@@ -47,7 +47,7 @@ export interface ICategoriesWeeklyMultipleReportState {
   opentaggedtask: any;
   openTaggedTaskArray: any;
   IsTimeEntry: any;
-  SharewebTimeComponent: any;
+  cmsTimeComponent: any;
   SelecteddateChoice: any;
   PresetData: any;
   AllTimeEntryItem: any;
@@ -116,7 +116,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       opentaggedtask: false,
       openTaggedTaskArray: [],
       IsTimeEntry: false,
-      SharewebTimeComponent: [],
+      cmsTimeComponent: [],
       SelecteddateChoice: 'Last3Month',
 
       PresetData: {},
@@ -1373,112 +1373,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
 
     }
-    // let columns: any = "Id, Title, TaskDate, TaskTime, AdditionalTimeEntry, Description, Modified, TaskMigration/Id, TaskMigration/Title, TaskMigration/Created, AuthorId&$expand=TaskMigration"
-    // let expended: any = 'TaskMigration';
-    // let columns2: any = "Id, Title, TaskDate, TaskTime, AdditionalTimeEntry, Description, Modified, AuthorId, TaskGruene/Id, TaskGruene/Title, TaskGruene/Created, TaskDE/Id, TaskDE/Title, TaskDE/Created, TaskEducation/Id, TaskEducation/Title, TaskEducation/Created, TaskEI/Id, TaskEI/Title, TaskEI/Created, TaskEPS/Id, TaskEPS/Title, TaskEPS/Created, TaskGender/Id, TaskGender/Title, TaskGender/Created, TaskHealth/Id, TaskHealth/Title, TaskHealth/Created, TaskHHHH/Id, TaskHHHH/Title, TaskHHHH/Created, TaskKathaBeck/Id, TaskKathaBeck/Title, TaskKathaBeck/Created, TaskQA/Id, TaskQA/Title, TaskQA/Created, TaskShareweb/Id, TaskShareweb/Title, TaskShareweb/Created, TaskOffshoreTasks/Id, TaskOffshoreTasks/Title, TaskOffshoreTasks/Created";
-    // let expen: any = "TaskGruene, TaskDE, TaskEducation, TaskEI, TaskEPS, TaskGender, TaskHealth, TaskHHHH, TaskKathaBeck, TaskQA, TaskShareweb, TaskOffshoreTasks";
-    // let listItems: any = []
-    // if (timelist?.length > 0) {
-
-
-    //   let arrayItems = JSON.parse(timelist[0].Configurations);
-    //   let listsInfo: any = [];
-    //   arrayItems.forEach(async (entry: any) => {
-    //     if (entry?.listName === 'TasksTimesheet2'){
-    //       (async () => {
-    //         globalCommon.calculateBatches(entry)
-    //        .then(function (batchesInfo: any) {
-    //          batchesInfo.forEach((batchInfo: any) => {
-    //            listsInfo.push(batchInfo);
-    //          });
-    //          // LoadAllTimeSheetData(listsInfo);
-    //        });
-    //    })();
-    //     }
-    //       // listItems += await globalCommon._pnpPagedSearchClick(entry.siteUrl, entry.listId, columns, filters, expended);
-    //     if (entry?.listName === 'TaskTimeSheetListNew'){
-    //       (async () => {
-    //         globalCommon.calculateBatches(entry)
-    //        .then(function (batchesInfo: any) {
-    //          batchesInfo.forEach((batchInfo: any) => {
-    //            listsInfo.push(batchInfo);
-    //          });
-    //          // LoadAllTimeSheetData(listsInfo);
-    //        });
-    //    })();
-    //     }
-    //       // await globalCommon._pnpPagedSearchClick(entry.siteUrl, entry.listId, columns2, filters, expen).then((items) => {
-    //       //   console.log(items);
-    //       // })
-    //       //   .catch((error) => {
-    //       //     console.error(error);
-    //       //   });
-    //   })
-    // let array: any = [];
-    // arrayItems.forEach(async (entry: any) => {
-    //   if (entry?.listName === 'TasksTimesheet2') { }
-    //   array.push({ 'SiteUrl': entry.siteUrl, "listId": entry.listId, "columns": columns, "filters": filters, "expend": expended });
-    //   if (entry?.listName === 'TaskTimeSheetListNew') {
-    //     array.push({ 'SiteUrl': entry.siteUrl, "listId": entry.listId, "columns": columns2, "filters": filters, "expend": expen });
-    //   }
-    // })
-    // let listsInfo: any = [];
-    // if (array != undefined && array.length > 0) {
-    //   array.forEach(async (TimeSheet: any) => {
-    //     (async () => {
-    //        globalCommon.calculateBatches(TimeSheet)
-    //       .then(function (batchesInfo: any) {
-    //         batchesInfo.forEach((batchInfo: any) => {
-    //           listsInfo.push(batchInfo);
-    //         });
-    //         // LoadAllTimeSheetData(listsInfo);
-    //       });
-    //   })();
-
-    //   });
-    // }
-    // console.log(listsInfo);
-
-    // }
-
-
-    // let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
-    // let array: any = [];
-    // let resultsOfTimeSheet: any = await web.lists
-    //   .getByTitle('TasksTimesheet2')
-    //   .items
-    //   .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'TaskMigration/Id', 'TaskMigration/Title', 'TaskMigration/Created', 'AuthorId')
-    //   // .filter(filters)
-    //   .expand('TaskMigration')
-    //   .getAll();
-    // console.log(resultsOfTimeSheet);
-
-
-
-
-    // let resultsofTimeSheetNew = await web.lists
-    //   .getByTitle('TaskTimeSheetListNew')
-    //   .items
-    //   .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'AuthorId', 'TaskGruene/Id', 'TaskGruene/Title', 'TaskGruene/Created', 'TaskDE/Id', 'TaskDE/Title', 'TaskDE/Created', 'TaskEducation/Id', 'TaskEducation/Title', 'TaskEducation/Created', 'TaskEI/Id', 'TaskEI/Title', 'TaskEI/Created', 'TaskEPS/Id', 'TaskEPS/Title', 'TaskEPS/Created', 'TaskGender/Id', 'TaskGender/Title', 'TaskGender/Created', 'TaskHealth/Id', 'TaskHealth/Title', 'TaskHealth/Created', 'TaskHHHH/Id', 'TaskHHHH/Title', 'TaskHHHH/Created', 'TaskKathaBeck/Id', 'TaskKathaBeck/Title', 'TaskKathaBeck/Created', 'TaskQA/Id', 'TaskQA/Title', 'TaskQA/Created', 'TaskShareweb/Id', 'TaskShareweb/Title', 'TaskShareweb/Created', 'TaskOffshoreTasks/Id', 'TaskOffshoreTasks/Title', 'TaskOffshoreTasks/Created')
-    //   //.filter(filters)
-    //   .expand('TaskGruene', 'TaskDE', 'TaskEducation', 'TaskEI', 'TaskEPS', 'TaskGender', 'TaskHealth', 'TaskHHHH', 'TaskKathaBeck', 'TaskQA', 'TaskShareweb', 'TaskOffshoreTasks')
-    //   .getAll();
-    // console.log(resultsofTimeSheetNew);
-
-    // let AllTimeSheetResult = (resultsOfTimeSheet).concat(resultsofTimeSheetNew);
-    // console.log(AllTimeSheetResult);
-    // if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
-    //   ImageSelectedUsers.forEach(function (obj: any, index: any) {
-    //     if (obj != undefined && obj.AssingedToUserId != undefined) {
-    //       let arra = AllTimeSheetResult.filter((eleme: any) => obj.AssingedToUserId === eleme.AuthorId);
-    //       if (arra?.length > 0) {
-    //         array = array.concat(arra);
-    //       }
-    //     }
-    //   })
-    // }
-    // this.LoadTimeSheetData(array);
-
+   
   }
 
   private LoadTimeSheetData(AllTimeSheetResult: any) {
@@ -1654,9 +1549,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
   private async GetAllSiteTaskData(filterItemTimeTab: any, getAllTimeEntry: any) {
     let callcount = 0;
-    let AllSharewebSiteTasks: any = [];
+    let AllSiteTask: any = [];
     let AllTimeEntryItem: any = [];
-    let getAllSharewebSiteTasks = [];
+  
     let PortfolioComponent = true;
     let PortfolioService = true;
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
@@ -1713,10 +1608,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               Item.NewCompletedDate = Item.CompletedDate;
               Item.NewCreated = Item.Created;
               if (Item.Created != undefined)
-                Item.FiltercreatedDate = ''//SharewebCommonFactoryService.ConvertLocalTOServerDate(Item.Created, "DD/MM/YYYY");
+                Item.FiltercreatedDate = ''
               if (Item.CompletedDate != undefined)
-                Item.FilterCompletedDate = ''//SharewebCommonFactoryService.ConvertLocalTOServerDate(Item.CompletedDate, "DD/MM/YYYY");
-              AllSharewebSiteTasks.push(Item);
+                Item.FilterCompletedDate = ''
+              AllSiteTask.push(Item);
             }
 
 
@@ -1724,12 +1619,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         }
       }
 
-      console.log(AllSharewebSiteTasks);
+      console.log(AllSiteTask);
 
       console.log(this.state.filterItems);
       let filterItems = this.state.filterItems;
       getAllTimeEntry.forEach(function (filterItem: any) {
-        AllSharewebSiteTasks.forEach(function (getItem: any) {
+        AllSiteTask.forEach(function (getItem: any) {
           if (getItem.ID == 4090)
             console.log(getItem)
           if (getItem.ID == 3227)
@@ -2329,10 +2224,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
       });
 
-      // this.AllTimeEntryBackup = JSON.parse(JSON.stringify(this.AllTimeEntry));
       this.rerenderEntire(this.AllTimeEntry);
-      //this.rerender();
-      //$scope.CopyAllTimeEntry = SharewebCommonFactoryService.ArrayCopy($scope.AllTimeEntry);
+      
 
     }
   }
@@ -2928,7 +2821,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
   private EditDataTimeEntryData = (e: any, item: any) => {
     this.setState({ IsTimeEntry: true });
-    this.setState({ SharewebTimeComponent: item });
+    this.setState({ cmsTimeComponent: item });
   };
 
   private cancelPresetPopup = (type: any) => {
@@ -3187,8 +3080,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({ AllTimeEntry: this.AllTimeEntry });
     this.rerenderEntire(this.state.AllTimeEntry);
     this.setState({ AdjustedTimePopup: false });
-    //  $scope.CopyAllTimeEntry = SharewebCommonFactoryService.ArrayCopy($scope.AllTimeEntry);
-    // $('#OpenAdjustedTimePopup').hide()
+    
   }
   private getexportChilds = (item: any) => {
     if (item != undefined || item != null) {
@@ -4351,7 +4243,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         {
           this?.state?.IsTimeEntry && (
             <TimeEntryPopup
-              props={this?.state?.SharewebTimeComponent}
+              props={this?.state?.cmsTimeComponent}
               CallBackTimeEntry={this?.TimeEntryCallBack}
               Context={AllListId.Context}
             ></TimeEntryPopup>

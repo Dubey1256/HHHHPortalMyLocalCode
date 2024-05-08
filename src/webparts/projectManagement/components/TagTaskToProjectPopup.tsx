@@ -325,10 +325,10 @@ const onRenderCustomHeaderMain = (type: any) => {
                 cell: ({ row, getValue }) => (
                     <div>
                         {/* {row?.original?.TitleNew != "Tasks" ?
-                            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={props?.AllListId} />
+                            <ReactPopperTooltip CMSToolId={getValue()} row={row} AllListId={props?.AllListId} />
                             : ''} */}
                         {row?.original?.TitleNew != "Tasks" ?
-                            <ReactPopperTooltipSingleLevel AllListId={props?.AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.masterTaskData} AllSitesTaskData={AllTasks} />
+                            <ReactPopperTooltipSingleLevel AllListId={props?.AllListId} CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.masterTaskData} AllSitesTaskData={AllTasks} />
                             : ''}
                     </div>
                 ),

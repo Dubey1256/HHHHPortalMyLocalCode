@@ -19,7 +19,7 @@ import { GrNext, GrPrevious } from "react-icons/gr";
 import * as Moment from "moment";
 import Slider from "react-slick";
 import HighlightableCell from "../../../globalComponents/highlight";
-import { MdOutlineGppGood, MdGppBad } from "react-icons/md";
+import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
 import { Panel } from '@fluentui/react';
 let Count = 0;
 let DashboardConfig: any = [];
@@ -580,7 +580,7 @@ const TaskStatusTbl = (Tile: any) => {
         isColumnVisible: true,
         cell: ({ row, getValue }: any) => (
           <span className="d-flex">
-            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={item?.Tasks} AllListId={ContextData?.propsValue?.Context} />
+            <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={item?.Tasks} AllListId={ContextData?.propsValue?.Context} />
           </span>
         ),
       },
@@ -652,7 +652,7 @@ const TaskStatusTbl = (Tile: any) => {
           <>
             {row?.original?.ProjectTitle != (null || undefined) &&
               <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
+                <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
             }
           </>
         ),

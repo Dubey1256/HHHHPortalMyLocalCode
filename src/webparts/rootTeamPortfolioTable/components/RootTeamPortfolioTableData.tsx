@@ -1052,7 +1052,7 @@ const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
             accessorFn: (row) => row?.TaskID,
             cell: ({ row, getValue }) => (
                 <>
-               <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={row?.original?.AllListId} singleLevel={true} masterTaskData={AllSubSiteMasterTask.current[row?.original?.siteName]} AllSitesTaskData={AllSubSiteTasksData?.current[row?.original?.siteName]} />
+               <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={row?.original?.AllListId} singleLevel={true} masterTaskData={AllSubSiteMasterTask.current[row?.original?.siteName]} AllSitesTaskData={AllSubSiteTasksData?.current[row?.original?.siteName]} />
                 </>
             ),
             id: "TaskID",
@@ -1112,7 +1112,7 @@ const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
                 <>
                     {row?.original?.ProjectTitle != (null || undefined) &&
                         <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${row?.original.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                         <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={row?.original?.AllListId} /> 
+                         <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={row?.original?.AllListId} /> 
                              </a></span>
                     }
                 </>

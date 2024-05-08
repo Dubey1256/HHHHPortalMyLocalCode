@@ -2,8 +2,8 @@ import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InlineEditingcolumns from "../../../globalComponents/inlineEditingcolumns";
 import { Panel, PanelType } from "office-ui-fabric-react";
-import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
-import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
+import { FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { Web } from "sp-pnp-js";
 import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import * as Moment from "moment";
@@ -93,7 +93,7 @@ const ProjectManagementMain = (props: any) => {
   const [IsComponent, setIsComponent] = React.useState(false);
   const [workingTodayFiltered, setWorkingTodayFiltered] = React.useState(false);
   const [pageLoaderActive, setPageLoader] = React.useState(false)
-  const [SharewebComponent, setSharewebComponent] = React.useState("");
+  const [CMSComponent, setCMSComponent] = React.useState("");
   const [AllTasks, setAllTasks] = React.useState([]);
   const rerender = React.useReducer(() => ({}), {})[1]
   const refreshData = () => setProjectTableData(() => renderData);
@@ -117,8 +117,8 @@ const ProjectManagementMain = (props: any) => {
   const [remark, setRemark] = React.useState(false)
   const [remarkData, setRemarkData] = React.useState(null);
   const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
-  const [editSmartInfo, setEditSmartInfo] = React.useState(false);
-  const [suggestedItems, setSuggestedItems] = React.useState("");
+  const [editSmartInfo, setEditSmartInfo] = React.useState(false)
+  const [suggestedItems, setSuggestedItems] = React.useState('')
   const [suggestedPortfolio, setSuggestedPortfolio] = React.useState("")
   const [searchedKeyPortfolios, setSearchedkeyPortfolios] = React.useState([])
   const [ActivityPopup, setActivityPopup] = React.useState(false);
@@ -480,15 +480,10 @@ const ProjectManagementMain = (props: any) => {
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
     if (elem?.TaskType != undefined) {
       setCheckedList(elem)
-    }
-    else if (elem?.TaskType == undefined) {
-      setCheckedList(elem)
-      selectedItem = elem
     } else {
       setCheckedList({})
     }
   }, []);
-
   const onRenderCustomHeaderMain = () => {
     return (
         <div className="d-flex full-width pb-1">
@@ -507,6 +502,7 @@ const closeActivity = () => {
   setSuggestedPortfolio("")
   childRef?.current?.setRowSelection({});
 }
+
 
   const CallBack = React.useCallback((item: any, type: any) => {
     setIsAddStructureOpen(false)
@@ -608,7 +604,7 @@ const closeActivity = () => {
     item["siteUrl"] = props?.siteUrl;
     item["listName"] = "Master Tasks";
     setIsComponent(true);
-    setSharewebComponent(item);
+    setCMSComponent(item);
   };
 
   const tagAndCreateCallBack = React.useCallback(() => {
@@ -736,22 +732,6 @@ const closeActivity = () => {
         items.portfolio = {};
         if (items?.Portfolio?.Id != undefined) {
           items.Portfolio = MasterListData?.find((masterItem: any) => masterItem?.Id == items?.Portfolio?.Id)
-          if (!taskComponent?.some((id: any) => id == items?.Portfolio?.Id)) {
-            let comp = items?.Portfolio
-            taskComponent.push(comp?.Id)
-            taskTaggedComponents.push(comp)
-          }
-          suggestedPortfolioItems = suggestedPortfolioItems.filter((itms: any) => {
-            if (smartPortfoliosData !== undefined || taskTaggedComponents !== undefined) {
-              const isKeyTitleMatch = smartPortfoliosData.some((tagPort: any) => tagPort?.Title === itms?.Title);
-              const isRelevantTitleMatch = taskTaggedComponents.some((taskTag: any) => taskTag?.Title === itms?.Title);
-              const isProjectOrSprint = itms?.Item_x0020_Type === 'Project' || itms?.Item_x0020_Type === 'Sprint';
-              if (isKeyTitleMatch || isRelevantTitleMatch || isProjectOrSprint) {
-                return false;
-              }
-            }
-            return itms?.Item_x0020_Type !== 'Project' && itms?.Item_x0020_Type !== 'Sprint';
-          });
           items.PortfolioTitle = '';
           items.portfolio = items?.Portfolio;
           items.PortfolioTitle = items?.Portfolio?.Title;
@@ -934,8 +914,33 @@ const closeActivity = () => {
       })
       allSprints = allSprints.concat(allActivities);
       allSprints = allSprints.concat(allWorkStream);
-      AllTask = AllTask.filter((item: any) => item?.isTaskPushed !== true);
-      allSprints = allSprints.concat(AllTask);
+      let AllTaskToBePushed: any = AllTask.filter((item: any) => {
+        if (item?.isTaskPushed !== true && item?.Project?.Id == projectData?.Id) {
+          item.isTaskPushed = true;
+          return true;
+        }
+      });
+      AllTask?.map((task: any) => {
+        if (task?.isTaskPushed == true) {
+          if (!taskComponent?.some((id: any) => id == task?.Portfolio?.Id)) {
+            let comp = task?.Portfolio
+            taskComponent.push(comp?.Id)
+            taskTaggedComponents.push(comp)
+          }
+          suggestedPortfolioItems = suggestedPortfolioItems.filter((itms: any) => {
+            if (smartPortfoliosData !== undefined || taskTaggedComponents !== undefined) {
+              const isKeyTitleMatch = smartPortfoliosData.some((tagPort: any) => tagPort?.Title === itms?.Title);
+              const isRelevantTitleMatch = taskTaggedComponents.some((taskTag: any) => taskTag?.Title === itms?.Title);
+              const isProjectOrSprint = itms?.Item_x0020_Type === 'Project' || itms?.Item_x0020_Type === 'Sprint';
+              if (isKeyTitleMatch || isRelevantTitleMatch || isProjectOrSprint) {
+                return false;
+              }
+            }
+            return itms?.Item_x0020_Type !== 'Project' && itms?.Item_x0020_Type !== 'Sprint';
+          });
+        }
+      })
+      allSprints = allSprints.concat(AllTaskToBePushed);
       allBackupSprintAndTask = allSprints
      let allRowInfo =getAllRowInfo(allSprints)
       countAWT(allRowInfo)
@@ -951,7 +956,7 @@ const closeActivity = () => {
 
     }
 
-  };
+  }
   const getAllRowInfo=(allSprints:any)=>{
     let allrowInfo:any=[];
    function getallRows(value:any){
@@ -1026,13 +1031,12 @@ const closeActivity = () => {
   }
   const EditPortfolio = (item: any, type: any) => {
     portfolioType = type;
-    setSharewebComponent(item);
+    setCMSComponent(item);
     setIsPortfolio(true);
   };
   const OpenAddStructureModal = () => {
     setIsAddStructureOpen(true);
-  };
-
+  }
   const CreateActivityPopup = (type: any) => {
     setActiveTile(type)
     if (checkedList?.TaskType === undefined) {
@@ -1130,11 +1134,11 @@ const closeActivity = () => {
     }
     if (propsItems === "Close") {
       setIsComponent(false);
-      setIsOpenActivity(false);
-      setIsOpenWorkstream(false);
+      setIsOpenActivity(false)
+      setIsOpenWorkstream(false)
       setActivityPopup(false)
     }
-    if (propsItems?.data && propsItems?.data?.ItmesDelete != true && (propsItems?.data?.TaskType?.Id == 2 || propsItems?.data?.TaskType?.Id == 3)) {
+    if (propsItems?.data && propsItems?.data?.ItmesDelete != true && (propsItems?.data?.TaskTypeId == 1 || propsItems?.data?.TaskType?.Id == 2 || propsItems?.data?.TaskType?.Id == 3)) {
       setIsOpenActivity(false)
       setIsOpenWorkstream(false)
       setActivityPopup(false)
@@ -1342,14 +1346,14 @@ const closeActivity = () => {
       },
       {
         accessorKey: "TaskID",
-                cell: ({ row, getValue }) => (
+        cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel AllListId={AllListId} CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </>
         ),
-        id:"TaskID",
+        id: "TaskID",
         placeholder: "Task Id",
         header: "",
         resetColumnFilters: false,
@@ -1422,7 +1426,7 @@ const closeActivity = () => {
             href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
           >
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel AllListId={AllListId} onclickPopup={false} ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel AllListId={AllListId} onclickPopup={false} CMSToolId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </a>
         ),
@@ -2286,6 +2290,9 @@ const closeActivity = () => {
                               <div className="wrapper project-management-Table">
                                 {(ProjectTableData?.length == 0 || ProjectTableData?.length > 0) && <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} updatedSmartFilterFlatView={false}
                                   projectmngmnt={"projectmngmnt"}
+                                  portfolioTypeData={portfolioTypeDataItem}
+                                  showingAllPortFolioCount={true}
+                                  taskTypeDataItem={taskTypeDataItem}
                                   masterTaskData={MasterListData}
                                   PortfolioFeature={Masterdata?.Item_x0020_Type == "Sprint" ? 'Feature' : ''}
                                   AllSitesTaskData={AllSitesAllTasks}
@@ -2320,7 +2327,7 @@ const closeActivity = () => {
                       {isOpenEditPopup ? (
                         <EditTaskPopup AllListId={AllListId} Items={passdata} context={props?.props?.Context} pageName="ProjectProfile" Call={CallBack} />) : ("")}
                       {IsComponent ? (
-                        <EditProjectPopup AllListId={AllListId} props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}  > {" "} </EditProjectPopup>) : ("")}
+                        <EditProjectPopup AllListId={AllListId} props={CMSComponent} Call={Call} showProgressBar={showProgressBar}  > {" "} </EditProjectPopup>) : ("")}
                     </div>
                   </article>
                 </div>
@@ -2329,7 +2336,7 @@ const closeActivity = () => {
             </div>
             {IsPortfolio && (
               <ServiceComponentPortfolioPopup
-                props={SharewebComponent}
+                props={CMSComponent}
                 Dynamic={AllListId}
                 ComponentType={portfolioType}
                 Call={ComponentServicePopupCallBack}

@@ -23,7 +23,7 @@ function Tooltip(props: any) {
 
   const [projectId, setprojectId] = React.useState(null)
   const [OpenCallNotes, setOpenCallNotes] = React.useState(false);
-  const [SharewebComponent, setSharewebComponent] = React.useState('');
+  const [CMSToolComponent, setCMSToolComponent] = React.useState('');
   const isServiceTask = props.IsServiceTask;
 
   // React.useEffect(() => {
@@ -200,7 +200,7 @@ function Tooltip(props: any) {
 
 
       }
-      setSharewebComponent(Component);
+      setCMSToolComponent(Component);
       setOpenCallNotes(true);
 
 
@@ -274,7 +274,7 @@ function Tooltip(props: any) {
 
         </Popup>
 
-        {OpenCallNotes && <CallNotes Item={SharewebComponent} callback={callNotesCallBack} />}
+        {OpenCallNotes && <CallNotes Item={CMSToolComponent} callback={callNotesCallBack} />}
       </>
     </myContextValue.Provider>
   )

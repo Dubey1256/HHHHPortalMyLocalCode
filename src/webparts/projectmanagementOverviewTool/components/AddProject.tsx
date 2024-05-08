@@ -4,18 +4,19 @@ import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
 import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import Button from 'react-bootstrap/Button';
-import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent';
+// import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent';
 import PortfolioTagging from './PortfolioTagging';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 let portfolioType = '';
 let AllListId: any = {};
 let AllFlatProject: any = [];
+let selectedProject: any = {};
 const AddProject = (props: any) => {
     const [title, settitle] = React.useState('')
     const [lgShow, setLgShow] = useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
-    const [ShareWebComponent, setShareWebComponent] = React.useState('');
+    const [CMSToolComponent, setCMSToolComponent] = React.useState('');
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [selectedItem, setSetSelectedItem]: any = React.useState(undefined);
     const [IsPortfolio, setIsPortfolio] = React.useState(false);
@@ -27,8 +28,23 @@ const AddProject = (props: any) => {
         setLgShow(true)
     }
     React.useEffect(() => {
-        if (props?.items?.length == 1 && props?.items[0]?.Item_x0020_Type == "Project") {
-            setSetSelectedItem(props?.items[0])
+        try {
+            if (props?.items?.length == 1 && props?.items[0]?.original?.Item_x0020_Type == "Project") {
+                setSetSelectedItem(props?.items[0]?.original)
+                selectedProject = props?.items[0]?.original;
+            } else if (props?.items?.Id != undefined && props?.items?.Item_x0020_Type == "Project") {
+                setSetSelectedItem(props?.items)
+                selectedProject = props?.items;
+                props.items = [props?.items];
+            } else if (props?.items?.length == 1 && props?.items[0]?.Item_x0020_Type == "Project") {
+                setSetSelectedItem(props?.items[0])
+                selectedProject = props?.items[0];
+            } else if (props?.items?.length == 1 && props?.items[0][0]?.original?.Item_x0020_Type == "Project") {
+                setSetSelectedItem(props?.items[0][0]?.original)
+                selectedProject = props?.items[0][0]?.original;
+            }
+        } catch (e) {
+
         }
         GetMasterData();
     }, [props?.items?.length])
@@ -260,7 +276,7 @@ const AddProject = (props: any) => {
 
         portfolioType = type;
         setIsPortfolio(true);
-        setShareWebComponent(item);
+        setCMSToolComponent(item);
     };
     const onRenderCustomHeader = (
     ) => {
@@ -272,7 +288,7 @@ const AddProject = (props: any) => {
                             <li><a data-interception="off" target="_blank" href={`${props?.AllListId?.siteUrl}/SitePages/PX-Overview.aspx`}>PX Management Overview</a></li>
                             <li>
                                 {" "}
-                                <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${props?.items[0]?.Id}`}>{props?.items[0]?.Title}</a>{" "}
+                                <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${selectedProject?.Id}`}>{selectedProject?.Title}</a>{" "}
                             </li>
                         </ul>
                     </div>
@@ -364,14 +380,14 @@ const AddProject = (props: any) => {
             </Panel>
             {IsPortfolio && (
                 <ServiceComponentPortfolioPopup
-                    props={ShareWebComponent}
+                    props={CMSToolComponent}
                     Dynamic={props?.AllListId}
                     ComponentType={portfolioType}
                     Call={ComponentServicePopupCallBack}
                     selectionType={"Multi"}
                 ></ServiceComponentPortfolioPopup>
             )}
-            {/* {IsPortfolio && <PortfolioTagging props={ShareWebComponent} AllListId={props?.AllListId} type={portfolioType} Call={Call}></PortfolioTagging>} */}
+            {/* {IsPortfolio && <PortfolioTagging props={CMSToolComponent} AllListId={props?.AllListId} type={portfolioType} Call={Call}></PortfolioTagging>} */}
         </>
     )
 }

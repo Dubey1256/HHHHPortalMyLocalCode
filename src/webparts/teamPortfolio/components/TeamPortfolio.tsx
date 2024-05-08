@@ -1,5 +1,4 @@
 import * as React from 'react';
-//import styles from './TeamPortfolio.module.scss';
 import { ITeamPortfolioProps } from './ITeamPortfolioProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import TeamPortlioTable from './TeamPortlioTable';
@@ -19,6 +18,8 @@ export default class TeamPortfolio extends React.Component<ITeamPortfolioProps, 
       SmartMetadataListID,
       PortFolioTypeID,
       SmartHelpListID,
+      AdminconfigrationID,
+      DocumentsListID
     } = this.props;
 
     return (

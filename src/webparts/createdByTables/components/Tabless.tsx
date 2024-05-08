@@ -244,7 +244,7 @@ const Tabless = (props: any) => {
     await web.lists
       .getById(props.Items.MasterTaskListID)
       .items
-      .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "StructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
+      .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
         "DueDate", "Body", "Item_x0020_Type", "FeedBack", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
         "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
         "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id",
@@ -280,8 +280,8 @@ const Tabless = (props: any) => {
     const web = new Web(items.currentSiteUrl);
     await web.lists
       .getById(items.listId)
-      .items.select("Title", "PercentComplete", "TaskLevel", "TeamMembers/Id", "TaskID", "ParentTask/Title", "ParentTask/Id", "TeamMembers/Title", "ResponsibleTeam/Id", "ResponsibleTeam/Title", 'EstimatedTimeDescription', "EstimatedTime", "FeedBack", "SharewebTaskType/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "Categories", "Priority_x0020_Rank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
-      .expand("Team_x0020_Members", "ResponsibleTeam", "TeamMembers", "ParentTask", "Author", "PortfolioType", "Portfolio", "TaskType", "SharewebTaskType", "Editor", "Responsible_x0020_Team", "AssignedTo")
+      .items.select("Title", "PercentComplete", "TaskLevel", "TeamMembers/Id", "TaskID", "ParentTask/Title", "ParentTask/Id", "TeamMembers/Title", "ResponsibleTeam/Id", "ResponsibleTeam/Title", 'EstimatedTimeDescription', "EstimatedTime", "FeedBack", "TaskType/Id", "TaskType/Title", "TaskType/Level", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "Categories", "Priority_x0020_Rank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
+      .expand("Team_x0020_Members", "ResponsibleTeam", "TeamMembers", "ParentTask", "Author", "PortfolioType", "Portfolio", "TaskType",  "Editor", "Responsible_x0020_Team", "AssignedTo")
       .filter(`${filter}`).top(5000)
       .getAll()
       .then((data: any) => {
@@ -471,7 +471,7 @@ const Tabless = (props: any) => {
         accessorFn: (row: any) => row?.idType,
         cell: ({ row, getValue }: any) => (
 
-          <>   <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.idType} row={row?.original} AllListId={AllListId} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={data} /></>
+          <>   <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.idType} row={row?.original} AllListId={AllListId} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={data} /></>
 
         ),
         id: "idType",

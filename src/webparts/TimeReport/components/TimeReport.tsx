@@ -20,7 +20,7 @@ import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 
 // import * as Moment from 'moment';
 import * as Moment from 'moment-timezone';
-import { MdEmail } from "react-icons/md";
+import { MdEmail } from "react-icons/Md";
 import PageLoader from '../../../globalComponents/pageLoader';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import EditPage from '../../../globalComponents/EditPanelPage/EditPage';
@@ -961,7 +961,7 @@ const TimeReport = (props: any) => {
                 accessorFn: (row) => row?.NewTaskId,
                 cell: ({ row, getValue }) => (
                     <>
-                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={props.ContextData} singleLevel={true} masterTaskData={componentDetails} AllSitesTaskData={AllTasks} />
+                        <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={props.ContextData} singleLevel={true} masterTaskData={componentDetails} AllSitesTaskData={AllTasks} />
                     </>
                 ),
                 id: "TaskID",

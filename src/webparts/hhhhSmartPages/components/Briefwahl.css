@@ -1,0 +1,596 @@
+
+  svg.right-arrowSvg {
+    font-size: 46px;
+    line-height: 52px;
+    font-family: 'GrueneType';
+    font-weight: 500;
+    fill: #fff;
+    height: .8em;
+    min-width: 31px;
+    margin-left: 20px;
+  }
+
+  svg.right-arrowSvgMini {
+    font-size: 29px;
+    line-height: 52px;
+    font-family: 'GrueneType';
+    font-weight: 500;
+    fill: #fff;
+    height: 0.5em;
+    min-width: 24px;
+    margin-left: 20px;
+  }
+
+  .mobile-part,
+  #mobile-view-btns {
+    display: none
+  }
+
+  #content p {
+    font-family: 'PTSans' !important;
+    line-height: 1.5 !important;
+    font-size: 18px;
+    font-weight: 400;
+  }
+
+  #PageInformation {
+    display: none;
+  }
+
+  .red_block {
+    background: #003399;
+    text-align: center;
+    font-size: 16px;
+    padding: 20px;
+  }
+
+  .red_block a {
+    color: #fff !important;
+    font-family: 'PTSans';
+    font-size: 23px;
+    line-height: 31px;
+    font-weight: 700;
+  }
+
+  .red_block i.icon-arrow-right {
+    margin-left: 16px;
+    vertical-align: bottom;
+  }
+
+  .red_block img.white_img-arrow {
+    width: 16px;
+    height: auto;
+    margin-left: 10px;
+  }
+
+  h1.privacypageTitle {
+    font-size: 59px !important;
+    font-weight: 500;
+    font-family: 'GrueneType';
+  }
+
+  ul.scrollToBtns {
+    margin: 35px 0 !important;
+    list-style: none !important;
+    display: inline-block;
+    width: 100%;
+  }
+
+  ul.scrollToBtns li {
+    align-items: center;
+    width: auto;
+    display: inline-block;
+  }
+
+  ul.scrollToBtns li a {
+    padding: 10px 20px;
+    text-align: center;
+    vertical-align: middle;
+    background: #003399;
+    color: #ffffff !important;
+    font-family: 'PTSans';
+    /* letter-spacing: 0.5px; */
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+  }
+
+  ul.scrollToBtns li a:hover {
+    background: #012671;
+  }
+
+  ul.scrollToBtns li:first-child {
+    margin-right: 10px;
+  }
+
+  ul.scrollToBtns li a i.icon-arrow-right {
+    margin-left: 15px;
+  }
+
+  img.AnleitungMobileImg {
+    display: none;
+  }
+
+  #AnleitungBriefwahl-1 h1,
+  #AnleitungBriefwahl-2 h1,
+  #box1content h1,
+  #box2content h1 {
+    font-family: 'GrueneType';
+    font-size: 40px !important;
+    font-weight: 100 !important;
+  }
+
+  #AnleitungBriefwahl-1 h3,
+  #AnleitungBriefwahl-2 h3,
+  #box1content h3,
+  #box2content h3 {
+    font-family: 'GrueneType';
+    font-size: 23px !important;
+    font-weight: 200 !important;
+  }
+
+  #AnleitungBriefwahl-1 .banner,
+  #AnleitungBriefwahl-2 .banner,
+  #box1content .banner,
+  #box2content .banner {
+    background: #393;
+    color: #fff;
+    padding: 10px 15px;
+    font-family: 'GrueneType';
+    font-size: 18px !important;
+    font-weight: 200;
+    letter-spacing: 0.5px;
+    margin-left: 40px;
+    cursor: pointer;
+  }
+
+  #AnleitungBriefwahl-1 .banner img.white_img-arrow,
+  #AnleitungBriefwahl-2 .banner img.white_img-arrow,
+  #box1content .banner img.white_img-arrow,
+  #box2content .banner img.white_img-arrow {
+    float: right;
+    width: 17px;
+    height: auto;
+    margin-top: 5px;
+  }
+
+  #AnleitungBriefwahl-1 ul.banner-list,
+  #AnleitungBriefwahl-2 ul.banner-list,
+  #box1content ul.banner-list,
+  #box2content ul.banner-list {
+    list-style: none !important;
+    margin: 25px auto;
+    color: #274A39;
+    font-size: 18px;
+    font-family: 'PTSans';
+  }
+
+  #AnleitungBriefwahl-2 ul.banner-list li img.attention-imgicon,
+  #AnleitungBriefwahl-2 ul.banner-list li img.download-imgicon,
+  #box2content ul.banner-list li img.attention-imgicon,
+  #box2content ul.banner-list li img.download-imgicon {
+    margin-right: 20px;
+  }
+
+  div#box1content .modal-dialog.modal-lg,
+  div#box2content .modal-dialog.modal-lg {
+    width: 830px;
+  }
+
+  .mb-20 {
+    margin-bottom: 20px !important;
+  }
+
+  .ms-wikicontent.ms-rtestate-field {
+    padding-right: 0px !important;
+  }
+
+  #visualization>div>div:first-child {
+    width: 100% !important;
+    text-align: center;
+  }
+
+  li.google-visualization-tooltip-item:last-child {
+    white-space: nowrap;
+  }
+
+  #table-scroll table {
+    border: 1px solid #c9c9c9;
+  }
+
+  .table tr th {
+    border-left-color: #c9c9c9 !important;
+    background-color: #a5a1a1 !important;
+    color: #fff;
+    font-weight: 700 !important;
+  }
+
+  #regions_div,
+  #BriefwahlTitleDiv {
+    width: 81%;
+    float: left;
+  }
+
+  #Stoerer_Briefwahl_imgDiv {
+    width: 19%;
+    float: left;
+    text-align: center;
+    margin: 0 auto;
+  }
+  #stateslist {
+    float: left;
+    margin: 0 auto !important;
+    padding-left: 2rem !important;
+    width: 19%;
+}
+
+  img.Stoerer_Briefwahl_img {
+    width: 60%;
+    margin: 20px auto;
+  }
+
+  .state-list-text {
+    padding: 0;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    color: #fff !important;
+    font-family: 'PTSans' !important;
+    font-size: 16px;
+    font-weight: 700 !important;
+    line-height: 24px !important;
+  }
+
+  .pagetitle {
+    font-size: 17px;
+    font-weight: 400;
+    padding: 0 0 20px 15px;
+    font-family: Rockwell;
+    color: #4a4a4a !important;
+  }
+
+  #suiteBar,
+  #s4-ribbonrow,
+  #SearchBox {
+    display: none !important;
+  }
+
+  #stateslist>li a {
+    color: #ffffff !important;
+    text-decoration: none;
+  }
+
+  .Briefwahl2021 #stateslist li {
+    border: 1px solid #ffffff;
+    display: inherit;
+    font-size: 16px;
+    padding: 3px 10px;
+    background: #267114 none repeat scroll 0 0;
+    font-style: normal !important;
+  }
+#box1content .banner, #box2content .banner {
+    background: #267114;
+    color: #fff;
+    padding: 10px 15px;
+    font-family: 'PTSans';
+    font-size: 16px !important;
+    font-weight: 700;
+    margin-left: 40px;
+    cursor: pointer;
+}
+  #stateslist>li:hover, #box1content .banner:hover {
+    background: #003399 none repeat scroll 0 0;
+    cursor: pointer;
+    color: #FFCB00 !important;
+  }
+  #stateslist>li:hover>a>h3 {
+    color: #FFCB00 !important;
+}
+  #stateslist>li:last-child {
+    background: #ffffff none repeat scroll 0 0;
+    margin-top: 12px;
+
+  }
+
+  .btn-primary {
+    background-color: #339933 !important;
+    border-color: #008939  !important;
+    text-transform: uppercase;
+    font-family: 'PTSans' !important;
+    padding: 7px 20px !important;
+    font-size: 16px !important;
+  }
+
+  .Briefwahl-modal-btn {
+    padding-left: 8%;
+  }
+
+  #stateslist img {
+    width: 160px !important;
+    height: 148px !important;
+    margin: 0 auto;
+  }
+
+  #searchInputBox {
+    float: right;
+    margin-bottom: 12px;
+    display: none;
+  }
+
+  @media screen and (max-width:992px) {
+    img.AnleitungDesktopImg {
+      width: 100%;
+    }
+
+    h1.privacypageTitle {
+      font-size: 42px !important;
+    }
+
+    ul.scrollToBtns li {
+      width: 100%;
+      margin: 5px 0;
+    }
+
+    ul.scrollToBtns li a {
+      padding: 10px 30px;
+      display: block;
+    }
+
+    .menu ul li {
+      padding: 0 0.50em;
+    }
+
+    .menu ul li a {
+      font: 700 14px "PTSans", open-sans, verdana, sans-serif;
+    }
+
+    .ms-webpart-chrome-vertical {
+      display: -moz-deck;
+    }
+
+    #stateslist {
+      display: inline-block;
+      float: none;
+      margin: 5px 6px;
+      width: auto;
+    }
+
+    #stateslist li {
+      margin: 3px 0;
+      padding: 10px;
+    }
+
+    #stateslist>li:last-child {
+      display: block;
+      text-align: center;
+    }
+
+    .Briefwahl-modal-btn .btn-primary {
+      width: 100%;
+      margin: 4px 0;
+    }
+
+    .Briefwahl-modal-btn {
+      padding-left: 10%;
+      padding-right: 10%;
+    }
+
+    .current-topic img {
+      float: right;
+      height: auto;
+      margin: -40px 0;
+      width: 600px;
+    }
+  }
+
+  @media screen and (max-width:766.5px) {
+
+    #content p {
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    #AnleitungBriefwahl-1 ul.banner-list,
+    #AnleitungBriefwahl-2 ul.banner-list {
+      font-size: 15px;
+    }
+
+    .red_block a {
+      font-size: 20px;
+    }
+
+    .red_block {
+      padding: 10px;
+    }
+
+    .red_block i.icon-arrow-right {
+      margin-left: 10px;
+      font-size: 15px;
+    }
+
+    svg.right-arrowSvg {
+      font-size: 30px;
+      line-height: 42px;
+      height: .5em;
+      min-width: 27px;
+      margin-left: 5px;
+    }
+
+    svg.right-arrowSvgMini {
+      font-size: 24px;
+      line-height: 30px;
+      height: 0.5em;
+      min-width: 18px;
+      margin-left: 0px;
+    }
+
+    #Stoerer_Briefwahl_imgDiv {
+      width: 100%;
+      float: none;
+      text-align: center;
+      margin: 0 auto;
+    }
+
+    #regions_div,
+    #BriefwahlTitleDiv {
+      width: 100%;
+      float: left;
+    }
+
+    img.Stoerer_Briefwahl_img {
+      width: 40%;
+      margin: 0px auto;
+    }
+
+    .mobile-part,
+    #mobile-view-btns {
+      display: block;
+    }
+
+    #web-view-btns {
+      display: none;
+    }
+
+    #AnleitungBriefwahl-1 h1,
+    #AnleitungBriefwahl-2 h1 {
+      font-size: 32px !important;
+    }
+
+    #AnleitungBriefwahl-1 .banner,
+    #AnleitungBriefwahl-2 .banner {
+      margin-left: 0px;
+    }
+
+    h1.privacypageTitle {
+      font-size: 32px !important;
+    }
+
+    ul.scrollToBtns li:first-child {
+      margin-right: 0px;
+    }
+
+    ul.scrollToBtns li a {
+      padding: 10px 0px;
+      font-size: 14px;
+    }
+
+    ul.scrollToBtns li a i.icon-arrow-right {
+      margin-left: 10px;
+    }
+
+    #box1content h1,
+    #box2content h1 {
+      font-size: 26px !important;
+    }
+
+    img.AnleitungMobileImg {
+      display: block;
+      margin: 0 auto;
+    }
+
+    #box1content .banner,
+    #box2content .banner {
+      padding: 10px 20px;
+      font-size: 14px !important;
+      letter-spacing: 0.5px;
+      margin-left: 0px;
+    }
+
+    img.AnleitungDesktopImg {
+      display: none;
+    }
+
+    #box2content ul.banner-list li img.attention-imgicon,
+    #box2content ul.banner-list li img.download-imgicon {
+      margin-right: 10px;
+      width: 25px;
+    }
+
+    .ms-siteicon-img {
+      display: block;
+      height: 70px;
+      margin-left: 10px;
+    }
+
+    .current-topic img {
+      display: block;
+      float: right;
+      height: 72px;
+      width: 350px;
+      margin: 0;
+    }
+
+    .menu ul li {
+      padding: 0 0.55em;
+    }
+
+    .menu ul li a {
+      font: 700 13px "PTSans", open-sans, verdana, sans-serif;
+      margin: 0;
+    }
+
+    .menu ul li.small a {
+      font: 700 13px "PTSans", open-sans, verdana, sans-serif;
+      margin: 0;
+    }
+
+    #contentBox {
+      min-width: 100%;
+    }
+
+    .ms-wikicontent.ms-rtestate-field {
+      padding-right: 0px;
+    }
+
+    #pageTitle {
+      font-size: 17px;
+    }
+
+    .ms-webpart-chrome-vertical {
+      display: -moz-inline-grid;
+      width: 100%;
+    }
+
+    #stateslist {
+      display: inline-block;
+      float: none;
+      margin: 0;
+      text-align: left;
+      width: auto;
+      padding: 0 10px;
+    }
+
+    .Briefwahl-modal-btn {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .Briefwahl-modal-btn>.btn-primary {
+      margin-bottom: 10px;
+    }
+
+    #regions_div {
+      display: none;
+    }
+
+    #stateslist img {
+      height: auto;
+      margin: 0 auto;
+    }
+
+    #stateslist li {
+      display: inline-block;
+      font-size: 16px;
+      margin: 2px 3px;
+      padding: 7px 10px;
+    }
+
+    #stateslist>li:last-child {
+      clear: both;
+      display: block;
+    }
+
+  }
+
+  /*#regions_div path:hover {fill: #09311d;}
+    #regions_div rect:hover {fill:transparent;}*/

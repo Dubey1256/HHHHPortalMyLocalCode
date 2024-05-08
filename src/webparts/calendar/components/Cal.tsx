@@ -17,6 +17,9 @@ import { FaPaperPlane } from "react-icons/fa";
 import EmailComponenet from "../../calendar/components/email";
 import moment from 'moment-timezone';
 import "./style.css";
+import 'core-js/es/object/values';
+import "@pnp/sp/sputilities";
+import { spfi, SPFx as spSPFx } from "@pnp/sp";
 moment.locale("en-GB");
 let createdBY: any,
   modofiedBy: any,
@@ -63,7 +66,7 @@ const Designation = [
   { key: "HR", text: "HR" },
   { key: "Admin", text: "Admin" },
   { key: "Management", text: "Management" },
-  { key: "Mobile Team", text: "Mobile Team" },
+  { key: "Mobile", text: "Mobile" },
   { key: "JTM (Junior Task Manager)", text: "JTM (Junior Task Manager)" }
 ];
 let newEvent: any
@@ -823,18 +826,8 @@ const Apps = (props: any) => {
     const eventYear = eventDate.getFullYear(); // Get year of the event
     return { year: eventYear, month: eventMonth };
   }
-  // const handleNavigate = (newDate: any) => {
-  //   const { year: currentYear, month: currentMonth } = getYearMonthFromDate(newDate);
-
-  //   const filteredData = events.filter((event: any) => {
-  //     const { year, month } = getYearMonthFromDate(event.start);
-  //     return month === currentMonth && year === currentYear;
-  //   });
-  //   localArr = processDataArray(filteredData);
-  //   setRecurringEvents(filteredData);
-  // };
-  const handleNavigate = (newDate: any, newView: any) => {
-    setview(newView || 'months');
+  const handleNavigate = (newDate: any ,newiew:any) => {
+    setview(newiew || 'month')
     const { year: currentYear, month: currentMonth } = getYearMonthFromDate(newDate);
     const filteredData = events.filter((event: any) => {
       const startDate = getYearMonthFromDate(event.start);
@@ -1136,12 +1129,15 @@ const Apps = (props: any) => {
     try {
       const web = new Web(props.props.siteUrl);
 
-      const mycolors = (HalfDaye || HalfDayT) ? "#6d36c5" :
+      
         (newEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
           ((newEvent.Event_x002d_Type === "Company Holiday") || (newEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
-
+          let mytitle = newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
+          if (newEvent != undefined && (newEvent?.type == "National Holiday" || newEvent?.type == "Company Holiday")) {
+            mytitle = newEvent.type + "-" + newEvent.title;
+          }
       const addEventItem = {
-        Title: newEvent.Title,
+        Title: mytitle,
         Description: newEvent.Description,
         EventDate: await getUtcTime(newEvent.EventDate),
         Event_x002d_Type: newEvent.Event_x002d_Type,
@@ -1151,7 +1147,7 @@ const Apps = (props: any) => {
         fAllDayEvent: newEvent.fAllDayEvent,
         fRecurrence: newEvent.fRecurrence,
         EventType: newEvent.EventType,
-        Color: mycolors,
+        // Color: mycolors,
         UID: newEvent.UID,
         HalfDay: HalfDaye,
         HalfDayTwo: HalfDayT,
@@ -1340,6 +1336,113 @@ const Apps = (props: any) => {
       return formattedDater;
     } else return "";
   };
+// for send Email
+
+const calculateTotalWorkingDays = (matchedData: any[]) => {
+  // Function to reset the time of a date string to 00:00:00
+ function resetTime(dateString:any) {
+   let date = new Date(dateString);
+   date.setHours(0, 0, 0, 0);
+   return date; // Return the date object
+ }
+ 
+ // Today's date for comparison (reset to 00:00:00)
+ const today = new Date();
+ today.setHours(0, 0, 0, 0);
+ 
+ let totalWorkingDays = 0; // Initialize the counter for total working days
+ 
+ matchedData.forEach((item) => {
+   let endDate = resetTime(item.EndDate);
+   let eventDate:any = resetTime(item.EventDate);
+   if (eventDate.getFullYear() === today.getFullYear()) {
+     let currentDate = new Date(eventDate);
+ 
+     while (currentDate <= endDate) {
+       const dayOfWeek = currentDate.getDay();
+ 
+       // Exclude weekends (Saturday and Sunday)
+       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+         // Check if the current date falls within the event range
+         if (currentDate >= eventDate && currentDate <= endDate) {
+           if (item.Event_x002d_Type !== "Work From Home") {
+             if (item.HalfDay === true || item.HalfDayTwo === true) {
+               totalWorkingDays += 0.5; // Add half-day
+             } else {
+               totalWorkingDays++; // Add full day
+             }
+           }
+         }
+       }
+ 
+       currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+     }
+   }
+ });
+ 
+ 
+   return totalWorkingDays;
+ };
+ 
+const isWeekend = (startDate: any, endDate: any) => {
+  const startDay = startDate.getDay();
+  const endDay = endDate.getDay();
+
+  return (startDay === 0 || startDay === 6) && (endDay === 0 || endDay === 6);
+};
+
+const SendEmail = (EventData: any, MyEventData: any) => {
+  const startDate = new Date(EventData?.start);
+  const endDate = new Date(EventData?.end);
+
+  let daysDifference = calculateTotalWorkingDays([MyEventData]);
+  const formattedstartDate = startDate.toLocaleDateString('en-GB', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+  const formattedendDate = endDate.toLocaleDateString('en-GB', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+
+  let sp = spfi().using(spSPFx(props?.props?.context));
+
+  let BindHtmlBody = `<div>
+  <div>
+    Dear Prashant,<br><br>
+    I am writing to request ${daysDifference} day of leave from ${formattedstartDate} to ${formattedendDate} due to ${EventData?.title}.<br><br>
+    I have ensured that my tasks are up to date and arranged coverage during my absence. Your understanding and approval would be greatly appreciated.<br><br>
+    Best regards,<br>
+    ${EventData?.name}
+  </div>
+</div>`;
+
+  let SendEmailMessage =
+    sp.utility
+      .sendEmail({
+        Body: BindHtmlBody,
+        Subject: "Leave Request - " + formattedstartDate +"-"+EventData?.Designation+"-"+EventData?.type+"-"+ EventData?.title , // Modified subject
+        To: ["ranu.trivedi@hochhuth-consulting.de","juli.kumari@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de","anubhav.shukla@hochhuth-consulting.de"],
+        AdditionalHeaders: {
+          "content-type": "text/html",
+        },
+      })
+      .then(() => {
+        console.log("Email Sent!");
+        alert("Email Sent Successfully!");
+      })
+      .catch((error) => {
+        console.error("Error sending email:", error); // Log the error
+        alert("Error sending email. Please try again."); // Alert user about the error
+      });
+};
+
+// Email End 
+
   const saveEvent = async () => {
     try {
       if (inputValueName?.length > 0 && (dType?.length > 0 || type == "National Holiday" || type == "Company Holiday")) {
@@ -1408,6 +1511,9 @@ const Apps = (props: any) => {
               .getById(props.props.SmalsusLeaveCalendar)
               .items.add(eventData)
               .then(() => {
+                if(newEvent.type !== "Work From Home"){
+                  SendEmail(newEvent,eventData)
+                }
                 getEvents();
               })
           });
@@ -1499,7 +1605,7 @@ const Apps = (props: any) => {
         Location: newEvent.loc,
         Event_x002d_Type: newEvent.type,
         Description: newEvent.reason,
-        // Designation: newEvent.Designation,
+        Designation: newEvent.Designation,
         EndDate: ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) + " " + (selectedTimeEnd + "" + ":00"),
         EventDate: ConvertLocalTOServerDateToSave(startDate, selectedTime) + " " + (selectedTime + "" + ":00"),
         HalfDay: newEvent.halfdayevent,

@@ -23,7 +23,7 @@ const AllMasterTaskLoad = (props: any) => {
   const [listIds, setlistIds] = React.useState<any>([]);
   const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
   const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
-  const [SharewebComponent, setSharewebComponent] = React.useState("");
+  const [CMSToolComponent, setCMSToolComponent] = React.useState("");
   const [IsComponent, setIsComponent] = React.useState(false);
 
   let allCSFdata: any = [];
@@ -125,7 +125,7 @@ const AllMasterTaskLoad = (props: any) => {
   const editComponentPopUp = (item: any) => {
     setIsComponent(true);
     setPortfoliotyped(item?.PortfolioType?.Title)
-    setSharewebComponent(item);
+    setCMSToolComponent(item);
   };
   const EditComponentCallback = (item: any) => {
     setIsComponent(false);
@@ -315,7 +315,7 @@ const AllMasterTaskLoad = (props: any) => {
                 columns={column} data={allData} callBackData={callBackData} AllListId={ContextValue} exportToExcel={true} showHeader={true} showingAllPortFolioCount={true} fixedWidth={true} pageName={"ProjectOverviewGrouped"} portfolioTypeData={portfolioTypeDataItem} />
                 {IsComponent && (
                   <EditInstituton
-                    item={SharewebComponent}
+                    item={CMSToolComponent}
                     Calls={EditComponentCallback}
                     SelectD={listIds}
                   // portfolioTypeData={Portfoliotyped}

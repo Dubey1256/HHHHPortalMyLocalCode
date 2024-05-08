@@ -231,7 +231,7 @@ const TeamSmartFilter = (item: any) => {
             let configurationData: any[] = [];
             const resultsArray = await Promise.all([
                 await web.lists
-                    .getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID)
+                    .getById(item?.ContextValue?.AdminconfigrationID)
                     .items.getById(parseInt(itemId)).select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations').get()
             ]);
             resultsArray.forEach((smart: any) => {
@@ -629,9 +629,9 @@ const TeamSmartFilter = (item: any) => {
             filterGroupsData?.forEach((element: any) => {
                 if (element?.checked?.length > 0) {
                     if (element?.selectAllChecked === true || element?.checked?.length === element?.ValueLength) {
-                        CategoriesandStatusInfo.push(element.Title + ' : (' + "all" + ')')
+                        CategoriesandStatusInfo.push(element.Title + ':(' + "all" + ')')
                     } else {
-                        CategoriesandStatusInfo.push(element.Title + ' : (' + element.checked.length + ')')
+                        CategoriesandStatusInfo.push(element.Title + ':(' + element.checked.length + ')')
                     }
                 }
             });
@@ -641,9 +641,9 @@ const TeamSmartFilter = (item: any) => {
             allStites?.forEach((element: any) => {
                 if (element?.checked?.length > 0) {
                     if (element?.selectAllChecked === true) {
-                        sitesCountInfo.push(element.Title + ' : (' + "all" + ')')
+                        sitesCountInfo.push(element.Title + ':(' + "all" + ')')
                     } else {
-                        sitesCountInfo.push(element.Title + ' : (' + element.checked.length + ')')
+                        sitesCountInfo.push(element.Title + ':(' + element.checked.length + ')')
                     }
                 }
             });
@@ -654,25 +654,25 @@ const TeamSmartFilter = (item: any) => {
             allFilterClintCatogryData?.forEach((element: any) => {
                 if (element?.checked?.length > 0) {
                     if (element?.selectAllChecked === true || element?.checked?.length === element?.ValueLength) {
-                        clientCategoryCountInfo.push(element.Title + ' : (' + "all" + ')')
+                        clientCategoryCountInfo.push(element.Title + ':(' + "all" + ')')
                     } else {
-                        clientCategoryCountInfo.push(element.Title + ' : (' + element.checked.length + ')')
+                        clientCategoryCountInfo.push(element.Title + ':(' + element.checked.length + ')')
                     }
                 }
             });
             clientCategoryCount = clientCategoryCountInfo.join(' | ');
         }
         if (selectedProject?.length > 0) {
-            projectCountInfo.push("Project" + ' : (' + selectedProject?.length + ')')
+            projectCountInfo.push("Project" + ':(' + selectedProject?.length + ')')
             projectCount = projectCountInfo.join(' | ');
         }
         if (TaskUsersData?.length > 0) {
             TaskUsersData?.forEach((element: any) => {
                 if (element?.checked?.length > 0) {
                     if (element?.selectAllChecked === true) {
-                        teamMembersCountInfo.push(element.Title + ' : (' + "all" + ')')
+                        teamMembersCountInfo.push(element.Title + ':(' + "all" + ')')
                     } else {
-                        teamMembersCountInfo.push(element.Title + ' : (' + element.checked.length + ')')
+                        teamMembersCountInfo.push(element.Title + ':(' + element.checked.length + ')')
                     }
                 }
             });
@@ -689,7 +689,7 @@ const TeamSmartFilter = (item: any) => {
             trueCount++;
         }
         if (trueCount > 0) {
-            dateCountInfo.push("Date" + ' : (' + trueCount + ')')
+            dateCountInfo.push("Date" + ':(' + trueCount + ')')
             dateCount = dateCountInfo.join(' | ');
         }
         setCategoriesandStatusInfo(CategoriesandStatus)
@@ -735,7 +735,10 @@ const TeamSmartFilter = (item: any) => {
                 })
                 if (checkCallData === true) {
                     item?.setLoaded(false);
-                    await item?.LoadAllSiteTasksAllData();
+                  const fetchData= await item?.LoadAllSiteTasksAllData();
+                  if(fetchData?.length===0){
+                    item?.setLoaded(true);
+                  }
                     setLoadeAllData(true);
                 }
             }
@@ -1019,6 +1022,9 @@ const TeamSmartFilter = (item: any) => {
             );
         }
         let allFinalResult = filteredMasterTaskData.concat(filteredTaskData);
+        if(allFinalResult?.length==0){
+            item?.setLoaded(true)
+        }
         setFinalArray(allFinalResult);
         setFirstTimecallFilterGroup(false);
         setItemsQueryBasedCall(false);
@@ -2054,7 +2060,7 @@ const TeamSmartFilter = (item: any) => {
         let copyCreateMeSmartFavorites: any = [];
         let copyEveryoneSmartFavorites: any = [];
         let filter = "Key eq 'Smartfavorites'";
-        web.lists.getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID)
+        web.lists.getById(item?.ContextValue?.AdminconfigrationID)
             .items.select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations').filter(filter).get()
             .then((Results: any) => {
                 Results?.map((smart: any) => {
@@ -2116,7 +2122,7 @@ const TeamSmartFilter = (item: any) => {
         let confirmDelete = confirm("Are you sure, you want to delete this?");
         if (confirmDelete) {
             await web.lists
-                .getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID)
+                .getById(item?.ContextValue?.AdminconfigrationID)
                 .items.getById(itemId.Id)
                 .recycle()
                 .then((i: any) => {
@@ -2151,12 +2157,12 @@ const TeamSmartFilter = (item: any) => {
                             <div className="togglebox">
                                 <div className='alignCenter justify-content-between col-sm-12'>
                                     <div className='alignCenter col-sm-8' style={{ color: `${portfolioColor}` }} onClick={() => { toggleIcon(); toggleAllExpendCloseUpDown(iconIndex) }}>
-                                        {icons[iconIndex]} <span className="f-16 fw-semibold hreflink ms-1 pe-2 allfilter">All Filters - </span>
-                                        <div className="ms-2 f-14" style={{ color: "#333333" }}>{sitesCountInfo + ' ' + projectCountInfo + ' ' + CategoriesandStatusInfo + ' ' + clientCategoryCountInfo + ' ' + teamMembersCountInfo + ' ' + dateCountInfo}</div>
+                                        {icons[iconIndex]} <span className="f-16 fw-semibold hreflink ms-1 pe-1 allfilter">All Filters -</span>
+                                        <div className="f-14" style={{ color: "#333333" }}>{sitesCountInfo + ' ' + projectCountInfo + ' ' + CategoriesandStatusInfo + ' ' + clientCategoryCountInfo + ' ' + teamMembersCountInfo + ' ' + dateCountInfo}</div>
                                     </div>
                                     <div className='alignCenter col-sm-4'>
                                         <div className='ml-auto alignCenter'>
-                                            <div className="svg__iconbox svg__icon--setting hreflink me-2" style={{ backgroundColor: `${portfolioColor}` }} ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()}>Type</div>
+                                            <div className="svg__iconbox svg__icon--setting hreflink me-2" style={{ backgroundColor: `${portfolioColor}` }} ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()}></div>
                                             {action === "click" && visible && (
                                                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container m-0 p-0" })}>
                                                     {/* <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button> */}
@@ -2765,7 +2771,7 @@ const TeamSmartFilter = (item: any) => {
 
                                         </Col>
                                         <div>
-                                            <Row>
+                                            <div className='alignCenter gap-4'>
                                                 <div className="col-2 dateformate ps-0" style={{ width: "160px" }}>
                                                     <div className="input-group">
                                                         <label className='mb-1 form-label full-width'>Start Date</label>
@@ -2801,9 +2807,9 @@ const TeamSmartFilter = (item: any) => {
                                                     </div>
                                                 </div>
                                                 <div className="col-2 mt-2 m-0 pull-left">
-                                                    <label className="hreflink pt-4" title="Clear Date Filters" onClick={clearDateFilters} ><strong style={{ color: `${portfolioColor}` }} >Clear</strong></label>
+                                                    <label className="hreflink pt-3" title="Clear Date Filters" onClick={clearDateFilters} ><strong style={{ color: `${portfolioColor}` }} >Clear</strong></label>
                                                 </div>
-                                            </Row>
+                                            </div>
                                         </div>
                                     </div>
                                 </div> : ""}

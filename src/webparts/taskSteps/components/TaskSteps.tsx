@@ -78,7 +78,7 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
       return({      
         ID: i.ID,
         Title: i.Title,
-        SharewebID : i.TaskID,      
+        CMSToolId : i.TaskID,      
         TaskType : i.TaskType,
         ParentTask: i.ParentTask != undefined ? i.ParentTask : null,
         Component:  i.Component,

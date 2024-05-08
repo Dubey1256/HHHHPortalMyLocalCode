@@ -45,7 +45,7 @@ const HalfClientCategory = (props: any) => {
     const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [protectedView, setProtectedView] = React.useState(false)
     const [AllTaskUser, setAllTaskUser] = React.useState([]);
-    const [SharewebComponent, setSharewebComponent] = React.useState("");
+    const [CMSToolComponent, setCMSToolComponent] = React.useState("");
     const [IsComponent, setIsComponent] = React.useState(false);
     const [selectedView, setSelectedView] = React.useState("MasterTask");
     const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
@@ -617,7 +617,7 @@ const HalfClientCategory = (props: any) => {
         item["siteUrl"] = AllListId.siteUrl;
         item["listName"] = "Master Tasks";
         setIsComponent(true);
-        setSharewebComponent(item);
+        setCMSToolComponent(item);
     };
     const EditComponentCallback = (item: any) => {
 
@@ -766,7 +766,7 @@ const HalfClientCategory = (props: any) => {
                 size: 120,
                 cell: ({ row, getValue }) => (
                     <span className="d-flex">
-                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId} />
+                        <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId} />
                     </span>
                 ),
             },
@@ -987,7 +987,7 @@ const HalfClientCategory = (props: any) => {
                 size: 95,
                 cell: ({ row, getValue }) => (
                     <span>
-                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId} />
+                        <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId} />
                     </span>
                 ),
             },
@@ -1309,7 +1309,7 @@ const HalfClientCategory = (props: any) => {
             )}
             {IsComponent && (
                 <EditInstituton
-                    item={SharewebComponent}
+                    item={CMSToolComponent}
                     Calls={EditComponentCallback}
                     SelectD={AllListId}
                 >

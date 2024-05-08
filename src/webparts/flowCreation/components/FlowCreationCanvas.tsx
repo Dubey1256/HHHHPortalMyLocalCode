@@ -45,15 +45,15 @@ export default function FlowCreationCanvas(props: any) {
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [IsComponent, setIsComponent] = React.useState(false);
   const [IsProjectPopup, setIsProjectPopup] = React.useState(false);
-  const [SharewebComponent, setSharewebComponent]: any = React.useState({});
+  const [CMSToolComponent, setCMSToolComponent]: any = React.useState({});
   const Callbackfrompopup = () => {
-    setSharewebComponent({})
+    setCMSToolComponent({})
     setIsComponent(false)
     setIsProjectPopup(false)
   }
   const EditComponentPopup = (event: any, item: any) => {
     event.stopPropagation();
-    setSharewebComponent(item)
+    setCMSToolComponent(item)
     if (item?.ItemCat == "Portfolio") {
       setIsComponent(true)
     }
@@ -366,14 +366,14 @@ export default function FlowCreationCanvas(props: any) {
       </div>
       {IsComponent && (
         <EditInstitution
-          item={SharewebComponent}
+          item={CMSToolComponent}
           Calls={Callbackfrompopup}
           SelectD={AllListId}
         >
           {" "}
         </EditInstitution>
       )}
-      {IsProjectPopup && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Callbackfrompopup} > </EditProjectPopup>}
+      {IsProjectPopup && <EditProjectPopup props={CMSToolComponent} AllListId={AllListId} Call={Callbackfrompopup} > </EditProjectPopup>}
     </>  </myContextValue.Provider>
   );
 }

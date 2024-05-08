@@ -21,7 +21,6 @@ let GlobalAllCSFData: any = [];
 let GlobalAllProjectData: any = [];
 let GlobalFeedbackJSON: any = [];
 let GlobalCurrentUserData: any;
-let SelectedTaskCategory: any = [];
 const CreateTaskCompareTool = (RequiredData: any) => {
     const { ItemDetails, RequiredListIds, CallbackFunction, CreateTaskForThisPoint, Context } = RequiredData || {};
     const [isOpenTypeCategoryPopup, setIsOpenTypeCategoryPopup] = useState(false);
@@ -60,6 +59,12 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 isApprovalComment: false,
                 isShowLight: ""
             }
+            let CommentArray: any[] = JSON.parse(CreateTaskForThisPoint?.Comments?.length > 0 ? JSON.stringify(CreateTaskForThisPoint?.Comments) : '[]');
+            if (CommentArray?.length > 0) {
+                CommentArray?.unshift(CreateTaskFor)
+            } else {
+                CommentArray = [CreateTaskFor];
+            }
             let CreateTaskPointDataObject: any = {
                 Title: CreateTaskForThisPoint.Title,
                 Completed: "",
@@ -67,7 +72,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 SeeAbove: '',
                 Phone: '',
                 LowImportance: '',
-                Comments: [CreateTaskFor]
+                Comments: CommentArray
             }
             let FeedBackItem: any = {
                 Title: "FeedBackPicture" + param,
@@ -153,14 +158,6 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 }
             }
         })
-        if (SelectedCategory.IsSelected == true) {
-            SelectedTaskCategory.push(SelectedCategory)
-        }
-        if (SelectedCategory.IsSelected == false && SelectedTaskCategory.length > 0) {
-            SelectedTaskCategory = SelectedTaskCategory.filter((item: any) =>
-                item.Title != SelectedCategory.Title
-            )
-        }
         setTypeCategoryData([...AllTypeCategory]);
     }
 
@@ -527,7 +524,6 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                     <button
                         className="btn btn-primary mx-1 px-3"
                         onClick={CreateTaskFunction}
-                        disabled={SelectedTaskCategory.length === 0 || !CreateTaskInfo.Title}
                     >
                         Submit
                     </button>
@@ -781,8 +777,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                         <input
                                             type='text'
                                             className="form-control"
-                                            value={CreateTaskInfo.Relevant_Url}
-
+                                            defaultValue={CreateTaskInfo.Relevant_Url}
                                             onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, Relevant_Url: e.target.value })}
                                         /> :
                                         <input

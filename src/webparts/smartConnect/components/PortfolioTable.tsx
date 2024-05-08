@@ -250,10 +250,10 @@ function PortfolioTable(SelectedProp: any) {
     const [filterItems, setfilterItems] = React.useState([]);
     const [AllMetadata, setMetadata] = React.useState([])
     const [IsComponent, setIsComponent] = React.useState(false);
-    const [SharewebComponent, setSharewebComponent] = React.useState("");
+    const [CMSToolComponent, setCMSToolComponent] = React.useState("");
     const [IsTask, setIsTask] = React.useState(false);
-    const [SharewebTask, setSharewebTask] = React.useState("");
-    const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
+    const [CMSTask, setCMSTask] = React.useState("");
+    const [cmsTimeComponent, setCmsTimeComponent] = React.useState([]);
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
     const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState(
         []
@@ -1763,7 +1763,7 @@ function PortfolioTable(SelectedProp: any) {
                                 crntItem.PortfolioStructureID != ""
                             ) {
                                 task.PortfolioStructureID = crntItem.PortfolioStructureID;
-                                task.ShowTooltipSharewebId =
+                                task.ShowTooltipCMSToolId =
                                     crntItem.PortfolioStructureID + "-" + task.TaskID;
                             }
                             if (crntItem.Portfolio_x0020_Type == "Service") {
@@ -1807,7 +1807,7 @@ function PortfolioTable(SelectedProp: any) {
                             crntItem.PortfolioStructureID != ""
                         ) {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
-                            task.ShowTooltipSharewebId =
+                            task.ShowTooltipCMSToolId =
                                 crntItem.PortfolioStructureID + "-" + task.TaskID;
                         }
                         if (crntItem.Portfolio_x0020_Type == "Events") {
@@ -1848,7 +1848,7 @@ function PortfolioTable(SelectedProp: any) {
                             crntItem.PortfolioStructureID != ""
                         ) {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
-                            task.ShowTooltipSharewebId =
+                            task.ShowTooltipCMSToolId =
                                 crntItem.PortfolioStructureID + "-" + task.TaskID;
                         }
                         if (crntItem.Portfolio_x0020_Type == "Component") {
@@ -2366,11 +2366,11 @@ function PortfolioTable(SelectedProp: any) {
 
     const EditData = (e: any, item: any) => {
         // setIsTimeEntry(true);
-        setSharewebTimeComponent(item);
+        setCmsTimeComponent(item);
     };
     const EditDataTimeEntryData = (e: any, item: any) => {
         setIsTimeEntry(true);
-        setSharewebTimeComponent(item);
+        setCmsTimeComponent(item);
     };
 
     const Call = React.useCallback((childItem: any) => {
@@ -2569,13 +2569,13 @@ function PortfolioTable(SelectedProp: any) {
         item["listName"] = "Master Tasks";
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
-        setSharewebComponent(item);
+        setCMSToolComponent(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     };
     const EditItemTaskPopup = (item: any) => {
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsTask(true);
-        setSharewebTask(item);
+        setCMSTask(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     };
 
@@ -2748,7 +2748,7 @@ function PortfolioTable(SelectedProp: any) {
                 item.CreateOpenType != undefined &&
                 item.CreateOpenType === "CreatePopup"
             ) {
-                setSharewebComponent(item.CreatedItem[0].data);
+                setCMSToolComponent(item.CreatedItem[0].data);
                 setIsComponent(true);
             }
             refreshData();
@@ -2820,12 +2820,12 @@ function PortfolioTable(SelectedProp: any) {
             checkedList[0].childs.unshift(item.data);
         else array.unshift(item.data);
 
-        setSharewebComponent(item.data);
+        setCMSToolComponent(item.data);
         setIsComponent(true);
         setData((array) => [...array]);
         refreshData();
         rerender();
-        // setSharewebComponent(item);
+        // setCMSToolComponent(item);
     }, []);
     const buttonRestructuring = () => {
         var ArrayTest: any = [];
@@ -4447,7 +4447,7 @@ function PortfolioTable(SelectedProp: any) {
 
             {IsTask && (
                 <EditTaskPopup
-                    Items={SharewebTask}
+                    Items={CMSTask}
                     Call={Call}
                     AllListId={SelectedProp?.SelectedProp}
                     context={SelectedProp?.SelectedProp.Context}
@@ -4455,7 +4455,7 @@ function PortfolioTable(SelectedProp: any) {
             )}
             {IsComponent && (
                 <EditInstituton
-                    item={SharewebComponent}
+                    item={CMSToolComponent}
                     Calls={Call}
                     showProgressBar={showProgressBar}
                     SelectD={SelectedProp}
@@ -4465,7 +4465,7 @@ function PortfolioTable(SelectedProp: any) {
             )}
             {IsTimeEntry && (
                 <TimeEntryPopup
-                    props={SharewebTimeComponent}
+                    props={cmsTimeComponent}
                     CallBackTimeEntry={TimeEntryCallBack}
                     Context={SelectedProp?.SelectedProp.Context}
                 ></TimeEntryPopup>

@@ -66,7 +66,7 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
                 let participants: any = []
                 TeamUser = res?.value;
                 let CurrentUserChatInfo = TeamUser.filter((items: any) => {
-                    if (items.userPrincipalName != undefined && currentUser.Email != undefined && items.userPrincipalName.toLowerCase() == currentUser.Email.toLowerCase())
+                    if (items.userPrincipalName != undefined && currentUser.Email != undefined && items.userPrincipalName?.toLowerCase() == currentUser?.Email?.toLowerCase())
                         return items
                 })
                 currentUser.ChatId = CurrentUserChatInfo[0]?.id;
@@ -74,9 +74,9 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
 
                 for (let index = 0; index < mention_To?.length; index++) {
                     for (let TeamUserIndex = 0; TeamUserIndex < TeamUser?.length; TeamUserIndex++) {
-                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase() == TeamUser[TeamUserIndex].userPrincipalName.toLowerCase())
+                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == TeamUser[TeamUserIndex].userPrincipalName?.toLowerCase())
                             SelectedUser.push(TeamUser[TeamUserIndex])
-                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
+                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
                             SelectedUser.push(TeamUser[TeamUserIndex])
                     }
                 }
@@ -99,7 +99,7 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
                 if (mention_To != undefined && AllUsers != undefined && AllUsers?.length > 0 && mention_To?.length > 0) {
                     mention_To?.map((TeamUser: any) => {
                         AllUsers?.map((User: any) => {
-                            if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser.toLowerCase()) {
+                            if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser?.toLowerCase()) {
                                 IsSendTeamMessage += 1;
                             }
                         })
@@ -827,7 +827,7 @@ export const GetIconImageUrl = (listName: any, listUrl: any, Item: any) => {
         let TaskListsConfiguration = parseJSON(GlobalConstants.LIST_CONFIGURATIONS_TASKS);
         let TaskListItem = TaskListsConfiguration.filter(function (filterItem: any) {
             let SiteRelativeUrl = filterItem.siteUrl;
-            return (filterItem.Title.toLowerCase() == listName.toLowerCase() && SiteRelativeUrl.toLowerCase() == (listUrl).toLowerCase());
+            return (filterItem.Title?.toLowerCase() == listName?.toLowerCase() && SiteRelativeUrl?.toLowerCase() == (listUrl)?.toLowerCase());
         });
         if (TaskListItem.length > 0) {
             if (Item == undefined) {
@@ -1083,16 +1083,6 @@ export const sendImmediateEmailNotifications = async (
     taskUsers: any,
     Context: any
 ) => {
-    let clientTaskDetails :any= [];
-    if(item?.ClientActivityJson!=undefined){
-        try{
-            clientTaskDetails= JSON.parse(item?.ClientActivityJson);
-            clientTaskDetails= clientTaskDetails[0]
-        }catch(e){
-
-        }
-    }
-   
     await GetImmediateTaskNotificationEmails(
         item,
         isLoadNotification,
@@ -1381,25 +1371,16 @@ export const sendImmediateEmailNotifications = async (
                                 UpdateItem?.Category.toLowerCase("approval") > -1
                             )
                                 item.CategoriesType = item?.Category?.replace("Approval,", "");
-                                if (
-                                    UpdateItem?.Category?.toLowerCase()?.indexOf("immediate") > -1
-                                ) {
-                                    Subject =
-                                    `[Immediate - ${UpdateItem.siteType} - ${UpdateItem.TaskID} ${UpdateItem.Title}] New Immediate Task Created`
-                                }
-                                else{
-                                    Subject =
-                                    "[" +
-                                    siteType +
-                                    " - " +
-                                    UpdateItem?.Category +
-                                    " (" +
-                                    UpdateItem?.PercentComplete +
-                                    "%)] " +
-                                    UpdateItem?.Title +
-                                    "";
-                                }
-                           
+                            Subject =
+                                "[" +
+                                siteType +
+                                " - " +
+                                UpdateItem?.Category +
+                                " (" +
+                                UpdateItem?.PercentComplete +
+                                "%)] " +
+                                UpdateItem?.Title +
+                                "";
                         }
                         if (UpdateItem?.PercentComplete != 1) {
                             Subject = Subject?.replaceAll("Approval,", "");
@@ -1427,11 +1408,15 @@ export const sendImmediateEmailNotifications = async (
                                 "] " +
                                 UpdateItem?.Title +
                                 "";
-                            if (isLoadNotification == "Client Task" && clientTaskDetails?.ClientActivityId!=undefined) {
-                                Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] New Client Task`
-                            }
-                            if (isLoadNotification == "Client Task Completed" && clientTaskDetails?.ClientActivityId!=undefined) {
-                                Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] Client Task completed`
+                            if (isLoadNotification == "Client Task") {
+                                Subject =
+                                    "[ SDC Client Task - " +
+                                    siteType +
+                                    " - " +
+                                    item?.SDCAuthor +
+                                    " ] " +
+                                    UpdateItem?.Title +
+                                    "";
                             }
                             if (
                                 UpdateItem?.Category?.toLowerCase()?.indexOf(
@@ -1464,7 +1449,13 @@ export const sendImmediateEmailNotifications = async (
                                 UpdateItem?.Category?.toLowerCase()?.indexOf("immediate") > -1
                             ) {
                                 Subject =
-                                `[Immediate - ${UpdateItem.siteType} - ${UpdateItem.TaskId} ${UpdateItem.Title} New Immediate Task Created]`
+                                    "[" +
+                                    siteType +
+                                    " - " +
+                                    "Approval,Immediate" +
+                                    "] " +
+                                    UpdateItem?.Title +
+                                    "";
                             }
                         } else if (
                             UpdateItem?.PercentComplete == 0 &&
@@ -1635,27 +1626,28 @@ export const sendImmediateEmailNotifications = async (
                             let extraBody = "";
                             if (UpdateItem?.ClientActivityJson?.SDCCreatedBy?.length > 0) {
                                 SDCDetails = UpdateItem?.ClientActivityJson;
-                                if (isLoadNotification == "Client Task" && clientTaskDetails?.ClientActivityId!=undefined) {
-                                    Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] New Client Task`
-                                }
-                                if (isLoadNotification == "Client Task Completed" && clientTaskDetails?.ClientActivityId!=undefined) {
-                                    Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] Client Task completed`
-                                }
+                                Subject =
+                                    "[ SDC Client Task - " +
+                                    siteType +
+                                    " - " +
+                                    SDCDetails?.SDCCreatedBy +
+                                    " ] " +
+                                    UpdateItem?.Title +
+                                    "";
                                 if (UpdateItem?.PercentComplete < 90) {
-                                //     extraBody = `<div>
-                                //       <h2>Email Subject : Your Task has been seen - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
-                                //       <p>Message:</p>
-                                //       <p>Dear ${SDCDetails?.SDCCreatedBy},</p>
-                                //       <p>Thank you for your Feedback!</p>
-                                //       <p>Your Task - [${UpdateItem?.Title}] has been seen by our Team and we are now working on it.</p>
-                                //       <p>You can track your Task Status here: <a href="${SDCDetails?.SDCTaskUrl}">${SDCDetails?.SDCTaskUrl}</a></p>
-                                //       <p>If you want to see all your Tasks or all Sharweb Tasks click here: <a href="${SDCDetails?.SDCTaskDashboard}">Team Dashboard - Task View</a></p>
-                                //       <p>Best regards,<br />Your HHHH Support Team</p>
-                                //       <br>
-                                //       <h4>Client Email : - ${SDCDetails?.SDCEmail}
-                                //   </div><br><br>`;
+                                    extraBody = `<div>
+                                      <h2>Email Subject : Your Task has been seen - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
+                                      <p>Message:</p>
+                                      <p>Dear ${SDCDetails?.SDCCreatedBy},</p>
+                                      <p>Thank you for your Feedback!</p>
+                                      <p>Your Task - [${UpdateItem?.Title}] has been seen by our Team and we are now working on it.</p>
+                                      <p>You can track your Task Status here: <a href="${SDCDetails?.SDCTaskUrl}">${SDCDetails?.SDCTaskUrl}</a></p>
+                                      <p>If you want to see all your Tasks or all Sharweb Tasks click here: <a href="${SDCDetails?.SDCTaskDashboard}">Team Dashboard - Task View</a></p>
+                                      <p>Best regards,<br />Your HHHH Support Team</p>
+                                      <br>
+                                      <h4>Client Email : - ${SDCDetails?.SDCEmail}
+                                  </div><br><br>`;
                                 } else if (UpdateItem?.PercentComplete == 90) {
-                                    Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] Client Task completed`
                                     extraBody = `<div>
                                       <h2>Email Subject : Your Task has been completed - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
                                       <p>Message:</p>
@@ -1672,20 +1664,6 @@ export const sendImmediateEmailNotifications = async (
 
                                 body = extraBody + body;
                             }
-                           
-                        }
-                        if(UpdateItem?.Category?.toLowerCase()?.indexOf("immediate") > -1){
-
-                            let headercontain = 
-                            `<div style="margin-top: 11.25pt;">
-                                <div style="margin-top: 2pt;">Hello ${UpdateItem?.Author1},</div>
-                                <div style="margin-top: 5pt;">Your task has been set to  ${UpdateItem?.PercentComplete}%  by ${UpdateItem?.Author1}, team will process it further.</div>
-                                <div style="margin-top: 5pt;">Have a nice day !</div>
-                                <div style="margin-top: 5pt;">Regards,</div>
-                                <div style="margin-top: 5pt;">Task Management Team,</div>
-                            </div>`
-
-                            body = headercontain + body;
                         }
                         var from = "",
                             to = ToEmails,
@@ -1867,9 +1845,6 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
     // let TaskUsers: any = [];
     let AllMasterTaskData: any = [];
     try {
-        
-        let Response: ArrayLike<any> = [];
-        Response = await loadTaskUsers();
         let ProjectData: any = [];
         let web = new Web(Props.siteUrl);
         AllMasterTaskData = await web.lists
@@ -2109,7 +2084,6 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
     }
     console.log("all Service and Coponent data in global common =======", AllMasterTaskData)
 }
-
 
 
 export const componentGrouping = (Portfolio: any, AllProtFolioData: any, path: string = "") => {
@@ -2783,13 +2757,42 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
             updatedCategoryTime[newKey] = timeSheetData[key];
         }
     }
-
-    if (day == 'Today') {
-        var subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + currentDate + ' - ' + (updatedCategoryTime.today) + ' hours '
+    var subject: any;
+    // if (day == 'Today') {
+    //     subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + currentDate + ' - ' + (updatedCategoryTime.today) + ' hours '
+    // }
+    // if (day == 'Yesterday') {
+    //     subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + yesterday + ' - ' + (updatedCategoryTime.yesterday) + ' hours '
+    // }
+    function padWithZero(num: number): string {
+        return num < 10 ? '0' + num : num.toString();
     }
-    if (day == 'Yesterday') {
-        var subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + yesterday + ' - ' + (updatedCategoryTime.yesterday) + ' hours '
+    
+    function formatDate(date: Date): string {
+        const day = padWithZero(date.getDate());
+        const month = padWithZero(date.getMonth() + 1); 
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
     }
+      if (day == "Today") {
+        subject = "Daily Timesheet - " + CurrentUserTitle + " - " + currentDate + " - " + updatedCategoryTime.today +  " hours ";
+      } else if (day == "Yesterday") {
+        subject =
+          "Daily Timesheet - " +
+          CurrentUserTitle +
+          " - " +
+          yesterday +
+          " - " +
+          updatedCategoryTime.yesterday +
+          " hours ";
+      } else {
+        subject =
+          "Daily Timesheet - " +
+          CurrentUserTitle +
+          " - " +
+          type;
+          day = 'Custom'
+      }
     AllData.map((item: any) => {
         item.ClientCategories = ''
         item.ClientCategory.forEach((val: any, index: number) => {
@@ -2805,7 +2808,7 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
         text =
             '<tr>' +
             '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.siteType + '</td>'
-            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management-Profile.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
+            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/PX-Profile.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:135px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Portfolio-Profile.aspx?taskId=' + item?.Portfolio?.Id + '><span style="font-size:13px">' + (item.Portfolio == undefined ? '' : item.Portfolio.Title) + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px">' + item.Title + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.TaskTime + '</td>'
@@ -2847,6 +2850,7 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
         + '</table>'
 
     body = body.replaceAll('>,<', '><').replaceAll(',', '')
+    let EmailSubject: string = `TimeSheet : ${currentDate}`;
 
     let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
     if (confirmation) {
@@ -2867,8 +2871,6 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
             }).then(() => {
                 console.log("Email Sent!");
                 alert('Email sent sucessfully');
-
-
             }).catch((err) => {
                 console.log(err.message);
             });
