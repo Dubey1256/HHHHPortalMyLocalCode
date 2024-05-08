@@ -294,7 +294,7 @@ export default function FlowCreationCanvas(props: any) {
                             <li><a>Project Management</a></li>
                             <li>
                                 {" "}
-                                <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${props?.items[0]?.Id}`}>{props?.items[0]?.Title}</a>{" "}
+                                <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${props?.items[0]?.Id}`}>{props?.items[0]?.Title}</a>{" "}
                             </li>
                         </ul>
                     </div>

@@ -1578,7 +1578,7 @@ const TaskDashboard = (props: any) => {
             var subject = "Today's Working Tasks of All Team";
             taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
-                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst") {
+                if (userGroup.Title == "Developers Team" || userGroup.Title == "Portfolio Lead Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst") {
                     if (userGroup.Title == "Smalsus Lead Team") {
                         userGroup.childBackup = userGroup?.childs;
                         userGroup.childs = [];
@@ -1848,7 +1848,7 @@ const TaskDashboard = (props: any) => {
                 text =
                     '<tr>' +
                     '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.siteType + '</td>'
-                    + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
+                    + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/PX-Profile.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
                     + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:135px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Portfolio-Profile.aspx?taskId=' + item?.Portfolio?.Id + '><span style="font-size:13px">' + (item.Portfolio == undefined ? '' : item.Portfolio.Title) + '</span></a>' + '</p>' + '</td>'
 
                     + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px">' + item.Title + '</span></a>' + '</p>' + '</td>'
@@ -1943,7 +1943,7 @@ const TaskDashboard = (props: any) => {
             var subject = `Today's Working Tasks of All Team Members: ${Moment(new Date()).zone('Asia/Kolkata').format('DD/MM/YYYY')}`;
             taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
-                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst" || userGroup.Title == "Trainees") {
+                if (userGroup.Title == "Portfolio Lead Team" || userGroup.Title == "Developers Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst" || userGroup.Title == "Trainees") {
                     if (userGroup.Title == "Smalsus Lead Team") {
                         userGroup.childBackup = userGroup?.childs;
                         userGroup.childs = [];
@@ -1955,7 +1955,7 @@ const TaskDashboard = (props: any) => {
                     }
                     userGroup?.childs?.map((teamMember: any) => {
                         if (!onLeaveEmployees.some((emp: any) => emp == teamMember?.AssingedToUserId)) {
-                            if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Trainees") {
+                            if (userGroup.Title == "Portfolio Lead Team" || userGroup.Title == "Developers Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Trainees") {
                                 estimatedTimeUsersCount += 1;
                             }
                             let body: any = '';
