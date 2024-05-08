@@ -663,7 +663,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         <li
                                             className="hreflink list-group-item rounded-0 list-group-item-action"
                                             key={Item.id}
-                                        // onClick={() => window.open(`${Item?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${Item?.Id}`, '_blank')}
+                                        // onClick={() => window.open(`${Item?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${Item?.Id}`, '_blank')}
                                         >
                                             <a>{Item.Title}</a>
                                         </li>
@@ -1810,7 +1810,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         <li
                                             className="hreflink list-group-item rounded-0 list-group-item-action"
                                             key={Item.id}
-                                        // onClick={() => window.open(`${Item?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${Item?.Id}`, '_blank')}
+                                        // onClick={() => window.open(`${Item?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${Item?.Id}`, '_blank')}
                                         >
                                             <a>{Item.Title}</a>
                                         </li>
@@ -3001,7 +3001,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         <li
                                             className="hreflink list-group-item rounded-0 list-group-item-action"
                                             key={Item.id}
-                                        // onClick={() => window.open(`${Item?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${Item?.Id}`, '_blank')}
+                                        // onClick={() => window.open(`${Item?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${Item?.Id}`, '_blank')}
                                         >
                                             <a>{Item.Title}</a>
                                         </li>

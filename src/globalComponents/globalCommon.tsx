@@ -778,7 +778,7 @@ export const loadAllTaskUsers = async (AllListId: any) => {
     try {
         let web = new Web(AllListId?.siteUrl);
         taskUser = await web.lists
-            .getById(AllListId?.TaskUsertListID)
+            .getById(AllListId?.TaskUserListID)
             .items
             .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name,UserGroup/Id,UserGroup/Title,TeamLeader/Id,TeamLeader/Title&$expand=UserGroup,AssingedToUser,Approver,TeamLeader").get();
     }
@@ -856,7 +856,7 @@ export const makePostDataForApprovalProcess = async (postData: any) => {
             }
         })
         var Item = { TaskUsers: '', postData: '' };
-        if ((postData?.Categories?.toLowerCase().indexOf('approval') > -1) && UserManager != undefined && UserManager?.length > 0) {
+        if ((postData?.Categories?.toLowerCase()?.indexOf('approval') > -1) && UserManager != undefined && UserManager?.length > 0) {
             //postData.PercentComplete = 0.01;
             //postData.Status = "For Approval";
             var isAvailable = false;
@@ -966,7 +966,7 @@ export const getListNameFromItemProperties = (item: any) => {
         listName = metadataType.split('.');
     listName = listName[2];
     if (listName != undefined)
-        listName = listName.substr(0, listName.indexOf('ListItem'));
+        listName = listName.substr(0, listName?.indexOf('ListItem'));
     return listName;
 }
 
@@ -3355,7 +3355,7 @@ const GetleaveUser = async (TaskUser: any, Context: any) => {
         })
     })
     finalData = todayLeaveUsers.filter((val: any, TaskId: any, array: any) => {
-        return array.indexOf(val) == TaskId;
+        return array?.indexOf(val) == TaskId;
     })
     console.log(finalData)
     return finalData

@@ -151,7 +151,7 @@ function TasksTable(props: any) {
   const getTaskUsers = async () => {
     let web = new Web(props?.AllListId?.siteUrl);
     await web.lists
-      .getById(props?.AllListId?.TaskUsertListID)
+      .getById(props?.AllListId?.TaskUserListID)
       .items
       .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,IsApprovalMail,CategoriesItemsJson,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover, ItemType,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
       .get().then((Response: any) => {

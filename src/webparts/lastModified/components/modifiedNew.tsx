@@ -56,7 +56,7 @@ export const Modified = (props: any) => {
 
   const storeEditList = () => {
     const editListsAll = {
-      TaskUsertListID: props?.props?.TaskUsertListID,
+      TaskUserListID: props?.props?.TaskUserListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
       MasterTaskListID: props?.props.MasterTaskListID,
       TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -74,7 +74,7 @@ export const Modified = (props: any) => {
       NewsListId:props?.props?.NewsListId,
       EventListId:props?.props?.EventListId,
       context: props?.props?.context,
-      TaskUserListId: props?.props?.TaskUsertListID,
+      TaskUserListId: props?.props?.TaskUserListID,
       isShowTimeEntry: props?.props?.TimeEntry,
 
     }
@@ -1343,7 +1343,7 @@ export const Modified = (props: any) => {
           cell: ({ row, getValue }) => (
             <>
               {row.original.GmBHSiteCheck == false ? <img className='workmember me-1' src={`${row.original.SiteIcon}`}></img> : undefined}
-              <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
+              <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
             </>
           ),
           id: "TaskID",

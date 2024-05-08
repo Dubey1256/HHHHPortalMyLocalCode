@@ -15,7 +15,7 @@ import { ILastModifiedViewsProps } from './components/ILastModifiedViewsProps';
 export interface ILastModifiedViewsWebPartProps {
   description: string;
   ListConfigurationListId: String
-  TaskUsertListID: String;
+  TaskUserListID: String;
   SmartMetadataListID: String;
   MasterTaskListID: String;
   TaskTimeSheetListID: String;
@@ -53,7 +53,7 @@ export default class LastModifiedViewsWebPart extends BaseClientSideWebPart<ILas
         userDisplayName: this.context.pageContext.user.displayName,
         ListConfigurationListId: this.properties.ListConfigurationListId,
         SmartMetadataListID: this.properties.SmartMetadataListID,
-        TaskUsertListID: this.properties.TaskUsertListID,
+        TaskUserListID: this.properties.TaskUserListID,
         MasterTaskListID: this.properties.MasterTaskListID,
         TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
         DocumentsListID: this.properties.DocumentsListID,
@@ -132,8 +132,8 @@ export default class LastModifiedViewsWebPart extends BaseClientSideWebPart<ILas
                 PropertyPaneTextField('ListConfigurationListId', {
                     label: 'ListConfigurationListId'
                   }),
-                  PropertyPaneTextField('TaskUsertListID', {
-                    label: 'TaskUsertListID'
+                  PropertyPaneTextField('TaskUserListID', {
+                    label: 'TaskUserListID'
                   }),
                   PropertyPaneTextField('SmartMetadataListID', {
                     label: 'SmartMetadataListID'

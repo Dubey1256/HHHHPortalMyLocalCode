@@ -11,7 +11,7 @@ const TaskUserManagementApp = (props: any) => {
     const [headerChange, setHeaderChange]: any = useState('');
     const baseUrl = props.props.context.pageContext._web.absoluteUrl
     let AllListid: any = {
-        TaskUsertListID: props.props.TaskUserListId,
+        TaskUserListID: props.props.TaskUserListId,
         SmartMetadataListID: props.props.SmartMetaDataId,
         siteUrl: props.props.context.pageContext._web.absoluteUrl,
     }

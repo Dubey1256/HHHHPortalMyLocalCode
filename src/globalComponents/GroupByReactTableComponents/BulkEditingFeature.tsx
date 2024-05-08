@@ -852,13 +852,13 @@ const BulkEditingFeature = (props: any) => {
         }
     }, []);
     const bulkEditingSettingPopupEvent = () => {
-        if (props?.selectedData.length > 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true)) {
+        if (props?.selectedData.length > 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true && activeCategory?.length === 0)) {
             alert("No Tiles are selected")
-        } else if (props?.selectedData.length <= 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true)) {
+        } else if (props?.selectedData.length <= 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true || activeCategory?.length > 0)) {
             alert("No items are selected")
-        } else if (props?.selectedData.length <= 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true)) {
+        } else if (props?.selectedData.length <= 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true && activeCategory?.length === 0)) {
             alert("No items are selected")
-        } else if (props?.selectedData.length > 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true)) {
+        } else if (props?.selectedData.length > 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true || activeCategory?.length > 0)) {
             setBulkEditingSettingPopup(true);
         }
     }
@@ -975,7 +975,7 @@ const BulkEditingFeature = (props: any) => {
             {props?.bulkEditingCongration?.FeatureType && <div>
                 <BulkUpdateFeatureType taskValue={props?.dragedTask?.task} setActiveTile={setActiveTile} save={save} isActive={isActive} featureTypeItemTiles={featureTypeItemTiles} selectedData={props?.selectedData} data={props?.data} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} setData={props?.setData} ContextValue={props?.ContextValue} />
             </div>}
-            {bulkEditingSettingPopup && <SelectedTaskUpdateOnPopup activeCategory={activeCategory} precentComplete={precentComplete} featureTypeItemTiles={featureTypeItemTiles} priorityRank={priorityRank} AllTaskUser={props?.AllTaskUser} save={save} selectedData={props?.selectedData} isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} columns={props?.columns} data={props?.data} setData={props?.setData} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} ContextValue={props?.ContextValue} masterTaskData={props?.masterTaskData} />}
+            {bulkEditingSettingPopup && <SelectedTaskUpdateOnPopup dashBoardbulkUpdateCallBack={props?.dashBoardbulkUpdateCallBack} tableId={props?.tableId} DashboardContextData={props?.DashboardContextData} activeCategory={activeCategory} precentComplete={precentComplete} featureTypeItemTiles={featureTypeItemTiles} priorityRank={priorityRank} AllTaskUser={props?.AllTaskUser} save={save} selectedData={props?.selectedData} isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} columns={props?.columns} data={props?.data} setData={props?.setData} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} ContextValue={props?.ContextValue} masterTaskData={props?.masterTaskData} />}
             {/* {(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project) && <div onClick={(e) => bulkEditingSettingPopupEvent()}><span className="svg__iconbox svg__icon--edit"></span></div>} */}
 
             <div className='d-flex justify-content-end mx-2 mb-2'>{(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project || props?.bulkEditingCongration?.FeatureType || props?.bulkEditingCongration?.categories) && <button onClick={(e) => bulkEditingSettingPopupEvent()} className='btn btn-primary'>Bulk Update</button>} <button onClick={(e) => ClearBulkUpdateFeature()} className='btn btn-primary ms-2'>Clear</button></div>

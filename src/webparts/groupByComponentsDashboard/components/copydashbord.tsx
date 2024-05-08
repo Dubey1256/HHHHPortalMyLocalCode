@@ -80,7 +80,7 @@ const GroupByDashboard = (SelectedProp: any) => {
         let web = new Web(ContextValue.siteUrl);
         let taskUsers = [];
         taskUsers = await web.lists
-            .getById(ContextValue.TaskUsertListID)
+            .getById(ContextValue.TaskUserListID)
             .items.select(
                 "Id",
                 "Email",

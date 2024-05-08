@@ -18,7 +18,7 @@ export default class ProjectManagement extends React.Component<IProjectManagemen
       Context,
       siteUrl,
       MasterTaskListID,
-      TaskUsertListID,
+      TaskUserListID,
       SmartMetadataListID,
       SmartInformationListID,
       DocumentsListID,

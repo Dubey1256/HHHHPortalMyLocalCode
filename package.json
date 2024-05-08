@@ -104,6 +104,7 @@
     "@babel/plugin-proposal-optional-chaining": "^7.21.0",
     "@babel/preset-env": "^7.24.0",
     "@babel/preset-react": "^7.23.3",
+    "@fluentui/react-components": "^9.49.2",
     "@microsoft/eslint-config-spfx": "1.15.2",
     "@microsoft/eslint-plugin-spfx": "1.15.2",
     "@microsoft/rush-stack-compiler-3.9": "^0.5.0",

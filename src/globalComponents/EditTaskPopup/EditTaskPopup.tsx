@@ -506,17 +506,34 @@ const EditTaskPopup = (Items: any) => {
                         []);
                 }
 
-                // ############## this is used for filttering time sheet category data from smart medatadata list ##########
+                // ############## this is used for flittering time sheet category data from smartMetaData list ##########
                 if (AllTimesheetCategoriesData?.length > 0) {
                     AllTimesheetCategoriesData = AllTimesheetCategoriesData.map(
                         (TimeSheetCategory: any) => {
-                            if (TimeSheetCategory.ParentId == 303) {
+                            if (TimeSheetCategory?.TaxType == "TimesheetCategories") {
                                 TempTimeSheetCategoryArray.push(TimeSheetCategory);
                             }
                         }
                     );
                 }
-                console.log("Timesheet Category Data ====", TempTimeSheetCategoryArray);
+
+                if (TempTimeSheetCategoryArray?.length > 0) {
+                    TempTimeSheetCategoryArray = TempTimeSheetCategoryArray.reduce(function (
+                        previous: any,
+                        current: any
+                    ) {
+                        let alreadyExists: any =
+                            previous.filter(function (item: any) {
+                                return item.Title === current.Title;
+                            }).length > 0;
+                        if (!alreadyExists) {
+                            previous.push(current);
+                        }
+                        return previous;
+                    },
+                        []);
+                }
+
                 setAllCategoryData(AutoCompleteItemsArray);
                 let AllSmartMetaDataGroupBy: any = {
                     TimeSheetCategory: TempTimeSheetCategoryArray,
@@ -1382,7 +1399,7 @@ const EditTaskPopup = (Items: any) => {
             MasterTaskListID: AllListIdData.MasterTaskListID,
             siteUrl: AllListIdData.siteUrl,
             ComponentType: ComponentType,
-            TaskUserListId: AllListIdData.TaskUsertListID,
+            TaskUserListId: AllListIdData.TaskUserListID,
         };
         let CallBackData = await globalCommon.GetServiceAndComponentAllData(
             PropsObject
@@ -1867,10 +1884,10 @@ const EditTaskPopup = (Items: any) => {
     var count = 0;
     const loadTaskUsers = async () => {
         var AllTaskUsers: any = [];
-        let currentUserId = Context.pageContext._legacyPageContext.userId;
+        let currentUserId = Context?.pageContext?._legacyPageContext?.userId;
         const web = new Web(siteUrls);
         taskUsers = await web.lists
-            .getById(AllListIdData?.TaskUsertListID)
+            .getById(AllListIdData?.TaskUserListID)
             .items.select(
                 "Id,UserGroupId,TimeCategory,CategoriesItemsJson,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name"
             )
@@ -2307,11 +2324,14 @@ const EditTaskPopup = (Items: any) => {
             }
             if (StatusData.value == 70) {
                 if (
-                    EditData.TeamMembers != undefined &&
-                    EditData.TeamMembers?.length > 0
+                    (EditData.TeamMembers != undefined &&
+                        EditData.TeamMembers?.length > 0) && (EditData.TeamMembers?.length != EditData?.AssignedTo?.length)
                 ) {
                     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
-                } else {
+                } else if (EditData.ResponsibleTeam?.length > 0) {
+                    setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
+                }
+                else {
                     setWorkingMember(0);
                 }
             }
@@ -2706,21 +2726,17 @@ const EditTaskPopup = (Items: any) => {
                             const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
                             ReactDOM.render(reactElement, containerDiv);
 
-                            const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> 
-                                </br> 
-                                    ${containerDiv.innerHTML}
-                                    <p>
-                                    Task Link:  
-                                    <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
-                                     Click-here
-                                    </a>
-                                    </p>
-                                    <p></p>
-                                    <b>
-                                    Thanks, </br>
-                                    Task Management Team
-                                    </b>
-                                    `;
+                            const SendMessage = `
+                            <p>${CommonMsg}</p> 
+                            </br> 
+                            <p>
+                            Task Link:  
+                            <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
+                             Click-here
+                            </a>
+                            </p>
+                            ${containerDiv.innerHTML}
+                            `;
 
 
                             if ((sendMSGCheck || SendMsgToAuthor || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
@@ -2765,108 +2781,111 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
-                            taskUsers?.forEach((allUserItem: any) => {
-                                if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
-                                    Createtordata.push(allUserItem);
-                                }
 
-                            });
+                        if (UpdatedDataObject?.TaskCategories?.length > 0) {
 
-                            Createtordata?.map((InfoItem: any) => {
-                                let DataForNotification: any = {
-                                    ReceiverName: InfoItem?.Title,
-                                    sendUserEmail: [InfoItem?.Email],
-                                    Context: Items.context,
-                                    ActionType: "Immediate",
-                                    ReasonStatement: '',
-                                    UpdatedDataObject: UpdatedDataObject,
-                                    RequiredListIds: AllListIdData
-                                }
-                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                    console.log("Ms Teams Notifications send")
+                            if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
+                                taskUsers?.forEach((allUserItem: any) => {
+                                    if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
+                                        Createtordata.push(allUserItem);
+                                    }
+
+                                });
+
+                                Createtordata?.map((InfoItem: any) => {
+                                    let DataForNotification: any = {
+                                        ReceiverName: InfoItem?.Title,
+                                        sendUserEmail: [InfoItem?.Email],
+                                        Context: Items.context,
+                                        ActionType: "Immediate",
+                                        ReasonStatement: '',
+                                        UpdatedDataObject: UpdatedDataObject,
+                                        RequiredListIds: AllListIdData
+                                    }
+                                    GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                        console.log("Ms Teams Notifications send")
+                                    })
+
                                 })
 
-                            })
 
 
+                            }
 
-                        }
+                            if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('Design') !== -1) {
+                                taskUsers?.forEach((allUserItem: any) => {
+                                    if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                        Createtordata.push(allUserItem);
+                                    }
+                                });
+                                Createtordata?.map((InfoItem: any) => {
+                                    let DataForNotification: any = {
+                                        ReceiverName: 'kristina',
+                                        sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
+                                        Context: Items.context,
+                                        ActionType: "Design",
+                                        ReasonStatement: "",
+                                        UpdatedDataObject: UpdatedDataObject,
+                                        RequiredListIds: AllListIdData
+                                    }
+                                    GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                        console.log("Ms Teams Notifications send")
+                                    })
 
-                        if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
-                            taskUsers?.forEach((allUserItem: any) => {
-                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
-                                    Createtordata.push(allUserItem);
-                                }
-                            });
-                            Createtordata?.map((InfoItem: any) => {
+                                })
+                            }
 
-                                let DataForNotification: any = {
-                                    ReceiverName: 'kristina',
-                                    sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
-                                    Context: Items.context,
-                                    ActionType: "Design",
-                                    ReasonStatement: "",
-                                    UpdatedDataObject: UpdatedDataObject,
-                                    RequiredListIds: AllListIdData
-                                }
-                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                    console.log("Ms Teams Notifications send")
+                            if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
+                                taskUsers?.forEach((allUserItem: any) => {
+                                    if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                        Createtordata.push(allUserItem);
+                                    }
+
+                                });
+                                Createtordata?.map((InfoItem: any) => {
+                                    let DataForNotification: any = {
+                                        ReceiverName: 'Robert',
+                                        sendUserEmail: ['robert.ungethuem@hochhuth-consulting.de'],
+                                        Context: Items.context,
+                                        ActionType: "User Experience - UX",
+                                        ReasonStatement: "",
+                                        UpdatedDataObject: UpdatedDataObject,
+                                        RequiredListIds: AllListIdData
+                                    }
+                                    GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                        console.log("Ms Teams Notifications send")
+                                    })
+                                })
+                            }
+
+                            if (checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') !== -1) {
+                                taskUsers?.forEach((allUserItem: any) => {
+                                    if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                        Createtordata.push(allUserItem);
+                                    }
+
+                                });
+
+                                Createtordata?.map((InfoItem: any) => {
+
+                                    let DataForNotification: any = {
+                                        ReceiverName: 'kristina',
+                                        sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
+                                        Context: Items.context,
+                                        ActionType: "User Experience - UX",
+                                        ReasonStatement: "",
+                                        UpdatedDataObject: UpdatedDataObject,
+                                        RequiredListIds: AllListIdData
+                                    }
+                                    GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                        console.log("Ms Teams Notifications send")
+                                    })
+
                                 })
 
-                            })
-                        }
-
-                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
-                            taskUsers?.forEach((allUserItem: any) => {
-                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
-                                    Createtordata.push(allUserItem);
-                                }
-
-                            });
-                            Createtordata?.map((InfoItem: any) => {
-                                let DataForNotification: any = {
-                                    ReceiverName: 'Robert',
-                                    sendUserEmail: ['robert.ungethuem@hochhuth-consulting.de'],
-                                    Context: Items.context,
-                                    ActionType: "User Experience - UX",
-                                    ReasonStatement: "",
-                                    UpdatedDataObject: UpdatedDataObject,
-                                    RequiredListIds: AllListIdData
-                                }
-                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                    console.log("Ms Teams Notifications send")
-                                })
-                            })
-                        }
-
-                        if (checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
-                            taskUsers?.forEach((allUserItem: any) => {
-                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
-                                    Createtordata.push(allUserItem);
-                                }
-
-                            });
-
-                            Createtordata?.map((InfoItem: any) => {
-
-                                let DataForNotification: any = {
-                                    ReceiverName: 'kristina',
-                                    sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
-                                    Context: Items.context,
-                                    ActionType: "User Experience - UX",
-                                    ReasonStatement: "",
-                                    UpdatedDataObject: UpdatedDataObject,
-                                    RequiredListIds: AllListIdData
-                                }
-                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                    console.log("Ms Teams Notifications send")
-                                })
-
-                            })
 
 
-
+                            }
                         }
 
 
@@ -2959,7 +2978,7 @@ const EditTaskPopup = (Items: any) => {
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
                             }
-                            if (TaskDetailsFromCall[0]?.Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
+                            if (TaskDetailsFromCall[0]?.Categories?.length > 0 && TaskDetailsFromCall[0]?.Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
                                 ValueStatus = CalculateStatusPercentage;
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
@@ -3299,178 +3318,105 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
+        let UpdateDataObject: any = {
+            IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
+            workingThisWeek: EditData.workingThisWeek
+                ? EditData.workingThisWeek
+                : null,
+            waitForResponse: EditData.waitForResponse
+                ? EditData.waitForResponse
+                : null,
+            PriorityRank: EditData.PriorityRank,
+            ItemRank: EditData.ItemRank,
+            Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
+            Priority: Priority,
+            StartDate: EditData.StartDate
+                ? Moment(EditData.StartDate).format("MM-DD-YYYY")
+                : null,
+            PercentComplete:
+                UpdateTaskInfo.PercentCompleteStatus != ""
+                    ? Number(UpdateTaskInfo.PercentCompleteStatus) / 100
+                    : EditData.PercentComplete
+                        ? EditData.PercentComplete / 100
+                        : 0,
+            Categories: CategoriesTitle ? CategoriesTitle : null,
+            PortfolioId: smartComponentsIds === "" ? null : smartComponentsIds,
+            RelevantPortfolioId: {
+                results:
+                    RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0
+                        ? RelevantPortfolioIds
+                        : [],
+            },
+            TaskCategoriesId: {
+                results:
+                    CategoryTypeID != undefined && CategoryTypeID.length > 0
+                        ? CategoryTypeID
+                        : [],
+            },
 
-        // ----------------------for check Activity and worstream---------------------------------------------------------
-   let SelectedSites:any=''
-   var Tasklevel:any=''
-   var TaskID:any=''
-  if(EditData.TaskType.Id == 1){
-   let SelectedSites:any=''
-   var TaskTypeId:any = 1;
-   SiteTypes.map((dataItem: any) => {
-       if (dataItem.isSelected == true) {
-           SelectedSites = dataItem.Title;
-       }
-   });
-       let web = new Web(AllListIdData?.siteUrl);
-       let componentDetails: any = [];
-       componentDetails = await web.lists
-         .getByTitle(SelectedSites)
-         .items.select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
-         .expand("TaskType")
-         .orderBy("TaskLevel", false)
-         .filter("TaskType/Id eq 1")
-         .top(1)
-         .get();
-       console.log(componentDetails);
-       if (componentDetails.length == 0) {
-         var LatestId: any = 1;
-         Tasklevel = LatestId;
-         TaskID = "A" + LatestId;
-       } else {
-         var LatestId = componentDetails[0].TaskLevel + 1;
-         Tasklevel = LatestId;
-         TaskID = "A" + LatestId;
-       }
-     
-  }
-  if (EditData.TaskType.Id == 3) {
-   let WorstreamLatestId:any=''
-   SiteTypes.map((dataItem: any) => {
-       if (dataItem.isSelected == true) {
-           SelectedSites = dataItem.Title;
-       }
-   });
-   let componentDetails: any = [];
-   let web = new Web(AllListIdData?.siteUrl);
-   componentDetails = await web.lists
-       .getByTitle(SelectedSites)
-       .items
-       .select("FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,FileLeafRef,Title,Id,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
-       .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
-       .filter(("TaskType/Id eq 3") && ("ParentTask/Id eq '" + EditData?.Id + "'"))
-       .orderBy("Created", true)
-       .top(499)
-       .get()
-   console.log(componentDetails)
-   if (componentDetails?.length == 0) {
-       WorstreamLatestId = 1;
-   } 
-   else {
-       if( componentDetails[componentDetails?.length-1]?.TaskLevel){
-           WorstreamLatestId = componentDetails[componentDetails?.length-1]?.TaskLevel + 1;
-       }else{
-           WorstreamLatestId = componentDetails?.length + 1;
-       }
-     
-   }
-   Tasklevel = WorstreamLatestId++;
-   let removed = EditData?.TaskID?.split('-')[0];
-   TaskID = `${removed}-W${Tasklevel}`
-   var TaskTypeId:any = 3;
-}
-let UpdateDataObject: any = {
-    IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
-    workingThisWeek: EditData.workingThisWeek
-        ? EditData.workingThisWeek
-        : null,
-    waitForResponse: EditData.waitForResponse
-        ? EditData.waitForResponse
-        : null,
-    PriorityRank: EditData.PriorityRank,
-    ItemRank: EditData.ItemRank,
-    TaskTypeId:TaskTypeId != undefined?TaskTypeId:null,
-    TaskID: TaskID != ''?TaskID:null,
-    TaskLevel: Tasklevel != ''?Tasklevel:null,
-    Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
-    Priority: Priority,
-    StartDate: EditData.StartDate
-        ? Moment(EditData.StartDate).format("MM-DD-YYYY")
-        : null,
-    PercentComplete:
-        UpdateTaskInfo.PercentCompleteStatus != ""
-            ? Number(UpdateTaskInfo.PercentCompleteStatus) / 100
-            : EditData.PercentComplete
-                ? EditData.PercentComplete / 100
-                : 0,
-    Categories: CategoriesTitle ? CategoriesTitle : null,
-    PortfolioId: smartComponentsIds === "" ? null : smartComponentsIds,
-    RelevantPortfolioId: {
-        results:
-            RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0
-                ? RelevantPortfolioIds
-                : [],
-    },
-    TaskCategoriesId: {
-        results:
-            CategoryTypeID != undefined && CategoryTypeID.length > 0
-                ? CategoryTypeID
-                : [],
-    },
-
-    DueDate: EditData.DueDate
-        ? Moment(EditData.DueDate).format("MM-DD-YYYY")
-        : null,
-    CompletedDate: EditData.CompletedDate
-        ? Moment(EditData.CompletedDate).format("MM-DD-YYYY")
-        : null,
-    Status: taskStatus
-        ? taskStatus
-        : EditData.Status
-            ? EditData.Status
-            : null,
-    Mileage: EditData.Mileage ? EditData.Mileage : "",
-    AssignedToId: {
-        results:
-            AssignedToIds != undefined && AssignedToIds.length > 0
-                ? AssignedToIds
-                : [],
-    },
-    ResponsibleTeamId: {
-        results:
-            ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0
-                ? ResponsibleTeamIds
-                : [],
-    },
-    TeamMembersId: {
-        results:
-            TeamMemberIds != undefined && TeamMemberIds.length > 0
-                ? TeamMemberIds
-                : [],
-    },
-    FeedBack:
-        updateFeedbackArray?.length > 0
-            ? JSON.stringify(updateFeedbackArray)
-            : null,
-    ComponentLink: {
-        __metadata: { type: "SP.FieldUrlValue" },
-        Description: EditData.Relevant_Url ? EditData.Relevant_Url : "",
-        Url: EditData.Relevant_Url ? EditData.Relevant_Url : "",
-    },
-    //BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
-    ProjectId: selectedProject.length > 0 ? selectedProject[0].Id : null,
-    ApproverId: {
-        results:
-            ApproverIds != undefined && ApproverIds.length > 0 ? ApproverIds : [],
-    },
-    Sitestagging: ClientTimeData?.length > 0 ? JSON.stringify(ClientTimeData) : null,
-    ClientCategoryId: {
-        results:
-            ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0
-                ? ClientCategoryIDs
-                : [],
-    },
-    // SiteCompositionSettings: SiteCompositionSetting,
-    ApproverHistory:
-        ApproverHistoryData?.length > 0
-            ? JSON.stringify(ApproverHistoryData)
-            : null,
-    EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null,
-    EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray
-        ? JSON.stringify(EditData.EstimatedTimeDescriptionArray)
-        : null,
-    WorkingAction: WorkingAction?.length > 0 ? JSON.stringify(WorkingAction) : null
-};
+            DueDate: EditData.DueDate
+                ? Moment(EditData.DueDate).format("MM-DD-YYYY")
+                : null,
+            CompletedDate: EditData.CompletedDate
+                ? Moment(EditData.CompletedDate).format("MM-DD-YYYY")
+                : null,
+            Status: taskStatus
+                ? taskStatus
+                : EditData.Status
+                    ? EditData.Status
+                    : null,
+            Mileage: EditData.Mileage ? EditData.Mileage : "",
+            AssignedToId: {
+                results:
+                    AssignedToIds != undefined && AssignedToIds.length > 0
+                        ? AssignedToIds
+                        : [],
+            },
+            ResponsibleTeamId: {
+                results:
+                    ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0
+                        ? ResponsibleTeamIds
+                        : [],
+            },
+            TeamMembersId: {
+                results:
+                    TeamMemberIds != undefined && TeamMemberIds.length > 0
+                        ? TeamMemberIds
+                        : [],
+            },
+            FeedBack:
+                updateFeedbackArray?.length > 0
+                    ? JSON.stringify(updateFeedbackArray)
+                    : null,
+            ComponentLink: {
+                __metadata: { type: "SP.FieldUrlValue" },
+                Description: EditData.Relevant_Url ? EditData.Relevant_Url : "",
+                Url: EditData.Relevant_Url ? EditData.Relevant_Url : "",
+            },
+            //BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
+            ProjectId: selectedProject.length > 0 ? selectedProject[0].Id : null,
+            ApproverId: {
+                results:
+                    ApproverIds != undefined && ApproverIds.length > 0 ? ApproverIds : [],
+            },
+            Sitestagging: ClientTimeData?.length > 0 ? JSON.stringify(ClientTimeData) : null,
+            ClientCategoryId: {
+                results:
+                    ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0
+                        ? ClientCategoryIDs
+                        : [],
+            },
+            // SiteCompositionSettings: SiteCompositionSetting,
+            ApproverHistory:
+                ApproverHistoryData?.length > 0
+                    ? JSON.stringify(ApproverHistoryData)
+                    : null,
+            EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null,
+            EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray
+                ? JSON.stringify(EditData.EstimatedTimeDescriptionArray)
+                : null,
+            WorkingAction: WorkingAction?.length > 0 ? JSON.stringify(WorkingAction) : null
+        };
         return UpdateDataObject;
     };
 
@@ -6702,7 +6648,7 @@ let UpdateDataObject: any = {
                                                                                         title={ProjectData.Title}
                                                                                         data-interception="off"
                                                                                         className="textDotted hreflink"
-                                                                                        href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                        href={`${siteUrls}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                     >
                                                                                         {ProjectData.Title}
                                                                                     </a>
@@ -9094,7 +9040,7 @@ let UpdateDataObject: any = {
                                                                                                     title={ProjectData.Title}
                                                                                                     data-interception="off"
                                                                                                     className="textDotted hreflink"
-                                                                                                    href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                                    href={`${siteUrls}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                                 >
                                                                                                     {ProjectData.Title}
                                                                                                 </a>

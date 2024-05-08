@@ -334,7 +334,7 @@ function EditProjectPopup(item: any) {
     let web = new Web(AllListId?.siteUrl);
     let taskUsers = [];
     taskUsers = await web.lists
-      .getById(AllListId?.TaskUsertListID)
+      .getById(AllListId?.TaskUserListID)
       .items.top(4999)
       .get();
     AllUsers = taskUsers;

@@ -15,7 +15,7 @@ import { IFlowCreationProps } from './components/IFlowCreationProps';
 export interface IFlowCreationWebPartProps {
   description: string;
   MasterTaskListID: any;
-  TaskUsertListID: any;
+  TaskUserListID: any;
   SmartMetadataListID: any;
   SmartInformationListID: any;
   DocumentsListID: any;
@@ -44,7 +44,7 @@ export default class FlowCreationWebPart extends BaseClientSideWebPart<IFlowCrea
         Context: this.context,
         siteUrl: this.context.pageContext.web.absoluteUrl,
         MasterTaskListID: this.properties.MasterTaskListID,
-        TaskUsertListID: this.properties.TaskUsertListID,
+        TaskUserListID: this.properties.TaskUserListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
         SmartInformationListID: this.properties.SmartInformationListID,
         SmartHelpListID:this.properties.SmartHelpListID,
@@ -123,8 +123,8 @@ export default class FlowCreationWebPart extends BaseClientSideWebPart<IFlowCrea
                 PropertyPaneTextField('SmartHelpListID', {
                   label: 'SmartHelp List'
                 }),
-                PropertyPaneTextField('TaskUsertListID', {
-                  label: "TaskUsertListID"
+                PropertyPaneTextField('TaskUserListID', {
+                  label: "TaskUserListID"
                 }),
                 PropertyPaneTextField('SmartMetadataListID', {
                   label: "SmartMetadataListID"
