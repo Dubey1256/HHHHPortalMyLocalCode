@@ -10,7 +10,7 @@ let groupedComponentData: any = [];
 const CallNotes = (props: any) => {
     MyContextdata = React.useContext(myContextValue)
     const [IsOpenPortfolio, setIsOpenPortfolio] = React.useState(false);
-    const [ShareWebComponent, setShareWebComponent] = React.useState('');
+    const [CMSToolComponent, setCMSToolComponent] = React.useState('');
     const [masterTasks, setMasterTasks] = React.useState<any>([])
     const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = React.useState<any>('');
     const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = React.useState<any>([]);
@@ -53,7 +53,7 @@ const CallNotes = (props: any) => {
         AllListId = {
             siteUrl: 'https://hhhhteams.sharepoint.com/sites/HHHH/SP',
             MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf',
-            TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300',
+            TaskUserListID: 'b318ba84-e21d-4876-8851-88b94b9dc300',
             SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a',
             SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd',
             DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08',
@@ -216,7 +216,6 @@ const CallNotes = (props: any) => {
                 },
                 FeedBack: JSON.stringify(task?.FeedBack),
                 PortfolioId: task?.PortfolioId,
-                SharewebCategoriesId: { results: [286] },
                 TaskCategoriesId: { results: [286] },
                 TaskTypeId: 2,
             };
@@ -263,7 +262,7 @@ const CallNotes = (props: any) => {
 
     const EditPortfolio = (item: any, Type: any) => {
         setIsOpenPortfolio(true);
-        setShareWebComponent(item);
+        setCMSToolComponent(item);
     }
 
     const removePortfolioAndActivateInput = (index: any) => {
@@ -389,7 +388,7 @@ const CallNotes = (props: any) => {
             </Panel>
             {/* {IsOpenPortfolio &&
         <ServiceComponentPortfolioPopup
-          props={ShareWebComponent}
+          props={CMSToolComponent}
           Dynamic={AllListId}
           Call={ComponentServicePopupCallBack}
           groupedData={groupedComponentData}

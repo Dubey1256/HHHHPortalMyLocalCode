@@ -10,7 +10,6 @@ import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryCompone
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
-import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
 import CreateActivity from "../../../globalComponents/CreateActivity";
 import CreateWS from "../../../globalComponents/CreateWS";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,11 +17,8 @@ import Tooltip from "../../../globalComponents/Tooltip";
 import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
-import Loader from "react-loader";
-import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
-import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import TeamSmartFilter from "../../../globalComponents/SmartFilterGolobalBomponents/TeamSmartFilter";
@@ -31,7 +27,8 @@ import PageLoader from "../../../globalComponents/pageLoader";
 import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 import TrafficLightComponent from "../../../globalComponents/TrafficLightVerification/TrafficLightComponent";
 import CreateAllStructureComponent from "../../../globalComponents/CreateAllStructure";
-
+import { myContextValue } from "../../../globalComponents/globalCommon";
+import ProgressBar from 'react-bootstrap/ProgressBar';
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -64,6 +61,7 @@ function TeamPortlioTable(SelectedProp: any) {
         childRefdata = { ...childRef };
 
     }
+    let MyContextdata: any = React.useContext(myContextValue);
     try {
         if (SelectedProp?.SelectedProp != undefined) {
             SelectedProp.SelectedProp.isShowTimeEntry = JSON.parse(
@@ -80,6 +78,8 @@ function TeamPortlioTable(SelectedProp: any) {
     ContextValue = SelectedProp?.SelectedProp;
     const refreshData = () => setData(() => renderData);
     const [loaded, setLoaded] = React.useState(false);
+    const [isCallTask, setIsCallTask] = React.useState(null);
+    const [isCallComponent, setIsCallComponent] = React.useState(null);
     const [siteConfig, setSiteConfig] = React.useState([]);
     const [dataAllGruping, seDataAllGruping] = React.useState([]);
     const [data, setData] = React.useState([]);
@@ -113,10 +113,10 @@ function TeamPortlioTable(SelectedProp: any) {
     const [isOpenActivity, setIsOpenActivity] = React.useState(false)
     const [isOpenWorkstream, setIsOpenWorkstream] = React.useState(false)
     const [IsComponent, setIsComponent] = React.useState(false);
-    const [SharewebComponent, setSharewebComponent] = React.useState("");
+    const [CMSToolComponent, setCMSToolComponent] = React.useState("");
     const [IsTask, setIsTask] = React.useState(false);
-    const [SharewebTask, setSharewebTask] = React.useState("");
-    const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
+    const [CMSTask, setCMSTask] = React.useState("");
+    const [cmsTimeComponent, setCmsTimeComponent] = React.useState([]);
     const [checkedList1, setCheckedList1] = React.useState([]);
     const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
@@ -130,6 +130,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const rerender = React.useReducer(() => ({}), {})[1];
     const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
     const [taskCatagory, setTaskCatagory] = React.useState([]);
+    // const [showProgress, setShowProgress] = React.useState(false);
     // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
@@ -145,7 +146,7 @@ function TeamPortlioTable(SelectedProp: any) {
         let web = new Web(ContextValue.siteUrl);
         let taskUsers = [];
         taskUsers = await web.lists
-            .getById(ContextValue.TaskUsertListID)
+            .getById(ContextValue.TaskUserListID)
             .items.select(
                 "Id",
                 "Email",
@@ -226,7 +227,6 @@ function TeamPortlioTable(SelectedProp: any) {
             .top(4999).expand("Parent").get();
         setAllClientCategory(smartmetaDetails?.filter((metadata: any) => metadata?.TaxType == 'Client Category'));
         smartmetaDetails?.map((newtest: any) => {
-            // if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
             if (newtest.Title == "SDC Sites" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
                 newtest.DataLoadNew = false;
             else if (newtest.TaxType == 'Sites') {
@@ -395,6 +395,19 @@ function TeamPortlioTable(SelectedProp: any) {
                             if (result?.TaskType) {
                                 result.portfolioItemsSearch = result?.TaskType?.Title;
                             }
+                            if (result?.Status === "Not Started") { result.statusColor = "#FFFFFF " } else if (result?.Status === "For Approval") {
+                                result.statusColor = " #FFFFCC"
+                            } else if (result?.Status === "Follow Up") { result.statusColor = " #CCFFFF" } else if (result?.Status === "Approved") { result.statusColor = "#CCFFCC " } else if (result?.Status === "Checking") {
+                                result.statusColor = " #FFCCFF"
+                            } else if (result?.Status === "Acknowledged") {
+                                result.statusColor = " #CCFFFF"
+                            } else if (result?.Status === "Ready to Go") { result.statusColor = " #FFCC99" } else if (result?.Status === "working on it") {
+                                result.statusColor = " #FFCC99"
+                            } else if (result?.Status === "Re-Open") { result.statusColor = " #FF9966" } else if (result?.Status === "Deployment Pending") { result.statusColor = " #FF9966" } else if (result?.Status === "In QA Review") {
+                                result.statusColor = " #CC99FF"
+                            } else if (result?.Status === "Task completed") { result.statusColor = " #339933" } else if (result?.Status === "For Review") { result.statusColor = " #336699" } else if (result?.Status === "Follow-up later") {
+                                result.statusColor = " #339999"
+                            } else if (result?.Status === "Completed") { result.statusColor = " #339933" } else if (result?.Status === " Closed") { result.statusColor = " #999999" }
 
                             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
@@ -680,6 +693,19 @@ function TeamPortlioTable(SelectedProp: any) {
                                 }
                             })
                         }
+                        if (result?.Status === "Not Started") { result.statusColor = "#FFFFFF " } else if (result?.Status === "For Approval") {
+                            result.statusColor = " #FFFF00"
+                        } else if (result?.Status === "Follow Up") { result.statusColor = " #00FFFF" } else if (result?.Status === "Approved") { result.statusColor = "#00FF00 " } else if (result?.Status === "Checking") {
+                            result.statusColor = " #FF00FF"
+                        } else if (result?.Status === "Acknowledged") {
+                            result.statusColor = " #99FFFF"
+                        } else if (result?.Status === "Ready to Go") { result.statusColor = " #FF9900" } else if (result?.Status === "working on it") {
+                            result.statusColor = " #FF9900"
+                        } else if (result?.Status === "Re-Open") { result.statusColor = " #FF3300" } else if (result?.Status === "Deployment Pending") { result.statusColor = " #FF3300" } else if (result?.Status === "In QA Review") {
+                            result.statusColor = " #9900FF"
+                        } else if (result?.Status === "Task completed") { result.statusColor = " #009900" } else if (result?.Status === "For Review") { result.statusColor = " #003366" } else if (result?.Status === "Follow-up later") {
+                            result.statusColor = " #006666"
+                        } else if (result?.Status === "Completed") { result.statusColor = " #006600" } else if (result?.Status === " Closed") { result.statusColor = " #999999" }
 
                         result.chekbox = false;
                         if (result?.FeedBack && result?.FeedBack != undefined) {
@@ -800,6 +826,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     });
                     setAllSiteTasksData(AllTasksData);
                     countTaskAWTLevel(AllTasksData, '');
+                    setIsCallTask(1);
                     // let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
                     // allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
                     try {
@@ -1023,6 +1050,7 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         AllComponetsData = componentDetails;
         ComponetsData["allComponets"] = componentDetails;
+        setIsCallComponent(1);
     };
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -1047,6 +1075,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 portfolioTypeData?.map((elem: any) => {
                     if (elem.Title === isUpdated || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) {
                         portfolioColor = elem.Color;
+                       document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
+                        document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
                     }
                 })
             }
@@ -1055,6 +1085,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 portfolioTypeData?.map((elem: any) => {
                     if (elem.Title === "Component") {
                         portfolioColor = elem.Color;
+                       document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
+
                     }
                 })
             }
@@ -1079,10 +1111,12 @@ function TeamPortlioTable(SelectedProp: any) {
     }, [AllMetadata.length > 0 && portfolioTypeData.length > 0])
 
     React.useEffect(() => {
-        if (AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0) {
+        if (AllSiteTasksData?.length > 0 && AllMasterTasksData?.length > 0) {
+            setFilterCounters(true);
+        } else if ((isCallTask === 1 && isCallComponent === 1) && ((AllSiteTasksData?.length === 0 && AllMasterTasksData?.length === 0) || (AllSiteTasksData?.length > 0 && AllMasterTasksData?.length === 0) || (AllSiteTasksData?.length === 0 && AllMasterTasksData?.length > 0))) {
             setFilterCounters(true);
         }
-    }, [AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0])
+    }, [(AllSiteTasksData && AllMasterTasksData) && (isCallTask && isCallComponent)])
 
     const firstTimeFullDataGrouping = () => {
         if (allLoadeDataMasterTaskAndTask?.length > 0) {
@@ -2086,7 +2120,7 @@ function TeamPortlioTable(SelectedProp: any) {
     //                 accessorFn: (row: any) => row?.TaskID,
     //                 cell: ({ row, getValue }: any) => (
     //                     <>
-    //                         <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
+    //                         <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
     //                     </>
     //                 ),
     //                 id: column?.id,
@@ -2144,8 +2178,8 @@ function TeamPortlioTable(SelectedProp: any) {
     //                 cell: ({ row, column, getValue }: any) => (
     //                     <>
     //                         {row?.original?.ProjectTitle != (null || undefined) &&
-    //                             <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-    //                                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
+    //                             <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+    //                                 <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
     //                         }
     //                     </>
     //                 ),
@@ -2509,7 +2543,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <>
-                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
+                        <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
                     </>
                 ),
                 id: "TaskID",
@@ -2560,12 +2594,12 @@ function TeamPortlioTable(SelectedProp: any) {
                 isColumnVisible: true
             },
             {
-                accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
+                accessorFn: (row) => row?.projectStructerId + " " + row?.ProjectTitle,
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&
                             <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
+                                <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
                         }
                     </>
                 ),
@@ -2677,15 +2711,44 @@ function TeamPortlioTable(SelectedProp: any) {
             {
                 accessorFn: (row) => row?.PercentComplete,
                 cell: ({ row }) => (
-                    <div className="text-center">{row?.original?.PercentComplete}</div>
+                    <div className="">{row?.original?.PercentComplete}</div>
                 ),
                 id: "PercentComplete",
-                placeholder: "Status",
+                placeholder: "% Complete",
                 resetColumnFilters: false,
                 header: "",
                 size: 55,
                 isColumnVisible: true,
-                fixedColumnWidth:true
+                fixedColumnWidth: true,
+                showProgressBar: true
+            },
+            {
+                accessorFn: (row) => row?.PercentComplete,
+                cell: ({ row }) => (
+                    <>
+                        {row?.original?.PercentComplete != "" && <div className="">{row?.original?.PercentComplete + "%"} <ProgressBar title={row?.original?.PercentComplete} style={{ height: "7px" }} className='dynamicProgreesColor' now={row?.original?.PercentComplete} /></div>}
+                    </>
+                ),
+                id: "showProgress",
+                placeholder: "Progress",
+                resetColumnFilters: false,
+                header: "",
+                size: 55,
+                isColumnVisible: false,
+                fixedColumnWidth: true,
+            },
+            {
+                accessorFn: (row) => row?.Status,
+                cell: ({ row }) => (
+                    <div style={{ backgroundColor: `${row?.original?.statusColor}`, borderRadius: "6px", border: `1px solid ${row?.original?.statusColor}` }} className="">{row?.original?.Status}</div>
+                ),
+                id: "Status",
+                placeholder: "Status",
+                resetColumnFilters: false,
+                header: "",
+                size: 80,
+                isColumnVisible: false,
+                fixedColumnWidth: true,
             },
             {
                 accessorFn: (row) => row?.ItemRank,
@@ -2698,7 +2761,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 size: 55,
                 isColumnVisible: true,
-                fixedColumnWidth:true
+                fixedColumnWidth: true
             },
             {
                 accessorFn: (row) => row?.SmartPriority,
@@ -2718,7 +2781,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 size: 55,
                 isColumnVisible: true,
-                fixedColumnWidth:true
+                fixedColumnWidth: true
             },
             {
                 accessorFn: (row) => row?.PriorityRank,
@@ -2959,7 +3022,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 },
                 header: "",
                 size: 105,
-                fixedColumnWidth:true
+                fixedColumnWidth: true
             },
             {
                 accessorFn: (row) => row?.Modified,
@@ -2994,11 +3057,11 @@ function TeamPortlioTable(SelectedProp: any) {
                 },
                 header: "",
                 size: 105,
-                fixedColumnWidth:true
+                fixedColumnWidth: true
             },
             {
                 accessorKey: "descriptionsSearch",
-                placeholder: "descriptionsSearch",
+                placeholder: "Descriptions",
                 header: "",
                 resetColumnFilters: false,
                 id: "descriptionsSearch",
@@ -3006,7 +3069,7 @@ function TeamPortlioTable(SelectedProp: any) {
             },
             {
                 accessorKey: "commentsSearch",
-                placeholder: "commentsSearch",
+                placeholder: "Comments",
                 header: "",
                 resetColumnFilters: false,
                 id: "commentsSearch",
@@ -3014,7 +3077,7 @@ function TeamPortlioTable(SelectedProp: any) {
             },
             {
                 accessorKey: "timeSheetsDescriptionSearch",
-                placeholder: "timeSheetsDescriptionSearch",
+                placeholder: "Timesheets Description",
                 header: "",
                 resetColumnFilters: false,
                 id: "timeSheetsDescriptionSearch",
@@ -3028,7 +3091,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 size: 49,
                 isColumnVisible: true,
-                fixedColumnWidth:true
+                fixedColumnWidth: true
             },
             {
                 cell: ({ row }) => (
@@ -3162,15 +3225,15 @@ function TeamPortlioTable(SelectedProp: any) {
         item["siteUrl"] = ContextValue.siteUrl;
         item["listName"] = "Master Tasks";
         setIsComponent(true);
-        setSharewebComponent(item);
+        setCMSToolComponent(item);
     };
     const EditItemTaskPopup = (item: any) => {
         setIsTask(true);
-        setSharewebTask(item);
+        setCMSTask(item);
     };
     const EditDataTimeEntryData = (e: any, item: any) => {
         setIsTimeEntry(true);
-        setSharewebTimeComponent(item);
+        setCmsTimeComponent(item);
     };
     const TimeEntryCallBack = React.useCallback((item1) => {
         setIsTimeEntry(false);
@@ -3199,18 +3262,21 @@ function TeamPortlioTable(SelectedProp: any) {
     const callbackdataAllStructure = React.useCallback((item) => {
         if (item[0]?.SelectedItem != undefined) {
             copyDtaArray.map((val: any) => {
-                item[0]?.subRows.map((childs: any) => {
+                item[0]?.subRows?.map((childs: any) => {
                     if (item[0].SelectedItem == val.Id) {
+                        val.subRows = val.subRows === undefined ? [] : val?.subRows
                         val?.subRows?.unshift(childs)
                     }
                     if (val.subRows != undefined && val.subRows.length > 0) {
                         val.subRows?.map((child: any) => {
                             if (item[0].SelectedItem == child.Id) {
+                                child.subRows = child.subRows === undefined ? [] : child?.subRows
                                 child?.subRows?.unshift(childs)
                             }
                             if (child.subRows != undefined && child.subRows.length > 0) {
                                 child.subRows?.map((Subchild: any) => {
                                     if (item[0].SelectedItem == Subchild.Id) {
+                                        Subchild.subRows = Subchild.subRows === undefined ? [] : Subchild?.subRows
                                         Subchild?.subRows.unshift(childs)
                                     }
                                 })
@@ -3300,7 +3366,7 @@ function TeamPortlioTable(SelectedProp: any) {
             }
             if (item?.CreateOpenType === 'CreatePopup') {
                 const openEditItem = (item?.CreatedItem != undefined ? item.CreatedItem[0]?.data : item.data);
-                setSharewebComponent(openEditItem);
+                setCMSToolComponent(openEditItem);
                 setIsComponent(true);
             }
             renderData = [];
@@ -3326,7 +3392,7 @@ function TeamPortlioTable(SelectedProp: any) {
             renderData = renderData.concat(copyDtaArray)
             if (item?.CreateOpenType === 'CreatePopup') {
                 const openEditItem = (item?.CreatedItem != undefined ? item.CreatedItem[0]?.data : item.data);
-                setSharewebComponent(openEditItem);
+                setCMSToolComponent(openEditItem);
                 setIsComponent(true);
             }
             refreshData();
@@ -3548,6 +3614,7 @@ function TeamPortlioTable(SelectedProp: any) {
 
 
     return (
+        <myContextValue.Provider value={{ ...myContextValue, allContextValueData: {} }}>
         <div id="ExandTableIds" style={{}}>
             <section className="ContentSection smartFilterSection">
                 <div className="col-sm-12 clearfix">
@@ -3586,7 +3653,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     </h2>
                 </div>
                 <div className="togglecontent mt-1">
-                    {filterCounters == true ? <TeamSmartFilter LoadAllSiteTasksAllData={LoadAllSiteTasksAllData} AllSiteTasksDataLoadAll={AllSiteTasksDataLoadAll} IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
+                    {filterCounters == true ? <TeamSmartFilter openTableSettingPopup={childRef?.current?.openTableSettingPopup} setSmartFabBasedColumnsSetting={childRef?.current?.setSmartFabBasedColumnsSetting} LoadAllSiteTasksAllData={LoadAllSiteTasksAllData} AllSiteTasksDataLoadAll={AllSiteTasksDataLoadAll} IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
             </section>
             <section className="Tabl1eContentSection row taskprofilepagegreen">
@@ -3756,7 +3823,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 </CreateWS>)}
             {IsTask && (
                 <EditTaskPopup
-                    Items={SharewebTask}
+                    Items={CMSTask}
                     Call={Call}
                     AllListId={SelectedProp?.SelectedProp}
                     context={SelectedProp?.SelectedProp?.Context}
@@ -3765,7 +3832,7 @@ function TeamPortlioTable(SelectedProp: any) {
             )}
             {IsComponent && (
                 <EditInstituton
-                    item={SharewebComponent}
+                    item={CMSToolComponent}
                     Calls={Call}
                     SelectD={SelectedProp?.SelectedProp}
                     portfolioTypeData={portfolioTypeData}
@@ -3774,13 +3841,15 @@ function TeamPortlioTable(SelectedProp: any) {
             )}
             {IsTimeEntry && (
                 <TimeEntryPopup
-                    props={SharewebTimeComponent}
+                    props={cmsTimeComponent}
                     CallBackTimeEntry={TimeEntryCallBack}
                     Context={SelectedProp?.SelectedProp?.Context}
                 ></TimeEntryPopup>
             )}
             {!loaded && <PageLoader />}
         </div>
+        </myContextValue.Provider>
     );
 }
 export default TeamPortlioTable;
+export { myContextValue }

@@ -212,7 +212,7 @@ const MeetingProfile = (props: any) => {
 
       web.lists
         // .getByTitle("Task Users")
-        .getById(props?.props.TaskUsertListID)
+        .getById(props?.props.TaskUserListID)
         .items
         .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
         .filter("ItemType eq 'User'")
@@ -243,7 +243,7 @@ const MeetingProfile = (props: any) => {
     await loadAllComponent()
     AllListId = {
       MasterTaskListID: props?.props?.MasterTaskListID,
-      TaskUsertListID: props?.props?.TaskUsertListID,
+      TaskUserListID: props?.props?.TaskUserListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
       meetingId: query,
       listId: props?.props?.MasterTaskListID,
@@ -268,7 +268,7 @@ const MeetingProfile = (props: any) => {
 
         .items.getById(AllListId?.meetingId)
 
-        .select("Id", "Title", "DueDate", "AssignedTo/Id", "Attachments", "Sitestagging", "FeedBack", "PortfolioStructureID", "AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id", 'AttachmentFiles', "ShortDescriptionVerified", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
+        .select("Id", "Title", "DueDate", "AssignedTo/Id", "Attachments","Created","Modified", "Sitestagging", "FeedBack", "PortfolioStructureID", "AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id", 'AttachmentFiles', "ShortDescriptionVerified", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
 
 
 
@@ -431,7 +431,7 @@ const MeetingProfile = (props: any) => {
     let PropsObject: any = {
       MasterTaskListID: AllListId?.MasterTaskListID,
       siteUrl: AllListId?.siteUrl,
-      TaskUserListId: AllListId?.TaskUsertListID,
+      TaskUserListId: AllListId?.TaskUserListID,
     }
     let componentDetails: any = [];
     let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)

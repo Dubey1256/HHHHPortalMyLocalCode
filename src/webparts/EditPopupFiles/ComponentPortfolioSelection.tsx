@@ -64,7 +64,7 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
   const GetTaskUsers = async () => {
     let web = new Web(Dynamic?.siteUrl);
     let taskUsers = [];
-    taskUsers = await web.lists.getById(Dynamic.TaskUsertListID).items.get();
+    taskUsers = await web.lists.getById(Dynamic.TaskUserListID).items.get();
     Response = taskUsers;
     //console.log(this.taskUsers);
   };
@@ -749,8 +749,7 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
       //  ungetFilterLength();
       // setData(data => ([...maidataBackup]));
       setComponentsData(MainDataBackup);
-      //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
-    }
+       }
   };
 
   //************ Custom Header And Footer  **********

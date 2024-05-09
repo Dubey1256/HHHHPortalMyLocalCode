@@ -24,11 +24,14 @@ import "react-popper-tooltip/dist/styles.css";
 // import TeamSmartFavorites from './Smart Favrorites/TeamSmartFavorites';
 import TeamSmartFavoritesCopy from './Smart Favrorites/TeamSmartFavoritesCopy';
 import { GlobalConstants } from '../LocalCommon';
+import { myContextValue } from '../globalCommon';
+import ServiceComponentPortfolioPopup from '../EditTaskPopup/ServiceComponentPortfolioPopup';
 
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
 let timeSheetConfig: any = {};
 const TeamSmartFilter = (item: any) => {
+    let MyContextdata: any = React.useContext(myContextValue);
     let web = new Web(item?.ContextValue?.Context?.pageContext?._web?.absoluteUrl + '/');
     let allMasterTasksData: any = item.AllMasterTasksData;
     let allTastsData: any = item.AllSiteTasksData;
@@ -150,7 +153,7 @@ const TeamSmartFilter = (item: any) => {
         let web = new Web(ContextValue?.siteUrl);
         let taskUsers = [];
         let results = await web.lists
-            .getById(ContextValue.TaskUsertListID)
+            .getById(ContextValue.TaskUserListID)
             .items
             .select('Id', 'Role', 'SortOrder', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', "AssingedToUser/Name", 'UserGroupId', 'UserGroup/Id', "ItemType")
             // .filter('IsActive eq 1')
@@ -229,7 +232,7 @@ const TeamSmartFilter = (item: any) => {
             let configurationData: any[] = [];
             const resultsArray = await Promise.all([
                 await web.lists
-                    .getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID)
+                    .getById(item?.ContextValue?.AdminconfigrationID)
                     .items.getById(parseInt(itemId)).select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations').get()
             ]);
             resultsArray.forEach((smart: any) => {
@@ -247,7 +250,10 @@ const TeamSmartFilter = (item: any) => {
                 }
             });
             let allMasterTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(configurationData));
-            setSmartFavoritesItemsQueryStringBasedBackup(allMasterTaskDataFlatLoadeViewBackup)
+            setSmartFavoritesItemsQueryStringBasedBackup(allMasterTaskDataFlatLoadeViewBackup);
+            let SmartFavoritesItemsQueryStringBasedTableConfigValue = [];
+            SmartFavoritesItemsQueryStringBasedTableConfigValue.push(configurationData[0]?.smartFabBasedColumnsSetting);
+            item?.setSmartFabBasedColumnsSetting(SmartFavoritesItemsQueryStringBasedTableConfigValue)
             setSmartFavoritesItemsQueryStringBased(configurationData);
         } catch (error) {
             console.log(error);
@@ -624,9 +630,9 @@ const TeamSmartFilter = (item: any) => {
             filterGroupsData?.forEach((element: any) => {
                 if (element?.checked?.length > 0) {
                     if (element?.selectAllChecked === true || element?.checked?.length === element?.ValueLength) {
-                        CategoriesandStatusInfo.push(element.Title + ' : (' + "all" + ')')
+                        CategoriesandStatusInfo.push(element.Title + ': (' + "all" + ')')
                     } else {
-                        CategoriesandStatusInfo.push(element.Title + ' : (' + element.checked.length + ')')
+                        CategoriesandStatusInfo.push(element.Title + ': (' + element.checked.length + ')')
                     }
                 }
             });
@@ -636,9 +642,9 @@ const TeamSmartFilter = (item: any) => {
             allStites?.forEach((element: any) => {
                 if (element?.checked?.length > 0) {
                     if (element?.selectAllChecked === true) {
-                        sitesCountInfo.push(element.Title + ' : (' + "all" + ')')
+                        sitesCountInfo.push(element.Title + ': (' + "all" + ')')
                     } else {
-                        sitesCountInfo.push(element.Title + ' : (' + element.checked.length + ')')
+                        sitesCountInfo.push(element.Title + ': (' + element.checked.length + ')')
                     }
                 }
             });
@@ -649,25 +655,25 @@ const TeamSmartFilter = (item: any) => {
             allFilterClintCatogryData?.forEach((element: any) => {
                 if (element?.checked?.length > 0) {
                     if (element?.selectAllChecked === true || element?.checked?.length === element?.ValueLength) {
-                        clientCategoryCountInfo.push(element.Title + ' : (' + "all" + ')')
+                        clientCategoryCountInfo.push(element.Title + ': (' + "all" + ')')
                     } else {
-                        clientCategoryCountInfo.push(element.Title + ' : (' + element.checked.length + ')')
+                        clientCategoryCountInfo.push(element.Title + ': (' + element.checked.length + ')')
                     }
                 }
             });
             clientCategoryCount = clientCategoryCountInfo.join(' | ');
         }
         if (selectedProject?.length > 0) {
-            projectCountInfo.push("Project" + ' : (' + selectedProject?.length + ')')
+            projectCountInfo.push("Project" + ': (' + selectedProject?.length + ')')
             projectCount = projectCountInfo.join(' | ');
         }
         if (TaskUsersData?.length > 0) {
             TaskUsersData?.forEach((element: any) => {
                 if (element?.checked?.length > 0) {
                     if (element?.selectAllChecked === true) {
-                        teamMembersCountInfo.push(element.Title + ' : (' + "all" + ')')
+                        teamMembersCountInfo.push(element.Title + ': (' + "all" + ')')
                     } else {
-                        teamMembersCountInfo.push(element.Title + ' : (' + element.checked.length + ')')
+                        teamMembersCountInfo.push(element.Title + ': (' + element.checked.length + ')')
                     }
                 }
             });
@@ -684,7 +690,7 @@ const TeamSmartFilter = (item: any) => {
             trueCount++;
         }
         if (trueCount > 0) {
-            dateCountInfo.push("Date" + ' : (' + trueCount + ')')
+            dateCountInfo.push("Date" + ': (' + trueCount + ')')
             dateCount = dateCountInfo.join(' | ');
         }
         setCategoriesandStatusInfo(CategoriesandStatus)
@@ -730,7 +736,10 @@ const TeamSmartFilter = (item: any) => {
                 })
                 if (checkCallData === true) {
                     item?.setLoaded(false);
-                    await item?.LoadAllSiteTasksAllData();
+                    const fetchData = await item?.LoadAllSiteTasksAllData();
+                    if (fetchData?.length === 0) {
+                        item?.setLoaded(true);
+                    }
                     setLoadeAllData(true);
                 }
             }
@@ -846,21 +855,23 @@ const TeamSmartFilter = (item: any) => {
             rerender()
         } else if (event == "FilterCategoriesAndStatus") {
             let filterGroups = [...filterGroupsData];
-            filterGroups[index].selectAllChecked = selectAllChecked;
-            let selectedId: any = [];
-            filterGroups[index].values.forEach((item: any) => {
+            const selectedIds: any[] = [];
+
+            const processItem = (item: any) => {
                 item.checked = selectAllChecked;
                 if (selectAllChecked) {
-                    selectedId.push(item?.Id)
+                    selectedIds.push(item?.Id);
                 }
                 item?.children?.forEach((chElement: any) => {
-                    if (selectAllChecked) {
-                        selectedId.push(chElement?.Id)
-                    }
+                    processItem(chElement);
                 });
+            };
+            filterGroups[index].selectAllChecked = selectAllChecked;
+            filterGroups[index]?.values?.forEach((item: any) => {
+                processItem(item);
             });
-            filterGroups[index].checked = selectedId;
-            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
+            filterGroups[index].checked = selectedIds;
+            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedIds);
             setFilterGroups((prev: any) => filterGroups);
             rerender()
         } else if (event == "FilterTeamMembers") {
@@ -882,49 +893,51 @@ const TeamSmartFilter = (item: any) => {
             filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
             setTaskUsersData((prev: any) => filterGroups);
             rerender()
-        } else if (event == "ClintCatogry") {
-            let filterGroups = [...allFilterClintCatogryData];
-            filterGroups[index].selectAllChecked = selectAllChecked;
-            let selectedId: any = [];
-            filterGroups[index].values.forEach((item: any) => {
-                item.checked = selectAllChecked;
-                if (selectAllChecked) {
-                    selectedId.push(item?.Id)
-                }
-                item?.children?.forEach((chElement: any) => {
-                    if (selectAllChecked) {
-                        selectedId.push(chElement?.Id)
-                    }
-                });
-            });
-            filterGroups[index].checked = selectedId;
-            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
-            setFilterClintCatogryData((prev: any) => filterGroups);
-            rerender()
-        }
-        // else if (event === "ClintCatogry") {
-        //     const filterGroups = [...allFilterClintCatogryData];
-        //     const selectedIds: any[] = [];
-
-        //     const processItem = (item: any) => {
+        } 
+        
+        // else if (event == "ClintCatogry") {
+        //     let filterGroups = [...allFilterClintCatogryData];
+        //     filterGroups[index].selectAllChecked = selectAllChecked;
+        //     let selectedId: any = [];
+        //     filterGroups[index].values.forEach((item: any) => {
         //         item.checked = selectAllChecked;
         //         if (selectAllChecked) {
-        //             selectedIds.push(item?.Id);
+        //             selectedId.push(item?.Id)
         //         }
         //         item?.children?.forEach((chElement: any) => {
-        //             processItem(chElement);
+        //             if (selectAllChecked) {
+        //                 selectedId.push(chElement?.Id)
+        //             }
         //         });
-        //     };
-
-        //     filterGroups[index].selectAllChecked = selectAllChecked;
-        //     filterGroups[index]?.values?.forEach((item: any) => {
-        //         processItem(item);
         //     });
-        //     filterGroups[index].checked = selectedIds;
-        //     filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index]?.values, selectedIds);
-        //     setFilterClintCatogryData(filterGroups);
-        //     rerender();
+        //     filterGroups[index].checked = selectedId;
+        //     filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
+        //     setFilterClintCatogryData((prev: any) => filterGroups);
+        //     rerender()
         // }
+        else if (event === "ClintCatogry") {
+            const filterGroups = [...allFilterClintCatogryData];
+            const selectedIds: any[] = [];
+
+            const processItem = (item: any) => {
+                item.checked = selectAllChecked;
+                if (selectAllChecked) {
+                    selectedIds.push(item?.Id);
+                }
+                item?.children?.forEach((chElement: any) => {
+                    processItem(chElement);
+                });
+            };
+
+            filterGroups[index].selectAllChecked = selectAllChecked;
+            filterGroups[index]?.values?.forEach((item: any) => {
+                processItem(item);
+            });
+            filterGroups[index].checked = selectedIds;
+            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index]?.values, selectedIds);
+            setFilterClintCatogryData(filterGroups);
+            rerender();
+        }
         headerCountData();
     }
     const FilterDataOnCheck = function () {
@@ -1014,6 +1027,9 @@ const TeamSmartFilter = (item: any) => {
             );
         }
         let allFinalResult = filteredMasterTaskData.concat(filteredTaskData);
+        if (allFinalResult?.length == 0) {
+            item?.setLoaded(true)
+        }
         setFinalArray(allFinalResult);
         setFirstTimecallFilterGroup(false);
         setItemsQueryBasedCall(false);
@@ -1099,13 +1115,15 @@ const TeamSmartFilter = (item: any) => {
                 return true;
             }
             if (isCreatedBy === true) {
-                let result = teamMembers.some((member: any) => member.Title === data?.Author?.Title?.replace(/\s+/g, ' '));
+                // let result = teamMembers.some((member: any) => member.Title === data?.Author?.Title?.replace(/\s+/g, ' '));
+                let result = teamMembers.some((member: any) => member.Id === data?.Author?.Id);
                 if (result === true) {
                     return true;
                 }
             }
             if (isModifiedby === true) {
-                let result = teamMembers.some((member: any) => member.Title === data?.Editor?.Title?.replace(/\s+/g, ' '));
+                // let result = teamMembers.some((member: any) => member.Title === data?.Editor?.Title?.replace(/\s+/g, ' '));
+                let result = teamMembers.some((member: any) => member.Id === data?.Editor?.Id);
                 if (result === true) {
                     return true;
                 }
@@ -1300,6 +1318,7 @@ const TeamSmartFilter = (item: any) => {
             setIsTeamMembersExpendShow(false);
             setIsDateExpendShow(false);
             setIsSmartfilter(false);
+            item?.setSmartFabBasedColumnsSetting([]);
             // setPreSet(false);
         } else {
             item?.setLoaded(false);
@@ -1316,6 +1335,7 @@ const TeamSmartFilter = (item: any) => {
             setIsSmartfilter(false);
             // setItemsQueryBasedCall(false);
             loadAdminConfigurationsId(item?.IsSmartfavoriteId);
+            item?.setSmartFabBasedColumnsSetting([])
             rerender();
         }
     };
@@ -1598,12 +1618,12 @@ const TeamSmartFilter = (item: any) => {
                 setStartDate(last30DaysStartDate);
                 setEndDate(last30DaysEndDate);
                 break;
-                case "last3months":
-                    const lastMonthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
-                    const last3MonthsStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, 1); 
-                    setStartDate(last3MonthsStartDate);
-                    setEndDate(lastMonthEndDate);
-                    break;
+            case "last3months":
+                const lastMonthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+                const last3MonthsStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, 1);
+                setStartDate(last3MonthsStartDate);
+                setEndDate(lastMonthEndDate);
+                break;
             case "thisyear":
                 const yearStartDate = new Date(currentDate.getFullYear(), 0, 1);
                 setStartDate(yearStartDate);
@@ -1706,24 +1726,7 @@ const TeamSmartFilter = (item: any) => {
             </div>
         )
     }
-    const customFooterForProjectManagement = () => {
-        return (
-            <footer className="text-end me-4">
-                <button type="button" className="btn btn-primary">
-                    <a target="_blank" className="text-light" data-interception="off"
-                        href={`${ContextValue?.siteUrl}/SitePages/PX-Overview.aspx`}>
-                        <span className="text-light">Create New One</span>
-                    </a>
-                </button>
-                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
-                    Save
-                </button>
-                <button type="button" className="btn btn-default px-3" onClick={closeProjectManagementPopup}>
-                    Cancel
-                </button>
-            </footer>
-        )
-    }
+   
     // ************** this is for Project Management Section Functions ************
 
     let selectedProjectData: any = []
@@ -1741,10 +1744,7 @@ const TeamSmartFilter = (item: any) => {
         })
         setSelectedProject(selectedTempArray);
     }
-    const saveSelectedProject = () => {
-        SelectProjectFunction(AllProjectSelectedData);
-        setProjectManagementPopup(false);
-    }
+    
     const autoSuggestionsForProject = (e: any) => {
         let allSuggestion: any = [];
         let searchedKey: any = e.target.value;
@@ -1761,15 +1761,7 @@ const TeamSmartFilter = (item: any) => {
         }
 
     }
-    const closeProjectManagementPopup = () => {
-        let TempArray: any = [];
-        setProjectManagementPopup(false);
-        AllProjectBackupArray?.map((ProjectData: any) => {
-            ProjectData.Checked = false;
-            TempArray.push(ProjectData);
-        })
-        SetAllProjectData(TempArray);
-    }
+
     const SelectProjectFromAutoSuggestion = (data: any) => {
         setProjectSearchKey('');
         setSearchedProjectData([]);
@@ -1785,98 +1777,15 @@ const TeamSmartFilter = (item: any) => {
         })
         setSelectedProject(tempArray)
     }
-    const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
-        () => [
-            {
-                accessorKey: "",
-                placeholder: "",
-                hasCheckbox: true,
-                hasCustomExpanded: false,
-                hasExpanded: false,
-                isHeaderNotAvlable: true,
-                size: 45,
-                id: 'Id',
-            },
-            {
-                accessorFn: (row) => row?.Title,
-                cell: ({ row }) => (
-                    <span>
-                        <a style={{ textDecoration: "none", color: "#000066" }} href={`${ContextValue?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
-                    </span>
-                ),
-                placeholder: "Title",
-                header: "",
-                resetColumnFilters: false,
-                id: "Title",
-            },
-            {
-                accessorFn: (row) => row?.PercentComplete,
-                cell: ({ row }) => (
-                    <div className="text-center">{row?.original?.PercentComplete}</div>
-                ),
-                id: "PercentComplete",
-                placeholder: "Status",
-                resetColumnFilters: false,
-                header: "",
-                size: 42,
-            },
-            {
-                accessorFn: (row) => row?.ItemRank,
-                cell: ({ row }) => (
-                    <div className="text-center">{row?.original?.ItemRank}</div>
-                ),
-                id: "ItemRank",
-                placeholder: "Item Rank",
-                resetColumnFilters: false,
-                header: "",
-                size: 42,
-            },
-            {
-                accessorFn: (row) => row?.AllTeamName,
-                cell: ({ row }) => (
-                    <div className="alignCenter">
-                        <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} Context={ContextValue} />
-                    </div>
-                ),
-                id: "AllTeamName",
-                placeholder: "Team",
-                resetColumnFilters: false,
-                header: "",
-                size: 100,
-            },
-            {
-                accessorFn: (row) => row?.DueDate,
-                cell: ({ row }) => (
-                    <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
-
-                ),
-                filterFn: (row: any, columnName: any, filterValue: any) => {
-                    if (row?.original?.DisplayDueDate?.includes(filterValue)) {
-                        return true
-                    } else {
-                        return false
-                    }
-                },
-                id: 'DueDate',
-                resetColumnFilters: false,
-                resetSorting: false,
-                placeholder: "DueDate",
-                header: "",
-                size: 91,
-            },
-        ],
-        [item?.ProjectData]
-    );
-
-    const callBackData = React.useCallback((checkData: any) => {
+   
+    const callBackData = React.useCallback((checkData: any,Type:any, functionType:any) => {
         let MultiSelectedData: any = [];
-        if (checkData != undefined) {
-            checkData.map((item: any) => MultiSelectedData?.push(item?.original))
-            setAllProjectSelectedData(MultiSelectedData);
-            // SelectProjectFunction(MultiSelectedData);
+        if (checkData?.length>0 && functionType=="Save") {
+            checkData.map((item: any) => MultiSelectedData?.push(item))
+            SelectProjectFunction(MultiSelectedData);
+            setProjectManagementPopup(false);  
         } else {
-            setAllProjectSelectedData([]);
-            MultiSelectedData = [];
+            setProjectManagementPopup(false);
         }
     }, []);
 
@@ -2047,7 +1956,7 @@ const TeamSmartFilter = (item: any) => {
         let copyCreateMeSmartFavorites: any = [];
         let copyEveryoneSmartFavorites: any = [];
         let filter = "Key eq 'Smartfavorites'";
-        web.lists.getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID)
+        web.lists.getById(item?.ContextValue?.AdminconfigrationID)
             .items.select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations').filter(filter).get()
             .then((Results: any) => {
                 Results?.map((smart: any) => {
@@ -2109,7 +2018,7 @@ const TeamSmartFilter = (item: any) => {
         let confirmDelete = confirm("Are you sure, you want to delete this?");
         if (confirmDelete) {
             await web.lists
-                .getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID)
+                .getById(item?.ContextValue?.AdminconfigrationID)
                 .items.getById(itemId.Id)
                 .recycle()
                 .then((i: any) => {
@@ -2144,12 +2053,12 @@ const TeamSmartFilter = (item: any) => {
                             <div className="togglebox">
                                 <div className='alignCenter justify-content-between col-sm-12'>
                                     <div className='alignCenter col-sm-8' style={{ color: `${portfolioColor}` }} onClick={() => { toggleIcon(); toggleAllExpendCloseUpDown(iconIndex) }}>
-                                        {icons[iconIndex]} <span className="f-16 fw-semibold hreflink ms-1 pe-2 allfilter">All Filters - </span>
-                                        <div className="ms-2 f-14" style={{ color: "#333333" }}>{sitesCountInfo + ' ' + projectCountInfo + ' ' + CategoriesandStatusInfo + ' ' + clientCategoryCountInfo + ' ' + teamMembersCountInfo + ' ' + dateCountInfo}</div>
+                                        {icons[iconIndex]} <span className="f-16 fw-semibold hreflink ms-1 pe-1 allfilter">All Filters -</span>
+                                        <div className="f-14" style={{ color: "#333333" }}>{sitesCountInfo + ' ' + projectCountInfo + ' ' + CategoriesandStatusInfo + ' ' + clientCategoryCountInfo + ' ' + teamMembersCountInfo + ' ' + dateCountInfo}</div>
                                     </div>
                                     <div className='alignCenter col-sm-4'>
                                         <div className='ml-auto alignCenter'>
-                                            <div className="svg__iconbox svg__icon--setting hreflink me-2" style={{ backgroundColor: `${portfolioColor}` }} ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()}>Type</div>
+                                            <div className="svg__iconbox svg__icon--setting hreflink me-2" style={{ backgroundColor: `${portfolioColor}` }} ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()}></div>
                                             {action === "click" && visible && (
                                                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container m-0 p-0" })}>
                                                     {/* <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button> */}
@@ -2180,7 +2089,7 @@ const TeamSmartFilter = (item: any) => {
                                                                                             <div className="fw-semibold ms-8 f-16 text-dark">{Group.Title}</div>
                                                                                         </div>
                                                                                         <div className='dataSecChild'>
-                                                                                            {Group?.values?.sort((a:any,b:any)=>a.SortOrder-b.SortOrder)?.map((insideCheckBox: any) => {
+                                                                                            {Group?.values?.sort((a: any, b: any) => a.SortOrder - b.SortOrder)?.map((insideCheckBox: any) => {
                                                                                                 return (
                                                                                                     <label className='alignCenter f-16 dataSecChildSec'>
                                                                                                         <input type="checkbox" className={"form-check-input cursor-pointer mt-0"} checked={MainGroup?.checked?.some((datachecked: any) => datachecked == insideCheckBox?.Id)} onChange={() => selectChild(insideCheckBox)} />
@@ -2758,7 +2667,7 @@ const TeamSmartFilter = (item: any) => {
 
                                         </Col>
                                         <div>
-                                            <Row>
+                                            <div className='alignCenter gap-4'>
                                                 <div className="col-2 dateformate ps-0" style={{ width: "160px" }}>
                                                     <div className="input-group">
                                                         <label className='mb-1 form-label full-width'>Start Date</label>
@@ -2794,9 +2703,9 @@ const TeamSmartFilter = (item: any) => {
                                                     </div>
                                                 </div>
                                                 <div className="col-2 mt-2 m-0 pull-left">
-                                                    <label className="hreflink pt-4" title="Clear Date Filters" onClick={clearDateFilters} ><strong style={{ color: `${portfolioColor}` }} >Clear</strong></label>
+                                                    <label className="hreflink pt-3" title="Clear Date Filters" onClick={clearDateFilters} ><strong style={{ color: `${portfolioColor}` }} >Clear</strong></label>
                                                 </div>
-                                            </Row>
+                                            </div>
                                         </div>
                                     </div>
                                 </div> : ""}
@@ -2888,27 +2797,17 @@ const TeamSmartFilter = (item: any) => {
                 </>}
             </section>
             {/* ********************* this is Project Management panel ****************** */}
-            {item?.ProjectData != undefined && item?.ProjectData?.length > 0 ?
-                <Panel
-                    onRenderHeader={onRenderCustomProjectManagementHeader}
-                    isOpen={ProjectManagementPopup}
-                    onDismiss={closeProjectManagementPopup}
-                    isBlocking={true}
-                    type={PanelType.custom}
-                    customWidth="1100px"
-                    onRenderFooter={customFooterForProjectManagement}
-                >
-                    <div className="SelectProjectTable">
-                        <div className="modal-body wrapper p-0 mt-2">
-                            <GlobalCommanTable SmartTimeIconShow={true} columns={columns} data={item?.ProjectData} callBackData={callBackData} multiSelect={true} />
-                        </div>
-
-                    </div>
-                </Panel>
+            {item?.ProjectData != undefined && item?.ProjectData?.length > 0 && ProjectManagementPopup ?
+                 <ServiceComponentPortfolioPopup
+                 Dynamic={item?.ContextValue}
+                 Call={(DataItem: any, Type: any, functionType: any) => {callBackData(DataItem, Type, functionType) }}  
+                 showProject={ProjectManagementPopup}
+                 selectionType = 'Multi'
+               />
                 : null
             }
             <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>
-            {selectedFilterPanelIsOpen && <TeamSmartFavoritesCopy isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack}
+            {selectedFilterPanelIsOpen && <TeamSmartFavoritesCopy openTableSettingPopup={item?.openTableSettingPopup} isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack}
                 portfolioColor={portfolioColor}
                 filterGroupsData={filterGroupsData}
                 allFilterClintCatogryData={allFilterClintCatogryData}
@@ -2931,7 +2830,7 @@ const TeamSmartFilter = (item: any) => {
                 AllUsers={AllUsers}
                 TaskUsersData={TaskUsersData}
             />}
-            {selectedFilterPanelIsOpenUpdate && updatedEditData && <TeamSmartFavoritesCopy isOpen={selectedFilterPanelIsOpenUpdate} selectedFilterCallBack={selectedFilterCallBack}
+            {selectedFilterPanelIsOpenUpdate && updatedEditData && <TeamSmartFavoritesCopy openTableSettingPopup={item?.openTableSettingPopup} isOpen={selectedFilterPanelIsOpenUpdate} selectedFilterCallBack={selectedFilterCallBack}
                 portfolioColor={portfolioColor}
                 updatedSmartFilter={true}
                 updatedEditData={updatedEditData}

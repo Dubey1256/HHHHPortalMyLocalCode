@@ -142,7 +142,7 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
                 Status: taskItem.Status,
                 ComponentLink: taskItem.ComponentLink ? taskItem.ComponentLink.Url : "",
                 SharedWebCategories: taskItem.TaskCategories,
-                ShareWebId: this.getShareWebId(),
+                CMSToolId: this.getCMSToolId(),
                 Created: {
                     Date: this.formatDate(taskItem.Created),
                     ...this.getUserInfo(taskItem.Author.Id)
@@ -191,7 +191,7 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
         return (categories || []).map((item: { Title: string; })=>item.Title);
     }
 
-    private getShareWebId() {
+    private getCMSToolId() {
         return;
     }
 

@@ -19,7 +19,7 @@ import EditProjectPopup from '../../../globalComponents/EditProjectPopup';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 var AllTaskUsers: any = []
 const TableDataTSX = (props: any) => {
-    const [SharewebComponent, setSharewebComponent] = React.useState('');
+    const [CMSToolComponent, setCMSToolComponent] = React.useState('');
     const [data, setData] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const Call = React.useCallback((item1) => {
@@ -30,7 +30,7 @@ const TableDataTSX = (props: any) => {
         item['listName'] = 'Master Tasks';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
-        setSharewebComponent(item);
+        setCMSToolComponent(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
     React.useEffect(() => {
@@ -46,7 +46,7 @@ const TableDataTSX = (props: any) => {
         //         accessor: 'Title',
         //         Cell: ({ row }: any) => (
         //             <span>
-        //                 <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.Id}`} data-interception="off" target="_blank">{row.values.Title}</a>
+        //                 <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/PX-Profile.aspx?ProjectId=${row?.Id}`} data-interception="off" target="_blank">{row.values.Title}</a>
         //             </span>
         //         )
         //     },

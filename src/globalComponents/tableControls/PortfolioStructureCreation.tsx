@@ -280,7 +280,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         } else if (this.Portfolio_x0020_Type == 'Events') {
             folderURL = (this.state.webServerRelativeUrl + '/Documents/EVENT-PORTFOLIO').toLowerCase();
         }
-        let DOcListID = (this.state?.PropValue?.DocumentListID != undefined ? this.state?.PropValue?.DocumentListID : 'd0f88b8f-d96d-4e12-b612-2706ba40fb08');
+        let DOcListID = (this.state?.PropValue?.DocumenstlistID != undefined ? this.state?.PropValue?.DocumenstlistID : 'd0f88b8f-d96d-4e12-b612-2706ba40fb08');
         if (this.state.textTitle == '') {
             alert('Please Enter the Title!')
         }
@@ -497,8 +497,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         this.setState((prevState) => ({
             disablebutton: !prevState.disablebutton,
           }));
-        //$('#CreateChildpoup1').hide();
-        //SharewebCommonFactoryService.showProgressBar();
+       
 
 
         let self = this;

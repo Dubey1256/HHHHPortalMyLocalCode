@@ -253,7 +253,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     // console.log("Cuurent User Name - " + r['Title']);  
     //}); 
     let taskUsers = [];
-    taskUsers = await web.lists.getById(this.props?.AllListId?.TaskUsertListID).items.select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'UserGroup/Id', 'UserGroup/Title').filter("ItemType eq 'User'").expand('AssingedToUser', 'UserGroup').get();
+    taskUsers = await web.lists.getById(this.props?.AllListId?.TaskUserListID).items.select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'UserGroup/Id', 'UserGroup/Title').filter("ItemType eq 'User'").expand('AssingedToUser', 'UserGroup').get();
     taskUsers = taskUsers?.filter((User: any) => User?.UserGroup == undefined || User?.UserGroup?.Title != "Ex Staff")
     this.taskUsers = taskUsers;
     if (this.taskUsers != undefined && this.taskUsers.length > 0) {
@@ -713,25 +713,21 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             if (this.state?.ReplyParent?.MsTeamCreated == undefined)
               this.state.ReplyParent.MsTeamCreated = ''
             const PreMsg = `
-              <b>Hi ${this.state?.ReplyParent?.Header.replaceAll('@', '')},</b>
-              <p></p>
-               Task Comment-<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span>
+               Task Comment:<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span>
               <p><br/></p>
-          <span>${finalTaskInfo}</span>
               <p></p>
               Task Link: <a href=${MsgURL}>Click here</a>
               <p></p>
-              <b>Thanks,<br/>Task Management Team</b>
+              <span>${finalTaskInfo}</span>
+             
           `;
             const CurrentMsg = `
-              <b>Hi ${this.state?.ReplyParent?.AuthorName},</b>
-              Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
+              Task Comment:<span style="background-color: yellow;">${txtComment}.</span>
               <p><br/></p>
-              <span>${finalTaskInfo}</span>
-              <p></p>
               Task Link: <a href=${MsgURL}>Click here</a>
               <p></p>
-              <b>Thanks,<br/>Task Management Team</b>
+              <span>${finalTaskInfo}</span>
+              <p></p>
           `;
             TeamsMessage = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${PreMsg} </blockquote>${CurrentMsg}`;
           }

@@ -5,7 +5,7 @@ export interface IDocumentSearchProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   context: any;
-  TaskUsertListID: string;
+  TaskUserListID: string;
   DocumentsListID: string;
   MasterTaskListID: string;
   SmartMetadataListID: string;

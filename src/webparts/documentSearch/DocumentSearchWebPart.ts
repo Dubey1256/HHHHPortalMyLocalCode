@@ -16,7 +16,7 @@ export interface IDocumentSearchWebPartProps {
   description: string;
   DocumentsListID: string;
   context: any;
-  TaskUsertListID: string;
+  TaskUserListID: string;
   MasterTaskListID: string,
   SmartMetadataListID: string;
 }
@@ -37,7 +37,7 @@ export default class DocumentSearchWebPart extends BaseClientSideWebPart<IDocume
         userDisplayName: this.context.pageContext.user.displayName,
         DocumentsListID: this.properties.DocumentsListID,
         context: this.context,
-        TaskUsertListID: this.properties.TaskUsertListID,
+        TaskUserListID: this.properties.TaskUserListID,
         MasterTaskListID: this.properties.MasterTaskListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
       }
@@ -100,8 +100,8 @@ export default class DocumentSearchWebPart extends BaseClientSideWebPart<IDocume
                 PropertyPaneTextField('DocumentsListID', {
                   label: 'DocumentsListID'
                 }),
-                PropertyPaneTextField('TaskUsertListID', {
-                  label: 'TaskUsertListID'
+                PropertyPaneTextField('TaskUserListID', {
+                  label: 'TaskUserListID'
                 }),
                 PropertyPaneTextField('MasterTaskListID', {
                   label: 'MasterTaskListID'

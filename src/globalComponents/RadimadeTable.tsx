@@ -102,10 +102,10 @@ function ReadyMadeTable(SelectedProp: any) {
     const [isOpenActivity, setIsOpenActivity] = React.useState(false)
     const [isOpenWorkstream, setIsOpenWorkstream] = React.useState(false)
     const [IsComponent, setIsComponent] = React.useState(false);
-    const [SharewebComponent, setSharewebComponent] = React.useState("");
+    const [CMSToolComponent, setCMSToolComponent] = React.useState("");
     const [IsTask, setIsTask] = React.useState(false);
-    const [SharewebTask, setSharewebTask] = React.useState("");
-    const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
+    const [CMSTask, setCMSTask] = React.useState("");
+    const [cmsTimeComponent, setCmsTimeComponent] = React.useState([]);
     const checkedList1: any = React.useRef([]);
     const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
@@ -200,8 +200,11 @@ function ReadyMadeTable(SelectedProp: any) {
             if (SelectedProp?.ComponentFilter != undefined) {
                 setIsUpdated(SelectedProp?.ComponentFilter)
             }
-            if (SelectedProp?.configration == "AllCSF") {
+            if (SelectedProp?.configration == "AllCSF" && SelectedProp?.showProject != true) {
                 GetComponents();
+            }
+            else if(SelectedProp?.configration == "AllCSF" && SelectedProp?.showProject == true) {
+                GetProjectData()
             } else if (SelectedProp?.configration == "AllAwt") {
                 // GetComponents();
                 // setSiteConfig()
@@ -217,11 +220,24 @@ function ReadyMadeTable(SelectedProp: any) {
 
         }
     }, [AllMetadata?.length > 0 && portfolioTypeData?.length > 0])
+
+    const GetProjectData= async()=>{
+        let results = await globalCommon.GetServiceAndComponentAllData(ContextValue)
+        if (results?.AllData?.length > 0) {
+            let componentDetails: any = results?.AllData;
+            let groupedComponentData: any = results?.GroupByData;
+            let groupedProjectData: any = results?.ProjectData;
+            let AllProjects: any = results?.FlatProjectData
+            setData(groupedProjectData)
+            setLoaded(true)
+          }
+    }
+
     const getTaskUsers = async () => {
         let web = new Web(ContextValue.siteUrl);
         let taskUsers = [];
         taskUsers = await web.lists
-            .getById(ContextValue.TaskUsertListID)
+            .getById(ContextValue.TaskUserListID)
             .items.select(
                 "Id",
                 "Email",
@@ -303,7 +319,6 @@ function ReadyMadeTable(SelectedProp: any) {
             .top(4999).expand("Parent").get();
         setAllClientCategory(smartmetaDetails?.filter((metadata: any) => metadata?.TaxType == 'Client Category'));
         smartmetaDetails?.map((newtest: any) => {
-            // if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
             if (newtest.Title == "SDC Sites" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
                 newtest.DataLoadNew = false;
             else if (newtest.TaxType == 'Sites') {
@@ -775,16 +790,13 @@ function ReadyMadeTable(SelectedProp: any) {
             localStorage.setItem('timeEntryIndex', dataString);
         }
         console.log("timeEntryIndex", timeEntryIndex)
-      
-      
-            if (AllSiteTasksData?.length > 0) {
-                setData([]);
-                if (SelectedProp?.configration == "AllAwt" && SelectedProp?.SelectedItem != undefined) {
-                    if ('Parent' in SelectedProp?.SelectedItem) {
-                        taskTypeData?.map((levelType: any) => {
-                            if (levelType.Level === 1)
-                                componentActivity(levelType, SelectedProp?.SelectedItem);
-                        })
+        if (AllSiteTasksData?.length > 0) {
+            setData([]);
+            portfolioTypeData?.map((port: any, index: any) => {
+                if (SelectedProp?.SelectedItem != undefined) {
+                    if (port.Title === SelectedProp?.SelectedItem?.Item_x0020_Type) {
+                        componentData = []
+                        componentGrouping(port?.Id, port?.Id);
                     }
                     if ('ParentTask' in SelectedProp?.SelectedItem) {
                         let data: any = [SelectedProp?.SelectedItem]
@@ -814,12 +826,11 @@ function ReadyMadeTable(SelectedProp: any) {
         
                     })
                 }
-              
-                countsrun++;
-    
-            }
-      
-      
+
+            })
+            countsrun++;
+
+        }
 
         setLoaded(true)
         return AllSiteTasksData;
@@ -1084,6 +1095,12 @@ function ReadyMadeTable(SelectedProp: any) {
             DataPrepareForCSFAWT()
         }
     }, [(AllMasterTasksData.length > 0 && AllSiteTasksData?.length > 0)]);
+
+    React.useEffect(() => {
+        if (AllMasterTasksData?.length > 0) {
+            DataPrepareForCSFAWT()
+        }
+    }, [(AllMasterTasksData.length > 0 && SelectedProp?.configration == "AllCSF")]);
 
 
     function DataPrepareForCSFAWT(){
@@ -1560,7 +1577,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <div className="hreflink">
-                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
+                        <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
                     </div>
                 ),
                 id: "TaskID",
@@ -1616,8 +1633,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&
-                            <span><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.PortfolioType?.Color}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
+                            <span><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.PortfolioType?.Color}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                                <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
                         }
                     </>
                 ),
@@ -2058,7 +2075,7 @@ function ReadyMadeTable(SelectedProp: any) {
             },
             {
                 accessorKey: "descriptionsSearch",
-                placeholder: "descriptionsSearch",
+                placeholder: "Descriptions",
                 header: "",
                 resetColumnFilters: false,
                 id: "descriptionsSearch",
@@ -2066,7 +2083,7 @@ function ReadyMadeTable(SelectedProp: any) {
             },
             {
                 accessorKey: "commentsSearch",
-                placeholder: "commentsSearch",
+                placeholder: "Comments",
                 header: "",
                 resetColumnFilters: false,
                 id: "commentsSearch",
@@ -2074,7 +2091,7 @@ function ReadyMadeTable(SelectedProp: any) {
             },
             {
                 accessorKey: "timeSheetsDescriptionSearch",
-                placeholder: "timeSheetsDescriptionSearch",
+                placeholder: "Timesheets Description",
                 header: "",
                 resetColumnFilters: false,
                 id: "timeSheetsDescriptionSearch",
@@ -2185,6 +2202,7 @@ function ReadyMadeTable(SelectedProp: any) {
  
     const callBackData = React.useCallback((checkData: any) => {
         let array: any = [];
+        let selectedItems: any = []
         if (checkData != undefined) {
             setCheckedList(checkData);
             array.push(checkData);
@@ -2192,6 +2210,12 @@ function ReadyMadeTable(SelectedProp: any) {
             if (childRef.current.table.getSelectedRowModel().flatRows.length > 0) {
                 setTrueRestructuring(true)
             }
+            checkData?.map((item:any) => {
+                if(item.original != undefined){
+                    selectedItems.push(item.original)
+                }
+            })
+            SelectedProp.setCheckBoxData(selectedItems)
         } else {
             setCheckedList({});
             setTableProperty([])
@@ -2229,15 +2253,15 @@ function ReadyMadeTable(SelectedProp: any) {
         item["siteUrl"] = ContextValue.siteUrl;
         item["listName"] = "Master Tasks";
         setIsComponent(true);
-        setSharewebComponent(item);
+        setCMSToolComponent(item);
     };
     const EditItemTaskPopup = (item: any) => {
         setIsTask(true);
-        setSharewebTask(item);
+        setCMSTask(item);
     };
     const EditDataTimeEntryData = (e: any, item: any) => {
         setIsTimeEntry(true);
-        setSharewebTimeComponent(item);
+        setCmsTimeComponent(item);
     };
     const TimeEntryCallBack = React.useCallback((item1) => {
         setIsTimeEntry(false);
@@ -2263,6 +2287,7 @@ function ReadyMadeTable(SelectedProp: any) {
     };
 
 
+ 
     const AddStructureCallBackCall = React.useCallback((item) => {
         if (checkedList1?.current.length == 0) {
             item[0]?.subRows.map((childs: any) => {
@@ -2272,9 +2297,12 @@ function ReadyMadeTable(SelectedProp: any) {
         } else {
             if (item[0]?.SelectedItem != undefined) {
                 copyDtaArray.map((val: any) => {
+                    if(val?.subRows==undefined){
+                        val.subRows=[]
+                    }
                     item[0]?.subRows.map((childs: any) => {
                         if (item[0].SelectedItem == val.Id) {
-                            val.subRows.unshift(childs)
+                            val?.subRows?.unshift(childs)
                         }
                         if (val.subRows != undefined && val.subRows.length > 0) {
                             val.subRows?.map((child: any) => {
@@ -2342,7 +2370,7 @@ function ReadyMadeTable(SelectedProp: any) {
         else if (dataToPush?.PortfolioId == SelectedProp?.SelectedItem?.Portfolio?.Id && SelectedProp?.SelectedItem?.TaskType?.Title == "Workstream") {
             arr.push(dataToPush)
          return true;
-        }
+        } 
 
         else if (dataToPush?.PortfolioId === SelectedProp?.SelectedItem?.Id && dataToPush?.TaskTypeId == 2 && dataToPush?.ParentTaskId === null) {
             //   if(SelectedProp?.UsedFrom=='ProjectManagement'){
@@ -2481,9 +2509,7 @@ function ReadyMadeTable(SelectedProp: any) {
             setIsOpenActivity(false)
             setIsOpenWorkstream(false)
             setActivityPopup(false)
-            if (res?.data?.PercentComplete != 0) {
-                res.data.PercentComplete = res?.data?.PercentComplete * 100;
-            }
+            
             const updated = updatedDataDataFromPortfolios(copyDtaArray, res?.data);
             if (updated) {
                 renderData = [];
@@ -2715,7 +2741,7 @@ function ReadyMadeTable(SelectedProp: any) {
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
-                                            <GlobalCommanTable  tableId={SelectedProp?.tableId}columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} showFilterIcon={SelectedProp?.configration != "AllAwt"}
+                                            <GlobalCommanTable multiSelect={SelectedProp?.multiSelect ? SelectedProp?.multiSelect: false} tableId={SelectedProp?.tableId}columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} showFilterIcon={SelectedProp?.configration != "AllAwt"}
                                             loadFilterTask={FilterAllTask}
                                                 masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
                                                 flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
@@ -2869,7 +2895,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 </CreateWS>)}
             {IsTask && (
                 <EditTaskPopup
-                    Items={SharewebTask}
+                    Items={CMSTask}
                     Call={Call}
                     AllListId={SelectedProp?.AllListId}
                     context={SelectedProp?.AllListId?.Context}
@@ -2878,7 +2904,7 @@ function ReadyMadeTable(SelectedProp: any) {
             )}
             {IsComponent && (
                 <EditInstitution
-                    item={SharewebComponent}
+                    item={CMSToolComponent}
                     Calls={Call}
                     SelectD={SelectedProp?.AllListId}
                     portfolioTypeData={portfolioTypeData}
@@ -2887,7 +2913,7 @@ function ReadyMadeTable(SelectedProp: any) {
             )}
             {IsTimeEntry && (
                 <TimeEntryPopup
-                    props={SharewebTimeComponent}
+                    props={cmsTimeComponent}
                     CallBackTimeEntry={TimeEntryCallBack}
                     Context={SelectedProp?.AllListId?.Context}
                 ></TimeEntryPopup>
@@ -2902,7 +2928,7 @@ export default ReadyMadeTable;
 
 // useCase:  
 
-//     AllListId:{} required alllist id  siteUrl,Context,MasterTaskListID,TaskUsertListID,SmartMetadataListID,PortFolioTypeID,TaskTypeID,
+//     AllListId:{} required alllist id  siteUrl,Context,MasterTaskListID,TaskUserListID,SmartMetadataListID,PortFolioTypeID,TaskTypeID,
 //    " CSFAWT"
 //    " AllAwt"
 //     "AllCSF"
@@ -2910,7 +2936,7 @@ export default ReadyMadeTable;
 //     SelectedItem:{} we have to pass the  data and give the all child data  inside that component,
 
 //     SelectedSiteForTask:["hhhh","de"],
-//     ExcludeSiteForTask:["shareweb"],
+//     ExcludeSiteForTask:["HHH"],
 //     TaskFilter:'',// like PercentComplete gt 0.89 or (PercentComplete eq 0.0 or (PercentComplete gt 0.0 and PercentComplete lt 0.89) or PercentComplete eq 0.89)
 //     ComponentFilter:""// like service ,component ,event 
   

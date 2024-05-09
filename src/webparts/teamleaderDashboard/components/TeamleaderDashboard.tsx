@@ -14,7 +14,7 @@ export default class TeamleaderDashboard extends React.Component<ITeamleaderDash
       pageContext,
       siteUrl,
       MasterTaskListID,
-      TaskUsertListID,
+      TaskUserListID,
       SmartMetadataListID,
       SmartInformationListID,
       DocumentsListID,
