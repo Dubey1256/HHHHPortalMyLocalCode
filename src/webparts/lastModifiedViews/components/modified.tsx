@@ -28,6 +28,7 @@ export const Modified = (props: any) => {
   let columns: any = [];
   let portfolioColor: any = '#000066';
   var baseUrl: any = props?.props.context?._pageContext?.web?.absoluteUrl;
+const [checkBoxVisble,SetCheckboxVisble]=useState(false)
   const [gmbhSite, setGmbhSite] = useState(false);
   const [sites, setSites] = useState<any>([])
   const [allSiteData, setallSiteData] = useState<any>([])
@@ -68,7 +69,10 @@ export const Modified = (props: any) => {
     let web = new Web(baseUrl);
     Users = await web.lists.getById(props?.props?.TaskUserListID).items.select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver").get();
     setAllUsers(Users)
-    if (baseUrl.toLowerCase().includes("gmbh")) {
+    if(baseUrl.toLowerCase().includes("sp")){
+      SetCheckboxVisble(true)
+    }
+    else if (baseUrl.toLowerCase().includes("gmbh")) {
       setGmbhSite(true)
       allSite = {
         GMBHSite: true,
@@ -221,6 +225,9 @@ export const Modified = (props: any) => {
       if (allSite.TabName == 'DOCUMENTS' || allSite.TabName == 'FOLDERS' || allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES' || allSite.TabName == 'TEAM-PORTFOLIO' || allSite.TabName == "WEB PAGES") {
         data?.map((item: any) => {
           item.siteType = allSite.TabName
+          if(allSite.TabName == 'DOCUMENTS'&& item?.Title==undefined){
+            item.Title=item?.FileLeafRef
+          }
           if (allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES' || allSite.TabName == 'TEAM-PORTFOLIO') {
             item.siteType = "Master Tasks";
             item.MasterType=allSite.TabName
@@ -876,12 +883,10 @@ export const Modified = (props: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
-          size: 55,
           id: 'Id',
         },
         {
-          accessorKey: "Title", placeholder: "Title", header: "",
+          accessorKey: "Title", placeholder: "Title", header: "", id: 'Title',
           cell: ({ row }) =>
             <div className="alignCenter">
               {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
@@ -973,8 +978,6 @@ export const Modified = (props: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
-          size: 55,
           id: 'Id',
         },
         {
@@ -1070,8 +1073,6 @@ export const Modified = (props: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
-          size: 5,
           id: 'Id',
         },
         {
@@ -1157,8 +1158,6 @@ export const Modified = (props: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
-          size: 5,
           id: 'Id',
         },
 
@@ -1238,8 +1237,7 @@ export const Modified = (props: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
-          size: 55,
+      
           id: 'Id',
         },
         {
@@ -1342,8 +1340,7 @@ export const Modified = (props: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
-          size: 55,
+      
           id: 'Id',
         },
         {
@@ -1442,8 +1439,6 @@ export const Modified = (props: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
-          size: 55,
           id: 'Id',
         },
         {
@@ -1837,6 +1832,7 @@ export const Modified = (props: any) => {
       <div className="p-0  d-flex justify-content-between align-items-center " style={{ verticalAlign: "top" }}>
         <h2 className="heading ">
           <span>Last Modified Views</span></h2>
+          {checkBoxVisble&&
         <div className="d-flex float-end">
           <div className="me-1" >
             <input className="form-check-input me-2"
@@ -1859,6 +1855,7 @@ export const Modified = (props: any) => {
               SERVICES </label>
           </div>
         </div>
+        }
       </div>
 
 
