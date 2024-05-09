@@ -64,7 +64,7 @@
     "react-autocomplete": "^1.8.1",
     "react-autosuggest": "^10.1.0",
     "react-beautiful-dnd": "^13.1.1",
-    "react-bootstrap": "^1.0.1",
+    "react-bootstrap": "^1.6.8",
     "react-bootstrap-icons": "^1.10.3",
     "react-checkbox-tree": "^1.8.0",
     "react-csv": "^2.2.2",

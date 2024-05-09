@@ -7,22 +7,15 @@ import GlobalCommanTable from '../../../globalComponents/GroupByReactTableCompon
 import { Panel, PanelType } from '@fluentui/react/lib/Panel';
 import { ContextualMenu, IContextualMenuItem, Icon } from '@fluentui/react';
 import ImagesC from "../../EditPopupFiles/ImageInformation";
-import { DefaultButton, PrimaryButton } from "@fluentui/react/lib/Button";
+import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
 import VersionHistoryPopup from "../../../globalComponents/VersionHistroy/VersionHistory";
 import "bootstrap/js/dist/tab";
-import moment from "moment";
-import Tooltip from "../../../globalComponents/Tooltip";
-import zIndex from "@material-ui/core/styles/zIndex";
-import CheckboxTree from "react-checkbox-tree";
-import "react-checkbox-tree/lib/react-checkbox-tree.css";
-import {
-  FaChevronDown,
-  FaChevronRight,
-  FaMinusSquare,
-  FaPlusSquare,
-  FaSquare,
-  FaCheckSquare,
-} from "react-icons/fa";
+import moment from 'moment';
+import Tooltip from '../../../globalComponents/Tooltip';
+import zIndex from '@material-ui/core/styles/zIndex';
+import CheckboxTree from 'react-checkbox-tree';
+import 'react-checkbox-tree/lib/react-checkbox-tree.css';
+import { FaChevronDown, FaChevronRight, FaMinusSquare, FaPlusSquare, FaSquare, FaCheckSquare } from 'react-icons/fa';
 import { Col, Container, Row } from "react-bootstrap";
 import { SPHttpClient } from "@microsoft/sp-http";
 let EmailNotification: any
@@ -61,20 +54,14 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const [selectedApproval, setSelectedApproval] = useState('');
     // const [searchedProjectKey, setSearchedProjectKey] = React.useState("");
 
-  const Categories: any = smartMetaDataItems.filter(
-    (items: any) => items.TaxType === "TimesheetCategories"
-  );
-  const uniqueCategories = Categories.filter(
-    (ele: any, i: any, item: any) =>
-      item.findIndex(
-        (elem: any) =>
-          elem.Title === ele.Title && elem.Parent?.Title === "Components"
-      ) === i
-  );
-  // const categoriesToInclude:any = ["Design", "Development", "Investigation", "QA", "Support","Verification", "Coordination", "Implementation", "Conception", "Preparation"];
-  // const uniqueCategories = Categories.filter((val: any) =>
-  //     categoriesToInclude.includes(val.Title) && val.Parent?.Title === "Components"
-  // );
+    const Categories: any = (smartMetaDataItems.filter((items: any) => items.TaxType === "TimesheetCategories"))
+    const uniqueCategories = Categories.filter(
+        (ele: any, i: any, item: any) => item.findIndex((elem: any) => (elem.Title === ele.Title) && elem.Parent?.Title === "Components") === i
+    );
+    // const categoriesToInclude:any = ["Design", "Development", "Investigation", "QA", "Support","Verification", "Coordination", "Implementation", "Conception", "Preparation"];
+    // const uniqueCategories = Categories.filter((val: any) =>
+    //     categoriesToInclude.includes(val.Title) && val.Parent?.Title === "Components"
+    // );
 
     console.log(Categories)
     console.log(uniqueCategories)
@@ -112,43 +99,43 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         }
     }, [memberToUpdate]);
 
-  const handleApprovalTypeChange = (e: any) => {
-    setSelectedApprovalType(e.target.value);
-  };
+    const handleApprovalTypeChange = (e: any) => {
+        setSelectedApprovalType(e.target.value);
+    };
 
-  // Function to handle company selection
-  const handleCompanyChange = (e: any) => {
-    setSelectedCompany(e.target.value);
-  };
+    // Function to handle company selection
+    const handleCompanyChange = (e: any) => {
+        setSelectedCompany(e.target.value);
+    };
 
-  // Function to handle roles selection
-  const handleRoleChange = (role: any) => {
-    setSelectedRoles((prevSelectedRoles: any) =>
-      prevSelectedRoles.includes(role)
-        ? prevSelectedRoles.filter((r: any) => r !== role)
-        : [...prevSelectedRoles, role]
-    );
-  };
+    // Function to handle roles selection
+    const handleRoleChange = (role: any) => {
+        setSelectedRoles((prevSelectedRoles: any) =>
+            prevSelectedRoles.includes(role)
+                ? prevSelectedRoles.filter((r: any) => r !== role)
+                : [...prevSelectedRoles, role]
+        );
+    };
 
-  console.log(context);
+    console.log(context)
 
-  useEffect(() => {
-    setData(TaskUsersListData);
-    setGroupData(TaskGroupsListData);
-  }, [TaskUsersListData, TaskGroupsListData]);
+    useEffect(() => {
+        setData(TaskUsersListData);
+        setGroupData(TaskGroupsListData);
+    }, [TaskUsersListData, TaskGroupsListData]);
 
-  const handleUpdateMemberClick = (item: any) => {
-    setMemberToUpdate(item);
-    setOpenUpdateMemberPopup(true);
-    if (item.AssingedToUser) {
-      setIsUserNameValid(true);
-    }
-  };
+    const handleUpdateMemberClick = (item: any) => {
+        setMemberToUpdate(item);
+        setOpenUpdateMemberPopup(true);
+        if (item.AssingedToUser) {
+            setIsUserNameValid(true)
+        }
+    };
 
-  const handleUpdateClick = (item: any) => {
-    setItemToUpdate(item);
-    setOpenUpdateGroupPopup(true);
-  };
+    const handleUpdateClick = (item: any) => {
+        setItemToUpdate(item);
+        setOpenUpdateGroupPopup(true);
+    };
 
     const addTeamMember = async () => {
         let userId:any =[]
@@ -196,49 +183,40 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
        
     }
 
-  const addNewGroup = async () => {
-    let web = new Web(baseUrl);
-    await web.lists
-      .getById(TaskUserListId)
-      .items.add({
-        Title: title,
-        Suffix: suffix,
-        SortOrder: sortOrder,
-        ItemType: "Group",
-      })
-      .then((res: any) => {
-        console.log(res);
-        const newItem = res.data;
-        setGroupData((prevData) => [...prevData, newItem]);
-        setTitle("");
-        setSuffix("");
-        setSortOrder("");
-        fetchAPIData();
-        setOpenGroupPopup(false);
-      });
-  };
-
-  const deleteTeamMember = async (items: any) => {
-    let web = new Web(baseUrl);
-    var deleteAlert = confirm("Are you sure you want to delete this?");
-    if (deleteAlert) {
-      await web.lists
-        .getById(TaskUserListId)
-        .items.getById(items?.Id)
-        .recycle()
-        .then((i) => {
-          console.log(i);
-          setData((prevData: any) =>
-            prevData.filter((item: any) => item.Id !== items?.Id)
-          );
-          setGroupData((prevData) =>
-            prevData.filter((item) => item.Id !== items?.Id)
-          );
-          fetchAPIData();
-          setOpenUpdateMemberPopup(false);
-        });
+    const addNewGroup = async () => {
+        let web = new Web(baseUrl);
+        await web.lists.getById(TaskUserListId).items.add({
+            Title: title,
+            Suffix: suffix,
+            SortOrder: sortOrder,
+            ItemType: "Group",
+            IsActive: true
+        }).then((res: any) => {
+            console.log(res);
+            const newItem = res.data;
+            setGroupData(prevData => [...prevData, newItem]);
+            setTitle("");
+            setSuffix("");
+            setSortOrder("");
+            fetchAPIData()
+            setOpenGroupPopup(false);
+        })
     }
-  };
+
+    const deleteTeamMember = async (items: any) => {
+        let web = new Web(baseUrl);
+        var deleteAlert = confirm("Are you sure you want to delete this?")
+        if (deleteAlert) {
+            await web.lists.getById(TaskUserListId).items.getById(items?.Id).recycle()
+                .then(i => {
+                    console.log(i);
+                    setData((prevData: any) => prevData.filter((item: any) => item.Id !== items?.Id));
+                    setGroupData(prevData => prevData.filter(item => item.Id !== items?.Id));
+                    fetchAPIData()
+                    setOpenUpdateMemberPopup(false)
+                });
+        }
+    }
 
     const updateUser = async () => {
         let sortOrderValue = sortOrder !== undefined ? (sortOrder == "" ? sortOrder = null : sortOrder) : memberToUpdate.SortOrder
@@ -272,20 +250,16 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 Email: Email ? Email:memberToUpdate?.Email
             };
 
-      await web.lists
-        .getById(TaskUserListId)
-        .items.getById(memberToUpdate.Id)
-        .update(updatedData)
-        .then((res: any) => {
-          console.log("Updated Data:", updatedData);
+            await web.lists.getById(TaskUserListId).items.getById(memberToUpdate.Id).update(updatedData).then((res: any) => {
+                console.log('Updated Data:', updatedData);
 
-          // Update the data and groupData states
-          const updatedMemberData = data.map((item: any) => {
-            if (item.Id === memberToUpdate.Id) {
-              return { ...item, ...updatedData };
-            }
-            return item;
-          });
+                // Update the data and groupData states
+                const updatedMemberData = data.map((item: any) => {
+                    if (item.Id === memberToUpdate.Id) {
+                        return { ...item, ...updatedData };
+                    }
+                    return item;
+                });
 
                 setData(updatedMemberData);
                 setSortOrder("")
@@ -313,42 +287,35 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         }
     };
 
-  const updateGroup = async () => {
-    let web = new Web(baseUrl);
-    if (itemToUpdate) {
-      await web.lists
-        .getById(TaskUserListId)
-        .items.getById(itemToUpdate.Id)
-        .update({
-          Title: title ? title : itemToUpdate.Title,
-          Suffix: suffix ? suffix : itemToUpdate.Suffix,
-          SortOrder: sortOrder ? sortOrder : itemToUpdate.SortOrder,
-        })
-        .then((res: any) => {
-          console.log(res);
-          setGroupData((prevData) =>
-            prevData.map((item) => {
-              if (item.Id === itemToUpdate.Id) {
-                return {
-                  ...item,
-                  Title: title ? title : item.Title,
-                  Suffix: suffix ? suffix : item.Suffix,
-                  SortOrder: sortOrder ? sortOrder : item.SortOrder,
-                };
-              }
-              return item;
-            })
-          );
-          fetchAPIData();
-          setOpenUpdateGroupPopup(false);
-        })
-        .catch((error) => {
-          console.error("Error updating item: ", error);
-        });
+    const updateGroup = async () => {
+        let web = new Web(baseUrl);
+        if (itemToUpdate) {
+            await web.lists.getById(TaskUserListId).items.getById(itemToUpdate.Id).update({
+                Title: title ? title : itemToUpdate.Title,
+                Suffix: suffix ? suffix : itemToUpdate.Suffix,
+                SortOrder: sortOrder ? sortOrder : itemToUpdate.SortOrder,
+            }).then((res: any) => {
+                console.log(res);
+                setGroupData(prevData => prevData.map(item => {
+                    if (item.Id === itemToUpdate.Id) {
+                        return {
+                            ...item,
+                            Title: title ? title : item.Title,
+                            Suffix: suffix ? suffix : item.Suffix,
+                            SortOrder: sortOrder ? sortOrder : item.SortOrder,
+                        };
+                    }
+                    return item;
+                }));
+                fetchAPIData()
+                setOpenUpdateGroupPopup(false);
+            }).catch(error => {
+                console.error("Error updating item: ", error);
+            });
+        }
     }
-  };
 
-  // Table for User code
+    // Table for User code
 
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [{
@@ -442,68 +409,56 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         [data]
     )
 
-  // Table for Group code
+    // Table for Group code
 
-  const columns2 = React.useMemo<ColumnDef<any, unknown>[]>(
-    () => [
-      {
-        accessorKey: "Title",
-        id: "Title",
-        header: "",
-        placeholder: "Title",
-        // sortDescFirst: false
-      },
-      {
-        accessorKey: "SortOrder",
-        header: "",
-        placeholder: "SortOrder",
-        id: "SortOrder",
-        isColumnDefultSortingDesc: true,
-        filterFn: (row: any, columnId: any, filterValue: any) => {
-          return row?.original?.SortOrder == filterValue;
-        },
-      },
-      {
-        cell: (info) => (
-          <div className="pull-right alignCenter">
-            <span
-              onClick={() => handleUpdateClick(info.row.original)}
-              className="svg__iconbox svg__icon--edit"
-              title="Edit"
-            ></span>
-            <span
-              onClick={() => deleteTeamMember(info.row.original)}
-              className="svg__iconbox svg__icon--trash"
-              title="Trash"
-            ></span>
-          </div>
-        ),
-        id: "editIcon",
-        canSort: false,
-        placeholder: "",
-        size: 30,
-      },
-    ],
-    [groupData]
-  );
+    const columns2 = React.useMemo<ColumnDef<any, unknown>[]>(
+        () => [
+            {
+                accessorKey: 'Title',
+                id: "Title",
+                header: "",
+                placeholder: "Title",
+                // sortDescFirst: false
+            },
+            {
+                accessorKey: "SortOrder",
+                header: "",
+                placeholder: "SortOrder",
+                id: "SortOrder",
+                isColumnDefultSortingDesc: true,
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    return row?.original?.SortOrder == filterValue
+                },
+            },
+            {
+                cell: (info) => (<div className='pull-right alignCenter'>
+                    <span onClick={() => handleUpdateClick(info.row.original)} className='svg__iconbox svg__icon--edit' title='Edit'></span>
+                    <span onClick={() => deleteTeamMember(info.row.original)} className='svg__iconbox svg__icon--trash' title='Trash'></span>
+                </div>),
+                id: "editIcon",
+                canSort: false,
+                placeholder: "",
+                size: 30,
+            }
+        ],
+        [groupData]
+    )
 
-  const userIdentifier = memberToUpdate?.AssingedToUser?.Name;
-  const email = userIdentifier ? userIdentifier.split("|").pop() : "";
+    const userIdentifier = memberToUpdate?.AssingedToUser?.Name;
+    const email = userIdentifier ? userIdentifier.split('|').pop() : '';
 
-  const userIdentifiers =
-    memberToUpdate?.Approver?.map((approver: any) => approver.Name) || [];
-  const emails = userIdentifiers.map((identifier: any) =>
-    identifier.split("|").pop()
-  );
+    const userIdentifiers = memberToUpdate?.Approver?.map((approver: any) => approver.Name) || [];
+    const emails = userIdentifiers.map((identifier: any) => identifier.split('|').pop());
 
-  const callBackData = React.useCallback((elem: any, ShowingData: any) => {},
-  []);
+    const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
-  const imageTabCallBack = React.useCallback((data: any) => {
-    setEditData(data);
-    console.log(EditData);
-    console.log(data);
-  }, []);
+    }, []);
+
+    const imageTabCallBack = React.useCallback((data: any) => {
+        setEditData(data);
+        console.log(EditData);
+        console.log(data);
+    }, []);
 
     const getUserInfo = async (userMail: string) => {
         const userEndPoint: any = `${context?.pageContext?.web?.absoluteUrl}/_api/Web/EnsureUser`;
@@ -577,178 +532,158 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         }
     };
 
-  // Autosuggestion code
+    // Autosuggestion code
 
-  const autoSuggestionsForTitle = (e: any) => {
-    let SearchedKeyWord: any = e.target.value;
-    let TempArray: any = [];
-    if (SearchedKeyWord.length > 0) {
-      if (data != undefined && data?.length > 0) {
-        data.map((AllDataItem: any) => {
-          if (
-            AllDataItem?.Title?.toLowerCase()?.includes(
-              SearchedKeyWord.toLowerCase()
-            )
-          ) {
-            TempArray.push(AllDataItem);
-          }
-        });
-      }
-      if (TempArray != undefined && TempArray.length > 0) {
-        setAutoSuggestData(TempArray);
-      }
-    } else {
-      setAutoSuggestData([]);
-    }
-  };
-
-  // Approval type column - Approve Selected code starts here
-
-  const buildHierarchy = (categories: any) => {
-    const rootCategories = categories.filter((c: any) => c.ParentID === 0);
-    const findChildren = (parent: any) => {
-      const children = categories.filter((c: any) => c.ParentID === parent.ID);
-      if (children.length > 0) {
-        parent.children = children.map((child: any) => findChildren(child));
-      }
-      return parent;
-    };
-    return rootCategories.map((rootCategory: any) =>
-      findChildren(rootCategory)
-    );
-  };
-
-  useEffect(() => {
-    buildHierarchy(TaxTypeCategories);
-  }, [TaxTypeCategories]);
-
-  // Headers for Panel customisation code
-
-  const onRenderCustomHeaderUpdateUser = () => {
-    return (
-      <>
-        <div className="siteColor subheading">
-          {" "}
-          Task-User Management - {memberToUpdate?.Title}{" "}
-        </div>
-        <Tooltip ComponentId="1767" />
-      </>
-    );
-  };
-
-  const onRenderCustomHeaderUpdateGroup = () => {
-    return (
-      <>
-        <div className="siteColor subheading"> Update Group </div>
-        <Tooltip ComponentId="1768" />
-      </>
-    );
-  };
-
-  const onRenderCustomHeaderAddGroup = () => {
-    return (
-      <>
-        <div className="siteColor subheading"> Add Group </div>
-        <Tooltip ComponentId="1757" />
-      </>
-    );
-  };
-
-  const onRenderCustomHeaderAddUser = () => {
-    return (
-      <>
-        <div className="siteColor subheading"> Add User </div>
-        <Tooltip ComponentId="1757" />
-      </>
-    );
-  };
-
-  const cancelAdd = () => {
-    setAddTitle("");
-    setAutoSuggestData(null);
-    setOpenPopup(false);
-  };
-
-  const cancelUpdate = () => {
-    setSelectedApprovalType(memberToUpdate.IsApprovalMail);
-    setSelectedCompany(memberToUpdate.Company);
-    setSelectedRoles(
-      Array.isArray(memberToUpdate.Role) ? memberToUpdate.Role : []
-    );
-    setIsActive(memberToUpdate.IsActive);
-    setIsTaskNotifications(memberToUpdate.IsTaskNotifications);
-    setUserCategory(memberToUpdate.TimeCategory);
-    setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson));
-    const Approvers: any = memberToUpdate?.Approver?.map(
-      (item: any) => item.Id
-    );
-    setApprover([Approvers]);
-    setUserTeam(memberToUpdate.Team);
-    setOpenUpdateMemberPopup(false);
-  };
-
-  const findCategoryById = (categories: any, id: any): any => {
-    for (const category of categories) {
-      if (category.Id.toString() === id) {
-        return category;
-      }
-      if (category.children) {
-        const result = findCategoryById(category.children, id);
-        if (result) {
-          return result;
+    const autoSuggestionsForTitle = (e: any) => {
+        let SearchedKeyWord: any = e.target.value;
+        let TempArray: any = [];
+        if (SearchedKeyWord.length > 0) {
+            if (data != undefined && data?.length > 0) {
+                data.map((AllDataItem: any) => {
+                    if (
+                        AllDataItem?.Title?.toLowerCase()?.includes(
+                            SearchedKeyWord.toLowerCase()
+                        )
+                    ) {
+                        TempArray.push(AllDataItem);
+                    }
+                });
+            }
+            if (TempArray != undefined && TempArray.length > 0) {
+                setAutoSuggestData(TempArray);
+            }
+        } else {
+            setAutoSuggestData([]);
         }
-      }
+    };
+
+    // Approval type column - Approve Selected code starts here
+
+    const buildHierarchy = (categories: any) => {
+        const rootCategories = categories.filter((c: any) => c.ParentID === 0);
+        const findChildren = (parent: any) => {
+            const children = categories.filter((c: any) => c.ParentID === parent.ID);
+            if (children.length > 0) {
+                parent.children = children.map((child: any) => findChildren(child));
+            }
+            return parent;
+        };
+        return rootCategories.map((rootCategory: any) => findChildren(rootCategory));
+    };
+
+    useEffect(() => {
+        buildHierarchy(TaxTypeCategories);
+    }, [TaxTypeCategories])
+
+    // Headers for Panel customisation code
+
+    const onRenderCustomHeaderUpdateUser = () => {
+        return (
+            <>
+                <div className='siteColor subheading'> Task-User Management - {memberToUpdate?.Title} </div>
+                <Tooltip ComponentId='1767' />
+            </>
+        );
+    };
+
+    const onRenderCustomHeaderUpdateGroup = () => {
+        return (
+            <>
+                <div className='siteColor subheading'> Update Group </div>
+                <Tooltip ComponentId='1768' />
+            </>
+        );
+    };
+
+    const onRenderCustomHeaderAddGroup = () => {
+        return (
+            <>
+                <div className='siteColor subheading'> Add Group </div>
+                <Tooltip ComponentId='1757' />
+            </>
+        );
+    };
+
+    const onRenderCustomHeaderAddUser = () => {
+        return (
+            <>
+                <div className='siteColor subheading'> Add User </div>
+                <Tooltip ComponentId='1757' />
+            </>
+        );
+    };
+
+    const cancelAdd = () => {
+        setAddTitle("")
+        setAutoSuggestData(null)
+        setOpenPopup(false)
     }
-    return null;
-  };
 
-  const handleCheck = (checked: any) => {
-    setChecked(checked);
-    const selected = checked
-      .map((id: any) => {
-        const category = findCategoryById(MyCategories, id);
-        return category ? { Title: category.Title, Id: category.Id } : null;
-      })
-      .filter((cat: any) => cat !== null);
-    setSelectedCategories(selected);
-  };
+    const cancelUpdate = () => {
+        setSelectedApprovalType(memberToUpdate.IsApprovalMail);
+        setSelectedCompany(memberToUpdate.Company);
+        setSelectedRoles(Array.isArray(memberToUpdate.Role) ? memberToUpdate.Role : []);
+        setIsActive(memberToUpdate.IsActive);
+        setIsTaskNotifications(memberToUpdate.IsTaskNotifications);
+        setUserCategory(memberToUpdate.TimeCategory)
+        setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
+        const Approvers: any = memberToUpdate?.Approver?.map((item: any) => item.Id)
+        setApprover([Approvers])
+        setUserTeam(memberToUpdate.Team)
+        setOpenUpdateMemberPopup(false)
+    }
 
-  const transformCategoriesToNodes = (categories: any) => {
-    return categories.map((category: any) => {
-      // Check if the category has children
-      const hasChildren = category.children && category.children.length > 0;
-      const node: any = {
-        value: category.Id.toString(),
-        label: category.Title,
-      };
-      // Conditionally add the 'children' property if the category has children
-      if (hasChildren) {
-        node.children = transformCategoriesToNodes(category.children);
-      }
-      return node;
-    });
-  };
+    const findCategoryById = (categories: any, id: any): any => {
+        for (const category of categories) {
+            if (category.Id.toString() === id) {
+                return category;
+            }
+            if (category.children) {
+                const result = findCategoryById(category.children, id);
+                if (result) {
+                    return result;
+                }
+            }
+        }
+        return null;
+    };
 
-  const icons: any = {
-    check: <FaCheckSquare />,
-    uncheck: <span className="alignIcon svg__iconbox svg__icon--sqCheckbox" />,
-    halfCheck: (
-      <span className="alignIcon svg__iconbox svg__icon--dotCheckbox" />
-    ),
-    expandClose: (
-      <span className="alignIcon svg__iconbox svg__icon--arrowRight" />
-    ),
-    expandOpen: (
-      <span className="alignIcon svg__iconbox svg__icon--arrowDown" />
-    ),
-    parentClose: (
-      <span className="alignIcon svg__iconbox svg__icon--arrowRight" />
-    ),
-    parentOpen: (
-      <span className="alignIcon svg__iconbox svg__icon--arrowDown" />
-    ),
-    leaf: null,
-  };
+    const handleCheck = (checked: any) => {
+        setChecked(checked);
+        const selected = checked.map((id: any) => {
+            const category = findCategoryById(MyCategories, id);
+            return category ? { Title: category.Title, Id: category.Id } : null;
+        }).filter((cat: any) => cat !== null);
+        setSelectedCategories(selected);
+    };
+
+    const transformCategoriesToNodes = (categories: any) => {
+        return categories.map((category: any) => {
+            // Check if the category has children
+            const hasChildren = category.children && category.children.length > 0;
+            const node: any = {
+                value: category.Id.toString(),
+                label: category.Title,
+            };
+            // Conditionally add the 'children' property if the category has children
+            if (hasChildren) {
+                node.children = transformCategoriesToNodes(category.children);
+            }
+            return node;
+        });
+    };
+
+    const icons: any = {
+        check: <FaCheckSquare />,
+        uncheck: <span className="alignIcon svg__iconbox svg__icon--sqCheckbox" />,
+        halfCheck: <span className="alignIcon svg__iconbox svg__icon--dotCheckbox" />,
+        expandClose: <span className="alignIcon svg__iconbox svg__icon--arrowRight" />,
+        expandOpen: <span className='alignIcon svg__iconbox svg__icon--arrowDown' />,
+        parentClose: <span className='alignIcon svg__iconbox svg__icon--arrowRight' />,
+        parentOpen: <span className='alignIcon svg__iconbox svg__icon--arrowDown' />,
+        leaf: null
+    };
+
 
 
     const getPeoplePickerItems=(items:any)=>{
@@ -756,34 +691,26 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     }
     // JSX Code starts here
 
-  return (
-    <>
-      <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
-        <button
-          className="nav-link active"
-          id="TEAM-MEMBERS"
-          data-bs-toggle="tab"
-          data-bs-target="#TEAMMEMBERS"
-          type="button"
-          role="tab"
-          aria-controls="TEAMMEMBERS"
-          aria-selected="true"
-        >
-          TEAM MEMBERS
-        </button>
-        <button
-          className="nav-link"
-          id="TEAM-GROUPS"
-          data-bs-toggle="tab"
-          data-bs-target="#TEAMGROUPS"
-          type="button"
-          role="tab"
-          aria-controls="TEAMGROUPS"
-          aria-selected="true"
-        >
-          TEAM GROUPS
-        </button>
-      </ul>
+    return (
+        <>
+            <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
+                <button className="nav-link active" id="TEAM-MEMBERS" data-bs-toggle="tab" data-bs-target="#TEAMMEMBERS"
+                    type="button"
+                    role="tab"
+                    aria-controls="TEAMMEMBERS"
+                    aria-selected="true"
+                >
+                    TEAM MEMBERS
+                </button>
+                <button className="nav-link" id="TEAM-GROUPS" data-bs-toggle="tab" data-bs-target="#TEAMGROUPS"
+                    type="button"
+                    role="tab"
+                    aria-controls="TEAMGROUPS"
+                    aria-selected="true"
+                >
+                    TEAM GROUPS
+                </button>
+            </ul >
 
             <div className="border border-top-0 clearfix p-1 tab-content" id="myTabContent">
                 {/* <div className="tab-pane fade show active" id="team-members" role="tabpanel" aria-labelledby="teammemberstab"> */}
@@ -931,77 +858,50 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         </li>
                     </ul>
 
-          <div
-            className="tab-content p-3 task-user-mangement"
-            id="myTabContent"
-          >
-            {/* Basic Information Tab */}
-            <div
-              className="tab-pane fade show active"
-              id="basicInfo"
-              role="tabpanel"
-              aria-labelledby="basic-info-tab"
-            >
-              <Row className="mb-2">
-                <Col md={2} sm={2}>
-                  <div className="input-group">
-                    <label className="form-label full-width fw-semibold">
-                      Title:{" "}
-                    </label>
-                    <input
-                      className="form-control"
-                      type="text"
-                      defaultValue={memberToUpdate?.Title}
-                      onChange={(e: any) => setTitle(e.target.value)}
-                    />
-                  </div>
-                </Col>
+                    <div className="tab-content p-3 task-user-mangement" id="myTabContent">
+                        {/* Basic Information Tab */}
+                        <div
+                            className="tab-pane fade show active"
+                            id="basicInfo"
+                            role="tabpanel"
+                            aria-labelledby="basic-info-tab"
+                        >
+                            <Row className='mb-2'>
+                                <Col md={6} className='ps-3'>
+                                    <Row>
+                                        <Col md={5} sm={5} className='px-1 ps-0'>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Title: </label>
+                                                <input className='form-control' type="text" defaultValue={memberToUpdate?.Title} onChange={(e: any) => setTitle(e.target.value)} />
+                                            </div>
+                                        </Col>
 
-                <Col md={1} sm={1}>
-                  <div className="input-group">
-                    <label className="form-label full-width fw-semibold">
-                      Suffix:{" "}
-                    </label>
-                    <input
-                      className="form-control"
-                      type="text"
-                      defaultValue={memberToUpdate?.Suffix}
-                      onChange={(e: any) => setSuffix(e.target.value)}
-                    />
-                  </div>
-                </Col>
+                                        <Col md={2} sm={2}>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Suffix: </label>
+                                                <input className='form-control' type="text" defaultValue={memberToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
+                                            </div>
+                                        </Col>
 
-                <Col md={3} className="px-1">
-                  <div className="input-group">
-                    <label className="form-label full-width fw-semibold">
-                      Group:{" "}
-                    </label>
-                    <select
-                      className="full-width"
-                      id="sites"
-                      defaultValue={memberToUpdate?.UserGroup?.Id}
-                      onChange={(e: any) => setUserGroup(e.target.value)}
-                    >
-                      <option>Select</option>
-                      {TaskGroupsListData.map((elem: any) => (
-                        <option value={elem?.Id}>{elem?.Title}</option>
-                      ))}
-                    </select>
-                  </div>
-                </Col>
-                <Col md={1} sm={1}>
-                  <div className="input-group">
-                    <label className="form-label full-width fw-semibold">
-                      Sort Order:{" "}
-                    </label>
-                    <input
-                      className="form-control"
-                      type="text"
-                      defaultValue={memberToUpdate?.SortOrder}
-                      onChange={(e: any) => setSortOrder(e.target.value)}
-                    />
-                  </div>
-                </Col>
+                                        <Col md={5} className='px-1'>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Group: </label>
+                                                <select className='full-width' id="sites" defaultValue={memberToUpdate?.UserGroup?.Id} onChange={(e: any) => setUserGroup(e.target.value)}>
+                                                    <option>Select</option>
+                                                    {TaskGroupsListData.map((elem: any) => <option value={elem?.Id}>{elem?.Title}</option>)}
+                                                </select>
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                </Col>
+                                <Col md={6} >
+                                    <Row>
+                                        <Col md={2} sm={2}>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Sort Order: </label>
+                                                <input className='form-control' type="text" defaultValue={memberToUpdate?.SortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
+                                            </div>
+                                        </Col>
 
                                         <Col md={5} sm={5} className=' px-1'>
                                             <div className='input-group'>

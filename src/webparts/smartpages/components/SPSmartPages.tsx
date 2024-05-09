@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Web } from 'sp-pnp-js';
-import SmartMetadataEditPopup from '../../smartmetadataportfolio/components/SmartMetadataEditPopup';
+import SmartMetadataEditPopup from '../../hhhhSmartMetadataPortfolio/components/SmartMetadataEditPopup';
 import GrueneWeltweitForm from "./GrueneWeltweitForm"
 import WahlWeltweit from './WahlWeltweit';
 import Briefwahl2021 from './Briefwahl2021';

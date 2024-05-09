@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Web } from 'sp-pnp-js';
-import SmartMetadataEditPopup from '../../smartmetadataportfolio/components/SmartMetadataEditPopup';
+import SmartMetadataEditPopup from '../../hhhhSmartMetadataPortfolio/components/SmartMetadataEditPopup';
 //import GrueneWeltweitForm from '../../smartpages/components/GrueneWeltweitForm';
 let AllMetaDataItems: any = [];
 export default function GrueneSmartPages(props: any) {

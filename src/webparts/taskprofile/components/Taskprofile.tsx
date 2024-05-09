@@ -271,7 +271,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .get()
     AllListId = {
       MasterTaskListID: this.props.MasterTaskListID,
-      TaskUserListID: this.props.TaskUserListID,
+      TaskUsertListID: this.props.TaskUserListID,
       SmartMetadataListID: this.props.SmartMetadataListID,
       //SiteTaskListID:this.props.SiteTaskListID,
       TaskTimeSheetListID: this.props.TaskTimeSheetListID,
@@ -1987,8 +1987,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                   }
                   {this.currentUser != undefined && this.state.sendMail && this.state.emailStatus != "" && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props.Context} emailStatus={this.state.emailStatus} currentUser={this.currentUser} items={this.state.Result} />}
                 </span>
-
-                {(this?.state?.Result["siteUrl"]?.includes('SP')) ? (
+                {!(this?.state?.Result["siteUrl"]?.includes('GrueneWeltweit')) ? (
                   <span className="text-end fs-6">
                     <a className='oldtitle' target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a>
                   </span>
@@ -2348,13 +2347,12 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Project</dt>
-                        <dd className='bg-Ff full-width '>
-                          
-                            {ProjectData?.Title != undefined ? <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}>
-                              
-                              <ReactPopperTooltipSingleLevel CMSToolId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></a> : null}
-                            <span className="text-end svg__icon--editBox svg__iconbox w-25" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
-                          
+                        <dd className='bg-Ff full-width columnFixedTitle'>
+                          <div>
+                            {ProjectData?.Title != undefined ? <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
+                              <ReactPopperTooltipSingleLevel CMSToolId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
+                            <span className="ml-auto pull-right svg__icon--editBox svg__iconbox w-25" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
+                          </div>
                         </dd>
                       </dl>
                       {isShowSiteCompostion && <dl className="Sitecomposition">
