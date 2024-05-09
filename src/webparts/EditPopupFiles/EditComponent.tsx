@@ -2223,29 +2223,34 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
     var TaxonomyItems: any = [];
     let web=new Web(RequireData?.siteUrl)
     try{
-      AllTaskusers=await web.lists.getById(RequireData?.SmartMetadataListID).items.select(`Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq ${SmartTaxonomy}`).getAll()
-    }  
+      AllTaskusers=await web.lists.getById(RequireData?.SmartMetadataListID).items.select(
+        "Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle"
+      )
+      .top(4999)
+      .expand("Author,Editor,Parent")
+      .get();
+     }  
       catch (error) {
           console.error(error)
         }
         AllTaskusers?.map((index: any, item: any)=> {
           if (
-            item.Title.toLowerCase() == "pse" &&
+            item?.Title?.toLowerCase() == "pse" &&
             item.TaxType == "Client Category"
           ) {
             item.newTitle = "EPS";
           } else if (
-            item.Title.toLowerCase() == "e+i" &&
+            item?.Title?.toLowerCase() == "e+i" &&
             item.TaxType == "Client Category"
           ) {
             item.newTitle = "EI";
           } else if (
-            item.Title.toLowerCase() == "education" &&
+            item?.Title?.toLowerCase() == "education" &&
             item.TaxType == "Client Category"
           ) {
             item.newTitle = "Education";
           } else if (
-            item.Title.toLowerCase() == "migration" &&
+            item?.Title?.toLowerCase() == "migration" &&
             item.TaxType == "Client Category"
           ) {
             item.newTitle = "Migration";
@@ -2406,25 +2411,30 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
 
     var TaxonomyItems: any = [];
     try{
-      AllTaskusers=await web.lists.getById(RequireData?.SmartMetadataListID).items.select(`Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq${SmartTaxonomy}`).getAll()
-    }
+      AllTaskusers=await web.lists.getById(RequireData?.SmartMetadataListID).items.select(
+        "Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle"
+      )
+      .top(4999)
+      .expand("Author,Editor,Parent")
+      .get();
+      }
     catch (error) {
       console.error(error)
     }
            
         AllTaskusers?.map(( item: any,index: any)=>{
           if (
-            item.Title.toLowerCase() == "pse" &&
+            item?.Title?.toLowerCase() == "pse" &&
             item.TaxType == "Client Category"
           ) {
             item.newTitle = "EPS";
           } else if (
-            item.Title.toLowerCase() == "e+i" &&
+            item?.Title?.toLowerCase() == "e+i" &&
             item.TaxType == "Client Category"
           ) {
             item.newTitle = "EI";
           } else if (
-            item.Title.toLowerCase() == "education" &&
+            item?.Title?.toLowerCase() == "education" &&
             item.TaxType == "Client Category"
           ) {
             item.newTitle = "Education";
@@ -3669,10 +3679,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                         <div className="col-sm-12">
                           <div className="col-sm-12 padding-0 input-group">
                             <label className="full_width">Categories</label>
-                            {(CategoriesData?.length == 0 ||
-                              CategoriesData[0] == undefined ||
-                              CategoriesData?.length > 1) && (
-                                <>
                                   <input
                                     type="text"
                                     className="ui-autocomplete-input form-control"
@@ -3689,9 +3695,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                                       className="svg__iconbox svg__icon--editBox"
                                     ></span>
                                   </span>
-                                </>
-                              )}
-                            {CategoriesData &&
+                                   {CategoriesData &&
                               CategoriesData?.length == 1 &&
                               CategoriesData != undefined ? (
                               <div className="full-width">
