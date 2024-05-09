@@ -296,7 +296,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 let UpdateJSONData: any = {
                     Title: CreateTaskInfo.Title,
                     DueDate: CreateTaskInfo.DueDate ? Moment(CreateTaskInfo.DueDate).format("MM-DD-YYYY") : null,
-                    // TeamMembersId: CreateTaskInfo?.TeamMembersId,
+                    TeamMembersId: CreateTaskInfo?.TeamMembersId,
                     ResponsibleTeamId: CreateTaskInfo?.ResponsibleTeamId,
                     FeedBack: JSON.stringify(CreateTaskInfo?.FeedBackJSON),
                     ComponentLink: {

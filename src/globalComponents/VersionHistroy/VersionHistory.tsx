@@ -25,6 +25,9 @@ export default function VersionHistory(props: any) {
         if (window?.location?.search?.split("&Site=")[1]?.indexOf("&OR") > -1) {
             sitetype = window?.location?.search?.split("&Site=")[1]?.split("&OR")[0];
         } 
+        else {
+            sitetype = props?.listName
+        }
     }
     catch (e) {
         console.log(e);
@@ -157,6 +160,9 @@ export default function VersionHistory(props: any) {
                                     if(childitem?.Editor?.LookupId === user?.AssingedToUserId){
                                         childitem.ItemImage = user?.Item_x0020_Cover?.Url;
                                         childitem.UserId = user?.AssingedToUserId;
+                                    }
+                                    else {
+                                        childitem.UserId = childitem?.Editor?.LookupId;
                                     }
                                 })
                             })
@@ -825,7 +831,7 @@ export default function VersionHistory(props: any) {
             }
             return (
             <div>
-                {key === 'Project' ? <a href={`${siteTypeUrl}/SitePages/PX-Profile.aspx?ProjectId=${obj.LookupId}`} target='_blank' data-interception="off">{obj.LookupValue}</a>:
+                {key === 'Project' ? <a href={`${siteTypeUrl}/SitePages/Project-Management.aspx?ProjectId=${obj.LookupId}`} target='_blank' data-interception="off">{obj.LookupValue}</a>:
                 key === 'Portfolio' ? <a href={`${siteTypeUrl}/SitePages/Portfolio-Profile.aspx?taskId=${obj.LookupId}`} target='_blank' data-interception="off">{obj.LookupValue}</a> :
                 obj?.LookupValue}
             </div>)
@@ -841,6 +847,7 @@ export default function VersionHistory(props: any) {
             <Panel
                 onRenderHeader={onRenderCustomHeader}
                 isOpen={show}
+                className='versionHistoryPopup'
                 onDismiss={handleClose}
                 isBlocking={false}
                 type={PanelType.custom}
