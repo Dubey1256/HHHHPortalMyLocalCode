@@ -1032,12 +1032,7 @@ const TopNavigation = (dynamicData: any) => {
                   onClick={() => deleteDataFunction(popupData[0], 'single')}
                 ></span>
                     <span className="text-left" onClick={()=>setVersionHistoryPopup(false)}>
-              {popupData[0]?.Id &&  <VersionHistory
-                                        taskId={popupData[0]?.Id}
-                                        listId={ListId}
-                                        siteUrls={dynamicData.dynamicData.siteUrl}
-                                      RequiredListIds={AllListId}
-                                    />}
+                  {popupData[0]?.Id && <VersionHistory taskId={popupData[0]?.Id} listId={ListId} listName = "TopNavigation" siteUrls={dynamicData.dynamicData.siteUrl} RequiredListIds={AllListId} />}
               </span>
               </div>
          
