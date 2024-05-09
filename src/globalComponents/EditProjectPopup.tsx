@@ -1030,14 +1030,6 @@ function EditProjectPopup(item: any) {
       //  NewArray = array2
     }
 
-    if (NewArray != undefined && NewArray.length > 0) {
-      CheckCategory = [];
-      NewArray.map((NeitemA: any) => {
-        CategoriesData.push(NeitemA);
-      });
-    } else {
-      CheckCategory = [];
-    }
     var CategoryID: any = [];
     var categoriesItem = "";
     CategoriesData?.map((category: any) => {
