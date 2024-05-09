@@ -221,7 +221,10 @@ const CreateAllStructureComponent = (props: any) => {
           );
         }
 
-        let level = PortfolioStructureId[0] === undefined ? 1 : PortfolioStructureId[0]?.PortfolioLevel + 1;
+        let level =
+          PortfolioStructureId[0] === undefined
+            ? 1
+            : PortfolioStructureId[0]?.PortfolioLevel + 1;
         let PortfolioStr = "C" + level;
         const componentItem = {
           Item_x0020_Type: "Component",
@@ -387,7 +390,7 @@ const CreateAllStructureComponent = (props: any) => {
             let fealevel: any = "";
             const mydaya =
               createdSubcomponent == undefined ||
-              createdSubcomponent.length == 0
+                createdSubcomponent.length == 0
                 ? createdComponent
                 : createdSubcomponent;
             const PortfolioStructureIdFea = await getPortfolioStructureId(
@@ -545,7 +548,7 @@ const CreateAllStructureComponent = (props: any) => {
           Item_x0020_Type: "Component",
         });
       }
-       hierarchyData?.forEach((val: any) => {
+      hierarchyData?.forEach((val: any) => {
         if (props.SelectedItem != undefined) {
           val.SelectedItem = props.SelectedItem.Id;
         }
@@ -556,15 +559,15 @@ const CreateAllStructureComponent = (props: any) => {
             // b?.features.forEach((fea: any) => {
             // })
           });
-        }
-        else {
+        } else {
           if (props.SelectedItem != undefined) {
             //val.subRows = val.subRows === undefined ? [] : val?.subRows
-            val.subRows=subCompFeatures;
+            val.subRows = subCompFeatures;
           }
         }
         if (val.compFeatures != undefined && val.compFeatures.length > 0) {
-          val.subRows = val?.compFeatures;
+          val.subRows = [val.subRows,val?.compFeatures];
+          [...val.subRows.flat()];
         }
       });
       // hierarchyData?.forEach((val: any) => {
@@ -663,7 +666,7 @@ const CreateAllStructureComponent = (props: any) => {
     if (index === 0) {
       if (
         component.isCheckedSub == true ||
-        props?.SelectedItem?.PortfolioType?.Title == "Component"
+        props?.SelectedItem?.PortfolioType?.Title == "Component" && Subcomponent !== 0
       ) {
         if (
           Subcomponent.Feature.length == 0 ||
@@ -674,7 +677,16 @@ const CreateAllStructureComponent = (props: any) => {
         } else {
           Subcomponent.isCheckedSubFea = true;
         }
-      } else {
+      }
+      else if (props?.SelectedItem?.PortfolioType?.Title == "Component" && Subcomponent === 0) {
+        if (component.Feature.length === 0) {
+          component.Feature.push({ id: 1, value: "" });
+          component.isCheckedCompFea = true;
+        } else {
+          component.isCheckedCompFea = true;
+        }
+      }
+      else {
         if (component.Feature.length === 0) {
           component.Feature.push({ id: 1, value: "" });
           component.isCheckedCompFea = true;
@@ -763,8 +775,8 @@ const CreateAllStructureComponent = (props: any) => {
             ? "eventpannelorange"
             : defaultPortfolioType == "Service" ||
               defaultPortfolioType == "Service Portfolio"
-            ? "serviepannelgreena"
-            : "component Portfolio clearfix"
+              ? "serviepannelgreena"
+              : "component Portfolio clearfix"
         }
       >
         <div className="modal-body ">
@@ -796,6 +808,29 @@ const CreateAllStructureComponent = (props: any) => {
               </div>{" "}
             </>
           )}
+          <div>
+            {props?.SelectedItem?.Item_x0020_Type !== "SubComponent" &&
+              props?.SelectedItem != undefined &&
+              components?.map((component: any, index: number) => {
+                return (
+                  <label
+                    className="SpfxCheckRadio me-0"
+                    key={`Feature-${index}`}
+                  >
+                    <input
+                      type="radio"
+                      name={`Feature-${index}`}
+                      onChange={() =>
+                        handleFeatureChange(index, 0, component, 0, false)
+                      }
+                      checked={component.isCheckedCompFea}
+                      className="radio"
+                    />
+                    Feature
+                  </label>
+                );
+              })}
+          </div>
 
           <div>
             {components?.map((component: any, index: number) => (
@@ -894,81 +929,52 @@ const CreateAllStructureComponent = (props: any) => {
                           (props?.SelectedItem?.Item_x0020_Type !=
                             "SubComponent" &&
                             props?.SelectedItem != undefined)) && (
-                          <div>
-                            <label
-                              className="form-label full-width"
-                              htmlFor={`exampleFormControlInput${Subcomponent.id}`}
-                            >
-                              <span>{indexSub + 1} - </span> SubComponent
-                              <span className="pull-right">
-                                <label className="SpfxCheckRadio me-0">
-                                  <input
-                                    type="radio"
-                                    name={`Feature${indexSub}`} // Ensure unique name for each radio group
-                                    checked={Subcomponent.isCheckedSubFea}
-                                    onChange={() =>
-                                      handleFeatureChange(
-                                        index,
-                                        indexSub,
-                                        component,
-                                        Subcomponent,
-                                        true
-                                      )
-                                    }
-                                    className="radio"
-                                  />
-                                  Feature
-                                </label>
-                              </span>
-                            </label>
-                            <div className="input-group">
-                              <input
-                                type="text"
-                                className="form-control"
-                                id={`exampleFormControlInput${Subcomponent.id}`}
-                                placeholder=""
-                                value={Subcomponent.value}
-                                onChange={(event) =>
-                                  handleInputChange(
-                                    index,
-                                    indexSub,
-                                    0,
-                                    event,
-                                    "subcomponent"
-                                  )
-                                }
-                              />
-                              {component.SubComponent.length == 1 &&
-                                component.isCheckedSub === true && (
-                                  <span
-                                    onClick={() =>
-                                      handleDelete(
-                                        index,
-                                        indexSub,
-                                        0,
-                                        "subcomponent"
-                                      )
-                                    }
-                                    title="Delete"
-                                    className="svg__iconbox svg__icon--trash hreflink"
-                                  ></span>
-                                )}
-                              {indexSub ===
-                                component.SubComponent.length - 1 && (
-                                <div className="input-group-append alignCenter">
-                                  <span
-                                    onClick={() =>
-                                      handleAddSubComponent(
-                                        index,
-                                        indexSub,
-                                        0,
-                                        "SubComponent"
-                                      )
-                                    }
-                                    title="Add"
-                                    className="svg__iconbox mx-1 svg__icon--Plus hreflink"
-                                  ></span>
-                                  {component.SubComponent.length > 1 && (
+                            <div>
+                              <label
+                                className="form-label full-width"
+                                htmlFor={`exampleFormControlInput${Subcomponent.id}`}
+                              >
+                                <span>{indexSub + 1} - </span> SubComponent
+                                <span className="pull-right">
+                                  <label className="SpfxCheckRadio me-0">
+                                    <input
+                                      type="radio"
+                                      name={`Feature${indexSub}`} // Ensure unique name for each radio group
+                                      checked={Subcomponent.isCheckedSubFea}
+                                      onChange={() =>
+                                        handleFeatureChange(
+                                          index,
+                                          indexSub,
+                                          component,
+                                          Subcomponent,
+                                          true
+                                        )
+                                      }
+                                      className="radio"
+                                    />
+                                    Feature
+                                  </label>
+                                </span>
+                              </label>
+                              <div className="input-group">
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  id={`exampleFormControlInput${Subcomponent.id}`}
+                                  placeholder=""
+                                  value={Subcomponent.value}
+                                  onChange={(event) =>
+                                    handleInputChange(
+                                      index,
+                                      indexSub,
+                                      0,
+                                      event,
+                                      "subcomponent"
+                                    )
+                                  }
+                                />
+                                {component.SubComponent.length == 1 &&
+                                  (component.isCheckedCompFea === true || props?.SelectedItem === undefined) && (
                                     <span
                                       onClick={() =>
                                         handleDelete(
@@ -982,76 +988,76 @@ const CreateAllStructureComponent = (props: any) => {
                                       className="svg__iconbox svg__icon--trash hreflink"
                                     ></span>
                                   )}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                        {(Subcomponent.isCheckedSubFea ||
-                          isDisableSub == true ||
-                          props?.SelectedItem?.Item_x0020_Type ==
-                            "SubComponent") && (
-                          <div className="mt-2 ps-4">
-                            {Subcomponent?.Feature?.map(
-                              (Features: any, indexFea: any) => (
-                                <div key={Features.id} className="form-group">
-                                  <span>{indexFea + 1} - </span>
-                                  <label
-                                    htmlFor={`exampleFormControlInput${Features.id}`}
-                                  >
-                                    Feature
-                                  </label>
-                                  <div className="input-group">
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      id={`exampleFormControlInput${Features.id}`}
-                                      placeholder=""
-                                      value={Features.value}
-                                      onChange={(event) =>
-                                        handleInputChange(
-                                          index,
-                                          indexSub,
-                                          indexFea,
-                                          event,
-                                          "feature"
-                                        )
-                                      }
-                                    />
-                                    {Subcomponent.Feature.length == 1 &&
-                                      (component.isCheckedCompFea === true ||
-                                        Subcomponent.isCheckedSubFea ===
-                                          true) && (
+                                {indexSub ===
+                                  component.SubComponent.length - 1 && (
+                                    <div className="input-group-append alignCenter">
+                                      <span
+                                        onClick={() =>
+                                          handleAddSubComponent(
+                                            index,
+                                            indexSub,
+                                            0,
+                                            "SubComponent"
+                                          )
+                                        }
+                                        title="Add"
+                                        className="svg__iconbox mx-1 svg__icon--Plus hreflink"
+                                      ></span>
+                                      {component.SubComponent.length > 1 && (
                                         <span
                                           onClick={() =>
                                             handleDelete(
                                               index,
                                               indexSub,
-                                              indexFea,
-                                              "feature"
+                                              0,
+                                              "subcomponent"
                                             )
                                           }
                                           title="Delete"
                                           className="svg__iconbox svg__icon--trash hreflink"
                                         ></span>
                                       )}
-                                    {indexFea ===
-                                      Subcomponent.Feature.length - 1 && (
-                                      <div className="input-group-append alignCenter">
-                                        <span
-                                          onClick={() =>
-                                            handleAddSubComponent(
-                                              index,
-                                              indexSub,
-                                              indexFea,
-                                              "Feature"
-                                            )
-                                          }
-                                          title="Add"
-                                          className="svg__iconbox mx-1 svg__icon--Plus hreflink"
-                                        ></span>
-                                        {Subcomponent.Feature.length > 1 && (
+                                    </div>
+                                  )}
+                              </div>
+                            </div>
+                          )}
+
+                        {(Subcomponent.isCheckedSubFea ||
+                          isDisableSub == true ||
+                          props?.SelectedItem?.Item_x0020_Type ==
+                          "SubComponent") && (
+                            <div className="mt-2 ps-4">
+                              {Subcomponent?.Feature?.map(
+                                (Features: any, indexFea: any) => (
+                                  <div key={Features.id} className="form-group">
+                                    <span>{indexFea + 1} - </span>
+                                    <label
+                                      htmlFor={`exampleFormControlInput${Features.id}`}
+                                    >
+                                      Feature
+                                    </label>
+                                    <div className="input-group">
+                                      <input
+                                        type="text"
+                                        className="form-control"
+                                        id={`exampleFormControlInput${Features.id}`}
+                                        placeholder=""
+                                        value={Features.value}
+                                        onChange={(event) =>
+                                          handleInputChange(
+                                            index,
+                                            indexSub,
+                                            indexFea,
+                                            event,
+                                            "feature"
+                                          )
+                                        }
+                                      />
+                                      {Subcomponent.Feature.length == 1 &&
+                                        (component.isCheckedCompFea === true ||
+                                          Subcomponent.isCheckedSubFea ===
+                                          true) && (
                                           <span
                                             onClick={() =>
                                               handleDelete(
@@ -1065,97 +1071,120 @@ const CreateAllStructureComponent = (props: any) => {
                                             className="svg__iconbox svg__icon--trash hreflink"
                                           ></span>
                                         )}
-                                      </div>
-                                    )}
+                                      {indexFea ===
+                                        Subcomponent.Feature.length - 1 && (
+                                          <div className="input-group-append alignCenter">
+                                            <span
+                                              onClick={() =>
+                                                handleAddSubComponent(
+                                                  index,
+                                                  indexSub,
+                                                  indexFea,
+                                                  "Feature"
+                                                )
+                                              }
+                                              title="Add"
+                                              className="svg__iconbox mx-1 svg__icon--Plus hreflink"
+                                            ></span>
+                                            {Subcomponent.Feature.length > 1 && (
+                                              <span
+                                                onClick={() =>
+                                                  handleDelete(
+                                                    index,
+                                                    indexSub,
+                                                    indexFea,
+                                                    "feature"
+                                                  )
+                                                }
+                                                title="Delete"
+                                                className="svg__iconbox svg__icon--trash hreflink"
+                                              ></span>
+                                            )}
+                                          </div>
+                                        )}
+                                    </div>
                                   </div>
-                                </div>
-                              )
-                            )}
-                          </div>
-                        )}
+                                )
+                              )}
+                            </div>
+                          )}
                       </div>
                     )
                   )}
                 </div>
-                {(component.isCheckedCompFea ||
-                  isDisableSub == true ||
-                  props?.SelectedItem?.Item_x0020_Type == "SubComponent") && (
-                  <div className="mt-2 ps-4">
-                    {component?.Feature?.map(
-                      (feature: any, featureIndex: number) => (
-                        <div key={feature.id} className="form-group">
-                          <span>{featureIndex + 1} - </span>
-                          <label htmlFor={`componentFeatureInput${feature.id}`}>
-                            Feature
-                          </label>
-                          <div className="input-group">
-                            <input
-                              type="text"
-                              className="form-control"
-                              id={`componentFeatureInput${feature.id}`}
-                              placeholder=""
-                              value={feature.value}
-                              onChange={(event) =>
-                                handleInputChange(
-                                  index,
-                                  0,
-                                  featureIndex,
-                                  event,
-                                  "ComponentFeature"
-                                )
-                              }
-                            />
-                            {component.Feature.length === 1 &&
-                              component.isCheckedCompFea === true && (
-                                <span
-                                  onClick={() =>
-                                    handleDelete(
-                                      index,
-                                      0,
-                                      featureIndex,
-                                      "ComponentFeature"
-                                    )
-                                  }
-                                  title="Delete"
-                                  className="svg__iconbox svg__icon--trash hreflink"
-                                ></span>
-                              )}
-                            {featureIndex === component.Feature.length - 1 && (
-                              <div className="input-group-append alignCenter">
-                                <span
-                                  onClick={() =>
-                                    handleAddSubComponent(
-                                      index,
-                                      0,
-                                      featureIndex,
-                                      "ComponentFeature"
-                                    )
-                                  }
-                                  title="Add"
-                                  className="svg__iconbox mx-1 svg__icon--Plus hreflink"
-                                ></span>
-                                {component.Feature.length > 1 && (
-                                  <span
-                                    onClick={() =>
-                                      handleDelete(
-                                        index,
-                                        0,
-                                        featureIndex,
-                                        "ComponentFeature"
-                                      )
-                                    }
-                                    title="Delete"
-                                    className="svg__iconbox svg__icon--trash hreflink"
-                                  ></span>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    )}
-                  </div>
-                )}
+                {
+                 <div className="mt-2 ps-4">
+                 {component?.Feature?.map((feature: any, featureIndex: number) => (
+                   <div key={feature.id} className="form-group">
+                     {(
+                       isDisableSub === true ||
+                       (props?.SelectedItem?.Item_x0020_Type !== "SubComponent" && component.isCheckedCompFea)
+                     ) && (
+                       <div>
+                         <span>{featureIndex + 1} - </span>
+                         <label htmlFor={`componentFeatureInput${feature.id}`}>
+                           Feature
+                         </label>
+                         <div className="input-group">
+                           <input
+                             type="text"
+                             className="form-control"
+                             id={`componentFeatureInput${feature.id}`}
+                             placeholder=""
+                             value={feature.value}
+                             onChange={(event) =>
+                               handleInputChange(
+                                 index,
+                                 0,
+                                 featureIndex,
+                                 event,
+                                 "ComponentFeature"
+                               )
+                             }
+                           />
+                           {component.Feature.length === 1 && component.isCheckedCompFea === true && (
+                             <span
+                               onClick={() =>
+                                 handleDelete(index, 0, featureIndex, "ComponentFeature")
+                               }
+                               title="Delete"
+                               className="svg__iconbox svg__icon--trash hreflink"
+                             ></span>
+                           )}
+                           {featureIndex === component.Feature.length - 1 && (
+                             <div className="input-group-append alignCenter">
+                               <span
+                                 onClick={() =>
+                                   handleAddSubComponent(
+                                     index,
+                                     0,
+                                     featureIndex,
+                                     "ComponentFeature"
+                                   )
+                                 }
+                                 title="Add"
+                                 className="svg__iconbox mx-1 svg__icon--Plus hreflink"
+                               ></span>
+                               {component.Feature.length > 1 && (
+                                 <span
+                                   onClick={() =>
+                                     handleDelete(index, 0, featureIndex, "ComponentFeature")
+                                   }
+                                   title="Delete"
+                                   className="svg__iconbox svg__icon--trash hreflink"
+                                 ></span>
+                               )}
+                             </div>
+                           )}
+                         </div>
+                       </div>
+                     )}
+                   </div>
+                 ))}
+               </div>
+               
+                }
+
               </div>
             ))}
           </div>
