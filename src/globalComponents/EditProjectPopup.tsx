@@ -1011,11 +1011,6 @@ function EditProjectPopup(item: any) {
     var Items = EditData;
 
     CheckCategory?.forEach((itemm: any, index: any) => {
-      CategoriesData.map((catId, index) => {
-        if (itemm.Id == catId.Id) {
-          CategoriesData.splice(index, 1);
-        }
-      });
       if (itemm.isChecked == true || itemm.isselected == true) {
         array2.push(itemm);
       }
