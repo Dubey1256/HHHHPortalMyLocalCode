@@ -915,7 +915,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     // Print ANd Xls Parts//////
     const downloadPdf = () => {
-        let defaultFountsize = 20;
+        let defaultFountsize = 8;
         let headerColoumns: any = [];
         let notVisbleColumns: any = Object.keys(columnVisibility);
         let allHeaderColoumns = columns.filter((column: any) => {
@@ -923,17 +923,36 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 column.placeholder !== undefined &&
                 column.placeholder !== '');
         });
-        allHeaderColoumns.map((column: any) => {
-            headerColoumns.push(column.placeholder)
-        })
+        allHeaderColoumns?.map((column: any) => { headerColoumns.push(column.placeholder) })
         let columnLength = headerColoumns?.length;
-        defaultFountsize = defaultFountsize - columnLength;
+        if (columnLength >= 12) { defaultFountsize = defaultFountsize - 2; }
+        const flattenedData: any[] = [];
+        const flattenRowData: any = (row: any) => {
+            const flattenedRow: any = {};
+            allHeaderColoumns?.forEach((column: any) => {
+                if (column?.placeholder != undefined && column?.placeholder != '') {
+                    if (row.original[column?.id] != undefined && row.original[column?.id] != null) {
+                        flattenedRow[column?.id] = row.original[column?.id];
+                    } else { flattenedRow[column?.id] = '' }
+                }
+            });
+            flattenedData?.push(flattenedRow);
+            if (row.getCanExpand()) { row.subRows?.forEach(flattenRowData); }
+        };
+        table.getRowModel()?.rows?.forEach(flattenRowData);
+        let uniqueArray: any = removeDuplicates(flattenedData);
+        function removeDuplicates(arr: any) {
+            const uniqueArray: any = [];
+            const seen = new Set();
+            for (const obj of arr) {
+                const objString = JSON.stringify(obj);
+                if (!seen.has(objString)) { uniqueArray.push(obj); seen.add(objString); } else { console.log('check=' + obj) }
+            } return uniqueArray;
+        }
         let rowDataShow: any = []
-        table.getRowModel().rows.map((elt: any) => {
+        uniqueArray?.map((elt: any) => {
             var value: any = [];
-            allHeaderColoumns.map((itemHeader: any) => {
-                value.push(elt?.original?.[itemHeader?.id])
-            })
+            allHeaderColoumns?.map((itemHeader: any) => { value.push(elt?.[itemHeader?.id]) })
             rowDataShow.push(value)
         })
         const doc: any = new jsPDF({ orientation: 'landscape' });
@@ -945,7 +964,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
             head: [headerColoumns],
             body: rowDataShow,
             styles: styles,
-
         })
         doc.save('Data PrintOut');
     }
