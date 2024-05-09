@@ -200,11 +200,8 @@ function ReadyMadeTable(SelectedProp: any) {
             if (SelectedProp?.ComponentFilter != undefined) {
                 setIsUpdated(SelectedProp?.ComponentFilter)
             }
-            if (SelectedProp?.configration == "AllCSF" && SelectedProp?.showProject != true) {
+            if (SelectedProp?.configration == "AllCSF") {
                 GetComponents();
-            }
-            else if(SelectedProp?.configration == "AllCSF" && SelectedProp?.showProject == true) {
-                GetProjectData()
             } else if (SelectedProp?.configration == "AllAwt") {
                 // GetComponents();
                 // setSiteConfig()
@@ -220,19 +217,6 @@ function ReadyMadeTable(SelectedProp: any) {
 
         }
     }, [AllMetadata?.length > 0 && portfolioTypeData?.length > 0])
-
-    const GetProjectData= async()=>{
-        let results = await globalCommon.GetServiceAndComponentAllData(ContextValue)
-        if (results?.AllData?.length > 0) {
-            let componentDetails: any = results?.AllData;
-            let groupedComponentData: any = results?.GroupByData;
-            let groupedProjectData: any = results?.ProjectData;
-            let AllProjects: any = results?.FlatProjectData
-            setData(groupedProjectData)
-            setLoaded(true)
-          }
-    }
-
     const getTaskUsers = async () => {
         let web = new Web(ContextValue.siteUrl);
         let taskUsers = [];
@@ -1096,12 +1080,6 @@ function ReadyMadeTable(SelectedProp: any) {
         }
     }, [(AllMasterTasksData.length > 0 && AllSiteTasksData?.length > 0)]);
 
-    React.useEffect(() => {
-        if (AllMasterTasksData?.length > 0) {
-            DataPrepareForCSFAWT()
-        }
-    }, [(AllMasterTasksData.length > 0 && SelectedProp?.configration == "AllCSF")]);
-
 
     function DataPrepareForCSFAWT(){
         isColumnDefultSortingAsc = false
@@ -1633,7 +1611,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&
-                            <span><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.PortfolioType?.Color}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                            <span><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.PortfolioType?.Color}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
                         }
                     </>
@@ -2202,7 +2180,6 @@ function ReadyMadeTable(SelectedProp: any) {
  
     const callBackData = React.useCallback((checkData: any) => {
         let array: any = [];
-        let selectedItems: any = []
         if (checkData != undefined) {
             setCheckedList(checkData);
             array.push(checkData);
@@ -2210,12 +2187,6 @@ function ReadyMadeTable(SelectedProp: any) {
             if (childRef.current.table.getSelectedRowModel().flatRows.length > 0) {
                 setTrueRestructuring(true)
             }
-            checkData?.map((item:any) => {
-                if(item.original != undefined){
-                    selectedItems.push(item.original)
-                }
-            })
-            SelectedProp.setCheckBoxData(selectedItems)
         } else {
             setCheckedList({});
             setTableProperty([])
@@ -2741,7 +2712,7 @@ function ReadyMadeTable(SelectedProp: any) {
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
-                                            <GlobalCommanTable multiSelect={SelectedProp?.multiSelect ? SelectedProp?.multiSelect: false} tableId={SelectedProp?.tableId}columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} showFilterIcon={SelectedProp?.configration != "AllAwt"}
+                                            <GlobalCommanTable  tableId={SelectedProp?.tableId}columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} showFilterIcon={SelectedProp?.configration != "AllAwt"}
                                             loadFilterTask={FilterAllTask}
                                                 masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
                                                 flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
