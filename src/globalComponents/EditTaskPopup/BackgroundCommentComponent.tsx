@@ -84,8 +84,8 @@ const BackgroundCommentComponent = (Props: any) => {
                 editable: false,
                 Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
                 Body: BackgroundComment,
-                AuthorImage: CurrentUser.Item_x0020_Cover != null ? CurrentUser.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                AuthorName: CurrentUser.Title != undefined ? CurrentUser.Title : Context.pageContext._user.displayName,
+                AuthorImage: CurrentUser?.Item_x0020_Cover != null ? CurrentUser?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                AuthorName: CurrentUser?.Title != undefined ? CurrentUser?.Title : Context?.pageContext?._user.displayName,
                 ID: (BackgroundComments != undefined ? BackgroundComments?.length + 1 : 0)
             }
             BackgroundComments.push(CommentJSON);

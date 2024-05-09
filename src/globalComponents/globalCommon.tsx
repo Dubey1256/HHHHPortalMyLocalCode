@@ -3020,6 +3020,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
     let startDate: any = ''
     let DevCount: any = 0;
     let Trainee: any = 0;
+    let TraineeTime: any = 0;
     let DesignCount: any = 0;
     let QACount: any = 0;
     let TranineesNum: any = 0;
@@ -3039,9 +3040,13 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
 
     const currentLoginUserId = Context.pageContext?._legacyPageContext.userId;
     selectedUser?.forEach((items: any) => {
-        if (items?.UserGroup?.Title == 'Senior Developer Team' || items?.UserGroup?.Title == 'Smalsus Lead Team' || items?.UserGroup?.Title == 'Junior Developer Team' || items?.UserGroup?.Title == 'Trainees') {
+        if (items?.UserGroup?.Title == 'Portfolio Lead Team' || items?.UserGroup?.Title == 'Smalsus Lead Team' || items?.UserGroup?.Title == 'Developers Team') {
             DevCount++
         }
+        if(items?.UserGroup?.Title == 'Trainees')
+            {
+                Trainee++;
+            }
         if ((items?.TimeCategory == 'Design' && items.Company == 'Smalsus') || items?.UserGroup?.Title == 'Design Team') {
             DesignCount++
         }
@@ -3055,11 +3060,14 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
 
             if (item?.AuthorId == val?.AssingedToUserId) {
 
-                if (val?.UserGroup?.Title == 'Senior Developer Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff')
+                if (val?.UserGroup?.Title == 'Portfolio Lead Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff')
                     item.Department = 'Developer';
                 item.userName = val?.Title
-                if (val?.UserGroup?.Title == 'Junior Developer Team')
-                    item.Department = 'Junior Developer';
+                if(val?.UserGroup?.Title == 'Trainees')
+                    item.Department = 'Trainees';
+                item.userName = val?.Title
+                if (val?.UserGroup?.Title == 'Developers Team')
+                    item.Department = 'Developer';
                 item.userName = val?.Title
 
                 if (val?.UserGroup?.Title == 'Design Team')
@@ -3076,8 +3084,11 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
     })
     if (AllTimeEntry != undefined) {
         AllTimeEntry?.forEach((time: any) => {
-            if (time?.Department == 'Developer' || time?.Department == 'Junior Developer') {
+            if (time?.Department == 'Developer') {
                 DevloperTime = DevloperTime + parseFloat(time.Effort)
+            }
+            if (time?.Department == 'Trainees') {
+                TraineeTime = TraineeTime + parseFloat(time.Effort)
             }
 
             if (time?.Department == 'Design') {
