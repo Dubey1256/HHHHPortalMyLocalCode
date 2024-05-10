@@ -4233,8 +4233,8 @@ const RestructuringCom = (props: any, ref: any) => {
 
       let web = new Web(props?.contextValue?.siteUrl);
       var postData: any = {
-        ParentTaskId: ParentTask_Id == null ? null : ParentTask_Id.Id,
-        PortfolioId: Portfolio == null ? null : Portfolio.Id,
+        ParentTaskId: (ParentTask_Id == null ||  ParentTask_Id == undefined) ? null : ParentTask_Id.Id,
+        PortfolioId: (Portfolio == null ||  Portfolio == undefined ) ? null : Portfolio.Id,
         TaskLevel: TaskLevel,
         TaskTypeId: TaskTypeId,
         TaskID: TaskId,
@@ -4790,13 +4790,13 @@ const RestructuringCom = (props: any, ref: any) => {
         });
     } else {
       let array: any = [...allData];
-      let ParentTask: any;
+      let ParentTask: any ;
       let PortfolioLevel: number = 0;
-      let TaskType: any;
+      let TaskType: any ;
       let SiteIconTitle: any;
-      let Tasklevel: any;
+      // let Tasklevel: any;
       let TaskID: any;
-      let Portfolio: any;
+      let Portfolio: any ;
 
       if (props?.queryItems != undefined && props?.queryItems != null && props?.queryItems?.Item_x0020_Type !== "Task") {
         if (restructureItem[0]?.TaskType?.Id == 1) {
@@ -4821,6 +4821,14 @@ const RestructuringCom = (props: any, ref: any) => {
           ParentTask = {Id: props?.queryItems?.Id,Title: props?.queryItems?.Title,TaskID: props?.queryItems?.TaskID,};
           SiteIconTitle = "W";
           TaskType = 3;
+        }
+      }else if (props?.queryItems == undefined && props?.queryItems == null) {
+        if (restructureItem[0]?.TaskType?.Id == 2) {
+          SiteIconTitle = "A";
+          TaskType = 1;
+        } else {
+          SiteIconTitle = "T";
+          TaskType = 2;
         }
       }
 
@@ -4865,8 +4873,8 @@ const RestructuringCom = (props: any, ref: any) => {
       var postData: any = {
         ParentTaskId: ParentTask == null ? null : ParentTask.Id,
         TaskLevel: PortfolioLevel,
-        PortfolioId: Portfolio.Id,
-        TaskTypeId: TaskType,
+        PortfolioId: Portfolio == null ? null : Portfolio?.Id,
+        TaskTypeId: TaskType == undefined || TaskType == null ? restructureItem[0]?.TaskType?.Id : TaskType,
         TaskID: TaskID,
       };
       await web.lists
@@ -6196,12 +6204,12 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
 
                           )
                         }
-                          <span className="mx-2">
+                          {/* <span className="mx-2">
                             {
                             newItemBackUp?.Item_x0020_Type != "Task" ?
                             (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ? items?.TaskID : (newItemBackUp?.TaskType?.Id == 2 ? items?.Id : ``) ) : (newItemBackUp?.TaskType?.Id == 1 ? (items?.TaskType?.Id == 2 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) :
                              (`${items?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-W`) : ('') }`)) : (newItemBackUp?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) : ''))
-                          }</span>
+                          }</span> */}
                           {items?.Title}
                         </a>
                       </div>
@@ -6533,7 +6541,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
           </div>
 
               {
-                 (newItemBackUp?.TaskType?.Id == 1) && RestructureChecked[0]?.TaskType?.Id == 1  ?
+                 (newItemBackUp?.TaskType?.Id == 1) && (restructureItem[0]?.TaskType?.Id == 1 || restructureItem[0]?.TaskType?.Id == 3 || restructureItem[0]?.TaskType?.Id == 2)  ?
                  restructureItem.some((item:any) => Array.isArray(item?.subRows) && item.subRows.length > 0) ? "" :
                  <>
                  {"Select Task Type :"}
@@ -6576,8 +6584,8 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
         
           {selectedItems != undefined &&
           selectedItems?.length > 1 &&
-          RestructureChecked[0]?.Item_x0020_Type == "Task" &&
-          (RestructureChecked[0]?.TaskType?.Id == 2 || selectedItems[0]?.TaskType?.Id == 2) ? (
+          restructureItem[0]?.Item_x0020_Type == "Task" &&
+          (restructureItem[0]?.TaskType?.Id == 2 || selectedItems[0]?.TaskType?.Id == 2) ? (
             <div className="mt-2">
               <span>
                 {newItemBackUp?.Item_x0020_Type != "Task" ? (
@@ -6780,7 +6788,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         target="_blank"
                         className="serviceColor_Active "
                         href={ props?.contextValue?.siteUrl +
-                                "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                "/SitePages/Project-Management.aspx?ProjectId=" +
                                 obj?.Id}
                       >
                               {obj?.newSubChild != undefined &&
@@ -6817,7 +6825,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             data-interception="off"
                             target="_blank"
                             href={ props?.contextValue?.siteUrl +
-                              "/SitePages/PX-Profile.aspx?ProjectId=" +
+                              "/SitePages/Project-Management.aspx?ProjectId=" +
                               obj?.newSubChild?.Id}
                           >
                              {obj?.newSubChild?.Title}
@@ -6849,7 +6857,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                  "/SitePages/Project-Management.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.Title}
@@ -6881,7 +6889,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                  "/SitePages/Project-Management.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.newActChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.newActChild?.Title}
@@ -6913,7 +6921,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                  "/SitePages/Project-Management.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}
@@ -7018,7 +7026,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                  "/SitePages/Project-Management.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.Title}
@@ -7050,7 +7058,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                  "/SitePages/Project-Management.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.newActChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.newActChild?.Title}
@@ -7082,7 +7090,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                  "/SitePages/Project-Management.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}
@@ -7293,7 +7301,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         target="_blank"
                         className="serviceColor_Active alignCenter"
                         href={obj.Item_x0020_Type == "Project" || obj.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                                "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                "/SitePages/Project-Management.aspx?ProjectId=" +
                                 obj?.Id :props?.contextValue?.siteUrl +
                                 "/SitePages/Task-Profile.aspx?taskId=" +
                                 obj?.Id + "&Site=" + obj?.siteType }
@@ -7330,7 +7338,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             data-interception="off"
                             target="_blank"
                             href={ obj?.newSubChild?.Item_x0020_Type == "Project" || obj?.newSubChild?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                            "/SitePages/PX-Profile.aspx?ProjectId=" +
+                            "/SitePages/Project-Management.aspx?ProjectId=" +
                             obj?.newSubChild?.Id :props?.contextValue?.siteUrl +
                             "/SitePages/Task-Profile.aspx?taskId=" +
                             obj?.newSubChild?.Id + "&Site=" + obj?.newSubChild?.siteType}
@@ -7371,7 +7379,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/PX-Profile.aspx?ProjectId=" +
+                              "/SitePages/Project-Management.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.Id :props?.contextValue?.siteUrl +
                               "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.Id + "&Site=" + obj?.newSubChild?.feature?.siteType
@@ -7413,7 +7421,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/PX-Profile.aspx?ProjectId=" +
+                              "/SitePages/Project-Management.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.activity?.Id :props?.contextValue?.siteUrl +
                               "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.activity?.Id + "&Site=" + obj?.newSubChild?.feature?.activity?.siteType
@@ -7516,7 +7524,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/PX-Profile.aspx?ProjectId=" +
+                              "/SitePages/Project-Management.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.Id :props?.contextValue?.siteUrl +
                               "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.Id + "&Site=" + obj?.newSubChild?.feature?.siteType
@@ -7557,7 +7565,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/PX-Profile.aspx?ProjectId=" +
+                              "/SitePages/Project-Management.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.activity?.Id :props?.contextValue?.siteUrl +
                               "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.activity?.Id + "&Site=" + obj?.newSubChild?.feature?.activity?.siteType
@@ -7664,7 +7672,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             onDismiss={closePanel}
           >
             <div className="mt-2">
-              After restructuring selected item becomes {query4TopIcon}
+              After restructuring selected item becomes {query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 2 ? 'Activity' : (query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 1 ? 'Task' : query4TopIcon) }
               <footer className="mt-4 text-end">
                 <button className="me-2 btn btn-primary" onClick={makeTopComp}>
                   Save

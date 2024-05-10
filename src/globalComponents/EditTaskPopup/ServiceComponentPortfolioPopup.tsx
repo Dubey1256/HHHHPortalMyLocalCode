@@ -206,11 +206,11 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     };
     const loadTaskUsers = async () => {
         let taskUser: any = [];
-        if (Dynamic?.TaskUsertListID != undefined) {
+        if (Dynamic?.TaskUserListID != undefined) {
             try {
                 let web = new Web(Dynamic?.siteUrl);
                 taskUser = await web.lists
-                    .getById(Dynamic?.TaskUsertListID)
+                    .getById(Dynamic?.TaskUserListID)
                     .items
                     .select("Id,UserGroupId,Suffix,IsActive,Title,Email,SortOrder,Role,showAllTimeEntry,Company,Group,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
                     .filter('IsActive eq 1')
@@ -239,7 +239,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 MasterTaskListID: Dynamic.MasterTaskListID,
                 siteUrl: Dynamic.siteUrl,
                 ComponentType: ComponentType,
-                TaskUserListId: Dynamic.TaskUsertListID,
+                TaskUserListId: Dynamic.TaskUserListID,
                 selectedItems: selectedDataArray
             }
             if (showProject == true) {

@@ -65,6 +65,7 @@ const Permission_management = (props: any) => {
         console.log(err);
       });
   };
+ 
 
   const getData = async () => {
     await $.ajax({
@@ -141,11 +142,8 @@ const Permission_management = (props: any) => {
   
   const postUser = async () => {
     const webUrl = props?.context?.siteUrl;
-    // const id = 1; // Replace with your actual group ID
-    // const inputValue = { Email: "user@example.com" }; // Replace with your actual input value
 
     try {
-      // Ensure the SPFx context is available
       const web = new Web(webUrl);
 
       // Construct the user data
@@ -164,8 +162,6 @@ const Permission_management = (props: any) => {
       setInputValue({ ...inputValue, Title: "" });
     } catch (error) {
       console.error(error);
-
-      // Handle unauthorized/forbidden error
       if (error.status === 403 || error.status === 401) {
         alert("You do not have the necessary rights to access this section");
       } else {
@@ -224,7 +220,6 @@ const Permission_management = (props: any) => {
     const newArrayWithoutDuplicates = commanArray.filter((obj : any, index : any, self: any) =>
   index === self.findIndex((o: any) => o.Id === obj.Id)
 );
-    // const newArrayWithoutDuplicates : any= Array.from(new Set(commanArray.map((obj:any) => obj.Id))).map((Id:any) => commanArray.find((obj:any) => obj.Id === Id));
     setPermissionUserGroup(newArrayWithoutDuplicates);
   };
 
