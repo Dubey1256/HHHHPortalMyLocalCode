@@ -2826,38 +2826,38 @@ const EditTaskPopup = (Items: any) => {
                             }
 
                             if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('Design') !== -1) {
-                              
-                                    let DataForNotification: any = {
-                                        ReceiverName: 'kristina',
-                                        sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
-                                        Context: Items.context,
-                                        ActionType: "Design",
-                                        ReasonStatement: "Task Completed",
-                                        UpdatedDataObject: UpdatedDataObject,
-                                        RequiredListIds: AllListIdData
-                                    }
-                                    GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                        console.log("Ms Teams Notifications send")
-                                    })
 
-                                
+                                let DataForNotification: any = {
+                                    ReceiverName: 'kristina',
+                                    sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
+                                    Context: Items.context,
+                                    ActionType: "Design",
+                                    ReasonStatement: "Task Completed",
+                                    UpdatedDataObject: UpdatedDataObject,
+                                    RequiredListIds: AllListIdData
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+
+
                             }
 
                             if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
-                               
-                                    let DataForNotification: any = {
-                                        ReceiverName: 'Robert',
-                                        sendUserEmail: ['robert.ungethuem@hochhuth-consulting.de'],
-                                        Context: Items.context,
-                                        ActionType: "User Experience - UX",
-                                        ReasonStatement: "New Task Created",
-                                        UpdatedDataObject: UpdatedDataObject,
-                                        RequiredListIds: AllListIdData
-                                    }
-                                    GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                        console.log("Ms Teams Notifications send")
-                                    })
-                                
+
+                                let DataForNotification: any = {
+                                    ReceiverName: 'Robert',
+                                    sendUserEmail: ['robert.ungethuem@hochhuth-consulting.de'],
+                                    Context: Items.context,
+                                    ActionType: "User Experience - UX",
+                                    ReasonStatement: "New Task Created",
+                                    UpdatedDataObject: UpdatedDataObject,
+                                    RequiredListIds: AllListIdData
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+
                             }
 
                             if (checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') !== -1) {
