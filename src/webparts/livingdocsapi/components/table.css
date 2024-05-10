@@ -1,0 +1,336 @@
+table {
+  border: 1px solid #E0E0E0;
+}
+  td {
+    border: 1px solid #E0E0E0;
+    text-align: left;
+    padding: 4px 8px;
+  }
+  th {
+    text-align: left;
+    padding: 0 8px;
+    border: 1px solid #E0E0E0;
+    background: #e3e3e3;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  td>img.CoverImg {
+    width: 230px;
+    height: auto !important;
+    object-fit: cover;
+    object-position: center;
+}
+  /* Loader */
+/*spinner*/
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #36D7B7;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+image {
+  max-width: 100%; /* Ensure image doesn't exceed the width of its container */
+  height: auto; /* Maintain aspect ratio */
+}
+
+
+details {
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.SharewebRightNavigatorBarAccordion details:first-child > summary {
+  border-bottom: 2px solid #243A4A !important;
+  padding-top: 0;
+}
+
+details[open] > summary:before {
+  transform: translateY(-100%) rotate(135deg) !important;
+  transition: 0.45s transform ease !important;
+}
+
+.SharewebRightNavigatorBarAccordion details summary::before {
+  left: 2px;
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid var(--siteColor);
+  border-top: 1.5px solid var(--siteColor);
+  top: 19px;
+}
+
+summary::before {
+  content: "";
+  position: absolute;
+  display: block;
+}
+
+.SharewebRightNavigatorBarAccordion details:first-child > summary > a {
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  font-family: 'Segoe UI Light';
+  color: #333;
+  padding-left: 0;
+  text-decoration: none;
+}
+
+summary:hover strong, details[open] summary strong, summary:hover::before, details[open] summary::before {
+  color: #333;
+}
+
+details summary {
+  /* position: relative; */
+  z-index: 10;
+  font-weight: 700;
+  font-family: 'Segoe UI';
+  display: inline-block;
+  width: 100%;
+  font-size: 15px;
+  padding-left: 40px;
+}
+
+@keyframes details-show {
+  from {
+      margin-bottom: -80%;
+      opacity: 0;
+      transform: translateY(-100%);
+  }
+}
+
+details > *:not(summary) {
+  /*animation: details-show 100ms ease-in-out;*/
+  position: relative;
+  z-index: 1;
+  transition: all 0.2s ease-in-out;
+  color: transparent;
+  overflow: hidden;
+}
+
+details[open] > *:not(summary) {
+  color: inherit;
+}
+
+.Panelaccordion details {
+  overflow: initial;
+  margin-bottom: 10px;
+}
+
+  .Panelaccordion details summary > a {
+      margin-left: 1.2rem;
+  }
+
+.expand-AccordionContent {
+  border: 1px solid #EEEEEE;
+  border-top: none;
+  background: #fff;
+  padding: 10px;
+}
+
+.Alertpopup .modal-footer {
+  padding: 10px 10px !important;
+  border: none !important;
+}
+
+.expand-AccordionContent .publicationItem {
+  border: none;
+  box-shadow: none;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 15px;
+}
+
+  .expand-AccordionContent .publicationItem:last-child {
+      padding-bottom: 0px;
+      border-bottom: none;
+  }
+
+.publicationItem {
+  box-shadow: none;
+}
+
+.expand-AccordionContent .publicationItem .mgadd, .expand-AccordionContent .publicationItem .tabdetail #marg-p {
+  padding: 0;
+}
+
+.expand-AccordionContent .publicationItem .tabdetail #imagedetail {
+  padding: 0;
+  width: 15%;
+}
+
+  .expand-AccordionContent .publicationItem .tabdetail #imagedetail img.image.mt-10 {
+      margin: 0 !important;
+  }
+
+.expand-AccordionContent .publicationItem #header {
+  margin: 10px 0px;
+}
+
+.expand-AccordionContent .publicationItem .tabdetail div {
+  margin: 0 !important;
+  padding: 0;
+}
+
+.SharewebRightNavigatorBarAccordion details:first-child > summary {
+  border-bottom: 2px solid var(--siteColor) !important;
+  padding-top: 0;
+}
+
+.SharewebRightNavigatorBarAccordion details.has-sub summary, .SharewebRightNavigatorBarAccordion details.has-sub > details > summary, .SharewebRightNavigatorBarAccordion details.has-sub > details > details > summary {
+  padding-left: 20px;
+}
+
+.SharewebRightNavigatorBarAccordion details summary {
+  font-size: 13px;
+  font-weight: 100;
+  background: none !important;
+  padding: 6px 0px;
+  border: none;
+}
+
+.SharewebRightNavigatorBarAccordion details > details {
+  border-bottom: 1px solid #dfdfdf;
+  margin-bottom: 0;
+}
+
+.SharewebRightNavigatorBarAccordion #accordion ul li a:hover {
+  font-weight: 700 !important;
+}
+
+.SharewebRightNavigatorBarAccordion ul#accordion li.accordion-header a:hover {
+  font-weight: 700 !important;
+  font-family: 'Segoe UI';
+  font-size: 14px !important;
+}
+
+.sharewebPages.customlist-style1 li .ReleveantDYnamicpages span.d-flex.aligncenter.justify-start > div:nth-child(2), .customlist-style1 li div span > div:first-child {
+  width: 100%;
+}
+
+.sharewebPages.customlist-style1 li .ReleveantDYnamicpages span.d-flex.aligncenter.justify-start > div:first-child {
+  width: auto;
+}
+
+.SharewebRightNavigatorBarAccordion details > details {
+  margin-bottom: 0;
+}
+
+.SharewebRightNavigatorBarAccordion details summary {
+  font-size: 13px;
+  font-weight: 100;
+  background: none !important;
+  padding: 6px 0px;
+  border: none;
+}
+
+.SharewebRightNavigatorBarAccordion details > details > summary > a.text-dark:hover {
+  font-weight: 700 !important;
+}
+
+.SharewebRightNavigatorBarAccordion details > details:last-child {
+  border-bottom: 0 !important;
+}
+
+.SharewebRightNavigatorBarAccordion details.has-Nosub summary::before {
+  content: none;
+}
+
+.SharewebRightNavigatorBarAccordion details > details {
+  border-bottom: 1px solid #dfdfdf;
+  margin-bottom: 0;
+}
+
+  .SharewebRightNavigatorBarAccordion details > details > details:last-child {
+      border-bottom: none !important;
+  }
+
+.SharewebRightNavigatorBarAccordion details summary::before {
+  left: 2px;
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid #333;
+  border-top: 1.5px solid #333;
+  top: 17px;
+}
+
+.SharewebRightNavigatorBarAccordion details.has-sub summary, .SharewebRightNavigatorBarAccordion details.has-sub > details > summary, .SharewebRightNavigatorBarAccordion details.has-sub > details > details > summary {
+  padding-left: 20px;
+}
+
+.SharewebRightNavigatorBarAccordion details.has-Nosub summary, .SharewebRightNavigatorBarAccordion details.has-Nosub > details > summary, .SharewebRightNavigatorBarAccordion details.has-Nosub > details > details > summary {
+  padding-left: 0px;
+}
+
+.SharewebRightNavigatorBarAccordion details > details > details summary:before {
+  content: none;
+}
+
+.SharewebRightNavigatorBarAccordion details > details > details > summary, .SharewebRightNavigatorBarAccordion details.has-Nosub > summary {
+  padding-left: 0px !important;
+}
+
+.SharewebRightNavigatorBarAccordion details:first-child > summary > a {
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  color: #333 !important;
+  padding-left: 0;
+}
+
+  .SharewebRightNavigatorBarAccordion details:first-child > summary > a:hover {
+      font-weight: 700 !important;
+      font-family: 'Segoe UI';
+      font-size: 14px !important;
+  }
+
+
+.SharewebRightNavigatorBarAccordion details:first-child > summary {
+  border-bottom: 2px solid #243A4A !important;
+  padding-top: 0;
+}
+
+.SharewebRightNavigatorBarAccordion details > details > summary > a.text-dark {
+  color: #333 !important;
+  text-decoration: none;
+}
+
+.sync-header {
+  margin-bottom: 20px;
+  /* border-bottom: 1px solid #ccc; Add underline beneath the header */
+}
+
+.sync-button {
+  float: right;
+}
+
+.image-container {
+  border: 1px solid #ccc; /* Add a border around the image container */
+  padding: 10px;
+  margin-bottom: 20px;
+  text-align: center; /* Center align the content */
+}
+
+.image-container h6 {
+  margin-top: 0;
+}
+
+.container {
+  /* margin-top: 20px; Add some top margin to the container */
+  padding: 20px; /* Add padding to the container */
+  /* border: 1px solid #ccc; Add a border around the container */
+  border-radius: 5px; /* Add border radius to make it look like a box */
+}

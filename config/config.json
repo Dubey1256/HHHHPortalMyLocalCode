@@ -470,6 +470,14 @@
         "manifest": "./src/webparts/lastModified/LastModifiedWebPart.manifest.json"
       }
     ]
+  },
+  "livingdocsapi-web-part": {
+    "components": [
+      {
+        "entrypoint": "./lib/webparts/livingdocsapi/LivingdocsapiWebPart.js",
+        "manifest": "./src/webparts/livingdocsapi/LivingdocsapiWebPart.manifest.json"
+      }
+    ]
   }
   },
   "externals": {
@@ -551,6 +559,7 @@
     "HhhhProfileWebPartStrings": "lib/webparts/hhhhProfile/loc/{locale}.js",
     "HhhcontactWebPartStrings": "lib/webparts/hhhcontact/loc/{locale}.js",
     "HhhhcontactprofileWebPartStrings": "lib/webparts/hhhhcontactprofile/loc/{locale}.js",
-    "LastModifiedWebPartStrings": "lib/webparts/lastModified/loc/{locale}.js"
+    "LastModifiedWebPartStrings": "lib/webparts/lastModified/loc/{locale}.js",
+    "LivingdocsapiWebPartStrings": "lib/webparts/livingdocsapi/loc/{locale}.js"
   }
 }
