@@ -39,7 +39,21 @@ const Permission_management = (props: any) => {
     let AllTasksMatches: any = [];
     AllTasksMatches = await web.lists
       .getById(props?.context?.TaskUserListID)
-      .items.getAll(4000)
+      .items.select(
+        "Id",
+        "Email",
+        "Suffix",
+        "Title",
+        "Item_x0020_Cover",
+        "AssingedToUser/Title",
+        "AssingedToUser/EMail",
+        "AssingedToUser/Id",
+        "AssingedToUser/Name",
+        "Author/Id",
+        "UserGroup/Id",
+        "ItemType"
+    )
+    .expand("AssingedToUser", "UserGroup","Author").get()
       .then((data: any) => {
         setTaskUser(data);
       })
@@ -47,6 +61,7 @@ const Permission_management = (props: any) => {
         console.log(err);
       });
   };
+ 
 
   const getData = async () => {
     await $.ajax({
@@ -120,107 +135,22 @@ const Permission_management = (props: any) => {
     });
   };
 
-  // const fetchRequestDigest = async () => {
-  //   try {
-  //     const response = await props?.context.context.spHttpClient.post(
-  //       `${props?.context.context.pageContext.web.absoluteUrl}/_api/contextinfo`,
-  //       props?.context.context.spHttpClient.configurations.v1
-  //     );
-
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       setRequestDigest(data.FormDigestValue);
-  //     } else {
-  //       console.error(`Error fetching request digest: ${response.statusText}`);
-  //     }
-  //   } catch (error) {
-  //     console.error('An error occurred while fetching request digest:', error);
-  //   }
-  // };
-
-  // const postUser = async (data, url) => {
-  //   try {
-  //     const response = await props?.context.context.spHttpClient.post(
-  //       `${props?.context.context.pageContext.web.absoluteUrl}/_api/web${url}`,
-  //       props?.context.context.spHttpClient.configurations.v1,
-  //       {
-  //         headers: {
-  //           'Accept': 'application/json;odata=nometadata',
-  //           'Content-Type': 'application/json;odata=verbose',
-  //           'X-RequestDigest': requestDigest || '',
-  //         },
-  //         body: JSON.stringify(data),
-  //       }
-  //     );
-
-  //     if (response.ok) {
-  //       // Handle success
-  //       console.log('Success:', await response.json());
-  //       // Update state or perform other actions as needed
-  //     } else {
-  //       // Handle error
-  //       console.error(`Error: ${response.statusText}`);
-  //     }
-  //   } catch (error) {
-  //     // Handle unexpected errors
-  //     console.error('An error occurred:', error);
-  //   }
-  // };
-
-  // const postUser = async () => {
-  //   var url = "https://hhhhteams.sharepoint.com/sites/HHHH/sp" + "/_api/web/sitegroups(" + id + ")/users";
-  //   var data = {
-  //     "__metadata": {
-  //       "type": "SP.User"
-  //     },
-  //     "LoginName": `i:0#.f|membership|${inputValue.Email}` ,
-  //   };
-
-  //   $.ajax({
-  //     url: url,
-  //     method: "POST",
-  //     headers: {
-  //       "accept": "application/json;odata=verbose",
-  //       "content-Type": "application/json;odata=verbose",
-  //     },
-  //     data: JSON.stringify(data),
-  //     success: function (result) {
-  //       console.log(result);
-  //     },
-  //     error: function (result, status) {
-  //       console.log(result);
-  //       alert("You do not have the necessary rights to access this section");
-  //     }
-  //   });
-  // };
+ 
 
   const postUser = async () => {
     const webUrl = props?.context?.siteUrl;
-    // const id = 1; // Replace with your actual group ID
-    // const inputValue = { Email: "user@example.com" }; // Replace with your actual input value
 
     try {
-      // Ensure the SPFx context is available
       const web = new Web(webUrl);
-
-      // Construct the user data
-      // const userData:any = {
-      //   LoginName: `i:0#.f|membership|${inputValue.Email}`
-      // };
       var data: any = {
         LoginName: `i:0#.f|membership|${inputValue.Email}`,
       };
-      // let loginName : any = ;
-
-      // Make the HTTP POST request to add the user to the group
       await web.siteGroups.getById(id).users.add(data);
 
       console.log("User added successfully");
       setInputValue({ ...inputValue, Title: "" });
     } catch (error) {
       console.error(error);
-
-      // Handle unauthorized/forbidden error
       if (error.status === 403 || error.status === 401) {
         alert("You do not have the necessary rights to access this section");
       } else {
@@ -232,14 +162,14 @@ const Permission_management = (props: any) => {
   const checkUser = async () => {
     const filteredSuggestions : any= taskUser.filter((suggestion: any) =>
       selectedPeople.some(
-        (limitedItem: any) => limitedItem.secondaryText == suggestion.Email
+        (limitedItem: any) => limitedItem.secondaryText == suggestion?.AssingedToUser?.EMail
       )
     );
 
     let commanArray: any = [];
     filteredSuggestions?.map(async (items: any) => {
       let newArray: any = [];
-      var targetId = items?.AuthorId;
+      var targetId = items?.Author?.Id;
       var query = "/_api/web/GetUserById(" + targetId + ")/Groups";
       var SiteUrl = props?.context?.siteUrl;
 
@@ -274,7 +204,6 @@ const Permission_management = (props: any) => {
     const newArrayWithoutDuplicates = commanArray.filter((obj : any, index : any, self: any) =>
   index === self.findIndex((o: any) => o.Id === obj.Id)
 );
-    // const newArrayWithoutDuplicates : any= Array.from(new Set(commanArray.map((obj:any) => obj.Id))).map((Id:any) => commanArray.find((obj:any) => obj.Id === Id));
     setPermissionUserGroup(newArrayWithoutDuplicates);
   };
 
