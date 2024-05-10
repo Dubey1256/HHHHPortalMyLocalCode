@@ -433,8 +433,9 @@ const Apps = (props: any) => {
         // if (windowEndDate !== undefined) {
         //   windowEndDate = new Date(windowEndDate).setDate(new Date(windowEndDate).getDate() - 1);
         // }
-        while (dates.length < repeatInstance || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
-          if ((repeatInstance !== 0 ? count > repeatInstance : new Date(dates[dates.length - 1]).setHours(0, 0, 0, 0) > windowEndDate) && useCount) {
+        const repeat = repeatInstance !== 0 ? repeatInstance - 1 : repeatInstance;
+        while (dates.length < repeat || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
+          if ((repeat !== 0 ? count > repeat : new Date(dates[dates.length - 1]).setHours(0, 0, 0, 0) > windowEndDate) && useCount) {
             break;
           }
           count++;
@@ -826,8 +827,8 @@ const Apps = (props: any) => {
     const eventYear = eventDate.getFullYear(); // Get year of the event
     return { year: eventYear, month: eventMonth };
   }
-  const handleNavigate = (newDate: any ,newiew:any) => {
-    setview(newiew || 'month')
+  const handleNavigate = (newDate: any, newView: any) => {
+    setview(newView || 'months');
     const { year: currentYear, month: currentMonth } = getYearMonthFromDate(newDate);
     const filteredData = events.filter((event: any) => {
       const startDate = getYearMonthFromDate(event.start);
@@ -861,7 +862,7 @@ const Apps = (props: any) => {
   // Handle Select Slot
   const handleSelectSlot = (slotInfo: any) => {
     let yname; // Not sure what this variable is used for, you may need to initialize it with some value or remove it if not needed
-    people(yname); // Unclear what this function does and what is expected here
+    processPeople(yname); // Unclear what this function does and what is expected here
     setLocation("");
     setType("Un-Planned");
     setPeoplePickerShow(true);
@@ -1129,15 +1130,12 @@ const Apps = (props: any) => {
     try {
       const web = new Web(props.props.siteUrl);
 
-      
+      const mycolors = 
         (newEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
           ((newEvent.Event_x002d_Type === "Company Holiday") || (newEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
-          let mytitle = newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
-          if (newEvent != undefined && (newEvent?.type == "National Holiday" || newEvent?.type == "Company Holiday")) {
-            mytitle = newEvent.type + "-" + newEvent.title;
-          }
+
       const addEventItem = {
-        Title: mytitle,
+        Title: newEvent.Title,
         Description: newEvent.Description,
         EventDate: await getUtcTime(newEvent.EventDate),
         Event_x002d_Type: newEvent.Event_x002d_Type,
@@ -1147,7 +1145,7 @@ const Apps = (props: any) => {
         fAllDayEvent: newEvent.fAllDayEvent,
         fRecurrence: newEvent.fRecurrence,
         EventType: newEvent.EventType,
-        // Color: mycolors,
+        Color: mycolors,
         UID: newEvent.UID,
         HalfDay: HalfDaye,
         HalfDayTwo: HalfDayT,
@@ -1168,7 +1166,7 @@ const Apps = (props: any) => {
     try {
       const web = new Web(props.props.siteUrl);
       const mytitle = `${editedEvent.name}-${editedEvent.type}-${editedEvent.title}`;
-      const mycolors = (HalfDaye || HalfDayT) ? "#6d36c5" :
+      const mycolors = 
         (editedEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
           ((editedEvent.Event_x002d_Type === "Company Holiday") || (editedEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
 
@@ -1216,9 +1214,18 @@ const Apps = (props: any) => {
       const endTime = selectedTimeEnd;
       const endDateTime = `${_endDate} ${endTime}`;
       const end = moment(endDateTime, "YYYY/MM/DD HH:mm").toLocaleString();
-
-      let mytitle = peopleName + "-" + type + "-" + inputValueName;
-      let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : type === "Work From Home" ? "#e0a209" : (type === "Company Holiday" || type === "National Holiday") ? "#228B22" : "";
+      let mytitle;
+      let inputValues: any = inputValueName
+      if (inputValueName.indexOf(peopleName + "-" + type) !== -1) {
+        mytitle = inputValueName;
+      } else if (inputValues.includes(peopleName)) {
+        let inputData = inputValues.split('-')
+        mytitle = peopleName + "-" + type + "-" + inputData[inputData?.length - 1];
+      }
+      else {
+        mytitle = peopleName + "-" + type + "-" + inputValueName;
+      }
+      //let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : type === "Work From Home" ? "#e0a209" : (type === "Company Holiday" || type === "National Holiday") ? "#228B22" : "";
 
       if (!editRecurrenceEvent) {
         const newEventData: any = {
@@ -1231,7 +1238,7 @@ const Apps = (props: any) => {
           Description: '',
           HalfDay: HalfDaye,
           HalfDayTwo: HalfDayT,
-          Color: mycolors,
+         // Color: mycolors,
           EventDate: new Date(start),
           EndDate: new Date(end),
           fAllDayEvent: allDay,
@@ -1280,53 +1287,32 @@ const Apps = (props: any) => {
     }
     return userInfoArray;
   };
-  const people = async (people: any) => {
-    let userId: any = [];
-    let userTitle: any = [];
-    let userSuffix: any = [];
-
+  const processPeople = async (people: any[]) => {
+    let userId: string[] = [];
+    let userTitle: string[] = [];
+    let userSuffix: string[] = [];
+  
     if (people?.length > 0) {
-      let userMail: any = []
-      people.map((item: any) => {
-        if (item?.id != undefined) {
-          userMail?.push(item?.id.split("|")[2])
+      let userMail: string[] = [];
+      people.forEach((item: any) => {
+        if (item?.id !== undefined) {
+          userMail.push(item.id.split("|")[2]);
         }
-      })
+      });
       let userInfo = await getUserInfo(userMail);
-      userData = userInfo
-      userInfo.map((item: any) => {
-        // userId = item.Id
-        if (item?.Title != undefined) {
-          userTitle.push(item.Title)
-          userId.push(item.Id)
+      userInfo.forEach((item: any) => {
+        if (item?.Title !== undefined) {
+          userTitle.push(item.Title);
+          userId.push(item.Id);
         }
-      })
-      // userSuffix = userTitle
-      //   .split(" ")
-      //   .map((i: any) => i.charAt(0))
-      //   .join("");
+      });
       title_Id = userId;
       title_people = userTitle;
       setPeopleName(userTitle);
-      setPeopleId(userId)
-    } else {
-      let userInfo = await getUserInfo(
-        props.props.context._pageContext._legacyPageContext.userPrincipalName
-      );
-      userInfo.map((item: any) => {
-        userId = item.Id
-        userTitle = item.Title
-      })
-      // userSuffix = userTitle
-      //   .split(" ")
-      //   .map((i: any) => i.charAt(0))
-      //   .join("");
-      title_Id = userId;
-      title_people = userTitle;
-      setPeopleName(userTitle);
-      setPeopleId(title_Id)
+      setPeopleId(userId);
     }
   };
+  
 
   const ConvertLocalTOServerDateToSave = (date: any, Time: any) => {
     if (date != undefined && date != "") {
@@ -1488,7 +1474,7 @@ const SendEmail = (EventData: any, MyEventData: any) => {
               mytitle = newEvent.type + "-" + newEvent.title;
             }
 
-            let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : newEvent.type === "Work From Home" ? "#e0a209" : (newEvent.type === "Company Holiday" || newEvent.type === "National Holiday") ? "#228B22" : "";
+            let mycolors = newEvent.type === "Work From Home" ? "#e0a209" : (newEvent.type === "Company Holiday" || newEvent.type === "National Holiday") ? "#228B22" : "";
 
             let eventData = {
               Title: mytitle,
@@ -1859,7 +1845,7 @@ const SendEmail = (EventData: any, MyEventData: any) => {
                 personSelectionLimit={10}
                 titleText="Select People"
                 resolveDelay={1000}
-                onChange={people}
+                onChange={processPeople}
                 showtooltip={true}
                 required={true}
                 disabled={IsDisableField}
