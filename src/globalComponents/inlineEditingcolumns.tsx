@@ -727,6 +727,7 @@ const inlineEditingcolumns = (props: any) => {
       setTaskAssignedTo(tempAssigned);
     }
     else{
+      AssignedToIds = []
       setTaskAssignedTo([])
     }
     if (dt?.TeamMemberUsers?.length > 0) {
@@ -741,6 +742,7 @@ const inlineEditingcolumns = (props: any) => {
       setTaskTeamMembers(tempTeam);
     }
     else{
+      TeamMemberIds = []
       setTaskTeamMembers([])
     }
     if (dt?.ResponsibleTeam?.length > 0) {
@@ -755,6 +757,7 @@ const inlineEditingcolumns = (props: any) => {
       setTaskResponsibleTeam(tempResponsible);
     }
     else{
+      ResponsibleTeamIds = []
       setTaskResponsibleTeam([])
     }
   },[]);

@@ -1011,11 +1011,6 @@ function EditProjectPopup(item: any) {
     var Items = EditData;
 
     CheckCategory?.forEach((itemm: any, index: any) => {
-      CategoriesData.map((catId, index) => {
-        if (itemm.Id == catId.Id) {
-          CategoriesData.splice(index, 1);
-        }
-      });
       if (itemm.isChecked == true || itemm.isselected == true) {
         array2.push(itemm);
       }
@@ -1030,14 +1025,6 @@ function EditProjectPopup(item: any) {
       //  NewArray = array2
     }
 
-    if (NewArray != undefined && NewArray.length > 0) {
-      CheckCategory = [];
-      NewArray.map((NeitemA: any) => {
-        CategoriesData.push(NeitemA);
-      });
-    } else {
-      CheckCategory = [];
-    }
     var CategoryID: any = [];
     var categoriesItem = "";
     CategoriesData?.map((category: any) => {
