@@ -367,10 +367,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         header: "",
         id: "SortOrder",
         placeholder: "SortOrder",
+        size: 42,  
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.SortOrder == filterValue;
         },
-        size: 42,
       },
       {
         accessorFn: (row) => row?.RoleTitle,
