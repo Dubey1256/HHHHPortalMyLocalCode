@@ -28,6 +28,15 @@ const TaskUserManagementApp = (props: any) => {
             if (item.Item_x0020_Cover != undefined && item.Item_x0020_Cover != null){
                 item.Item_x002d_Image = item?.Item_x0020_Cover
             }
+             if (item.UserGroup !== undefined && item.UserGroup !== null){
+                item.UserGroupTitle = item?.UserGroup?.Title
+            }
+            else{
+                item.UserGroupTitle = ""
+            }
+            if (item.Team == null || item.Team == undefined) {
+                item.Team = ""
+            }
             const approverTitles = item.Approver ? item.Approver.map((approver: any) => approver.Title).join(', ') : '';
             const roleTitles = item.Role ? item.Role.map((role: any) => role).join(', ') : '';
             if (item?.CategoriesItemsJson != null && item?.CategoriesItemsJson.includes("</div>")) {
