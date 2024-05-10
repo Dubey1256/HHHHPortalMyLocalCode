@@ -1300,6 +1300,7 @@ const Apps = (props: any) => {
         }
       });
       let userInfo = await getUserInfo(userMail);
+      userData = userInfo
       userInfo.forEach((item: any) => {
         if (item?.Title !== undefined) {
           userTitle.push(item.Title);
@@ -1474,7 +1475,7 @@ const SendEmail = (EventData: any, MyEventData: any) => {
               mytitle = newEvent.type + "-" + newEvent.title;
             }
 
-            let mycolors = newEvent.type === "Work From Home" ? "#e0a209" : (newEvent.type === "Company Holiday" || newEvent.type === "National Holiday") ? "#228B22" : "";
+            let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : newEvent.type === "Work From Home" ? "#e0a209" : (newEvent.type === "Company Holiday" || newEvent.type === "National Holiday") ? "#228B22" : "";
 
             let eventData = {
               Title: mytitle,
