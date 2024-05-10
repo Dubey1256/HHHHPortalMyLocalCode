@@ -2991,15 +2991,15 @@ const EditTaskPopup = (Items: any) => {
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
                             }
-                            if (TaskDetailsFromCall[0]?.Categories?.length > 0 && TaskDetailsFromCall[0]?.Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
-                                ValueStatus = CalculateStatusPercentage;
-                                setSendEmailNotification(true);
-                                Items.StatusUpdateMail = true;
-                            }
-                            else {
-                                setSendEmailComponentStatus(false);
-                                Items.StatusUpdateMail = false;
-                            }
+                            // if (TaskDetailsFromCall[0]?.Categories?.length > 0 && TaskDetailsFromCall[0]?.Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
+                            //     ValueStatus = CalculateStatusPercentage;
+                            //     setSendEmailNotification(true);
+                            //     Items.StatusUpdateMail = true;
+                            // }
+                            // else {
+                            //     setSendEmailComponentStatus(false);
+                            //     Items.StatusUpdateMail = false;
+                            // }
                             if (sendEmailGlobalCount > 0) {
                                 if (sendEmailStatus) {
                                     setSendEmailComponentStatus(false);

@@ -343,7 +343,7 @@ const SmartInformation = (props: any, ref: any) => {
             allSmartInformationglobaltagdocuments.push(items)
 
             if (allSmartInformationglobal?.length == allSmartInformationglobaltagdocuments?.length) {
-              setSmartInformation(allSmartInformationglobaltagdocuments);
+              setSmartInformation([...allSmartInformationglobaltagdocuments]);
               rerender();
             }
 
@@ -572,8 +572,6 @@ const SmartInformation = (props: any, ref: any) => {
             })
         }
         else {
-
-
 
           // await web.lists.getByTitle("SmartInformation")
           await web.lists.getById(props?.AllListId?.SmartInformationListID)
@@ -967,7 +965,8 @@ const SmartInformation = (props: any, ref: any) => {
         var member = taskUser.filter((elem: any) => elem.AssingedToUser != undefined && elem.AssingedToUser.Id === 32)
       }
       else {
-        var member = taskUser.filter((elem: any) => elem.Email === email)
+        // var member = taskUser.filter((elem: any) => elem.Email.toLowerCase() === email.toLowerCase())
+        var member = taskUser.filter((elem: any) => new RegExp('^' + email + '$', 'i').test(elem.Email));
       }
       setsmartnoteAuthor(member)
       setIsUserNameValid(true);
@@ -1101,6 +1100,12 @@ const SmartInformation = (props: any, ref: any) => {
   const closeDoc = () => {
     addSmartInfoPopupAddlinkDoc2 = false;
     handleClose()
+    if (props.showHide === "projectManagement" || props.showHide == "ANCTaskProfile") {
+      if (props?.callback != undefined || null) {
+        props?.callback()
+      }
+    }
+  
   }
   return (
     <div>
@@ -1378,12 +1383,12 @@ const SmartInformation = (props: any, ref: any) => {
 
 
             </a>
-            <a className={SelectedTilesTitle == "Task" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('Task')}>
+            {props?.listName != 'Master Tasks' && <a className={SelectedTilesTitle == "Task" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('Task')}>
               <p className='full-width floar-end'>
                 Task
               </p>
               <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Task.png" title="Tasks" data-themekey="#" />
-            </a>
+            </a>}
 
           </div>
 
