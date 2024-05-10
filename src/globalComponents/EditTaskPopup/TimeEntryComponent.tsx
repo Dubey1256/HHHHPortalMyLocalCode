@@ -2467,7 +2467,7 @@ function reverseArray(arr: any) {
       .getById(ListId)
       .items.getById(CategoryyID)
       .update({
-        Title: newData != undefined ? newData.Title : checkCategories,
+       Title: newData.Title != '' ? newData.Title : checkCategories,
         CategoryId:
           Category != undefined && Category != "" ? Category : CategoriesIdd,
       })
@@ -3755,7 +3755,7 @@ function reverseArray(arr: any) {
                         defaultValue={
                           checkCategories != undefined
                             ? checkCategories
-                            : item.Category.Title
+                            : item.Title
                         }
                         onChange={(e) =>
                           setNewData({ ...newData, Title: e.target.value })
