@@ -286,7 +286,11 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
    * @memberof EventRecurrenceInfoDaily
    */
   private async applyRecurrence() {
-    const endDate = await this.getUtcTime(this.state.endDate);
+
+    const endDateString = await this.getUtcTime(this.state.endDate);
+    const endDate = new Date(endDateString);
+    // endDate.setHours(endDate.getHours() + 5);
+    // endDate.setMinutes(endDate.getMinutes() + 30);
     let selectDateRangeOption;
     switch (this.state.selectdateRangeOption) {
       case 'noDate':
@@ -302,7 +306,9 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
         break;
     }
     const recurrenceXML = `<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat>` +
-      `<daily ${this.state.selectPatern === 'every' ? `dayFrequency="${this.state.numberOfDays.trim()}"/>` : 'weekday'}</repeat>${selectDateRangeOption}</rule></recurrence>`;
+      `<daily ${this.state.selectPatern === 'every' ? `dayFrequency="${this.state.numberOfDays.trim()}"/>` : `weekday="TRUE" />`}</repeat>${selectDateRangeOption}</rule></recurrence>`;
+
+
     //  console.log(recurrenceXML);
     //endDate change
     this.props.returnRecurrenceData(this.state.startDate, this.state.endDate, recurrenceXML);
