@@ -12,7 +12,7 @@ const TaskUserManagementApp = (props: any) => {
     const baseUrl = props.props.context.pageContext._web.absoluteUrl
     let AllListid: any = {
         TaskUserListID: props.props.TaskUserListId,
-        SmartMetadataListID: props.props.SmartMetaDataId,
+        SmartMetadataListID: props.props.SmartMetadataListID,
         siteUrl: props.props.context.pageContext._web.absoluteUrl,
     }
     const fetchAPIData = async () => {
@@ -44,7 +44,7 @@ const TaskUserManagementApp = (props: any) => {
         setTaskGroupsListData(taskGroupsListData)
 
 
-        const fetchedSmartMetaData = await web.lists.getById(props.props.SmartMetaDataId).items.select("Id,ParentID,Parent/Id,Parent/Title,TaxType,Title,listId,siteUrl,SortOrder,Configurations").expand("Parent").getAll();
+        const fetchedSmartMetaData = await web.lists.getById(props.props.SmartMetadataListID).items.select("Id,ParentID,Parent/Id,Parent/Title,TaxType,Title,listId,siteUrl,SortOrder,Configurations").expand("Parent").getAll();
         setSmartMetaDataItems(fetchedSmartMetaData)
     }
 
