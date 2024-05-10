@@ -5366,7 +5366,7 @@ const EditTaskPopup = (Items: any) => {
                                 target="_blank"
                                 className="mx-2"
                                 data-interception="off"
-                                href={`${siteUrls}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}
+                                href={`${siteUrls}/Lists/${Items.Items.siteType !== "Offshore%20Tasks" ? Items.Items.siteType : "SharewebQA"}/EditForm.aspx?ID=${EditData.ID}`}
                             >
                                 Open Out-Of-The-Box Form
                             </a>
@@ -5504,7 +5504,7 @@ const EditTaskPopup = (Items: any) => {
                                 target="_blank"
                                 className="mx-2"
                                 data-interception="off"
-                                href={`${Items.Items.siteType}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}
+                                href={`${siteUrls}/Lists/${Items.Items.siteType !== "Offshore%20Tasks" ? Items.Items.siteType : "SharewebQA"}/EditForm.aspx?ID=${EditData.ID}`}
                             >
                                 Open Out-Of-The-Box Form
                             </a>
