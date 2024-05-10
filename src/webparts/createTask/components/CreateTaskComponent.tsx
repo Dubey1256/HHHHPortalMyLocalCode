@@ -107,6 +107,8 @@ function CreateTaskComponent(props: any) {
             siteUrl: props?.SelectedProp?.siteUrl,
             AdminConfigrationListID: props?.SelectedProp?.AdminConfigrationListID,
             isShowTimeEntry: isShowTimeEntry,
+            Context: props?.SelectedProp?.Context,
+            context: props?.SelectedProp?.Context,
             isShowSiteCompostion: isShowSiteCompostion
         }
         try {
