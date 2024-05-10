@@ -2257,7 +2257,8 @@ function EditProjectPopup(item: any) {
                           <VersionHistoryPopup
                             siteUrls={AllListId?.siteUrl}
                             taskId={EditData.ID}
-                            listId={AllListId?.MasterTaskListID}
+                            listName = "Master Tasks"
+                            RequiredListIds={AllListId}
                           />
                         ) : (
                           ""

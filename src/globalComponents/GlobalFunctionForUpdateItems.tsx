@@ -230,6 +230,7 @@ export const UpdateTaskStatusFunction = async (RequiredData: any): Promise<any> 
             const AllTaskUsersData = GetTaskUsersData?.AllUsersData;
             const CurrentUserData = GetTaskUsersData?.CurrentUser;
             const ApproversData = GetTaskUsersData?.ApproversData;
+
             let UpdateDataJSON: any = { PercentComplete: Number(Status) / 100 };
             let TaskCategories: string = ItemDetails?.TaskCategories?.map((item: any) => item.Title).join(', ');
             let TaskCategoriesIds: any = ItemDetails?.TaskCategories?.map((Item: any) => Item.Id);
@@ -402,13 +403,12 @@ export const UpdateTaskStatusFunction = async (RequiredData: any): Promise<any> 
             if (Status >= 5 && Status <= 90) {
                 if (CheckImmediateCategoryTask || CheckEmailCategoryTask) {
                     try {
-                        if (ApproversData?.length > 0) {
-                            AllTaskUsersData?.map((AllUserData: any) => {
-                                if (AllUserData.AssingedToUserId === ItemDetails?.Author?.Id) {
-                                    ReceiverEmail = [AllUserData.Email];
-                                }
-                            })
-                        }
+                        AllTaskUsersData?.map((AllUserData: any) => {
+                            if (AllUserData.AssingedToUserId === ItemDetails?.Author?.Id) {
+                                ReceiverEmail = [AllUserData?.AssingedToUser?.EMail];
+                            }
+                        })
+
                         try {
                             let EmailRequiredData: any = {
                                 ItemDetails: ItemDetails,
@@ -897,7 +897,7 @@ export const SendApprovalEmailNotificationComponent = (props: any) => {
             const containerDiv = document.createElement('div');
             const reactElement = React.createElement(EmailMessage?.type, EmailMessage?.props);
             ReactDOM.render(reactElement, containerDiv);
-            const FinalMSG = "<style>p>br {display: none;}</style>" + containerDiv.innerHTML;
+            const FinalMSG = "" + containerDiv.innerHTML;
             const EmailProps = {
                 To: ReceiverEmail,
                 Subject: "[ " + ItemDetails?.siteType + " - " + TaskStatus + " ]" + ItemDetails?.Title,
@@ -1240,7 +1240,7 @@ export const SendApprovalEmailNotificationBodyContent = (props: any) => {
 
 export const SendEmailAndImmediateTaskNotificationBodyContent = (props: any) => {
     return (
-        <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
+        <div id='htmlMailBodyEmail'>
             <div style={{ backgroundColor: "#FAFAFA" }}>
                 <div style={{ width: "900px", backgroundColor: "#fff", padding: "0px 32px", margin: "0 auto" }}>
                     <div style={{ display: "flex", alignItems: "center", padding: "56px 0px" }}>
@@ -1598,7 +1598,9 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                 <span style={{ fontSize: "10pt", color: "#333", marginRight: '5px', fontWeight: '600' }}>
                                                                     {i + 1}.
                                                                 </span>
-                                                                <span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span></div>
+                                                                {/* <span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span> */}
+                                                                {fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")}
+                                                            </div>
 
                                                             {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
                                                                 return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px', width: '100%' }}>
