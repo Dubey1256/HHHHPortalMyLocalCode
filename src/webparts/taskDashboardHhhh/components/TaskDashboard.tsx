@@ -1578,7 +1578,7 @@ const TaskDashboard = (props: any) => {
             var subject = "Today's Working Tasks of All Team";
             taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
-                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst") {
+                if (userGroup.Title == "Developers Team" || userGroup.Title == "Portfolio Lead Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst") {
                     if (userGroup.Title == "Smalsus Lead Team") {
                         userGroup.childBackup = userGroup?.childs;
                         userGroup.childs = [];
@@ -1943,7 +1943,7 @@ const TaskDashboard = (props: any) => {
             var subject = `Today's Working Tasks of All Team Members: ${Moment(new Date()).zone('Asia/Kolkata').format('DD/MM/YYYY')}`;
             taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
-                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst" || userGroup.Title == "Trainees") {
+                if (userGroup.Title == "Portfolio Lead Team" || userGroup.Title == "Developers Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst" || userGroup.Title == "Trainees") {
                     if (userGroup.Title == "Smalsus Lead Team") {
                         userGroup.childBackup = userGroup?.childs;
                         userGroup.childs = [];
@@ -1955,7 +1955,7 @@ const TaskDashboard = (props: any) => {
                     }
                     userGroup?.childs?.map((teamMember: any) => {
                         if (!onLeaveEmployees.some((emp: any) => emp == teamMember?.AssingedToUserId)) {
-                            if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Trainees") {
+                            if (userGroup.Title == "Portfolio Lead Team" || userGroup.Title == "Developers Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Trainees") {
                                 estimatedTimeUsersCount += 1;
                             }
                             let body: any = '';

@@ -1467,6 +1467,19 @@ const EditTaskPopup = (Items: any) => {
                 setOpenTeamPortfolioPopup(false);
                 setProjectManagementPopup(false)
                 setopenLinkedPortfolioPopup(false);
+            } else if (Type == "untaggedProject") {
+                setSelectedProject(DataItem);
+                let updatedItem = {
+                    ...EditDataBackup,
+                    Project: DataItem[0],
+                };
+
+                EditDataBackup = updatedItem;
+                setEditData(updatedItem);
+            } else if (Type == "untagged") {
+                setLinkedPortfolioData(DataItem);
+                LinkedPortfolioDataBackup = DataItem;
+                setOpenTeamPortfolioPopup(false);
             } else {
                 if (DataItem != undefined && DataItem.length > 0) {
                     if (DataItem[0]?.Item_x0020_Type !== "Project" || DataItem[0]?.Item_x0020_Type !== "Sprint") {

@@ -119,18 +119,18 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Editor/Title", "Modified", "Comments")
             .expand("TeamMembers", "Author", "ResponsibleTeam", "PortfolioType", "Editor")
             .get()
-        } else {
+        }  else {
           taskDetails = await web.lists
             .getByTitle(this.state.listName)
             .items
             .getById(this.state.itemID)
-            .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
-            .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "Portfolio", "Editor", "Project", "TaskCategories")
+            .select("ID", "Title", "TaskID","ParentTask/TaskID","ParentTask/Id", "Id", "TaskType/Title", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+            .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "Portfolio", "Editor", "Project", "TaskCategories","ParentTask","TaskType")
             .get()
         }
       } else {
-        taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "ComponentLink", "PriorityRank", "DueDate", "TaskCategories/Id", "TaskCategories/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
-          .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "Portfolio", "PortfolioType", "Editor", "Project", "TaskCategories")
+        taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "TaskID","ParentTask/TaskID","ParentTask/Id", "Id", "TaskType/Title", "ComponentLink", "PriorityRank", "DueDate", "TaskCategories/Id", "TaskCategories/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+          .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "Portfolio", "PortfolioType", "Editor", "Project", "TaskCategories","ParentTask","TaskType")
           .get()
       }
     } catch (e) {

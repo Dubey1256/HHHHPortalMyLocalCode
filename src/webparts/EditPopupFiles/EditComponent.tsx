@@ -1566,8 +1566,13 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
             linkedComponentData?.length >= 0
           ) {
             linkedComponentData?.map(( smart: any,index: any)=>{
+              if(smart?.Id === undefined){
+                RelevantPortfolioIds = smart;
+                PortfolioIds;
+              }else{
               RelevantPortfolioIds = smart.Id;
               PortfolioIds.push(smart.Id);
+              }
             });
           }
         });
