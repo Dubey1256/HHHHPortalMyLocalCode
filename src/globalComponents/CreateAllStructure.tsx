@@ -268,7 +268,7 @@ const CreateAllStructureComponent = (props: any) => {
             const currentValue = parseInt(parts[1].substring(1));
             const newValue = currentValue + 1;
             FeaPortfolioStr = `${prefix}-S${newValue}`;
-            fealevel = PortfolioStructureIdSub[0]?.PortfolioLevel + 1;
+            fealevel = PortfolioStructureIdFea[0]?.PortfolioLevel + 1;
           }
           // else {
           //     fealevel = PortfolioStructureIdFea[0].PortfolioLevel + 1
@@ -567,7 +567,11 @@ const CreateAllStructureComponent = (props: any) => {
         }
         if (val.compFeatures != undefined && val.compFeatures.length > 0) {
           val.subRows = [val.subRows,val?.compFeatures];
-          [...val.subRows.flat()];
+          if(val.subRows.length>1)
+            {
+              val.subRows = val?.subRows.flat();
+            }
+         
         }
       });
       // hierarchyData?.forEach((val: any) => {
