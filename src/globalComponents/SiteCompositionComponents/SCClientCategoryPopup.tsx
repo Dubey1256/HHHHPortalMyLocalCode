@@ -254,7 +254,7 @@ const ClientCategoryPopup = (Props: any) => {
                 isBlocking={false}
                 type={PanelType.custom}
                 customWidth="900px"
-                onRenderFooter={onRenderClientCategoryFooter} 
+                onRenderFooter={onRenderClientCategoryFooter}
             >
                 <div className="">
                     <div className='col-sm-12'>
@@ -303,12 +303,13 @@ const ClientCategoryPopup = (Props: any) => {
                                                     >
                                                         <a>
                                                             {item.Title}
-                                                            {item.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                <div className="popover__content">
-                                                                    <span>{item.Description1}</span>
-                                                                </div>
-                                                            </div> : null}
+                                                            {item.Description1 ?
+                                                                <span className="hover-text alignIcon">
+                                                                    <span className="svg__iconbox svg__icon--info dark"></span>
+                                                                    <span className="tooltip-text pop-right">
+                                                                        {item.Description1}
+                                                                    </span>
+                                                                </span> : null}
                                                         </a>
                                                     </p>
                                                     <ul className="sub-menu clr">
