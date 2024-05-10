@@ -225,7 +225,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
       if (allSite.TabName == 'DOCUMENTS' || allSite.TabName == 'FOLDERS' || allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES' || allSite.TabName == 'TEAM-PORTFOLIO' || allSite.TabName == "WEB PAGES") {
         data?.map((item: any) => {
           item.siteType = allSite.TabName
-          if(allSite.TabName == 'DOCUMENTS'&& item?.Title==undefined){
+          if(allSite.TabName == 'DOCUMENTS'&& item?.Title==undefined || allSite.TabName=="WEB PAGES"){
             item.Title=item?.FileLeafRef
           }
           if (allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES' || allSite.TabName == 'TEAM-PORTFOLIO') {
