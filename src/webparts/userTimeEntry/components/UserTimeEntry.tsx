@@ -3260,6 +3260,7 @@ export default class UserTimeEntry extends React.Component<
       ShowingAllData: ShowingData,
     });
   };
+  
   private SelectedAllTeam = (e: any) => {
     let currentuserId =
       this.props.Context.pageContext?._legacyPageContext.userId;
@@ -3267,10 +3268,10 @@ export default class UserTimeEntry extends React.Component<
       AllTaskUser?.forEach((val: any) => {
         let user: any = [];
         if (
-          (val?.UserGroup?.Title == "Senior Developer Team" ||
+          (val?.UserGroup?.Title == "Developers Team" ||
             val?.UserGroup?.Title == "Smalsus Lead Team" ||
             val?.UserGroup?.Title == "Junior Task Management" ||
-            val?.UserGroup?.Title == "Junior Developer Team" ||
+            val?.UserGroup?.Title == "Portfolio Lead Team" ||
             val?.UserGroup?.Title == "Design Team" ||
             val?.UserGroup?.Title == "QA Team" ||
             val?.UserGroup?.Title == "Trainees") &&
@@ -3301,6 +3302,7 @@ export default class UserTimeEntry extends React.Component<
 
     this.setState({ showShareTimesheet: true });
   };
+
   private shareTaskInEmail = () => {
     if (DateType == "Custom") {
       let start = Moment(this.state.startdate).format("DD/MM/YYYY");
