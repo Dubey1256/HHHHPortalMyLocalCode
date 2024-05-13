@@ -25,9 +25,11 @@ const ArticleComponent = () => {
         try {
             const webs = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/LivingDocs');
             data = await webs.lists.getById("59D8FE3B-3910-4586-8762-A9EBAB68B8AA").items.getAll();
+
             // Create a deep copy of processedData for backupprofilePagedata
             const processedData = data.map((item:any) => ({ ...item, Description: item.Description.replace(/<[^>]+>/g, '') }));
             backupprofilePagedata = JSON.parse(JSON.stringify(processedData));
+
             // Update setprofilePagedata with the original processedData
             setprofilePagedata(processedData);
         } catch (error) {
