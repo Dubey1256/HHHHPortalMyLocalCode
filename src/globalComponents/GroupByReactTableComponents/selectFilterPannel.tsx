@@ -129,7 +129,7 @@ const SelectFilterPanel = (props: any) => {
                                                         <tr>
                                                             <td style={{ width: "100%" }}>
                                                                 <div className="alignCenter">
-                                                                    <input className="cursor-pointer form-check-input rounded-0" type="checkbox" name="selectAll" checked={Object.keys(props?.selectedFilterPannelData)?.every((key: any) => props?.selectedFilterPannelData[key].Selected === true)} onChange={handleSelectAllChange} />All content
+                                                                    <input className="cursor-pointer form-check-input rounded-0 me-1" type="checkbox" name="selectAll" checked={Object.keys(props?.selectedFilterPannelData)?.every((key: any) => props?.selectedFilterPannelData[key].Selected === true)} onChange={handleSelectAllChange} />All content
                                                                 </div>
                                                             </td>
                                                         </tr>
