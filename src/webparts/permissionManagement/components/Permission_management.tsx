@@ -1,61 +1,65 @@
 import { Panel, PanelType } from "office-ui-fabric-react";
-import React, { useEffect, useState } from "react";
-import Tooltip from "../../../globalComponents/Tooltip";
-import { event } from "jquery";
+import * as React from 'react';
+import * as $ from 'jquery';
+// import Tooltip from "../../../globalComponents/Tooltip";
 import {
   PeoplePicker,
   PrincipalType,
 } from "@pnp/spfx-controls-react/lib/PeoplePicker";
+import { Web} from "sp-pnp-js";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
-import { Web, sp } from "sp-pnp-js";
-import EditPage from "../../../globalComponents/EditPanelPage/EditPage";
+import Tooltip from "../../../globalComponents/Tooltip";
+// import EditPage from "../../../globalComponents/EditPanelPage/EditPage";
 // import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 
 var id: any = [];
 const Permission_management = (props: any) => {
   console.log(props);
   let arr: any = [];
-  const [groups, setGroups]: any = useState([]);
-  const [truePanel, setTruePanel]: any = useState(false);
-  const [optionsData, setOptionsData]: any = useState("");
-  const [data, setData]: any = useState([]);
-  const [addUser, setAddUser]: any = useState(false);
-  const [taskUser, setTaskUser]: any = useState([]);
-  const [inputValue, setInputValue]: any = useState({ Title: "", Id: "" });
-  const [suggestions, setSuggestions] = useState([]);
-  const [checkPermission, setCheckPermission] = useState(false);
-  const [permissionUserGroup, setPermissionUserGroup]: any = useState([]);
-  const [headerChange, setHeaderChange]: any = useState("");
-  const [selectedPeople, setSelectedPeople] = useState([]);
-  const [checkUserPermission, setCheckUserPermission]: any = useState([]);
+  const [groups, setGroups]: any = React.useState([]);
+  const [groupsMember, setGroupsMember]: any = React.useState([]);
+  const [tiles, setTiles]: any = React.useState([]);
+  const [truePanel, setTruePanel]: any = React.useState(false);
+  const [optionsData, setOptionsData]: any = React.useState("");
+  const [data, setData]: any = React.useState([]);
+  const [addUser, setAddUser]: any = React.useState(false);
+//   const [taskUser, setTaskUser]: any = React.useState([]);
+  const [inputValue, setInputValue]: any = React.useState({ Title: "", Id: "" });
+  const [suggestions, setSuggestions] = React.useState([]);
+  const [checkPermission, setCheckPermission] = React.useState(false);
+  const [permissionUserGroup, setPermissionUserGroup]: any = React.useState([]);
+//   const [headerChange, setHeaderChange]: any = React.useState("");
+  const [selectedPeople, setSelectedPeople] = React.useState([]);
+//   const [checkUserPermission, setCheckUserPermission]: any = React.useState([]);
 
-  useEffect(() => {
-    taskUserData();
+   React.useEffect(() => {
+    // taskUserData();
     getData();
+    tilesData();
   }, []);
 
-  const taskUserData = async () => {
+//   const taskUserData = async () => {
+//     let web = new Web(props?.context?.siteUrl);
+//     let AllTasksMatches: any = [];
+//     AllTasksMatches = await web.lists
+//       .getById(props?.context?.TaskUsertListID)
+//       .items.getAll(4000)
+//       .then((data: any) => {
+//         setTaskUser(data);
+//       })
+//       .catch((err: any) => {
+//         console.log(err);
+//       });
+//   };
+
+  const tilesData = async () => {
     let web = new Web(props?.context?.siteUrl);
-    let AllTasksMatches: any = [];
-    AllTasksMatches = await web.lists
-      .getById(props?.context?.TaskUserListID)
-      .items.select(
-        "Id",
-        "Email",
-        "Suffix",
-        "Title",
-        "Item_x0020_Cover",
-        "AssingedToUser/Title",
-        "AssingedToUser/EMail",
-        "AssingedToUser/Id",
-        "AssingedToUser/Name",
-        "Author/Id",
-        "UserGroup/Id",
-        "ItemType"
-    )
-    .expand("AssingedToUser", "UserGroup","Author").get()
+    await web.lists
+      .getById(props?.context?.TilesManagementListID)
+      .items.getAll()
       .then((data: any) => {
-        setTaskUser(data);
+       console.log(data);
+       setTiles(data);
       })
       .catch((err: any) => {
         console.log(err);
@@ -125,29 +129,36 @@ const Permission_management = (props: any) => {
         accept: "application/json;odata=verbose",
         "content-Type": "application/json;odata=verbose",
       },
-      success: function (data) {
+      success: function (data:any) {
         setTruePanel(true);
         setData(data?.d?.results);
       },
-      error: function (data) {
+      error: function (data:any) {
         alert("You do not have rights to access this section");
       },
     });
   };
 
- 
-
+  
   const postUser = async () => {
     const webUrl = props?.context?.siteUrl;
 
     try {
       const web = new Web(webUrl);
-      var data: any = {
-        LoginName: `i:0#.f|membership|${inputValue.Email}`,
-      };
-      await web.siteGroups.getById(id).users.add(data);
 
-      console.log("User added successfully");
+      // Construct the user data
+      // const userData:any = {
+      //   LoginName: `i:0#.f|membership|${inputValue.Email}`
+      // };
+      // var data: any = {
+      //   LoginName: `i:0#.f|membership|${selectedPeople[0].secondaryText}`,
+      // };
+      // let loginName : any = ;
+
+      // Make the HTTP POST request to add the user to the group
+      await web.siteGroups.getById(id).users.add(`i:0#.f|membership|${selectedPeople[0].secondaryText}`);
+
+      alert("User added successfully");
       setInputValue({ ...inputValue, Title: "" });
     } catch (error) {
       console.error(error);
@@ -160,18 +171,23 @@ const Permission_management = (props: any) => {
   };
 
   const checkUser = async () => {
-    const filteredSuggestions : any= taskUser.filter((suggestion: any) =>
-      selectedPeople.some(
-        (limitedItem: any) => limitedItem.secondaryText == suggestion?.AssingedToUser?.EMail
-      )
-    );
+    // const filteredSuggestions : any= taskUser.filter((suggestion: any) =>
+    //   selectedPeople.some(
+    //     (limitedItem: any) => limitedItem.secondaryText == suggestion.Email
+    //   )
+    // );
 
     let commanArray: any = [];
-    filteredSuggestions?.map(async (items: any) => {
+    selectedPeople?.map(async (items: any) => {
       let newArray: any = [];
-      var targetId = items?.Author?.Id;
-      var query = "/_api/web/GetUserById(" + targetId + ")/Groups";
-      var SiteUrl = props?.context?.siteUrl;
+      // var targetId = items?.AuthorId;
+
+      const userLoginName = encodeURIComponent(items?.secondaryText);
+            const SiteUrl = props?.context?.siteUrl;
+            const query = `/_api/web/siteusers(@v)?@v='${userLoginName}'/groups`;
+    
+      // var query =  `/_api/web/siteusers(@v)?@v='${encodeURIComponent(items?.secondaryText)}'/groups`;
+      // var SiteUrl = props?.context?.siteUrl;
 
       await $.ajax({
         url: SiteUrl + query,
@@ -181,7 +197,7 @@ const Permission_management = (props: any) => {
           accept: "application/json;odata=verbose",
           "content-Type": "application/json;odata=verbose",
         },
-        success: function (data) {
+        success: function (data: { d: { results: any[]; }; }) {
           data?.d?.results?.map((items: any) => {
             if (
               items?.OwnerTitle !== "System Account" &&
@@ -196,7 +212,7 @@ const Permission_management = (props: any) => {
 
           commanArray.push(...newArray);
         },
-        error: function (data) {
+        error: function () {
           console.log("You do not have rights to access this section");
         },
       });
@@ -218,10 +234,10 @@ const Permission_management = (props: any) => {
           accept: "application/json;odata=verbose",
           "content-Type": "application/json;odata=verbose",
         },
-        success: function (result) {
+        success: function (result: any) {
           console.log(result);
         },
-        error: function (data) {
+        error: function () {
           alert("You do not have the necessary rights to access this section");
         },
       });
@@ -231,7 +247,7 @@ const Permission_management = (props: any) => {
   const onRenderCustomCalculateSC = () => {
     return (
       <>
-        <div className="subheading siteColor">Manage Permissions</div>
+       <div className="subheading">Manage Permissions</div>
         <div>
           <Tooltip ComponentId="1229" />
         </div>
@@ -242,7 +258,7 @@ const Permission_management = (props: any) => {
   const onRenderCustomCalculateSC1 = () => {
     return (
       <>
-        <div className="subheading siteColor">Add User in {optionsData}</div>
+        <div className="subheading">Add User in {optionsData}</div>
         <div>
           <Tooltip ComponentId="1126" />
         </div>
@@ -253,10 +269,8 @@ const Permission_management = (props: any) => {
   const onRenderCustomCalculateSC3 = () => {
     return (
       <>
-        <div className="subheading siteColor">Check User Permissions</div>
-        <div>
-          <Tooltip ComponentId="1126" />
-        </div>
+        <h3>Check User Permissions</h3>
+       
       </>
     );
   };
@@ -290,9 +304,9 @@ const Permission_management = (props: any) => {
         cell: ({ row, getValue }: any) => (
           <div className="alignCenter">
             <span
-              onClick={() => {
-                deleteRequestWithOutData(row?.original?.Id);
-              }}
+              // onClick={() => {
+              //   deleteRequestWithOutData(row?.original?.Id);
+              // }}
               className="bg-dark hreflink ml-auto svg__icon--cross svg__iconbox"
             ></span>
           </div>
@@ -313,15 +327,15 @@ const Permission_management = (props: any) => {
     const value = e.target.value;
     setInputValue(value);
 
-    const filteredSuggestions = taskUser.filter((item: any) =>
-      item?.Title.toLowerCase().includes(value.toLowerCase())
-    );
+    // const filteredSuggestions = taskUser.filter((item: any) =>
+    //   item?.Title.toLowerCase().includes(value.toLowerCase())
+    // );
 
-    if (value != undefined && value != null && value != "") {
-      setSuggestions(filteredSuggestions);
-    } else {
-      setSuggestions([]);
-    }
+    // if (value != undefined && value != null && value != "") {
+    //   setSuggestions(filteredSuggestions);
+    // } else {
+    //   setSuggestions([]);
+    // }
   };
 
   const handleSuggestionClick = (suggestion: any) => {
@@ -335,21 +349,21 @@ const Permission_management = (props: any) => {
     setPermissionUserGroup([]);
   };
 
-  const AssignedToUser = (item: any) => {
-    if (item.length > 0) {
-      const email = item.length > 0 ? item[0].loginName.split("|").pop() : null;
-      const member = data.filter((elem: any) => elem.Email === email);
-      // setAssignedToUser(member)
-      // setIsUserNameValid(true);
-    } else {
-      // setAssignedToUser([])
-      // setIsUserNameValid(false);
-    }
-  };
+//   const AssignedToUser = (item: any) => {
+//     if (item.length > 0) {
+//       const email = item.length > 0 ? item[0].loginName.split("|").pop() : null;
+//       const member = data.filter((elem: any) => elem.Email === email);
+//       // setAssignedToUser(member)
+//       // setIsUserNameValid(true);
+//     } else {
+//       // setAssignedToUser([])
+//       // setIsUserNameValid(false);
+//     }
+//   };
 
-  const changeHeader = (items: any) => {
-    setHeaderChange(items);
-  };
+//   const changeHeader = (items: any) => {
+//     setHeaderChange(items);
+//   };
 
   const handlePeoplePickerChange = (items: any) => {
     setSelectedPeople(items);
@@ -357,32 +371,23 @@ const Permission_management = (props: any) => {
 
   return (
     <>
-      <div className="alignCenter">
+    
         <div className="alignCenter">
           <h2 className="heading">
-            {headerChange != undefined &&
+          Permission-Management
+            {/* {headerChange != undefined &&
             headerChange != null &&
             headerChange != ""
               ? headerChange
-              : "Permission-Management"}{" "}
+              : "Permission-Management"}{" "} */}
           </h2>
-          <EditPage
+          {/* <EditPage
             context={props?.context}
             changeHeader={changeHeader}
             tooltipId={"956"}
-          />
+          /> */}
         </div>
-        <div className="ml-auto">
-          <a
-            target="_blank"
-            data-interception="off"
-            className="fw-bold"
-            href={`${props?.context?.siteUrl}/SitePages/Manage-Permission-Tool.aspx`}
-          >
-            Old Permission-Management
-          </a>
-        </div>
-      </div>
+     
       <div
         className="d-flex justify-content-end"
         onClick={() => {
@@ -392,164 +397,119 @@ const Permission_management = (props: any) => {
       >
         Check User Permissions
       </div>
-      <div className="mb-3 card commentsection">
-        <div className="card-header">
-          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">
-            Manage Permissions - Users
-          </div>
-        </div>
-        <div className="card-body d-flex justify-content-around  my-3">
-          <div
-            className="card"
-            style={{ width: "14rem" }}
-            onClick={() => {
-              GetUserByGroupId("Designers");
-            }}
-          >
-            <div className="card-body" style={{ backgroundColor: "#000066" }}>
-              <a className="d-flex flex-column align-items-center mt-2">
-                <h6 className="text-white">Designers</h6>
-                <img
-                  className="m-3"
-                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png"
-                />
-                <span className="fw-bold text-white">Design</span>
-              </a>
-            </div>
-          </div>
-          <div
-            className="card"
-            style={{ width: "14rem" }}
-            onClick={() => {
-              GetUserByGroupId("HHHH Visitors");
-            }}
-          >
-            <div className="card-body" style={{ backgroundColor: "#000066" }}>
-              <a className="d-flex flex-column align-items-center mt-2">
-                <h6 className="text-white">HHHH Visitors</h6>
-                <img
-                  className="m-3"
-                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png"
-                />
-                <span className="fw-bold text-white">Read</span>
-              </a>
-            </div>
-          </div>
-        </div>
+      {
+       tiles?.length > 0 && tiles.some((item:any) => item.Itemtype === 'Manage Permissions-Users') &&
+       <div className="mb-3 card commentsection">
+       <div className="card-header">
+         <h2 className="align-items-center heading card-title d-flex h5 justify-content-between my-2">
+           Manage Permissions - Users
+         </h2>
+       </div>
+       <div className="card-body d-flex justify-content-around  my-3">
+         {
+           tiles?.length > 0 &&
+           tiles?.map((tilesItem:any)=> tilesItem?.Itemtype == "Manage Permissions-Users" &&
+           <div
+           className="card"
+           style={{ width: "14rem" }}
+           onClick={() => {
+             GetUserByGroupId(tilesItem?.Title);
+           }}
+         >
+           <div className="card-body bg-siteColor">
+             <a className="d-flex flex-column align-items-center mt-2">
+               <h6 className="text-white">{tilesItem?.Title}</h6>
+               <img
+                 className="m-3"
+                 src="https://www.gruene-washington.de/PublishingImages/Icons/32/admin.png"
+               />
+               <span className="fw-bold text-white">{tilesItem?.Footer}</span>
+             </a>
+           </div>
+         </div>
+           )
+         }
+       </div>
+     </div>
+      }
+    
+{
+   tiles?.length > 0 && tiles.some((item:any) => item.Itemtype === 'Manage Permissions-Team') &&
+   <div className="mb-3 card commentsection">
+   <div className="card-header">
+     <h2 className="align-items-center heading card-title d-flex h5 justify-content-between my-2">
+     Manage Permissions - Teams
+     </h2>
+   </div>
+   <div className="card-body d-flex justify-content-around  my-3">
+     {
+       tiles?.length > 0 &&
+       tiles?.map((tilesItem:any)=> tilesItem?.Itemtype == "Manage Permissions-Team" &&
+       <div
+       className="card"
+       style={{ width: "14rem" }}
+       onClick={() => {
+         GetUserByGroupId(tilesItem?.Title);
+       }}
+     >
+       <div className="card-body bg-siteColor">
+         <a className="d-flex flex-column align-items-center mt-2">
+           <h6 className="text-white">{tilesItem?.Title}</h6>
+           <img
+             className="m-3"
+             src="https://www.gruene-washington.de/PublishingImages/Icons/32/admin.png"
+           />
+           <span className="fw-bold text-white">{tilesItem?.Footer}</span>
+         </a>
+       </div>
+     </div>
+       )
+     }
+   </div>
+ </div>
+}
+
+{
+  tiles?.length > 0 && tiles.some((item:any) => item.Itemtype === 'Manage Permissions-Admins') &&
+   
+  <div className="mb-3 card commentsection">
+  <div className="card-header">
+    <h2 className="align-items-center heading card-title d-flex h5 justify-content-between my-2">
+    Manage Permissions - Admins
+    </h2>
+  </div>
+  <div className="card-body  d-flex justify-content-around  my-3">
+    {
+      tiles?.length > 0 &&
+      tiles?.map((tilesItem:any)=> tilesItem?.Itemtype == "Manage Permissions-Admins" &&
+      <div
+      className="card"
+      style={{ width: "14rem" }}
+      onClick={() => {
+        GetUserByGroupId(tilesItem?.Title);
+      }}
+    >
+      <div className="card-body bg-siteColor">
+        <a className="d-flex flex-column align-items-center mt-2">
+          <h6 className="text-white">{tilesItem?.Title}</h6>
+          <img
+            className="m-3"
+            src="https://www.gruene-washington.de/PublishingImages/Icons/32/admin.png"
+          />
+          <span className="fw-bold text-white">{tilesItem?.Footer}</span>
+        </a>
       </div>
+    </div>
+      )
+    }
+  </div>
+</div>
+}
+  
 
-      <div className="mb-3 card commentsection">
-        <div className="card-header">
-          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">
-            Manage Permissions - Teams
-          </div>
-        </div>
-        <div
-          className="card-body d-flex justify-content-center  my-3"
-          onClick={() => {
-            GetUserByGroupId("HHHH Members");
-          }}
-        >
-          <div className="card" style={{ width: "14rem" }}>
-            <div className="card-body" style={{ backgroundColor: "#000066" }}>
-              <a className="d-flex flex-column align-items-center mt-2">
-                <h6 className="text-white">HHHH Members</h6>
-                <img
-                  className="m-3"
-                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png"
-                />
-                <span className="fw-bold text-white">Edit</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="mb-3 card commentsection">
-        <div className="card-header">
-          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">
-            Manage Permissions - Admins
-          </div>
-        </div>
-        <div className="card-body d-flex justify-content-around  my-3">
-          <div
-            className="card"
-            style={{ width: "14rem" }}
-            onClick={() => {
-              GetUserByGroupId("HHHH Administrator");
-            }}
-          >
-            <div className="card-body" style={{ backgroundColor: "#000066" }}>
-              <a className="d-flex flex-column align-items-center mt-2">
-                <h6 className="text-white">HHHH Administrator</h6>
-                <img
-                  className="m-3"
-                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png"
-                />
-                <span className="fw-bold text-white">Full Control</span>
-              </a>
-            </div>
-          </div>
-
-          <div
-            className="card"
-            style={{ width: "14rem" }}
-            onClick={() => {
-              GetUserByGroupId("HHHH Owners");
-            }}
-          >
-            <div className="card-body" style={{ backgroundColor: "#000066" }}>
-              <a className="d-flex flex-column align-items-center mt-2">
-                <h6 className="text-white">HHHH Owners</h6>
-                <img
-                  className="m-3"
-                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png"
-                />
-                <span className="fw-bold text-white">Full Control</span>
-              </a>
-            </div>
-          </div>
-
-          <div
-            className="card"
-            style={{ width: "14rem" }}
-            onClick={() => {
-              GetUserByGroupId("Offshore Timesheet Admins");
-            }}
-          >
-            <div className="card-body" style={{ backgroundColor: "#000066" }}>
-              <a className="d-flex flex-column align-items-center mt-2">
-                <h6 className="text-white">Offshore Timesheet Admins</h6>
-                <img
-                  className="m-3"
-                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png"
-                />
-                <span className="fw-bold text-white">Full Control</span>
-              </a>
-            </div>
-          </div>
-
-          <div
-            className="card"
-            style={{ width: "14rem" }}
-            onClick={() => {
-              GetUserByGroupId("Time sheet admin group");
-            }}
-          >
-            <div className="card-body" style={{ backgroundColor: "#000066" }}>
-              <a className="d-flex flex-column align-items-center mt-2">
-                <h6 className="text-white">Time sheet admin group</h6>
-                <img
-                  className="m-3"
-                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png"
-                />
-                <span className="fw-bold text-white">Full Control</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
       <a
+       target="_blank"
+       data-interception="off"
         href={`${props?.context?.siteUrl}/_layouts/15/user.aspx`}
         className="d-flex justify-content-end"
       >
@@ -576,14 +536,14 @@ const Permission_management = (props: any) => {
           </div>
           <div className="">
             <select value={optionsData} onChange={setSelectOptions}>
-              {groups?.map((items: any) => (
+              {tiles?.map((items: any) => (
                 <option value={items.Title} key={items.Title}>
                   {items.Title}
                 </option>
               ))}
             </select>
           </div>
-          <div className="Alltable my-3">
+           <div className="Alltable my-3">
             <GlobalCommanTable
               showHeader={true}
               showPagination={true}
@@ -593,7 +553,7 @@ const Permission_management = (props: any) => {
               hideOpenNewTableIcon={true}
               hideTeamIcon={true}
             />
-          </div>
+          </div> 
         </div>
         <footer className="text-end">
           <button className="btn btn-primary">OK</button>
@@ -614,35 +574,22 @@ const Permission_management = (props: any) => {
         <div className="modal-body">
           <div className="input-group">
             <label className="form-label full-width">User*</label>
-            <input
-              type="text"
-              className="form-control"
-              value={inputValue?.Title}
-              onChange={handleInputChange}
-              placeholder="Enter names or email addresses..."
-            />
-            {inputValue?.Title != "" && (
-              <span
-                className="svg__icon--cross svg__iconbox dark"
-                onClick={() => setInputValue({ ...inputValue, Title: "" })}
-              ></span>
-            )}
+            <div className="full-width">
+            <PeoplePicker
+                    titleText="Select People"
+                    personSelectionLimit={3}
+                    principalTypes={[PrincipalType.User]}
+                    resolveDelay={800}
+                    onChange={handlePeoplePickerChange}
+                    defaultSelectedUsers={selectedPeople}
+                    context={props?.context?.Context==undefined?props?.context?.context:props?.context?.Context}
+                    
+                  />
+                  </div>
           </div>
-          <div className="SmartTableOnTaskPopup w-50">
-            <ul className="list-group">
-              {suggestions.map((suggestion: any, index: any) => (
-                <li
-                  className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                  key={index}
-                  onClick={() => handleSuggestionClick(suggestion)}
-                >
-                  {suggestion?.Title}
-                </li>
-              ))}
-            </ul>
-          </div>
+         
         </div>
-        <footer className="mt-4 text-end">
+        <footer className="d-block full-width text-end mt-2" style={{paddingRight:"0px !important"}}>
           <button className="me-2 btn btn-primary" onClick={postUser}>
             Save
           </button>
@@ -673,26 +620,18 @@ const Permission_management = (props: any) => {
       >
         <div className="modal-body">
           <div className="row">
-            <div className="col-sm-9">
-              {/* <div className="input-group">
-                <label className="form-label full-width">User*</label>
-                <input type="text" className="form-control"
-                  value={inputValue?.Title}
-                  onChange={handleInputChange} placeholder="Enter names or email addresses..." />
-                {
-                  inputValue?.Title != "" && <span className="svg__icon--cross svg__iconbox dark" onClick={()=>setInputValue({...inputValue,Title:""})}></span>
-                }   
-              </div> */}
+            <div className="col-md-8">
+           
               <div className="input-group class-input">
                 <div className="w-100 peoplePickerData">
-                  <PeoplePicker
+                <PeoplePicker
                     titleText="Select People"
                     personSelectionLimit={3}
                     principalTypes={[PrincipalType.User]}
-                    resolveDelay={1000}
+                    resolveDelay={800}
                     onChange={handlePeoplePickerChange}
                     defaultSelectedUsers={selectedPeople}
-                    context={props?.context?.context}
+                    context={props?.context?.Context}
                   />
                 </div>
               </div>
@@ -705,16 +644,16 @@ const Permission_management = (props: any) => {
                   ))}
                 </ul></div> */}
             </div>
-            <div className="col-sm-3 mt-1">
-              <div className="mt-1">
+            <div className="col-md-4">
+        
                 <label className="full-width form-label"></label>
                 <button
-                  className="btnCol mt-1 btn btn-primary"
+                  className="btnCol btn btn-primary"
                   onClick={() => checkUser()}
                 >
                   Check Permission
                 </button>
-              </div>
+             
             </div>
           </div>
           <div className="mt-16">
@@ -729,7 +668,7 @@ const Permission_management = (props: any) => {
           </div>
         </div>
 
-        <footer className="mt-4 text-end">
+        <footer className="mt-4 d-flex justify-content-end">
           <button
             className="btn btn-primary"
             onClick={() => {
