@@ -9,6 +9,7 @@ const TaskUserManagementApp = (props: any) => {
     const [taskGroupsListData, setTaskGroupsListData] = useState([])
     const [smartMetaDataItems, setSmartMetaDataItems] = useState([])
     const [headerChange, setHeaderChange]: any = useState('');
+    let [descriptionChange, setDescrpitionChange]: any = useState("");
     const baseUrl = props.props.context.pageContext._web.absoluteUrl
     let AllListid: any = {
         TaskUserListID: props.props.TaskUserListId,
@@ -28,7 +29,7 @@ const TaskUserManagementApp = (props: any) => {
             if (item.Item_x0020_Cover != undefined && item.Item_x0020_Cover != null){
                 item.Item_x002d_Image = item?.Item_x0020_Cover
             }
-             if (item.UserGroup !== undefined && item.UserGroup !== null){
+            if (item.UserGroup !== undefined && item.UserGroup !== null){
                 item.UserGroupTitle = item?.UserGroup?.Title
             }
             else{
@@ -46,7 +47,7 @@ const TaskUserManagementApp = (props: any) => {
                 ...item,
                 ApproverTitle: approverTitles,
                 RoleTitle: roleTitles
-            };
+            }; 
         });
 
         setTaskUsersListData(updatedTaskUsersListData )
@@ -62,6 +63,17 @@ const TaskUserManagementApp = (props: any) => {
     const changeHeader=(items:any)=>{
         setHeaderChange(items)
       }
+    
+    const changeDescription =(items: any) => {
+        setDescrpitionChange(items)
+    }
+    useEffect(() => {
+        if (descriptionChange != null && descriptionChange != undefined){
+            let modifiedDescription = descriptionChange.replace("<p>", "");
+            modifiedDescription = modifiedDescription.replace("</p>", "");
+            setDescrpitionChange(modifiedDescription)
+        }
+    }, [descriptionChange])
 
     let context = props.props.context
     context.siteUrl = context.pageContext.web.absoluteUrl;
@@ -70,7 +82,8 @@ const TaskUserManagementApp = (props: any) => {
     return (
         <>
             <h2 className='heading mb-3'>{headerChange != undefined && headerChange != null && headerChange != '' ? headerChange : 'TaskUser Management'}
-            <EditPage context={context} changeHeader={changeHeader} />
+            <EditPage context={context} changeHeader={changeHeader} changeDescription={changeDescription}/>
+            <h5 className='mb-3'>{descriptionChange != undefined && descriptionChange != null && descriptionChange != '' ? descriptionChange : ''}</h5>
             <a className='f-15 fw-semibold hreflink pull-right' href={`${baseUrl}/SitePages/TaskUser-Management-Old.aspx`} target='_blank' data-interception='off'>Old TaskUser Management</a>
             </h2>
             <TaskUserManagementTable TaskUsersListData={taskUsersListData} AllListid={AllListid} TaskGroupsListData={taskGroupsListData} baseUrl={baseUrl} TaskUserListId={props.props.TaskUserListId} context={context} fetchAPIData={fetchAPIData} smartMetaDataItems={smartMetaDataItems} />
