@@ -478,6 +478,14 @@
         "manifest": "./src/webparts/livingdocsapi/LivingdocsapiWebPart.manifest.json"
       }
     ]
+  },
+  "living-docs-sync-tool-web-part": {
+    "components": [
+      {
+        "entrypoint": "./lib/webparts/livingDocsSyncTool/LivingDocsSyncToolWebPart.js",
+        "manifest": "./src/webparts/livingDocsSyncTool/LivingDocsSyncToolWebPart.manifest.json"
+      }
+    ]
   }
   },
   "externals": {
@@ -499,6 +507,7 @@
     }
   },
   "localizedResources": {
+    "LivingDocsSyncToolWebPartStrings": "lib/webparts/livingDocsSyncTool/loc/{locale}.js",
     "TaskNotificationManagementWebPartStrings": "lib/webparts/taskNotificationManagement/loc/{locale}.js",
     "RootTeamPortfolioTableWebPartStrings": "lib/webparts/rootTeamPortfolioTable/loc/{locale}.js",
     "HelloSpfxWebPartStrings": "lib/webparts/helloSpfx/loc/{locale}.js",
