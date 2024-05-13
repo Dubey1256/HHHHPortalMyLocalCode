@@ -2826,49 +2826,38 @@ const EditTaskPopup = (Items: any) => {
                             }
 
                             if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('Design') !== -1) {
-                                taskUsers?.forEach((allUserItem: any) => {
-                                    if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
-                                        Createtordata.push(allUserItem);
-                                    }
-                                });
-                                Createtordata?.map((InfoItem: any) => {
-                                    let DataForNotification: any = {
-                                        ReceiverName: 'kristina',
-                                        sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
-                                        Context: Items.context,
-                                        ActionType: "Design",
-                                        ReasonStatement: "",
-                                        UpdatedDataObject: UpdatedDataObject,
-                                        RequiredListIds: AllListIdData
-                                    }
-                                    GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                        console.log("Ms Teams Notifications send")
-                                    })
 
+                                let DataForNotification: any = {
+                                    ReceiverName: 'kristina',
+                                    sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
+                                    Context: Items.context,
+                                    ActionType: "Design",
+                                    ReasonStatement: "Task Completed",
+                                    UpdatedDataObject: UpdatedDataObject,
+                                    RequiredListIds: AllListIdData
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
                                 })
+
+
                             }
 
                             if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
-                                taskUsers?.forEach((allUserItem: any) => {
-                                    if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
-                                        Createtordata.push(allUserItem);
-                                    }
 
-                                });
-                                Createtordata?.map((InfoItem: any) => {
-                                    let DataForNotification: any = {
-                                        ReceiverName: 'Robert',
-                                        sendUserEmail: ['robert.ungethuem@hochhuth-consulting.de'],
-                                        Context: Items.context,
-                                        ActionType: "User Experience - UX",
-                                        ReasonStatement: "",
-                                        UpdatedDataObject: UpdatedDataObject,
-                                        RequiredListIds: AllListIdData
-                                    }
-                                    GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                        console.log("Ms Teams Notifications send")
-                                    })
+                                let DataForNotification: any = {
+                                    ReceiverName: 'Robert',
+                                    sendUserEmail: ['robert.ungethuem@hochhuth-consulting.de'],
+                                    Context: Items.context,
+                                    ActionType: "User Experience - UX",
+                                    ReasonStatement: "New Task Created",
+                                    UpdatedDataObject: UpdatedDataObject,
+                                    RequiredListIds: AllListIdData
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
                                 })
+
                             }
 
                             if (checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') !== -1) {
@@ -2886,7 +2875,7 @@ const EditTaskPopup = (Items: any) => {
                                         sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
                                         Context: Items.context,
                                         ActionType: "User Experience - UX",
-                                        ReasonStatement: "",
+                                        ReasonStatement: "Task Completed",
                                         UpdatedDataObject: UpdatedDataObject,
                                         RequiredListIds: AllListIdData
                                     }
@@ -2991,15 +2980,15 @@ const EditTaskPopup = (Items: any) => {
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
                             }
-                            if (TaskDetailsFromCall[0]?.Categories?.length > 0 && TaskDetailsFromCall[0]?.Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
-                                ValueStatus = CalculateStatusPercentage;
-                                setSendEmailNotification(true);
-                                Items.StatusUpdateMail = true;
-                            }
-                            else {
-                                setSendEmailComponentStatus(false);
-                                Items.StatusUpdateMail = false;
-                            }
+                            // if (TaskDetailsFromCall[0]?.Categories?.length > 0 && TaskDetailsFromCall[0]?.Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
+                            //     ValueStatus = CalculateStatusPercentage;
+                            //     setSendEmailNotification(true);
+                            //     Items.StatusUpdateMail = true;
+                            // }
+                            // else {
+                            //     setSendEmailComponentStatus(false);
+                            //     Items.StatusUpdateMail = false;
+                            // }
                             if (sendEmailGlobalCount > 0) {
                                 if (sendEmailStatus) {
                                     setSendEmailComponentStatus(false);
@@ -5366,7 +5355,7 @@ const EditTaskPopup = (Items: any) => {
                                 target="_blank"
                                 className="mx-2"
                                 data-interception="off"
-                                href={`${siteUrls}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}
+                                href={`${siteUrls}/Lists/${Items.Items.siteType !== "Offshore%20Tasks" ? Items.Items.siteType : "SharewebQA"}/EditForm.aspx?ID=${EditData.ID}`}
                             >
                                 Open Out-Of-The-Box Form
                             </a>
@@ -5504,7 +5493,7 @@ const EditTaskPopup = (Items: any) => {
                                 target="_blank"
                                 className="mx-2"
                                 data-interception="off"
-                                href={`${Items.Items.siteType}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}
+                                href={`${siteUrls}/Lists/${Items.Items.siteType !== "Offshore%20Tasks" ? Items.Items.siteType : "SharewebQA"}/EditForm.aspx?ID=${EditData.ID}`}
                             >
                                 Open Out-Of-The-Box Form
                             </a>

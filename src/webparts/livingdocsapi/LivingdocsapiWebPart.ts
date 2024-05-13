@@ -1,43 +1,35 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
-import * as pnp from 'sp-pnp-js';
 import {
-  type IPropertyPaneConfiguration,
+  IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'TaskUserManagementWebPartStrings';
-import TaskUserManagement from './components/TaskUserManagement';
-import { ITaskUserManagementProps } from './components/ITaskUserManagementProps';
+import * as strings from 'LivingdocsapiWebPartStrings';
+import Livingdocsapi from './components/Livingdocsapi';
+import { ILivingdocsapiProps } from './components/ILivingdocsapiProps';
 
-export interface ITaskUserManagementWebPartProps {
+export interface ILivingdocsapiWebPartProps {
   description: string;
-  TaskUserListId: "b318ba84-e21d-4876-8851-88b94b9dc300";
-  SmartMetadataListID: "01a34938-8c7e-4ea6-a003-cee649e8c67a";
-  SitePagesList: "16839758-4688-49D5-A45F-CFCED9F80BA6"
 }
 
-export default class TaskUserManagementWebPart extends BaseClientSideWebPart<ITaskUserManagementWebPartProps> {
+export default class LivingdocsapiWebPart extends BaseClientSideWebPart<ILivingdocsapiWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<ITaskUserManagementProps> = React.createElement(
-      TaskUserManagement,
+    const element: React.ReactElement<ILivingdocsapiProps> = React.createElement(
+      Livingdocsapi,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName,
-        context: this.context,
-        TaskUserListId:this.properties.TaskUserListId,
-        SmartMetadataListID: this.properties.SmartMetadataListID,
-        SitePagesList: this.properties.SitePagesList
+        userDisplayName: this.context.pageContext.user.displayName
       }
     );
 
@@ -47,12 +39,8 @@ export default class TaskUserManagementWebPart extends BaseClientSideWebPart<ITa
   protected onInit(): Promise<void> {
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
-      pnp.setup({
-        spfxContext: this.context
-      });
     });
   }
-
 
 
 
@@ -69,9 +57,10 @@ export default class TaskUserManagementWebPart extends BaseClientSideWebPart<ITa
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
+              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
               break;
             default:
-              environmentMessage = strings.UnknownEnvironment;
+              throw new Error('Unknown host');
           }
 
           return environmentMessage;
@@ -120,15 +109,6 @@ export default class TaskUserManagementWebPart extends BaseClientSideWebPart<ITa
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                }),
-                PropertyPaneTextField('TaskUserListId', {
-                  label: "TaskUserListId"
-                }),
-                PropertyPaneTextField('SmartMetadataListID', {
-                  label: "SmartMetadataListID"
-                }),
-                PropertyPaneTextField('SitePagesList', {
-                  label: "SitePagesList"
                 })
               ]
             }

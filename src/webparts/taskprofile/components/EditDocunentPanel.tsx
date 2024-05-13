@@ -34,7 +34,7 @@ const EditDocumentpanel = (props: any) => {
     { rankTitle: '(1) Archive', rank: 1 },
     { rankTitle: '(0) No Show', rank: 0 }
   ]
-  let  Status:any=["Draft","Final","Archived"]
+  let  Status:any=["selectStatus","Draft","Final","Archived"]
 
   React.useEffect(() => {
     if (props?.editData != undefined) {
@@ -537,12 +537,12 @@ const EditDocumentpanel = (props: any) => {
                 </div>
                 <div className="input-group mx-4">
                   <label className="full-width">Status</label>
-                  <select className="form-select" defaultValue={EditdocumentsData?.ItemRank} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Status: e.target.value })}>
+                  <select className="form-select" defaultValue={EditdocumentsData?.Status} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Status: e.target.value })}>
                     {Status.map(function (h: any, i: any) {
                       return (
                         <option key={i}
-                          selected={EditdocumentsData?.ItemRank == h?.rank}
-                          value={h?.rank} >{h?.rankTitle}</option>
+                          selected={EditdocumentsData?.Status == h}
+                          value={h} >{h}</option>
                       )
                     })}
                   </select>

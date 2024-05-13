@@ -12,7 +12,7 @@ const TaskUserManagementApp = (props: any) => {
     const baseUrl = props.props.context.pageContext._web.absoluteUrl
     let AllListid: any = {
         TaskUserListID: props.props.TaskUserListId,
-        SmartMetadataListID: props.props.SmartMetaDataId,
+        SmartMetadataListID: props.props.SmartMetadataListID,
         siteUrl: props.props.context.pageContext._web.absoluteUrl,
     }
     const fetchAPIData = async () => {
@@ -27,6 +27,15 @@ const TaskUserManagementApp = (props: any) => {
         const updatedTaskUsersListData = taskUsersListData.map((item: any) => {
             if (item.Item_x0020_Cover != undefined && item.Item_x0020_Cover != null){
                 item.Item_x002d_Image = item?.Item_x0020_Cover
+            }
+             if (item.UserGroup !== undefined && item.UserGroup !== null){
+                item.UserGroupTitle = item?.UserGroup?.Title
+            }
+            else{
+                item.UserGroupTitle = ""
+            }
+            if (item.Team == null || item.Team == undefined) {
+                item.Team = ""
             }
             const approverTitles = item.Approver ? item.Approver.map((approver: any) => approver.Title).join(', ') : '';
             const roleTitles = item.Role ? item.Role.map((role: any) => role).join(', ') : '';
@@ -44,7 +53,7 @@ const TaskUserManagementApp = (props: any) => {
         setTaskGroupsListData(taskGroupsListData)
 
 
-        const fetchedSmartMetaData = await web.lists.getById(props.props.SmartMetaDataId).items.select("Id,ParentID,Parent/Id,Parent/Title,TaxType,Title,listId,siteUrl,SortOrder,Configurations").expand("Parent").getAll();
+        const fetchedSmartMetaData = await web.lists.getById(props.props.SmartMetadataListID).items.select("Id,ParentID,Parent/Id,Parent/Title,TaxType,Title,listId,siteUrl,SortOrder,Configurations").expand("Parent").getAll();
         setSmartMetaDataItems(fetchedSmartMetaData)
     }
 
