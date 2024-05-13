@@ -9,7 +9,8 @@ const ArticleComponent = () => {
     const [profilePagedata, setprofilePagedata] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [accessToken, setAccessToken] = useState('eyJraWQiOiIiLCJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6InB1YmxpYy1hcGk6cmVhZCBwdWJsaWMtYXBpOndyaXRlIHB1YmxpYy1hcGk6Y29uZmlnOnJlYWQgcHVibGljLWFwaTpjb25maWc6d3JpdGUgZGVzay1uZXQiLCJuYW1lIjoiUHJvZmlsZXBhZ2VzVG9rZW4iLCJwcm9qZWN0SWQiOjI1OTUsImNoYW5uZWxJZCI6MjU0MywidHlwZSI6ImNsaWVudCIsImp0aSI6IjA0YmQ2NmYyLTk2NWItNDVkZC1iZTNmLTExOTE3OTdiZTg0YiIsImNvZGUiOiIwNGJkNjZmMi05NjViLTQ1ZGQtYmUzZi0xMTkxNzk3YmU4NGIiLCJpYXQiOjE3MTUzMzc2MjZ9.OWICZpi40dhM9FTb2QQMax_EBtNAhI6TG0ULxHybiTE');
+    const tokenProfile = 'eyJraWQiOiIiLCJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6InB1YmxpYy1hcGk6cmVhZCBwdWJsaWMtYXBpOndyaXRlIHB1YmxpYy1hcGk6Y29uZmlnOnJlYWQgcHVibGljLWFwaTpjb25maWc6d3JpdGUgZGVzay1uZXQiLCJuYW1lIjoiU2FuZEJveFRva2VuIiwicHJvamVjdElkIjoyNjA2LCJjaGFubmVsSWQiOjI1NTQsInR5cGUiOiJjbGllbnQiLCJqdGkiOiIyNTNmNjhkMC03NzQ0LTRiZTUtYmMzOC04ODE1NDhjMzA2ZjkiLCJjb2RlIjoiMjUzZjY4ZDAtNzc0NC00YmU1LWJjMzgtODgxNTQ4YzMwNmY5IiwiaWF0IjoxNzE0NjMwNDc2fQ.qSlCxhe0azafcmQIiMPgEfQJocsWAcyX8xXtzHV_lGE'
+    const [accessToken, setAccessToken] = useState('eyJraWQiOiIiLCJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6InB1YmxpYy1hcGk6cmVhZCBwdWJsaWMtYXBpOndyaXRlIHB1YmxpYy1hcGk6Y29uZmlnOnJlYWQgcHVibGljLWFwaTpjb25maWc6d3JpdGUgZGVzay1uZXQiLCJuYW1lIjoiU2FuZEJveFRva2VuIiwicHJvamVjdElkIjoyNjA2LCJjaGFubmVsSWQiOjI1NTQsInR5cGUiOiJjbGllbnQiLCJqdGkiOiIyNTNmNjhkMC03NzQ0LTRiZTUtYmMzOC04ODE1NDhjMzA2ZjkiLCJjb2RlIjoiMjUzZjY4ZDAtNzc0NC00YmU1LWJjMzgtODgxNTQ4YzMwNmY5IiwiaWF0IjoxNzE0NjMwNDc2fQ.qSlCxhe0azafcmQIiMPgEfQJocsWAcyX8xXtzHV_lGE');
 
     const apiUrl = `https://server.livingdocs.io/api/v1/document-lists`;
     const ImageapiUrl = `https://server.livingdocs.io/api/v1/import/images`;
@@ -20,22 +21,22 @@ const ArticleComponent = () => {
     }, [accessToken]);
 
     const getProfilePageListData = async () => {
-        let Pagedata: any;
-        let webs = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/LivingDocs');
+        let data;
         try {
-            let data = await webs.lists.getById("59D8FE3B-3910-4586-8762-A9EBAB68B8AA").items.getAll()
-            data.forEach((item) => {
-                const regex = /(<([^>]+)>)/gi;
-                const newString = item.Description.replace(regex, "");
-                item.Description = newString;
-            })
-            backupprofilePagedata = data;
-            setprofilePagedata(backupprofilePagedata)
-        } catch (error: any) {
-            console.error(error);
-        };
-    };
+            const webs = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/LivingDocs');
+            data = await webs.lists.getById("59D8FE3B-3910-4586-8762-A9EBAB68B8AA").items.getAll();
 
+            // Create a deep copy of processedData for backupprofilePagedata
+            const processedData = data.map((item:any) => ({ ...item, Description: item.Description.replace(/<[^>]+>/g, '') }));
+            backupprofilePagedata = JSON.parse(JSON.stringify(processedData));
+
+            // Update setprofilePagedata with the original processedData
+            setprofilePagedata(processedData);
+        } catch (error) {
+            console.error(error);
+            return; // Handle errors gracefully (optional)
+        }
+    };
     const fetchArticles = async () => {
         try {
             const response = await axios.get(apiUrl, {
@@ -194,7 +195,7 @@ const ArticleComponent = () => {
     };
     const getImageData = async (imageid: any, page: any, ItemUpdate: any) => {
         try {
-           
+
             await new Promise(resolve => setTimeout(resolve, 3000));
             const imgUrlresponse = await axios.get(`https://server.livingdocs.io/api/v1/import/images/status?id=${imageid.id}`, {
                 headers: {
@@ -216,13 +217,13 @@ const ArticleComponent = () => {
             livingImageUrls = imgurl?.images[0]?.image
         console.log(imgurl)
         const unique_id = uuid();
-        const small_id = page.Id + unique_id.slice(0, 8);        
+        const small_id = page.Id + unique_id.slice(0, 8);
         try {
             const data = {
-                systemName: "p:2595:2543.article-container",
+                systemName: "p:2606:2554.article-container",
                 webhook: "https://my-domain.com/webhooks/document-import",
                 context: {
-                    myIdentifier: "p:2595:2543.article-container"
+                    myIdentifier: "p:2606:2554.article-container"
                 },
                 documents: [
                     {
@@ -234,12 +235,12 @@ const ArticleComponent = () => {
                         livingdoc: {
                             content: [
                                 {
-                                    identifier: "p:2595:2543.article-container",
+                                    identifier: "p:2606:2554.article-container",
                                     id: "doc-1cdmu2hll0",
                                     containers: {
                                         header: [
                                             {
-                                                identifier: "p:2595:2543.head",
+                                                identifier: "p:2606:2554.head",
                                                 id: "doc-1cdmu2hll1",
                                                 content: {
                                                     title: `${page.Title}`
@@ -249,7 +250,7 @@ const ArticleComponent = () => {
                                         ],
                                         main: [
                                             {
-                                                "identifier": "p:2595:2543.image",
+                                                "identifier": "p:2606:2554.image",
                                                 "id": "doc-1cdmu2hll2",
                                                 "content": {
                                                     "image": {
@@ -269,7 +270,7 @@ const ArticleComponent = () => {
                                             },
 
                                             {
-                                                "identifier": "p:2595:2543.paragraph",
+                                                "identifier": "p:2606:2554.paragraph",
                                                 "id": "doc-1cdmuevar0",
                                                 "content": {
                                                     "text": `${page.Description}`
@@ -283,7 +284,7 @@ const ArticleComponent = () => {
                                 }
                             ],
                             design: {
-                                name: "p:2595:2543",
+                                name: "p:2606:2554",
                                 version: "1.0.0"
                             }
                         },
@@ -312,12 +313,11 @@ const ArticleComponent = () => {
             });
             console.log(response.data); // Log the response data if needed
             if (ItemUpdate === 'bulkupdate') {
-                // Efficiently remove items from backupprofilePagedata:
-                const filteredData = backupprofilePagedata.filter((item: any) => item.Id !== page.Id);
+                // Efficiently remove items from a deep copy of backupprofilePagedata
+                const filteredData = backupprofilePagedata.slice().filter((item: any) => item.Id !== page.Id);
 
-                // Update backupprofilePagedata with the filtered data:
-                backupprofilePagedata.length = 0; // Clear existing data
-                backupprofilePagedata.push(...filteredData); // Add filtered elements
+                // Update backupprofilePagedata with the filtered data (deep copy)
+                backupprofilePagedata = JSON.parse(JSON.stringify(filteredData));
 
                 // Load images only if filtered data has elements:
                 if (filteredData.length > 0) {
@@ -359,20 +359,20 @@ const ArticleComponent = () => {
 
     return (
         <><div className="container">
-             {loading && (
-                        <div className="loading-spinner">
-                            <div className="spinner"></div>
-                        </div>
-                    )}
+            {loading && (
+                <div className="loading-spinner">
+                    <div className="spinner"></div>
+                </div>
+            )}
             <div className="mb-5 clearfix">
                 <div className="clearfix mb-5">
-                <h2 className="d-flex">
-                    Profile Page Content
-                    <button className='btn btn-primary ml-auto' onClick={() => UoloadAllContentImages()}>Sync All</button>
-                </h2>
-              
+                    <h2 className="d-flex">
+                        Profile Page Content
+                        <button className='btn btn-primary ml-auto' onClick={() => UoloadAllContentImages()}>Sync All</button>
+                    </h2>
+
                 </div>
-              
+
                 <div className="mb-5">
                     <table>
                         <tr><th>Image</th>
@@ -387,7 +387,7 @@ const ArticleComponent = () => {
                                 <tr><td><img className='CoverImg' src={page.Item_x0020_Cover.Url} alt={page.Title} /></td>
                                     <td>{page.Title}</td>
                                     <td>{truncatedDescription}</td>
-                                    <td  className="text-center">
+                                    <td className="text-center">
                                         <button className='btn btn-sm btn-primary' onClick={() => uploadImages(page, 'singleupdate')}>Sync
                                         </button>
                                     </td>

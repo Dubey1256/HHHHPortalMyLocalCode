@@ -2104,7 +2104,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                     </div>
                                                                 </td>
                                                                 <td className="p-1"
-                                                                    style={{ width: "20%" }}
+                                                                    style={{ width: "10%" }}
                                                                 >
                                                                     <div className="input-group alignCenter">
                                                                         {siteData.BtnStatus ?
@@ -2149,9 +2149,6 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                             />
                                                                         }
                                                                     </div>
-                                                                </td>
-                                                                <td className="m-0 align-middle" style={{ width: "5%" }}>
-                                                                    <span>{siteData.BtnStatus ? "%" : ''}</span>
                                                                 </td>
                                                                 {usedFor == "AWT" ?
                                                                     <td className="m-0 align-middle" style={{ width: "10%" }}>
