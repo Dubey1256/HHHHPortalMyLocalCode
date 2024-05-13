@@ -23,7 +23,7 @@ const Permission_management = (props: any) => {
   const [optionsData, setOptionsData]: any = React.useState("");
   const [data, setData]: any = React.useState([]);
   const [addUser, setAddUser]: any = React.useState(false);
-//   const [taskUser, setTaskUser]: any = React.useState([]);
+  const [taskUser, setTaskUser]: any = React.useState([]);
   const [inputValue, setInputValue]: any = React.useState({ Title: "", Id: "" });
   const [suggestions, setSuggestions] = React.useState([]);
   const [checkPermission, setCheckPermission] = React.useState(false);
@@ -33,24 +33,24 @@ const Permission_management = (props: any) => {
 //   const [checkUserPermission, setCheckUserPermission]: any = React.useState([]);
 
    React.useEffect(() => {
-    // taskUserData();
+     taskUserData();
     getData();
     tilesData();
   }, []);
 
-//   const taskUserData = async () => {
-//     let web = new Web(props?.context?.siteUrl);
-//     let AllTasksMatches: any = [];
-//     AllTasksMatches = await web.lists
-//       .getById(props?.context?.TaskUsertListID)
-//       .items.getAll(4000)
-//       .then((data: any) => {
-//         setTaskUser(data);
-//       })
-//       .catch((err: any) => {
-//         console.log(err);
-//       });
-//   };
+  const taskUserData = async () => {
+    let web = new Web(props?.context?.siteUrl);
+    let AllTasksMatches: any = [];
+    AllTasksMatches = await web.lists
+      .getById(props?.context?.TaskUserListID)
+      .items.getAll(4000)
+      .then((data: any) => {
+        setTaskUser(data);
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  };
 
   const tilesData = async () => {
     let web = new Web(props?.context?.siteUrl);
@@ -65,7 +65,6 @@ const Permission_management = (props: any) => {
         console.log(err);
       });
   };
- 
 
   const getData = async () => {
     await $.ajax({
@@ -142,8 +141,11 @@ const Permission_management = (props: any) => {
   
   const postUser = async () => {
     const webUrl = props?.context?.siteUrl;
+    // const id = 1; // Replace with your actual group ID
+    // const inputValue = { Email: "user@example.com" }; // Replace with your actual input value
 
     try {
+      // Ensure the SPFx context is available
       const web = new Web(webUrl);
 
       // Construct the user data
@@ -162,6 +164,8 @@ const Permission_management = (props: any) => {
       setInputValue({ ...inputValue, Title: "" });
     } catch (error) {
       console.error(error);
+
+      // Handle unauthorized/forbidden error
       if (error.status === 403 || error.status === 401) {
         alert("You do not have the necessary rights to access this section");
       } else {
@@ -171,23 +175,18 @@ const Permission_management = (props: any) => {
   };
 
   const checkUser = async () => {
-    // const filteredSuggestions : any= taskUser.filter((suggestion: any) =>
-    //   selectedPeople.some(
-    //     (limitedItem: any) => limitedItem.secondaryText == suggestion.Email
-    //   )
-    // );
+    const filteredSuggestions : any= taskUser.filter((suggestion: any) =>
+      selectedPeople.some(
+        (limitedItem: any) => limitedItem.secondaryText == suggestion?.Email
+      )
+    );
 
     let commanArray: any = [];
-    selectedPeople?.map(async (items: any) => {
+    filteredSuggestions?.map(async (items: any) => {
       let newArray: any = [];
-      // var targetId = items?.AuthorId;
-
-      const userLoginName = encodeURIComponent(items?.secondaryText);
-            const SiteUrl = props?.context?.siteUrl;
-            const query = `/_api/web/siteusers(@v)?@v='${userLoginName}'/groups`;
-    
-      // var query =  `/_api/web/siteusers(@v)?@v='${encodeURIComponent(items?.secondaryText)}'/groups`;
-      // var SiteUrl = props?.context?.siteUrl;
+      var targetId = items?.AuthorId;
+      var query = "/_api/web/GetUserById(" + targetId + ")/Groups";
+      var SiteUrl = props?.context?.siteUrl;
 
       await $.ajax({
         url: SiteUrl + query,
@@ -197,7 +196,7 @@ const Permission_management = (props: any) => {
           accept: "application/json;odata=verbose",
           "content-Type": "application/json;odata=verbose",
         },
-        success: function (data: { d: { results: any[]; }; }) {
+        success: function (data) {
           data?.d?.results?.map((items: any) => {
             if (
               items?.OwnerTitle !== "System Account" &&
@@ -212,7 +211,7 @@ const Permission_management = (props: any) => {
 
           commanArray.push(...newArray);
         },
-        error: function () {
+        error: function (data) {
           console.log("You do not have rights to access this section");
         },
       });
@@ -220,6 +219,7 @@ const Permission_management = (props: any) => {
     const newArrayWithoutDuplicates = commanArray.filter((obj : any, index : any, self: any) =>
   index === self.findIndex((o: any) => o.Id === obj.Id)
 );
+    // const newArrayWithoutDuplicates : any= Array.from(new Set(commanArray.map((obj:any) => obj.Id))).map((Id:any) => commanArray.find((obj:any) => obj.Id === Id));
     setPermissionUserGroup(newArrayWithoutDuplicates);
   };
 
@@ -269,8 +269,11 @@ const Permission_management = (props: any) => {
   const onRenderCustomCalculateSC3 = () => {
     return (
       <>
-        <h3>Check User Permissions</h3>
        
+        <div className="subheading">Check User Permissions {optionsData}</div>
+        <div>
+          <Tooltip ComponentId="1126" />
+        </div>
       </>
     );
   };
@@ -582,7 +585,7 @@ const Permission_management = (props: any) => {
                     resolveDelay={800}
                     onChange={handlePeoplePickerChange}
                     defaultSelectedUsers={selectedPeople}
-                    context={props?.context?.Context==undefined?props?.context?.context:props?.context?.Context}
+                    context={props?.context?.context != undefined?props?.context?.context:props?.context?.Context}
                     
                   />
                   </div>
@@ -631,24 +634,24 @@ const Permission_management = (props: any) => {
                     resolveDelay={800}
                     onChange={handlePeoplePickerChange}
                     defaultSelectedUsers={selectedPeople}
-                    context={props?.context?.Context}
+                    context={props?.context?.context != undefined?props?.context?.context:props?.context?.Context}
                   />
                 </div>
               </div>
-              {/* <div className="SmartTableOnTaskPopup w-50">
-                <ul className="list-group">
-                  {suggestions.map((suggestion: any, index: any) => (
+             
+               
+                  {suggestions?.map((suggestion: any, index: any) => (
                     <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionClick(suggestion)}>
                       {suggestion?.Title}
                     </li>
                   ))}
-                </ul></div> */}
+                
             </div>
             <div className="col-md-4">
         
                 <label className="full-width form-label"></label>
                 <button
-                  className="btnCol btn btn-primary"
+                  className="btnCol btn btn-primary mt-2"
                   onClick={() => checkUser()}
                 >
                   Check Permission
