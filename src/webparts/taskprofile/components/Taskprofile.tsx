@@ -2337,12 +2337,12 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Project</dt>
-                        <dd className='bg-Ff full-width '>
+                        <dd className='bg-Ff full-width columnFixedTitle'>
 
                           {ProjectData?.Title != undefined ? <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}>
 
                             <ReactPopperTooltipSingleLevel CMSToolId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></a> : null}
-                          <span className="text-end svg__icon--editBox svg__iconbox w-25" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
+                          <span className="text-end ml-auto svg__icon--editBox svg__iconbox w-25" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
 
                         </dd>
                       </dl>

@@ -654,6 +654,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 topCompo = true;
                 setQuery4TopIcon("Task");
               }
+
               let newObj: any;
               if (
                 items?.PortfolioTypeCheck === obj.PortfolioTypeCheck &&
@@ -1130,8 +1131,16 @@ const RestructuringCom = (props: any, ref: any) => {
               }
             });
           });
-          if(restructureItem?.[0].TaskType?.Id === 2 && (props?.queryItems?.Item_x0020_Type == 'Feature' || props?.queryItems?.Item_x0020_Type == 'SubComponent' || props?.queryItems?.Item_x0020_Type == 'Component')){
-                      topCompo = true;
+          if((restructureItem?.[0].TaskType?.Id === 2 ||restructureItem?.[0].TaskType?.Id === 1 || restructureItem?.[0].TaskType?.Id === 3) && (props?.queryItems?.Item_x0020_Type == 'Feature' || props?.queryItems?.Item_x0020_Type == 'SubComponent' || props?.queryItems?.Item_x0020_Type == 'Component')){
+            if(restructureItem?.[0].TaskType?.Id === 2){
+              topCompo = true;
+            }else if(restructureItem?.[0].TaskType?.Id === 1 && restructureItem.some((item:any) => Array.isArray(item?.subRows) && item.subRows.length == 0)){
+              topCompo = true;
+            }else if(restructureItem?.[0].TaskType?.Id === 3 && restructureItem.some((item:any) => Array.isArray(item?.subRows) && item.subRows.length == 0)){
+              topCompo = true;
+            }
+            
+            
           }
         }
       }else if (restructureItem[0]?.Item_x0020_Type === "Sprint") {
@@ -2091,7 +2100,10 @@ const RestructuringCom = (props: any, ref: any) => {
                               newChildarray?.push(newObj.newSubChild);
                               setRestructureChecked(newChildarray);
                               ArrayTest?.push(newObj);
-                              obj.isRestructureActive = false;
+                              if(sub.subRows?.length > 0 && sub.subRows.some((item:any) =>  item.Item_x0020_Type == 'Feature')){
+                                obj.isRestructureActive = false;
+                              }
+                              // obj.isRestructureActive = false;
                               sub.isRestructureActive = false;
                             }
                           }
@@ -2172,7 +2184,10 @@ const RestructuringCom = (props: any, ref: any) => {
                         newChildarray?.push(newObj.newSubChild);
                         setRestructureChecked(newChildarray);
                         ArrayTest?.push(newObj);
-                        obj.isRestructureActive = false;
+                        if(sub.subRows?.length > 0){
+                          obj.isRestructureActive = false;
+                        }
+                        
                         sub.isRestructureActive = false;
                       }
                     }
@@ -3534,10 +3549,10 @@ const RestructuringCom = (props: any, ref: any) => {
       if (
         newItemBackUp?.subRows != undefined &&
         newItemBackUp?.subRows?.length > 0 &&
-        restructureItem[0]?.TaskType?.Id == 3
+        RestructureChecked[0]?.TaskType?.Id == 3
       ) {
         newItemBackUp?.subRows?.map((sub: any) => {
-          if (restructureItem[0]?.TaskType?.Id === sub?.TaskType?.Id) {
+          if (RestructureChecked[0]?.TaskType?.Id === sub?.TaskType?.Id) {
             if (TaskLevel <= sub.TaskLevel) {
               TaskLevel = sub.TaskLevel;
               Level = sub.TaskLevel;
@@ -4823,7 +4838,7 @@ const RestructuringCom = (props: any, ref: any) => {
           TaskType = 3;
         }
       }else if (props?.queryItems == undefined && props?.queryItems == null) {
-        if (restructureItem[0]?.TaskType?.Id == 2) {
+        if (restructureItem[0]?.TaskType?.Id == 2 || restructureItem[0]?.TaskType?.Id == 3) {
           SiteIconTitle = "A";
           TaskType = 1;
         } else {
@@ -7672,7 +7687,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             onDismiss={closePanel}
           >
             <div className="mt-2">
-              After restructuring selected item becomes {query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 2 ? 'Activity' : (query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 1 ? 'Task' : query4TopIcon) }
+              After restructuring selected item becomes {query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 2 ? 'Activity' : (query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 1 ? 'Task' : (query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 3 ? 'Activity' : query4TopIcon ) ) }
               <footer className="mt-4 text-end">
                 <button className="me-2 btn btn-primary" onClick={makeTopComp}>
                   Save
