@@ -5,7 +5,7 @@ export interface ISmartConnectProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   MasterTaskListID: string;
-  TaskUsertListID: string;
+  TaskUserListID: string;
   SmartMetadataListID: string;
   siteUrl:string;
 }

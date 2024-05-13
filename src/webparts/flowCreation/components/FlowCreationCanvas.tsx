@@ -22,7 +22,7 @@ const getId = () => `dndnode_${id++}`;
 let AllListId: any = {
   // siteUrl: 'https://hhhhteams.sharepoint.com/sites/HHHH/SP',
   // MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf',
-  // TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300',
+  // TaskUserListID: 'b318ba84-e21d-4876-8851-88b94b9dc300',
   // SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a',
   // SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd',
   // DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08',
@@ -45,15 +45,15 @@ export default function FlowCreationCanvas(props: any) {
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [IsComponent, setIsComponent] = React.useState(false);
   const [IsProjectPopup, setIsProjectPopup] = React.useState(false);
-  const [SharewebComponent, setSharewebComponent]: any = React.useState({});
+  const [CMSToolComponent, setCMSToolComponent]: any = React.useState({});
   const Callbackfrompopup = () => {
-    setSharewebComponent({})
+    setCMSToolComponent({})
     setIsComponent(false)
     setIsProjectPopup(false)
   }
   const EditComponentPopup = (event: any, item: any) => {
     event.stopPropagation();
-    setSharewebComponent(item)
+    setCMSToolComponent(item)
     if (item?.ItemCat == "Portfolio") {
       setIsComponent(true)
     }
@@ -80,7 +80,7 @@ export default function FlowCreationCanvas(props: any) {
     }
     AllListId = {
       MasterTaskListID: props?.props?.MasterTaskListID,
-      TaskUsertListID: props?.props?.TaskUsertListID,
+      TaskUserListID: props?.props?.TaskUserListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
       //SiteTaskListID:this.props?.props?.SiteTaskListID,
       TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -294,7 +294,7 @@ export default function FlowCreationCanvas(props: any) {
                             <li><a>Project Management</a></li>
                             <li>
                                 {" "}
-                                <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${props?.items[0]?.Id}`}>{props?.items[0]?.Title}</a>{" "}
+                                <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${props?.items[0]?.Id}`}>{props?.items[0]?.Title}</a>{" "}
                             </li>
                         </ul>
                     </div>
@@ -366,14 +366,14 @@ export default function FlowCreationCanvas(props: any) {
       </div>
       {IsComponent && (
         <EditInstitution
-          item={SharewebComponent}
+          item={CMSToolComponent}
           Calls={Callbackfrompopup}
           SelectD={AllListId}
         >
           {" "}
         </EditInstitution>
       )}
-      {IsProjectPopup && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Callbackfrompopup} > </EditProjectPopup>}
+      {IsProjectPopup && <EditProjectPopup props={CMSToolComponent} AllListId={AllListId} Call={Callbackfrompopup} > </EditProjectPopup>}
     </>  </myContextValue.Provider>
   );
 }

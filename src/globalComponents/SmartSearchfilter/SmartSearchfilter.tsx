@@ -206,7 +206,7 @@ const TaskMangementTable = (props: any) => {
     const getTaskUsers = async () => {
         let taskUsers = [];
         taskUsers = await web.lists
-            .getById(item?.TaskUsertListID)
+            .getById(item?.TaskUserListID)
             .items.select(
                 "Id",
                 "Email",
@@ -880,7 +880,7 @@ const TaskMangementTable = (props: any) => {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <>
-                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={item} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
+                        <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={item} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
                     </>
                 ),
                 id: "TaskID",

@@ -7,5 +7,5 @@ export interface ISiteStructureProps {
   ContextData: any;
   TopNavigationListID: any;
   SPSitesListUrl: string;
-  TaskUsertListID: string;
+  TaskUserListID: string;
 }

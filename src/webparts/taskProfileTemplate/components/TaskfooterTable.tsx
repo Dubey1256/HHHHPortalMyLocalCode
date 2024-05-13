@@ -58,9 +58,9 @@ function TasksTable(props: any) {
   const [checkedList, setCheckedList]: any = React.useState([]);
   const [AllUsers, setTaskUser] = React.useState([]);
   const [IsTask, setIsTask] = React.useState(false);
-  const [SharewebTask, setSharewebTask] = React.useState('');
+  const [CMSTask, setCMSTask] = React.useState('');
   const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
-  const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
+  const [cmsTimeComponent, setCmsTimeComponent] = React.useState([]);
   const [AllClientCategory, setAllClientCategory] = React.useState([])
   const [count, setCount] = React.useState(0);
   const [AllMasterTasksData, setAllMasterTasksData] = React.useState(props?.AllSiteTasksAndMaster)
@@ -151,7 +151,7 @@ function TasksTable(props: any) {
   const getTaskUsers = async () => {
     let web = new Web(props?.AllListId?.siteUrl);
     await web.lists
-      .getById(props?.AllListId?.TaskUsertListID)
+      .getById(props?.AllListId?.TaskUserListID)
       .items
       .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,IsApprovalMail,CategoriesItemsJson,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover, ItemType,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
       .get().then((Response: any) => {
@@ -565,11 +565,11 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
   const EditItemTaskPopup = (item: any) => {
 
     setIsTask(true);
-    setSharewebTask(item);
+    setCMSTask(item);
   }
   const EditData = (e: any, item: any) => {
     setIsTimeEntry(true);
-    setSharewebTimeComponent(item);
+    setCmsTimeComponent(item);
   }
 
   //=================== callback function to all the poup handle ================
@@ -820,7 +820,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
           <div>
             {row?.original?.TitleNew != "Tasks" ?
               <span className="d-flex hreflink">
-                <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.AllMasterTasks} AllSitesTaskData={props?.AllSiteTasks} AllListId={props.AllListId} />
+                <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.AllMasterTasks} AllSitesTaskData={props?.AllSiteTasks} AllListId={props.AllListId} />
               </span>
               : ''}
           </div>
@@ -868,7 +868,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
           <>
             {row?.original?.ProjectTitle != (null || undefined) ?
               <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${props?.AllListId.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={props?.AllListId} /></a></span>
+                <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={props?.AllListId} /></a></span>
               : ""}
           </>
         ),
@@ -1337,8 +1337,8 @@ const compareToolCallBack = React.useCallback((compareData) => {
       </div>
 
 
-      {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={props.AllListId} context={props.Context} pageName={"TaskFooterTable"}></EditTaskPopup>}
-      {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack} AllListId={props.AllListId} TimeEntryPopup Context={props.Context}></TimeEntryPopup>}
+      {IsTask && <EditTaskPopup Items={CMSTask} Call={Call} AllListId={props.AllListId} context={props.Context} pageName={"TaskFooterTable"}></EditTaskPopup>}
+      {IsTimeEntry && <TimeEntryPopup props={cmsTimeComponent} CallBackTimeEntry={TimeEntryCallBack} AllListId={props.AllListId} TimeEntryPopup Context={props.Context}></TimeEntryPopup>}
       {MeetingPopup &&
         <CreateActivity
           portfolioTypeData={props.props.PortfolioType}

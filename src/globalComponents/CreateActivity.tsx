@@ -54,14 +54,14 @@ const CreateActivity = (props: any) => {
   const [CategoriesData, setCategoriesData] = React.useState<any>([]);
   const [categorySearchKey, setCategorySearchKey] = React.useState("");
   const [SearchedProjectItems, setSearchedProjectItems] = React.useState<any>([]);
-  const [ShareWebComponent, setShareWebComponent] = React.useState('');
+  const [CMSToolComponent, setCMSToolComponent] = React.useState('');
   const [SearchedProjectKey, setSearchedProjectKey] = React.useState<any>('');
   const [selectedProjectData, setSelectedProjectData]: any = React.useState({});
   const [refreshData, setRefreshData] = React.useState(false);
   const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
   // const [IsClientPopup, setIsClientPopup] = React.useState(false);
   const [FeedbackPost, setFeedbackPost] = React.useState([]);
-  const [SharewebCategory, setSharewebCategory] = React.useState("");
+  const [TaskCat, setTaskCat] = React.useState("");
   const [selectedItem, setSelectedItem]: any = React.useState({});
   const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
   const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
@@ -113,7 +113,7 @@ const CreateActivity = (props: any) => {
         setTaskUrl(props?.SiteUrl);
       }
     }
-
+    setSelectedItem(props?.selectedItem)
     if (props?.selectedItem?.AssignedTo?.length > 0) {
       setTaskAssignedTo(props?.selectedItem?.AssignedTo);
     }
@@ -132,7 +132,6 @@ const CreateActivity = (props: any) => {
     } else if (props?.selectedItem?.ClientCategory?.results?.length > 0) {
       ClientCategoriesData = props?.selectedItem?.ClientCategory?.results;
     }
-    setSelectedItem(props?.selectedItem);
     let targetDiv: any = document?.querySelector(".ms-Panel-main");
     if (props?.selectedItem?.PortfolioType?.Color != undefined) { //Changes Made by Robin
       setTimeout(() => {
@@ -157,11 +156,11 @@ const CreateActivity = (props: any) => {
   }, [IsComponentPicker]);
   //***************** Load All task Users***************** */
   const getTaskUsers = async () => {
-    if (AllListId?.TaskUsertListID != undefined) {
+    if (AllListId?.TaskUserListID != undefined) {
       let web = new Web(AllListId?.siteUrl);
       let taskUser = [];
       taskUser = await web.lists
-        .getById(AllListId?.TaskUsertListID)
+        .getById(AllListId?.TaskUserListID)
         .items.select(
           "Id,UserGroupId,Suffix,Title,IsTaskNotifications,IsApprovalMail,CategoriesItemsJson,technicalGroup,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name"
         )
@@ -206,7 +205,7 @@ const CreateActivity = (props: any) => {
     let PropsObject: any = {
       MasterTaskListID: AllListId.MasterTaskListID,
       siteUrl: AllListId.siteUrl,
-      TaskUserListId: AllListId.TaskUsertListID,
+      TaskUserListId: AllListId.TaskUserListID,
     }
     let componentDetails: any = [];
     let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
@@ -236,11 +235,11 @@ const CreateActivity = (props: any) => {
     // if (Type == 'Component') {
     //     setIsOpenPortfolio(true);
     //     setOpenPortfolioType(Type)
-    //     setShareWebComponent(item);
+    //     setCMSToolComponent(item);
     // }
     if (Type == 'Project') {
       setProjectManagementPopup(true)
-      setShareWebComponent(item);
+      setCMSToolComponent(item);
     }
   }
   const autoSuggestionsForProject = (e: any) => {
@@ -900,7 +899,7 @@ const CreateActivity = (props: any) => {
 
   const EditComponentPicker = (item: any) => {
     setIsComponentPicker(true);
-    setSharewebCategory(item);
+    setTaskCat(item);
   };
   //-------- Edit client categrory and categrioes open popup  fuction end ------------
 
@@ -1133,7 +1132,6 @@ const CreateActivity = (props: any) => {
                     SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
                     ResponsibleTeam: TaskResponsibleTeam,
                     TeamMembers: TaskTeamMembers,
-                    TaskType: props?.UsedFrom == "ProjectManagement" ? null :{"Id":1,"Title":'Activities'},
                     TeamLeader: TaskResponsibleTeam,
                     Author: {
                       Id: props?.context?.pageContext?.legacyPageContext
@@ -1239,7 +1237,7 @@ const CreateActivity = (props: any) => {
                 res.data = item;
               }
               if (selectedItem.PageType == "ProjectManagement") {
-                props.Call();
+                props.Call("Close");
                 let url = `${AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`;
                 window.open(url, "_blank");
               } else {
@@ -1263,7 +1261,6 @@ const CreateActivity = (props: any) => {
 
           if (
             selectedItem?.TaskType?.Title == "Workstream" ||
-            selectedItem?.SharewebTaskType?.Title == "Workstream" ||
             selectedItem?.TaskType === "Workstream"
           ) {
             TaskID = selectedItem?.TaskID + "-T" + LatestId;
@@ -2143,7 +2140,7 @@ const CreateActivity = (props: any) => {
       )}
       {ProjectManagementPopup && (
         <ServiceComponentPortfolioPopup
-          props={ShareWebComponent}
+          props={CMSToolComponent}
           Dynamic={AllListId}
           Call={ComponentServicePopupCallBack}
           selectionType={"Single"}
@@ -2153,7 +2150,7 @@ const CreateActivity = (props: any) => {
       )}
       {IsComponentPicker && (
         <Picker
-          props={SharewebCategory}
+          props={TaskCat}
           selectedCategoryData={CategoriesData}
           usedFor="Task-Footertable"
           AllListId={AllListId}

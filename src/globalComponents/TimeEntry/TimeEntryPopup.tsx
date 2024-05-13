@@ -263,11 +263,7 @@ function TimeEntryPopup(item: any) {
                             value.AuthorTitle = val.Author.Title;
                             value.EditorTitle = val.Editor.Title;
                             value.show = true;
-                            // if (val.Created != undefined)
-                            //     //  value.TaskTimeCreatedDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(val.Created, 'DD/MM/YYYY HH:mm');
-                            //     if (val.Modified != undefined)
-                                    // value.TaskTimeModifiedDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(val.Modified, 'DD/MM/YYYY HH:mm');
-                                    if(!isItemExists(item.AdditionalTime,value.ID))
+                                  if(!isItemExists(item.AdditionalTime,value.ID))
                                     item.AdditionalTime.push(value);
                         })
 
@@ -532,9 +528,7 @@ function TimeEntryPopup(item: any) {
                             if (item.AdditionalTime === undefined) {
                                 item.AdditionalTime = [];
                             }
-                            // item.ServerTaskDate = angular.copy(item.TaskDate);
-                            // item.TaskDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.TaskDate, 'DD/MM/YYYY');
-                            item.isShifted = false;
+                           item.isShifted = false;
 
                         })
                         getStructureData();

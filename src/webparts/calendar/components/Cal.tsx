@@ -17,6 +17,9 @@ import { FaPaperPlane } from "react-icons/fa";
 import EmailComponenet from "../../calendar/components/email";
 import moment from 'moment-timezone';
 import "./style.css";
+import 'core-js/es/object/values';
+import "@pnp/sp/sputilities";
+import { spfi, SPFx as spSPFx } from "@pnp/sp";
 moment.locale("en-GB");
 let createdBY: any,
   modofiedBy: any,
@@ -63,7 +66,7 @@ const Designation = [
   { key: "HR", text: "HR" },
   { key: "Admin", text: "Admin" },
   { key: "Management", text: "Management" },
-  { key: "Mobile Team", text: "Mobile Team" },
+  { key: "Mobile", text: "Mobile" },
   { key: "JTM (Junior Task Manager)", text: "JTM (Junior Task Manager)" }
 ];
 let newEvent: any
@@ -430,8 +433,9 @@ const Apps = (props: any) => {
         // if (windowEndDate !== undefined) {
         //   windowEndDate = new Date(windowEndDate).setDate(new Date(windowEndDate).getDate() - 1);
         // }
-        while (dates.length < repeatInstance || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
-          if ((repeatInstance !== 0 ? count > repeatInstance : new Date(dates[dates.length - 1]).setHours(0, 0, 0, 0) > windowEndDate) && useCount) {
+        const repeat = repeatInstance !== 0 ? repeatInstance - 1 : repeatInstance;
+        while (dates.length < repeat || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
+          if ((repeat !== 0 ? count > repeat : new Date(dates[dates.length - 1]).setHours(0, 0, 0, 0) > windowEndDate) && useCount) {
             break;
           }
           count++;
@@ -823,16 +827,6 @@ const Apps = (props: any) => {
     const eventYear = eventDate.getFullYear(); // Get year of the event
     return { year: eventYear, month: eventMonth };
   }
-  // const handleNavigate = (newDate: any) => {
-  //   const { year: currentYear, month: currentMonth } = getYearMonthFromDate(newDate);
-
-  //   const filteredData = events.filter((event: any) => {
-  //     const { year, month } = getYearMonthFromDate(event.start);
-  //     return month === currentMonth && year === currentYear;
-  //   });
-  //   localArr = processDataArray(filteredData);
-  //   setRecurringEvents(filteredData);
-  // };
   const handleNavigate = (newDate: any, newView: any) => {
     setview(newView || 'months');
     const { year: currentYear, month: currentMonth } = getYearMonthFromDate(newDate);
@@ -868,7 +862,7 @@ const Apps = (props: any) => {
   // Handle Select Slot
   const handleSelectSlot = (slotInfo: any) => {
     let yname; // Not sure what this variable is used for, you may need to initialize it with some value or remove it if not needed
-    people(yname); // Unclear what this function does and what is expected here
+    processPeople(yname); // Unclear what this function does and what is expected here
     setLocation("");
     setType("Un-Planned");
     setPeoplePickerShow(true);
@@ -1136,7 +1130,7 @@ const Apps = (props: any) => {
     try {
       const web = new Web(props.props.siteUrl);
 
-      const mycolors = (HalfDaye || HalfDayT) ? "#6d36c5" :
+      const mycolors = 
         (newEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
           ((newEvent.Event_x002d_Type === "Company Holiday") || (newEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
 
@@ -1172,7 +1166,7 @@ const Apps = (props: any) => {
     try {
       const web = new Web(props.props.siteUrl);
       const mytitle = `${editedEvent.name}-${editedEvent.type}-${editedEvent.title}`;
-      const mycolors = (HalfDaye || HalfDayT) ? "#6d36c5" :
+      const mycolors = 
         (editedEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
           ((editedEvent.Event_x002d_Type === "Company Holiday") || (editedEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
 
@@ -1220,9 +1214,18 @@ const Apps = (props: any) => {
       const endTime = selectedTimeEnd;
       const endDateTime = `${_endDate} ${endTime}`;
       const end = moment(endDateTime, "YYYY/MM/DD HH:mm").toLocaleString();
-
-      let mytitle = peopleName + "-" + type + "-" + inputValueName;
-      let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : type === "Work From Home" ? "#e0a209" : (type === "Company Holiday" || type === "National Holiday") ? "#228B22" : "";
+      let mytitle;
+      let inputValues: any = inputValueName
+      if (inputValueName.indexOf(peopleName + "-" + type) !== -1) {
+        mytitle = inputValueName;
+      } else if (inputValues.includes(peopleName)) {
+        let inputData = inputValues.split('-')
+        mytitle = peopleName + "-" + type + "-" + inputData[inputData?.length - 1];
+      }
+      else {
+        mytitle = peopleName + "-" + type + "-" + inputValueName;
+      }
+      //let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : type === "Work From Home" ? "#e0a209" : (type === "Company Holiday" || type === "National Holiday") ? "#228B22" : "";
 
       if (!editRecurrenceEvent) {
         const newEventData: any = {
@@ -1235,7 +1238,7 @@ const Apps = (props: any) => {
           Description: '',
           HalfDay: HalfDaye,
           HalfDayTwo: HalfDayT,
-          Color: mycolors,
+         // Color: mycolors,
           EventDate: new Date(start),
           EndDate: new Date(end),
           fAllDayEvent: allDay,
@@ -1284,53 +1287,33 @@ const Apps = (props: any) => {
     }
     return userInfoArray;
   };
-  const people = async (people: any) => {
-    let userId: any = [];
-    let userTitle: any = [];
-    let userSuffix: any = [];
-
+  const processPeople = async (people: any[]) => {
+    let userId: string[] = [];
+    let userTitle: string[] = [];
+    let userSuffix: string[] = [];
+  
     if (people?.length > 0) {
-      let userMail: any = []
-      people.map((item: any) => {
-        if (item?.id != undefined) {
-          userMail?.push(item?.id.split("|")[2])
+      let userMail: string[] = [];
+      people.forEach((item: any) => {
+        if (item?.id !== undefined) {
+          userMail.push(item.id.split("|")[2]);
         }
-      })
+      });
       let userInfo = await getUserInfo(userMail);
       userData = userInfo
-      userInfo.map((item: any) => {
-        // userId = item.Id
-        if (item?.Title != undefined) {
-          userTitle.push(item.Title)
-          userId.push(item.Id)
+      userInfo.forEach((item: any) => {
+        if (item?.Title !== undefined) {
+          userTitle.push(item.Title);
+          userId.push(item.Id);
         }
-      })
-      // userSuffix = userTitle
-      //   .split(" ")
-      //   .map((i: any) => i.charAt(0))
-      //   .join("");
+      });
       title_Id = userId;
       title_people = userTitle;
       setPeopleName(userTitle);
-      setPeopleId(userId)
-    } else {
-      let userInfo = await getUserInfo(
-        props.props.context._pageContext._legacyPageContext.userPrincipalName
-      );
-      userInfo.map((item: any) => {
-        userId = item.Id
-        userTitle = item.Title
-      })
-      // userSuffix = userTitle
-      //   .split(" ")
-      //   .map((i: any) => i.charAt(0))
-      //   .join("");
-      title_Id = userId;
-      title_people = userTitle;
-      setPeopleName(userTitle);
-      setPeopleId(title_Id)
+      setPeopleId(userId);
     }
   };
+  
 
   const ConvertLocalTOServerDateToSave = (date: any, Time: any) => {
     if (date != undefined && date != "") {
@@ -1340,6 +1323,113 @@ const Apps = (props: any) => {
       return formattedDater;
     } else return "";
   };
+// for send Email
+
+const calculateTotalWorkingDays = (matchedData: any[]) => {
+  // Function to reset the time of a date string to 00:00:00
+ function resetTime(dateString:any) {
+   let date = new Date(dateString);
+   date.setHours(0, 0, 0, 0);
+   return date; // Return the date object
+ }
+ 
+ // Today's date for comparison (reset to 00:00:00)
+ const today = new Date();
+ today.setHours(0, 0, 0, 0);
+ 
+ let totalWorkingDays = 0; // Initialize the counter for total working days
+ 
+ matchedData.forEach((item) => {
+   let endDate = resetTime(item.EndDate);
+   let eventDate:any = resetTime(item.EventDate);
+   if (eventDate.getFullYear() === today.getFullYear()) {
+     let currentDate = new Date(eventDate);
+ 
+     while (currentDate <= endDate) {
+       const dayOfWeek = currentDate.getDay();
+ 
+       // Exclude weekends (Saturday and Sunday)
+       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+         // Check if the current date falls within the event range
+         if (currentDate >= eventDate && currentDate <= endDate) {
+           if (item.Event_x002d_Type !== "Work From Home") {
+             if (item.HalfDay === true || item.HalfDayTwo === true) {
+               totalWorkingDays += 0.5; // Add half-day
+             } else {
+               totalWorkingDays++; // Add full day
+             }
+           }
+         }
+       }
+ 
+       currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+     }
+   }
+ });
+ 
+ 
+   return totalWorkingDays;
+ };
+ 
+const isWeekend = (startDate: any, endDate: any) => {
+  const startDay = startDate.getDay();
+  const endDay = endDate.getDay();
+
+  return (startDay === 0 || startDay === 6) && (endDay === 0 || endDay === 6);
+};
+
+const SendEmail = (EventData: any, MyEventData: any) => {
+  const startDate = new Date(EventData?.start);
+  const endDate = new Date(EventData?.end);
+
+  let daysDifference = calculateTotalWorkingDays([MyEventData]);
+  const formattedstartDate = startDate.toLocaleDateString('en-GB', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+  const formattedendDate = endDate.toLocaleDateString('en-GB', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+
+  let sp = spfi().using(spSPFx(props?.props?.context));
+
+  let BindHtmlBody = `<div>
+  <div>
+    Dear Prashant,<br><br>
+    I am writing to request ${daysDifference} day of leave from ${formattedstartDate} to ${formattedendDate} due to ${EventData?.title}.<br><br>
+    I have ensured that my tasks are up to date and arranged coverage during my absence. Your understanding and approval would be greatly appreciated.<br><br>
+    Best regards,<br>
+    ${EventData?.name}
+  </div>
+</div>`;
+
+  let SendEmailMessage =
+    sp.utility
+      .sendEmail({
+        Body: BindHtmlBody,
+        Subject: "Leave Request - " + formattedstartDate +"-"+EventData?.Designation+"-"+EventData?.type+"-"+ EventData?.title , // Modified subject
+        To: ["ranu.trivedi@hochhuth-consulting.de","juli.kumari@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de"],
+        AdditionalHeaders: {
+          "content-type": "text/html",
+        },
+      })
+      .then(() => {
+        console.log("Email Sent!");
+        alert("Email Sent Successfully!");
+      })
+      .catch((error) => {
+        console.error("Error sending email:", error); // Log the error
+        alert("Error sending email. Please try again."); // Alert user about the error
+      });
+};
+
+// Email End 
+
   const saveEvent = async () => {
     try {
       if (inputValueName?.length > 0 && (dType?.length > 0 || type == "National Holiday" || type == "Company Holiday")) {
@@ -1408,6 +1498,9 @@ const Apps = (props: any) => {
               .getById(props.props.SmalsusLeaveCalendar)
               .items.add(eventData)
               .then(() => {
+                if(newEvent.type !== "Work From Home"){
+                  SendEmail(newEvent,eventData)
+                }
                 getEvents();
               })
           });
@@ -1499,7 +1592,7 @@ const Apps = (props: any) => {
         Location: newEvent.loc,
         Event_x002d_Type: newEvent.type,
         Description: newEvent.reason,
-        // Designation: newEvent.Designation,
+        Designation: newEvent.Designation,
         EndDate: ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) + " " + (selectedTimeEnd + "" + ":00"),
         EventDate: ConvertLocalTOServerDateToSave(startDate, selectedTime) + " " + (selectedTime + "" + ":00"),
         HalfDay: newEvent.halfdayevent,
@@ -1753,7 +1846,7 @@ const Apps = (props: any) => {
                 personSelectionLimit={10}
                 titleText="Select People"
                 resolveDelay={1000}
-                onChange={people}
+                onChange={processPeople}
                 showtooltip={true}
                 required={true}
                 disabled={IsDisableField}

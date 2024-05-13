@@ -63,8 +63,8 @@ const GroupByDashboard = (SelectedProp: any) => {
     const [taskTypeDataItem, setTaskTypeDataItem] = React.useState([]);
     const [OpenAddStructurePopup, setOpenAddStructurePopup] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
-    const [SharewebComponent, setSharewebComponent] = React.useState("");
-    const [SharewebTask, setSharewebTask] = React.useState("");
+    const [CMSToolComponent, setCMSToolComponent] = React.useState("");
+    const [CMSTask, setCMSTask] = React.useState("");
     const [checkedList1, setCheckedList1] = React.useState([]);
     const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
     const [precentComplete, setPrecentComplete] = React.useState([])
@@ -80,7 +80,7 @@ const GroupByDashboard = (SelectedProp: any) => {
         let web = new Web(ContextValue.siteUrl);
         let taskUsers = [];
         taskUsers = await web.lists
-            .getById(ContextValue.TaskUsertListID)
+            .getById(ContextValue.TaskUserListID)
             .items.select(
                 "Id",
                 "Email",
@@ -286,7 +286,7 @@ const GroupByDashboard = (SelectedProp: any) => {
     const inlineCallBack = React.useCallback((item: any) => {
         let ComponentsData: any = [];
         let AllMasterItem = backupAllMaster;
-        AllMasterItem = AllMasterItem?.map((result: any) => {
+        backupAllMaster = AllMasterItem = AllMasterItem?.map((result: any) => {
             if (result?.Id == item?.Id) {
                 return { ...result, ...item };
             }
@@ -356,7 +356,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <>
-                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={[]} />
+                        <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={[]} />
                     </>
                 ),
                 id: "TaskID",
@@ -430,7 +430,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 accessorFn: (row) => row?.HelpInformationVerified,
                 cell: ({ row }) => (
                     <div className="alignCenter">
-                        <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>
+                        <span> <TrafficLightComponent callBack={inlineCallBack} columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>
                    </div>
                 ),
                 id: "HelpInformationVerified",
@@ -818,7 +818,7 @@ const GroupByDashboard = (SelectedProp: any) => {
         item["siteUrl"] = ContextValue.siteUrl;
         item["listName"] = "Master Tasks";
         setIsComponent(true);
-        setSharewebComponent(item);
+        setCMSToolComponent(item);
     };
     ///////////////////////////////////
 
@@ -907,7 +907,7 @@ const GroupByDashboard = (SelectedProp: any) => {
             }
             if (item?.CreateOpenType === 'CreatePopup') {
                 const openEditItem = (item?.CreatedItem != undefined ? item.CreatedItem[0]?.data : item.data);
-                setSharewebComponent(openEditItem);
+                setCMSToolComponent(openEditItem);
                 setIsComponent(true);
             }
             renderData = [];
@@ -935,7 +935,7 @@ const GroupByDashboard = (SelectedProp: any) => {
             renderData = renderData.concat(copyDtaArray)
             if (item?.CreateOpenType === 'CreatePopup') {
                 const openEditItem = (item?.CreatedItem != undefined ? item.CreatedItem[0]?.data : item.data);
-                setSharewebComponent(openEditItem);
+                setCMSToolComponent(openEditItem);
                 setIsComponent(true);
             }
             refreshData();
@@ -1019,7 +1019,7 @@ const GroupByDashboard = (SelectedProp: any) => {
             {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp} />}
             {IsComponent && (
                 <EditInstituton
-                    item={SharewebComponent}
+                    item={CMSToolComponent}
                     Calls={Call}
                     SelectD={SelectedProp?.SelectedProp}
                     portfolioTypeData={portfolioTypeData}

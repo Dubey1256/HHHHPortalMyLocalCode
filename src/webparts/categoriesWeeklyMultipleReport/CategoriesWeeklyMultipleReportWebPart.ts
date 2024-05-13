@@ -15,7 +15,7 @@ import pnp from 'sp-pnp-js';
 
 export interface ICategoriesWeeklyMultipleReportWebPartProps {
   description: string;
-  TaskUsertListID: "b318ba84-e21d-4876-8851-88b94b9dc300";
+  TaskUserListID: "b318ba84-e21d-4876-8851-88b94b9dc300";
   SmartMetadataListID: "01a34938-8c7e-4ea6-a003-cee649e8c67a";
   MasterTaskListID: "ec34b38f-0669-480a-910c-f84e92e58adf";
   TaskTypeID: "21b55c7b-5748-483a-905a-62ef663972dc";
@@ -44,7 +44,7 @@ export default class CategoriesWeeklyMultipleReportWebPart extends BaseClientSid
         siteUrl: this.context.pageContext.web.absoluteUrl,
         MasterTaskListID: this.properties.MasterTaskListID,
         TaskTypeID: this.properties.TaskTypeID,
-        TaskUsertListID: this.properties.TaskUsertListID,
+        TaskUserListID: this.properties.TaskUserListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
         PortFolioTypeID:this.properties.PortFolioTypeID,
         Context: this.context,
@@ -99,7 +99,7 @@ export default class CategoriesWeeklyMultipleReportWebPart extends BaseClientSid
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField("TaskUsertListID", {
+                PropertyPaneTextField("TaskUserListID", {
                   label: "Task User List",
                 }),
                 PropertyPaneTextField("SmartMetadataListID", {
