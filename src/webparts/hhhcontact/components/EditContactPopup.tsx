@@ -69,25 +69,19 @@ const EditContactPopup = (props: any) => {
     const getContactDetails = async () => {
         try {
             //props?.allListId?.TeamContactSearchlistIds
-            const select = "WorkCity,WorkFax ,WorkAddress,Id,WorkCountry,Email,FullName,WorkFax,ItemCover,SmartActivities/Id,SmartActivities/Title,SmartCategories/Id,SmartCategories/Title,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,ol_Department,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title";
+            const select = "WorkCity,WorkFax ,WorkAddress,Id,WorkCountry,Email,FullName,WorkFax,Item_x0020_Cover,SmartActivities/Id,SmartActivities/Title,SmartCategories/Id,SmartCategories/Title,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,ol_Department,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title";
             const query = `Id eq ${itemId}`;
             const data = await webs.lists.getById(props?.allListId?.TeamContactSearchlistIds).items.select(select).expand('Author', 'Editor', 'SmartActivities', 'SmartCategories').filter(query).get();
-            data.map((Item: any) => {
-                if (Item?.Created != null && Item?.Created != undefined) {
-                    Item.Created = moment(Item?.Created, "DD-MM-YYYY").format("DD/MM/YYYY");
-                }
-                if (Item?.Modified != null && Item?.Modified != undefined) {
-                    Item.Modified = moment(Item?.Modified, "DD-MM-YYYY").format("DD/MM/YYYY");
-                }
-                if (Item.ItemCover != null && Item.ItemCover != undefined) {
-                    Item.Item_x002d_Image = Item?.ItemCover
-
-                }
-            })
             const contact = data[0];
             if (contact.SmartCategories) {
                 setSmartCategoriesData(contact.SmartCategories)
             }
+            if (contact?.Created != null && contact?.Created != undefined) {
+                contact.Created = moment(contact.Created).format("DD/MM/YYYY");
+            }
+            if (contact?.Modified != null && contact?.Modified != undefined) {
+                contact.Modified = moment(contact.Modified).format("DD/MM/YYYY");
+             }
             setContactDetails(contact);
 
         } catch (error) {
@@ -360,7 +354,7 @@ const EditContactPopup = (props: any) => {
         return (
             <>
                 <div className='subheading'>
-                    Edit Contact - {contactDetails.FirstName + ' ' + contactDetails.Title}
+                    Edit Contact - {(contactDetails.FirstName != null ? contactDetails.FirstName: " ") + ' ' + (contactDetails.Title != null ? contactDetails.Title: " ")}
                 </div>
                 <Tooltip ComponentId='3433' />
             </>
