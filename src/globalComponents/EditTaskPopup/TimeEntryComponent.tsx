@@ -680,12 +680,25 @@ const TimeEntryPopup = (item: any) => {
       .get();
     AllMetadata = MetaData;
     MetaData.forEach((itemss: any) => {
-      if (
-        itemss?.Title?.toLowerCase() == item?.props?.siteType?.toLowerCase() &&
-        itemss.TaxType == "Sites"
-      ) {
-        TimesheetConfiguration = JSON.parse(itemss.Configurations);
-      }
+     if(item?.props?.siteType=="Offshore%20Tasks")
+        {
+          if (
+       
+            itemss?.Title?.toLowerCase() == 'offshore tasks' &&
+            itemss.TaxType == "Sites"
+          ) {
+            TimesheetConfiguration = JSON.parse(itemss.Configurations);
+          }
+        }
+        else{
+          if (
+       
+            itemss?.Title?.toLowerCase() == item?.props?.siteType?.toLowerCase() &&
+            itemss.TaxType == "Sites"
+          ) {
+            TimesheetConfiguration = JSON.parse(itemss.Configurations);
+          }
+        }
     });
     TimesheetConfiguration?.forEach((val: any) => {
       TimeSheetlistId = val.TimesheetListId;
@@ -1183,7 +1196,7 @@ function reverseArray(arr: any) {
     getStructurefTimesheetCategories();
     setEditItem(items.Title);
 
-    if (items.siteType == "Offshore Tasks" || items.siteType == "SharewebQA") {
+    if (items.siteType == "Offshore Tasks" || items.siteType == "Offshore%20Tasks" || items.siteType == "SharewebQA") {
       var siteType = "OffshoreTasks";
       var filteres = "Task" + siteType + "/Id eq " + items.Id;
       var linkedSite = "Task" + siteType;
