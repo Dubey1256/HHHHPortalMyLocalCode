@@ -179,7 +179,7 @@ const ContactSearch = (props: any) => {
     //********************************End Bulk Email function */
 
     // ***********callback for table***************************************
-    cconst callBackData = (data: any) => {
+    const callBackData = (data: any) => {
         if (data?.length > 0) {
             setIsDisabled(false);
             data.map((item: any) => {
