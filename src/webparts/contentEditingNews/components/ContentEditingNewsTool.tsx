@@ -139,16 +139,16 @@ const ContentEditingNewsTable = (props: any) => {
      }
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
-            // {
-            //     accessorKey: "",
-            //     placeholder: "",
-            //     hasCheckbox: true,
-            //     hasCustomExpanded: false,
-            //     hasExpanded: false,
-            //     isHeaderNotAvlable: true,
-            //     size: 10,
-            //     id: 'Id',
-            // },
+            {
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: false,
+                hasCustomExpanded: false,
+                hasExpanded: false,
+                isHeaderNotAvlable: true,
+                size: 10,
+                id: 'Id',
+            },
             {
                 accessorFn: (row: any) => row?.Title,
                 cell: ({ row }: any) => (
