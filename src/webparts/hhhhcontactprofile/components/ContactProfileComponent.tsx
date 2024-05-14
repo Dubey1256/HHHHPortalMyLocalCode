@@ -151,7 +151,7 @@ const ContactProfileComponent = (props: any) => {
                                             <div className="col-md-6 ps-2 pe-0">
                                                 <div className="contact-info">
                                                     <div className="contact-dtls">
-                                                        <div className="infocontent-pannel"><img title="Country" src={`${baseUrl}/PublishingImages/Icons/24/icon_Street_png.jpg`} /> {Contacts?.WorkCity}</div>
+                                                        <div className="infocontent-pannel"><img title="City" src={`${baseUrl}/PublishingImages/Icons/24/icon_Street_png.jpg`} /> {Contacts?.WorkCity}</div>
                                                     </div>
                                                 </div>
                                             </div>
