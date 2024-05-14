@@ -356,7 +356,7 @@ const ArticleComponent = () => {
                 }
             });
             console.log(documentresponse.data)
-            page.livingDocsUrl = `https://edit.livingdocs.io/p/sandbox-txzrdjhamqwf/articles/${documentresponse.data.logs[0].document_id}/edit/canvas`
+            page.livingDocsUrl = `https://edit.livingdocs.io/p/sandbox-cwqrtkjpuakn/articles/${documentresponse.data.logs[0].document_id}/edit/canvas`
             await UpdatelivingDocs(page); // Log the response data if needed        
         } catch (error) {
             console.error('Error:', error);
