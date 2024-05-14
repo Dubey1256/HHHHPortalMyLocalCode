@@ -457,11 +457,13 @@ function TeamPortlioTable(SelectedProp: any) {
                             }
                             try {
                                 if (result?.Comments != null && result?.Comments != undefined) {
+                                    const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
                                     const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
                                     const commentsFormData = JSON?.parse(cleanedComments);
-                                    result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                                    const searchData = commentsFormData?.reduce((accumulator: any, comment: any) => {
                                         return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
                                     }, "").trim();
+                                    result.commentsSearch = cleanText(searchData);
                                 }
                             } catch (error) {
                                 console.error("An error occurred:", error);
@@ -743,11 +745,13 @@ function TeamPortlioTable(SelectedProp: any) {
 
                         try {
                             if (result?.Comments != null && result?.Comments != undefined) {
+                                const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
                                 const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
                                 const commentsFormData = JSON?.parse(cleanedComments);
-                                result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                                const searchData = commentsFormData?.reduce((accumulator: any, comment: any) => {
                                     return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
                                 }, "").trim();
+                                result.commentsSearch = cleanText(searchData);
                             }
                         } catch (error) {
                             console.error("An error occurred:", error);
@@ -969,11 +973,13 @@ function TeamPortlioTable(SelectedProp: any) {
             }
             try {
                 if (result?.Comments != null && result?.Comments != undefined) {
+                    const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
                     const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
                     const commentsFormData = JSON?.parse(cleanedComments);
-                    result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                    const searchData = commentsFormData?.reduce((accumulator: any, comment: any) => {
                         return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
                     }, "").trim();
+                    result.commentsSearch = cleanText(searchData);
                 }
             } catch (error) {
                 console.error("An error occurred:", error);

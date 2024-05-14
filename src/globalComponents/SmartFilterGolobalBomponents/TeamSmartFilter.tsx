@@ -2011,6 +2011,11 @@ const TeamSmartFilter = (item: any) => {
     };
 
     const handleUpdateFaborites = (editData: any) => {
+        if (editData?.startDate) {
+            editData.startDate = new Date(editData.startDate)
+        } if (editData?.endDate) {
+            editData.endDate = new Date(editData.endDate)
+        }
         setUpdatedEditData(editData)
         setSelectedFilterPanelIsOpenUpdate(true);
     }
