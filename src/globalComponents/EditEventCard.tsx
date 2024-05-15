@@ -517,8 +517,8 @@ const EditEventCardPopup = (props: any) => {
                 let web = new Web(props?.allListId?.siteUrl);
                 await web.lists.getById(props?.allListId[props?.usedFor]).items.getById(updateData?.Id).update(postData).then((e) => {
                     console.log("Your information has been updated successfully");
-                    setShowConfirmation(true)
-
+                   
+                    callBack();
 
 
                 });
@@ -574,15 +574,8 @@ const EditEventCardPopup = (props: any) => {
                 setSelectedPagesData(selectCategoryDataCallBack, "For-Panel");
         }, []
     );
-    const cancelConfirmationPopup = () => {
-        setShowConfirmation(false)
-        callBack();
-    }
-    const ProceedConfirmation = () => {
-        window.open(
-            `https://grueneweltweit.sharepoint.com/sites/GrueneWeltweit/Washington/Public/SitePages/SyncTool.aspx`, "_blank"
-        )
-    }
+   
+ 
     const EditComponentPicker = (arr: any, type: any) => {
         setIsComponentPicker(true);
         taggingtype = type;
