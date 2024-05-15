@@ -33,11 +33,11 @@ const ContactSearch = (props: any) => {
     const getAllContact = async () => {
         //allListId?.TeamContactSearchlistIds
         try {
-            let data = await webs.lists.getById(allListId?.TeamContactSearchlistIds).items.select("WorkCity,Id,SmartActivitiesId,SmartCategories/Id,SmartCategories/Title,WorkCountry,ItemType,Email,FullName,Item_x0020_Cover,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title").expand("Author,Editor,SmartCategories").orderBy("Created desc").getAll();
+            let data = await webs.lists.getById(allListId?.TeamContactSearchlistIds).items.select("WorkCity,Id,SmartActivitiesId,SmartCategories/Id,SmartCategories/Title,WorkCountry,ItemType,Email,FullName,ItemCover,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title").expand("Author,Editor,SmartCategories").orderBy("Created desc").getAll();
             data.map((item: any) => {
                 item.Selected = false
-                if (item.Item_x0020_Cover != null && item.Item_x0020_Cover != undefined) {
-                    item.Item_x002d_Image = item.Item_x0020_Cover
+                if (item.ItemCover != null && item.ItemCover != undefined) {
+                    item.Item_x002d_Image = item.ItemCover
                 }
                 if (item?.SmartCategories) {
                     item.SmartCategories.forEach((i: any) => {
@@ -179,7 +179,7 @@ const ContactSearch = (props: any) => {
     //********************************End Bulk Email function */
 
     // ***********callback for table***************************************
-    cconst callBackData = (data: any) => {
+    const callBackData = (data: any) => {
         if (data?.length > 0) {
             setIsDisabled(false);
             data.map((item: any) => {

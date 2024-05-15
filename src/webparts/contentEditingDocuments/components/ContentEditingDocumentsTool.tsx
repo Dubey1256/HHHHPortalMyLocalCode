@@ -39,7 +39,7 @@ const ContentEditingDocumentsTable = (props: any) => {
             AllListId = {
                 siteUrl: props?.props?.siteUrl,
                 Context: props?.props?.Context,             
-                LivingNews: props?.props?.LivingNews,             
+                LivingDocument: props?.props?.LivingDocument,             
                 TaskUserListID: props?.props?.TaskUserListID
             }
         }
@@ -54,7 +54,7 @@ const ContentEditingDocumentsTable = (props: any) => {
                 .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name,UserGroup/Id,UserGroup/Title,TeamLeader/Id,TeamLeader/Title&$expand=UserGroup,AssingedToUser,Approver,TeamLeader").get()
                 .then((taskuser: any) => {
                     AllTaskUser = taskuser
-                    LoadNewsListData();
+                    LoadDocListData();
                 }).catch((error: any) => {
                     console.log(error)
                 });
@@ -78,16 +78,21 @@ const ContentEditingDocumentsTable = (props: any) => {
         }
        
     };
-    const LoadNewsListData = async () => {
+    const LoadDocListData = async () => {
         try {
                 const web = new Web(props?.props?.siteUrl);
-                await web.lists.getById(AllListId?.LivingNews)
-                    .items.getAll()
+                // await web.lists.getById(AllListId?.LivingDocument)
+                // .items.getAll()
+                await web.lists.getById(AllListId?.LivingDocument)
+                .items.select('Id', 'Title', 'PriorityRank', 'Year', 'Body', 'Status', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover', 'File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl')
+                .expand('Author,Editor').getAll()              
                     .then((Data: any[]) => {
                         copyData = JSON.parse(JSON.stringify(Data))
                         console.log(Data)
                         Data.forEach((item: any) => {
                             item.Id = item.ID;
+                            if(item.Title===null || item.Title===undefined || item.Title==='')
+                                item.Title=item.FileLeafRef;
                             item. Editor={}
                             item.Author={}
                             item.displayDescription="";

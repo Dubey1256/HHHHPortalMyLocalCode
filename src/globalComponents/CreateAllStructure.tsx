@@ -806,10 +806,10 @@ const CreateAllStructureComponent = (props: any) => {
               <label>
                 <b>Select Portfolio type</b>
               </label>
-              <div style={{display:'flex !important'}}>
+              <div>
                 {props?.portfolioTypeData.map((item: any) => {
                   return (
-                    <div className="mb-2 mt-2">
+                    <span className="mb-2 mt-2">
                       <label className="SpfxCheckRadio">
                         <input
                           className="radio"
@@ -823,7 +823,7 @@ const CreateAllStructureComponent = (props: any) => {
                         ></input>
                         {item.Title}
                       </label>
-                    </div>
+                    </span>
                   );
                 })}
               </div>{" "}
