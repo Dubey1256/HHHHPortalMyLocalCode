@@ -787,6 +787,15 @@ const SmartInformation = (props: any, ref: any) => {
   // ===========get file upload data and Id ============= .
 
   const getAll = async (folderName: any, folderPath: any) => {
+    const web:any = new Web(props?.AllListId?.siteUrl);
+    try {
+      const currentUrl = web._url;
+      const adjustedUrl = currentUrl?.replace("/SitePages", "");
+      web._url = adjustedUrl;
+    }
+    catch (e) {
+      console.log(e)
+    }
     let fileName: any = "";
     if (allValue?.fileupload != "") {
       fileName = allValue?.fileupload;
@@ -797,7 +806,7 @@ const SmartInformation = (props: any, ref: any) => {
     if (allValue?.Dragdropdoc != "") {
       fileName = allValue?.Dragdropdoc;
     }
-    await sp.web.getFileByServerRelativeUrl(`${props?.Context?._pageContext?._web?.serverRelativeUrl}/${folderPath}/${fileName}`).getItem()
+    await web.getFileByServerRelativeUrl(`${props?.Context?._pageContext?._web?.serverRelativeUrl}/${folderPath}/${fileName}`).getItem()
       .then(async (res: any) => {
         console.log(res);
         setShow(false);
@@ -851,7 +860,7 @@ const SmartInformation = (props: any, ref: any) => {
         GetResult();
         setshowAdddocument(false)
       })
-      .catch((err) => {
+      .catch((err:any) => {
         console.log(err.message);
       });
   }
