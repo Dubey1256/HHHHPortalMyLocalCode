@@ -148,6 +148,7 @@ const ContentEditingDocumentsTable = (props: any) => {
             const plainText = gethtml.replace(/<[^>]*>|&#[^;]+;/g, '');
             const words = plainText.split(' ');
             first100Words = words.slice(0, 20).join(' ');
+         
         }
         return first100Words;
     };
@@ -388,7 +389,7 @@ const ContentEditingDocumentsTable = (props: any) => {
                             <GlobalCommanTable customHeaderButtonAvailable={true}
                                 ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={true}
                                 columns={columns} data={livingDocsSyncData} showHeader={true}
-                                callBackData={callBackData} />
+                                callBackData={callBackData} fixedWidth={true}/>
                             {!loaded && <PageLoader />}
                         </div>
                     </div>
