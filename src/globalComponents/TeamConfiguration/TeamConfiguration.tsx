@@ -17,6 +17,8 @@ export interface ITeamConfigurationState {
     AssignedToUsers: any;
     TeamMemberUsers: any;
     updateDragState: boolean;
+    datesInfo: any;
+    oldWorkingDaysInfo: any;
     TeamConfiguration: any;
     TeamUserExpended: boolean;
 }
@@ -34,6 +36,8 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             AssignedToUsers: [],
             TeamMemberUsers: [],
             updateDragState: false,
+            datesInfo: [],
+            oldWorkingDaysInfo: [],
             TeamConfiguration: {},
             TeamUserExpended: true
         }
@@ -44,10 +48,98 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private async loadData() {
         await this.loadTaskUsers();
         await this.GetTaskDetails();
+        await this.getDatesInfo()
         this.showComposition();
     }
+
     private AllUsers: any = [];
+
     private dragUser: any;
+    private getDatesInfo() {
+        let datesInfo: any = [];
+        let currentDate = moment();
+        let workingActionTest = JSON.parse(this?.state?.taskDetails?.WorkingAction)
+        let workingAction:any
+        if(workingActionTest?.length>0){
+            workingActionTest?.map((info:any)=>{
+                if(info?.Title=='WorkingDetails'){
+                    workingAction= info?.InformationData;
+                }
+            })
+        }
+        let oldJson: any =workingAction;
+        let count = 0;
+        while (datesInfo.length < 5) {
+            let dateFullInfo = { displayDate: '', originalDate: '' };
+            if (currentDate.day() !== 0 && currentDate.day() !== 6) {
+                count++;
+                if (count == 1) {
+                    dateFullInfo.displayDate = "Today"
+                    dateFullInfo.originalDate = currentDate.format('DD/MM/YYYY')
+                }
+                else if (count == 2) {
+                    dateFullInfo.displayDate = "Tomorrow"
+                    dateFullInfo.originalDate = currentDate.format('DD/MM/YYYY')
+                }
+                else {
+                    dateFullInfo.displayDate = currentDate.format('DD/MM/YYYY')
+                    dateFullInfo.originalDate = currentDate.format('DD/MM/YYYY')
+                }
+                datesInfo.push(dateFullInfo);
+                currentDate = currentDate.add(1, 'day');
+            }
+            else {
+                currentDate = currentDate.add(1, 'day');
+                count++;
+            }
+
+        }
+        if (oldJson != undefined || oldJson != null) {
+            oldJson = oldJson.filter((oldDate: any) => {
+                return !datesInfo.some((newDate: any) => oldDate.WorkingDate == newDate.originalDate);
+            });
+        }
+        datesInfo?.map((dates: any) => {
+            dates.userInformation = [];
+            workingAction?.map((workActionData: any) => {
+                if (workActionData?.WorkingDate == dates?.originalDate) {
+                    this?.state?.taskUsers?.map((users: any) => {
+                        users?.childs.map((userValue: any, index: any) => {
+                            workActionData?.WorkingMember?.map((workingMember: any) => {
+                                if (userValue?.AssingedToUser?.Id == workingMember.Id) {
+                                    userValue.workingDateUser = dates?.originalDate;
+                                    dates.userInformation.push({ ...userValue });
+                                    //  users?.childs.splice(index,1)
+                                }
+                            })
+
+                        })
+                    })
+
+                }
+            })
+        })
+
+        datesInfo?.map((datesUser: any) => {
+            this?.state?.taskUsers?.map((userRemove: any) => {
+                userRemove?.childs?.map((childUser: any, index: any) => {
+                    datesUser.userInformation.map((userDate: any) => {
+                        if (userDate?.AssingedToUser?.Id == childUser?.AssingedToUser?.Id) {
+                            userRemove?.childs.splice(index, 1);
+                        }
+                    })
+                })
+            })
+        })
+
+        this.setState({
+            datesInfo: datesInfo,
+            oldWorkingDaysInfo: oldJson
+        })
+
+    }
+
+
     private async loadTaskUsers() {
         if (this.props.ItemInfo.siteUrl != undefined) {
             web = new Web(this.props.ItemInfo.siteUrl);
@@ -120,7 +212,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 .getById(this.props.ItemInfo.listId)
                 .items
                 .getById(this.props.ItemInfo.Id)
-                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
+                .select("ID", "Title", "WorkingAction", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
                 .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
                 .get()
         } else {
@@ -215,7 +307,6 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             self.AssignedToUsers = self.getUsersWithImage(Item.AssignedTo);
             //AssignedToUsersDetail = self.AssignedToUsers;
         }
-
         taskUsers.forEach(function (categoryUser: any) {
             for (var i = 0; i < categoryUser.childs.length; i++) {
                 if (categoryUser.childs[i].Item_x0020_Cover != undefined) {
@@ -227,17 +318,17 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
             }
         });
-        taskUsers.forEach(function (categoryUser: any) {
-            for (var i = 0; i < categoryUser.childs.length; i++) {
-                if (categoryUser.childs[i].Item_x0020_Cover != undefined) {
-                    self.AssignedToUsers.forEach(function (item: any) {
-                        if (categoryUser.childs[i] != undefined && categoryUser.childs[i].AssingedToUserId != undefined && categoryUser.childs[i].AssingedToUserId == item.Id) {
-                            categoryUser.childs.splice(i, 1);
-                        }
-                    });
-                }
-            }
-        });
+        // taskUsers.forEach(function (categoryUser: any) {
+        //     for (var i = 0; i < categoryUser.childs.length; i++) {
+        //         if (categoryUser.childs[i].Item_x0020_Cover != undefined) {
+        //             self.AssignedToUsers.forEach(function (item: any) {
+        //                 if (categoryUser.childs[i] != undefined && categoryUser.childs[i].AssingedToUserId != undefined && categoryUser.childs[i].AssingedToUserId == item.Id) {
+        //                     categoryUser.childs.splice(i, 1);
+        //                 }
+        //             });
+        //         }
+        //     }
+        // });
         taskUsers.forEach(function (categoryUser: any) {
             for (var i = 0; i < categoryUser.childs.length; i++) {
                 if (categoryUser.childs[i].Item_x0020_Cover != undefined) {
@@ -266,7 +357,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
 
     private isItemExists = function (arr: any, Id: any) {
         var isExists = false;
-        arr.forEach(function (item: any) {
+        arr?.forEach(function (item: any) {
             if (item.ID == Id) {
                 isExists = true;
                 return false;
@@ -321,21 +412,74 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         e.preventDefault();
         let $data = dragItem.user;
         let self = this;
+        let isRemove = false;
+        if (dragItem.userType == "UserWorkingDays") {
+            this.state?.datesInfo.map((dates: any) => {
+                if (dates?.originalDate == dragItem?.user?.workingDateUser) {
+                    dates?.userInformation.map((user: any, index: any) => {
+                        if (user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id) {
+                            dates.userInformation.splice(index, 1)
+                        }
+                    })
+                }
+
+            })
+            let userExistsWorkingDates = this.state.datesInfo.some((item: any) =>
+                item?.userInformation.some((user: any) =>
+                    user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id
+                )
+            );
+           let  userExistsTeamMembers = this.state.TeamMemberUsers.some((user: any) => {
+                if (user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+            let userExistsLeads = this.state.ResponsibleTeam.some((user: any) => {
+                if (user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+            if (userExistsWorkingDates!=true && userExistsLeads!=true && userExistsTeamMembers!=true ) {
+                this.state.taskUsers.forEach((child: any) => {
+                    if (child.ID === $data.UserGroupId) {
+                        if (!self.isItemExists(child.childs, $data.Id)) {
+                            child.childs.push($data);
+                        }
+                    }
+                });
+            }
+
+        }
+        else {
+           let userExistsWorkingDates=this.state.datesInfo.some((item: any) =>
+            item?.userInformation.some((user: any) =>
+                user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id
+            )
+        );
+            if(!userExistsWorkingDates){
         this.state.taskUsers.forEach(function (child: any) {
             if (child.ID == $data.UserGroupId) {
                 if (!self.isItemExists(child.childs, $data.Id))
                     child.childs.push($data);
             }
-        });
-        this.dropSuccessHandler(true);
+                })
+            }   
+        }
+        this.dropSuccessHandler(true,'');
     }
 
     private onDropTeam(e: any, array: any, Team: any, AllUser: any, userType: any) {
         if (dragItem.userType != userType) {
             let $data = dragItem.user;
             let self = this;
+
             array.forEach(function (user: any, indexParent: any) {
                 if (user.Title == $data.Company && !self.isItemExists(array, $data.Id)) {
+
                     user.childs.push($data);
                 }
             })
@@ -353,7 +497,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                     }
                 })
             }
-            this.dropSuccessHandler(true);
+            this.dropSuccessHandler(true,'');
         }
     }
 
@@ -381,21 +525,68 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             if (!self.isItemExists(array, $data.Id)) {
                 array.push($data);
             }
-            this.dropSuccessHandler(false);
+            this.dropSuccessHandler(false,'');
         }
     }
 
-    private dropSuccessHandler(isRemove: any) {
+    private onDropWorkingDays(e: any, date: any, groupAlluser: any, userType: any) {
+        let dataUser = { ...dragItem.user };
+        let draguserType = dragItem.userType
+        let dateLocationData = date;
+        if (draguserType != userType) {
+            groupAlluser?.map((group: any) => {
+                group?.childs?.map((user: any, index: any) => {
+                    if (user.AssingedToUser?.Id == dataUser?.AssingedToUser?.Id) {
+                        user.workingDateUser = dateLocationData.originalDate
+                        // dateLocationData?.userInformation.push(user)
+                        group.childs.splice(index, 1)
+                    }
+                })
+            })
+            this?.state?.datesInfo.map((dataDetail: any) => {
+                if (dataDetail?.originalDate == dateLocationData?.originalDate) {
+                    if (!this.isItemExists(dataDetail.userInformation, dataUser.ID)) {
+                        dataUser.workingDateUser = dateLocationData?.originalDate;
+                        dataDetail.userInformation.push(dataUser)
+                    }
+
+                }
+            })
+            this.dropSuccessHandler(true,userType);
+        }
+        else if (draguserType == userType) {
+            this?.state?.datesInfo?.map((dataDetail: any) => {
+                if (dataDetail?.originalDate == dateLocationData?.originalDate) {
+                    if (!this.isItemExists(dataDetail.userInformation, dataUser.ID)) {
+                        dataUser.workingDateUser = dataDetail?.originalDate
+                        dataDetail.userInformation.push(dataUser)
+                    }
+                }
+            })
+            this.dropSuccessHandler(true,userType);
+        }
+
+
+        // this.setState({
+        //    datesInfo: datesInfo,
+        //    taskUsers:allUser
+        // })
+    }
+
+    private dropSuccessHandler(isRemove: any,dropLocation:any) {
         if (isRemove) {
-            if (dragItem.userType == 'TeamMemberUsers')
+            if (dropLocation!="UserWorkingDays" && dragItem.userType == 'TeamMemberUsers')
                 this.state.TeamMemberUsers.splice(dragItem.current, 1);
 
-            if (dragItem.userType == 'ResponsibleTeam')
+            if (dropLocation!="UserWorkingDays" && dragItem.userType == 'ResponsibleTeam')
                 this.state.ResponsibleTeam.splice(dragItem.current, 1);
         }
         if (dragItem.userType == 'Assigned User')
             this.state.AssignedToUsers.splice(dragItem.current, 1);
+
         let TeamConfiguration = {
+            dateInfo: this.state.datesInfo,
+            oldWorkingDaysInfo: this.state.oldWorkingDaysInfo,
             TeamMemberUsers: this.state.TeamMemberUsers,
             ResponsibleTeam: this.state.ResponsibleTeam,
             AssignedTo: this.state.AssignedToUsers,
@@ -419,7 +610,6 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                             <span className='alignCenter'>
                                 {this.state.TeamUserExpended ?
                                     <SlArrowDown onClick={() => this.setState({ TeamUserExpended: false })}></SlArrowDown>
-
                                     :
                                     <SlArrowRight onClick={() => this.setState({ TeamUserExpended: true })}></SlArrowRight>
                                 }
@@ -469,8 +659,8 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                 })
                                 }
                             </div>
+                            {/* Coment test start */}
                             <div className="row ">
-
                                 <div className="col-sm-7">
                                     <h6 className='mb-1'>Team Members</h6>
                                     <div className="d-flex pb-1 UserTimeTabGray" style={{ paddingTop: "3px" }}>
@@ -515,11 +705,12 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                     </div>
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className='col-sm-3'>
+                                {/* <div className='col-sm-3'>
                                     <h6 className='mb-1'>Working Members</h6>
                                     <div className="col"
                                         onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers, 'Assigned User')}
@@ -542,13 +733,59 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         </div>
 
                                     </div>
-                                </div>
-
+                                </div> */}
                                 <div className="col-sm-2">
                                     <div className="dustbin bg-siteColor" onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
                                         onDragOver={(e) => e.preventDefault()}>
                                         <span className="light svg__iconbox svg__icon--palmTree" title="Drag user here to  remove user from team for this Network Activity."></span>
                                     </div>
+
+                                </div>
+                                
+                            
+                            </div>
+                            {/* Coment test end */}
+                            {/* Working days */}
+                            <div className='mt-3'>
+                                <h6> Working Days</h6>
+                                <div className="team w-75">
+                                    {
+                                        this.state.datesInfo != null && this.state.datesInfo.length > 0 && this.state.datesInfo.map((date: any) => {
+                                            return (
+                                                <div className="width20 top-assign" onDragOver={(e) => e.preventDefault()} onDrop={(e) => this.onDropWorkingDays(e, date, this.state.taskUsers, 'UserWorkingDays')}> <label className="BdrBtm">{date.displayDate}</label>
+                                                    {date?.userInformation?.length > 0 && date?.userInformation?.map((userInfo: any, index: any) =>
+                                                        <div className='me-3'>
+                                                            <img
+                                                                className="ProirityAssignedUserPhoto"
+                                                                src={userInfo?.Item_x0020_Cover?.Url}
+                                                                // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
+                                                                title={userInfo?.Title}
+                                                                draggable
+                                                                onDragStart={(e) => this.dragStart(e, index, userInfo, 'UserWorkingDays')}
+                                                                onDragOver={(e) => e.preventDefault()} />
+
+                                                        </div>
+                                                    )
+
+                                                    }
+                                                </div>
+
+                                            )
+                                        }
+                                        )
+                                    }
+                                    
+
+                                        {/* <div className="dustbin bg-siteColor" onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
+                                            onDragOver={(e) => e.preventDefault()}>
+                                            <img title="Drag user here to  remove user from team for this Network Activity."
+                                                src={this.props.ItemInfo?.Services != undefined && (this.props.ItemInfo?.Services.length > 0 || this.props?.ItemInfo?.Portfolio_x0020_Type == 'Service') ?
+                                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_tree.png" :
+                                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_tree.png"
+                                                }
+                                            />
+                                        </div> */}
+
 
                                 </div>
                             </div>

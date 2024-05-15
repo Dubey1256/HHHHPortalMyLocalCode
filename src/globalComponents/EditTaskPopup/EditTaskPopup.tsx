@@ -92,6 +92,7 @@ var TaskApproverBackupArray: any = [];
 let categoryTitle: any = "";
 let onHoldCategory: any = [];
 let globalSelectedProject: any = { PriorityRank: 1 };
+let oldWorkingAction:any=[]
 const EditTaskPopup = (Items: any) => {
     const Context = Items?.context;
     const AllListIdData = Items?.AllListId;
@@ -100,6 +101,8 @@ const EditTaskPopup = (Items: any) => {
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
     let SiteWebConfigData: any = [];
+    const [workingToday,setWorkingToday]=useState(false);
+    const [editWorkingDays,setEditWorkingDays]=useState<any>();
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
     const [IsComponentPicker, setIsComponentPicker] = useState(false);
@@ -915,6 +918,8 @@ const EditTaskPopup = (Items: any) => {
                 let saveImage = [];
                 if (item?.WorkingAction?.length > 0) {
                     let WorkingActionData: any = JSON.parse(item.WorkingAction);
+                    oldWorkingAction=[]
+                    oldWorkingAction=[...WorkingActionData]
                     setWorkingAction(WorkingActionData);
                 }
                 if (item.Categories != null) {
@@ -2470,6 +2475,7 @@ const EditTaskPopup = (Items: any) => {
 
     var smartComponentsIds: any = "";
     var RelevantPortfolioIds: any = [];
+    var assigneduserid:any=[]
     var AssignedToIds: any = [];
     var ResponsibleTeamIds: any = [];
     var TeamMemberIds: any = [];
@@ -2813,18 +2819,13 @@ const EditTaskPopup = (Items: any) => {
                             }
 
                             if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('Design') !== -1) {
-                                taskUsers?.forEach((allUserItem: any) => {
-                                    if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
-                                        Createtordata.push(allUserItem);
-                                    }
-                                });
-                                Createtordata?.map((InfoItem: any) => {
+
                                     let DataForNotification: any = {
                                         ReceiverName: 'kristina',
                                         sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
                                         Context: Items.context,
                                         ActionType: "Design",
-                                        ReasonStatement: "",
+                                    ReasonStatement: "Task Completed",
                                         UpdatedDataObject: UpdatedDataObject,
                                         RequiredListIds: AllListIdData
                                     }
@@ -2832,30 +2833,24 @@ const EditTaskPopup = (Items: any) => {
                                         console.log("Ms Teams Notifications send")
                                     })
 
-                                })
+
                             }
 
                             if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
-                                taskUsers?.forEach((allUserItem: any) => {
-                                    if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
-                                        Createtordata.push(allUserItem);
-                                    }
 
-                                });
-                                Createtordata?.map((InfoItem: any) => {
                                     let DataForNotification: any = {
                                         ReceiverName: 'Robert',
                                         sendUserEmail: ['robert.ungethuem@hochhuth-consulting.de'],
                                         Context: Items.context,
                                         ActionType: "User Experience - UX",
-                                        ReasonStatement: "",
+                                    ReasonStatement: "New Task Created",
                                         UpdatedDataObject: UpdatedDataObject,
                                         RequiredListIds: AllListIdData
                                     }
                                     GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                         console.log("Ms Teams Notifications send")
                                     })
-                                })
+
                             }
 
                             if (checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') !== -1) {
@@ -2873,7 +2868,7 @@ const EditTaskPopup = (Items: any) => {
                                         sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
                                         Context: Items.context,
                                         ActionType: "User Experience - UX",
-                                        ReasonStatement: "",
+                                        ReasonStatement: "Task Completed",
                                         UpdatedDataObject: UpdatedDataObject,
                                         RequiredListIds: AllListIdData
                                     }
@@ -2978,15 +2973,15 @@ const EditTaskPopup = (Items: any) => {
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
                             }
-                            if (TaskDetailsFromCall[0]?.Categories?.length > 0 && TaskDetailsFromCall[0]?.Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
-                                ValueStatus = CalculateStatusPercentage;
-                                setSendEmailNotification(true);
-                                Items.StatusUpdateMail = true;
-                            }
-                            else {
-                                setSendEmailComponentStatus(false);
-                                Items.StatusUpdateMail = false;
-                            }
+                            // if (TaskDetailsFromCall[0]?.Categories?.length > 0 && TaskDetailsFromCall[0]?.Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
+                            //     ValueStatus = CalculateStatusPercentage;
+                            //     setSendEmailNotification(true);
+                            //     Items.StatusUpdateMail = true;
+                            // }
+                            // else {
+                            //     setSendEmailComponentStatus(false);
+                            //     Items.StatusUpdateMail = false;
+                            // }
                             if (sendEmailGlobalCount > 0) {
                                 if (sendEmailStatus) {
                                     setSendEmailComponentStatus(false);
@@ -3317,9 +3312,27 @@ const EditTaskPopup = (Items: any) => {
                 delete SCItems?.ClientCategory;
             });
         }
+        
+        if(WorkingAction?.length > 0){
+            WorkingAction.map((type:any)=>{
+                if(type?.Title=='WorkingDetails'){
+                    type?.InformationData?.map((allInfo:any)=>{
+                        if(allInfo?.WorkingMember?.length>0){
+                            allInfo?.WorkingMember.forEach((userIds: any) => {
+                                if (!assigneduserid?.includes(userIds?.Id)) {
+                                    assigneduserid?.push(userIds?.Id);
+                                }
+                            });
+                        }
+                    })
+                }
+            })   
+                       
+
+        }
 
         let UpdateDataObject: any = {
-            IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
+            IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : workingToday,
             workingThisWeek: EditData.workingThisWeek
                 ? EditData.workingThisWeek
                 : null,
@@ -3368,8 +3381,8 @@ const EditTaskPopup = (Items: any) => {
             Mileage: EditData.Mileage ? EditData.Mileage : "",
             AssignedToId: {
                 results:
-                    AssignedToIds != undefined && AssignedToIds.length > 0
-                        ? AssignedToIds
+                assigneduserid != undefined && assigneduserid.length > 0
+                        ? assigneduserid
                         : [],
             },
             ResponsibleTeamId: {
@@ -3474,6 +3487,40 @@ const EditTaskPopup = (Items: any) => {
             const timesheetDatass = teamConfigData;
             console.log(timesheetDatass);
         } else {
+            if(teamConfigData?.dateInfo?.length>0){
+                let storeData:any=[]
+                let  storeInWorkingAction:any={"Title":"WorkingDetails","InformationData":[]}
+               if( teamConfigData?.oldWorkingDaysInfo!=undefined || teamConfigData?.oldWorkingDaysInfo!=null &&teamConfigData?.oldWorkingDaysInfo?.length>0){
+                teamConfigData?.oldWorkingDaysInfo.map((oldJson:any)=>{
+                    storeData?.push(oldJson)
+                })
+               }
+                teamConfigData?.dateInfo?.map((Info:any)=>{
+                    let dataAccordingDays:any={}
+                    if(Info?.userInformation?.length>0){  
+                        dataAccordingDays.WorkingDate=Info?.originalDate
+                        dataAccordingDays.WorkingMember=[];
+                        Info?.userInformation?.map((userInfo:any)=>{
+                            dataAccordingDays.WorkingMember.push({Id:userInfo?.AssingedToUserId,Title:userInfo.Title})
+                            })
+                        storeData?.push(dataAccordingDays)
+                    }
+                })
+            //   if (assignedUsers!=undefined && assignedUsers!=null){
+            //     setTaskAssignedTo(assignedUsers);
+            //     EditData.AssignedTo = assignedUsers;
+            //   }
+
+            // setEditData({ ...EditData, IsTodaysTask: false })
+                // storeData=JSON.stringify(storeData)
+                storeInWorkingAction.InformationData=[...storeData]
+                
+
+                oldWorkingAction = oldWorkingAction.filter((type: any) => type?.Title != "WorkingDetails");
+                setWorkingAction([...oldWorkingAction,storeInWorkingAction]);
+                setEditWorkingDays(storeData)
+                setWorkingToday(true)
+            }
 
             if (teamConfigData?.AssignedTo?.length > 0) {
                 let tempArray: any = [];
@@ -4304,6 +4351,8 @@ const EditTaskPopup = (Items: any) => {
                 })
             }
             console.log("Comment Added in working aaray", copyWorkAction)
+            oldWorkingAction=[]
+            oldWorkingAction=[...copyWorkAction]
             setWorkingAction([...copyWorkAction])
         }
         setAddImageDescriptionsDetails(e.target.value);
@@ -4762,6 +4811,8 @@ const EditTaskPopup = (Items: any) => {
 
                 })
             }
+            oldWorkingAction=[]
+            oldWorkingAction=[...copyWorkAction]
             setWorkingAction([...copyWorkAction]);
             console.log("Bottleneck All Details:", copyWorkAction)
             setUseFor("")
@@ -5353,7 +5404,7 @@ const EditTaskPopup = (Items: any) => {
                                 target="_blank"
                                 className="mx-2"
                                 data-interception="off"
-                                href={`${siteUrls}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}
+                                href={`${siteUrls}/Lists/${Items.Items.siteType !== "Offshore%20Tasks" ? Items.Items.siteType : "SharewebQA"}/EditForm.aspx?ID=${EditData.ID}`}
                             >
                                 Open Out-Of-The-Box Form
                             </a>
@@ -5491,7 +5542,7 @@ const EditTaskPopup = (Items: any) => {
                                 target="_blank"
                                 className="mx-2"
                                 data-interception="off"
-                                href={`${Items.Items.siteType}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}
+                                href={`${siteUrls}/Lists/${Items.Items.siteType !== "Offshore%20Tasks" ? Items.Items.siteType : "SharewebQA"}/EditForm.aspx?ID=${EditData.ID}`}
                             >
                                 Open Out-Of-The-Box Form
                             </a>
@@ -5720,7 +5771,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="d-flex justify-content-between align-items-center mb-0  full-width">
                                                     Title
                                                     <span className="d-flex">
-                                                        <span className="form-check mx-2">
+                                                        {/* <span className="form-check mx-2">
                                                             <input
                                                                 className="form-check-input rounded-0"
                                                                 type="checkbox"
@@ -5734,7 +5785,6 @@ const EditTaskPopup = (Items: any) => {
                                                                 Working This Week
                                                             </label>
                                                         </span>
-
                                                         <span className="form-check">
                                                             <input
                                                                 className="form-check-input rounded-0"
@@ -5748,7 +5798,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <label className="form-check-label">
                                                                 Working Today
                                                             </label>
-                                                        </span>
+                                                        </span> */}
                                                     </span>
                                                 </div>
                                                 <input
