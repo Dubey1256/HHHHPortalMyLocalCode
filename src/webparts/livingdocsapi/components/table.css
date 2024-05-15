@@ -330,10 +330,3 @@ details[open] > *:not(summary) {
 .image-container h6 {
   margin-top: 0;
 }
-
-.container {
-  /* margin-top: 20px; Add some top margin to the container */
-  padding: 20px; /* Add padding to the container */
-  /* border: 1px solid #ccc; Add a border around the container */
-  border-radius: 5px; /* Add border radius to make it look like a box */
-}
