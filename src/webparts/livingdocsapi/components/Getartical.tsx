@@ -419,7 +419,7 @@ const ArticleComponent = () => {
                 )}
                 <div className="mb-5 clearfix">
                     <div className="clearfix mb-3 mt-3">
-                        <h2 className="d-flex">
+                        <h2 className="d-flex heading">
                             SP LivingDocs Library - Page Content
                             <button title='Sync All' className='btn btn-primary ml-auto' onClick={() => UoloadAllContentImages()}>Sync All</button>
                         </h2>
