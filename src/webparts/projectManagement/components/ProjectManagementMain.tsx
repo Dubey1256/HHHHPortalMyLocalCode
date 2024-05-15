@@ -2090,15 +2090,16 @@ const ProjectManagementMain = (props: any) => {
                             <div>
                               <div className="align-items-center d-flex justify-content-between">
                                 <h2 className="heading alignCenter">
-
-                                  {Masterdata?.Item_x0020_Type == "Sprint" ?
-                                    <div title={Masterdata?.Item_x0020_Type} style={{ backgroundColor: '#000066' }} className={"Dyicons me-1"}>
-                                      X
-                                    </div>
-                                    : <img
-                                      className="circularImage rounded-circle "
-                                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
-                                    />}
+                                  <div
+                                    title={Masterdata?.Item_x0020_Type}
+                                    className={"Dyicons me-1"}
+                                  >
+                                    {Masterdata?.Item_x0020_Type !== "Sprint"
+                                      ? `${Masterdata?.Item_x0020_Type?.charAt(
+                                          0
+                                        )}`
+                                      : "X"}
+                                  </div>
                                   <span>
                                     {`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`}
                                     <span
