@@ -419,7 +419,7 @@ const ArticleComponent = () => {
                 )}
                 <div className="mb-5 clearfix">
                     <div className="clearfix mb-5">
-                        <h2 className="d-flex">
+                        <h2 className="d-flex heading">
                             Profile Page Content
                             <button className='btn btn-primary ml-auto' onClick={() => UoloadAllContentImages()}>Sync All</button>
                         </h2>
