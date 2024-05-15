@@ -159,14 +159,16 @@ const ContactSearch = (props: any) => {
     const sendEmail = () => {
         let emails = '';
         var ContactsNotHavingEmail: any = [];
-        userEmails?.forEach((item: any) => {
-            if (item.original != undefined) {
-                if (item.original.isSelect === true) {
-                    if (item.original.Email == null) {
-                        ContactsNotHavingEmail.push(item?.original);
-                    }
-                    if (item.original.Email != null) {
-                        emails += item?.original?.Email + ';';
+        userEmails?.forEach((item: any, index: number) => {
+            if (item.original != undefined && item.original.isSelect === true) {
+                if (item.original.Email == null) {
+                    ContactsNotHavingEmail.push(item.original);
+                }
+                else {
+                    if (index !== userEmails.length - 1 && userEmails.length > 1) {
+                        emails += item.original.Email + ";";
+                    } else {
+                        emails += item.original.Email;
                     }
                 }
             }
