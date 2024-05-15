@@ -32,7 +32,7 @@ const ArticleComponent = () => {
             data = await webs.lists.getById("59D8FE3B-3910-4586-8762-A9EBAB68B8AA").items.select(select).expand('Author', 'Editor', 'Responsible').getAll();
 
             // Create a deep copy of processedData for backupprofilePagedata
-            const processedData = data.map((item:any) => ({ ...item, Description: item.Description.replace(/<[^>]+>/g, '') }));
+            const processedData = data.map((item: any) => ({ ...item, Description: item.Description.replace(/<[^>]+>/g, '') }));
             backupprofilePagedata = JSON.parse(JSON.stringify(processedData));
 
             // Update setprofilePagedata with the original processedData
@@ -356,7 +356,7 @@ const ArticleComponent = () => {
                 }
             });
             console.log(documentresponse.data)
-            page.livingDocsUrl = `https://edit.livingdocs.io/p/sandbox-cwqrtkjpuakn/articles/${documentresponse.data.logs[0].document_id}/edit/canvas`
+            page.livingDocsUrl = `https://edit.livingdocs.io/p/sandbox-txzrdjhamqwf/articles/${documentresponse.data.logs[0].document_id}/edit/canvas`
             await UpdatelivingDocs(page); // Log the response data if needed        
         } catch (error) {
             console.error('Error:', error);
@@ -418,9 +418,9 @@ const ArticleComponent = () => {
                     </div>
                 )}
                 <div className="mb-5 clearfix">
-                    <div className="clearfix mb-5">
+                    <div className="clearfix mb-3 mt-3">
                         <h2 className="d-flex">
-                            Profile Page Content
+                            SP LivingDocs Library - Page Content
                             <button className='btn btn-primary ml-auto' onClick={() => UoloadAllContentImages()}>Sync All</button>
                         </h2>
 
@@ -428,15 +428,15 @@ const ArticleComponent = () => {
 
                     <div className="mb-5">
                         <table>
-                        <tr>
-    <th style={{ width: '15%' }}>Image</th>
-    <th style={{ width: '15%' }}>Title</th>
-    <th style={{ width: '30%' }}>Description</th>
-    <th style={{ width: '25%' }}>LV-Url</th>
-    <th style={{ width: '5%' }}>Responsible</th>
-    <th style={{ width: '5%' }}>Sync to LivingDocs</th>
-    <th style={{ width: '5%' }}>Edit</th>
-</tr>
+                            <tr>
+                                <th style={{ width: '15%' }}>Image</th>
+                                <th style={{ width: '15%' }}>Title</th>
+                                <th style={{ width: '30%' }}>Description</th>
+                                <th style={{ width: '25%' }}>LV-Url</th>
+                                <th style={{ width: '5%' }}>Responsible</th>
+                                <th style={{ width: '5%' }}>Sync to LivingDocs</th>
+                                <th style={{ width: '5%' }}>Edit</th>
+                            </tr>
 
                             {profilePagedata && profilePagedata.map((page: any) => {
                                 // Truncate description to 50 words
@@ -445,7 +445,7 @@ const ArticleComponent = () => {
                                     <tr><td><img className='CoverImg' src={page.Item_x0020_Cover.Url} alt={page.Title} /></td>
                                         <td>{page.Title}</td>
                                         <td>{truncatedDescription}</td>
-                                        <td><div className='LDURl'><a target='_blank' rel='noopener noreferrer'>{page.LivingDocsUrl?.Url}</a></div></td>
+                                        <td><div className='LDURl'><a target='_blank' data-interception="off" href={page.LivingDocsUrl?.Url}>{page.LivingDocsUrl?.Url}</a></div></td>
                                         <td>{page.Responsible?.FullName}</td>
                                         <td className="text-center">
                                             <button className='btn btn-sm btn-primary' onClick={() => uploadImages(page, 'singleupdate')}>Sync
