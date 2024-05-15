@@ -17,7 +17,7 @@ const ContactSearch = (props: any) => {
     const [SelectCreateContact, setSelectCreateContact] = useState(false)
     const [EditPopupflag, setEditPopupflag] = useState(false)
     const [isDisabled, setIsDisabled] = useState(true);
-    const [userEmails, setUserEmails] = useState([]);
+    const [userEmails, setUserEmails]: any = useState([]);
     let webs = new Web(baseUrl);
 
     useEffect(() => {
@@ -36,6 +36,9 @@ const ContactSearch = (props: any) => {
             let data = await webs.lists.getById(allListId?.TeamContactSearchlistIds).items.select("WorkCity,Id,SmartActivitiesId,SmartCategories/Id,SmartCategories/Title,WorkCountry,ItemType,Email,FullName,ItemCover,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title").expand("Author,Editor,SmartCategories").orderBy("Created desc").getAll();
             data.map((item: any) => {
                 item.Selected = false
+                if (item.ItemCover != null && item.ItemCover != undefined) {
+                    item.Item_x002d_Image = item.ItemCover
+                }
                 if (item?.SmartCategories) {
                     item.SmartCategories.forEach((i: any) => {
                         if (i.Title == 'Member OV' || i.Title == 'Member' || i.Title == 'Friends' || i.Title == 'Friends - Active' || i.Title == 'Interest' || i.Title == 'Info' || i.Title == 'Partner' || i.Title == 'Ex')
@@ -159,31 +162,30 @@ const ContactSearch = (props: any) => {
     const sendEmail = () => {
         let emails = '';
         var ContactsNotHavingEmail: any = [];
-        userEmails?.map((item: any) => {
-
-            if (item?.isSelect == true) {
-                userEmails?.map((child: any) => {
-                    if (child?.Email == null) {
-                        ContactsNotHavingEmail.push(child);
-
+        userEmails?.forEach((item: any) => {
+            if (item.original != undefined) {
+                if (item.original.isSelect === true) {
+                    if (item.original.Email == null) {
+                        ContactsNotHavingEmail.push(item?.original);
                     }
-                    if (child.Email != null) {
-                        emails += child.Email + ";";
+                    if (item.original.Email != null) {
+                        emails += item?.original?.Email + ';';
                     }
-                })
+                }
             }
-
-        })
+        });
         window.location.href = 'mailto:' + emails;
     }
     //********************************End Bulk Email function */
 
     // ***********callback for table***************************************
     const callBackData = (data: any) => {
-        if (data != undefined) {
+        if (data?.length > 0) {
             setIsDisabled(false);
-            data.isSelect = true;
-            setUserEmails([data]);
+            data.map((item: any) => {
+                item.original.isSelect = true
+            })
+            setUserEmails(data);
         } else {
             setUserEmails([]);
             setIsDisabled(true);
@@ -240,7 +242,7 @@ const ContactSearch = (props: any) => {
                     <div className="TableContentSection">
                         <div className='Alltable mt-2 mb-2'>
                             <div className='col-md-12 p-0 '>
-                                <GlobalCommanTable fixedWidthTable={true} columns={columns} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} data={allContactData} hideTeamIcon={true} hideOpenNewTableIcon={true} showHeader={true} callBackData={callBackData} />
+                                <GlobalCommanTable multiSelect={true} fixedWidthTable={true} columns={columns} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} data={allContactData} hideTeamIcon={true} hideOpenNewTableIcon={true} showHeader={true} callBackData={callBackData} />
                             </div>
                         </div>
                     </div>

@@ -1672,7 +1672,7 @@ export default function ProjectOverview(props: any) {
                         });
                     }
 
-                    items.TaskID = globalCommon.getTaskId(items);
+                    items.TaskID = globalCommon.GetTaskId(items);
                     AllTaskUsers?.map((user: any) => {
                         if (user.AssingedToUserId == items.Author.Id) {
                             items.createdImg = user?.Item_x0020_Cover?.Url;

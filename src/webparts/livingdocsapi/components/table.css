@@ -17,10 +17,13 @@ table {
     background-color: #fafafa;
   }
   td>img.CoverImg {
-    width: 230px;
+    width: 150px;
     height: auto !important;
     object-fit: cover;
     object-position: center;
+}
+.LDURl > a {
+  word-break: break-all;
 }
   /* Loader */
 /*spinner*/
