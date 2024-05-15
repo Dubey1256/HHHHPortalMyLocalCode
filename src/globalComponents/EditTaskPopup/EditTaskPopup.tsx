@@ -3859,7 +3859,7 @@ const EditTaskPopup = (Items: any) => {
         let tempArray: any = [];
         let SiteUrl = siteUrls;
         let CurrentSiteName: any = '';
-        if (Items.Items.siteType == "Offshore%20Tasks") {
+        if (Items?.Items?.siteType == "Offshore%20Tasks" || Items?.Items?.siteType == "Offshore Tasks") {
             CurrentSiteName = "SharewebQA";
         } else {
             CurrentSiteName = Items.Items.siteType;
