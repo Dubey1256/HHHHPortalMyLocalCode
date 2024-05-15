@@ -806,7 +806,7 @@ const CreateAllStructureComponent = (props: any) => {
               <label>
                 <b>Select Portfolio type</b>
               </label>
-              <div style={{display:'flex !important'}}>
+              <div className='d-flex'>
                 {props?.portfolioTypeData.map((item: any) => {
                   return (
                     <div className="mb-2 mt-2">
