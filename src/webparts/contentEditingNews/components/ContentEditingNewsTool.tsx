@@ -78,19 +78,33 @@ const ContentEditingNewsTable = (props: any) => {
         }
        
     };
+    const limitTo100Words = (gethtml: any) => {
+        let first100Words = '';
+        if (gethtml !== null && gethtml !== undefined && gethtml !== '') {
+            const plainText = gethtml.replace(/<[^>]*>|&#[^;]+;/g, '');
+            const words = plainText.split(' ');
+          //  first100Words = words.slice(0, 20).join(' ');
+            if (words.length <= 13) {
+                first100Words = plainText;
+            } else {
+                first100Words = words.slice(0, 13).join(' ') + ' ...';
+            }
+        }
+        return first100Words;
+    };
     const LoadNewsListData = async () => {
         try {
                 const web = new Web(props?.props?.siteUrl);
                 await web.lists.getById(AllListId?.LivingNews)
-                    .items.getAll()
+                .items.select('Id', 'Title', 'Body', 'PublishingDate','Item_x0020_Cover', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title','Responsible/Id', 'Responsible/Title', 'SmartTopics/Title', 'SmartTopics/Id')
+                .expand('Author,Editor,Responsible,SmartTopics').getAll()  
                     .then((Data: any[]) => {
                         copyData = JSON.parse(JSON.stringify(Data))
                         console.log(Data)
                         Data.forEach((item: any) => {
                             item.Id = item.ID;
-                            item. Editor={}
-                            item.Author={}
-                            item.displayDescription="";
+                            item. Editor={};
+                            item.Author={};
                             if (item?.Modified != null && item?.Modified != undefined) {
                                 item.serverModifiedDate = new Date(item?.Modified).setHours(0, 0, 0, 0)
                             }
@@ -105,16 +119,27 @@ const ContentEditingNewsTable = (props: any) => {
                             if (item.DisplayModifiedDate == "Invalid date" || "") {
                                 item.DisplayModifiedDate = item.DisplayModifiedDate.replaceAll("Invalid date", "");
                             }
-                            item.EventDate
-                            if(item?.EventDate!=undefined){
-                                item.EventDate = moment(item.Modified).format("DD/MM/YYYY");
-                                if (item.EventDate == "Invalid date" || "") {
-                                    item.EventDate = item.EventDate.replaceAll("Invalid date", "");
+                            item.PublishedDate="";
+                            if(item?.PublishingDate!=undefined){
+                                item.PublishedDate = moment(item?.PublishingDate).format("DD/MM/YYYY");
+                                if (item.PublishedDate == "Invalid date" || "") {
+                                    item.PublishedDate = item.PublishedDate.replaceAll("Invalid date", "");
                                 }  
                             }
+                            item.ResponsibleName=""; 
+                            if(item?.Responsible!=="" && item?.Responsible!==null && item?.Responsible?.Title!==null)
+                                item.ResponsibleName= item?.Responsible?.Title;
 
-                            item.displayDescription=  item?.Body;
-                            
+                            item.SmartTopicsName=""; 
+                            if(item?.SmartTopics!=="" && item?.SmartTopics!==null && item?.SmartTopics?.length>0)
+                                item.SmartTopicsName= item?.SmartTopics?.map((elem: any) => elem.Title).join("; ")
+
+                            item.ItemCoverUrl=""; 
+                            if(item?.Item_x0020_Cover!=="" && item?.Item_x0020_Cover!==null && item?.Item_x0020_Cover?.Url!==null)
+                                item.ItemCoverUrl= item?.Item_x0020_Cover.Url;
+
+                            item.displayDescription=limitTo100Words(item?.Body);
+                            item.inconDescription=  item?.Body;
                             if (item?.AuthorId) {
                                 item.Editor.EditorImage = findUserByName(item?.EditorId)
                             }
@@ -150,14 +175,42 @@ const ContentEditingNewsTable = (props: any) => {
                 id: 'Id',
             },
             {
-                accessorFn: (row: any) => row?.Title,
+                accessorFn: (row: any) => row?.ItemCoverUrl,
+                cell: ({ row }: any) => (
+                    <span className="text-content hreflink">
+                       {row?.original?.ItemCoverUrl && <img style={{width:'40px'}} className='me-1' src={row?.original.ItemCoverUrl} alt="Sample Image" />}
+                    </span>
+                ),
+                id: "ItemCoverUrl",
+                placeholder: "Image",
+                resetColumnFilters: false,
+                header: "",
+                size: 70,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row: any) => row?.PublishedDate,
                 cell: ({ row }: any) => (
                     <span
                         className="text-content hreflink"
-                        title={row?.original?.Title}
+                        title={row?.original?.PublishedDate}
                     >
+                        {row?.original?.PublishedDate}
+                    </span>
+                ),
+                id: "PublishedDate",
+                placeholder: "Published Date",
+                resetColumnFilters: false,
+                header: "",
+                size: 70,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row: any) => row?.Title,
+                cell: ({ row }: any) => (
+                    <span className="text-content hreflink" title={row?.original?.Title} >
+                    {/* {row?.original?.ItemCoverUrl && <img style={{width:'40px'}} className='me-1' src={row?.original.ItemCoverUrl} alt="Sample Image" />} */}
                         {row?.original?.Title}
-                        {row?.original?.displayDescription && <InfoIconsToolTip row={row?.original} SingleColumnData={"displayDescription"} />}
                     </span>
                 ),
                 id: "Title",
@@ -168,17 +221,43 @@ const ContentEditingNewsTable = (props: any) => {
                 isColumnVisible: true
             },
             {
-                accessorFn: (row: any) => row?.EventDate,
+                accessorFn: (row: any) => row?.SmartTopicsName,
                 cell: ({ row }: any) => (
-                    <span
-                        className="text-content hreflink"
-                        title={row?.original?.EventDate}
-                    >
-                        {row?.original?.EventDate}
+                    <span className="text-content hreflink" title={row?.original?.SmartTopicsName}>
+                        {row?.original?.SmartTopicsName}
                     </span>
                 ),
-                id: "EventDate",
-                placeholder: "Date",
+                id: "SmartTopicsName",
+                placeholder: "Page",
+                resetColumnFilters: false,
+                header: "",
+                size: 70,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row: any) => row?.ResponsibleName,
+                cell: ({ row }: any) => (
+                    <span className="text-content hreflink" title={row?.original?.ResponsibleName}>
+                        {row?.original?.ResponsibleName}
+                    </span>
+                ),
+                id: "ResponsibleName",
+                placeholder: "Responsible",
+                resetColumnFilters: false,
+                header: "",
+                size: 70,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row: any) => row?.displayDescription,
+                cell: ({ row }: any) => (
+                    <span className="text-content hreflink" title={row?.original?.displayDescription}>
+                        {row?.original?.displayDescription}
+                        {row?.original?.displayDescription != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"inconDescription"} />}
+                    </span>
+                ),
+                id: "displayDescription",
+                placeholder: "Description",
                 resetColumnFilters: false,
                 header: "",
                 size: 70,
@@ -303,7 +382,7 @@ const ContentEditingNewsTable = (props: any) => {
     return (
         <div className="container section">
             <div className='mb-4'>
-                <h2 className="heading">LivingDocs News Tool</h2>
+                <h2 className="heading">SP LivingDocs Content Library - News </h2>
             </div>
             <div>
               
@@ -311,7 +390,7 @@ const ContentEditingNewsTable = (props: any) => {
                             <div className='Alltable mt-2 mb-2'>
                                 <div className='col-md-12 p-0'>
                                     <GlobalCommanTable customHeaderButtonAvailable={true}
-                                        ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={false}
+                                        ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={true}
                                         columns={columns} data={livingDocsSyncData} showHeader={true}
                                         callBackData={callBackData} />
                                     {!loaded && <PageLoader />}

@@ -54,9 +54,17 @@ const EditEventCardPopup = (props: any) => {
     const [ShowConfirmation, setShowConfirmation]: any = React.useState(false);
     const [pageUrl, setPageUrl] = React.useState({ Description: '', Url: '' });
     var TaskApproverBackupArray: any = [];
+    const [allContactData, setallContactData] = React.useState([]);
+    const [searchedNameData, setSearchedDataName] = React.useState([])
+    const [listIsVisible, setListIsVisible] = React.useState(false);
+    const [searchKey, setSearchKey] = React.useState({
+        Title: '',
+        FirstName: '',
+    });
     let callBack = props?.callBack;
     React.useEffect(() => {
         if (props?.usedFor == "SharewebNews" && props?.usedFor != undefined) {
+            getAllContact()
             getNewsData()
 
         }  if (props?.usedFor == "SharewebEvent" && props?.usedFor != undefined) {
@@ -67,13 +75,27 @@ const EditEventCardPopup = (props: any) => {
 
 
     }, []);
+    const getAllContact = async () => {
+        let web = new Web(props?.allListId?.siteUrl);
+        try {
+            let data = await web.lists.getById("45d6a95e-22ad-45d4-b1eb-b0abea83575d").items.select("WorkCity,Id,SmartActivitiesId,SmartCategories/Id,SmartCategories/Title,WorkCountry,ItemType,Email,FullName,ItemCover,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title").expand("Author,Editor,SmartCategories").orderBy("Created desc").getAll();
+            data.map((item: any) => {
+                item.Selected = false
+                item.LastName = item.Title
+                item.Title = item.FirstName + ' ' + item.LastName
+            })
+            setallContactData(data)
+        } catch (error: any) {
+            console.error(error);
+        };
+    };
     const getEventData= ()=>{
         let webs = new Web(props?.allListId?.siteUrl);
         webs.lists.getById(props?.allListId[props?.usedFor]).items.getById(props?.EditEventData?.Id)
-            .select("Id", "Title","BannerUrl","EventDate","Category","Overbook","Location","EndDate","EventDescription","Event_x002d_Type","ParticipantsPicker/Id","ParticipantsPicker/Title","SmartContact/Id",  "SmartActivitiesId" ,"SmartTopics/Title", "SmartTopics/Id", "SmartPages/Title", " SmartPages/Id",  "Description", "Created", "Author/Id", "Author/Title", "Modified", "Editor/Id", "Editor/Title").expand("Author", "ParticipantsPicker","SmartContact", "SmartTopics", "SmartPages", "Editor")
+            .select("Id", "Title","Responsible/Id","Responsible/Title","Responsible/FullName","BannerUrl","EventDate","Category","Overbook","Location","EndDate","EventDescription","Event_x002d_Type","ParticipantsPicker/Id","ParticipantsPicker/Title","SmartContact/Id",  "SmartActivitiesId" ,"SmartTopics/Title", "SmartTopics/Id", "SmartPages/Title", " SmartPages/Id",  "Description", "Created", "Author/Id", "Author/Title", "Modified", "Editor/Id", "Editor/Title").expand("Author","Responsible", "ParticipantsPicker","SmartContact", "SmartTopics", "SmartPages", "Editor")
             .get().then((data: any) => {
               
-                data.ItemDescription = data?.Body
+                data.ItemDescription = data?.EventDescription
                 if (data?.PageUrl != undefined && data?.PageUrl?.Url != undefined && data?.PageUrl?.Url != '') {
                     setValuechecked(true);
                     setPageUrl(prevState => ({
@@ -98,7 +120,7 @@ const EditEventCardPopup = (props: any) => {
     const getNewsData = () => {
         let webs = new Web(props?.allListId?.siteUrl);
         webs.lists.getById(props?.allListId[props?.usedFor]).items.getById(props?.EditEventData?.Id)
-            .select("Id", "Title","Expires","SmartContact/ Id", "SmartActivitiesId", "SmartTopics/Title", "SmartTopics/Id", "SmartPages/Title", " SmartPages/Id", "ItemRank",  "Body", "SortOrder", "PublishingDate", "Created", "Author/Id", "Author/Title", "Modified", "Editor/Id", "Editor/Title").expand("Author","SmartContact", "SmartTopics", "SmartPages", "Editor")
+            .select("Id", "Title","Expires","Responsible/Id","Responsible/Title","Responsible/FullName","SmartContact/ Id", "SmartActivitiesId", "SmartTopics/Title", "SmartTopics/Id", "SmartPages/Title", "SmartPages/Id", "ItemRank",  "Body", "SortOrder", "PublishingDate", "Created", "Author/Id", "Author/Title", "Modified", "Editor/Id", "Editor/Title").expand("Author","SmartContact","Responsible", "SmartTopics", "SmartPages", "Editor")
             .get().then((data: any) => {
               
                 data.ItemDescription = data?.Body
@@ -110,7 +132,7 @@ const EditEventCardPopup = (props: any) => {
                         Url: data?.PageUrl?.Url
                     }));
                 }
-                setisVisible(data?.IsVisible)
+           
                 setShareWebTypeData(data?.SmartActivities)
                 setShareWebTypeTopicData(data?.SmartTopics)
                 setShareWebTypePagesData(data?.SmartPages)
@@ -129,7 +151,7 @@ const EditEventCardPopup = (props: any) => {
                     </h3>
 
                     :
-                    props?.usedFor === 'ImageSlider' ? <h3>Edit Image Slider Item - {updateData?.Title} <span className="ml-auto"><Tooltip /></span></h3> : <h3>Event Metadata - {updateData?.Title} <span className="ml-auto"><Tooltip ComponentId={props?.usedFor == "SharewebNews" ? "" : ""} /></span></h3>}
+                   <h3>Event Metadata - {updateData?.Title} <span className="ml-auto"><Tooltip ComponentId={props?.usedFor == "SharewebNews" ? "" : ""} /></span></h3>}
 
             </>
         );
@@ -380,7 +402,7 @@ const EditEventCardPopup = (props: any) => {
         try {
             if (confirm("Are you sure, you want to delete this?")) {
                 let web = new Web(props?.allListId?.siteUrl);
-                await web.lists.getById(props?.usedFor == "SharewebNews" ? props?.allListId?.NewsListId : props?.allListId?.EventListId).items.getById(updateData.Id).recycle().then((e) => {
+                await web.lists.getById(props?.allListId[props?.usedFor]).items.getById(updateData.Id).recycle().then((e) => {
                     console.log("Your information has been deleted");
                     callBack();
 
@@ -406,30 +428,30 @@ const EditEventCardPopup = (props: any) => {
         }
         return smartActivityIds;
     }
-    // const setSmartTopicIds = (smartActivity: any) => {
-    //     var smartActivityIds: any = [];
-    //     if (smartActivity != undefined && smartActivity.length > 0) {
-    //         smartActivity.map((Activity: any) => {
-    //             if (Activity.Id != undefined) {
-    //                 smartActivityIds.push(Activity.Id);
-    //             }
-    //         })
+    const setSmartTopicIds = (smartActivity: any) => {
+        var smartActivityIds: any = [];
+        if (smartActivity != undefined && smartActivity.length > 0) {
+            smartActivity.map((Activity: any) => {
+                if (Activity.Id != undefined) {
+                    smartActivityIds.push(Activity.Id);
+                }
+            })
 
-    //     }
-    //     return smartActivityIds;
-    // }
-    // const setSmartPagesIds = (smartActivity: any) => {
-    //     var smartActivityIds: any = [];
-    //     if (smartActivity != undefined && smartActivity.length > 0) {
-    //         smartActivity.map((Activity: any) => {
-    //             if (Activity.Id != undefined) {
-    //                 smartActivityIds.push(Activity.Id);
-    //             }
-    //         })
+        }
+        return smartActivityIds;
+    }
+    const setSmartPagesIds = (smartActivity: any) => {
+        var smartActivityIds: any = [];
+        if (smartActivity != undefined && smartActivity.length > 0) {
+            smartActivity.map((Activity: any) => {
+                if (Activity.Id != undefined) {
+                    smartActivityIds.push(Activity.Id);
+                }
+            })
 
-    //     }
-    //     return smartActivityIds;
-    // }
+        }
+        return smartActivityIds;
+    }
 
     const sendMail = () => {
         console.log(props);
@@ -452,101 +474,60 @@ const EditEventCardPopup = (props: any) => {
         try {
             let postData: any;
             let smartactivityIds = setSmartActivityIds(ShareWebTypeData);
-            // let smartTopicIds = setSmartTopicIds(ShareWebTypeTopicData);
-            // let smartPagesIds = setSmartPagesIds(ShareWebTypePagesData);
-            if (props?.usedFor == undefined) {
+            let smartTopicIds = setSmartTopicIds(ShareWebTypeTopicData);
+            let smartPagesIds = setSmartPagesIds(ShareWebTypePagesData);
+            if (props?.usedFor == "SharewebEvent") {
                 postData = {
                     Title: (updateData?.Title),
-                    AlternateLanguageTitle: (updateData?.AlternateLanguageTitle),
+                  
                     ItemRank: updateData?.ItemRank != null ? String(updateData?.ItemRank) : null,
-                    // EventType: (updateData?.EventType),
-                    Description: updateData?.ItemDescription,
+                    Event_x002d_Type: (updateData?.EventType),
+                    EventDescription: updateData?.ItemDescription,
                     AlternateLanguageDescription: (updateData?.AlternateLanguageDescription),
                     EventDate: updateData?.EventDate != undefined ? new Date(updateData?.EventDate).toISOString() : null,
                     EndDate: updateData?.EndDate != undefined ? new Date(updateData?.EndDate).toISOString() : null,
-                    IsVisible: isVisible,
+                 
                     SmartActivitiesId: { "results": smartactivityIds },
-                    // SmartTopicsId: { "results": smartTopicIds },
-                    // SmartPagesId: { "results": smartPagesIds },
+                    SmartTopicsId: { "results": smartTopicIds },
+                    SmartPagesId: { "results": smartPagesIds },
                     // WorkAddress: (updateData?.WorkAddress),
                     // Description:updateData?.Description,
                     // About:updateData?.About,                   
-                    ItemCover: {
-                        "__metadata": { type: "SP.FieldUrlValue" },
-                        Description: updateData?.Item_x002d_Image != undefined ? updateData?.Item_x002d_Image?.Url : (updateData?.Item_x002d_Image != undefined ? updateData?.Item_x002d_Image?.Url : ""),
-                        Url: updateData?.Item_x002d_Image != undefined ? updateData?.Item_x002d_Image?.Url : (updateData?.Item_x002d_Image != undefined ? updateData?.Item_x002d_Image?.Url : "")
-                    },
+                   
                 }
-                if (props?.EditEventData?.siteUrl === 'team') {
-                    postData.EventType1 = updateData?.EventType
-                }
-                else {
-                    postData.EventType0 = updateData?.EventType
-                }
+                
             }
-            else if (props?.usedFor === "ImageSlider") {
-                postData = {
-                    Title: (updateData?.Title),
-                    ItemDescription: updateData?.ItemDescription,
-                    ItemCover: {
-                        "__metadata": { type: "SP.FieldUrlValue" },
-                        Description: updateData?.ItemCover != undefined ? updateData?.ItemCover?.Url : (updateData?.ItemCover != undefined ? updateData?.ItemCover?.Url : ""),
-                        Url: updateData?.ItemCover != undefined ? updateData?.ItemCover?.Url : (updateData?.ItemCover != undefined ? updateData?.ItemCover?.Url : "")
-                    }
-                }
-            }
+           
             else {
                 postData = {
                     Title: (updateData?.Title),
-                    AlternateLanguageDescription: (updateData?.AlternateLanguageDescription),
-                    AlternateLanguageTitle: (updateData?.AlternateLanguageTitle),
+                   
                     ItemRank: updateData?.ItemRank != null ? String(updateData?.ItemRank) : null,
                     Body: updateData?.ItemDescription,
                     PublishingDate: updateData?.PublishingDate != undefined && updateData?.PublishingDate != 'Invalid date' ? new Date(updateData?.PublishingDate).toISOString() : null,
-                    NewsType: updateData?.NewsType,
+                    // NewsType: updateData?.NewsType,
                     SmartActivitiesId: { "results": smartactivityIds },
-                    // SmartTopicsId: { "results": smartTopicIds },
-                    // SmartPagesId: { "results": smartPagesIds },
-                    IsVisible: isVisible,
-                    ItemCover: {
-                        "__metadata": { type: "SP.FieldUrlValue" },
-                        Description: updateData?.Item_x002d_Image != undefined ? updateData?.Item_x002d_Image?.Url : (updateData?.Item_x002d_Image != undefined ? updateData?.Item_x002d_Image?.Url : ""),
-                        Url: updateData?.Item_x002d_Image != undefined ? updateData?.Item_x002d_Image?.Url : (updateData?.Item_x002d_Image != undefined ? updateData?.Item_x002d_Image?.Url : "")
-                    },
-                    PageUrl: {
-                        "__metadata": { type: "SP.FieldUrlValue" },
-                        Description: pageUrl?.Description != undefined && pageUrl?.Description != '' ? pageUrl?.Description : null,
-                        Url: pageUrl?.Url != undefined && pageUrl?.Url != '' ? pageUrl?.Url : null,
-                    },
+                    SmartTopicsId: { "results": smartTopicIds },
+                    SmartPagesId: { "results": smartPagesIds },
+                    
+                   
                 }
             }
 
-            if (updateData?.Id != undefined && props?.usedFor !== "ImageSlider") {
                 let web = new Web(props?.allListId?.siteUrl);
-                await web.lists.getById(props?.usedFor == "SharewebNews" ? props?.allListId?.NewsListId : props?.allListId?.EventListId).items.getById(updateData?.Id).update(postData).then((e) => {
+                await web.lists.getById(props?.allListId[props?.usedFor]).items.getById(updateData?.Id).update(postData).then((e) => {
                     console.log("Your information has been updated successfully");
                     setShowConfirmation(true)
 
 
 
                 });
-            }
-            else if (props?.usedFor === "ImageSlider") {
-                let web = new Web(props?.allListId?.siteUrl);
-                await web.lists.getById(props?.allListId?.ImageSliderListId).items.getById(updateData?.Id).update(postData).then((e) => {
-                    console.log("Your information has been updated successfully");
-                    setShowConfirmation(true)
 
-                });
-            }
+
         } catch (error) {
             console.log("Error:", error.message);
         }
-
-
-
-
-    }
+            }
 
  
 
@@ -554,19 +535,19 @@ const EditEventCardPopup = (props: any) => {
     const CustomFooter = () => {
         return (
 
-            <footer>
+            <footer className='alignCenter px-2'>
                 <div className='col text-start'>
                     <div><span className='pe-2'>Created</span><span className='pe-2'> {updateData?.Created ? moment(updateData?.Created).format("DD/MM/YYYY HH:MM") : ''}&nbsp;By</span><span><a>{updateData?.Author ? updateData?.Author?.Title : ''}</a></span></div>
                     <div><span className='pe-2'>Last modified</span><span className='pe-2'> {updateData?.Modified ? moment(updateData?.Modified).format("DD/MM/YYYY HH:MM") : ''}&nbsp;By</span><span><a>{updateData?.Editor ? updateData?.Editor.Title : ''}</a></span></div>
                     <div className='alignCenter'>
                         <FaRegTrashAlt />
-                        <a onClick={() => deleteData()}> Delete this item</a></div>
+                        <a className='ms-1' onClick={() => deleteData()}> Delete this item</a></div>
                 </div>
 
                 <div className='col text-end'>
-                    <span onClick={() => sendMail()} className="alignIcon  svg__iconbox svg__icon--mail"></span>
-                    <a target="_blank" onClick={() => sendMail()}>Share this {props?.usedFor == "SharewebNews" ? <span>News</span> : <span>Event</span>}</a> |
-                    <a href={`${props?.allListId?.siteUrl}/Lists/${props?.usedFor != undefined ? props?.usedFor === "ImageSlider" ? "ImageSlider" : "Announcements" : "Events"}/EditForm.aspx?ID=${updateData?.Id}`} data-interception="off"
+                  
+                   
+                    <a href={`${props?.allListId?.siteUrl}/Lists/${props?.usedFor}/EditForm.aspx?ID=${updateData?.Id}`} data-interception="off"
                         target="_blank">Open out-of-the-box form</a>
 
                     <button className='btn btn-primary ms-1 mx-2'
@@ -616,6 +597,31 @@ const EditEventCardPopup = (props: any) => {
     const showFieldInfo = () => {
         setValuechecked(!valuechecked);
     }
+    const SetResponsibledata = (item:any) => {
+        setUpdateData({ ...updateData, Responsible: item })
+        setListIsVisible(false);
+     
+    }
+    const searchedName = async (e: any) => {
+        setListIsVisible(true);
+        let res:any = {}
+        let Key: any = e.target.value;
+        res.FullName = Key;
+        let subString = Key.split(" ");
+        setSearchKey({ ...searchKey, Title: subString[0] + " " + subString[1] })
+        setSearchKey({ ...searchKey, FirstName: subString })
+        const data: any = {
+            nodes: allContactData.filter((items: any) =>
+                items.FullName?.toLowerCase().includes(Key.toLowerCase())
+            ),
+        };
+        setSearchedDataName(data.nodes);
+        setUpdateData({ ...updateData, Responsible: res })
+        if (Key.length == 0) {
+            setSearchedDataName(allContactData);
+            setListIsVisible(false);
+        }
+    }
     return (
         <>
             <Panel onRenderHeader={onRenderCustomHeaderEventCard}
@@ -645,21 +651,31 @@ const EditEventCardPopup = (props: any) => {
                     <div className="border-top-0 clearfix p-3 tab-content " id="myTabContent">
                         <div className={`tab-pane show  ${imagetab == false ? "active" : ""}`} id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
                             <div className='general-section'>
-                                <div className="col">
-                                    <div className="user-form-5 row">
+                                <div className="col-md-12">
+                                    <div className="row form-group">
                                         <div className="col">
                                             <div className='input-group'>
                                                 <label className='w-100 form-label'>Title </label>
                                                 <input type="text" className="form-control" defaultValue={updateData ? updateData?.Title : null} onChange={(e) => setUpdateData({ ...updateData, Title: e.target.value })} aria-label="Title" placeholder='Title' />
                                             </div>
                                         </div>
-                                        {props?.usedFor !== 'ImageSlider' && <div className="col">
-                                            <div className='input-group'>
-                                                <label className="w-100 form-label">English Title</label>
-                                                <input type="text" className="form-control" defaultValue={updateData?.AlternateLanguageTitle ? updateData?.AlternateLanguageTitle : ""}
-                                                    onChange={(e) => setUpdateData({ ...updateData, AlternateLanguageTitle: e.target.value })} aria-label="English Title" />
+                                        <div className="col">
+                                        <div className='input-group'>
+                                                <label htmlFor="Responsible" className='full-width form-label boldClable '>Responsible</label>
+                                                <input type='text' placeholder="Enter Contacts Name" value={updateData?.Responsible?.FullName || ''} onChange={(e) => searchedName(e)} className="form-control" />
+                                                {listIsVisible ? <div className="col-12 mt-1 rounded-0">
+                                                    <ul className="list-group">
+                                                        {searchedNameData?.map((item: any) => {
+                                                            return (
+                                                                <li className="list-group-item" onClick={() => SetResponsibledata(item)}><a>{item.FullName}</a></li>
+                                                            )
+                                                        })}
+                                                    </ul>
+                                                </div>
+                                                    : null}
                                             </div>
-                                            </div>}
+                                        </div>
+                                       
                                         {props?.usedFor !== 'ImageSlider' && <div className="col">
                                             <div className='input-group'>
                                                 <label className='form-label alignCenter full-width gap-1'>
@@ -678,38 +694,17 @@ const EditEventCardPopup = (props: any) => {
                                             </div>
                                         </div>}
 
-
-                                    </div>
-                                    {props?.usedFor !== 'ImageSlider' && <div className="col mt-12">
-                                        {props?.usedFor == "SharewebNews" ?
-                                            <div className="user-form-6 row">
-                                                <div className="col pad0">
+                                        {props?.usedFor == "SharewebNews"&&<div className="col ">
                                                     <div className='input-group'>
                                                         <label className="w-100 form-label">Publishing Date</label>
                                                         <input className="form-control" type="date" value={updateData?.PublishingDate != undefined ? moment(updateData?.PublishingDate).format('YYYY-MM-DD') : null} onChange={(e) => setUpdateData({ ...updateData, PublishingDate: moment(e.target.value).format('YYYY-MM-DD') })} />
                                                     </div>
-                                                </div>
-                                                <div className="col">
-                                                <div className='input-group'>
-                                                <label className='form-label alignCenter full-width gap-1'>News Type
-                                                {/* <CustomToolTip Description={'Define the news type and under which section the news item will be listed.'} /> */}
-                                                </label>
-                                                        <select className={`${updateData?.NewsType === null ? 'colLight form-select' : 'form-select'}`} value={updateData?.NewsType} onChange={(e) => setUpdateData({ ...updateData, NewsType: e.target.value })}>
-                                                            <option className='defaultSelectValue' value={"select"}> Select</option>
-                                                            <option value={"Analyse"}> Analyse</option>
-                                                            <option value={"Antrag"}>Antrag</option>
-                                                            <option value={"Artikel"}> Artikel</option>
-                                                            <option value={"Offener Brief"}>Offener Brief</option>
-                                                            <option value={"OV Events"}> OV Events</option>
-                                                            <option value={"Positionspapier"}>Positionspapier</option>
-                                                            <option value={"Pressemitteilung"}> Pressemitteilung</option>
-                                                            <option value={"Publikation"}>Publikation</option>
-                                                            <option value={"Sofa-Talk"}> Sofa-Talk</option>
-                                                        </select>
-                                                   </div>
-                                                </div>
-                                            </div>
-                                            : <div className="user-form-6 row">
+                                                </div>}
+                                    </div>
+                                   
+                                        {props?.usedFor !== "SharewebNews" &&
+                                        <div className="col-md-12">
+                                           <div className="row form-group mt-2">
                                                 <div className="col pad0">
                                                     <div className='input-group'>
                                                         <label className="w-100 form-label">Start Date</label>
@@ -721,10 +716,10 @@ const EditEventCardPopup = (props: any) => {
                                                         <label className="w-100 form-label">End Date</label>
                                                         <input className="form-control" type='date' value={updateData?.EndDate != undefined ? moment(updateData?.EndDate).format('YYYY-MM-DD') : null} onChange={(e) => setUpdateData({ ...updateData, EndDate: moment(e.target.value).format('YYYY-MM-DD') })} />
                                                     </div></div>
-                                                <div className="col">
+                                                {/* <div className="col">
                                                     <div className='input-group'>
                                                     <label className='form-label alignCenter full-width gap-1'>Event Type
-                                                            {/* <CustomToolTip Description={'Define the event type and under which section the event item will be listed.'} /> */}
+                                                          
                                                             </label>
                                                         <select className={`${updateData?.EventType === null ? 'colLight form-select' : 'form-select'}`} value={updateData?.EventType} onChange={(e) => setUpdateData({ ...updateData, EventType: e.target.value })}>
                                                             <option value={""}> Select</option>
@@ -732,18 +727,18 @@ const EditEventCardPopup = (props: any) => {
                                                             <option value={"Training"}>Training</option>
                                                         </select>
                                                     </div>
-                                                </div>
-                                            </div>}
-                                    </div>}
+                                                </div> */}
+                                            </div> </div>}
+                                   
                                
 
                               
 
                                 </div>
-                                {props?.usedFor !== 'ImageSlider' && <div className="col mt-12">
+                               <div className="col mt-2">
                                         <details>
-                                            {props?.usedFor == "SharewebNews" && props?.usedFor != undefined ? <summary><span>News Tags</span></summary> : <summary><span>Event Tags</span></summary>}
-                                            <div className="expand-AccordionContent clearfix">
+                                            { props?.usedFor == "SharewebNews" ? <summary><span>News Tags</span></summary> : <summary><span>Event Tags</span></summary>}
+                                            <div className="expand-AccordionContent border clearfix p-2">
                                                 <div className='row'>
                                                     <div className="col pad0">
                                                         <div className='input-group'>
@@ -850,7 +845,7 @@ const EditEventCardPopup = (props: any) => {
                                                                 </>
                                                             }
                                                             <span className="input-group-text" title="Smart Category Popup" onClick={(e) => EditComponentPicker(EditData, "Activities")}>
-                                                                <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                <span className="alignIcon svg__iconbox svg__icon--editBox"></span>
                                                             </span>
                                                         </div>
                                                         </div>
@@ -953,7 +948,7 @@ const EditEventCardPopup = (props: any) => {
                                                                 </>
                                                             }
                                                             <span className="input-group-text" title="Smart Category Popup" onClick={(e) => EditComponentPicker(EditData, "Topics")}>
-                                                                <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                <span className="alignIcon svg__iconbox svg__icon--editBox"></span>
                                                             </span>
                                                         </div>  </div>
                                                     </div>
@@ -1061,7 +1056,7 @@ const EditEventCardPopup = (props: any) => {
                                                                 </>
                                                             }
                                                             <span className="input-group-text" title="Smart Category Popup" onClick={(e) => EditComponentPicker(EditData, "Smart Pages")}>
-                                                                <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                <span className="alignIcon svg__iconbox svg__icon--editBox"></span>
                                                             </span>
                                                         </div>
                                                         </div>
@@ -1069,7 +1064,7 @@ const EditEventCardPopup = (props: any) => {
                                                 </div>
                                             </div>
                                         </details>
-                                    </div>}
+                                    </div>
                                
                                 <div className="col my-2">
                                     <div className="col" >

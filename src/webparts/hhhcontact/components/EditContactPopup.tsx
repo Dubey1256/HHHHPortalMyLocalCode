@@ -69,7 +69,7 @@ const EditContactPopup = (props: any) => {
     const getContactDetails = async () => {
         try {
             //props?.allListId?.TeamContactSearchlistIds
-            const select = "WorkCity,WorkFax ,WorkAddress,Id,WorkCountry,Email,FullName,WorkFax,Item_x0020_Cover,SmartActivities/Id,SmartActivities/Title,SmartCategories/Id,SmartCategories/Title,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,ol_Department,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title";
+            const select = "WorkCity,WorkFax ,WorkAddress,Id,WorkCountry,Email,FullName,WorkFax,ItemCover,SmartActivities/Id,SmartActivities/Title,SmartCategories/Id,SmartCategories/Title,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,ol_Department,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title";
             const query = `Id eq ${itemId}`;
             const data = await webs.lists.getById(props?.allListId?.TeamContactSearchlistIds).items.select(select).expand('Author', 'Editor', 'SmartActivities', 'SmartCategories').filter(query).get();
             const contact = data[0];
@@ -81,6 +81,9 @@ const EditContactPopup = (props: any) => {
             }
             if (contact?.Modified != null && contact?.Modified != undefined) {
                 contact.Modified = moment(contact.Modified).format("DD/MM/YYYY");
+             }
+            if (contact?.ItemCover != null && contact?.ItemCover != undefined) {
+                contact.Item_x002d_Image = contact?.ItemCover
              }
             setContactDetails(contact);
 

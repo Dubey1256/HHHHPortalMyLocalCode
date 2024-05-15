@@ -15,6 +15,7 @@ import {
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 import EditEventCardPopup from '../../../globalComponents/EditEventCard';
 
+const imgPattern = /<img[^>]+>/g;
 const useStyles = makeStyles({
     root: {
         alignItems: "flex-start",
@@ -42,11 +43,11 @@ const LivingDocsSyncToolTable = (props: any) => {
         if (props?.props != undefined) {
             const params = new URLSearchParams(window.location.search);
             console.log(params.get('ItemType'));
-            
-            const  capitalizeFLetter=(site:String) =>{
-              return site[0].toUpperCase() + site.slice(1);
-          }
-          chanageTiles.current  =  capitalizeFLetter(params.get('ItemType'))
+
+            const capitalizeFLetter = (site: String) => {
+                return site[0].toUpperCase() + site.slice(1);
+            }
+            chanageTiles.current = capitalizeFLetter(params.get('ItemType'))
             AllListId = {
                 siteUrl: props?.props?.siteUrl,
                 Context: props?.props?.Context,
@@ -59,9 +60,11 @@ const LivingDocsSyncToolTable = (props: any) => {
                 TaskUserListID: props?.props?.TaskUserListID
             }
         }
+
         //    AllTaskUser= globalCommon?.loadAllTaskUsers(AllListId)
         loadAllTaskUsers()
     }, []);
+
     const loadAllTaskUsers = async () => {
 
         try {
@@ -84,18 +87,20 @@ const LivingDocsSyncToolTable = (props: any) => {
     }
     // ==================loadBriefwahlData function to prepare the data of the BriefwahlData   Start  ===================
     const findUserByName = (name: any,) => {
-        if(AllTaskUser?.length>0){
-          const user = AllTaskUser?.filter(
-            (user: any) => user?.AssingedToUser?.Id === name
-        );
-        let Image: any;
-        if (user[0]?.Item_x0020_Cover != undefined) {
-            Image = user[0].Item_x0020_Cover.Url;
-        } 
-       return user?.length>0 ? Image : null;
+        if (AllTaskUser?.length > 0) {
+            const user = AllTaskUser?.filter(
+                (user: any) => user?.AssingedToUser?.Id === name
+            );
+            let Image: any;
+            if (user[0]?.Item_x0020_Cover != undefined) {
+                Image = user[0].Item_x0020_Cover.Url;
+            }
+            return user?.length > 0 ? Image : null;
         }
-       
+
     };
+
+
     const LoadNewsEventDocListData = async () => {
 
         try {
@@ -103,20 +108,26 @@ const LivingDocsSyncToolTable = (props: any) => {
                 loadDocuments()
             } else {
 
-                
+                let select = '';
+                if (chanageTiles?.current == "SharewebEvent") {
+                    select = `Id,ID,Title,Responsible/Id,Item_x0020_Cover,Responsible/Title,Responsible/FullName,EventDate,Category,EndDate,EventDescription,Event_x002d_Type,Description,SmartContact/Id,SmartActivitiesId,SmartTopics/Title,SmartTopics/Id,SmartPages/Title,SmartPages/Id,Created,Author/Id,Author/Title,Modified,Editor/Id,Editor/Title&$expand=Author,SmartContact,SmartTopics,Responsible,SmartPages,Editor`
+                } else {
+                    select = `Id,ID,Title,Responsible/Id,Item_x0020_Cover,Responsible/Title,Responsible/FullName,Expires,SmartContact/Id,SmartActivitiesId,SmartTopics/Title,SmartTopics/Id,SmartPages/Title,SmartPages/Id,ItemRank,Body,SortOrder,PublishingDate,Created,Author/Id,Author/Title,Modified,Editor/Id,Editor/Title&$expand=Author,SmartContact,SmartTopics,SmartPages,Editor,Responsible`
+                }
                 const web = new Web(props?.props?.siteUrl);
                 await web.lists.getById(AllListId?.[chanageTiles?.current])
-                    .items.getAll()
+                    .items.select(select).getAll()
                     .then((Data: any[]) => {
-                        let notSyncData=Data?.filter((items:any)=>items?.Status!="Sync")
+                        let notSyncData = Data?.filter((items: any) => items?.Status != "Sync")
                         copyData = JSON.parse(JSON.stringify(notSyncData))
                         console.log(Data)
                         notSyncData.forEach((item: any) => {
                             item.Id = item.ID;
-                            item.Date=""
-                            item. Editor={}
-                            item.Author={}
-                            item.displayDescription=""
+                            item.Date = ""
+                            item.Editor = {}
+                            item.Author = {}
+                            item.showSmartTopic=""
+                            item.displayDescription = ""
                             if (item?.Modified != null && item?.Modified != undefined) {
                                 item.serverModifiedDate = new Date(item?.Modified).setHours(0, 0, 0, 0)
                             }
@@ -131,31 +142,46 @@ const LivingDocsSyncToolTable = (props: any) => {
                             if (item.DisplayModifiedDate == "Invalid date" || "") {
                                 item.DisplayModifiedDate = item.DisplayModifiedDate.replaceAll("Invalid date", "");
                             }
-                           
-                            if(item?.EventDate!=undefined){
+
+                            if (item?.EventDate != undefined) {
                                 item.Date = moment(item.EventDate).format("DD/MM/YYYY");
                                 if (item.Date == "Invalid date" || "") {
                                     item.Date = item.EventDate.replaceAll("Invalid date", "");
-                                }  
+                                }
                             }
-                            if(item?.PublishingDate!=undefined){
+                            if (item?.PublishingDate != undefined) {
                                 item.Date = moment(item.PublishingDate).format("DD/MM/YYYY");
                                 if (item.Date == "Invalid date" || "") {
                                     item.Date = item.PublishingDate.replaceAll("Invalid date", "");
-                                } 
+                                }
                             }
-                           
-                            if(chanageTiles?.current=="SharewebNews"){
-                                item.displayDescription=  item?.Body
-                            }else{
-                                item.displayDescription=  item?.EventDescription
+
+                            if (chanageTiles?.current == "SharewebNews") {
+                                item.displayDescription = limitTo100Words(item?.Body)
+                                item.inconDescription = item?.Body
+                            } else {
+                                item.displayDescription =  limitTo100Words(item?.EventDescription)
+                                item.inconDescription = item?.EventDescription
+                            }
+
+                            if (item?.Editor) {
+                                item.Editor.EditorImage = findUserByName(item?.Editor?.Id)
+                            }
+                            if (item?.Author) {
+                                item.Author.AuthorImage = findUserByName(item?.Author?.Id)
                             }
                             
-                            if (item?.AuthorId) {
-                                item.Editor.EditorImage = findUserByName(item?.EditorId)
-                            }
-                            if (item?.AuthorId) {
-                                item.Author.AuthorImage = findUserByName(item?.AuthorId)
+                            if(item?.SmartTopics?.length>0){
+                                let SmartTopic=""
+                                item?.SmartTopics?.map((data:any)=>{
+                                    if(SmartTopic?.length>0){
+                                        SmartTopic= SmartTopic+";"+data?.Title
+                                    }else{
+                                        SmartTopic= data?.Title
+                                    }
+                                    
+                                })
+                                item.showSmartTopic=SmartTopic
                             }
                         });
                         setLivingDocsSyncData(notSyncData)
@@ -176,6 +202,16 @@ const LivingDocsSyncToolTable = (props: any) => {
         }
 
     }
+
+    const limitTo100Words = (gethtml: any) => {
+        let first100Words = '';
+        if (gethtml !== null && gethtml !== undefined && gethtml !== '') {
+            const plainText = gethtml.replace(/<[^>]*>|&#[^;]+;/g, '');
+            const words = plainText.split(' ');
+            first100Words = words.slice(0, 20).join(' ');
+        }
+        return first100Words;
+    };
     const loadDocuments = async () => {
         const web = new Web(AllListId?.siteUrl);
         try {
@@ -186,14 +222,14 @@ const LivingDocsSyncToolTable = (props: any) => {
                 .getAll()
                 .then((data: any) => {
                     console.log(data)
-                    let notSyncData=data?.filter((items:any)=>items?.Status!="Sync")
+                    let notSyncData = data?.filter((items: any) => items?.Status != "Sync")
                     copyData = JSON.parse(JSON.stringify(notSyncData))
                     notSyncData.forEach((item: any) => {
 
                         item.Id = item.ID;
-
-                        item.displayDescription="" 
-                        item.displayDescription= item?.Body
+                        item.showSmartTopic=""
+                        item.displayDescription = ""
+                        item.displayDescription = item?.Body
                         if (item?.Modified != null && item?.Modified != undefined) {
                             item.serverModifiedDate = new Date(item?.Modified).setHours(0, 0, 0, 0)
                         }
@@ -214,6 +250,18 @@ const LivingDocsSyncToolTable = (props: any) => {
                         if (item.Author) {
                             item.Author.AuthorImage = findUserByName(item.Author?.Id)
                         }
+                        if(item?.SmartTopics?.length>0){
+                            let SmartTopic=""
+                            item?.SmartTopics?.map((data:any)=>{
+                                if(SmartTopic?.length>0){
+                                    SmartTopic= SmartTopic+";"+data?.Title
+                                }else{
+                                    SmartTopic= data?.Title
+                                }
+                                
+                            })
+                            item.showSmartTopic=SmartTopic
+                        }
                     });
                     setLivingDocsSyncData(notSyncData)
 
@@ -225,10 +273,19 @@ const LivingDocsSyncToolTable = (props: any) => {
             console.log(e);
         }
     };
-        const editItem=(editData:any)=>{
-            setEditData(editData)
-            setopenEditPopup(true)
-         }
+    function truncateString(str: string, limit: number) {
+
+        const words = str.split(' ');
+        if (words.length > limit) {
+            return words.slice(0, limit).join(' ') + '...';
+        }
+        return str;
+    }
+
+    const editItem = (editData: any) => {
+        setEditData(editData)
+        setopenEditPopup(true)
+    }
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
@@ -240,20 +297,20 @@ const LivingDocsSyncToolTable = (props: any) => {
                 isHeaderNotAvlable: true,
                 size: 10,
                 id: 'Id',
+              
             },
             {
-                accessorFn: (row: any) => row?.Title,
+                accessorFn: (row: any) => row?.Item_x0020_Cover,
                 cell: ({ row }: any) => (
                     <span
                         className="text-content hreflink"
-                        title={row?.original?.Title}
+                       
                     >
-                        {row?.original?.Title}
-                        {row?.original?.displayDescription!="" && <InfoIconsToolTip row={row?.original} SingleColumnData={"displayDescription"} />}
+                       <img src={row?.original?.Item_x0020_Cover!=undefined?row?.original?.Item_x0020_Cover.Url:""} alt="" style={{width:"50px", height:"50px"}}/> 
                     </span>
                 ),
-                id: "Title",
-                placeholder: "Title",
+                id: "Item_x0020_Cover",
+                placeholder: "Image",
                 resetColumnFilters: false,
                 header: "",
                 size: 70,
@@ -270,30 +327,79 @@ const LivingDocsSyncToolTable = (props: any) => {
                     </span>
                 ),
                 id: "Date",
-                placeholder: "Date",
+                placeholder: chanageTiles?.current == "SharewebNews" ? "Published Date" : chanageTiles?.current == "SharewebEvent" ? "Start Date" : "Year",
+                resetColumnFilters: false,
+                header: "",
+                size: 70,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row: any) => row?.Title,
+                cell: ({ row }: any) => (
+                    <span
+                        className="text-content hreflink"
+                        title={row?.original?.Title}
+                    >
+                        {row?.original?.Title}
+
+                    </span>
+                ),
+                id: "Title",
+                placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
                 size: 70,
                 isColumnVisible: true
             },
 
-            // {
-            //     accessorFn: (row: any) => row?.displayDescription,
-            //     cell: ({ row }: any) => (
-            //         <span
-            //             className="text-content hreflink"
-            //             title={row?.original?.displayDescription}
-            //         >
-            //             {row?.original?.displayDescription}
-            //         </span>
-            //     ),
-            //     id: "Description",
-            //     placeholder: "Status",
-            //     resetColumnFilters: false,
-            //     header: "",
-            //     size: 70,
-            //     isColumnVisible: true
-            // },
+
+            {
+                accessorFn: (row: any) => row?.displayDescription,
+                cell: ({ row }: any) => (
+                    <span
+                        className="text-content hreflink" 
+
+                    >
+                        {row?.original?.displayDescription}
+                        {row?.original?.displayDescription != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"inconDescription"} />}
+                    </span>
+                ),
+                id: "displayDescription",
+                placeholder: "Description",
+                resetColumnFilters: false,
+                header: "",
+                size: 70,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row: any) => row?.Responsible,
+                cell: ({ row }: any) => (
+                    <span>
+                        {row?.original?.Responsible?.Title}
+                    </span>
+                ),
+                id: "Responsible",
+                placeholder: "Responsible",
+                resetColumnFilters: false,
+                header: "",
+                size: 70,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row: any) => row?.showSmartTopic,
+                cell: ({ row }: any) => (
+                    <span>
+                        {row?.original?.showSmartTopic}
+                    </span>
+                ),
+                id: "showSmartTopic",
+                placeholder: "Page",
+                resetColumnFilters: false,
+                header: "",
+                size: 70,
+                isColumnVisible: true
+            },
+
 
             {
                 accessorFn: (row) => row?.Modified,
@@ -301,22 +407,22 @@ const LivingDocsSyncToolTable = (props: any) => {
                     <div className="alignCenter">
                         {row?.original?.Modified == null ? ("") : (
                             <>
-                            <div style={{ width: "70px" }} className="me-1">{row?.original?.DisplayModifiedDate}</div>
-                            {row?.original?.Editor != undefined || row?.original?.Editor != undefined ? (
-                                <>
-                                    <a
-                                       onClick={()=> globalCommon?.openUsersDashboard(AllListId?.siteUrl, row?.original?.Editor?.Id)}
-                                    >
-                                        {row?.original?.Editor?.AuthorImage!=undefined?
-                                        <img title={row?.original?.Editor?.Title}className="workmember ms-1"
-                                        src={findUserByName(row?.original?.EditorId != undefined ? row?.original?.AuthorId : row?.original?.Editor?.Id)} 
-                                        />:<span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Editor?.Title}></span>}
-                                    </a>
-                                </>
-                            ) : (
-                                <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Editor?.Title}  onClick={()=> globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined,row?.original?.Editor?.Title)}></span>
-                            )}
-                        </>
+                                <div style={{ width: "70px" }} className="me-1">{row?.original?.DisplayModifiedDate}</div>
+                                {row?.original?.Editor != undefined || row?.original?.Editor != undefined ? (
+                                    <>
+                                        <a
+                                            onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, row?.original?.Editor?.Id)}
+                                        >
+                                            {row?.original?.Editor?.AuthorImage != undefined ?
+                                                <img title={row?.original?.Editor?.Title} className="workmember ms-1"
+                                                    src={findUserByName(row?.original?.EditorId != undefined ? row?.original?.AuthorId : row?.original?.Editor?.Id)}
+                                                /> : <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Editor?.Title}></span>}
+                                        </a>
+                                    </>
+                                ) : (
+                                    <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, row?.original?.Editor?.Title)}></span>
+                                )}
+                            </>
                             // <>
                             //     <div className="me-1">
                             //         {row?.original?.DisplayModifiedDate}
@@ -360,16 +466,16 @@ const LivingDocsSyncToolTable = (props: any) => {
                                 {row?.original?.Author != undefined || row?.original?.AuthoId != undefined ? (
                                     <>
                                         <a
-                                            onClick={()=> globalCommon?.openUsersDashboard(AllListId?.siteUrl, row?.original?.AuthoId?.Id)}
+                                            onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, row?.original?.AuthoId?.Id)}
                                         >
-                                            {row?.original?.Author?.AuthorImage!=undefined?
-                                            <img title={row?.original?.Author?.Title}className="workmember ms-1"
-                                            src={findUserByName(row?.original?.AuthorId != undefined ? row?.original?.AuthorId : row?.original?.Author?.Id)} 
-                                            />:<span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Author?.Title}></span>}
+                                            {row?.original?.Author?.AuthorImage != undefined ?
+                                                <img title={row?.original?.Author?.Title} className="workmember ms-1"
+                                                    src={findUserByName(row?.original?.AuthorId != undefined ? row?.original?.AuthorId : row?.original?.Author?.Id)}
+                                                /> : <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Author?.Title}></span>}
                                         </a>
                                     </>
                                 ) : (
-                                    <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Author?.Title}   onClick={()=> globalCommon?.openUsersDashboard(AllListId?.siteUrl,undefined ,row?.original?.Author?.Title)}></span>
+                                    <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Author?.Title} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, row?.original?.Author?.Title)}></span>
                                 )}
                             </>
                         )}
@@ -402,10 +508,10 @@ const LivingDocsSyncToolTable = (props: any) => {
 
 
                         <div className='alignCenter'>
-                           <span title="Edit" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1"
-                            onClick={() => editItem(row.original)}
-                             >
-                                
+                            <span title="Edit" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1"
+                                onClick={() => editItem(row.original)}
+                            >
+
                             </span>
 
                         </div>
@@ -443,17 +549,17 @@ const LivingDocsSyncToolTable = (props: any) => {
 
         if (childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length > 0) {
             await Promise.all(childRef?.current?.table?.getSelectedRowModel()?.flatRows?.map(async (config: any) => {
-                await Promise.all([  batchUpdateLivingDocsList(config?.original),]);
-              }));
-     
-          
+                await Promise.all([batchUpdateLivingDocsList(config?.original),]);
+            }));
+
+
             if (chanageTiles?.current == "SharewebDocument") {
-                loadDocuments() 
-            
-            }else{
+                loadDocuments()
+
+            } else {
                 LoadNewsEventDocListData()
             }
-          
+
             console.log("Batch update completed successfully.");
         } else {
             console.log("No items to update.");
@@ -462,135 +568,143 @@ const LivingDocsSyncToolTable = (props: any) => {
     }
     const batchUpdateLivingDocsList = async (postDataArry2: any): Promise<void> => {
         const web = new Web(AllListId?.siteUrl);
-         let postData: any = {}
-            try {
+        let postData: any = {}
+        try {
 
-                if (chanageTiles?.current == "SharewebNews") {
-                    postDataArry2.SyncListId = AllListId?.LivingNews;
-                    postData = {
-                        Title: postDataArry2?.Title,
+            if (chanageTiles?.current == "SharewebNews") {
+                postDataArry2.SyncListId = AllListId?.LivingNews;
+                postData = {
+                    Title: postDataArry2?.Title,
 
-                        SortOrder: postDataArry2?.SortOrder,
-                        SmartTopicsId: {
-                            results: postDataArry2?.SmartTopicsId
+                    SortOrder: postDataArry2?.SortOrder,
+                    SmartTopicsId: {
+                        results: postDataArry2?.SmartTopicsId
 
-                        },
-                        SmartPagesId: {
-                            results: postDataArry2?.SmartPagesId
+                    },
+                    SmartPagesId: {
+                        results: postDataArry2?.SmartPagesId
 
-                        },
-                        SmartContactId: {
-                            results: postDataArry2?.SmartContactId
+                    },
+                    SmartContactId: {
+                        results: postDataArry2?.SmartContactId
 
-                        },
-                        SmartActivitiesId: {
-                            results: postDataArry2?.SmartActivitiesId
+                    },
+                    SmartActivitiesId: {
+                        results: postDataArry2?.SmartActivitiesId
 
-                        },
-                        OData__ColorTag: postDataArry2?.OData__ColorTag,
-                        ItemRank: postDataArry2?.ItemRank,
-                        ComplianceAssetId: postDataArry2?.ComplianceAssetId,
-                        Body: postDataArry2?.Body,
-                        Attachments: postDataArry2?.Attachments
-                    }
-                    await Promise.all ([syncFunctionAndUpadte(postDataArry2,postData),updateStatusdata(postDataArry2)])
+                    },
+                    Responsible:postDataArry2?.Responsible,
+                    PublishingDate:postDataArry2?.PublishingDate,
+                    Item_x0020_Cover: {
+                        "__metadata": { type: 'SP.FieldUrlValue' },
+                        'Description': postDataArry2?.Item_x0020_Cover?.Url,
+                        'Url': postDataArry2?.Item_x0020_Cover?.Url,
+                      },
+                    OData__ColorTag: postDataArry2?.OData__ColorTag,
+                    ItemRank: postDataArry2?.ItemRank,
+                    ComplianceAssetId: postDataArry2?.ComplianceAssetId,
+                    Body: postDataArry2?.Body,
+                    Attachments: postDataArry2?.Attachments
                 }
-                if (chanageTiles?.current == "SharewebEvent") {
-                    postDataArry2.SyncListId = AllListId?.LivingEvent;
-                    postData = {
-                        Title: postDataArry2?.Title,
-
-                        SmartTopicsId: {
-                            results: postDataArry2?.SmartTopicsId
-
-                        },
-                        SmartPagesId: {
-                            results: postDataArry2?.SmartPagesId
-
-                        },
-                        SmartContactId: {
-                            results: postDataArry2?.SmartContactId
-
-                        },
-                        SmartActivitiesId: {
-                            results: postDataArry2?.SmartActivitiesId
-
-                        },
-                        EventDate: postDataArry2?.EventDate,
-                        Attachments: postDataArry2?.Attachments,
-
-                        BannerUrl: {
-                            "__metadata": { type: "SP.FieldUrlValue" },
-                            Description: postDataArry2?.BannerUrl,
-                            Url: postDataArry2?.BannerUrl
-                        },
-                        Category: postDataArry2?.Category,
-                        ParticipantsPickerId: { results: postDataArry2?.ParticipantsPickerId != null ? postDataArry2?.ParticipantsPickerId : [] },
-                        Overbook: postDataArry2?.Overbook,
-                        OData__ColorTag: postDataArry2?.OData__ColorTag,
-                        Description: postDataArry2?.Description,
-                        EndDate: postDataArry2?.EndDate,
-                        EventDescription: postDataArry2?.EventDescription,
-                        Event_x002d_Type: postDataArry2?.Event_x002d_Type,
-                        FreeBusy: postDataArry2?.FreeBusy,
-                        Geolocation: postDataArry2?.Geolocation,
-                        Location: postDataArry2?.Location,
-                        Facilities: postDataArry2?.Facilities
-
-                    }
-                    await Promise.all ([syncFunctionAndUpadte(postDataArry2,postData),updateStatusdata(postDataArry2)])
-                  
-                }
-                //========= copy file from one list to another doc list function start =======
-                if (chanageTiles?.current == "SharewebDocument") {
-                    postDataArry2.SyncListId = AllListId?.LivingDocument;
-                    const web = new Web(props?.props?.siteUrl);
-                    // destination is a server-relative url of a new file
-
-                    await Promise.all ([syncFunctionAndUpadteForDoc(postDataArry2),updateStatusdata(postDataArry2)])
-
-                }
-                //========= copy file from one list to another doc list function End =======
-
-            } catch (error) {
-                console.log(error)
+                await Promise.all([syncFunctionAndUpadte(postDataArry2, postData), updateStatusdata(postDataArry2)])
             }
-      
-       
+            if (chanageTiles?.current == "SharewebEvent") {
+                postDataArry2.SyncListId = AllListId?.LivingEvent;
+                postData = {
+                    Title: postDataArry2?.Title,
+
+                    SmartTopicsId: {
+                        results: postDataArry2?.SmartTopicsId
+
+                    },
+                    SmartPagesId: {
+                        results: postDataArry2?.SmartPagesId
+
+                    },
+                    SmartContactId: {
+                        results: postDataArry2?.SmartContactId
+
+                    },
+                    SmartActivitiesId: {
+                        results: postDataArry2?.SmartActivitiesId
+
+                    },
+                    EventDate: postDataArry2?.EventDate,
+                    Attachments: postDataArry2?.Attachments,
+
+                    BannerUrl: {
+                        "__metadata": { type: "SP.FieldUrlValue" },
+                        Description: postDataArry2?.BannerUrl,
+                        Url: postDataArry2?.BannerUrl
+                    },
+                    Responsible:postDataArry2?.Responsible,
+                    Category: postDataArry2?.Category,
+                    ParticipantsPickerId: { results: postDataArry2?.ParticipantsPickerId != null ? postDataArry2?.ParticipantsPickerId : [] },
+                    Overbook: postDataArry2?.Overbook,
+                    OData__ColorTag: postDataArry2?.OData__ColorTag,
+                    Description: postDataArry2?.Description,
+                    EndDate: postDataArry2?.EndDate,
+                    EventDescription: postDataArry2?.EventDescription,
+                    Event_x002d_Type: postDataArry2?.Event_x002d_Type,
+                    FreeBusy: postDataArry2?.FreeBusy,
+                    Geolocation: postDataArry2?.Geolocation,
+                    Location: postDataArry2?.Location,
+                    Facilities: postDataArry2?.Facilities
+
+                }
+                await Promise.all([syncFunctionAndUpadte(postDataArry2, postData), updateStatusdata(postDataArry2)])
+
+            }
+            //========= copy file from one list to another doc list function start =======
+            if (chanageTiles?.current == "SharewebDocument") {
+                postDataArry2.SyncListId = AllListId?.LivingDocument;
+                const web = new Web(props?.props?.siteUrl);
+                // destination is a server-relative url of a new file
+
+                await Promise.all([syncFunctionAndUpadteForDoc(postDataArry2), updateStatusdata(postDataArry2)])
+
+            }
+            //========= copy file from one list to another doc list function End =======
+
+        } catch (error) {
+            console.log(error)
+        }
+
+
 
     }
 
-  const syncFunctionAndUpadte=(postDataArry2:any,postData:any)=>{
-    const web = new Web(AllListId?.siteUrl);
-    web.lists.getById(postDataArry2?.SyncListId).items.add(postData).then(async (data) => {
-        console.log("sucess")
-        
+    const syncFunctionAndUpadte = (postDataArry2: any, postData: any) => {
+        const web = new Web(AllListId?.siteUrl);
+        web.lists.getById(postDataArry2?.SyncListId).items.add(postData).then(async (data) => {
+            console.log("sucess")
 
-    });
-  }
-  const updateStatusdata=async (postDataArry2:any)=>{
-    const web = new Web(AllListId?.siteUrl);
-    await web.lists.getById(AllListId?.[chanageTiles?.current])
-    .items.getById(postDataArry2?.Id).update({ Status: "Sync" }).then(async (data)=>{
-        console.log(data)
-      
-    }).catch((error:any)=>{
-        console.log(error)
-    })
-  }
-  const syncFunctionAndUpadteForDoc=(postDataArry2:any)=>{
-    const web = new Web(AllListId?.siteUrl);
-    const destinationUrl = `/sites/HHHH/LivingDocs/LivingDocument/${postDataArry2?.FileLeafRef}`;
 
-    web.getFileByServerRelativePath(`/sites/HHHH/LivingDocs/SharewebDocument/${postDataArry2?.FileLeafRef}`).copyTo(destinationUrl, false).then(async (data: any) => {
-         console.log(data)
-         
-       
-     }).catch((eror: any) => {
-         console.log(eror)
-     });
-  }
-   
+        });
+    }
+    const updateStatusdata = async (postDataArry2: any) => {
+        const web = new Web(AllListId?.siteUrl);
+        await web.lists.getById(AllListId?.[chanageTiles?.current])
+            .items.getById(postDataArry2?.Id).update({ Status: "Sync" }).then(async (data) => {
+                console.log(data)
+
+            }).catch((error: any) => {
+                console.log(error)
+            })
+    }
+    const syncFunctionAndUpadteForDoc = (postDataArry2: any) => {
+        const web = new Web(AllListId?.siteUrl);
+        const destinationUrl = `/sites/HHHH/LivingDocs/LivingDocument/${postDataArry2?.FileLeafRef}`;
+
+        web.getFileByServerRelativePath(`/sites/HHHH/LivingDocs/SharewebDocument/${postDataArry2?.FileLeafRef}`).copyTo(destinationUrl, false).then(async (data: any) => {
+            console.log(data)
+
+
+        }).catch((eror: any) => {
+            console.log(eror)
+        });
+    }
+
     // =========Custom button html start ================
     let customTableHeaderButtons = (
         <>
@@ -612,7 +726,7 @@ const LivingDocsSyncToolTable = (props: any) => {
     return (
         <div className="container section">
             <div className='mb-4'>
-                <h2 className="heading">LivingDocs Sync Tool</h2>
+                <h2 className="heading">SP LivingDocs Content Library - {chanageTiles?.current=="SharewebNews"?"News":chanageTiles?.current=="SharewebEvent"?"Event":"Document"}</h2>
             </div>
             <div>
                 {/* <ul className="nav nav-tabs" id="myTab" role="tablist">
@@ -663,11 +777,12 @@ const LivingDocsSyncToolTable = (props: any) => {
 
                     </div>
                 </div>
-                
+
 
             </div>
-            {openEditPopup && <EditEventCardPopup  allListId={AllListId}usedFor={chanageTiles.current} EditEventData={editData}Context={AllListId?.Context}callBack={EditCallBack}/>}
-            </div>
+            {openEditPopup && <EditEventCardPopup allListId={AllListId} usedFor={chanageTiles.current} EditEventData={editData} Context={AllListId?.Context} callBack={EditCallBack} />}
+            {/* {openEditPopup && <EditLivingDocumentpanel allListId={AllListId} usedFor={chanageTiles.current} EditEventData={editData} Context={AllListId?.Context} callBack={EditCallBack} />} */}
+        </div>
 
     );
 }
