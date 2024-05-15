@@ -111,9 +111,9 @@ const LivingDocsSyncToolTable = (props: any) => {
 
                 let select = '';
                 if (chanageTiles?.current == "SharewebEvent") {
-                    select = `Id,ID,Title,Responsible/Id,Item_x0020_Cover,Responsible/Title,Responsible/FullName,EventDate,Category,EndDate,EventDescription,Event_x002d_Type,Description,SmartContact/Id,SmartActivitiesId,SmartTopics/Title,SmartTopics/Id,SmartPages/Title,SmartPages/Id,Created,Author/Id,Author/Title,Modified,Editor/Id,Editor/Title&$expand=Author,SmartContact,SmartTopics,Responsible,SmartPages,Editor`
+                    select = `Id,ID,Title,Responsible/Id,Item_x0020_Cover,Status,Responsible/Title,Responsible/FullName,EventDate,Category,EndDate,EventDescription,Event_x002d_Type,Description,SmartContact/Id,SmartActivitiesId,SmartTopics/Title,SmartTopics/Id,SmartPages/Title,SmartPages/Id,Created,Author/Id,Author/Title,Modified,Editor/Id,Editor/Title&$expand=Author,SmartContact,SmartTopics,Responsible,SmartPages,Editor`
                 } else {
-                    select = `Id,ID,Title,Responsible/Id,Item_x0020_Cover,Responsible/Title,Responsible/FullName,Expires,SmartContact/Id,SmartActivitiesId,SmartTopics/Title,SmartTopics/Id,SmartPages/Title,SmartPages/Id,ItemRank,Body,SortOrder,PublishingDate,Created,Author/Id,Author/Title,Modified,Editor/Id,Editor/Title&$expand=Author,SmartContact,SmartTopics,SmartPages,Editor,Responsible`
+                    select = `Id,ID,Title,Responsible/Id,Item_x0020_Cover,Status,Responsible/Title,Responsible/FullName,Expires,SmartContact/Id,SmartActivitiesId,SmartTopics/Title,SmartTopics/Id,SmartPages/Title,SmartPages/Id,ItemRank,Body,SortOrder,PublishingDate,Created,Author/Id,Author/Title,Modified,Editor/Id,Editor/Title&$expand=Author,SmartContact,SmartTopics,SmartPages,Editor,Responsible`
                 }
                 const web = new Web(props?.props?.siteUrl);
                 await web.lists.getById(AllListId?.[chanageTiles?.current])
@@ -363,7 +363,7 @@ const LivingDocsSyncToolTable = (props: any) => {
                 accessorFn: (row: any) => row?.displayDescription,
                 cell: ({ row }: any) => (
                     <span
-                        className="text-content hreflink alignIcon" 
+                        className="text-content hreflink" 
 
                     >
                         {truncateString(row?.original?.displayDescription,50)}

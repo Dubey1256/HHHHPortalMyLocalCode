@@ -535,7 +535,7 @@ const EditEventCardPopup = (props: any) => {
     const CustomFooter = () => {
         return (
 
-            <footer className='alignCenter px-2'>
+            <footer className='alignCenter px-4'>
                 <div className='col text-start'>
                     <div><span className='pe-2'>Created</span><span className='pe-2'> {updateData?.Created ? moment(updateData?.Created).format("DD/MM/YYYY HH:MM") : ''}&nbsp;By</span><span><a>{updateData?.Author ? updateData?.Author?.Title : ''}</a></span></div>
                     <div><span className='pe-2'>Last modified</span><span className='pe-2'> {updateData?.Modified ? moment(updateData?.Modified).format("DD/MM/YYYY HH:MM") : ''}&nbsp;By</span><span><a>{updateData?.Editor ? updateData?.Editor.Title : ''}</a></span></div>
