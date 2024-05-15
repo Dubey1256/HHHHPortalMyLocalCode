@@ -135,7 +135,7 @@ const Editlivingdocspop = (props: any) => {
                         <div></div>
                     </div>
                     <div>
-                        <a href={`https://hhhhteams.sharepoint.com/sites/HHHH/livingdocs/Lists/LivingDocs/?ID=${livingDocsData.Id}`} target="_blank" data-interception="off">Open out-of-the-box form</a>
+                        <a href={`https://hhhhteams.sharepoint.com/sites/HHHH/livingdocs/Lists/LivingDocs/EditForm.aspx?ID=${livingDocsData.Id}`} target="_blank" data-interception="off">Open out-of-the-box form</a>
                         <button className="btn btn-primary ms-1 mx-2" onClick={() => UpdatelivingDocs(livingDocsData)}>Save</button>
                         <button onClick={() => closelivingDocsPopup()} className="btn btn-default">Cancel</button>
                     </div>
@@ -192,11 +192,11 @@ const Editlivingdocspop = (props: any) => {
                                     })} />
                                 </div></div>
                             <div className="col-sm-12">
-                                <label className='full-width form-label boldClable '>Description</label>
+                                <label className='full-width form-label boldClable '>Page Teaser</label>
                                 <textarea className='w-100'
                                     defaultValue={livingDocsData.Description}
                                     onChange={(e) => setlivingDocsData({ ...livingDocsData, Description: e.target.value })}
-                                    rows={6}
+                                    rows={15}
                                     cols={50}
                                     placeholder="Enter text here..."
                                 />
