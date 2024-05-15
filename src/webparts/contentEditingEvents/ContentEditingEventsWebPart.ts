@@ -14,7 +14,7 @@ import { IContentEditingEventsProps } from './components/IContentEditingEventsPr
 
 export interface IContentEditingEventsWebPartProps {
   description: string;
-  LivingEvent:"b821f73d-9bbb-4dc0-882e-2e63c5fffd5c",
+  LivingEvent:"1816004b-f27d-4001-acc8-fe46bf3ce56a",
   TaskUserListID: 'eab2329a-fbeb-4726-86f7-b4d13cbd1172';
 }
 

@@ -14,7 +14,7 @@ import { IContentEditingDocumentsProps } from './components/IContentEditingDocum
 
 export interface IContentEditingDocumentsWebPartProps {
   description: string;
-  LivingDocument:"1816004b-f27d-4001-acc8-fe46bf3ce56a",
+  LivingDocument:"b821f73d-9bbb-4dc0-882e-2e63c5fffd5c",
   TaskUserListID: 'eab2329a-fbeb-4726-86f7-b4d13cbd1172';
 }
 
