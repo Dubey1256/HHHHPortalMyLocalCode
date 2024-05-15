@@ -14,6 +14,7 @@ interface NameIdData {
   [key: number]: {
     NameId: any;
     TotalLeaved: any;
+    LastEndDate:any
   };
 }
 let message: any;
@@ -64,8 +65,12 @@ const EmailComponenet = (props: any) => {
 
   const SendEmail = () => {
     let sp = spfi().using(spSPFx(props.Context));
-    
-    
+    let totalteammemberonleave = AllTaskuser?.length - Object?.keys(nameidTotals)?.length;
+    props?.data.filter((items: any) => {
+      if (items?.eventType == 'Work From Home') {
+        membersWorkfromHome.push(items)
+      }
+    })
     let SendEmailMessage =
       sp.utility
         .sendEmail({
@@ -164,8 +169,33 @@ const EmailComponenet = (props: any) => {
     }, 0);
   };
 
-
-
+  // const getLastEndDate = (leaveObjects:any) => {
+  //   const sortedLeaves = leaveObjects.sort((a: { EndDate: string }, b: { EndDate: string }) => new Date(a.EndDate).getTime() - new Date(b.EndDate).getTime());
+  //   const lastLeave = sortedLeaves[sortedLeaves.length - 1];
+  //   const lastEndDate = new Date(lastLeave.EndDate);
+  //   // lastEndDate.setDate(lastEndDate.getDate() + 1);
+  // //   console.log(lastEndDate)
+  //   return lastEndDate;
+  // };
+  function getLastEndDate(leaveArray:any) {
+    const endDates = leaveArray.map((leave:any) => leave.EndDate);
+    const sortedEndDates = endDates.sort((a:any, b:any) => new Date(a).getTime() - new Date(b).getTime());
+    let sortEnds:any
+    let lastEndDate = sortedEndDates[sortedEndDates.length -1];
+    
+    for (let i = 1; i < sortedEndDates.length; i++) {
+        const currentDate = new Date(sortedEndDates[i]);
+        const prevDate = new Date(sortedEndDates[i - 1]);
+        
+        if (currentDate.getTime() !== prevDate.getTime() + 24 * 60 * 60 * 1000) {
+            return sortEnds = sortedEndDates[sortedEndDates.length - 1];
+        }
+        
+        lastEndDate = sortEnds;
+    }
+    
+    return lastEndDate; // Return the last date if no gap found
+}
 
 
 
@@ -194,9 +224,11 @@ const EmailComponenet = (props: any) => {
       if (matchedData.length !== 0) {
 
         const totalDays = calculateTotalWorkingDays(matchedData);
+        const lastEndDate = getLastEndDate(matchedData);
         nameidData[username.NameId] = {
           NameId: username.NameId,
           TotalLeaved: totalDays,
+          LastEndDate: lastEndDate,
         };
       }
     });
@@ -239,7 +271,9 @@ const EmailComponenet = (props: any) => {
           const data = nameidTotals[parseInt(key)];
           if (data.NameId === item.NameId) {
             item.TotalLeave = data.TotalLeaved;
-
+           // item.lastEndDate = data.LastEndDate;
+            let lastEndDate = new Date(data.LastEndDate);
+            item.enddate = moment(lastEndDate, 'ddd MMM DD YYYY HH:mm:ss [GMT]ZZ').format('DD/MM/YYYY');
           }
         })
       }
@@ -326,10 +360,11 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
   const AllTrainees = SPFxTrainee?.length +ManagementTrainee?.length +MobileTrainee?.length +Totalsmalsustrainee?.length +DesignTrainee?.length +QATrainee?.length +HRTrainee?.length +JTMTrainee?.length  ;
   const AllTraineesLeave = SPFxTraineeLeave?.length +ManagementTraineeLeave?.length +MobileTraineeLeave?.length +TotalsmalsustraineeLeave?.length +DesignTraineeLeave?.length +QATraineeLeave?.length +JTMTraineeLeave?.length +HRTraineeLeave?.length  ;
   const CompleteTeam = AllStaff + AllTrainees;
-  if (Object.keys(nameidTotals).length !== 0 ) {
+  const returnEmailHtml = (): any => {
+    let WorkfromHomeEmp: any = []
     props?.data.filter((items: any) => {
       if (items?.eventType == 'Work From Home') {
-        membersWorkfromHome.push(items)
+        WorkfromHome.push(items)
       }
       
     })
