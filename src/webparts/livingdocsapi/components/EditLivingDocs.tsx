@@ -183,13 +183,22 @@ const Editlivingdocspop = (props: any) => {
                             <div className="col-sm-12 mb-3">
                                 <div className='input-group'>
                                     <label htmlFor="Title" className='full-width form-label boldClable '>Image Url</label>
-                                    <input type="text" id="Title" className="form-control" defaultValue={livingDocsData?.Item_x0020_Cover?.Url} onChange={(e) => setlivingDocsData({
-                                        ...livingDocsData,
-                                        Item_x0020_Cover: {
-                                            ...livingDocsData.Item_x0020_Cover,
-                                            Url: e.target.value
-                                        }
-                                    })} />
+                                    <input
+                                        type="text"
+                                        id="Title"
+                                        className="form-control"
+                                        defaultValue={livingDocsData?.Item_x0020_Cover?.Url}
+                                        onInput={(e) => {
+                                            const target = e.target as HTMLInputElement;
+                                            setlivingDocsData({
+                                                ...livingDocsData,
+                                                Item_x0020_Cover: {
+                                                    ...livingDocsData.Item_x0020_Cover,
+                                                    Url: target.value !== "" ? target.value : "" // Check if value is empty, assign blank if true
+                                                }
+                                            });
+                                        }}
+                                    />
                                 </div></div>
                             <div className="col-sm-12">
                                 <label className='full-width form-label boldClable '>Page Teaser</label>
