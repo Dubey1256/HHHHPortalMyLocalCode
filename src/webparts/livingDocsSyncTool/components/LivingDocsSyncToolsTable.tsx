@@ -125,8 +125,7 @@ const LivingDocsSyncToolTable = (props: any) => {
                         notSyncData.forEach((item: any) => {
                             item.Id = item.ID;
                             item.Date = ""
-                            item.Editor = {}
-                            item.Author = {}
+                           
                             item.showSmartTopic=""
                             item.displayDescription = ""
                             if (item?.Modified != null && item?.Modified != undefined) {
@@ -159,10 +158,10 @@ const LivingDocsSyncToolTable = (props: any) => {
 
                             if (chanageTiles?.current == "SharewebNews") {
                                 item.displayDescription = limitTo100Words(item?.Body)
-                                item.inconDescription = item?.Body
+                                item.Description = item?.Body
                             } else {
                                 item.displayDescription =  limitTo100Words(item?.EventDescription)
-                                item.inconDescription = item?.EventDescription
+                                item.Description = item?.EventDescription
                             }
 
                             if (item?.Editor) {
@@ -229,8 +228,10 @@ const LivingDocsSyncToolTable = (props: any) => {
 
                         item.Id = item.ID;
                         item.showSmartTopic=""
+                        item.Date =  item?.Year
                         item.displayDescription = ""
-                        item.displayDescription = item?.Body
+                        item.displayDescription = item?.Body,
+                        item.Description=item?.Body
                         if (item?.Modified != null && item?.Modified != undefined) {
                             item.serverModifiedDate = new Date(item?.Modified).setHours(0, 0, 0, 0)
                         }
@@ -274,14 +275,7 @@ const LivingDocsSyncToolTable = (props: any) => {
             console.log(e);
         }
     };
-    function truncateString(str: string, limit: number) {
-
-        const words = str.split(' ');
-        if (words.length > limit) {
-            return words.slice(0, limit).join(' ') + '...';
-        }
-        return str;
-    }
+ 
 
     const editItem = (editData: any) => {
         setEditData(editData)
@@ -357,24 +351,23 @@ const LivingDocsSyncToolTable = (props: any) => {
                 size: 300,
                 isColumnVisible: true
             },
-
-
             {
                 accessorFn: (row: any) => row?.displayDescription,
                 cell: ({ row }: any) => (
-                    <span
-                        className="text-content hreflink" 
-
-                    >
-                        {truncateString(row?.original?.displayDescription,50)}
-                        {row?.original?.displayDescription != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"inconDescription"} />}
+                    <div className='alignCenter'>
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "480px" }}>
+                        <span className="hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.displayDescription}>
+                            {row?.original?.displayDescription}
+                        </span>
                     </span>
+                    <span>{row?.original?.displayDescription != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"Description"} />}</span>
+                </div>
                 ),
                 id: "displayDescription",
                 placeholder: "Description",
                 resetColumnFilters: false,
                 header: "",
-                
+                size: 500,
                 isColumnVisible: true
             },
             {
@@ -394,17 +387,20 @@ const LivingDocsSyncToolTable = (props: any) => {
             {
                 accessorFn: (row: any) => row?.showSmartTopic,
                 cell: ({ row }: any) => (
-                    <span>
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "120px" }}>
+                    <span className="text-content hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.showSmartTopic}>
                         {row?.original?.showSmartTopic}
                     </span>
+                    </span>
                 ),
-                id: "showSmartTopic",
-                placeholder: "Page",
+                id: "SmartTopicShowing",
+                placeholder: "Smart Topic",
                 resetColumnFilters: false,
                 header: "",
-                size: 125,
+                size: 140,
                 isColumnVisible: true
             },
+           
 
 
             {
@@ -754,7 +750,7 @@ const LivingDocsSyncToolTable = (props: any) => {
        
     }
     return (
-        <div className="container section">
+        <div className="section">
             <div className='mb-4'>
                 <h2 className="heading">SP LivingDocs Content Library - {chanageTiles?.current=="SharewebNews"?"News":chanageTiles?.current=="SharewebEvent"?"Event":"Document"}</h2>
             </div>
@@ -798,7 +794,7 @@ const LivingDocsSyncToolTable = (props: any) => {
                                         customTableHeaderButtons={customTableHeaderButtons}
                                         ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={false}
                                         columns={columns} data={livingDocsSyncData} showHeader={true}
-                                        callBackData={callBackData} />
+                                        callBackData={callBackData} fixedWidth={true}/>
                                     {!loaded && <PageLoader />}
                                 </div>
                             </div>
