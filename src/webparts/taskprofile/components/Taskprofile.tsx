@@ -2760,7 +2760,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                           <div className="d-flex p-0">
                                                             <div className="col-1 p-0 wid30">
                                                               {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)}
-                                                                src={fbComment.AuthorImage} /> : <span title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
+                                                                src={fbComment.AuthorImage} /> : <span onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)} title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
                                                               }
                                                             </div>
                                                             <div className="col-11 pad0" key={k}>
