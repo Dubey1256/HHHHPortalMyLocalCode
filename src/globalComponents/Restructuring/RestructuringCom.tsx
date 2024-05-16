@@ -654,6 +654,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 topCompo = true;
                 setQuery4TopIcon("Task");
               }
+
               let newObj: any;
               if (
                 items?.PortfolioTypeCheck === obj.PortfolioTypeCheck &&
@@ -1130,8 +1131,16 @@ const RestructuringCom = (props: any, ref: any) => {
               }
             });
           });
-          if(restructureItem?.[0].TaskType?.Id === 2 && (props?.queryItems?.Item_x0020_Type == 'Feature' || props?.queryItems?.Item_x0020_Type == 'SubComponent' || props?.queryItems?.Item_x0020_Type == 'Component')){
-                      topCompo = true;
+          if((restructureItem?.[0].TaskType?.Id === 2 ||restructureItem?.[0].TaskType?.Id === 1 || restructureItem?.[0].TaskType?.Id === 3) && (props?.queryItems?.Item_x0020_Type == 'Feature' || props?.queryItems?.Item_x0020_Type == 'SubComponent' || props?.queryItems?.Item_x0020_Type == 'Component')){
+            if(restructureItem?.[0].TaskType?.Id === 2){
+              topCompo = true;
+            }else if(restructureItem?.[0].TaskType?.Id === 1 && restructureItem.some((item:any) => Array.isArray(item?.subRows) && item.subRows.length == 0)){
+              topCompo = true;
+            }else if(restructureItem?.[0].TaskType?.Id === 3 && restructureItem.some((item:any) => Array.isArray(item?.subRows) && item.subRows.length == 0)){
+              topCompo = true;
+            }
+            
+            
           }
         }
       }else if (restructureItem[0]?.Item_x0020_Type === "Sprint") {
@@ -1812,10 +1821,6 @@ const RestructuringCom = (props: any, ref: any) => {
                   if (items?.PortfolioType?.Title === obj.PortfolioType?.Title) {
                     if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task") {
                       obj.isRestructureActive = true;
-                      obj.Restructuring =
-                        obj?.PortfolioTypeCheck == "Component"
-                          ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                          : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                     } else {
                       newObj = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle}
                       newChildarray?.push(newObj);
@@ -1845,10 +1850,6 @@ const RestructuringCom = (props: any, ref: any) => {
                         obj.Item_x0020_Type != "Task"
                       ) {
                         obj.isRestructureActive = true;
-                        obj.Restructuring =
-                          obj?.PortfolioTypeCheck == "Component"
-                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                       } else {
                          newObj = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle}
                         newChildarray?.push(newObj);
@@ -1874,10 +1875,6 @@ const RestructuringCom = (props: any, ref: any) => {
                             sub.Item_x0020_Type != "Feature"
                           ) {
                             sub.isRestructureActive = true;
-                            sub.Restructuring =
-                              sub?.PortfolioTypeCheck == "Component"
-                                ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                                : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                           }
                           if (sub.Title == "Others") {
                             sub.isRestructureActive = false;
@@ -1897,10 +1894,6 @@ const RestructuringCom = (props: any, ref: any) => {
               if (items?.PortfolioType?.Title === obj.PortfolioType?.Title) {
                 if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task") {
                   obj.isRestructureActive = true;
-                  obj.Restructuring =
-                    obj?.PortfolioTypeCheck == "Component"
-                      ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                      : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                 } else {
                   
                   newObj = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle}
@@ -1924,10 +1917,6 @@ const RestructuringCom = (props: any, ref: any) => {
                       sub.Item_x0020_Type != "Feature"
                     ) {
                       sub.isRestructureActive = true;
-                      sub.Restructuring =
-                        sub?.PortfolioTypeCheck == "Component"
-                          ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                          : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                     }
                     if (sub.Title == "Others") {
                       sub.isRestructureActive = false;
@@ -1969,10 +1958,6 @@ const RestructuringCom = (props: any, ref: any) => {
                       obj.Item_x0020_Type != "Feature"
                     ) {
                       obj.isRestructureActive = true;
-                      obj.Restructuring =
-                        obj?.PortfolioTypeCheck == "Component"
-                          ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                          : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                     } else {
                       if (
                         items?.Id == obj.Id && obj.Item_x0020_Type != "Task"
@@ -2038,10 +2023,6 @@ const RestructuringCom = (props: any, ref: any) => {
                         obj.Item_x0020_Type != "Feature"
                       ) {
                         obj.isRestructureActive = true;
-                        obj.Restructuring =
-                          obj?.PortfolioTypeCheck == "Component"
-                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                       } else {
                         if (
                           items?.Id == obj.Id &&
@@ -2072,10 +2053,6 @@ const RestructuringCom = (props: any, ref: any) => {
                             sub.Item_x0020_Type != "Feature"
                           ) {
                             sub.isRestructureActive = true;
-                            sub.Restructuring =
-                              sub?.PortfolioTypeCheck == "Component"
-                                ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                                : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                           } else {
                             if (
                               items?.Id == sub.Id &&
@@ -2091,7 +2068,10 @@ const RestructuringCom = (props: any, ref: any) => {
                               newChildarray?.push(newObj.newSubChild);
                               setRestructureChecked(newChildarray);
                               ArrayTest?.push(newObj);
-                              obj.isRestructureActive = false;
+                              if(sub.subRows?.length > 0 && sub.subRows.some((item:any) =>  item.Item_x0020_Type == 'Feature')){
+                                obj.isRestructureActive = false;
+                              }
+                              // obj.isRestructureActive = false;
                               sub.isRestructureActive = false;
                             }
                           }
@@ -2122,10 +2102,6 @@ const RestructuringCom = (props: any, ref: any) => {
                   obj.Item_x0020_Type != "Feature"
                 ) {
                   obj.isRestructureActive = true;
-                  obj.Restructuring =
-                    obj?.PortfolioTypeCheck == "Component"
-                      ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                      : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                 } else {
                   if (
                     items?.Id == obj.Id &&
@@ -2154,10 +2130,6 @@ const RestructuringCom = (props: any, ref: any) => {
                       sub.Item_x0020_Type != "Feature"
                     ) {
                       sub.isRestructureActive = true;
-                      sub.Restructuring =
-                        sub?.PortfolioTypeCheck == "Component"
-                          ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                          : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                     } else {
                       if (
                         items?.Id == sub.Id &&
@@ -2172,7 +2144,10 @@ const RestructuringCom = (props: any, ref: any) => {
                         newChildarray?.push(newObj.newSubChild);
                         setRestructureChecked(newChildarray);
                         ArrayTest?.push(newObj);
-                        obj.isRestructureActive = false;
+                        if(sub.subRows?.length > 0){
+                          obj.isRestructureActive = false;
+                        }
+                        
                         sub.isRestructureActive = false;
                       }
                     }
@@ -2205,10 +2180,6 @@ const RestructuringCom = (props: any, ref: any) => {
                 obj.Item_x0020_Type != "Feature"
               ) {
                 obj.isRestructureActive = true;
-                obj.Restructuring =
-                  obj?.PortfolioTypeCheck == "Component"
-                    ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                    : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
               }
               if (obj.Title == "Others") {
                 obj.isRestructureActive = false;
@@ -2234,10 +2205,6 @@ const RestructuringCom = (props: any, ref: any) => {
                     sub.Item_x0020_Type != "Feature"
                   ) {
                     sub.isRestructureActive = true;
-                    sub.Restructuring =
-                      sub?.PortfolioTypeCheck == "Component"
-                        ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                   }
                   if (
                     items?.Id == sub.Id &&
@@ -2561,25 +2528,13 @@ const RestructuringCom = (props: any, ref: any) => {
                                 if (checkchild == 3) {
                                   if (wrkstrm.Item_x0020_Type !== "Task") {
                                     wrkstrm.isRestructureActive = true;
-                                    wrkstrm.Restructuring =
-                                      wrkstrm?.PortfolioTypeCheck == "Component"
-                                        ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                                   }
                                 } else if (checkchild == 2) {
                                   if (wrkstrm.TaskType?.Id !== 3) {
                                     wrkstrm.isRestructureActive = true;
-                                    wrkstrm.Restructuring =
-                                      wrkstrm?.PortfolioTypeCheck == "Component"
-                                        ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                                   }
                                 } else {
                                   wrkstrm.isRestructureActive = true;
-                                  wrkstrm.Restructuring =
-                                    wrkstrm?.PortfolioTypeCheck == "Component"
-                                      ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                                      : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                                 }
                               }
                               if (items?.Id == activity.Id) {
@@ -2664,26 +2619,17 @@ const RestructuringCom = (props: any, ref: any) => {
                     checkPorfiloAlrt
                   ) {
                     topCompo = false;
-                    alert("You are noy allowed to restructure this item");
+                    alert("You are not allowed to restructure this item");
                     checkPorfiloAlrt = false;
                   }
                   if (obj.TaskType?.Id !== 3) {
                     obj.isRestructureActive = true;
-                    obj.Restructuring =
-                      obj?.PortfolioTypeCheck == "Component"
-                        ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                   }
                   if (obj.Title == "Others") {
                     obj.isRestructureActive = false;
                   }
                 } else {
                   obj.isRestructureActive = true;
-                  obj.Restructuring =
-                    obj?.PortfolioTypeCheck == "Component"
-                      ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                      : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
-
                   if (obj.Title == "Others") {
                     obj.isRestructureActive = false;
                   }
@@ -3534,10 +3480,10 @@ const RestructuringCom = (props: any, ref: any) => {
       if (
         newItemBackUp?.subRows != undefined &&
         newItemBackUp?.subRows?.length > 0 &&
-        restructureItem[0]?.TaskType?.Id == 3
+        RestructureChecked[0]?.TaskType?.Id == 3
       ) {
         newItemBackUp?.subRows?.map((sub: any) => {
-          if (restructureItem[0]?.TaskType?.Id === sub?.TaskType?.Id) {
+          if (RestructureChecked[0]?.TaskType?.Id === sub?.TaskType?.Id) {
             if (TaskLevel <= sub.TaskLevel) {
               TaskLevel = sub.TaskLevel;
               Level = sub.TaskLevel;
@@ -4823,7 +4769,7 @@ const RestructuringCom = (props: any, ref: any) => {
           TaskType = 3;
         }
       }else if (props?.queryItems == undefined && props?.queryItems == null) {
-        if (restructureItem[0]?.TaskType?.Id == 2) {
+        if (restructureItem[0]?.TaskType?.Id == 2 || restructureItem[0]?.TaskType?.Id == 3) {
           SiteIconTitle = "A";
           TaskType = 1;
         } else {
@@ -6753,7 +6699,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
       {
         projects && restructureItem?.length == 1 &&
       <Panel
-      onRenderHeader={onRenderCustomCalculateSCProject}
+        onRenderHeader={onRenderCustomCalculateSCProject}
         isOpen={projects}
         type={PanelType.large}
         isBlocking={false}
@@ -6788,7 +6734,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         target="_blank"
                         className="serviceColor_Active "
                         href={ props?.contextValue?.siteUrl +
-                                "/SitePages/Project-Management.aspx?ProjectId=" +
+                                "/SitePages/PX-Profile.aspx?ProjectId=" +
                                 obj?.Id}
                       >
                               {obj?.newSubChild != undefined &&
@@ -6825,7 +6771,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             data-interception="off"
                             target="_blank"
                             href={ props?.contextValue?.siteUrl +
-                              "/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/PX-Profile.aspx?ProjectId=" +
                               obj?.newSubChild?.Id}
                           >
                              {obj?.newSubChild?.Title}
@@ -6857,7 +6803,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  "/SitePages/PX-Profile.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.Title}
@@ -6889,7 +6835,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  "/SitePages/PX-Profile.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.newActChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.newActChild?.Title}
@@ -6921,7 +6867,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  "/SitePages/PX-Profile.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}
@@ -6970,7 +6916,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         target="_blank"
                         className="hreflink serviceColor_Active "
                         href={props?.contextValue?.siteUrl +
-                                "/SitePages/Project-Management.aspx?ProjectId" +
+                                "/SitePages/PX-Profile.aspx?ProjectId=" +
                                 obj?.Id
                         }
                       >
@@ -6995,7 +6941,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             data-interception="off"
                             target="_blank"
                             href={props?.contextValue?.siteUrl +
-                                    "/SitePages/Project-Management.aspx?ProjectId" +
+                                    "/SitePages/PX-Profile.aspx?ProjectId=" +
                                     obj?.newSubChild?.Id
                             }
                           >
@@ -7026,7 +6972,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  "/SitePages/PX-Profile.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.Title}
@@ -7058,7 +7004,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  "/SitePages/PX-Profile.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.newActChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.newActChild?.Title}
@@ -7090,7 +7036,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  "/SitePages/PX-Profile.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}
@@ -7120,7 +7066,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                           target="_blank"
                           className="hreflink serviceColor_Active fw-semibold reStuTile"
                           href={ props?.contextValue?.siteUrl +
-                                "/SitePages/Project-Management.aspx?ProjectId" +
+                                "/SitePages/PX-Profile.aspx?ProjectId=" +
                                 obj?.Id
                           }
                         >
@@ -7134,7 +7080,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             
                            ) : 'P'
                           }
-                          {/* <span className="Dyicons">{newItemBackUp != undefined && newItemBackUp != null ? "X" : "P"}</span> */}
                           {
                             RestructureChecked[0]?.Item_x0020_Type == 'Sprint' ? 
                             <div className="alignCenter ms-1 me-2">{`${newItemBackUp?.TaskID}-X${newItemBackUp?.subRows?.length+1}`}</div> :
@@ -7259,21 +7204,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
       >
 
             <div className="modal-body">
-            {/* <div className="my-1">
-              Selected Item will restructure 
-              inside
-              {newItemBackUp?.Item_x0020_Type == "Sprint" ?
-                <span className="Dyicons me-1 ms-1">
-                  X
-                </span> : (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ?  <img
-                            className="workmember mx-1"
-                              src={newItemBackUp?.SiteIcon}
-                            /> : <span className="Dyicons me-1 ms-1">
-                            P
-                          </span>)
-              }
-              {newItemBackUp?.Title }
-            </div> */}
             <label className="fw-bold form-label full-width"> Old: </label>
             <div
               className="alignCenter border p-1"
@@ -7301,7 +7231,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         target="_blank"
                         className="serviceColor_Active alignCenter"
                         href={obj.Item_x0020_Type == "Project" || obj.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                                "/SitePages/Project-Management.aspx?ProjectId=" +
+                                "/SitePages/PX-Profile.aspx?ProjectId=" +
                                 obj?.Id :props?.contextValue?.siteUrl +
                                 "/SitePages/Task-Profile.aspx?taskId=" +
                                 obj?.Id + "&Site=" + obj?.siteType }
@@ -7338,7 +7268,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             data-interception="off"
                             target="_blank"
                             href={ obj?.newSubChild?.Item_x0020_Type == "Project" || obj?.newSubChild?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                            "/SitePages/Project-Management.aspx?ProjectId=" +
+                            "/SitePages/PX-Profile.aspx?ProjectId=" +
                             obj?.newSubChild?.Id :props?.contextValue?.siteUrl +
                             "/SitePages/Task-Profile.aspx?taskId=" +
                             obj?.newSubChild?.Id + "&Site=" + obj?.newSubChild?.siteType}
@@ -7379,7 +7309,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/PX-Profile.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.Id :props?.contextValue?.siteUrl +
                               "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.Id + "&Site=" + obj?.newSubChild?.feature?.siteType
@@ -7421,7 +7351,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/PX-Profile.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.activity?.Id :props?.contextValue?.siteUrl +
                               "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.activity?.Id + "&Site=" + obj?.newSubChild?.feature?.activity?.siteType
@@ -7466,7 +7396,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         target="_blank"
                         className="hreflink serviceColor_Active "
                         href={props?.contextValue?.siteUrl +
-                                "/SitePages/Project-Management.aspx?ProjectId" +
+                                "/SitePages/PX-Profile.aspx?ProjectId=" +
                                 obj?.Id
                         }
                       >
@@ -7493,7 +7423,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             data-interception="off"
                             target="_blank"
                             href={props?.contextValue?.siteUrl +
-                                    "/SitePages/Project-Management.aspx?ProjectId" +
+                                    "/SitePages/PX-Profile.aspx?ProjectId=" +
                                     obj?.newSubChild?.Id
                             }
                           >
@@ -7524,7 +7454,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/PX-Profile.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.Id :props?.contextValue?.siteUrl +
                               "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.Id + "&Site=" + obj?.newSubChild?.feature?.siteType
@@ -7565,7 +7495,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/PX-Profile.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.activity?.Id :props?.contextValue?.siteUrl +
                               "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.activity?.Id + "&Site=" + obj?.newSubChild?.feature?.activity?.siteType
@@ -7613,7 +7543,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
              
             </div>
             <div>
-            {restructureItem != undefined && restructureItem?.length > 0 && 
+            {restructureItem != undefined && restructureItem?.length > 0 &&  restructureItem[0]?.TaskType?.Id == 2 && 
             newItemBackUp?.TaskType?.Id == 1 && (
               <div className="mt-2">
                   <label className="form-label me-2">{"Select Task Type :"}</label>
@@ -7646,7 +7576,43 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                     /> {"Task"}
                   </label>
               </div>
-            ) }</div>
+            ) }
+
+            {restructureItem != undefined && restructureItem?.length > 0 &&  restructureItem[0]?.TaskType?.Id == 2 && 
+           ( newItemBackUp?.Item_x0020_Type == 'Project' || newItemBackUp?.Item_x0020_Type == 'Sprint')  && (
+              <div className="mt-2">
+                  <label className="form-label me-2">{"Select Task Type :"}</label>
+                  <label className="SpfxCheckRadio">
+                    <input
+                      type="radio"
+                      className="radio"                 
+                      value="Activity"
+                      checked={
+                        RestructureChecked[0]?.TaskType?.Id == 3
+                          ? true
+                          : RestructureChecked[0]?.TaskType?.Id == 1
+                          ? true
+                          : false
+                      }
+                      onChange={(e) => setRestructure(RestructureChecked, 1)}
+                       />
+                     {"Activity"}
+                  </label>
+                  <label className="SpfxCheckRadio">
+                    <input
+                      type="radio"
+                      className="radio"
+                      name="fav_language"
+                      value="Task"
+                      checked={
+                        RestructureChecked[0]?.TaskType?.Id === 2 ? true : false
+                      }
+                      onChange={(e) => setRestructure(RestructureChecked, 2)}
+                    /> {"Task"}
+                  </label>
+              </div>
+            ) }
+            </div>
             </div>
         <footer className="mt-4 text-end">
           <button className="me-2 btn btn-primary" onClick={projectMngmntFuc}>
@@ -7672,7 +7638,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             onDismiss={closePanel}
           >
             <div className="mt-2">
-              After restructuring selected item becomes {query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 2 ? 'Activity' : (query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 1 ? 'Task' : query4TopIcon) }
+              After restructuring selected item becomes {query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 2 ? 'Activity' : (query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 1 ? 'Task' : (query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 3 ? 'Activity' : query4TopIcon ) ) }
               <footer className="mt-4 text-end">
                 <button className="me-2 btn btn-primary" onClick={makeTopComp}>
                   Save

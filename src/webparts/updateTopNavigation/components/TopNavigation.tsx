@@ -135,11 +135,11 @@ const TopNavigation = (dynamicData: any) => {
     TaskTypeItems?.forEach((item: any) => {
       item.Title = item?.Title?.replace(/\b\w/g, (match:any) => match.toUpperCase());
       if (item.ownersonly == true) {
-        item.image =`${dynamicData.dynamicData.siteUrl}/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png`;
+        item.image =`${dynamicData?.dynamicData?.siteUrl}/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png`;
       }
       if (item.IsVisible == false) {
         item.image =
-        `${dynamicData.dynamicData.siteUrl}/SitecollectionImages/ICONS/24/do-not-disturb-rounded.png`;
+        `${dynamicData?.dynamicData?.siteUrl}/SitecollectionImages/ICONS/24/do-not-disturb-rounded.png`;
       }
       if (item.ParentID == 0) {
         item.Id = item.ID;

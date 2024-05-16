@@ -1202,7 +1202,7 @@ const inlineEditingcolumns = (props: any) => {
             className="hreflink"
           >
             &nbsp;
-            <span className="alignCenter">
+            <span className="alignCenter ml-auto">
               <ShowTaskTeamMembers
                 props={props?.item}
                 TaskUsers={props?.TaskUsers}
@@ -1293,7 +1293,7 @@ const inlineEditingcolumns = (props: any) => {
             })}
             &nbsp;
             {showEditPencil && (
-              <a className="pancil-icons">
+              <a className="pancil-icons ml-auto">
                 <span className="svg__iconbox svg__icon--editBox alignIcon "></span>
               </a>
             )}
@@ -1357,7 +1357,7 @@ const inlineEditingcolumns = (props: any) => {
               <span className="alignIcon svg__iconbox svg__icon--cross"></span>
             </a> : ''}
 
-            <a className="pancil-icons hreflink" onClick={() => setUpdateFeatureType(true)}>
+            <a className="pancil-icons ml-auto hreflink" onClick={() => setUpdateFeatureType(true)}>
               <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
             </a>
           </span>
@@ -1447,7 +1447,7 @@ const inlineEditingcolumns = (props: any) => {
           <>&nbsp;</>
           {props?.item?.DisplayDueDate != undefined ? props?.item?.DisplayDueDate : <>&nbsp;</>}
           {showEditPencil && (
-            <a className="pancil-icons">
+            <a className="pancil-icons ml-auto">
               <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
             </a>
           )}
@@ -1830,7 +1830,7 @@ const inlineEditingcolumns = (props: any) => {
          
           {props?.item?.Categories}  &nbsp;
           {showEditPencil && (
-            <a className="pancil-icons">
+            <a className="pancil-icons ml-auto">
               <span className="svg__iconbox svg__icon--editBox"></span>
             </a>
           )}

@@ -59,9 +59,9 @@ const EditDocumentpanel = (props: any) => {
           Data.docTitle = getUploadedFileName(Data?.FileLeafRef);
           Title = Data?.docTitle;
           Data.Title = Title;       
-          // if (Data?.Title.includes(Data?.File_x0020_Type)) {
-          //   Data.Title = getUploadedFileName(Data?.Title);
-          // }
+          if (Data?.Title?.includes(Data?.File_x0020_Type)) {
+            Data.Title = getUploadedFileName(Data?.Title);
+          }
           Data.siteType = 'sp';
           // Data.docTitle = getUploadedFileName(Data?.FileLeafRef);
           Data.Item_x002d_Image = Data?.Item_x0020_Cover
@@ -258,6 +258,7 @@ const EditDocumentpanel = (props: any) => {
         ItemRank: EditdocumentsData?.ItemRank == 'Select Item Rank' ? null : EditdocumentsData?.ItemRank,
         Year: EditdocumentsData.Year,
         ItemType: EditdocumentsData.ItemType,
+        Status:EditdocumentsData.Status,
         PortfoliosId: { "results": componetServicetagData.length > 0 ? componetServicetagData : [] },
         Body: EditdocumentsData?.Body,
         Item_x0020_Cover: {
