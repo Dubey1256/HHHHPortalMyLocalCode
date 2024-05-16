@@ -63,8 +63,9 @@ const EditEventCardPopup = (props: any) => {
     });
     let callBack = props?.callBack;
     React.useEffect(() => {
+        getAllContact()
         if (props?.usedFor == "SharewebNews" && props?.usedFor != undefined) {
-            getAllContact()
+         
             getNewsData()
 
         }  if (props?.usedFor == "SharewebEvent" && props?.usedFor != undefined) {
@@ -479,7 +480,7 @@ const EditEventCardPopup = (props: any) => {
             if (props?.usedFor == "SharewebEvent") {
                 postData = {
                     Title: (updateData?.Title),
-                  
+                    ResponsibleId:updateData?.Responsible!=undefined?updateData?.Responsible?.Id:null,
                     ItemRank: updateData?.ItemRank != null ? String(updateData?.ItemRank) : null,
                     Event_x002d_Type: (updateData?.EventType),
                     EventDescription: updateData?.ItemDescription,
@@ -501,7 +502,7 @@ const EditEventCardPopup = (props: any) => {
             else {
                 postData = {
                     Title: (updateData?.Title),
-                   
+                    ResponsibleId:updateData?.Responsible!=undefined?updateData?.Responsible?.Id:null,
                     ItemRank: updateData?.ItemRank != null ? String(updateData?.ItemRank) : null,
                     Body: updateData?.ItemDescription,
                     PublishingDate: updateData?.PublishingDate != undefined && updateData?.PublishingDate != 'Invalid date' ? new Date(updateData?.PublishingDate).toISOString() : null,

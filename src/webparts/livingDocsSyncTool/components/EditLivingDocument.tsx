@@ -24,6 +24,13 @@ const EditLivingDocumentpanel = (props: any) => {
   const [projectdata, setProjectData] = React.useState([]);
   const [allProjectDaata, SetAllProjectDaata] = React.useState([]);
   const [Metadata, setMetadata] = React.useState([]);
+  const [allContactData, setallContactData] = React.useState([]);
+  const [searchedNameData, setSearchedDataName] = React.useState([])
+  const [listIsVisible, setListIsVisible] = React.useState(false);
+  const [searchKey, setSearchKey] = React.useState({
+      Title: '',
+      FirstName: '',
+  });
   // const [selectedTasks, setselectedTasks] = React.useState([]);
     let Status: any = ["selectStatus", "Draft", "Final", "Archived"]
   let ItemRank = [
@@ -42,21 +49,33 @@ const EditLivingDocumentpanel = (props: any) => {
     AllListId = props.AllListId   
     AllListId.Context = props.AllListId?.context
     if (props?.editData != undefined) {
+        getAllContact()
         loadSelectedDocuments()
     }  
   }, [props?.editData != undefined])
 
-  React.useEffect(() => {
-
-  }, [])
-
+ 
+  const getAllContact = async () => {
+    let web = new Web(props?.AllListId?.siteUrl);
+    try {
+        let data = await web.lists.getById("45d6a95e-22ad-45d4-b1eb-b0abea83575d").items.select("WorkCity,Id,SmartActivitiesId,SmartCategories/Id,SmartCategories/Title,WorkCountry,ItemType,Email,FullName,ItemCover,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title").expand("Author,Editor,SmartCategories").orderBy("Created desc").getAll();
+        data.map((item: any) => {
+            item.Selected = false
+            item.LastName = item.Title
+            item.Title = item.FirstName + ' ' + item.LastName
+        })
+        setallContactData(data)
+    } catch (error: any) {
+        console.error(error);
+    };
+};
   const loadSelectedDocuments = async () => {
     const web = new Web(props?.AllListId?.siteUrl);
     try {
         await web.lists.getById(props?.AllListId?.SharewebDocument)
         .items.getById(props?.editData?.Id)
-        .select('Id', 'Title', 'PriorityRank', 'Year','Status', 'Body', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover','File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl')
-        .expand('Author,Editor')
+        .select('Id', 'Title', 'PriorityRank', "Responsible/Id","Responsible/Title","Responsible/FullName",'Year','Status', 'Body', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover','File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl')
+        .expand('Author,Editor,Responsible')
         .get()
         .then((Data) => {
           let Title: any = " "
@@ -136,7 +155,8 @@ const EditLivingDocumentpanel = (props: any) => {
         "__metadata": { type: 'SP.FieldUrlValue' },
         'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
         'Url': EditdocumentsData?.Url?.Url ? EditdocumentsData?.Url?.Url : "",
-      }
+      },
+      ResponsibleId:EditdocumentsData?.Responsible!=undefined?EditdocumentsData?.Responsible?.Id:null
 
     }   
     const web = new Web(props?.AllListId?.siteUrl);
@@ -224,6 +244,32 @@ const EditLivingDocumentpanel = (props: any) => {
     copyData.Body = description
     setEditdocumentsData(copyData)
   }
+  const SetResponsibledata = (item:any) => {
+    setEditdocumentsData({ ...EditdocumentsData, Responsible: item })
+    setListIsVisible(false);
+ 
+}
+const searchedName = async (e: any) => {
+    setListIsVisible(true);
+    let res:any = {}
+    let Key: any = e.target.value;
+    res.FullName = Key;
+    let subString = Key.split(" ");
+    setSearchKey({ ...searchKey, Title: subString[0] + " " + subString[1] })
+    setSearchKey({ ...searchKey, FirstName: subString })
+    const data: any = {
+        nodes: allContactData.filter((items: any) =>
+            items.FullName?.toLowerCase().includes(Key.toLowerCase())
+        ),
+    };
+    setSearchedDataName(data.nodes);
+    setEditdocumentsData({ ...EditdocumentsData, Responsible: res })
+
+    if (Key.length == 0) {
+        setSearchedDataName(allContactData);
+        setListIsVisible(false);
+    }
+}
   //////// folora editor function end///////////
   return (
     <>
@@ -288,107 +334,33 @@ const EditLivingDocumentpanel = (props: any) => {
                         <input type="text" className="form-control" value={EditdocumentsData?.Title}
                         onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value })}
                         />
-                  </div>                                          
+                  </div>  
+                  <div className="col">
+                                        <div className='input-group'>
+                                                <label htmlFor="Responsible" className='full-width form-label boldClable '>Responsible</label>
+                                                <input type='text' placeholder="Enter Contacts Name" value={EditdocumentsData?.Responsible?.FullName || ''} onChange={(e) => searchedName(e)} className="form-control" />
+                                                {listIsVisible ? <div className="col-12 mt-1 rounded-0">
+                                                    <ul className="list-group">
+                                                        {searchedNameData?.map((item: any) => {
+                                                            return (
+                                                                <li className="list-group-item" onClick={() => SetResponsibledata(item)}><a>{item.FullName}</a></li>
+                                                            )
+                                                        })}
+                                                    </ul>
+                                                </div>
+                                                    : null}
+                                            </div>
+                                        </div>                                        
               </div>
 
 
               {/* ------end project--- */}
 
-              {EditdocumentsData?.File_x0020_Type === "msg" ?
-                <>
-                  <div className='mt-3'>
-                    <label className="form-label full-width ">Recipients </label>
-                    <div className="input-group gap-1">
-                      <label className='form-label full-width'>To:</label>
-                      {(EditdocumentsData?.recipients) ?
-                        (JSON.parse(EditdocumentsData?.recipients)?.map((item: any) => {
-                          if (item.recipType == "to") {
-                            return (
-                              <div className="col-sm-3">
-                                <div className="full-width replaceInput pe-2 alignCenter" onChange={(e) =>
-                                  setEditdocumentsData({
-                                    ...EditdocumentsData,
-                                    recipients: e.target,
-                                  })}>
-                                  <span className='textDotted'>{item.email}</span>
-                                </div>
-                              </div>
-                            )
-                          }
-                        }))
-                        :
-                        <div className="col-sm-3"
-                          onChange={(e) =>
-                            setEditdocumentsData({
-                              ...EditdocumentsData,
-                              recipients: e.target,
-                            })
-                          }
-                        >
-                          <div className="full-width replaceInput pe-2 alignCenter"></div>
-                        </div>
-
-                      }
-                      <div className='input-group gap-1'>
-                        <label className="form-label full-width">CC:</label>
-                        {(EditdocumentsData?.recipients !== null) ?
-                          (JSON.parse(EditdocumentsData?.recipients)?.map((items: any) => {
-                            if (items.recipType === "cc") {
-                              return (
-                                <div className="col-sm-3">
-                                  <div className="full-width replaceInput pe-2 alignCenter" onChange={(e) =>
-                                    setEditdocumentsData({
-                                      ...EditdocumentsData,
-                                      recipients: e.target,
-                                    })}>
-                                    <span className='textDotted'>{items.email}</span>
-                                  </div></div>
-                              )
-                            }
-                          }))
-                          :
-                          <div className="col-sm-3"
-                            onChange={(e) =>
-                              setEditdocumentsData({
-                                ...EditdocumentsData,
-                                recipients: e.target,
-                              })
-                            }
-                          >
-                            <div className="full-width replaceInput pe-2 alignCenter"></div>
-                          </div>
-                        }
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className='d-flex gap-4 mt-2'>
-                    <div className="input-group">
-                      <label className="full-width">Sender</label>
-                      <input type="text" className="form-control" value={EditdocumentsData?.senderEmail} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, senderEmail: e.target.value })} />
-
-                    </div>
-                    <div className="input-group"><label className=" full-width ">Creation Date & Time </label>
-                      {EditdocumentsData?.creationTime ?
-                        <input type="datetime" className="form-control" value={moment(EditdocumentsData?.creationTime).format("DD/MM/YYYY HH:mm")} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, creationTime: e.target.value })} />
-                        :
-                        (<input type="datetime" className="form-control" value={EditdocumentsData?.creationTime} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, creationTime: e.target.value })} />)
-
-                      }
-                    </div>
-                  </div>
-                </>
-                : ""}
+           
               {EditdocumentsData != undefined && <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Body != undefined ? EditdocumentsData?.Body : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>}
             </div>
           </Tab>
-          <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" className='p-0'  >
-            <div className='border border-top-0 p-2'>
-
-              {isOpenImageTab && <ImageInformation EditdocumentsData={EditdocumentsData} setData={setEditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
-              {/* {isOpenImageTab && <ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />} */}
-            </div>
-          </Tab>
+          
         </Tabs>
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
@@ -404,7 +376,7 @@ const EditLivingDocumentpanel = (props: any) => {
             </div>
 
             <div className='col-sm-6 mt-2 p-0'>
-              <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form</a></span>
+              <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/SharewebDocument/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form</a></span>
 
 
               <button type='button' className='btn btn-primary mx-2'

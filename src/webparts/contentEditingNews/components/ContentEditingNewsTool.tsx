@@ -38,8 +38,8 @@ const ContentEditingNewsTable = (props: any) => {
         if (props?.props != undefined) {
             AllListId = {
                 siteUrl: props?.props?.siteUrl,
-                Context: props?.props?.Context,             
-                LivingNews: props?.props?.LivingNews,             
+                Context: props?.props?.Context,
+                LivingNews: props?.props?.LivingNews,
                 TaskUserListID: props?.props?.TaskUserListID
             }
         }
@@ -66,77 +66,102 @@ const ContentEditingNewsTable = (props: any) => {
     }
     // ==================loadBriefwahlData function to prepare the data of the BriefwahlData   Start  ===================
     const findUserByName = (name: any,) => {
-        if(AllTaskUser?.length>0){
-          const user = AllTaskUser?.filter(
-            (user: any) => user?.AssingedToUser?.Id === name
-        );
-        let Image: any;
-        if (user[0]?.Item_x0020_Cover != undefined) {
-            Image = user[0].Item_x0020_Cover.Url;
-        } 
-       return user?.length>0 ? Image : null;
+        if (AllTaskUser?.length > 0) {
+            const user = AllTaskUser?.filter(
+                (user: any) => user?.AssingedToUser?.Id === name
+            );
+            let Image: any;
+            if (user[0]?.Item_x0020_Cover != undefined) {
+                Image = user[0].Item_x0020_Cover.Url;
+            }
+            return user?.length > 0 ? Image : null;
         }
-       
+
+    };
+    const limitTo100Words = (gethtml: any) => {
+        let first100Words = '';
+        if (gethtml !== null && gethtml !== undefined && gethtml !== '') {
+            const plainText = gethtml.replace(/<[^>]*>|&#[^;]+;/g, '');
+            const words = plainText.split(' ');
+            first100Words = words.slice(0, 20).join(' ');
+            // if (words.length <= 13) {
+            //     first100Words = plainText;
+            // } else {
+            //     first100Words = words.slice(0, 13).join(' ')
+            // }
+        }
+        return first100Words;
     };
     const LoadNewsListData = async () => {
         try {
-                const web = new Web(props?.props?.siteUrl);
-                await web.lists.getById(AllListId?.LivingNews)
-                    .items.getAll()
-                    .then((Data: any[]) => {
-                        copyData = JSON.parse(JSON.stringify(Data))
-                        console.log(Data)
-                        Data.forEach((item: any) => {
-                            item.Id = item.ID;
-                            item. Editor={}
-                            item.Author={}
-                            item.displayDescription="";
-                            if (item?.Modified != null && item?.Modified != undefined) {
-                                item.serverModifiedDate = new Date(item?.Modified).setHours(0, 0, 0, 0)
+            const web = new Web(props?.props?.siteUrl);
+            await web.lists.getById(AllListId?.LivingNews)
+                .items.select('Id', 'Title', 'Body', 'PublishingDate', 'Item_x0020_Cover', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'Responsible/Id', 'Responsible/Title', 'SmartTopics/Title', 'SmartTopics/Id')
+                .expand('Author,Editor,Responsible,SmartTopics').getAll()
+                .then((Data: any[]) => {
+                    copyData = JSON.parse(JSON.stringify(Data))
+                    console.log(Data)
+                    Data.forEach((item: any) => {
+                        item.Id = item.ID;
+                        item.Editor = {};
+                        item.Author = {};
+                        if (item?.Modified != null && item?.Modified != undefined) {
+                            item.serverModifiedDate = new Date(item?.Modified).setHours(0, 0, 0, 0)
+                        }
+                        if (item?.Created != null && item?.Created != undefined) {
+                            item.serverCreatedDate = new Date(item?.Created).setHours(0, 0, 0, 0)
+                        }
+                        item.DisplayCreateDate = moment(item.Created).format("DD/MM/YYYY");
+                        if (item.DisplayCreateDate == "Invalid date" || "") {
+                            item.DisplayCreateDate = item.DisplayCreateDate.replaceAll("Invalid date", "");
+                        }
+                        item.DisplayModifiedDate = moment(item.Modified).format("DD/MM/YYYY");
+                        if (item.DisplayModifiedDate == "Invalid date" || "") {
+                            item.DisplayModifiedDate = item.DisplayModifiedDate.replaceAll("Invalid date", "");
+                        }
+                        item.PublishedDate = "";
+                        if (item?.PublishingDate != undefined) {
+                            item.PublishedDate = moment(item?.PublishingDate).format("DD/MM/YYYY");
+                            if (item.PublishedDate == "Invalid date" || "") {
+                                item.PublishedDate = item.PublishedDate.replaceAll("Invalid date", "");
                             }
-                            if (item?.Created != null && item?.Created != undefined) {
-                                item.serverCreatedDate = new Date(item?.Created).setHours(0, 0, 0, 0)
-                            }
-                            item.DisplayCreateDate = moment(item.Created).format("DD/MM/YYYY");
-                            if (item.DisplayCreateDate == "Invalid date" || "") {
-                                item.DisplayCreateDate = item.DisplayCreateDate.replaceAll("Invalid date", "");
-                            }
-                            item.DisplayModifiedDate = moment(item.Modified).format("DD/MM/YYYY");
-                            if (item.DisplayModifiedDate == "Invalid date" || "") {
-                                item.DisplayModifiedDate = item.DisplayModifiedDate.replaceAll("Invalid date", "");
-                            }
-                            item.EventDate
-                            if(item?.EventDate!=undefined){
-                                item.EventDate = moment(item.Modified).format("DD/MM/YYYY");
-                                if (item.EventDate == "Invalid date" || "") {
-                                    item.EventDate = item.EventDate.replaceAll("Invalid date", "");
-                                }  
-                            }
+                        }
+                        item.ResponsibleName = "";
+                        if (item?.Responsible !== "" && item?.Responsible !== null && item?.Responsible?.Title !== null)
+                            item.ResponsibleName = item?.Responsible?.Title;
 
-                            item.displayDescription=  item?.Body;
-                            
-                            if (item?.AuthorId) {
-                                item.Editor.EditorImage = findUserByName(item?.EditorId)
-                            }
-                            if (item?.AuthorId) {
-                                item.Author.AuthorImage = findUserByName(item?.AuthorId)
-                            }
-                        });
-                        setLivingDocsSyncData(Data)
-                        setLoaded(true)
-                    }).catch((err) => {
-                        setLoaded(true)
-                        console.log(err.message);
+                        item.SmartTopicsName = "";
+                        if (item?.SmartTopics !== "" && item?.SmartTopics !== null && item?.SmartTopics?.length > 0)
+                            item.SmartTopicsName = item?.SmartTopics?.map((elem: any) => elem.Title).join("; ")
+
+                        item.ItemCoverUrl = "";
+                        if (item?.Item_x0020_Cover !== "" && item?.Item_x0020_Cover !== null && item?.Item_x0020_Cover?.Url !== null)
+                            item.ItemCoverUrl = item?.Item_x0020_Cover.Url;
+
+                        item.displayDescription = limitTo100Words(item?.Body);
+                        item.inconDescription = item?.Body;
+                        if (item?.AuthorId) {
+                            item.Editor.EditorImage = findUserByName(item?.EditorId)
+                        }
+                        if (item?.AuthorId) {
+                            item.Author.AuthorImage = findUserByName(item?.AuthorId)
+                        }
                     });
+                    setLivingDocsSyncData(Data)
+                    setLoaded(true)
+                }).catch((err) => {
+                    setLoaded(true)
+                    console.log(err.message);
+                });
 
         } catch (error) {
             console.log('Error fetching list items:', error);
         }
     }
-    const editItem=(editData:any)=>{
+    const editItem = (editData: any) => {
         setEditData(editData)
         setopenEditPopup(true)
-     }
+    }
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
@@ -146,42 +171,105 @@ const ContentEditingNewsTable = (props: any) => {
                 hasCustomExpanded: false,
                 hasExpanded: false,
                 isHeaderNotAvlable: true,
-                size: 10,
+                size: 2,
                 id: 'Id',
+            },
+            {
+                accessorFn: (row: any) => row?.ItemCoverUrl,
+                cell: ({ row }: any) => (
+                    <span className="text-content hreflink">
+                    {row?.original?.ItemCoverUrl != "" ? <img style={{width:'40px'}} className='me-1' src={row?.original?.ItemCoverUrl} alt="" /> : ""}
+                 </span>
+                ),
+                id: "ItemCoverUrl",
+                placeholder: "Image",
+                resetColumnFilters: false,
+                header: "",
+                size: 35,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row: any) => row?.PublishedDate,
+                cell: ({ row }: any) => (
+                    <span
+                        className="text-content hreflink"
+                        title={row?.original?.PublishedDate}
+                    >
+                        {row?.original?.PublishedDate}
+                    </span>
+                ),
+                id: "PublishedDate",
+                placeholder: "Published Date",
+                resetColumnFilters: false,
+                header: "",
+                size: 100,
+                isColumnVisible: true
             },
             {
                 accessorFn: (row: any) => row?.Title,
                 cell: ({ row }: any) => (
-                    <span
-                        className="text-content hreflink"
-                        title={row?.original?.Title}
-                    >
-                        {row?.original?.Title}
-                        {row?.original?.displayDescription && <InfoIconsToolTip row={row?.original} SingleColumnData={"displayDescription"} />}
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "480px" }}>
+                        <span className="hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.Title} >
+                            {row?.original?.Title}
+                        </span>
                     </span>
                 ),
                 id: "Title",
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 500,
                 isColumnVisible: true
             },
             {
-                accessorFn: (row: any) => row?.EventDate,
+                accessorFn: (row: any) => row?.SmartTopicsName,
                 cell: ({ row }: any) => (
-                    <span
-                        className="text-content hreflink"
-                        title={row?.original?.EventDate}
-                    >
-                        {row?.original?.EventDate}
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "120px" }}>
+                        <span className="hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.SmartTopicsName}>
+                            {row?.original?.SmartTopicsName}
+                        </span>
                     </span>
                 ),
-                id: "EventDate",
-                placeholder: "Date",
+                id: "SmartTopicsName",
+                placeholder: "Page",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 140,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row: any) => row?.ResponsibleName,
+                cell: ({ row }: any) => (
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "120px" }}>
+                        <span className="hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.ResponsibleName}>
+                            {row?.original?.ResponsibleName}
+                        </span>
+                    </span>
+                ),
+                id: "ResponsibleName",
+                placeholder: "Responsible",
+                resetColumnFilters: false,
+                header: "",
+                size: 140,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row: any) => row?.displayDescription,
+                cell: ({ row }: any) => (
+                    <div className='alignCenter'>
+                        <span style={{ display: "flex", alignItems: "center", maxWidth: "480px" }}>
+                            <span className="hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.displayDescription}>
+                                {row?.original?.displayDescription}
+                            </span>
+                        </span>
+                        <span>{row?.original?.displayDescription != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"inconDescription"} />}</span>
+                    </div>
+                ),
+                id: "displayDescription",
+                placeholder: "Description",
+                resetColumnFilters: false,
+                header: "",
+                size: 500,
                 isColumnVisible: true
             },
             {
@@ -190,22 +278,22 @@ const ContentEditingNewsTable = (props: any) => {
                     <div className="alignCenter">
                         {row?.original?.Modified == null ? ("") : (
                             <>
-                            <div style={{ width: "70px" }} className="me-1">{row?.original?.DisplayModifiedDate}</div>
-                            {row?.original?.Editor != undefined || row?.original?.Editor != undefined ? (
-                                <>
-                                    <a
-                                       onClick={()=> globalCommon?.openUsersDashboard(AllListId?.siteUrl, row?.original?.Editor?.Id)}
-                                    >
-                                        {row?.original?.Editor?.AuthorImage!=undefined?
-                                        <img title={row?.original?.Editor?.Title}className="workmember ms-1"
-                                        src={findUserByName(row?.original?.EditorId != undefined ? row?.original?.AuthorId : row?.original?.Editor?.Id)} 
-                                        />:<span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Editor?.Title}></span>}
-                                    </a>
-                                </>
-                            ) : (
-                                <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Editor?.Title}  onClick={()=> globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined,row?.original?.Editor?.Title)}></span>
-                            )}
-                        </>                         
+                                <div style={{ width: "70px" }} className="me-1">{row?.original?.DisplayModifiedDate}</div>
+                                {row?.original?.Editor != undefined || row?.original?.Editor != undefined ? (
+                                    <>
+                                        <a
+                                            onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, row?.original?.Editor?.Id)}
+                                        >
+                                            {row?.original?.Editor?.AuthorImage != undefined ?
+                                                <img title={row?.original?.Editor?.Title} className="workmember ms-1"
+                                                    src={findUserByName(row?.original?.EditorId != undefined ? row?.original?.AuthorId : row?.original?.Editor?.Id)}
+                                                /> : <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Editor?.Title}></span>}
+                                        </a>
+                                    </>
+                                ) : (
+                                    <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, row?.original?.Editor?.Title)}></span>
+                                )}
+                            </>
                         )}
                     </div>
                 ),
@@ -223,7 +311,7 @@ const ContentEditingNewsTable = (props: any) => {
                     }
                 },
                 header: "",
-                size: 115
+                size: 100
             },
             {
                 accessorFn: (row) => row?.Created,
@@ -237,16 +325,16 @@ const ContentEditingNewsTable = (props: any) => {
                                 {row?.original?.Author != undefined || row?.original?.AuthoId != undefined ? (
                                     <>
                                         <a
-                                            onClick={()=> globalCommon?.openUsersDashboard(AllListId?.siteUrl, row?.original?.AuthoId?.Id)}
+                                            onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, row?.original?.AuthoId?.Id)}
                                         >
-                                            {row?.original?.Author?.AuthorImage!=undefined?
-                                            <img title={row?.original?.Author?.Title}className="workmember ms-1"
-                                            src={findUserByName(row?.original?.AuthorId != undefined ? row?.original?.AuthorId : row?.original?.Author?.Id)} 
-                                            />:<span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Author?.Title}></span>}
+                                            {row?.original?.Author?.AuthorImage != undefined ?
+                                                <img title={row?.original?.Author?.Title} className="workmember ms-1"
+                                                    src={findUserByName(row?.original?.AuthorId != undefined ? row?.original?.AuthorId : row?.original?.Author?.Id)}
+                                                /> : <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Author?.Title}></span>}
                                         </a>
                                     </>
                                 ) : (
-                                    <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Author?.Title}   onClick={()=> globalCommon?.openUsersDashboard(AllListId?.siteUrl,undefined ,row?.original?.Author?.Title)}></span>
+                                    <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Author?.Title} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, row?.original?.Author?.Title)}></span>
                                 )}
                             </>
                         )}
@@ -265,7 +353,7 @@ const ContentEditingNewsTable = (props: any) => {
                     }
                 },
                 header: "",
-                size: 105,
+                size: 100,
                 isColumnVisible: true
             },
             // {
@@ -275,7 +363,7 @@ const ContentEditingNewsTable = (props: any) => {
             //                <span title="Edit" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1"
             //                 onClick={() => editItem(row.original)}
             //                  >
-                                
+
             //                 </span>
 
             //             </div>
@@ -296,32 +384,32 @@ const ContentEditingNewsTable = (props: any) => {
         [livingDocsSyncData]
     );
     const callBackData = (data: any) => {
-     
+
         console.log(data)
     }
     // =========Custom button html End ================
     return (
-        <div className="container section">
+        <div className="section">
             <div className='mb-4'>
-                <h2 className="heading">LivingDocs News Tool</h2>
+                <h2 className="heading">SP LivingDocs Content Library - News </h2>
             </div>
             <div>
-              
-            <div className="TableContentSection">
-                            <div className='Alltable mt-2 mb-2'>
-                                <div className='col-md-12 p-0'>
-                                    <GlobalCommanTable customHeaderButtonAvailable={true}
-                                        ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={false}
-                                        columns={columns} data={livingDocsSyncData} showHeader={true}
-                                        callBackData={callBackData} />
-                                    {!loaded && <PageLoader />}
-                                </div>
-                            </div>
+
+                <div className="TableContentSection">
+                    <div className='Alltable mt-2 mb-2'>
+                        <div className='col-md-12 p-0'>
+                            <GlobalCommanTable customHeaderButtonAvailable={true}
+                                ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={true}
+                                columns={columns} data={livingDocsSyncData} showHeader={true}
+                                callBackData={callBackData} fixedWidth={true} />
+                            {!loaded && <PageLoader />}
                         </div>
-                
+                    </div>
+                </div>
+
 
             </div>
-            </div>
+        </div>
 
     );
 }
