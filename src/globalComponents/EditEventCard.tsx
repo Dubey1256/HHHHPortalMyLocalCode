@@ -480,7 +480,7 @@ const EditEventCardPopup = (props: any) => {
             if (props?.usedFor == "SharewebEvent") {
                 postData = {
                     Title: (updateData?.Title),
-                    ResponsibleId:updateData?.Responsible!=undefined?updateData?.Responsible?.Id:null,
+                    ResponsibleId:updateData?.Responsible?.Id!=undefined?updateData?.Responsible?.Id:null,
                     ItemRank: updateData?.ItemRank != null ? String(updateData?.ItemRank) : null,
                     Event_x002d_Type: (updateData?.EventType),
                     EventDescription: updateData?.ItemDescription,
@@ -502,7 +502,7 @@ const EditEventCardPopup = (props: any) => {
             else {
                 postData = {
                     Title: (updateData?.Title),
-                    ResponsibleId:updateData?.Responsible!=undefined?updateData?.Responsible?.Id:null,
+                    ResponsibleId:updateData?.Responsible?.Id!=undefined?updateData?.Responsible?.Id:null,
                     ItemRank: updateData?.ItemRank != null ? String(updateData?.ItemRank) : null,
                     Body: updateData?.ItemDescription,
                     PublishingDate: updateData?.PublishingDate != undefined && updateData?.PublishingDate != 'Invalid date' ? new Date(updateData?.PublishingDate).toISOString() : null,
@@ -729,122 +729,8 @@ const EditEventCardPopup = (props: any) => {
                               
 
                                 </div>
-                               <div className="col mt-2">
-                                        <details>
-                                            { props?.usedFor == "SharewebNews" ? <summary><span>News Tags</span></summary> : <summary><span>Event Tags</span></summary>}
-                                            <div className="expand-AccordionContent border clearfix p-2">
-                                                <div className='row'>
-                                                    <div className="col pad0">
-                                                        <div className='input-group'>
-                                                        <div className="col pad0">
-                                                                <div className='form-label alignCenter full-width gap-1'>
-                                                                    <label className="form-label">Main Activity</label>
-                                                                    {/* <CustomToolTip Description={'Tag the available Activities'} /> */}
-                                                                </div>
-
-                                                            {ShareWebTypeData?.length > 1 ? <>
-                                                                <input
-                                                                    type="text"
-                                                                    className="form-control"
-                                                                    id="txtCategories"
-                                                                    placeholder="Main Activity"
-                                                                    value={ActivitySearchKey}
-                                                                    //onChange={(e) => autoSuggestionsForActivity(e)}
-                                                                />
-                                                                {SearchedActivityData?.length > 0 ? (
-                                                                    <div className="SmartTableOnTaskPopup">
-                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                            {SearchedActivityData.map((item: any) => {
-                                                                                return (
-                                                                                    <li
-                                                                                        className="list-group-item rounded-0 p-1 list-group-item-action"
-                                                                                        key={item.id}
-                                                                                        onClick={() =>
-                                                                                            setSelectedActivityData([item], "For-Auto-Search")
-                                                                                        }
-                                                                                    >
-                                                                                        <a>{item.Newlabel}</a>
-                                                                                    </li>
-                                                                                );
-                                                                            })}
-                                                                        </ul>
-                                                                    </div>
-                                                                ) : null}
-                                                                {ShareWebTypeData?.map(
-                                                                    (type: any, index: number) => {
-                                                                        return (
-                                                                            <div className="block w-100">
-                                                                                <a style={{ color: "#fff !important" }} className="textDotted">
-                                                                                    {type.Title}
-                                                                                </a>
-                                                                                <span onClick={() => removeCategoryItem('Activities', type.Id)} className="bg-light ml-auto svg__icon--cross svg__iconbox"></span>
-                                                                            </div>
-                                                                        );
-                                                                    }
-                                                                )}</> :
-                                                                <>
-                                                                    {ShareWebTypeData?.length == 1 ?
-
-                                                                        <div className="full-width">
-                                                                            {ShareWebTypeData?.map((ActivityItem: any) => {
-                                                                                return (
-                                                                                    <div className="full-width replaceInput alignCenter">
-                                                                                        <a
-                                                                                            title={ActivityItem.Title}
-                                                                                            target="_blank"
-                                                                                            data-interception="off"
-                                                                                            className="textDotted"
-                                                                                        >
-                                                                                            {ActivityItem.Title}
-                                                                                        </a>
-                                                                                    </div>
-                                                                                );
-                                                                            })}
-                                                                        </div>
-                                                                        :
-                                                                        <>
-                                                                            <input
-                                                                                type="text"
-                                                                                className="form-control"
-                                                                                id="txtCategories"
-                                                                                placeholder="Main Activity"
-                                                                                value={ActivitySearchKey}
-                                                                                //onChange={(e) => autoSuggestionsForActivity(e)}
-                                                                            />
-                                                                            {SearchedActivityData?.length > 0 ? (
-                                                                                <div className="SmartTableOnTaskPopup">
-                                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                                        {SearchedActivityData.map((item: any) => {
-                                                                                            return (
-                                                                                                <li
-                                                                                                    className="list-group-item p-1 rounded-0 list-group-item-action"
-                                                                                                    key={item.id}
-                                                                                                    onClick={() =>
-                                                                                                        setSelectedActivityData(
-                                                                                                            [item],
-                                                                                                            "For-Auto-Search"
-                                                                                                        )
-                                                                                                    }
-                                                                                                >
-                                                                                                    <a>{item.Newlabel}</a>
-                                                                                                </li>
-                                                                                            );
-                                                                                        })}
-                                                                                    </ul>
-                                                                                </div>
-                                                                            ) : null}
-                                                                        </>
-                                                                    }
-
-                                                                </>
-                                                            }
-                                                            <span className="input-group-text" title="Smart Category Popup" onClick={(e) => EditComponentPicker(EditData, "Activities")}>
-                                                                <span className="alignIcon svg__iconbox svg__icon--editBox"></span>
-                                                            </span>
-                                                        </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="col pad0">
+                                   <div className="col mt-2">
+                                    <div className="col pad0">
                                                         <div className='input-group'>
                                                         <div className="col pad0">
                                                                 <div className='form-label alignCenter full-width gap-1'>
@@ -946,118 +832,6 @@ const EditEventCardPopup = (props: any) => {
                                                             </span>
                                                         </div>  </div>
                                                     </div>
-                                                    <div className="col pad0">
-                                                        <div className='input-group'>
-                                                        <div className="col pad0">
-                                                        <div className='form-label alignCenter full-width gap-1'>
-                                                                            <label className="form-label">Smart Pages</label>
-                                                                        
-                                                                            </div>
-                                                            {ShareWebTypePagesData?.length > 1 ? <>
-                                                                <input
-                                                                    type="text"
-                                                                    className="form-control"
-                                                                    id="txtCategories"
-                                                                    placeholder="Smart Pages"
-                                                                    value={PagesSearchKey}
-                                                                    //onChange={(e) => autoSuggestionsForPages(e)}
-                                                                />
-                                                                {SearchedPagesData?.length > 0 ? (
-                                                                    <div className="SmartTableOnTaskPopup">
-                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                            {SearchedPagesData.map((item: any) => {
-                                                                                return (
-                                                                                    <li
-                                                                                        className="list-group-item rounded-0 p-1 list-group-item-action"
-                                                                                        key={item.id}
-                                                                                        onClick={() =>
-                                                                                            setSelectedPagesData([item], "For-Auto-Search")
-                                                                                        }
-                                                                                    >
-                                                                                        <a>{item.Newlabel}</a>
-                                                                                    </li>
-                                                                                );
-                                                                            })}
-                                                                        </ul>
-                                                                    </div>
-                                                                ) : null}
-                                                                {ShareWebTypePagesData?.map(
-                                                                    (type: any, index: number) => {
-                                                                        return (
-                                                                            <div className="block w-100">
-                                                                                <a style={{ color: "#fff !important" }} className="textDotted">
-                                                                                    {type.Title}
-                                                                                </a>
-                                                                                <span onClick={() => removeCategoryItem('Pages', type.Id)} className="bg-light ml-auto svg__icon--cross svg__iconbox"></span>
-                                                                            </div>
-                                                                        );
-                                                                    }
-                                                                )}</> :
-                                                                <>
-                                                                    {ShareWebTypePagesData?.length == 1 ?
-
-                                                                        <div className="full-width">
-                                                                            {ShareWebTypePagesData?.map((CategoryItem: any) => {
-                                                                                return (
-                                                                                    <div className="full-width replaceInput alignCenter">
-                                                                                        <a
-                                                                                            title={CategoryItem.Title}
-                                                                                            target="_blank"
-                                                                                            data-interception="off"
-                                                                                            className="textDotted"
-                                                                                        >
-                                                                                            {CategoryItem.Title}
-                                                                                        </a>
-                                                                                    </div>
-                                                                                );
-                                                                            })}
-                                                                        </div>
-                                                                        :
-                                                                        <>
-                                                                            <input
-                                                                                type="text"
-                                                                                className="form-control"
-                                                                                id="txtCategories"
-                                                                                placeholder="Smart Pages"
-                                                                                value={PagesSearchKey}
-                                                                               // onChange={(e) => autoSuggestionsForPages(e)}
-                                                                            />
-                                                                            {SearchedActivityData?.length > 0 ? (
-                                                                                <div className="SmartTableOnTaskPopup">
-                                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                                        {SearchedActivityData.map((item: any) => {
-                                                                                            return (
-                                                                                                <li
-                                                                                                    className="list-group-item p-1 rounded-0 list-group-item-action"
-                                                                                                    key={item.id}
-                                                                                                    onClick={() =>
-                                                                                                        setSelectedPagesData(
-                                                                                                            [item],
-                                                                                                            "For-Auto-Search"
-                                                                                                        )
-                                                                                                    }
-                                                                                                >
-                                                                                                    <a>{item.Newlabel}</a>
-                                                                                                </li>
-                                                                                            );
-                                                                                        })}
-                                                                                    </ul>
-                                                                                </div>
-                                                                            ) : null}
-                                                                        </>
-                                                                    }
-
-                                                                </>
-                                                            }
-                                                            <span className="input-group-text" title="Smart Category Popup" onClick={(e) => EditComponentPicker(EditData, "Smart Pages")}>
-                                                                <span className="alignIcon svg__iconbox svg__icon--editBox"></span>
-                                                            </span>
-                                                        </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </details>
                                     </div>
                                
                                 <div className="col my-2">

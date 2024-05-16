@@ -374,14 +374,14 @@ const LivingDocsSyncToolTable = (props: any) => {
                 accessorFn: (row: any) => row?.Responsible,
                 cell: ({ row }: any) => (
                     <span>
-                        {row?.original?.Responsible?.Title}
+                        {row?.original?.Responsible?.FullName}
                     </span>
                 ),
                 id: "Responsible",
                 placeholder: "Responsible",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 120,
                 isColumnVisible: true
             },
             {
@@ -454,7 +454,7 @@ const LivingDocsSyncToolTable = (props: any) => {
                     }
                 },
                 header: "",
-                size: 125
+                size: 105
             },
             {
                 accessorFn: (row) => row?.Created,
@@ -496,7 +496,7 @@ const LivingDocsSyncToolTable = (props: any) => {
                     }
                 },
                 header: "",
-                size: 125,
+                size: 105,
                 isColumnVisible: true
             },
 
