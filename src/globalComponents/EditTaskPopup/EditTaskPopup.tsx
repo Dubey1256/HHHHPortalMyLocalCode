@@ -2740,15 +2740,17 @@ const EditTaskPopup = (Items: any) => {
                             ReactDOM.render(reactElement, containerDiv);
 
                             const SendMessage = `
-                            <p>${CommonMsg}</p> 
-                            </br> 
-                            <p>
+                            <span>${CommonMsg}</span> 
+                            <p></p>
+                            <span>
                             Task Link:  
                             <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
-                             Click-here
+                            ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
                             </a>
-                            </p>
-                            ${containerDiv.innerHTML}
+                            </span>
+                            <p></p>
+                            <span>${containerDiv.innerHTML}</span>
+                            
                             `;
 
 
@@ -2839,12 +2841,9 @@ const EditTaskPopup = (Items: any) => {
                                 GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                     console.log("Ms Teams Notifications send")
                                 })
-
-
                             }
 
                             if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
-
                                 let DataForNotification: any = {
                                     ReceiverName: 'Robert',
                                     sendUserEmail: ['robert.ungethuem@hochhuth-consulting.de'],
@@ -2854,7 +2853,7 @@ const EditTaskPopup = (Items: any) => {
                                     UpdatedDataObject: UpdatedDataObject,
                                     RequiredListIds: AllListIdData
                                 }
-                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                await GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                     console.log("Ms Teams Notifications send")
                                 })
 
@@ -2869,7 +2868,6 @@ const EditTaskPopup = (Items: any) => {
                                 });
 
                                 Createtordata?.map((InfoItem: any) => {
-
                                     let DataForNotification: any = {
                                         ReceiverName: 'kristina',
                                         sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
@@ -3861,7 +3859,7 @@ const EditTaskPopup = (Items: any) => {
         let tempArray: any = [];
         let SiteUrl = siteUrls;
         let CurrentSiteName: any = '';
-        if (Items.Items.siteType == "Offshore%20Tasks") {
+        if (Items?.Items?.siteType == "Offshore%20Tasks" || Items?.Items?.siteType == "Offshore Tasks") {
             CurrentSiteName = "SharewebQA";
         } else {
             CurrentSiteName = Items.Items.siteType;

@@ -119,18 +119,18 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Editor/Title", "Modified", "Comments")
             .expand("TeamMembers", "Author", "ResponsibleTeam", "PortfolioType", "Editor")
             .get()
-        }  else {
+        } else {
           taskDetails = await web.lists
             .getByTitle(this.state.listName)
             .items
             .getById(this.state.itemID)
-            .select("ID", "Title", "TaskID","ParentTask/TaskID","ParentTask/Id", "Id", "TaskType/Title", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
-            .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "Portfolio", "Editor", "Project", "TaskCategories","ParentTask","TaskType")
+            .select("ID", "Title", "TaskID", "ParentTask/TaskID", "ParentTask/Id", "Id", "TaskType/Title", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+            .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "Portfolio", "Editor", "Project", "TaskCategories", "ParentTask", "TaskType")
             .get()
         }
       } else {
-        taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "TaskID","ParentTask/TaskID","ParentTask/Id", "Id", "TaskType/Title", "ComponentLink", "PriorityRank", "DueDate", "TaskCategories/Id", "TaskCategories/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
-          .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "Portfolio", "PortfolioType", "Editor", "Project", "TaskCategories","ParentTask","TaskType")
+        taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "TaskID", "ParentTask/TaskID", "ParentTask/Id", "Id", "TaskType/Title", "ComponentLink", "PriorityRank", "DueDate", "TaskCategories/Id", "TaskCategories/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+          .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "Portfolio", "PortfolioType", "Editor", "Project", "TaskCategories", "ParentTask", "TaskType")
           .get()
       }
     } catch (e) {
@@ -732,16 +732,16 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             TeamsMessage = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${PreMsg} </blockquote>${CurrentMsg}`;
           }
           else {
-            TeamsMessage = `
-          <b>Hi ${combinedNames},</b>
+            TeamsMessage = `<span> You have been tagged in the comments for this task. Please have a look.</span>
+            <p></p>
+          <div style="background-color: #fff; padding:16px; display:block;">
+          <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">Task Comment</b>: <span>${txtComment}</span>
+          </div>
           <p></p>
-          Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
-          <p><br/></p>
+          Task Link: <a href=${MsgURL}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a>
+          <p></p>
           <span>${finalTaskInfo}</span>
-          <p></p>
-          Task Link: <a href=${MsgURL}>Click here</a>
-          <p></p>
-          <b>Thanks,<br/>Task Management Team</b>
+         
       `;
           }
 

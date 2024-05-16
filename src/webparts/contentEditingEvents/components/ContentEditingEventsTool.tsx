@@ -82,12 +82,8 @@ const ContentEditingEventsTable = (props: any) => {
         if (gethtml !== null && gethtml !== undefined && gethtml !== '') {
             const plainText = gethtml.replace(/<[^>]*>|&#[^;]+;/g, '');
             const words = plainText.split(' ');
-          //  first100Words = words.slice(0, 20).join(' ');
-            if (words.length <= 13) {
-                first100Words = plainText;
-            } else {
-                first100Words = words.slice(0, 13).join(' ') + ' ...';
-            }
+            first100Words = words.slice(0, 20).join(' ');
+         
         }
         return first100Words;
     };
