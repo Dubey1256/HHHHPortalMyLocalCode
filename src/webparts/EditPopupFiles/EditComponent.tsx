@@ -1979,6 +1979,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
           <div className="ps-4">
             {" "}
             <ul className=" m-0 p-0 spfxbreadcrumb">
+            <li>
+                  <a
+                    target="_blank"
+                    data-interception="off"
+                    href={`${RequireData.siteUrl}/SitePages/Team-Portfolio.aspx`}
+                  >
+                    Team-Portfolio
+                  </a>
+              </li>
               <li>
                 {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
                 {EditData?.Portfolio_x0020_Type != undefined && (
@@ -3679,7 +3688,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                         <div className="col-sm-12">
                           <div className="col-sm-12 padding-0 input-group">
                             <label className="full_width">Categories</label>
-                                  <input
+                            {(CategoriesData?.length == 0 ||
+                              CategoriesData?.length !== 1) && (
+                                <>
+                                <input
                                     type="text"
                                     className="ui-autocomplete-input form-control"
                                     id="txtCategories"
@@ -3695,6 +3707,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                                       className="svg__iconbox svg__icon--editBox"
                                     ></span>
                                   </span>
+                                  </>)}
+
                                    {CategoriesData &&
                               CategoriesData?.length == 1 &&
                               CategoriesData != undefined ? (
