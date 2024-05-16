@@ -32,9 +32,12 @@ const CreateContactComponent = (props: any) => {
         setSearchKey({ ...searchKey, Title: subString[0] + " " + subString[1] })
         setSearchKey({ ...searchKey, FirstName: subString })
         const data: any = {
-            nodes: listData.filter((items: any) =>
-                items.FullName?.toLowerCase().includes(Key.toLowerCase())
-            ),
+            nodes: listData.filter((item: any) => {
+                const fullName = item.FullName?.toLowerCase();
+                if (!fullName) return false; 
+                const searchTerms = Key.split(" ").filter((term: string) => term.trim() !== "");
+                return searchTerms.every((term: string) => fullName.includes(term.toLowerCase()));
+            }),
         };
         setSearchedDataName(data.nodes);
         if (Key.length == 0) {
@@ -71,6 +74,10 @@ const CreateContactComponent = (props: any) => {
         setProfileStatus(true);
         setContactdata(item);
     }
+    const ClosePopup = useCallback(() => {
+        setProfileStatus(false);
+        props.callBack();
+    }, []);
     const closeEditpoup = (page: any,update:any,updatedetails:any) => {
         if (page == "CreateContact" && update!=="Update") {
             setProfileStatus(false);
@@ -85,15 +92,25 @@ const CreateContactComponent = (props: any) => {
     const onRenderCustomHeadersmartinfo = () => {
         return (
             <> 
-                <div className="subheading">
-                    Create Contact
-                </div>
-                <Tooltip ComponentId='696' />
+                <h3>
+                  Create Contact
+                  <span className="ml-auto"><Tooltip ComponentId='696' /></span>
+                </h3>
+                
             </>
         );
     };
 
-    
+    const CustomFootersmartinfo=()=>{
+        return(
+            <footer>
+                <div className="col text-end">
+            <button className="btn btn-primary ms-1 mx-2" onClick={saveDataFunction} disabled={isUserExist}>Save</button>
+            <button onClick={() => props.callBack()} className="btn btn-default">Cancel</button>
+            </div>
+        </footer>
+        )
+    }
     return (
         <>
             <Panel
@@ -102,12 +119,13 @@ const CreateContactComponent = (props: any) => {
                 type={PanelType.custom}
                 customWidth="450px"
                 isBlocking={false}
+                onRenderFooterContent={CustomFootersmartinfo}
                 isFooterAtBottom={true}
                 onDismiss={() => props?.callBack()}
             >
                 <div className="modal-body">
                     <div className="">
-                        <label className="form-label full-width"></label>
+                        <label className="form-label full-width">Contacts Name</label>
                         <input type='text' placeholder="Enter Contacts Name" onChange={(e) => searchedName(e)} className="form-control" />
                         {listIsVisible ? <div>
                             <ul className="list-group">
@@ -121,14 +139,8 @@ const CreateContactComponent = (props: any) => {
                             : null}
                     </div>
                 </div>
-                <footer>
-                    <div className="col text-end mt-2">
-                    <button className="btn btn-primary ms-1 mx-2" onClick={saveDataFunction} disabled={isUserExist}>Save</button>
-                    <button onClick={() => props.callBack()} className="btn btn-default">Cancel</button>
-                    </div>
-                </footer>
                
-                {profileStatus && !newContact && (<EditContactPopup props={contactdata} allListId={props?.allListId} closeEditpoup={closeEditpoup} EditCallBackItem={props.EditCallBackItem} page={"CreateContact"} />)}
+                {profileStatus && !newContact && (<EditContactPopup props={contactdata} allListId={props?.allListId} callBack={ClosePopup} closeEditpoup={closeEditpoup} EditCallBackItem={props.EditCallBackItem} page={"CreateContact"} />)}
                 {!profileStatus && newContact && (<EditContactPopup props={contactdata} allListId={props?.allListId} closeEditpoup={closeEditpoup} EditCallBackItem={props.EditCallBackItem} page={"CreateNewContact"} />)}
             </Panel>
         </>
