@@ -1969,7 +1969,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                 </ul>
               </div>
             </div>
-          }</section>
+          }
           <section className='row p-0 '>
             <h2 className="heading d-flex ps-0 justify-content-between align-items-center task-title">
               <span className='alignCenter'>
@@ -2326,7 +2326,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                     </div>
                   </div>
 
-                  <div className='col-md-4 p-0 Site_Compositionbox'>
+                  <div className='col-md-4 pe-0 Site_Compositionbox'>
                     <div className='bg-Ff p-2 rounded-1 boxshadow h-100 '>
                       <dl>
 
@@ -2947,6 +2947,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                 <div> {this.state.Result.Id != undefined && <RelevantEmail ref={this?.keyDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantEmail>}</div>
               </div>
             </div>
+          </section>
           </section>
           <section className='TableContentSection'>
             {console.log("context data ================", myContextValue)}
