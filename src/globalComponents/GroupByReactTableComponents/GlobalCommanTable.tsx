@@ -516,7 +516,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             preSetColumnSettingVisibility = preSetColumnsValue?.columnSettingVisibility;
                             preSetColumnOrdring = preSetColumnsValue
                             setShowHeaderLocalStored(preSetColumnsValue?.showHeader)
-                            if (Object.keys(preSetColumnSettingVisibility)?.length) {
+                            if (preSetColumnSettingVisibility != undefined && preSetColumnSettingVisibility != '' && Object.keys(preSetColumnSettingVisibility)?.length) {
                                 const columnId = updatedSortDec.id;
                                 if (preSetColumnSettingVisibility[columnId] !== undefined) {
                                     updatedSortDec.isColumnVisible = preSetColumnSettingVisibility[columnId];
@@ -546,7 +546,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 } catch (error) {
                     console.log(error);
                     localStorage.removeItem(tableId);
-                    location.reload();
+                    // location.reload();
                 }
             });
             setSelectedFilterPannelData(updatedSelectedFilterPannelData);
