@@ -374,14 +374,14 @@ const LivingDocsSyncToolTable = (props: any) => {
                 accessorFn: (row: any) => row?.Responsible,
                 cell: ({ row }: any) => (
                     <span>
-                        {row?.original?.Responsible?.Title}
+                        {row?.original?.Responsible?.FullName}
                     </span>
                 ),
                 id: "Responsible",
                 placeholder: "Responsible",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 120,
                 isColumnVisible: true
             },
             {
@@ -394,7 +394,7 @@ const LivingDocsSyncToolTable = (props: any) => {
                     </span>
                 ),
                 id: "SmartTopicShowing",
-                placeholder: "Smart Topic",
+                placeholder: "Page",
                 resetColumnFilters: false,
                 header: "",
                 size: 140,
@@ -454,7 +454,7 @@ const LivingDocsSyncToolTable = (props: any) => {
                     }
                 },
                 header: "",
-                size: 125
+                size: 105
             },
             {
                 accessorFn: (row) => row?.Created,
@@ -496,7 +496,7 @@ const LivingDocsSyncToolTable = (props: any) => {
                     }
                 },
                 header: "",
-                size: 125,
+                size: 105,
                 isColumnVisible: true
             },
 
@@ -792,8 +792,9 @@ const LivingDocsSyncToolTable = (props: any) => {
                                 <div className='col-md-12 p-0'>
                                     <GlobalCommanTable customHeaderButtonAvailable={true}
                                         customTableHeaderButtons={customTableHeaderButtons}
-                                        ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={false}
+                                        ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={true}
                                         columns={columns} data={livingDocsSyncData} showHeader={true}
+                                      
                                         callBackData={callBackData} fixedWidth={true}/>
                                     {!loaded && <PageLoader />}
                                 </div>

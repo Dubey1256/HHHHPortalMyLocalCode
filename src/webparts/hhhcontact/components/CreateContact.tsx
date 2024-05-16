@@ -32,9 +32,12 @@ const CreateContactComponent = (props: any) => {
         setSearchKey({ ...searchKey, Title: subString[0] + " " + subString[1] })
         setSearchKey({ ...searchKey, FirstName: subString })
         const data: any = {
-            nodes: listData.filter((items: any) =>
-                items.FullName?.toLowerCase().includes(Key.toLowerCase())
-            ),
+            nodes: listData.filter((item: any) => {
+                const fullName = item.FullName?.toLowerCase();
+                if (!fullName) return false; 
+                const searchTerms = Key.split(" ").filter((term: string) => term.trim() !== "");
+                return searchTerms.every((term: string) => fullName.includes(term.toLowerCase()));
+            }),
         };
         setSearchedDataName(data.nodes);
         if (Key.length == 0) {
