@@ -882,7 +882,7 @@ export const SendApprovalEmailNotificationComponent = (props: any) => {
                     TaskStatus = "Rejected"
                 }
             } else {
-                TaskStatus = `Task Status Is Updated ${ItemDetails.PercentComplete} for `
+                TaskStatus = `Task Status Is Updated`
             }
             if (ItemDetails?.FeedBack?.length > 0) {
                 let FeedItemData: any = JSON.parse(ItemDetails?.FeedBack);
@@ -1251,7 +1251,7 @@ export const SendEmailAndImmediateTaskNotificationBodyContent = (props: any) => 
                         Hi {props?.Author?.Title},
                     </div>
                     <div style={{ marginBottom: "12px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
-                        Task created from your end has been marked to {props?.PercentComplete}%. Please follow the below link to review it.
+                        Task created from your end and Status has been updated. Please follow the below link to review it.
                     </div>
                     <div style={{ marginBottom: "32px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
                         You can track your Task Status here:
