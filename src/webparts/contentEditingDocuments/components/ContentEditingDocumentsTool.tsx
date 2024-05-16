@@ -255,7 +255,7 @@ const ContentEditingDocumentsTable = (props: any) => {
                     </span>
                 ),
                 id: "SmartTopicShowing",
-                placeholder: "Smart Topic",
+                placeholder: "Page",
                 resetColumnFilters: false,
                 header: "",
                 size: 140,
