@@ -4762,7 +4762,9 @@ const EditTaskPopup = (Items: any) => {
         var data: any = ApproverData;
         if (useFor == "Bottleneck" || useFor == "Attention") {
             let CreatorData: any = currentUserBackupArray[0];
+            let workingDetails=WorkingAction?.filter((type:any)=> type?.Title=="WorkingDetails")
             let copyWorkAction: any = [...WorkingAction]
+            copyWorkAction=WorkingAction?.filter((type:any)=> type?.Title!="WorkingDetails")
             if (data?.length > 0) {
                 data?.map((selectedData: any) => {
                     if (selectedData?.Id != undefined) {
@@ -4813,7 +4815,7 @@ const EditTaskPopup = (Items: any) => {
             }
             oldWorkingAction=[]
             oldWorkingAction=[...copyWorkAction]
-            setWorkingAction([...copyWorkAction]);
+            setWorkingAction([...copyWorkAction,...workingDetails]);
             console.log("Bottleneck All Details:", copyWorkAction)
             setUseFor("")
             setApproverPopupStatus(false)

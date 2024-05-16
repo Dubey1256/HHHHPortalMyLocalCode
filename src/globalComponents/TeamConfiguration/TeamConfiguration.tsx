@@ -3,6 +3,7 @@ import { TbTruckDelivery } from 'react-icons/tb';
 import { Web } from "sp-pnp-js";
 import Tooltip from '../Tooltip';
 import { SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown } from "react-icons/sl";
+import moment from 'moment';
 
 export interface ITeamConfigurationProps {
     parentCallback: (dt: any) => void;
