@@ -2757,33 +2757,33 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                                                   <div className="border p-2 full-width text-break"
 
-                                                  >
-                                                    <span ><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbSubData?.Title, null, j) }}></span></span>
-                                                    <div className="feedbackcomment col-sm-12 PadR0 mt-10">
-                                                      {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
-                                                        return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "} title={fbComment?.isShowLight != undefined ? fbComment?.isShowLight : ""}>
-                                                          <div className="">
-                                                            <div className="d-flex p-0">
-                                                              <div className="col-1 p-0 wid30">
-                                                                {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)}
-                                                                  src={fbComment.AuthorImage} /> : <span title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
-                                                                }
-                                                              </div>
-                                                              <div className="col-11 pad0" key={k}>
-                                                                <div className="d-flex justify-content-between align-items-center">
-                                                                  {fbComment?.AuthorName} - {fbComment?.Created}
-                                                                  <span className='d-flex'>
-                                                                    <a className="ps-1" title="Comment Reply" >
-                                                                      <div data-toggle="tooltip" id={buttonId + "-" + i + j + k}
-                                                                        onClick={() => this.openReplySubcommentPopup(i, j, k)}
-                                                                        data-placement="bottom"
-                                                                      >
-                                                                        <span className="svg__iconbox svg__icon--reply"></span>
-                                                                      </div>
-                                                                    </a>
-                                                                    <a title="Edit"
-                                                                      onClick={() => this.openEditModal(fbComment, k, j, true, i)}
+                                                >
+                                                  <span ><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbSubData?.Title, null, j) }}></span></span>
+                                                  <div className="feedbackcomment col-sm-12 PadR0 mt-10">
+                                                    {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
+                                                      return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "} title={fbComment?.isShowLight != undefined ? fbComment?.isShowLight : ""}>
+                                                        <div className="">
+                                                          <div className="d-flex p-0">
+                                                            <div className="col-1 p-0 wid30">
+                                                              {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)}
+                                                                src={fbComment.AuthorImage} /> : <span onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)} title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
+                                                              }
+                                                            </div>
+                                                            <div className="col-11 pad0" key={k}>
+                                                              <div className="d-flex justify-content-between align-items-center">
+                                                                {fbComment?.AuthorName} - {fbComment?.Created}
+                                                                <span className='d-flex'>
+                                                                  <a className="ps-1" title="Comment Reply" >
+                                                                    <div data-toggle="tooltip" id={buttonId + "-" + i + j + k}
+                                                                      onClick={() => this.openReplySubcommentPopup(i, j, k)}
+                                                                      data-placement="bottom"
                                                                     >
+                                                                      <span className="svg__iconbox svg__icon--reply"></span>
+                                                                    </div>
+                                                                  </a>
+                                                                  <a title="Edit"
+                                                                    onClick={() => this.openEditModal(fbComment, k, j, true, i)}
+                                                                  >
 
                                                                       <span className='svg__iconbox svg__icon--edit'></span>
                                                                     </a>
