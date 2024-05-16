@@ -394,7 +394,7 @@ const LivingDocsSyncToolTable = (props: any) => {
                     </span>
                 ),
                 id: "SmartTopicShowing",
-                placeholder: "Smart Topic",
+                placeholder: "Page",
                 resetColumnFilters: false,
                 header: "",
                 size: 140,
@@ -792,8 +792,9 @@ const LivingDocsSyncToolTable = (props: any) => {
                                 <div className='col-md-12 p-0'>
                                     <GlobalCommanTable customHeaderButtonAvailable={true}
                                         customTableHeaderButtons={customTableHeaderButtons}
-                                        ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={false}
+                                        ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={true}
                                         columns={columns} data={livingDocsSyncData} showHeader={true}
+                                      
                                         callBackData={callBackData} fixedWidth={true}/>
                                     {!loaded && <PageLoader />}
                                 </div>

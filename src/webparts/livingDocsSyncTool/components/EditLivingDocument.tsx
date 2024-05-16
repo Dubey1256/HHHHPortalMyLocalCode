@@ -27,6 +27,7 @@ const EditLivingDocumentpanel = (props: any) => {
   const [allContactData, setallContactData] = React.useState([]);
   const [searchedNameData, setSearchedDataName] = React.useState([])
   const [listIsVisible, setListIsVisible] = React.useState(false);
+  const [ShareWebTypeTopicData, setShareWebTypeTopicData] = React.useState([]);
   const [searchKey, setSearchKey] = React.useState({
       Title: '',
       FirstName: '',
@@ -74,17 +75,12 @@ const EditLivingDocumentpanel = (props: any) => {
     try {
         await web.lists.getById(props?.AllListId?.SharewebDocument)
         .items.getById(props?.editData?.Id)
-        .select('Id', 'Title', 'PriorityRank', "Responsible/Id","Responsible/Title","Responsible/FullName",'Year','Status', 'Body', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover','File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl')
-        .expand('Author,Editor,Responsible')
+        .select('Id', 'Title', 'PriorityRank', "Responsible/Id","SmartTopics/Id", "SmartTopics/Title","Responsible/Title","Responsible/FullName",'Year','Status', 'Body', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover','File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl')
+        .expand('Author,Editor,Responsible ,SmartTopics')
         .get()
         .then((Data) => {
-          let Title: any = " "
+          
           Data.docTitle = getUploadedFileName(Data?.FileLeafRef);
-          Title = Data?.docTitle;
-            Data.Title = Title;       
-            if (Data?.Title?.includes(Data?.File_x0020_Type)) {
-                Data.Title = getUploadedFileName(Data?.Title);
-            }  
           Data.siteType = 'LivingDocs';          
           Data.Item_x002d_Image = Data?.Item_x0020_Cover
           let portfolioData: any = []        
@@ -96,6 +92,7 @@ const EditLivingDocumentpanel = (props: any) => {
           }, 1000)
           console.log("document data", Data);
           setEditdocumentsData(Data);
+          // setShareWebTypeTopicData(Data?.SmartTopics)
         });
 
     } catch (e: any) {
@@ -197,7 +194,7 @@ const EditLivingDocumentpanel = (props: any) => {
     return (
       <>
         <div className='subheading'>
-          {true ? `Edit Document Metadata - ${EditdocumentsData?.Title != undefined ? EditdocumentsData.Title : EditdocumentsData?.docTitle}` : null}
+          {true ? `Edit Document Metadata - ${EditdocumentsData?.Title != undefined ? EditdocumentsData.Title : EditdocumentsData?.Title}` : null}
         </div>
         <Tooltip ComponentId={'942'} />
       </>
@@ -350,7 +347,28 @@ const searchedName = async (e: any) => {
                                                 </div>
                                                     : null}
                                             </div>
-                                        </div>                                        
+                    </div>   
+
+
+                                  <div className="col pad0">
+                                                        <div className='input-group'>
+                                                        <div className="col pad0">
+                                                                <div className='form-label alignCenter full-width gap-1'>
+                                                                    <label className="form-label">Main Topic</label>
+                                                                    {/* <CustomToolTip Description={'Tag the available Topics'} /> */}
+                                                                </div>
+                                                            
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control"
+                                                                    id="txtCategories"
+                                                                    placeholder="Main Topic"
+                                                                    value={EditdocumentsData?.SmartTopics[0]?.Title}
+                                                                   // onChange={(e) => autoSuggestionsForTopic(e)}
+                                                                />
+                                                                
+                                                        </div>  </div>
+                                                    </div>                                     
               </div>
 
 
