@@ -925,7 +925,7 @@ const EditTaskPopup = (Items: any) => {
                     setEmailStatus(item.TaskCategories?.some((category: any) => category.Title === "Email Notification"));
                     setImmediateStatus(item.TaskCategories?.some((category: any) => category.Title === "Immediate"));
                     setOnlyCompletedStatus(item.TaskCategories?.some((category: any) => category.Title === "Only Completed"));
-                    setDesignStatus(item.TaskCategories?.some((category: any) => category.Title === "Design"));
+                    setDesignStatus(item.TaskCategories?.some((category: any) => category.Title === "Design" || category.Title === "User Experience - UX"));
                     let checkForApproval: any = item.TaskCategories?.some((category: any) => category.Title === "Approval")
                     if (checkForApproval) {
                         setApprovalStatus(true);
@@ -2845,8 +2845,8 @@ const EditTaskPopup = (Items: any) => {
 
                             if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
                                 let DataForNotification: any = {
-                                    ReceiverName: 'Robert',
-                                    sendUserEmail: ['robert.ungethuem@hochhuth-consulting.de'],
+                                    ReceiverName: 'Alina',
+                                    sendUserEmail: ['alina.chyhasova@hochhuth-consulting.de'],
                                     Context: Items.context,
                                     ActionType: "User Experience - UX",
                                     ReasonStatement: "New Task Created",
