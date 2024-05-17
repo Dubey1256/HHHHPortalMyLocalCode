@@ -4481,8 +4481,9 @@ const EditTaskPopup = (Items: any) => {
         let tempArrayJsonData: any = [];
         let arrangedArray: any = []
         let CurrentSiteName: string = '';
-        if (Items?.Items?.siteType == "Offshore%20Tasks" || Items?.Items?.siteType == "Offshore Tasks") {
+        if (Items?.Items?.siteType == "Offshore%20Tasks" || Items?.Items?.siteType == "Offshore Tasks" || NewList == "Offshore%20Tasks" || NewList == "Offshore Tasks") {
             CurrentSiteName = "SharewebQA";
+            NewList = "SharewebQA";
         } else {
             CurrentSiteName = Items.Items.siteType;
         }
