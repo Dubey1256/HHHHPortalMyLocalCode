@@ -30,6 +30,7 @@ let approveItem: any;
 let emailStatus: any = "";
 let IsShowConfigBtn = false;
 let dragItem: any;
+let DragDropType: any = '';
 let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1, taskStatusComment: "For Approval" }, { value: 2, taskStatusComment: "Follow Up" }, { value: 3, taskStatusComment: "Approved" },
 { value: 4, taskStatusComment: "Checking" }, { value: 5, taskStatusComment: "Acknowledged" }, { value: 8, taskStatusComment: "Priority Check" }, { value: 9, taskStatusComment: "Ready To Go" },
 { value: 10, taskStatusComment: "working on it" }, { value: 70, taskStatusComment: "Re-Open" }, { value: 75, taskStatusComment: "Deployment Pending" }, { value: 80, taskStatusComment: "In QA Review" },
@@ -96,7 +97,6 @@ const TaskStatusTbl = (Tile: any) => {
   const [sendMail, setsendMail]: any = React.useState(false);
   const [IsManageConfigPopup, setIsManageConfigPopup] = React.useState(false);
   const [SelectedItem, setSelectedItem]: any = React.useState({});
-
   if (ContextData != undefined && ContextData != '') {
     ContextData.ShowHideSettingIcon = (Value: any) => {
       IsShowConfigBtn = Value;
@@ -130,9 +130,12 @@ const TaskStatusTbl = (Tile: any) => {
     DashboardConfig.forEach((configuration: any) => {
       if (configuration?.WebpartTitle == config?.WebpartTitle && configuration?.Tasks != undefined && configuration?.Tasks?.length > 0) {
         configuration?.Tasks.forEach((user: any) => {
+          if (user?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && user?.AssingedToUserId == User?.AssingedToUserId) {
+            user.IsShowTask = !user.IsShowTask
+          }
           if (user?.dates != undefined && user?.dates?.length > 0) {
             user?.dates.forEach((Date: any) => {
-              if (Date?.ServerDate.getTime() == Time?.ServerDate.getTime() && user?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && user?.AssingedToUserId == User?.AssingedToUserId) {
+              if (Time != undefined && Date?.ServerDate?.getTime() == Time?.ServerDate?.getTime() && user?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && user?.AssingedToUserId == User?.AssingedToUserId) {
                 Date.IsShowTask = !Date.IsShowTask
               }
             })
@@ -143,8 +146,30 @@ const TaskStatusTbl = (Tile: any) => {
     setActiveTile((prevString: any) => Tile?.activeTile);
     rerender();
   }
-  const handleDragStart = (e: any, sourceUser: any) => {
+  const ShowUnAssignedTask = (config: any, User: any, Time: any) => {
+    DashboardConfig.forEach((configuration: any) => {
+      if (configuration?.WebpartTitle == config?.WebpartTitle && configuration?.Tasks != undefined && configuration?.Tasks?.length > 0) {
+        configuration?.Tasks.forEach((user: any) => {
+          if (user?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && user?.AssingedToUserId == User?.AssingedToUserId) {
+            user.IsActiveUser = !user.IsActiveUser
+            // user.IsShowTask = !user.IsShowTask
+          }
+          if (user?.dates != undefined && user?.dates?.length > 0) {
+            user?.dates.forEach((Date: any) => {
+              if (Date?.DisplayDate == 'Un-Assigned' && user?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && user?.AssingedToUserId == User?.AssingedToUserId) {
+                Date.IsShowTask = !Date.IsShowTask
+              }
+            })
+          }
+        })
+      }
+    })
+    setActiveTile((prevString: any) => Tile?.activeTile);
+    rerender();
+  }
+  const handleDragStart = (e: any, sourceUser: any, DragType: any) => {
     e.dataTransfer.setData("sourceUser", JSON.stringify(sourceUser));
+    DragDropType = DragType;
   };
   const startDrag = (e: any, Item: any, ItemId: any, draggedItem: any) => {
     dragItem = draggedItem;
@@ -152,227 +177,389 @@ const TaskStatusTbl = (Tile: any) => {
     console.log('Drag successfuly');
   }
   const onDropUser = (e: any, User: any, config: any, WorkingDate: any) => {
-    let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
-    let sourceUser = globalCommon.parseJSON(e.dataTransfer.getData("sourceUser"))
-    let TeamMemberIds = [];
-    if (Item?.TeamMembers == undefined)
-      Item.TeamMembers = [];
-    if (Item?.TeamMembers != undefined && Item?.TeamMembers?.length > 0) {
-      Item?.TeamMembers?.map((teamMember: any) => {
-        TeamMemberIds.push(teamMember.Id);
-      });
-    }
-    TeamMemberIds.push(User?.AssingedToUserId);
-    Item?.TeamMembers.push({ "Id": User?.AssingedToUserId, "Title": User?.Title })
-    if (WorkingDate != undefined && WorkingDate != '') {
-      if (WorkingDate == "Today") {
-        let today: any = new Date();
-        today.setDate(today.getDate());
-        today.setHours(0, 0, 0, 0);
-        WorkingDate = Moment(today).format("DD/MM/YYYY");
+    if (WorkingDate == 'Un-Assigned') {
 
-      }
-      else if (WorkingDate == "Tomorrow") {
-        let today: any = new Date();
-        today.setDate(today.getDate() + 1);
-        today.setHours(0, 0, 0, 0);
-        WorkingDate = Moment(today).format("DD/MM/YYYY");
-      }
-      Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item.WorkingAction))
-      if (Item?.WorkingAction == undefined || Item?.WorkingAction == '') {
-        Item.WorkingAction = [{ 'WorkingDate': WorkingDate, WorkingMember: [User?.AssingedToUserId] }];
-      }
-      else if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0) {
-        let IsAddNew: boolean = true;
-        Item?.WorkingAction?.map((workingDetails: any) => {
-          if (workingDetails?.WorkingDate == WorkingDate) {
-            IsAddNew = false;
-            if (workingDetails?.WorkingMember == undefined)
-              workingDetails.WorkingMember = []
-            if (!IsUserIdExist(workingDetails?.WorkingMember, User?.AssingedToUserId))
-              workingDetails?.WorkingMember.push(User?.AssingedToUserId)
-          }
-        })
-        if (IsAddNew == true) {
-          Item?.WorkingAction.push({ 'WorkingDate': WorkingDate, WorkingMember: [User?.AssingedToUserId] })
-        }
-      }
     }
-    Item.percentage = 10 + '%';
-    StatusOptions?.map((item: any) => {
-      if (10 == item.value) {
-        Item.Status = item?.taskStatusComment
+    else {
+      let sourceUser = globalCommon.parseJSON(e.dataTransfer.getData("sourceUser"))
+      let UpdatedItem: any = [];
+      let count: any = 0;
+      if (RefSelectedItem != undefined && RefSelectedItem?.length > 0) {
+        RefSelectedItem?.map((DraggedItem: any) => {
+          UpdatedItem.push(DraggedItem?.original)
+        })
       }
-    });
-    if (Item != undefined && Item != '') {
-      let web = new Web(ContextData?.propsValue?.siteUrl);
-      web.lists.getById(Item.listId).items.getById(Item?.Id).update({
-        TeamMembersId: { results: TeamMemberIds != undefined && TeamMemberIds.length > 0 ? TeamMemberIds : [], },
-        PercentComplete: 10 / 100,
-        Status: Item?.Status,
-        WorkingAction: JSON.stringify(Item.WorkingAction)
-      }).then((res: any) => {
-        console.log('Drop successfuly');
-        DashboardConfig?.forEach((item: any) => {
-          if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
-            item?.Tasks.map((task: any) => {
-              if (task?.Id == Item.Id) {
-                task.AssignedTo = Item?.AssignedTo;
-                task.TeamMembers = Item?.TeamMembers;
-              }
-              if (task?.dates != undefined && task?.dates?.length > 0) {
-                task?.dates.map((Time: any) => {
-                  if (Time?.Tasks != undefined && Time?.Tasks?.length > 0) {
-                    Time?.Tasks.map((updatedItem: any) => {
-                      if (updatedItem?.Id == Item.Id) {
-                        updatedItem.WorkingAction = Item?.WorkingAction;
-                      }
-                    })
+      else {
+        UpdatedItem.push(globalCommon.parseJSON(e.dataTransfer.getData("DataId")))
+      }
+      if (UpdatedItem != undefined && UpdatedItem?.length > 0) {
+        UpdatedItem?.map((item: any) => {
+          let Item = item;
+          let AssignedToIds = [];
+          if (Item?.AssignedTo == undefined)
+            Item.AssignedTo = [];
+          if (Item?.AssignedTo != undefined && Item?.AssignedTo?.length > 0) {
+            Item?.AssignedTo?.map((assignMember: any) => {
+              AssignedToIds.push(assignMember.Id);
+            });
+          }
+          AssignedToIds.push(User?.AssingedToUserId);
+          Item?.AssignedTo.push({ "Id": User?.AssingedToUserId, "Title": User?.Title })
+          if (WorkingDate != undefined && WorkingDate != '') {
+            if (WorkingDate == "Today") {
+              let today: any = new Date();
+              today.setDate(today.getDate());
+              today.setHours(0, 0, 0, 0);
+              WorkingDate = Moment(today).format("DD/MM/YYYY");
+
+            }
+            else if (WorkingDate == "Tomorrow") {
+              let today: any = new Date();
+              today.setDate(today.getDate() + 1);
+              today.setHours(0, 0, 0, 0);
+              WorkingDate = Moment(today).format("DD/MM/YYYY");
+            }
+            Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item?.WorkingAction))
+            if (Item?.WorkingAction == undefined || Item?.WorkingAction == '') {
+              Item.WorkingAction = [];
+              let Object: any = { 'Title': "WorkingDetails", "InformationData": [{ 'WorkingDate': WorkingDate, 'WorkingMember': [{ 'Id': User?.AssingedToUserId, 'Title': User?.Title }] }] }
+              Item.WorkingAction.push(Object);
+            }
+            else if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0) {
+              let IsAddNew: boolean = true;
+              let IsWorkingDetailsExist = false;
+              Item?.WorkingAction?.map((workingMember: any) => {
+                if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
+                  IsWorkingDetailsExist = true;
+                  workingMember?.InformationData?.map((workingDetails: any) => {
+                    if (workingDetails?.WorkingDate == WorkingDate) {
+                      IsAddNew = false;
+                      if (workingDetails?.WorkingMember == undefined)
+                        workingDetails.WorkingMember = []
+                      if (!IsUserIdExist(workingDetails?.WorkingMember, User))
+                        workingDetails?.WorkingMember.push({ 'Id': User?.AssingedToUserId, 'Title': User?.Title })
+                    }
+                  })
+                }
+              })
+              if (IsAddNew == true) {
+                if (IsWorkingDetailsExist == false) {
+                  Item?.WorkingAction.push({ 'Title': "WorkingDetails", 'InformationData': [] })
+                }
+                Item?.WorkingAction?.map((workingMember: any) => {
+                  if (workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
+                    if (workingMember?.InformationData == undefined)
+                      workingMember.InformationData = [];
+                    workingMember.InformationData.push({ 'WorkingDate': WorkingDate, 'WorkingMember': [{ 'Id': User?.AssingedToUserId, 'Title': User?.Title }] })
+
                   }
                 })
               }
-            });
-            if (item?.Tasks != undefined) {
-              item.Tasks = item?.Tasks.filter((task: any) => task?.Id != Item.Id);
             }
           }
-          if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle) {
-            if (item?.Tasks != undefined) {
-              item?.Tasks.map((user: any) => {
-                if (user?.AssingedToUserId == User?.AssingedToUserId) {
-                  if (Item?.WorkingAction != undefined && Item?.WorkingAction != '' && Item?.WorkingAction?.length > 0) {
-                    Item?.WorkingAction?.map((workingDetails: any) => {
-                      if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
-                        let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
-                        WorkingDate?._d.setHours(0, 0, 0, 0)
-                        workingDetails?.WorkingMember?.map((assignMember: any) => {
-                          user?.dates.map((Time: any) => {
-                            if (Time?.ServerDate.getTime() == WorkingDate?._d.getTime() && user?.AssingedToUserId == assignMember && !isTaskItemExists(Time?.Tasks, Item)) {
-                              Time?.Tasks.push(Item);
-                              Time.TotalTask = Time?.Tasks?.length;
-                              Time.TotalEstimatedTime += Item?.EstimatedTime;
+          Item.percentage = 10 + '%';
+          StatusOptions?.map((item: any) => {
+            if (10 == item.value) {
+              Item.Status = item?.taskStatusComment
+            }
+          });
+          if (Item != undefined && Item != '') {
+            let web = new Web(ContextData?.propsValue?.siteUrl);
+            web.lists.getById(Item.listId).items.getById(Item?.Id).update({
+              // TeamMembersId: { results: TeamMemberIds != undefined && TeamMemberIds.length > 0 ? TeamMemberIds : [], },
+              AssignedToId: { results: AssignedToIds != undefined && AssignedToIds.length > 0 ? AssignedToIds : [], },
+              PercentComplete: 10 / 100,
+              Status: Item?.Status,
+              WorkingAction: Item?.WorkingAction?.length > 0 ? JSON.stringify(Item?.WorkingAction) : '',
+              IsTodaysTask: true,
+            }).then((res: any) => {
+              count++;
+              console.log('Drop successfuly');
+              DashboardConfig?.forEach((item: any) => {
+                if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
+                  item?.Tasks.map((task: any) => {
+                    if (task?.Id == Item.Id) {
+                      task.AssignedTo = Item?.AssignedTo;
+                      task.TeamMembers = Item?.TeamMembers;
+                    }
+                    if (task?.dates != undefined && task?.dates?.length > 0) {
+                      task?.dates.map((Time: any) => {
+                        if (Time?.Tasks != undefined && Time?.Tasks?.length > 0) {
+                          Time?.Tasks.map((updatedItem: any) => {
+                            if (updatedItem?.Id == Item.Id) {
+                              updatedItem.WorkingAction = [...Item?.WorkingAction];;
+                              if (updatedItem?.WorkingAction != undefined && updatedItem?.WorkingAction != '' && updatedItem?.WorkingAction?.length > 0) {
+                                updatedItem.WorkingDate = ''
+                                updatedItem?.WorkingAction?.map((workingMember: any) => {
+                                  if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
+                                    workingMember?.InformationData?.map((workingDetails: any) => {
+                                      if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                                        workingDetails?.WorkingMember?.forEach((workingUser: any) => {
+                                          if (User.AssingedToUserId != undefined && workingUser?.Id === User.AssingedToUserId) {
+                                            updatedItem.WorkingDate += workingDetails?.WorkingDate + ' | '
+                                          }
+                                        })
+                                      }
+                                    })
+                                  }
+                                })
+                              }
+                              // updatedItem.WorkingDate = updatedItem?.WorkingDate?.replace(/;+$/, '');
                             }
                           })
-                        })
-                      }
-                    })
+                          if (DragDropType == 'Un-Assigned' && Time?.Tasks != undefined && Time?.Tasks?.length > 0) {
+                            Time.Tasks = Time?.Tasks.filter((task: any) => task?.Id != Item.Id);
+                            if (Time?.Tasks) {
+                              Time.TotalEstimatedTime = 0;
+                              Time?.Tasks.map((Item: any) => {
+                                Time.TotalEstimatedTime += Item?.EstimatedTime;
+                              })
+                              Time.TotalTask = Time?.Tasks?.length;
+                            } else {
+                              Time.TotalTask = 0;
+                              Time.TotalEstimatedTime = 0;
+                            }
+                          }
+                        }
+                      })
+                    }
+                    if (task?.AssingedToUserId != undefined && task?.Tasks != undefined && task?.Tasks?.length > 0) {
+                      task?.Tasks.map((updatedItem: any) => {
+                        if (updatedItem?.Id == Item.Id) {
+                          updatedItem.WorkingAction = [...Item?.WorkingAction];
+                          if (updatedItem?.WorkingAction != undefined && updatedItem?.WorkingAction != '' && updatedItem?.WorkingAction?.length > 0 && task?.AssingedToUserId == User?.AssingedToUserId) {
+                            updatedItem.WorkingDate = ''
+                            updatedItem?.WorkingAction?.map((workingMember: any) => {
+                              if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
+                                workingMember?.InformationData?.map((workingDetails: any) => {
+                                  if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                                    workingDetails?.WorkingMember?.forEach((workingUser: any) => {
+                                      if (User.AssingedToUserId != undefined && workingUser?.Id === User?.AssingedToUserId) {
+                                        updatedItem.WorkingDate += workingDetails?.WorkingDate + ' | '
+                                      }
+                                    })
+                                  }
+                                })
+                              }
+                            })
+                          }
+                          //updatedItem.WorkingDate = updatedItem?.WorkingDate?.replace(/;+$/, '');
+                        }
+                      })
+                    }
+                  });
+                  if (item?.Tasks != undefined) {
+                    item.Tasks = item?.Tasks.filter((task: any) => task?.Id != Item.Id);
                   }
                 }
-                // if (user?.AssingedToUserId == sourceUser?.AssingedToUserId) {
-                //   if (Item?.PrevWorkingAction != undefined && Item?.PrevWorkingAction != '' && Item?.PrevWorkingAction?.length > 0) {
-                //     Item?.PrevWorkingAction?.map((workingDetails: any) => {
-                //       if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
-                //         let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
-                //         WorkingDate?._d.setHours(0, 0, 0, 0)
-                //         user?.dates.map((Time: any) => {
-                //           if (Time?.ServerDate.getTime() == WorkingDate?._d.getTime()) {
-                //             Time.Tasks = Time?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
-                //             Time.TotalTask = Time?.Tasks?.length;
-                //             Time.TotalEstimatedTime -= Item?.EstimatedTime;
-                //           }
-                //         })
-                //       }
-                //     })
-                //   }
-                // }
+                if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle) {
+                  if (item?.Tasks != undefined) {
+                    item?.Tasks.map((user: any) => {
+                      if (user?.AssingedToUserId == User?.AssingedToUserId) {
+                        if (Item?.WorkingAction != undefined && Item?.WorkingAction != '' && Item?.WorkingAction?.length > 0) {
+                          Item.WorkingDate = '';
+                          Item?.WorkingAction?.map((workingMember: any) => {
+                            if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
+                              workingMember?.InformationData?.map((workingDetails: any) => {
+                                if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                                  let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
+                                  WorkingDate?._d.setHours(0, 0, 0, 0)
+                                  workingDetails?.WorkingMember?.map((assignMember: any) => {
+                                    if (User.AssingedToUserId != undefined && assignMember?.Id === User.AssingedToUserId) {
+                                      Item.WorkingDate += workingDetails?.WorkingDate + ' | '
+                                    }
+                                    user?.dates.map((Time: any) => {
+                                      if (Time?.ServerDate?.getTime() == WorkingDate?._d.getTime() && user?.AssingedToUserId == assignMember?.Id && !isTaskItemExists(Time?.Tasks, Item)) {
+                                        Time?.Tasks.push(Item);
+                                        Time.TotalTask = Time?.Tasks?.length;
+                                        Time.TotalEstimatedTime += Item?.EstimatedTime;
+                                      }
+                                    })
+                                    if (User?.AssingedToUserId != undefined && assignMember?.Id === User.AssingedToUserId && !isTaskItemExists(User.Tasks, Item)) {
+                                      if (User?.Tasks == undefined)
+                                        User.Tasks = [];
+                                      User.Tasks.push(Item)
+                                      User.TotalTask += 1;
+                                      User.TotalEstimatedTime += Item?.EstimatedTime;
+                                    }
+                                  })
+                                }
+                              })
+                            }
+                          })
+                        }
+                      }
+                      // if (user?.AssingedToUserId == sourceUser?.AssingedToUserId) {
+                      //   if (Item?.PrevWorkingAction != undefined && Item?.PrevWorkingAction != '' && Item?.PrevWorkingAction?.length > 0) {
+                      //     Item?.PrevWorkingAction?.map((workingDetails: any) => {
+                      //       if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                      //         let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
+                      //         WorkingDate?._d.setHours(0, 0, 0, 0)
+                      //         user?.dates.map((Time: any) => {
+                      //           if (Time?.ServerDate.getTime() == WorkingDate?._d.getTime()) {
+                      //             Time.Tasks = Time?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                      //             Time.TotalTask = Time?.Tasks?.length;
+                      //             Time.TotalEstimatedTime -= Item?.EstimatedTime;
+                      //           }
+                      //         })
+                      //       }
+                      //     })
+                      //   }
+                      // }
+                    });
+                  }
+                }
               });
-            }
-          }
-        });
-        DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
-        DashboardConfigCopy?.map((Config: any) => {
-          if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
-            Config?.Tasks?.map((Date: any) => {
-              if (Date?.dates != undefined && Date?.dates?.length > 0) {
-                Date?.dates?.map((Time: any) => {
-                  Time.ServerDate = Moment(Time?.ServerDate)
-                  Time.ServerDate = Time.ServerDate?._d;
-                  Time.ServerDate.setHours(0, 0, 0, 0)
-                })
+              DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+              DashboardConfigCopy?.map((Config: any) => {
+                if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+                  Config?.Tasks?.map((Date: any) => {
+                    if (Date?.dates != undefined && Date?.dates?.length > 0) {
+                      Date?.dates?.map((Time: any) => {
+                        if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
+                          Time.ServerDate = Moment(Time?.ServerDate)
+                          Time.ServerDate = Time.ServerDate?._d;
+                          Time.ServerDate.setHours(0, 0, 0, 0)
+                        }
+                      })
+                    }
+                  });
+                }
+              });
+              if (count == UpdatedItem?.length) {
+                try {
+                  if (childRef?.current != undefined)
+                    childRef?.current?.setRowSelection({});
+                  setRefSelectedItem([])
+                  setActiveTile(Tile?.activeTile)
+                  rerender();
+                } catch (e) {
+                  console.log(e)
+                }
               }
-            });
+
+            }).catch((err: any) => {
+              console.log(err);
+            })
           }
-        });
-        setActiveTile(Tile?.activeTile)
-        rerender();
-      }).catch((err: any) => {
-        console.log(err);
-      })
+        })
+      }
     }
   }
   const onDropTable = (e: any, Type: any, config: any) => {
     let sourceUser = globalCommon.parseJSON(e.dataTransfer.getData("sourceUser"))
     let Status = 0;
+    let count = 0;
     if (Type != undefined) {
       Status = Type
     }
-    let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
-    Item.percentage = Status + '%';
-    StatusOptions?.map((item: any) => {
-      if (Status == item.value) {
-        Item.Status = item?.taskStatusComment
-      }
-    });
-    if (Item != undefined && Item != '') {
-      let web = new Web(ContextData?.propsValue?.siteUrl);
-      web.lists.getById(Item.listId).items.getById(Item?.Id).update({
-        PercentComplete: Status / 100,
-        Status: Item?.Status,
-        WorkingAction: '',
-      }).then((res: any) => {
-        console.log('Drop successfuly');
-        DashboardConfig?.forEach((item: any) => {
-          if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
-            if (item?.Tasks != undefined) {
-              item?.Tasks.map((user: any) => {
-                // if (user?.AssingedToUserId == sourceUser?.AssingedToUserId) {
-                if (Item?.WorkingAction != undefined && Item?.WorkingAction != '' && Item?.WorkingAction?.length > 0) {
-                  Item?.WorkingAction?.map((workingDetails: any) => {
-                    if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
-                      let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
-                      WorkingDate?._d.setHours(0, 0, 0, 0)
-                      user?.dates.map((Time: any) => {
-                        if (Time?.ServerDate.getTime() == WorkingDate?._d.getTime()) {
-                          Time.Tasks = Time?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
-                          Time.TotalTask = Time?.Tasks?.length;
-                          Time.TotalEstimatedTime -= Item?.EstimatedTime;
+    // let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
+    let UpdatedItem: any = []
+    if (RefSelectedItem != undefined && RefSelectedItem?.length > 0) {
+      RefSelectedItem?.map((DraggedItem: any) => {
+        UpdatedItem.push(DraggedItem?.original)
+      })
+    }
+    else {
+      UpdatedItem.push(globalCommon.parseJSON(e.dataTransfer.getData("DataId")))
+    }
+    if (UpdatedItem != undefined && UpdatedItem?.length > 0) {
+      UpdatedItem?.map((item: any) => {
+        let Item = item;
+        Item.percentage = Status + '%';
+        StatusOptions?.map((item: any) => {
+          if (Status == item.value) {
+            Item.Status = item?.taskStatusComment
+          }
+        });
+        Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item?.WorkingAction))
+        if (Item != undefined && Item != '') {
+          if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0)
+            Item.WorkingAction = Item?.WorkingAction.filter((Category: any) => Category?.Title !== 'WorkingDetails')
+          let web = new Web(ContextData?.propsValue?.siteUrl);
+          web.lists.getById(Item.listId).items.getById(Item?.Id).update({
+            PercentComplete: Status / 100,
+            Status: Item?.Status,
+            WorkingAction: Item?.WorkingAction?.length > 0 ? JSON.stringify(Item?.WorkingAction) : '',
+            AssignedToId: { results: [], },
+            IsTodaysTask: false,
+          }).then((res: any) => {
+            console.log('Drop successfuly');
+            count++;
+            DashboardConfig?.forEach((item: any) => {
+              if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
+                if (item?.Tasks != undefined) {
+                  item?.Tasks.map((user: any) => {
+                    // if (user?.AssingedToUserId == sourceUser?.AssingedToUserId) {
+                    Item.WorkingDate = '';
+                    if (Item.PrevWorkingAction != undefined && Item.PrevWorkingAction != '' && Item.PrevWorkingAction?.length > 0) {
+                      Item.PrevWorkingAction?.map((workingMember: any) => {
+                        if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
+                          workingMember?.InformationData?.map((workingDetails: any) => {
+                            if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                              let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
+                              WorkingDate?._d.setHours(0, 0, 0, 0)
+                              user?.dates.map((Time: any) => {
+                                if (Time?.ServerDate?.getTime() == WorkingDate?._d.getTime()) {
+                                  Time.Tasks = Time?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                                  Time.TotalTask = Time?.Tasks?.length;
+                                  Time.TotalEstimatedTime -= Item?.EstimatedTime;
+
+                                  user.Tasks = Time?.Tasks
+                                  user.TotalTask = Time?.TotalTask
+                                  user.TotalEstimatedTime -= Time?.TotalEstimatedTime
+                                }
+                              })
+                            }
+                          })
                         }
                       })
                     }
-                  })
+                    //}
+                  });
+                  if (sourceUser == undefined || sourceUser == '') {
+                    item.Tasks = item?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                  }
                 }
-                //}
-              });
-              if (sourceUser == undefined || sourceUser == '') {
-                item.Tasks = item?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
               }
-            }
-          }
-          if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle) {
-            item?.Tasks.push(Item)
-          }
-        });
-        Item.WorkingAction = '';
-        DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
-        DashboardConfigCopy?.map((Config: any) => {
-          if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
-            Config?.Tasks?.map((Date: any) => {
-              if (Date?.dates != undefined && Date?.dates?.length > 0) {
-                Date?.dates?.map((Time: any) => {
-                  Time.ServerDate = Moment(Time?.ServerDate)
-                  Time.ServerDate = Time.ServerDate?._d;
-                  Time.ServerDate.setHours(0, 0, 0, 0)
-                })
+              if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle) {
+                item?.Tasks.push(Item)
               }
             });
-          }
-        });
-        setActiveTile(Tile?.activeTile)
-        rerender();
-      }).catch((err: any) => {
-        console.log(err);
+            DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+            DashboardConfigCopy?.map((Config: any) => {
+              if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+                Config?.Tasks?.map((Date: any) => {
+                  if (Date?.dates != undefined && Date?.dates?.length > 0) {
+                    Date?.dates?.map((Time: any) => {
+                      if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
+                        Time.ServerDate = Moment(Time?.ServerDate)
+                        Time.ServerDate = Time.ServerDate?._d;
+                        Time.ServerDate.setHours(0, 0, 0, 0)
+                      }
+                    })
+                  }
+                });
+              }
+            });
+            if (count == UpdatedItem?.length) {
+              try {
+                if (childRef?.current != undefined)
+                  childRef?.current?.setRowSelection({});
+                setRefSelectedItem([])
+              } catch (e) {
+                console.log(e)
+              }
+            }
+            setActiveTile(Tile?.activeTile)
+            rerender();
+          }).catch((err: any) => {
+            console.log(err);
+          })
+        }
       })
     }
+
   }
   const isTaskItemExists = (array: any, items: any) => {
     let isExists = false;
@@ -385,11 +572,11 @@ const TaskStatusTbl = (Tile: any) => {
     }
     return isExists;
   }
-  const IsUserIdExist = (array: any, items: any) => {
+  const IsUserIdExist = (array: any, User: any) => {
     let isExists = false;
     for (let index = 0; index < array.length; index++) {
       let item = array[index];
-      if (items?.AssingedToUserId != undefined && item != undefined && items?.AssingedToUserId == item) {
+      if (User?.AssingedToUserId != undefined && item != undefined && item?.Id != undefined && User?.AssingedToUserId == item?.Id) {
         isExists = true;
         break;
       }
@@ -468,9 +655,11 @@ const TaskStatusTbl = (Tile: any) => {
                   Config?.Tasks?.map((Date: any) => {
                     if (Date?.dates != undefined && Date?.dates?.length > 0) {
                       Date?.dates?.map((Time: any) => {
-                        Time.ServerDate = Moment(Time?.ServerDate)
-                        Time.ServerDate = Time.ServerDate?._d;
-                        Time.ServerDate.setHours(0, 0, 0, 0)
+                        if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
+                          Time.ServerDate = Moment(Time?.ServerDate)
+                          Time.ServerDate = Time.ServerDate?._d;
+                          Time.ServerDate.setHours(0, 0, 0, 0)
+                        }
                       })
                     }
                   });
@@ -532,9 +721,11 @@ const TaskStatusTbl = (Tile: any) => {
                       Config?.Tasks?.map((Date: any) => {
                         if (Date?.dates != undefined && Date?.dates?.length > 0) {
                           Date?.dates?.map((Time: any) => {
-                            Time.ServerDate = Moment(Time?.ServerDate)
-                            Time.ServerDate = Time.ServerDate?._d;
-                            Time.ServerDate.setHours(0, 0, 0, 0)
+                            if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
+                              Time.ServerDate = Moment(Time?.ServerDate)
+                              Time.ServerDate = Time.ServerDate?._d;
+                              Time.ServerDate.setHours(0, 0, 0, 0)
+                            }
                           })
                         }
                       });
@@ -565,7 +756,6 @@ const TaskStatusTbl = (Tile: any) => {
   const LoadTimeSheet = () => {
     ContextData?.callbackFunction()
   }
-
   const generateDynamicColumns = (item: any, index: any) => {
     if (item?.DataSource != 'TimeSheet') {
       return [{
@@ -580,7 +770,7 @@ const TaskStatusTbl = (Tile: any) => {
       {
         accessorFn: (row: any) => row?.portfolioItemsSearch,
         cell: ({ row, getValue }: any) => (
-          <div>
+          <div draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)}>
             <img width={"20px"} height={"20px"} className="rounded-circle" src={row?.original?.SiteIcon} />
           </div>
         ),
@@ -598,7 +788,7 @@ const TaskStatusTbl = (Tile: any) => {
         size: 110,
         isColumnVisible: true,
         cell: ({ row, getValue }: any) => (
-          <span className="d-flex">
+          <span className="d-flex" draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)}>
             <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={item?.Tasks} AllListId={ContextData?.propsValue?.Context} />
           </span>
         ),
@@ -606,8 +796,8 @@ const TaskStatusTbl = (Tile: any) => {
       {
         accessorFn: (row: any) => row?.Title,
         cell: ({ row, getValue }: any) => (
-          <div>
-            <a className="hreflink" draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)} target='_blank' style={{ textDecoration: 'none', cursor: 'pointer' }} href={`${ContextData.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
+          <div draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)}>
+            <a className="hreflink" target='_blank' style={{ textDecoration: 'none', cursor: 'pointer' }} href={`${ContextData.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
               rel='noopener noreferrer' data-interception="off" > {row?.original?.Title}
             </a>
             {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != "" && (
@@ -625,7 +815,7 @@ const TaskStatusTbl = (Tile: any) => {
       {
         accessorFn: (row: any) => row?.SmartPriority,
         cell: ({ row }: any) => (
-          <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority != 0 ? row?.original?.SmartPriority : null}</div>
+          <div className="text-center boldClable" draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)} title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority != 0 ? row?.original?.SmartPriority : null}</div>
         ),
         filterFn: (row: any, columnName: any, filterValue: any) => {
           if (row?.original?.SmartPriority?.includes(filterValue)) {
@@ -648,7 +838,7 @@ const TaskStatusTbl = (Tile: any) => {
       {
         accessorFn: (row: any) => row?.PriorityRank,
         cell: ({ row }: any) => (
-          <div className="text-center">{row?.original?.PriorityRank}</div>
+          <div className="text-center" draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)}>{row?.original?.PriorityRank}</div>
         ),
         filterFn: (row: any, columnName: any, filterValue: any) => {
           if (row?.original?.PriorityRank == filterValue) {
@@ -668,12 +858,12 @@ const TaskStatusTbl = (Tile: any) => {
       {
         accessorFn: (row: any) => row?.projectStructerId + "." + row?.ProjectTitle,
         cell: ({ row, column, getValue }: any) => (
-          <>
+          <div draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)} >
             {row?.original?.ProjectTitle != (null || undefined) &&
-              <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+              <span><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
             }
-          </>
+          </div>
         ),
         id: 'ProjectTitle',
         placeholder: "Project",
@@ -683,10 +873,9 @@ const TaskStatusTbl = (Tile: any) => {
         isColumnVisible: false
       },
       {
-
         accessorFn: (row: any) => row?.PercentComplete,
         cell: ({ row }: any) => (
-          <div className="text-center">{row?.original?.PercentComplete}</div>
+          <div className="text-center" draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)}>{row?.original?.PercentComplete}</div>
         ),
         id: "PercentComplete",
         placeholder: "Status",
@@ -700,9 +889,9 @@ const TaskStatusTbl = (Tile: any) => {
       {
         accessorFn: (row: any) => row?.TaskTypeValue,
         cell: ({ row, column, getValue }: any) => (
-          <>
+          <div draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)} >
             <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"></span></span>
-          </>
+          </div>
         ),
         placeholder: "Task Type",
         header: "",
@@ -714,9 +903,9 @@ const TaskStatusTbl = (Tile: any) => {
       {
         accessorFn: (row: any) => row?.ClientCategorySearch,
         cell: ({ row }: any) => (
-          <>
+          <div draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)}>
             <ShowClintCatogory clintData={row?.original} AllMetadata={ContextData?.AllMetadata} />
-          </>
+          </div>
         ),
         id: "ClientCategorySearch",
         placeholder: "Client Category",
@@ -728,7 +917,7 @@ const TaskStatusTbl = (Tile: any) => {
       {
         accessorFn: (row: any) => row?.AllTeamName,
         cell: ({ row }: any) => (
-          <div className="alignCenter">
+          <div className="alignCenter" draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)}>
             <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={ContextData?.AllTaskUser} Context={ContextData?.propsValue} />
           </div>
         ),
@@ -742,7 +931,7 @@ const TaskStatusTbl = (Tile: any) => {
       {
         accessorFn: (row: any) => row?.ItemRank,
         cell: ({ row }: any) => (
-          <div className="text-center">{row?.original?.ItemRank}</div>
+          <div draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)} className="text-center">{row?.original?.ItemRank}</div>
         ),
         id: "ItemRank",
         placeholder: "Item Rank",
@@ -761,12 +950,32 @@ const TaskStatusTbl = (Tile: any) => {
         isColumnVisible: false
       },
       {
+        accessorFn: (row: any) => row?.WorkingDate,
+        cell: ({ row }: any) => (
+          <div className='alignCenter'>
+            <span style={{ display: "flex", alignItems: "center", maxWidth: "84px" }}>
+              <span className="hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.WorkingDate}>
+                {row?.original?.WorkingDate}
+              </span>
+            </span>
+            <span>{row?.original?.WorkingDate != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"WorkingDate"} />}</span>
+          </div>
+        ),
+        id: "WorkingDate",
+        placeholder: "Working Date",
+        header: "",
+        resetColumnFilters: false,
+        size: 80,
+        isColumnVisible: true,
+        fixedColumnWidth: true
+      },
+      {
         accessorFn: (row: any) => row?.Created,
         cell: ({ row, column }: any) => (
-          <div className="alignCenter">
+          <div className="alignCenter" draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)}>
             {row?.original?.Created == null ? ("") : (
               <>
-                <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
+                <div className='ms-1'  >{row?.original?.DisplayCreateDate} </div>
                 {row?.original?.Author != undefined &&
                   <>
                     <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank" data-interception="off">
@@ -798,7 +1007,7 @@ const TaskStatusTbl = (Tile: any) => {
       {
         accessorFn: (row: any) => row?.DueDate,
         cell: ({ row, column, getValue }: any) => (
-          <div className='ms-1'>{row?.original?.DisplayDueDate}</div>
+          <div draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)} className='ms-1'>{row?.original?.DisplayDueDate}</div>
         ),
         filterFn: (row: any, columnName: any, filterValue: any) => {
           if (row?.original?.DisplayDueDate?.includes(filterValue)) {
@@ -820,7 +1029,7 @@ const TaskStatusTbl = (Tile: any) => {
       {
         accessorFn: (row: any) => row?.Modified,
         cell: ({ row, column }: any) => (
-          <div className="alignCenter">
+          <div className="alignCenter" draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)}>
             {row?.original?.Modified == null ? ("") : (
               <>
                 <div style={{ width: "75px" }} className="me-1">{row?.original?.DisplayModifiedDate}</div>
@@ -853,6 +1062,7 @@ const TaskStatusTbl = (Tile: any) => {
         fixedColumnWidth: true,
         isColumnDefultSortingDesc: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Modified" ? true : false
       },
+
       {
         accessorKey: "TotalTaskTime",
         id: "TotalTaskTime",
@@ -982,7 +1192,6 @@ const TaskStatusTbl = (Tile: any) => {
         },]
     }
   }
-
   if (Tile.activeTile != undefined && DashboardConfigCopy != undefined && DashboardConfigCopy?.length > 0)
     DashboardConfig = DashboardConfigCopy.filter((config: any) => config?.TileName == '' || config?.TileName == Tile.activeTile);
   const updatedDashboardConfig = DashboardConfig?.map((item: any, index: any) => {
@@ -991,8 +1200,6 @@ const TaskStatusTbl = (Tile: any) => {
     return { ...item, column: columnss };
   });
   DashboardConfig = updatedDashboardConfig;
-
-
   const editPopFunc = (item: any) => {
     setEditPopup(true);
     setResult(item)
@@ -1074,7 +1281,7 @@ const TaskStatusTbl = (Tile: any) => {
       let sendAllTasks = `<span style="font-size: 18px;margin-bottom: 10px;">
             Hi there, <br><br>
             Below is the working today task of all the team members <strong>(Project Wise):</strong>
-            <p><a href ='${ContextData?.siteUrl}/SitePages/PX-Overview.aspx'>Click here for flat overview of the today's tasks</a></p>
+            <p><a href =${ContextData?.siteUrl}/SitePages/Project-Management-Overview.aspx>Click here for flat overview of the today's tasks</a></p>
             </span>
             ${body}
             <h3>
@@ -1107,8 +1314,41 @@ const TaskStatusTbl = (Tile: any) => {
     setIsManageConfigPopup(false);
     setSelectedItem('')
   }
-
-
+  const customTableHeaderButtons = (config: any) => {
+    return (
+      <span className="alignCenter">
+        {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
+        {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink me-2"
+          target="_blank" data-interception="off" title="Create New Task" href={`${ContextData?.siteUrl}/SitePages/CreateTask.aspx`}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none">
+            <path d="M27.9601 22.2H26.0401V26.0399H22.2002V27.9599H26.0401V31.8H27.9601V27.9599H31.8002V26.0399H27.9601V22.2Z" fill="#057BD0" />
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M32.3996 9.60001H9.59961V32.4H15.5996V38.4H38.3996V15.6H15.5996V31.2968H10.7028V10.7032H31.2964V15.4839H32.3996V9.60001ZM16.7028 16.7032H37.2964V37.2968H16.7028V16.7032Z" fill="#057BD0" />
+            <path d="M9.59956 9.59999V9.29999H9.29956V9.59999H9.59956ZM32.3996 9.59999H32.6996V9.29999H32.3996V9.59999ZM9.59956 32.4H9.29956V32.7H9.59956V32.4ZM15.5996 32.4H15.8996V32.1H15.5996V32.4ZM15.5996 38.4H15.2996V38.7H15.5996V38.4ZM38.3996 38.4V38.7H38.6996V38.4H38.3996ZM38.3996 15.6H38.6996V15.3H38.3996V15.6ZM15.5996 15.6V15.3H15.2996V15.6H15.5996ZM15.5996 31.2968V31.5968H15.8996V31.2968H15.5996ZM10.7028 31.2968H10.4028V31.5968H10.7028V31.2968ZM10.7028 10.7032V10.4032H10.4028V10.7032H10.7028ZM31.2964 10.7032H31.5963V10.4032H31.2964V10.7032ZM31.2964 15.4839H30.9964V15.7839H31.2964V15.4839ZM32.3996 15.4839V15.7839H32.6996V15.4839H32.3996ZM37.2963 16.7032H37.5964V16.4032H37.2963V16.7032ZM16.7028 16.7032V16.4032H16.4028V16.7032H16.7028ZM37.2963 37.2968V37.5968H37.5964V37.2968H37.2963ZM16.7028 37.2968H16.4028V37.5968H16.7028V37.2968ZM9.59956 9.89999H32.3996V9.29999H9.59956V9.89999ZM9.89956 32.4V9.59999H9.29956V32.4H9.89956ZM15.5996 32.1H9.59956V32.7H15.5996V32.1ZM15.2996 32.4V38.4H15.8996V32.4H15.2996ZM15.5996 38.7H38.3996V38.1H15.5996V38.7ZM38.6996 38.4V15.6H38.0996V38.4H38.6996ZM38.3996 15.3H15.5996V15.9H38.3996V15.3ZM15.2996 15.6V31.2968H15.8996V15.6H15.2996ZM10.7028 31.5968H15.5996V30.9968H10.7028V31.5968ZM10.4028 10.7032V31.2968H11.0028V10.7032H10.4028ZM31.2964 10.4032H10.7028V11.0032H31.2964V10.4032ZM31.5963 15.4839V10.7032H30.9964V15.4839H31.5963ZM32.3996 15.1839H31.2964V15.7839H32.3996V15.1839ZM32.0996 9.59999V15.4839H32.6996V9.59999H32.0996ZM37.2963 16.4032H16.7028V17.0032H37.2963V16.4032ZM37.5964 37.2968V16.7032H36.9963V37.2968H37.5964ZM16.7028 37.5968H37.2963V36.9968H16.7028V37.5968ZM16.4028 16.7032V37.2968H17.0028V16.7032H16.4028Z" fill="#057BD0" />
+          </svg>
+        </a>}
+        {config?.WebpartTitle == 'Draft Tasks' && <a className="empCol hreflink me-3">Approve</a>}
+        {config?.WebpartTitle == 'Waiting for Approval' && <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>}
+        {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
+      </span>
+    )
+  }
+  const customTimeSheetTableHeaderButtons = (config: any) => {
+    return (
+      <span className="alignCenter">
+        {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink me-1" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
+        {RefSelectedItem?.length > 0 ? <span className="empCol me-1 hreflink" onClick={() => SaveApprovalRejectPopup('ApprovedAll', undefined)}>Approve All</span>
+          : ''}
+        {/* <span className="me-1 hreflink" style={{ color: "#646464" }}>Approve All</span>} */}
+      </span>
+    )
+  }
+  const customWorkingTableHeaderButtons = (config: any, user: any, Time: any, ShowType: any) => {
+    return (
+      <span className="alignCenter">
+        <span className="empCol me-1 hreflink" onClick={() => ShowType == 'DateTask' ? ShowWorkingTask(config, user, undefined) : ShowUnAssignedTask(config, user, undefined)}>Hide</span>
+      </span>
+    )
+  }
   const generateDashboard = () => {
     const rows: any = [];
     let currentRow: any = [];
@@ -1128,24 +1368,10 @@ const TaskStatusTbl = (Tile: any) => {
                     <span className="fw-bold">
                       {`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}
                     </span>
-                    <span className="alignCenter">
-                      {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
-                      {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink me-2"
-                        target="_blank" data-interception="off" title="Create New Task" href={`${ContextData?.siteUrl}/SitePages/CreateTask.aspx`}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none">
-                          <path d="M27.9601 22.2H26.0401V26.0399H22.2002V27.9599H26.0401V31.8H27.9601V27.9599H31.8002V26.0399H27.9601V22.2Z" fill="#057BD0" />
-                          <path fill-rule="evenodd" clip-rule="evenodd" d="M32.3996 9.60001H9.59961V32.4H15.5996V38.4H38.3996V15.6H15.5996V31.2968H10.7028V10.7032H31.2964V15.4839H32.3996V9.60001ZM16.7028 16.7032H37.2964V37.2968H16.7028V16.7032Z" fill="#057BD0" />
-                          <path d="M9.59956 9.59999V9.29999H9.29956V9.59999H9.59956ZM32.3996 9.59999H32.6996V9.29999H32.3996V9.59999ZM9.59956 32.4H9.29956V32.7H9.59956V32.4ZM15.5996 32.4H15.8996V32.1H15.5996V32.4ZM15.5996 38.4H15.2996V38.7H15.5996V38.4ZM38.3996 38.4V38.7H38.6996V38.4H38.3996ZM38.3996 15.6H38.6996V15.3H38.3996V15.6ZM15.5996 15.6V15.3H15.2996V15.6H15.5996ZM15.5996 31.2968V31.5968H15.8996V31.2968H15.5996ZM10.7028 31.2968H10.4028V31.5968H10.7028V31.2968ZM10.7028 10.7032V10.4032H10.4028V10.7032H10.7028ZM31.2964 10.7032H31.5963V10.4032H31.2964V10.7032ZM31.2964 15.4839H30.9964V15.7839H31.2964V15.4839ZM32.3996 15.4839V15.7839H32.6996V15.4839H32.3996ZM37.2963 16.7032H37.5964V16.4032H37.2963V16.7032ZM16.7028 16.7032V16.4032H16.4028V16.7032H16.7028ZM37.2963 37.2968V37.5968H37.5964V37.2968H37.2963ZM16.7028 37.2968H16.4028V37.5968H16.7028V37.2968ZM9.59956 9.89999H32.3996V9.29999H9.59956V9.89999ZM9.89956 32.4V9.59999H9.29956V32.4H9.89956ZM15.5996 32.1H9.59956V32.7H15.5996V32.1ZM15.2996 32.4V38.4H15.8996V32.4H15.2996ZM15.5996 38.7H38.3996V38.1H15.5996V38.7ZM38.6996 38.4V15.6H38.0996V38.4H38.6996ZM38.3996 15.3H15.5996V15.9H38.3996V15.3ZM15.2996 15.6V31.2968H15.8996V15.6H15.2996ZM10.7028 31.5968H15.5996V30.9968H10.7028V31.5968ZM10.4028 10.7032V31.2968H11.0028V10.7032H10.4028ZM31.2964 10.4032H10.7028V11.0032H31.2964V10.4032ZM31.5963 15.4839V10.7032H30.9964V15.4839H31.5963ZM32.3996 15.1839H31.2964V15.7839H32.3996V15.1839ZM32.0996 9.59999V15.4839H32.6996V9.59999H32.0996ZM37.2963 16.4032H16.7028V17.0032H37.2963V16.4032ZM37.5964 37.2968V16.7032H36.9963V37.2968H37.5964ZM16.7028 37.5968H37.2963V36.9968H16.7028V37.5968ZM16.4028 16.7032V37.2968H17.0028V16.7032H16.4028Z" fill="#057BD0" />
-                        </svg>
-                      </a>}
-                      {config?.WebpartTitle == 'Draft Tasks' && <a className="empCol hreflink me-3">Approve</a>}
-                      {config?.WebpartTitle == 'Waiting for Approval' && <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>}
-                      {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
-                    </span>
                   </div>
                   <div className="Alltable" draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="300px" bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                      <GlobalCommanTable wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                         pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
@@ -1194,8 +1420,8 @@ const TaskStatusTbl = (Tile: any) => {
                               <>
                                 <div className="top-assign p-1 mb-2">
                                   {user.Item_x0020_Cover != undefined && user.AssingedToUser != undefined &&
-                                    <span>
-                                      <img className={user.IsShowTask == true ? 'large_teamsimg' : 'large_teamsimg'} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
+                                    <span onClick={() => ShowWorkingTask(config, user, undefined)}>
+                                      <img className={user.IsShowTask == true || user?.IsActiveUser == true ? 'large_teamsimg activeimg' : 'large_teamsimg'} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
                                     </span>
                                   }
                                 </div>
@@ -1212,8 +1438,8 @@ const TaskStatusTbl = (Tile: any) => {
                                       <p className="mb-0">{date?.DisplayDate}</p>
                                       {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => (
                                         user?.dates != null && user?.dates?.length > 0 && user?.dates.map((time: any, index: number) => (
-                                          date?.ServerDate.getTime() == time?.ServerDate.getTime() && <>
-                                            <dt onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, time?.DisplayDate)} className={time.IsShowTask == true ? 'activeblock px-2 shadow-sm text-center' : 'px-2 shadow-sm text-center'} onClick={() => ShowWorkingTask(config, user, time)}>
+                                          date?.ServerDate?.getTime() == time?.ServerDate?.getTime() && <>
+                                            <dt onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, time?.DisplayDate)} className={time.IsShowTask == true && time?.DisplayDate == 'Un-Assigned' ? 'px-2 shadow-sm text-center activeblock' : 'px-2 shadow-sm text-center'} onClick={() => time?.DisplayDate != 'Un-Assigned' ? ShowWorkingTask(config, user, time) : ShowUnAssignedTask(config, user, time)}>
                                               {time?.TotalTask != undefined && time?.TotalTask != '' && <><span title="Total Task">{time?.TotalTask}</span> | <span title="Total Estimation Time">{time?.TotalEstimatedTime}</span></>}
                                               {time?.TotalTask == undefined || time?.TotalTask == '' && <span>N/A</span>}
                                             </dt>
@@ -1230,14 +1456,30 @@ const TaskStatusTbl = (Tile: any) => {
                         <div className={`col-12 px-1 mb-2 py-4`}>
                           <>
                             {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => (
+                              user.IsShowTask == true && (
+                                <>
+                                  <h3 className="f-15">{user?.Title} Working Tasks</h3>
+                                  <div key={index} className="Alltable mb-2" onDragStart={(e) => handleDragStart(e, user, '')} draggable={false}>
+                                    <GlobalCommanTable bulkEditIcon={true} updatedSmartFilterFlatView={true} customHeaderButtonAvailable={true} customTableHeaderButtons={customWorkingTableHeaderButtons(config, user, undefined, 'DateTask')} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={user?.Tasks}
+                                      callBackData={callBackData} pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
+                                  </div>
+                                </>
+                              )
+                            ))}
+                            {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => (
                               user?.dates != null && user?.dates?.length > 0 && user?.dates.map((Date: any, index: number) => (
                                 Date.IsShowTask == true && (
                                   <>
-                                    <h3 className="f-15">{user?.Title} {Date?.DisplayDate} Task</h3>
-                                    <div key={index} className="Alltable mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} style={{ height: "300px" }}>
-                                      <GlobalCommanTable bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
-                                        callBackData={callBackData} pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
-                                    </div>
+                                    {/* onDragStart={(e) => handleDragStart(e, user,'')} draggable={false} */}
+                                    {/* {Date?.DisplayDate} */}
+                                    {/* onDragOver={(e) => e.preventDefault()} */}
+                                    {Date?.DisplayDate == 'Un-Assigned' &&
+                                      <><h3 className="f-15">Un-Assigned Tasks</h3>
+                                        <div onDragStart={(e) => handleDragStart(e, user, 'Un-Assigned')} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} key={index} className="Alltable mb-2">
+                                          <GlobalCommanTable bulkEditIcon={true} updatedSmartFilterFlatView={true} customHeaderButtonAvailable={true} customTableHeaderButtons={customWorkingTableHeaderButtons(config, user, undefined, 'Un-AssignedTask')} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date?.Tasks}
+                                            callBackData={callBackData} pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
+                                        </div></>
+                                    }
                                   </>
                                 )
                               ))
@@ -1254,18 +1496,16 @@ const TaskStatusTbl = (Tile: any) => {
                       <span className="fw-bold">
                       </span>
                       <span className="alignCenter">
-                        {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
-                        {RefSelectedItem?.length > 0 ? <span className="empCol me-1 mt-2 hreflink" onClick={() => SaveApprovalRejectPopup('ApprovedAll', undefined)}>Approve All</span>
-                          : <span className="me-1 mt-2 hreflink" style={{ color: "#646464" }}>Approve All</span>}
+                        <span className="empCol me-1 mt-2 hreflink"><br /></span>
                       </span>
                     </div>
                     <div className="Alltable" >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
-                        <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                           pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                       )}
                       {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
-                        <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                           pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                       )}
                     </div>

@@ -1441,6 +1441,13 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
     })
 }
 
+export const removeHtmlFromString = (StringValue: string) => {
+    let cleanStr = StringValue?.replace(/<[^>]*>/g, '');
+    cleanStr = cleanStr?.replace(/&nbsp;/g, ' ');
+    cleanStr = cleanStr?.trim();
+    return cleanStr;
+}
+
 export const GenerateMSTeamsNotification = (RequiredData: any) => {
     try {
         if (RequiredData?.Title?.length > 0) {
@@ -1578,7 +1585,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title?.length > 8 ?
                                 <div style={{ width: "100%" }}>
                                     <div><b style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Task Description:</b></div>
-                                    <div>
+                                    <div style={{ width: '100%' }}>
                                         {RequiredData["FeedBack"] != null &&
                                             RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                                             RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title != '' &&
@@ -1596,12 +1603,14 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                     {i + 1}.
                                                                 </span>
                                                                 {/* <span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span> */}
-                                                                {fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")}
+                                                                {/* {fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")} */}
+                                                                {removeHtmlFromString(fbData['Title'])}
+
                                                             </div>
 
                                                             {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
                                                                 return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px', width: '100%' }}>
-                                                                    <div style={{ marginBottom: '8px' }}>
+                                                                    <div style={{ marginBottom: '8px', width: '100%' }}>
                                                                         <div style={{ fontWeight: '600' }}>{fbComment.AuthorName} - {fbComment.Created}</div>
                                                                     </div>
                                                                     <div><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span></div>
