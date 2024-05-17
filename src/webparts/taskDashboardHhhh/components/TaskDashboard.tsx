@@ -1511,7 +1511,7 @@ const TaskDashboard = (props: any) => {
             setWorkingTodayTasks([...todayTasks]);
 
         } else {
-            alert('This Drop Is Not Allowed')
+            alert('You do not have the necessary Permissions to move Tasks in this User's Dashboard')
         }
 
     }
