@@ -1441,6 +1441,13 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
     })
 }
 
+export const removeHtmlFromString = (StringValue: string) => {
+    let cleanStr = StringValue?.replace(/<[^>]*>/g, '');
+    cleanStr = cleanStr?.replace(/&nbsp;/g, ' ');
+    cleanStr = cleanStr?.trim();
+    return cleanStr;
+}
+
 export const GenerateMSTeamsNotification = (RequiredData: any) => {
     try {
         if (RequiredData?.Title?.length > 0) {
@@ -1596,7 +1603,9 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                     {i + 1}.
                                                                 </span>
                                                                 {/* <span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span> */}
-                                                                {fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")}
+                                                                {/* {fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")} */}
+                                                                {removeHtmlFromString(fbData['Title'])}
+
                                                             </div>
 
                                                             {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
