@@ -143,6 +143,7 @@ function ReadyMadeTable(SelectedProp: any) {
                     portfolioTypeData?.map((elem: any) => {
                         if (elem.Title === "Component") {
                             portfolioColor = elem.Color;
+                            document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
                         }
                     })
 
