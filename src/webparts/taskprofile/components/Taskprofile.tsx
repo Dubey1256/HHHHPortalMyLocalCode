@@ -2316,7 +2316,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       </div>
                       <div className='col-12 p-0'>
                       <dl>
-                        <dt className='bg-Fa p-2' style={{ width: "19.5%" }}>Url</dt>
+                        <dt className='bg-Fa p-2' style={{ width: "20.5%" }}>Url</dt>
                         <dt className='bg-Ff p-2 text-break ' style={{ width: "80%" }}>
                           {this.state.Result["component_url"] != null &&
                             <a target="_blank" data-interception="off" href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a>
