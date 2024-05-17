@@ -1,8 +1,8 @@
 import * as React from 'react';
 //import styles from './EventRecurrenceInfoDaily.module.scss';
-import strings from '../constants/strings';
-import { IEventRecurrenceInfoDailyProps } from './IEventRecurrenceInfoDailyProps';
-import { IEventRecurrenceInfoDailyState } from './IEventRecurrenceInfoDailyState';
+import strings from '../../../calendar/components/EventRecurrenceControls/constants/strings';
+import { IEventRecurrenceInfoDailyProps } from '../../../calendar/components/EventRecurrenceControls/EventRecurrenceInfoDaily/IEventRecurrenceInfoDailyProps';
+import { IEventRecurrenceInfoDailyState } from '../../../calendar/components/EventRecurrenceControls/EventRecurrenceInfoDaily/IEventRecurrenceInfoDailyState';
 //import { escape } from '@microsoft/sp-lodash-subset';
 import * as moment from 'moment';
 //import { parseString } from "xml2js";
@@ -13,7 +13,7 @@ import {
   MaskedTextField,
 } from 'office-ui-fabric-react';
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react/lib/DatePicker';
-import { toLocaleShortDateString } from '../utils/dateUtils';
+import { toLocaleShortDateString } from '../../../calendar/components/EventRecurrenceControls/utils/dateUtils';
 import { Web } from "sp-pnp-js";
 
 
@@ -286,16 +286,18 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
    * @memberof EventRecurrenceInfoDaily
    */
   private async applyRecurrence() {
-    const endDate = await this.getUtcTime(this.state.endDate);
+
+    const endDateString = await this.getUtcTime(this.state.endDate);
+    const endDate = new Date(endDateString);
+    // endDate.setHours(endDate.getHours() + 5);
+    // endDate.setMinutes(endDate.getMinutes() + 30);
     let selectDateRangeOption;
     switch (this.state.selectdateRangeOption) {
       case 'noDate':
         selectDateRangeOption = `<repeatForever>FALSE</repeatForever>`;
         break;
       case 'endAfter':
-        let occurrences = parseInt(this.state.numberOcurrences, 10); // Convert string to number
-        occurrences = Math.max(occurrences - 1, 0); // Ensure occurrences doesn't go negative
-        selectDateRangeOption = `<repeatInstances>${occurrences}</repeatInstances>`;
+        selectDateRangeOption = `<repeatInstances>${this.state.numberOcurrences}</repeatInstances>`;
         break;
       case 'endDate':
         selectDateRangeOption = `<windowEnd>${endDate}</windowEnd>`;
@@ -304,7 +306,9 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
         break;
     }
     const recurrenceXML = `<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat>` +
-      `<daily ${this.state.selectPatern === 'every' ? `dayFrequency="${this.state.numberOfDays.trim()}"/>` : 'weekday'}</repeat>${selectDateRangeOption}</rule></recurrence>`;
+      `<daily ${this.state.selectPatern === 'every' ? `dayFrequency="${this.state.numberOfDays.trim()}"/>` : `weekday="TRUE" />`}</repeat>${selectDateRangeOption}</rule></recurrence>`;
+
+
     //  console.log(recurrenceXML);
     //endDate change
     this.props.returnRecurrenceData(this.state.startDate, this.state.endDate, recurrenceXML);

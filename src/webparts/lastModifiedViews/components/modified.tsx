@@ -66,11 +66,7 @@ export const Modified = (props: any) => {
 
   const getAllUsers = async () => {
     let web = new Web(baseUrl);
-    Users = await web.lists
-    .getById(props?.props?.TaskUsertListID)
-    .items
-    .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
-    .get();
+    Users = await web.lists.getById(props?.props?.TaskUserListID).items.select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver").get();
     setAllUsers(Users)
     if (baseUrl.toLowerCase().includes("gmbh")) {
       setGmbhSite(true)
@@ -80,7 +76,7 @@ export const Modified = (props: any) => {
       }
     }
     const editListsAll = {
-      TaskUsertListID: props?.props?.TaskUsertListID,
+      TaskUserListID: props?.props?.TaskUserListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
       MasterTaskListID: props?.props.MasterTaskListID,
       TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -95,7 +91,7 @@ export const Modified = (props: any) => {
       SmartHelptListID: props?.props?.SmartHelptListID,
       PortFolioTypeID: props?.props?.PortFolioTypeID,
       context: props?.props?.context,
-      TaskUserListId: props?.props?.TaskUsertListID,
+      TaskUserListId: props?.props?.TaskUserListID,
       isShowTimeEntry:props?.props?.TimeEntry,
 
     }
@@ -302,14 +298,14 @@ export const Modified = (props: any) => {
             })
           }
         })
-        if (allSite.TabName == 'DOCUMENTS') {
-          // data = data.filter((item: any) => { return (item.Title != null) })
+        if (allSite.TabName == 'TEAM-PORTFOLIO') {
+          data = data.filter((item: any) => { return (item.Item_x0020_Type!= "Sprint" &&item.Item_x0020_Type!='Project') })
         }
       }
       else {
         data?.map((item: any) => {
           item.fontColorTask = '#000066';
-          masterTaskData.map((masterTaskValue: any) => {
+            masterTaskData?.map((masterTaskValue: any) => {
             if (item?.Portfolio?.Id == masterTaskValue?.Id) {
               if (masterTaskValue?.PortfolioType?.Title == 'Service') {
                 item.fontColorTask = '#228b22'
@@ -542,8 +538,8 @@ export const Modified = (props: any) => {
     if (event.target.checked && serviceChecked == true) {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
-          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
-            masterTaskData.map((masterTaskValue: any) => {
+          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES' && item.siteType != "Master Tasks") {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
                   storeComponent.push(item)
@@ -557,7 +553,7 @@ export const Modified = (props: any) => {
             })
           }
           if (item.siteType == type) {
-            masterTaskData.map((masterTaskValue: any) => {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
                   storeComponent.push(item)
@@ -576,7 +572,7 @@ export const Modified = (props: any) => {
     }
     else if (event.target.checked) {
       allSiteData.map((item: any) => {
-        masterTaskData.map((masterTaskValue: any) => {
+        masterTaskData?.map((masterTaskValue: any) => {
           if (item?.Portfolio?.Id == masterTaskValue.Id) {
             if (masterTaskValue.PortfolioType?.Title == 'Component') {
               storeComponent.push(item)
@@ -588,8 +584,8 @@ export const Modified = (props: any) => {
     else if (event.target.checked == false && serviceChecked == true) {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
-          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
-            masterTaskData.map((masterTaskValue: any) => {
+          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES' &&  item.siteType != "Master Tasks") {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue.PortfolioType?.Title == 'Service') {
                   item.fontColorTask = '#228b22'
@@ -599,7 +595,7 @@ export const Modified = (props: any) => {
             })
           }
           else if (item.siteType == type) {
-            masterTaskData.map((masterTaskValue: any) => {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue.PortfolioType?.Title == 'Service') {
                   item.fontColorTask = '#228b22'
@@ -615,7 +611,7 @@ export const Modified = (props: any) => {
     else if (event.target.checked == false) {
       duplicate.map((dupdata: any) => {
         dupdata.map((data: any) => {
-          if (type == 'ALL' && data.siteType != 'DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES') {
+          if (type == 'ALL' && data.siteType != 'DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES'  && data.siteType != "Master Tasks") {
             storeComponent.push(data)
           }
           else if (data.siteType == type) {
@@ -634,8 +630,8 @@ export const Modified = (props: any) => {
     if (event.target.checked && componentChecked == true) {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
-          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
-            masterTaskData.map((masterTaskValue: any) => {
+          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES' && item.siteType != "Master Tasks") {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
                   storeServices.push(item)
@@ -649,7 +645,7 @@ export const Modified = (props: any) => {
             })
           }
           else if (item.siteType == type) {
-            masterTaskData.map((masterTaskValue: any) => {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue.Id) {
                 if (masterTaskValue.PortfolioType?.Title == 'Component') {
                   storeServices.push(item)
@@ -669,7 +665,7 @@ export const Modified = (props: any) => {
 
     else if (event.target.checked) {
       allSiteData.map((item: any) => {
-        masterTaskData.map((masterTaskValue: any) => {
+        masterTaskData?.map((masterTaskValue: any) => {
           if (item?.Portfolio?.Id == masterTaskValue.Id) {
             if (masterTaskValue?.PortfolioType?.Title == 'Service') {
               item.fontColorTask = '#228b22'
@@ -682,8 +678,8 @@ export const Modified = (props: any) => {
     else if (event.target.checked == false && componentChecked == true) {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
-          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
-            masterTaskData.map((masterTaskValue: any) => {
+          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES' && item.siteType != "Master Tasks") {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
                   storeServices.push(item)
@@ -873,12 +869,12 @@ export const Modified = (props: any) => {
           id: 'Id',
         },
         {
-          accessorKey: "FileLeafRef", placeholder: "Title", header: "",
+          accessorKey: "Title", placeholder: "Title", header: "",
           cell: ({ row }) =>
-            <>
-              {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
+            <div className="alignCenter">
+              {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
               <a data-interception="off" target='_blank' href={row.original.EncodedAbsUrl}>{row.original.FileLeafRef}</a>
-            </>
+            </div>
         },
         {
           accessorKey: 'Modified', cell: ({ row }) =>
@@ -886,9 +882,9 @@ export const Modified = (props: any) => {
               {row.original.modifiedNew}
               <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
+                  <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -913,9 +909,9 @@ export const Modified = (props: any) => {
               {row.original.createdNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+                  <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -949,7 +945,7 @@ export const Modified = (props: any) => {
             <>
               {type == 'WEB PAGES' ?
                 <>
-                  <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+                  <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
                 </>
                 : undefined}
             </>
@@ -970,12 +966,12 @@ export const Modified = (props: any) => {
           id: 'Id',
         },
         {
-            accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
+          accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
           cell: ({ row }) =>
-            <>
-              {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
+            <div className="alignCenter">
+              {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
               <a data-interception="off" target='_blank' href={row.original.EncodedAbsUrl}>{row.original.FileLeafRef}</a>
-            </>
+            </div>
         },
         {
           accessorKey: 'Modified', cell: ({ row }) =>
@@ -983,9 +979,9 @@ export const Modified = (props: any) => {
               {row.original.modifiedNew}
               <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
+                  <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1010,9 +1006,9 @@ export const Modified = (props: any) => {
               {row.original.createdNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+                  <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1035,7 +1031,7 @@ export const Modified = (props: any) => {
             <>
               {type == 'DOCUMENTS' || type == 'WEB PAGES' ?
                 <>
-                  <a onClick={() => editDocOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+                  <div className="mt--2" onClick={() => editDocOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
                 </>
                 : undefined}
             </>
@@ -1047,7 +1043,7 @@ export const Modified = (props: any) => {
             <>
               {type == 'DOCUMENTS' || type == 'WEB PAGES' ?
                 <>
-                  <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+                  <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
                 </>
                 : undefined}
             </>
@@ -1085,9 +1081,9 @@ export const Modified = (props: any) => {
               {row.original.modifiedNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
+                  <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1113,9 +1109,9 @@ export const Modified = (props: any) => {
               {row.original.createdNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+                  <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1150,7 +1146,7 @@ export const Modified = (props: any) => {
           cell: ({ row }) =>
 
             <>
-              <a onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
             </>,
 
         }
@@ -1158,7 +1154,7 @@ export const Modified = (props: any) => {
           id: 'delteSmartPages',
           cell: ({ row }) =>
             <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
             </>
 
         }
@@ -1216,9 +1212,9 @@ export const Modified = (props: any) => {
               {row.original.createdNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+                  <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1253,7 +1249,7 @@ export const Modified = (props: any) => {
           cell: ({ row }) =>
 
             <>
-              <a onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
             </>,
 
         }
@@ -1261,7 +1257,7 @@ export const Modified = (props: any) => {
           id: 'delteSmartMetaData', size: 25,
           cell: ({ row }) =>
             <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
             </>
 
         }
@@ -1307,9 +1303,9 @@ export const Modified = (props: any) => {
               {row.original.modifiedNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
+                  <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1334,9 +1330,9 @@ export const Modified = (props: any) => {
               {row.original.createdNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+                  <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1358,7 +1354,7 @@ export const Modified = (props: any) => {
           id: 'updateContact',
           cell: ({ row }) =>
             <>
-              <a onClick={() => editContactOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+              <div className="mt--2" onClick={() => editContactOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
             </>
 
         },
@@ -1366,7 +1362,7 @@ export const Modified = (props: any) => {
           id: 'deleteContact',
           cell: ({ row }) =>
             <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
             </>
 
         }
@@ -1415,9 +1411,9 @@ export const Modified = (props: any) => {
               {row.original.modifiedNew}
               <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
+                  <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1442,9 +1438,9 @@ export const Modified = (props: any) => {
               {row.original.createdNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+                  <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1466,7 +1462,7 @@ export const Modified = (props: any) => {
           id: 'updateEvents',
           cell: ({ row }) =>
             <>
-              <a onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+              <div className="mt--2" onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
             </>
 
         },
@@ -1474,7 +1470,7 @@ export const Modified = (props: any) => {
           id: 'deleteEvents',
           cell: ({ row }) =>
             <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
             </>
 
         }
@@ -1541,9 +1537,9 @@ export const Modified = (props: any) => {
               {row.original.createdNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+                  <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1565,7 +1561,7 @@ export const Modified = (props: any) => {
           id: 'updateNews',
           cell: ({ row }) =>
             <>
-              <a onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+              <div className="mt--2" onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
             </>
 
         },
@@ -1573,7 +1569,7 @@ export const Modified = (props: any) => {
           id: 'deleteNews',
           cell: ({ row }) =>
             <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
             </>
 
         }
@@ -1593,16 +1589,17 @@ export const Modified = (props: any) => {
           accessorKey: 'PortfolioStructureID', placeholder: 'ID', header: "", id: 'PortfolioStructureID',
           cell: ({ row }) =>
             <>
-              <img className='workmember ms-1' src={`${baseUrl}${row.original.photoComponent}`} alt="" />
+               <span className='Dyicons mx-1 '>{row?.original?.ItemType?.toUpperCase()?.charAt(0)}
+                                </span>
               <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>{row.original.PortfolioStructureID}</span>
             </>
         },
         {
           accessorKey: "Title", placeholder: "Component Name", header: "", id: "Title",
           cell: ({ row }) =>
-            <span>  <a data-interception="off" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
+            <div>  <a data-interception="off" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
               {row.original.Title}
-            </a></span>
+            </a></div>
 
         },
         {
@@ -1673,9 +1670,9 @@ export const Modified = (props: any) => {
               </span>
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+                  <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 mt--2 bg-fxdark" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>
           , filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1696,7 +1693,7 @@ export const Modified = (props: any) => {
           id: 'updateComponent',
           cell: ({ row }) =>
             <>
-              <a onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+              <div className="mt--2" onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
             </>
 
         },
@@ -1704,7 +1701,7 @@ export const Modified = (props: any) => {
           id: 'deleteComponent',
           cell: ({ row }) =>
             <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
             </>
 
         },
@@ -1724,7 +1721,7 @@ export const Modified = (props: any) => {
           cell: ({ row, getValue }) => (
             <>
               {row.original.GmBHSiteCheck == false ? <img className='workmember me-1' src={`${row.original.SiteIcon}`}></img> : undefined}
-              <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
+              <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
             </>
           ),
           id: "TaskID",
@@ -1747,9 +1744,7 @@ export const Modified = (props: any) => {
                        row.original.Title : ""}
                 </span>
               </span>
-              {/* <a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
-                {row.original.Tiltle}
-              </a> */}
+             
             {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>}
             </div>
           ),
@@ -1806,9 +1801,9 @@ export const Modified = (props: any) => {
               {row.original.modifiedNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
+                  <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember mt--2 ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1871,7 +1866,7 @@ export const Modified = (props: any) => {
           cell: ({ row }) =>
 
             <>
-              <a onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
             </>,
 
         }
@@ -1879,7 +1874,7 @@ export const Modified = (props: any) => {
           id: 'delteTask',
           cell: ({ row }) =>
             <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
             </>
 
         }

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Web } from "sp-pnp-js";
+import { Web,sp } from "sp-pnp-js";
 import { useEffect, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
@@ -18,12 +18,14 @@ import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import { FaChevronDown, FaChevronRight, FaMinusSquare, FaPlusSquare, FaSquare, FaCheckSquare } from 'react-icons/fa';
 import { Col, Container, Row } from "react-bootstrap";
 import { SPHttpClient } from "@microsoft/sp-http";
+let EmailNotification: any
 
 const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, AllListid, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
     const [data, setData] = React.useState<any>([]);
     const [groupData, setGroupData] = useState([]);
     const [title, setTitle] = useState("");
-    const [addTitle, setAddTitle] = useState("");
+    const [addTitle, setAddTitle] = useState<any>("");
+    const [Email, setEmail] = useState<any>("");
     const [suffix, setSuffix] = useState("");
     const [selectedApprovalType, setSelectedApprovalType] = useState('');
     const [selectedCompany, setSelectedCompany] = useState('');
@@ -50,7 +52,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const [checked, setChecked] = useState([]);
     const [expanded, setExpanded] = useState([]);
     const [selectedApproval, setSelectedApproval] = useState('');
-    
     // const [searchedProjectKey, setSearchedProjectKey] = React.useState("");
 
     const Categories: any = (smartMetaDataItems.filter((items: any) => items.TaxType === "TimesheetCategories"))
@@ -70,10 +71,12 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     // When the member to update is set, initialize the Member states
     useEffect(() => {
         if (memberToUpdate) {
-            setSelectedApprovalType(memberToUpdate?.IsApprovalMail);
-            setSelectedCompany(memberToUpdate?.Company);
-            if(memberToUpdate?.Item_x0020_Cover != null)
-                setImageUrl(memberToUpdate?.Item_x0020_Cover);
+            if (memberToUpdate?.IsApprovalMail != null && memberToUpdate?.IsApprovalMail != undefined) {
+                setSelectedApprovalType(memberToUpdate?.IsApprovalMail);
+            }
+            else {
+                setSelectedApprovalType("Decide Case By Case")
+            } setSelectedCompany(memberToUpdate?.Company);
             // setSelectedRoles(memberToUpdate.Role || []);
             setSelectedRoles(Array.isArray(memberToUpdate.Role) ? memberToUpdate.Role : []);
             setIsActive(memberToUpdate?.IsActive);
@@ -81,14 +84,14 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             setUserCategory(memberToUpdate?.TimeCategory)
             // setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
             if (memberToUpdate.CategoriesItemsJson) {
-                const categoriesJson = memberToUpdate.CategoriesItemsJson != 'null' ? JSON.parse(memberToUpdate.CategoriesItemsJson): [];
+                const categoriesJson = memberToUpdate.CategoriesItemsJson != 'null' ? JSON.parse(memberToUpdate.CategoriesItemsJson) : [];
                 setSelectedCategories(categoriesJson);
                 if (categoriesJson) {
                     const categoryIds = categoriesJson.map((category: any) => category.Id.toString());
                     setChecked(categoryIds);
                 }
             }
-            setAssignedToUser(memberToUpdate?.AssingedToUser?.Id)
+            setAssignedToUser(memberToUpdate?.AssingedToUser)
             // setApprover([memberToUpdate.Approver?.[0]?.Id])
             const Approvers: any = memberToUpdate?.Approver?.map((item: any) => item.Id)
             setApprover(Approvers)
@@ -135,23 +138,49 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     };
 
     const addTeamMember = async () => {
+        let userId:any =[]
         let web = new Web(baseUrl);
-        await web.lists.getById(TaskUserListId).items.add({
-            Title: addTitle,
-            ItemType: "User",
-            Company: "Smalsus",
-            IsActive: false,
-            IsTaskNotifications: false,
-        }).then((res: any) => {
-            console.log(res);
-            const newItem = res.data;
-            setData((prevData: any) => [...prevData, newItem]);
-            setTitle("");
-            setAddTitle("");
-            fetchAPIData()
-            setAutoSuggestData(null)
-            setOpenPopup(false);
+        const externalUsers = await sp.web.siteUserInfoList.items.top(1000).get();
+        console.log(externalUsers);
+        externalUsers?.forEach((item:any)=>{
+            if(item.UserName == addTitle[0]?.secondaryText){
+                userId = item?.Id;
+                setAssignedToUser(item)
+            }
         })
+
+        const taskUsers = await web.lists
+        .getById(TaskUserListId)
+        .items.filter(`AssingedToUser/Id eq '${userId}'`)
+        .getAll();
+    
+        if(taskUsers != undefined && taskUsers.length > 0){
+            alert('User already exist')
+        }
+        else{
+            await web.lists.getById(TaskUserListId).items.add({
+                Title: addTitle[0]?.text,
+                AssingedToUserId:(userId != null && userId.length > 0) ? userId : null,
+                Email:addTitle[0]?.secondaryText,
+                ItemType: "User",
+                Company:null,
+                IsActive: false,
+                IsTaskNotifications: false,
+            }).then((res: any) => {
+                console.log(res);
+                const newItem = res.data;
+                setData((prevData: any) => [...prevData, newItem]);
+                setTitle("");
+                setAddTitle("");
+                setIsUserNameValid(true);
+                setMemberToUpdate(newItem);
+                setOpenUpdateMemberPopup(true);
+                fetchAPIData()
+                setAutoSuggestData(null)
+                setOpenPopup(false);
+            })
+        }
+       
     }
 
     const addNewGroup = async () => {
@@ -160,7 +189,8 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             Title: title,
             Suffix: suffix,
             SortOrder: sortOrder,
-            ItemType: "Group"
+            ItemType: "Group",
+            IsActive: true
         }).then((res: any) => {
             console.log(res);
             const newItem = res.data;
@@ -195,7 +225,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         if (memberToUpdate) {
             const updatedData = {
                 Title: title ? title : memberToUpdate.Title,
-                Suffix: suffix ? suffix : memberToUpdate.Suffix,
+                Suffix: suffix != '' ? suffix : memberToUpdate.Suffix,
                 SortOrder: sortOrderValue,
                 IsActive: isActive,
                 Company: selectedCompany,
@@ -205,11 +235,11 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 Role: { "results": selectedRoles },
                 IsTaskNotifications: isTaskNotifications,
                 AssingedToUserId:
-                  assignedToUser != null ? assignedToUser?.Id: null,
+                    assignedToUser != null ? assignedToUser?.Id : null,
                 // ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
                 //     ? { "results": approver } : (approver.length > 0 && approver[0] != null && approver[0].AssingedToUser?.Id != null) ? { "results": [approver[0].AssingedToUser.Id] } : { "results": [] },
                 ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
-                ? { "results": approver } : Array.isArray(approver) && approver.length > 0 ? { "results": approver?.map(app => app?.userId) } : { "results": [] },
+                    ? { "results": approver } : Array.isArray(approver) && approver.length > 0 ? { "results": approver?.map(app => app?.userId) } : { "results": [] },
                 // ApproverId: Array.isArray(approver) && approver.length > 0 ? { "results": approver?.map(app => app?.AssingedToUser?.Id) } : { "results": [] },
                 UserGroupId: userGroup ? parseInt(userGroup) : memberToUpdate?.UserGroup?.Id,
                 Team: userTeam ? userTeam : memberToUpdate.Team,
@@ -217,6 +247,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : memberToUpdate.Item_x0020_Cover.Url},
                 Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image?.Url || imageUrl?.Item_x0020_Cover?.Url || (memberToUpdate?.Item_x0020_Cover?.Url || null) },
                 CategoriesItemsJson: JSON.stringify(selectedCategories),
+                Email: Email ? Email:memberToUpdate?.Email
             };
 
             await web.lists.getById(TaskUserListId).items.getById(memberToUpdate.Id).update(updatedData).then((res: any) => {
@@ -248,6 +279,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 setAssignedToUser([])
                 setSuffix("")
                 setOpenUpdateMemberPopup(false);
+                EmailNotification = ""
                 fetchAPIData()
             }).catch(error => {
                 console.error("Error updating item: ", error);
@@ -307,7 +339,8 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         alt="User"
                     // style={{ marginRight: '10px', width: '32px', height: '32px' }}
                     />
-                    <span>{`${row.original.Title} (${row.original.Suffix})`}</span>
+                    
+                    <span>{`${row.original.Title} ${row.original.Suffix != null ? `(${row.original.Suffix})` :''}`}</span>
                 </div>
             ),
             sortDescFirst: false
@@ -426,79 +459,78 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         console.log(EditData);
         console.log(data);
     }, []);
-    const UpdateCallBackData = React.useCallback((data:any)=>{
-        setMemberToUpdate(data);
-    },[])
-  const getUserInfo = async (userMail: string) => {
-    const userEndPoint: any = `${context?.pageContext?.web?.absoluteUrl}/_api/Web/EnsureUser`;
 
-    const userData: string = JSON.stringify({
-      logonName: userMail,
-    });
+    const getUserInfo = async (userMail: string) => {
+        const userEndPoint: any = `${context?.pageContext?.web?.absoluteUrl}/_api/Web/EnsureUser`;
 
-    const userReqData = {
-      body: userData,
+        const userData: string = JSON.stringify({
+            logonName: userMail,
+        });
+
+        const userReqData = {
+            body: userData,
+        };
+
+        const resUserInfo = await context?.spHttpClient.post(
+            userEndPoint,
+            SPHttpClient.configurations.v1,
+            userReqData
+        );
+        const userInfo = await resUserInfo.json();
+
+        return userInfo;
     };
 
-    const resUserInfo = await context?.spHttpClient.post(
-      userEndPoint,
-      SPHttpClient.configurations.v1,
-      userReqData
-    );
-    const userInfo = await resUserInfo.json();
-
-    return userInfo;
-  };
-
-  const AssignedToUser = async (items: any[]) => {
-    let userId: number = undefined;
-    let userTitle: any;
-    let userSuffix: string = undefined;
-    if (items.length > 0) {
-        let userMail = items[0].id.split("|")[2];
-        let userInfo = await getUserInfo(userMail);
-        userId = userInfo.Id;
-        userTitle = userInfo.Title;
-        userSuffix = userTitle
-          .split(" ")
-          .map((i: any) => i.charAt(0))
-          .join("");
-      setAssignedToUser(userInfo);
-      setIsUserNameValid(true);
-    } else {
-      setAssignedToUser([]);
-      setIsUserNameValid(false);
-    }
-  };
-
-  const ApproverFunction = async (items: any[]) => {
-    let userId: number = undefined;
-    let userTitle: any;
-    let userSuffix: string = undefined;
-    let userMail: any
-    let userInfo: any
-    if (items.length > 0) {
-        const approvers = await Promise.all(items.map(async (selectedusers) => {
-            userMail = selectedusers?.id.split("|")[2];
-            userInfo = await getUserInfo(userMail);
+    const AssignedToUser = async (items: any[]) => {
+        let userId: number = undefined;
+        let userTitle: any;
+        let userSuffix: string = undefined;
+        if (items.length > 0) {
+            let userMail = items[0].id.split("|")[2];
+            EmailNotification = userMail
+            let userInfo = await getUserInfo(userMail);
             userId = userInfo.Id;
             userTitle = userInfo.Title;
             userSuffix = userTitle
                 .split(" ")
                 .map((i: any) => i.charAt(0))
                 .join("");
-            
-            return {
-                userId: userId,
-                userTitle: userTitle,
-                userSuffix: userSuffix
-            };
-        }));
-      setApprover(approvers);
-    } else {
-      setApprover([]);
-    }
-  };
+            setAssignedToUser(userInfo);
+            setIsUserNameValid(true);
+        } else {
+            setAssignedToUser([]);
+            setIsUserNameValid(false);
+        }
+    };
+
+    const ApproverFunction = async (items: any[]) => {
+        let userId: number = undefined;
+        let userTitle: any;
+        let userSuffix: string = undefined;
+        let userMail: any
+        let userInfo: any
+        if (items.length > 0) {
+            const approvers = await Promise.all(items.map(async (selectedusers) => {
+                userMail = selectedusers?.id.split("|")[2];
+                userInfo = await getUserInfo(userMail);
+                userId = userInfo.Id;
+                userTitle = userInfo.Title;
+                userSuffix = userTitle
+                    .split(" ")
+                    .map((i: any) => i.charAt(0))
+                    .join("");
+
+                return {
+                    userId: userId,
+                    userTitle: userTitle,
+                    userSuffix: userSuffix
+                };
+            }));
+            setApprover(approvers);
+        } else {
+            setApprover([]);
+        }
+    };
 
     // Autosuggestion code
 
@@ -599,7 +631,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         setApprover([Approvers])
         setUserTeam(memberToUpdate.Team)
         setOpenUpdateMemberPopup(false)
-        setImageUrl({})
     }
 
     const findCategoryById = (categories: any, id: any): any => {
@@ -654,6 +685,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     };
 
 
+
+    const getPeoplePickerItems=(items:any)=>{
+          setAddTitle(items)
+    }
     // JSX Code starts here
 
     return (
@@ -684,7 +719,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         <div className='tbl-button'>
                             <button type='button' className='btn btn-primary position-relative' style={{ zIndex: "99" }} onClick={() => setOpenPopup(true)}>Add Team Member</button>
                         </div>
-                        <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} showHeader={true} />
+                        <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                     </div>
                 </div>
                 <div className="tab-pane" id="TEAMGROUPS" role="tabpanel" aria-labelledby="TEAMGROUPS">
@@ -694,11 +729,12 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         <div className='tbl-button'>
                             <button type='button' className='btn btn-primary position-relative' style={{ zIndex: "99" }} onClick={() => setOpenGroupPopup(true)}>Add Team Group</button>
                         </div>
-                        <GlobalCommanTable columns={columns2} data={groupData} callBackData={callBackData} showHeader={true} />
+                        <GlobalCommanTable columns={columns2} data={groupData} callBackData={callBackData} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                     </div>
                 </div>
             </div>
 
+{/* ------------------Add Team Member----------------------------------------------------------------------------------- */}
             <Panel
                 onRenderHeader={onRenderCustomHeaderAddUser}
                 isOpen={openPopup}
@@ -707,14 +743,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 isBlocking={!openPopup}
             >
                 <div className="modal-body">
-                    <div className='input-group'>
-                        <label className='form-label full-width'>User Name: </label>
-                        <input className='form-control' type="text" placeholder='Enter Title' value={addTitle} onChange={(e: any) => { setAddTitle(e.target.value); autoSuggestionsForTitle(e) }} />
-                    </div>
-                    {autoSuggestData?.length > 0 ? (
+                  
                         <div>
                             <ul className="list-group">
-                                {autoSuggestData?.map((Item: any) => {
+                                {/* {autoSuggestData?.map((Item: any) => {
                                     return (
                                         <li
                                             className="hreflink list-group-item rounded-0 list-group-item-action"
@@ -723,18 +755,33 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                             <a>{Item.Title}</a>
                                         </li>
                                     );
-                                })}
+                                })} */}
+                                <div>
+                                    <PeoplePicker
+                                        context={context}
+                                        principalTypes={[PrincipalType.User]}
+                                        personSelectionLimit={1}
+                                        titleText="Select People"
+                                        resolveDelay={1000}
+                                        onChange={getPeoplePickerItems}
+                                        showtooltip={true}
+                                        required={true}
+                                        disabled={false}
+                                    ></PeoplePicker>
+                                </div>
                             </ul>
                         </div>
-                    ) : null}
+                  
                 </div>
 
                 <footer className='modal-footer mt-2'>
-                    <button type='button' className='btn me-2 btn-primary' onClick={() => addTeamMember()}>Save</button>
+                    <button type='button' disabled={addTitle==''?true:false} className='btn me-2 btn-primary' onClick={() => addTeamMember()}>Save</button>
                     <button type='button' className='btn btn-default' onClick={cancelAdd}>Cancel</button>
                 </footer>
 
             </Panel>
+
+
             <Panel
                 onRenderHeader={onRenderCustomHeaderAddGroup}
                 isOpen={openGroupPopup}
@@ -820,89 +867,104 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                             aria-labelledby="basic-info-tab"
                         >
                             <Row className='mb-2'>
-                                <Col md={2} sm={2}>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width fw-semibold'>Title: </label>
-                                        <input className='form-control' type="text" defaultValue={memberToUpdate?.Title} onChange={(e: any) => setTitle(e.target.value)} />
-                                    </div>
-                                </Col>
+                                <Col md={6} className='ps-3'>
+                                    <Row>
+                                        <Col md={5} sm={5} className='px-1 ps-0'>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Title: </label>
+                                                <input className='form-control' type="text" defaultValue={memberToUpdate?.Title} onChange={(e: any) => setTitle(e.target.value)} />
+                                            </div>
+                                        </Col>
 
-                                <Col md={1} sm={1}>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width fw-semibold'>Suffix: </label>
-                                        <input className='form-control' type="text" defaultValue={memberToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
-                                    </div>
-                                </Col>
-                        
-                                <Col md={3} className='px-1'>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width fw-semibold'>Group: </label>
-                                        <select className='full-width' id="sites" defaultValue={memberToUpdate?.UserGroup?.Id} onChange={(e: any) => setUserGroup(e.target.value)}>
-                                            <option>Select</option>
-                                            {TaskGroupsListData.map((elem: any) => <option value={elem?.Id}>{elem?.Title}</option>)}
-                                        </select>
-                                    </div>
-                                </Col>
-                                <Col md={1} sm={1}>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width fw-semibold'>Sort Order: </label>
-                                        <input className='form-control' type="text" defaultValue={memberToUpdate?.SortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
-                                    </div>
-                                </Col>
+                                        <Col md={2} sm={2}>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Suffix: </label>
+                                                <input className='form-control' type="text" defaultValue={memberToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
+                                            </div>
+                                        </Col>
 
-                                <Col md={3} sm={3} className=' px-1'>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width fw-semibold'>Manage Categories: </label>
-                                        <select className='full-width' id="sites" defaultValue={memberToUpdate?.TimeCategory} onChange={(e: any) => setUserCategory(e.target.value)}>
-                                            <option>Select</option>
-                                            {uniqueCategories.map((elem: any) => <option value={elem.Title}>{elem.Title}</option>)}
-                                        </select>
-                                    </div></Col>
-                                    <Col md={2} sm={2}>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width fw-semibold'>Team: </label>
-                                        <select className='full-width' id="sites" defaultValue={memberToUpdate?.Team} onChange={(e: any) => setUserTeam(e.target.value)}
-                                        >
-
-                                            <option>Select</option>
-                                            <option value="Management">Management</option>
-                                            <option value="SPFX">SPFX</option>
-                                            <option value="Shareweb">Shareweb</option>
-                                            <option value="Mobile">Mobile</option>
-                                            <option value="QA">QA</option>
-                                            <option value="Design">Design</option>
-                                            <option value="HR">HR</option>
-                                            <option value="Junior Task Management">Junior Task Management</option>
-                                            
-                                        </select>
-                                    </div>
+                                        <Col md={5} className='px-1'>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Group: </label>
+                                                <select className='full-width' id="sites" defaultValue={memberToUpdate?.UserGroup?.Id} onChange={(e: any) => setUserGroup(e.target.value)}>
+                                                    <option>Select</option>
+                                                    {TaskGroupsListData.map((elem: any) => <option value={elem?.Id}>{elem?.Title}</option>)}
+                                                </select>
+                                            </div>
+                                        </Col>
+                                    </Row>
                                 </Col>
-                                <Row className='mt-2'>
-                                <Col md={3} className='pe-0 ps-1'>
+                                <Col md={6} >
+                                    <Row>
+                                        <Col md={2} sm={2}>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Sort Order: </label>
+                                                <input className='form-control' type="text" defaultValue={memberToUpdate?.SortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
+                                            </div>
+                                        </Col>
+
+                                        <Col md={5} sm={5} className=' px-1'>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Manage Categories: </label>
+                                                <select className='full-width' id="sites" defaultValue={memberToUpdate?.TimeCategory} onChange={(e: any) => setUserCategory(e.target.value)}>
+                                                    <option>Select</option>
+                                                    {uniqueCategories.map((elem: any) => <option value={elem.Title}>{elem.Title}</option>)}
+                                                </select>
+                                            </div></Col>
+                                        <Col md={5} sm={5} className='ps-1 pe-1'>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Team: </label>
+                                                <select className='full-width' id="sites" defaultValue={memberToUpdate?.Team} onChange={(e: any) => setUserTeam(e.target.value)}
+                                                >
+
+                                                    <option>Select</option>
+                                                    <option value="Management">Management</option>
+                                                    <option value="SPFX">SPFX</option>
+                                                    <option value="Shareweb">Shareweb</option>
+                                                    <option value="Mobile">Mobile</option>
+                                                    <option value="QA">QA</option>
+                                                    <option value="Design">Design</option>
+                                                    <option value="HR">HR</option>
+                                                    <option value="Junior Task Manager">Junior Task Manager</option>
+
+                                                </select>
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                            <Row className='mt-2'>
+                                <Col className='pe-0 ps-1'>
                                     <div className='input-group class-input'>
                                         <label className='form-label full-width fw-semibold'>User Name:</label>
                                         <div className="w-100">
-                                        <PeoplePicker  context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false}
-                                            principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => AssignedToUser(items)}
-                                            defaultSelectedUsers={email ? [email] : []} />
+                                            <PeoplePicker context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false}
+                                                principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => AssignedToUser(items)}
+                                                defaultSelectedUsers={email ? [email] : []} />
                                         </div>
                                     </div>
                                 </Col>
-                                <Col className='ps-2' style={{width:"40%;"}}>
+                                <Col className='ps-2'>
                                     <div className='input-group class-input'>
                                         <label className='form-label full-width fw-semibold'>Approver:</label>
-                                        <div>
-                                        <PeoplePicker context={context} titleText="" 
-                                            personSelectionLimit={4} showHiddenInUI={false} principalTypes=
-                                            {[PrincipalType.User]} resolveDelay={1000} onChange={(items) => ApproverFunction(items)}
-                                            defaultSelectedUsers={emails.length > 0 ? emails : []} />
-                                            </div>
+                                        <div className="w-100">
+                                            <PeoplePicker context={context} titleText=""
+                                                personSelectionLimit={4} showHiddenInUI={false} principalTypes=
+                                                {[PrincipalType.User]} resolveDelay={1000} onChange={(items) => ApproverFunction(items)}
+                                                defaultSelectedUsers={emails.length > 0 ? emails : []} />
+                                        </div>
                                     </div>
                                 </Col>
-                                </Row>
+                                <Col>
+                                <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Email: </label>
+                                                <input className='form-control' type="text" defaultValue={memberToUpdate?.Email} onChange={(e: any) => setEmail(e.target.value)} />
+                                            </div>
+                                </Col>
                             </Row>
 
-                            <Row className='mb-2'>
+
+                            <Row className='mb-2 mt-2'>
                                 <Col md={2}>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Company: </label>
@@ -924,7 +986,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Roles: </label>
                                         <Row>
-                                            <Col className='px-0'>
+                                            <Col className='px-0' style={{ width: '165px' }}>
                                                 {['Component Teams', 'Service Teams'].map((role: any) => (
                                                     <React.Fragment key={role}>
                                                         <label className='SpfxCheckRadio mb-1' htmlFor={`role-${role}`}>
@@ -1004,12 +1066,11 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         >
                             <div>
                                 <ImagesC
-                                    EditdocumentsData={imageUrl}
-                                    setData={setImageUrl}
+                                    EditdocumentsData={memberToUpdate}
+                                    setData={setMemberToUpdate}
                                     AllListId={TaskUserListId}
                                     Context={context}
                                     callBack={imageTabCallBack}
-                                    setToUpdate={memberToUpdate}
                                 />
                             </div>
                         </div>
@@ -1047,19 +1108,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                             </div>
                             <div className="text-left">
                                 <a onClick={() => deleteTeamMember(memberToUpdate)}>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        viewBox="0 0 48 48"
-                                        fill="none"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            clip-rule="evenodd"
-                                            d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z"
-                                            fill="#333333"
-                                        />
-                                    </svg>{" "}
+                                    <span style={{ marginLeft: '-4px' }} className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>{" "}
                                     Delete This Item
                                 </a>
                                 <span>
@@ -1112,4 +1161,3 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
 }
 
 export default TaskUserManagementTable;
-

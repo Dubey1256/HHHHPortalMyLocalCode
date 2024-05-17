@@ -248,7 +248,7 @@ function ShowTeamMembers(item: any) {
               const item: any = {
                 Comments: CurrentItem[0].Comments?.length > 0 ? JSON.stringify(CurrentItem[0].Comments) : null,
               }
-              globalCommon.updateItemById(GlobalConstants.SP_SITE_URL, listID, item, CurrentItem[0]?.Id)
+              globalCommon.updateItemById(item?.AllListId?.siteUrl, listID, item, CurrentItem[0]?.Id)
             }
           });
 
@@ -373,13 +373,13 @@ function ShowTeamMembers(item: any) {
     new_chat_resp = undefined;
     var select: any = 'Id,Title,Comments&$filter=Id eq ' + item?.props[0]?.original?.Id;
     if (item?.props[0]?.original != undefined && item?.props[0]?.original?.siteType == 'Master Tasks')
-      listID = GlobalConstants.MASTER_TASKS_LISTID;
+      listID = item?.AllListId?.MasterTaskListID;
     else if (item?.props[0]?.original != undefined && item?.props[0]?.original?.siteType != 'Master Tasks' && item?.original != undefined && item?.original?.listId != undefined)
       listID = item?.original?.listId;
     else if (item?.props[0]?.original != undefined && item?.props[0]?.original?.siteType != 'Master Tasks' && item?.props[0]?.original?.listId != undefined)
       listID = item?.props[0]?.original?.listId;
 
-    CurrentItem = await globalCommon.getData(GlobalConstants.SP_SITE_URL, listID, select);
+    CurrentItem = await globalCommon.getData(item?.AllListId?.siteUrl, listID, select);
     if (CurrentItem != undefined && CurrentItem?.length > 0) {
       if (CurrentItem[0]?.Comments != undefined && CurrentItem[0]?.Comments?.length > 0) {
         CurrentItem[0].Comments = globalCommon.parseJSON(CurrentItem[0]?.Comments)
@@ -730,13 +730,7 @@ function ShowTeamMembers(item: any) {
                   })}
                 </div>
                 <div className="col-3 mt-4" >
-                  <img onDrop={(e) => drop(e)} onDragOver={(e) => e.preventDefault()}
-                    title="Drag user here to  remove user from team for this Network Activity."
-                    height={"50px"}
-                    width={"50px"}
-                    style={{ borderRadius: "25px" }}
-                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png"
-                  />
+                  <div className="dustbin bg-siteColor" onDrop={(e) => drop(e)} onDragOver={(e) => e.preventDefault()}><span className="svg__iconbox svg__icon--palmTree" title="Drag user here to  remove user from team for this Network Activity."></span></div>
                 </div>
               </div>
             </div>

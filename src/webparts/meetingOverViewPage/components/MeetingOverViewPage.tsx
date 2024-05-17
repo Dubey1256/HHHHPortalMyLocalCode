@@ -14,7 +14,7 @@ export default class MeetingOverViewPage extends React.Component<IMeetingOverVie
       siteUrl,
       Context,
       MasterTaskListID,
-      TaskUsertListID,
+      TaskUserListID,
       SmartMetadataListID,
       SmartInformationListID,
       DocumentsListID,

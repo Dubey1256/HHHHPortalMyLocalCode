@@ -21,7 +21,6 @@ let GlobalAllCSFData: any = [];
 let GlobalAllProjectData: any = [];
 let GlobalFeedbackJSON: any = [];
 let GlobalCurrentUserData: any;
-let SelectedTaskCategory: any = [];
 const CreateTaskCompareTool = (RequiredData: any) => {
     const { ItemDetails, RequiredListIds, CallbackFunction, CreateTaskForThisPoint, Context } = RequiredData || {};
     const [isOpenTypeCategoryPopup, setIsOpenTypeCategoryPopup] = useState(false);
@@ -46,7 +45,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
         GetAllComponentAndServiceData();
         GetSmartMetaDataList();
         let param: any = Moment(new Date().toLocaleString());
-        GlobalFunctionForUpdateItem.GetCurrentUserData({ ListId: RequiredListIds?.TaskUsertListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context }).then((ResData: any) => {
+        GlobalFunctionForUpdateItem.GetCurrentUserData({ ListId: RequiredListIds?.TaskUserListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context }).then((ResData: any) => {
             let CurrentUserData: any = ResData?.CurrentUser;
             GlobalCurrentUserData = ResData?.CurrentUser;
             let CommentTitle: any = `This is in reference to the task: ${ItemDetails?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + ItemDetails?.Id + "&Site=" + ItemDetails?.siteType}`;
@@ -60,6 +59,12 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 isApprovalComment: false,
                 isShowLight: ""
             }
+            let CommentArray: any[] = JSON.parse(CreateTaskForThisPoint?.Comments?.length > 0 ? JSON.stringify(CreateTaskForThisPoint?.Comments) : '[]');
+            if (CommentArray?.length > 0) {
+                CommentArray?.unshift(CreateTaskFor)
+            } else {
+                CommentArray = [CreateTaskFor];
+            }
             let CreateTaskPointDataObject: any = {
                 Title: CreateTaskForThisPoint.Title,
                 Completed: "",
@@ -67,7 +72,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 SeeAbove: '',
                 Phone: '',
                 LowImportance: '',
-                Comments: [CreateTaskFor]
+                Comments: CommentArray
             }
             let FeedBackItem: any = {
                 Title: "FeedBackPicture" + param,
@@ -91,7 +96,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
             MasterTaskListID: RequiredListIds?.MasterTaskListID,
             siteUrl: ItemDetails?.siteUrl,
             ComponentType: "Component",
-            TaskUserListId: RequiredListIds.TaskUsertListID,
+            TaskUserListId: RequiredListIds.TaskUserListID,
         };
         let CallBackData = await GlobalCommon.GetServiceAndComponentAllData(
             PropsObject
@@ -153,14 +158,6 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 }
             }
         })
-        if (SelectedCategory.IsSelected == true) {
-            SelectedTaskCategory.push(SelectedCategory)
-        }
-        if (SelectedCategory.IsSelected == false && SelectedTaskCategory.length > 0) {
-            SelectedTaskCategory = SelectedTaskCategory.filter((item: any) =>
-                item.Title != SelectedCategory.Title
-            )
-        }
         setTypeCategoryData([...AllTypeCategory]);
     }
 
@@ -295,7 +292,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 }
             });
 
-            if (SelectedCategories.length > 0 || CreateTaskInfo.Title?.length > 0) {
+            if (SelectedCategories.length > 0 && CreateTaskInfo.Title?.length > 0) {
                 let UpdateJSONData: any = {
                     Title: CreateTaskInfo.Title,
                     DueDate: CreateTaskInfo.DueDate ? Moment(CreateTaskInfo.DueDate).format("MM-DD-YYYY") : null,
@@ -527,7 +524,6 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                     <button
                         className="btn btn-primary mx-1 px-3"
                         onClick={CreateTaskFunction}
-                        disabled={SelectedTaskCategory.length === 0 || !CreateTaskInfo.Title}
                     >
                         Submit
                     </button>
@@ -734,7 +730,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                             type='Number'
                                             className="form-control"
                                             value={CreateTaskInfo.PriorityRank}
-                                            onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, PriorityRank: parseInt(e.target.value) || 0 })}
+                                            onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, PriorityRank: e.target.value })}
                                         /> :
                                         <input
                                             type='Number'
@@ -781,8 +777,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                         <input
                                             type='text'
                                             className="form-control"
-                                            value={CreateTaskInfo.Relevant_Url}
-
+                                            defaultValue={CreateTaskInfo.Relevant_Url}
                                             onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, Relevant_Url: e.target.value })}
                                         /> :
                                         <input

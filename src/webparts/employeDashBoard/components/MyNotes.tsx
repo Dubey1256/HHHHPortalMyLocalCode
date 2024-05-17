@@ -7,6 +7,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import { AiFillLeftCircle, AiFillRightCircle, AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import moment from 'moment';
 import ManageConfigPopup from '../../../globalComponents/ManageConfigPopup';
+import AddConfiguration from '../../../globalComponents/AddConfiguration';
 const MyNotes = (MyNotes: any) => {
   const ContextData: any = React.useContext(myContextValue);
   const [myNoteData, setMyNoteData] = React.useState<any>([]);
@@ -20,9 +21,9 @@ const MyNotes = (MyNotes: any) => {
   const [SelectedItem, setSelectedItem]: any = React.useState({});
   useEffect(() => {
     GetMyNotesData()
-  }, [ContextData?.currentUserData != undefined])
+  }, [ContextData?.currentUserData != undefined && ContextData?.currentUserData?.AssingedToUser != undefined])
   const GetMyNotesData = async () => {
-    if (ContextData?.currentUserData != undefined) {
+    if (ContextData?.currentUserData != undefined && ContextData?.currentUserData?.AssingedToUser != undefined) {
       const web = new Web(ContextData?.siteUrl);
       await web.lists.getById(ContextData?.propsValue?.MyNotesId).items.select("Id,Title,FeedBack,Created,Modified,Author/Title,Author/Id ,Editor/Title,Editor/Id").expand("Author,Editor").filter(`Author/Id eq ${ContextData?.currentUserData?.AssingedToUser?.Id}`).orderBy("Modified desc").getAll().then(async (data: any) => {
         if (data.length > 0)
@@ -198,7 +199,8 @@ const MyNotes = (MyNotes: any) => {
         </footer>
       </Panel>
       <span>
-        {IsManageConfigPopup && <ManageConfigPopup SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseOpenConfigPopup={CloseOpenConfigPopup} />}
+        {/* {IsManageConfigPopup && <ManageConfigPopup SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseOpenConfigPopup={CloseOpenConfigPopup} />} */}
+        {IsManageConfigPopup && <AddConfiguration DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} props={ContextData?.propsValue} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseOpenConfigPopup} />}
       </span>
     </>
   )

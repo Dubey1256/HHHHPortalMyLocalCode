@@ -11,7 +11,7 @@ import { map } from "jquery";
 var taskUsers: any;
 let GroupByUsers: any = [];
 let AllMasterTasks: any[] = [];
-var currentUserData: any;
+var currentUserData: any = {};
 let DashboardConfig: any = [];
 let DashboardConfigBackUp: any = [];
 let allData: any = [];
@@ -78,6 +78,7 @@ const EmployeProfile = (props: any) => {
       }
       Count++;
     }
+    dates.unshift({ "DisplayDate": 'Un-Assigned', "ServerDate": undefined, IsShowTask: false });
   };
   const timeEntryIndex: any = {};
   const smartTimeTotal = async () => {
@@ -423,30 +424,70 @@ const EmployeProfile = (props: any) => {
           config.Tasks = LoginUserTeamMembers;
           if (config?.Tasks != undefined && config?.Tasks?.length > 0) {
             config?.Tasks.map((User: any) => {
+              User.TotalTask = 0;
+              User.TotalEstimatedTime = 0;
               User.dates = JSON.parse(JSON.stringify(dates));
               User.dates.map((Date: any) => {
                 Date.ServerDate = Moment(Date?.ServerDate)
                 Date.ServerDate = Date.ServerDate?._d;
                 Date.ServerDate.setHours(0, 0, 0, 0)
+                if (Date?.DisplayDate == 'Un-Assigned')
+                  Date.ServerDate = undefined;
                 if (Date?.Tasks == undefined)
                   Date.Tasks = [];
                 Date.TotalTask = 0;
                 Date.TotalEstimatedTime = 0
                 array.map((Task: any) => {
+                  // if (Task.WorkingDate == undefined)
+                  Task.WorkingDate = ''
+                  let IsUnAssigedTask: any = true;
                   if (Task?.WorkingAction != undefined && Task?.WorkingAction != '' && Task?.WorkingAction?.length > 0) {
-                    Task?.WorkingAction?.map((workingDetails: any) => {
-                      if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
-                        let WorkingDate: any = Moment(workingDetails.WorkingDate, 'DD/MM/YYYY');
-                        WorkingDate?._d.setHours(0, 0, 0, 0)
-                        workingDetails?.WorkingMember?.forEach((Id: any) => {
-                          if (User.AssingedToUserId != undefined && Id === User.AssingedToUserId && Date.ServerDate.getTime() == WorkingDate?._d.getTime() && !isTaskItemExists(Date.Tasks, Task)) {
-                            Date.Tasks.push(Task)
-                            Date.TotalTask += 1;
-                            Date.TotalEstimatedTime += Task?.EstimatedTime;
+                    Task?.WorkingAction?.map((workingMember: any) => {
+                      if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
+                        IsUnAssigedTask = false
+                        workingMember?.InformationData?.map((workingDetails: any) => {
+                          if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                            workingDetails?.WorkingMember?.forEach((workingUser: any) => {
+                              if (User.AssingedToUserId != undefined && workingUser?.Id === User.AssingedToUserId) {
+                                Task.WorkingDate += workingDetails?.WorkingDate + ' | '
+                              }
+                            })
+                          }
+                        })
+                        let CopyTask = { ...Task }
+                        workingMember?.InformationData?.map((workingDetails: any) => {
+                          if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                            let WorkingDate: any = Moment(workingDetails.WorkingDate, 'DD/MM/YYYY');
+                            WorkingDate?._d.setHours(0, 0, 0, 0)
+                            workingDetails?.WorkingMember?.forEach((workingUser: any) => {
+                              if (User.AssingedToUserId != undefined && workingUser?.Id === User.AssingedToUserId && Date.ServerDate?.getTime() == WorkingDate?._d.getTime() && !isTaskItemExists(Date.Tasks, Task)) {
+                                Date.Tasks.push(CopyTask)
+                                Date.TotalTask += 1;
+                                Date.TotalEstimatedTime += Task?.EstimatedTime;
+                              }
+                              if (User.AssingedToUserId != undefined && workingUser?.Id === User.AssingedToUserId && !isTaskItemExists(User.Tasks, Task)) {
+                                if (User?.Tasks == undefined)
+                                  User.Tasks = [];
+                                User.Tasks.push(CopyTask)
+                                User.TotalTask += 1;
+                                User.TotalEstimatedTime += Task?.EstimatedTime;
+                              }
+                            })
                           }
                         })
                       }
                     })
+                  }
+                  else if (IsUnAssigedTask == true && Date?.DisplayDate == 'Un-Assigned') {
+                    if (Task?.AssignedTo != undefined && Task?.AssignedTo?.length > 0) {
+                      Task?.AssignedTo?.forEach((assign: any) => {
+                        if (assign.Id != undefined && User.AssingedToUserId != undefined && assign.Id === User.AssingedToUserId && !isTaskItemExists(User?.Tasks, Task)) {
+                          Date.Tasks.push(Task)
+                          Date.TotalTask += 1;
+                          Date.TotalEstimatedTime += Task?.EstimatedTime;
+                        }
+                      })
+                    }
                   }
                 })
               })
@@ -567,6 +608,10 @@ const EmployeProfile = (props: any) => {
         }
       }
     })
+    let todayDate: any = new Date();
+    const currentDate = todayDate;
+    currentDate.setDate(today.getDate());
+    currentDate.setHours(0, 0, 0, 0);
     array?.forEach((items: any) => {
       DashboardConfig?.forEach((config: any) => {
         if (config?.Tasks == undefined)
@@ -575,12 +620,28 @@ const EmployeProfile = (props: any) => {
           if (config?.IsDraftTask != undefined && items.Categories?.toLowerCase().indexOf(config?.IsDraftTask.toLowerCase()) > -1 && items.Author?.Id == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
             config?.Tasks.push(items);
           }
-          if (config?.IsBottleneckTask != undefined && items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
+
+          if (items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
             items?.WorkingAction?.map((workingDetails: any) => {
-              if (workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title === config?.IsBottleneckTask && workingDetails?.InformationData.length > 0) {
+              if (config?.IsBottleneckTask != undefined && workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title === config?.IsBottleneckTask && workingDetails?.InformationData.length > 0) {
                 workingDetails?.InformationData?.map((botteleckInfo: any) => {
                   if (botteleckInfo?.TaggedUsers != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
                     config?.Tasks.push(items);
+                  }
+                })
+              }
+              if (config?.IsTodaysTask != undefined && workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title === "WorkingDetails" && workingDetails?.InformationData.length > 0) {
+                workingDetails?.InformationData?.map((workingTask: any) => {
+                  if (workingTask?.WorkingMember != undefined && workingTask?.WorkingMember?.length > 0) {
+                    workingTask?.WorkingMember?.map((assign: any) => {
+                      let WorkingDate: any = Moment(workingTask?.WorkingDate, 'DD/MM/YYYY');
+                      WorkingDate?._d.setHours(0, 0, 0, 0)
+
+                      if (assign != undefined && assign?.Id == currentUserData?.AssingedToUser?.Id && WorkingDate?._d.getTime() == currentDate?.getTime() && !isTaskItemExists(config?.Tasks, items)) {
+                        items.WorkingDate = workingTask?.WorkingDate;
+                        config?.Tasks.push(items);
+                      }
+                    })
                   }
                 })
               }
@@ -588,22 +649,10 @@ const EmployeProfile = (props: any) => {
           }
           items.AssignedTo?.forEach((assign: any) => {
             if (assign && assign.Id === currentUserData?.AssingedToUser?.Id) {
-              if (config.IsTodaysTask != undefined && items.IsTodaysTask === config.IsTodaysTask && !isTaskItemExists(config?.Tasks, items)) {
-                config?.Tasks.push(items)
-              }
-              // && items.Categories?.toLowerCase().indexOf(config?.IsBottleneckTask.toLowerCase()) > -1 
-              // else if (config?.IsBottleneckTask != undefined && items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
-              //   items?.WorkingAction?.map((workingDetails: any) => {
-              //     if (workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title === config?.IsBottleneckTask && workingDetails?.InformationData.length > 0) {
-              //       workingDetails?.InformationData?.map((botteleckInfo: any) => {
-              //         if (botteleckInfo?.TaggedUsers != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
-              //           config?.Tasks.push(items);
-              //         }
-              //       })
-              //     }
-              //   })
+              // if (config.IsTodaysTask != undefined && items.IsTodaysTask === config.IsTodaysTask && !isTaskItemExists(config?.Tasks, items)) {
+              //   config?.Tasks.push(items)
               // }
-              else if (config?.IsImmediateTask != undefined && items.Categories?.toLowerCase().indexOf(config?.IsImmediateTask.toLowerCase()) > -1 && !isTaskItemExists(config?.Tasks, items)) {
+              if (config?.IsImmediateTask != undefined && items.Categories?.toLowerCase().indexOf(config?.IsImmediateTask.toLowerCase()) > -1 && !isTaskItemExists(config?.Tasks, items)) {
                 config?.Tasks.push(items);
               }
               else if (config?.IsApprovalTask != undefined && items.percentage == config?.IsApprovalTask && !isTaskItemExists(config?.Tasks, items)) {

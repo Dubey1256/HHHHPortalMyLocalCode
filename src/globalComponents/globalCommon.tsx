@@ -66,7 +66,7 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
                 let participants: any = []
                 TeamUser = res?.value;
                 let CurrentUserChatInfo = TeamUser.filter((items: any) => {
-                    if (items.userPrincipalName != undefined && currentUser.Email != undefined && items.userPrincipalName.toLowerCase() == currentUser.Email.toLowerCase())
+                    if (items.userPrincipalName != undefined && currentUser.Email != undefined && items.userPrincipalName?.toLowerCase() == currentUser?.Email?.toLowerCase())
                         return items
                 })
                 currentUser.ChatId = CurrentUserChatInfo[0]?.id;
@@ -74,9 +74,9 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
 
                 for (let index = 0; index < mention_To?.length; index++) {
                     for (let TeamUserIndex = 0; TeamUserIndex < TeamUser?.length; TeamUserIndex++) {
-                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase() == TeamUser[TeamUserIndex].userPrincipalName.toLowerCase())
+                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == TeamUser[TeamUserIndex].userPrincipalName?.toLowerCase())
                             SelectedUser.push(TeamUser[TeamUserIndex])
-                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
+                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
                             SelectedUser.push(TeamUser[TeamUserIndex])
                     }
                 }
@@ -99,7 +99,7 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
                 if (mention_To != undefined && AllUsers != undefined && AllUsers?.length > 0 && mention_To?.length > 0) {
                     mention_To?.map((TeamUser: any) => {
                         AllUsers?.map((User: any) => {
-                            if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser.toLowerCase()) {
+                            if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser?.toLowerCase()) {
                                 IsSendTeamMessage += 1;
                             }
                         })
@@ -121,7 +121,7 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
                     return result;
                 }
                 else {
-                    alert("Something went wrong please try after sometime")
+                    console.log("Error In Global Common SendTeamMessage Function")
                 }
 
             });
@@ -778,7 +778,7 @@ export const loadAllTaskUsers = async (AllListId: any) => {
     try {
         let web = new Web(AllListId?.siteUrl);
         taskUser = await web.lists
-            .getById(AllListId?.TaskUsertListID)
+            .getById(AllListId?.TaskUserListID)
             .items
             .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name,UserGroup/Id,UserGroup/Title,TeamLeader/Id,TeamLeader/Title&$expand=UserGroup,AssingedToUser,Approver,TeamLeader").get();
     }
@@ -827,7 +827,7 @@ export const GetIconImageUrl = (listName: any, listUrl: any, Item: any) => {
         let TaskListsConfiguration = parseJSON(GlobalConstants.LIST_CONFIGURATIONS_TASKS);
         let TaskListItem = TaskListsConfiguration.filter(function (filterItem: any) {
             let SiteRelativeUrl = filterItem.siteUrl;
-            return (filterItem.Title.toLowerCase() == listName.toLowerCase() && SiteRelativeUrl.toLowerCase() == (listUrl).toLowerCase());
+            return (filterItem.Title?.toLowerCase() == listName?.toLowerCase() && SiteRelativeUrl?.toLowerCase() == (listUrl)?.toLowerCase());
         });
         if (TaskListItem.length > 0) {
             if (Item == undefined) {
@@ -856,7 +856,7 @@ export const makePostDataForApprovalProcess = async (postData: any) => {
             }
         })
         var Item = { TaskUsers: '', postData: '' };
-        if ((postData?.Categories?.toLowerCase().indexOf('approval') > -1) && UserManager != undefined && UserManager?.length > 0) {
+        if ((postData?.Categories?.toLowerCase()?.indexOf('approval') > -1) && UserManager != undefined && UserManager?.length > 0) {
             //postData.PercentComplete = 0.01;
             //postData.Status = "For Approval";
             var isAvailable = false;
@@ -966,7 +966,7 @@ export const getListNameFromItemProperties = (item: any) => {
         listName = metadataType.split('.');
     listName = listName[2];
     if (listName != undefined)
-        listName = listName.substr(0, listName.indexOf('ListItem'));
+        listName = listName.substr(0, listName?.indexOf('ListItem'));
     return listName;
 }
 
@@ -1850,7 +1850,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
         AllMasterTaskData = await web.lists
             .getById(Props.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "HelpInformationVerifiedJson","FoundationPageUrl", "HelpInformationVerified", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate",
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "HelpInformationVerifiedJson", "FoundationPageUrl", "HelpInformationVerified", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate",
                 "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "PriorityRank",
                 "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id",
                 "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables",
@@ -2612,49 +2612,67 @@ export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, A
     }
     return { findGrouping, flatdata };
 }
-export const replaceURLsWithAnchorTags = (text: any) => {
+export const replaceURLsWithAnchorTags = (text:any) => {
     // Regular expression to match URLs
-    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    var urlRegex = /(https?:\/\/[^\s<>"]+)(?=["'\s.,]|$)/g;
     // Replace URLs with anchor tags
-    var replacedText = text.replace(urlRegex, function (url: any) {
-        return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+    var replacedText = text?.replace(urlRegex, function (url: any) {
+        if (!isURLInsideAnchorTag(url, text)) {
+            return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+        } else {
+            return url;
+        }
     });
     return replacedText;
 }
+
+function isURLInsideAnchorTag(url: any, text: any) {
+    // Regular expression to match anchor tags
+    var anchorRegex = /<a\s+(?:[^>]*?\s+)?href=(["'])(.*?)\1/ig;
+    var matches = text?.match(anchorRegex);
+    if (matches) {
+        for (var i = 0; i < matches?.length; i++) {
+            if (matches[i]?.includes(url)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 //--------------------------------------Share TimeSheet Report-----------------------------------------------------------------------
 
-export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, taskUser: any, Context: any, type: any) => {
+export const ShareTimeSheet = async (totalTimeDay: any, AllTaskTimeEntries: any, taskUser: any, Context: any, type: any) => {
     let AllData: any = []
     var isCustomDate = false;
     const currentLoginUserId = Context.pageContext?._legacyPageContext.userId;
     const CurrentUserTitle = Context.pageContext?._legacyPageContext?.userDisplayName;
 
-    var startDateMid =''
+    var startDateMid = ''
     var eventDateMid = ''
-    if (type == "Today" || type == "Yesterday" || type == "This Week" ||  type == "Last Week" || type == "This Month"){
+    if (type == "Today" || type == "Yesterday" || type == "This Week" || type == "Last Week" || type == "This Month") {
         const startDate = getStartingDate(type);
         const endDate = getEndingDate(type);
         const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
         const endDateMidnight = new Date(endDate.setHours(0, 0, 0, 0));
-    
-         startDateMid = moment(startDateMidnight).format("DD/MM/YYYY")
-         eventDateMid = moment(endDateMidnight).format("DD/MM/YYYY")
-      }
-      else{
+
+        startDateMid = moment(startDateMidnight).format("DD/MM/YYYY")
+        eventDateMid = moment(endDateMidnight).format("DD/MM/YYYY")
+    }
+    else {
         var splitDate = type.split(' - ')
-         startDateMid = splitDate[0]
-         eventDateMid = splitDate[1]
-         day = 'Custom'
-         if(splitDate[0] == splitDate[1]){
+        startDateMid = splitDate[0]
+        eventDateMid = splitDate[1]
+        day = 'Custom'
+        if (splitDate[0] == splitDate[1]) {
             isCustomDate = false
-         }
-         else{
+        }
+        else {
             isCustomDate = true;
-         }
-        
-      }
-     
-    
+        }
+
+    }
+
+
     var NewStartDate = startDateMid.split("/")
     var NewEndDate = eventDateMid.split("/")
 
@@ -2757,12 +2775,41 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
             updatedCategoryTime[newKey] = timeSheetData[key];
         }
     }
-
-    if (day == 'Today') {
-        var subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + currentDate + ' - ' + (updatedCategoryTime.today) + ' hours '
+    var subject: any;
+    // if (day == 'Today') {
+    //     subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + currentDate + ' - ' + (updatedCategoryTime.today) + ' hours '
+    // }
+    // if (day == 'Yesterday') {
+    //     subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + yesterday + ' - ' + (updatedCategoryTime.yesterday) + ' hours '
+    // }
+    function padWithZero(num: number): string {
+        return num < 10 ? '0' + num : num.toString();
     }
-    if (day == 'Yesterday') {
-        var subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + yesterday + ' - ' + (updatedCategoryTime.yesterday) + ' hours '
+
+    function formatDate(date: Date): string {
+        const day = padWithZero(date.getDate());
+        const month = padWithZero(date.getMonth() + 1);
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+    if (day == "Today") {
+        subject = "Daily Timesheet - " + CurrentUserTitle + " - " + currentDate + " - " + updatedCategoryTime.today + " hours ";
+    } else if (day == "Yesterday") {
+        subject =
+            "Daily Timesheet - " +
+            CurrentUserTitle +
+            " - " +
+            yesterday +
+            " - " +
+            updatedCategoryTime.yesterday +
+            " hours ";
+    } else {
+        subject =
+            "Daily Timesheet - " +
+            CurrentUserTitle +
+            " - " +
+            type;
+        day = 'Custom'
     }
     AllData.map((item: any) => {
         item.ClientCategories = ''
@@ -2779,7 +2826,7 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
         text =
             '<tr>' +
             '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.siteType + '</td>'
-            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management-Profile.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
+            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/PX-Profile.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:135px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Portfolio-Profile.aspx?taskId=' + item?.Portfolio?.Id + '><span style="font-size:13px">' + (item.Portfolio == undefined ? '' : item.Portfolio.Title) + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px">' + item.Title + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.TaskTime + '</td>'
@@ -2794,7 +2841,7 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
         `<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
             <thead>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Username: </td><td style="padding: 5px 0px;"> <a style="text-decoration:none;" href='${Context?.pageContext?.web?.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${currentLoginUserId}'>${CurrentUserTitle}</a></td></tr>
-            <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours ${day=='Custom'?day:'Total Time'} :</td><td style="padding: 5px 0px;">${totalTimeDay} Hours</td></tr>
+            <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours ${day == 'Custom' ? day : 'Total Time'} :</td><td style="padding: 5px 0px;">${totalTimeDay} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours this week :</td><td style="padding: 5px 0px;">${updatedCategoryTime.thisWeek} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600;padding: 5px 0px;width: 210px;">Total hours this month :</td><td style="padding: 5px 0px;">${updatedCategoryTime.thisMonth} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td colspan="2" style="padding: 5px 0px;"><a style="text-decoration:none;" href ='${Context.pageContext?.web?.absoluteUrl}/SitePages/UserTimeEntry.aspx?userId=${currentLoginUserId}'>Click here to open Online-Timesheet</a></td></tr>
@@ -2821,6 +2868,7 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
         + '</table>'
 
     body = body.replaceAll('>,<', '><').replaceAll(',', '')
+    let EmailSubject: string = `TimeSheet : ${currentDate}`;
 
     let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
     if (confirmation) {
@@ -2841,8 +2889,6 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
             }).then(() => {
                 console.log("Email Sent!");
                 alert('Email sent sucessfully');
-
-
             }).catch((err) => {
                 console.log(err.message);
             });
@@ -3309,7 +3355,7 @@ const GetleaveUser = async (TaskUser: any, Context: any) => {
         })
     })
     finalData = todayLeaveUsers.filter((val: any, TaskId: any, array: any) => {
-        return array.indexOf(val) == TaskId;
+        return array?.indexOf(val) == TaskId;
     })
     console.log(finalData)
     return finalData

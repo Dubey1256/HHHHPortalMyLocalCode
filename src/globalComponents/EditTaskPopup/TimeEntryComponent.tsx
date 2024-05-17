@@ -1193,7 +1193,7 @@ function reverseArray(arr: any) {
     getStructurefTimesheetCategories();
     setEditItem(items.Title);
 
-    if (items.siteType == "Offshore Tasks" || items.siteType == "Offshore%20Tasks" || items.siteType == "SharewebQA") {
+    if (items.siteType == "Offshore Tasks" || items.siteType == "SharewebQA") {
       var siteType = "OffshoreTasks";
       var filteres = "Task" + siteType + "/Id eq " + items.Id;
       var linkedSite = "Task" + siteType;
