@@ -1,16 +1,22 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { sp, Web } from 'sp-pnp-js';
-import { ColumnDef } from '@tanstack/react-table';
-import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import * as XLSX from 'xlsx';
 import FileSaver from 'file-saver';
-import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 export default function SiteDataBackupTool(selectedProps: any) {
     const [ListData, setListData] = useState<Item[]>([]);
     const [successMessage, setSuccessMessage] = useState(false);
     const [selectedFile, setselectedFile]: any = useState([]);
+    let Domain=selectedProps.SPBackupConfigListUrl.toLowerCase();
+    let labelSiteName='';
+    if(Domain?.indexOf("sp") > -1){
+        labelSiteName='SP Site';
+    }
+    else{
+        labelSiteName='GMBH Site';
+    }
+    let DomainUrl=Domain.split('/sites/')[0];
     var listData: any[] = [];
     interface Item {
         SiteUrl: string;
@@ -41,7 +47,17 @@ export default function SiteDataBackupTool(selectedProps: any) {
         if (selectedFile !== undefined) {
             var libraryName = "Documents";
             var folderName = "DataBackup";
-            const library = `/sites/HHHH/SP/${libraryName}/${folderName}`;
+            let library =''
+            if(Domain?.indexOf("sp") > -1)
+                {
+                     library = `/sites/HHHH/SP/${libraryName}/${folderName}`;
+                }
+          
+            if(Domain?.indexOf("gmbh") > -1)
+                {
+                    library = `/sites/HHHH/Gmbh/${libraryName}/${folderName}`;
+                }
+             
             const fileName = selectedFile?.name;
             try {
                 const fileContent: any = await readFileAsArrayBuffer(selectedFile);
@@ -143,10 +159,10 @@ export default function SiteDataBackupTool(selectedProps: any) {
     const QueryBasedOnLookup: any = [];
     const GetBackupConfig = async () => {
         try {
-            let web = new Web(selectedProps.AllList.SPBackupConfigListUrl);
-            const LoadBackups = await web.lists.getById(selectedProps.AllList.SPBackupConfigListID).items.getAll();
+            let web = new Web(selectedProps?.SPBackupConfigListUrl);
+            const LoadBackups = await web.lists.getById(selectedProps?.SPBackupConfigListID).items.getAll();
             if (LoadBackups !== undefined) {
-                LoadBackups.forEach((element) => {
+                LoadBackups.forEach((element: any) => {
                     if (element.Backup === true && element.Columns !== '') {
                         QueryBasedOnLookup.push({
                             ...element,
@@ -162,8 +178,9 @@ export default function SiteDataBackupTool(selectedProps: any) {
     const LoadQueryBasedOnLookup = async () => {
         var count = 0;
         await Promise.all(QueryBasedOnLookup.map(async (item: Item) => {
+           
             try {
-                let web = new Web('https://hhhhteams.sharepoint.com' + item.SiteUrl);
+                let web = new Web(DomainUrl + item.SiteUrl);
                 const items = await web.lists.getById(item.List_x0020_Id).items.select(item.Query).getAll();
                 console.log(items);
                 const index = isItemExists(listData, 'Site', item.Site_x0020_Name);
@@ -183,33 +200,18 @@ export default function SiteDataBackupTool(selectedProps: any) {
     useEffect(() => {
         GetBackupConfig()
     }, [0])
-    // const columns = useMemo<ColumnDef<any, unknown>[]>(() => [{
-    //     accessorKey: "Title", placeholder: "Title", header: "", size: 30,
-    //     cell: ({ row }) => (
-    //         <>
-    //             <div className='alignCenter'>
-    //                 <span title="Tick" className="svg__iconbox svg__icon--tickRight"></span>
-    //                 {row?.original?.Title != undefined && row?.original?.Title != null && row?.original?.Title != '' ? <a className='ms-2'>{row?.original?.Title}</a> : ""} ({row?.original?.Items.length})
-    //             </div>
-    //         </>
-    //     ),
-    // }],
-    //     [ListData]);
     const callBackData = useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
     }, []);
     return (
         <div className='px-3 border'>
-            <label className='form-label full-width fw-bold'>SP Site</label>
-            {/* {ListData && <div>
-                < GlobalCommanTable columns={columns} data={ListData} showHeader={true} callBackData={callBackData} />
-            </div>} */}
+            <label className='form-label full-width fw-bold'>{labelSiteName}</label>                                 
             <div>
                 {ListData.map((item: any) => {
                     return (<>
                         <div className='alignCenter pb-1'>
                             <span className='svg__iconbox svg__icon--tickRight mini me-1'></span>
-                  
-                        {item.Title} ({item.Items.length})
+
+                            {item.Title} ({item.Items.length})
                         </div></>)
                 })}
 
@@ -221,10 +223,10 @@ export default function SiteDataBackupTool(selectedProps: any) {
                         <input type="file" className='p-1' onChange={handleFileChange} />
                         <button className='btnCol btn btn-primary ms-3' onClick={() => uploadDocument()}>Upload Document</button>
                     </span>
-                    <span className='ml-auto'>            
-                        <button type="button" className='btnCol btn btn-primary me-1' onClick={() => DataBackup('Daily')}>Daily Backup</button>             
+                    <span className='ml-auto'>
+                        <button type="button" className='btnCol btn btn-primary me-1' onClick={() => DataBackup('Daily')}>Daily Backup</button>
                         <button type="button" className='btnCol btn btn-primary ms-1' onClick={() => DataBackup('Monthly')}>Monthly Backup</button>
-                    </span> 
+                    </span>
                     {successMessage && <p>File Uploaded Successfully</p>}
                 </div >
             }
