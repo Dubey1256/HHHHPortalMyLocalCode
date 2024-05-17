@@ -23,7 +23,7 @@ import {
   MdKeyboardArrowRight,
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
-} from "react-icons/md";
+} from "react-icons/Md";
 
 let AllTimeSpentDetails: any = [];
 let CurntUserId = "";
@@ -113,9 +113,15 @@ const TimeEntryPopup = (item: any) => {
     Description: "",
     TaskTime: "",
   });
-  const [title,setNewTitle]=React.useState(undefined)
-  
-  
+  const initialData = {
+    Title: '',
+    TaskDate: '',
+    Description: '',
+    TimeSpentInMinute: '',
+    TimeSpentInHours: '',
+    TaskTime: '',
+};
+  const [newData, setNewData] = React.useState(initialData);
   const [saveEditTaskTimeChild, setsaveEditTaskTimeChild] = React.useState<any>(
     {}
   );
@@ -399,13 +405,11 @@ const TimeEntryPopup = (item: any) => {
     CategoriesIdd = child.Category.Id;
     array.push(child);
     setCategoryData(array);
-    setNewTitle(title);
     setEditcategory(true);
   };
 
   const closeEditcategorypopup = (child: any) => {
-   
-    setNewTitle(undefined)
+    setNewData(initialData );
     setcheckCategories(undefined);
     setEditcategory(false);
   };
@@ -420,7 +424,7 @@ const TimeEntryPopup = (item: any) => {
       setAddTaskTimepopup(true);
       setTimeInMinutes(0);
       setTimeInHours(0);
-      setNewTitle(undefined)
+      setNewData(initialData );
       SetWeek(1);
       setediteddata(undefined);
       setCount(1);
@@ -440,7 +444,7 @@ const TimeEntryPopup = (item: any) => {
       PopupType = Type;
       CategryTitle = "";
       setediteddata(undefined);
-      setNewTitle(undefined)
+      setNewData(initialData );
       setTimeInHours(0);
       setMyDatee(undefined);
       change = Moment().format();
@@ -459,19 +463,16 @@ const TimeEntryPopup = (item: any) => {
       Eyd = Moment(Dateet).format("ddd, DD MMM yyyy");
       var inputDate: any = new Date(Eyd);
       setediteddata(inputDate);
-      //setediteddata(Eyd)
       var Array: any = [];
       var Childitem: any = [];
       setAddTaskTimepopup(true);
-      // Array.push(childitem)
-      setNewTitle(undefined)
+      setNewData(initialData );
       Childitem.push(childitem);
       backupEdit?.forEach((val: any) => {
         if (val.Id == childitem.MainParentId) {
           CategryTitle = val.Category.Title;
         }
       });
-      // setsaveEditTaskTime(Array)
       setsaveEditTaskTimeChild(childitem);
     }
     if (Type == "AddTime Category") {
@@ -511,7 +512,7 @@ const TimeEntryPopup = (item: any) => {
     setAddTaskTimepopup(false);
     setcheckCategories(undefined);
     setTimeInHours(0);
-    setNewTitle(undefined)
+    setNewData(initialData );
     setTimeInMinutes(0);
     SetWeek(1);
     setediteddata(undefined);
@@ -676,12 +677,25 @@ const TimeEntryPopup = (item: any) => {
       .get();
     AllMetadata = MetaData;
     MetaData.forEach((itemss: any) => {
-      if (
-        itemss?.Title?.toLowerCase() == item?.props?.siteType?.toLowerCase() &&
-        itemss.TaxType == "Sites"
-      ) {
-        TimesheetConfiguration = JSON.parse(itemss.Configurations);
-      }
+     if(item?.props?.siteType=="Offshore%20Tasks")
+        {
+          if (
+       
+            itemss?.Title?.toLowerCase() == 'offshore tasks' &&
+            itemss.TaxType == "Sites"
+          ) {
+            TimesheetConfiguration = JSON.parse(itemss.Configurations);
+          }
+        }
+        else{
+          if (
+       
+            itemss?.Title?.toLowerCase() == item?.props?.siteType?.toLowerCase() &&
+            itemss.TaxType == "Sites"
+          ) {
+            TimesheetConfiguration = JSON.parse(itemss.Configurations);
+          }
+        }
     });
     TimesheetConfiguration?.forEach((val: any) => {
       TimeSheetlistId = val.TimesheetListId;
@@ -1430,6 +1444,19 @@ function reverseArray(arr: any) {
   //-----------------------------------------Delete Timesheet function----------------------------------------------------------------------------------
 
   const deleteTaskTime = async (childinew: any) => {
+    let web = new Web(`${CurrentSiteUrl}`);
+    let TimeForTask = 0;
+    if(item.props?.TotalTime != null){
+      item.props.TotalTime = item.props?.TotalTime - childinew.TaskTimeInMin;
+    }
+    
+      if(item.props.TotalTime > 0){
+        await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
+          TotalTime: item.props?.TotalTime
+      }).then((res: any) => {
+          console.log(res);
+      });
+      }
     var UpdatedData: any = [];
     var deleteConfirmation = confirm("Are you sure, you want to delete this?");
     if (deleteConfirmation) {
@@ -1459,8 +1486,7 @@ function reverseArray(arr: any) {
       } else {
         var ListId = TimeSheetlistId;
       }
-      let web = new Web(`${CurrentSiteUrl}`);
-
+    
       await web.lists
         .getById(ListId)
         .items.getById(childinew.ParentID)
@@ -1548,9 +1574,10 @@ function reverseArray(arr: any) {
     }
     let itemMetadataAdded = {
       Title:
-      title != undefined &&
-      title != ""
-      ? title
+        newData != undefined &&
+          newData.Title != undefined &&
+          newData.Title != ""
+          ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
       CategoryId: Category,
@@ -1574,6 +1601,7 @@ function reverseArray(arr: any) {
   // ----------------------------------------------------------Save Timesheet for old user----------------------------------------------------------------------
 
   const saveOldUserTask = async (UpdatedData: any) => {
+   
     var Available = false;
     var TimeInHours: any = changeTime / 60;
     TimeInHours = TimeInHours.toFixed(2);
@@ -1590,11 +1618,11 @@ function reverseArray(arr: any) {
     });
 
     function findCategoryById(data: any, categoryId: any): any | null {
-      let foundCategoryId: any = null;
+      let foundCategoryId: any = [];
 
       data.forEach((categoryData: { Id: any; Category: { Id: any } }) => {
         if (categoryData.Category.Id === categoryId) {
-          foundCategoryId = categoryData.Id;
+          foundCategoryId = categoryData;
         }
       });
 
@@ -1605,6 +1633,21 @@ function reverseArray(arr: any) {
     console.log(foundCategory, "foundCategory");
     console.log("UP DATA", UpdatedData);
     let web = new Web(`${CurrentSiteUrl}`);
+   
+    if(item.props?.TotalTime != null){
+      item.props.TotalTime = item.props?.TotalTime + TimeInMinutes;
+    }
+    else{
+      item.props.TotalTime = TimeInMinutes;
+    }
+
+    if(item.props.TotalTime > 0){
+      await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
+        TotalTime: item.props.TotalTime
+    }).then((res: any) => {
+        console.log(res);
+    });
+    }
 
     if (AllTimeEntry != undefined && AllTimeEntry.length > 0) {
       AllTimeEntry.forEach(async (ite: any) => {
@@ -1621,13 +1664,13 @@ function reverseArray(arr: any) {
             var listNames = listName;
             var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
           }
-          if (foundCategory) {
+          if (foundCategory.length > 0) {
             let isAvailble = false;
             let count = 0
-            mainParentId = foundCategory;
+            mainParentId = foundCategory?.Id;
             mainParentTitle = checkCategories;
-            data?.forEach((val: any) => {
-              val?.subRows.forEach(async (items: any) => {
+           
+              foundCategory?.subRows?.forEach(async (items: any) => {
                   if (!isAvailble && items.AuthorId === CurntUserId) {
                       count++;
                       isAvailble = true;
@@ -1657,12 +1700,12 @@ function reverseArray(arr: any) {
                       update["TaskDate"] = Moment(Datee).format("DD/MM/YYYY");
                       update["Description"] = postData?.Description;
           
-                      val.AdditionalTime.push(update);
+                      foundCategory.AdditionalTime.push(update);
           
                       var ListId = items.siteType === "Migration" || items.siteType === "ALAKDigital" ? TimeSheetlistId : TimeSheetlistId;
           
                       await web.lists.getById(ListId).items.getById(NewparentId).update({
-                          AdditionalTimeEntry: JSON.stringify(val.AdditionalTime),
+                          AdditionalTimeEntry: JSON.stringify(foundCategory.AdditionalTime),
                           TimesheetTitleId: NewMainparentId,
                       }).then((res: any) => {
                           console.log(res);
@@ -1670,7 +1713,7 @@ function reverseArray(arr: any) {
                       });
                   }
               });
-          });
+          
          
            
              if (!isAvailble) {
@@ -1680,10 +1723,11 @@ function reverseArray(arr: any) {
            else {
             let itemMetadataAdded = {
               Title:
-              title != undefined &&
-              title != ""
-              ? title
-              : checkCategories,
+                newData != undefined &&
+                  newData.Title != undefined &&
+                  newData.Title != ""
+                  ? newData.Title
+                  : checkCategories,
 
               [smartTermId]: item.props.Id,
               CategoryId: Category,
@@ -1720,8 +1764,10 @@ function reverseArray(arr: any) {
 
   //---------------------------------------------------------------Save Timesheet Main function----------------------------------------------------------------------
   const saveTimeSpent = async () => {
+
+    
     var UpdatedData: any = {};
-    if (item.props.siteType == "Offshore Tasks"  || item.props.siteType == "Offshore%20Tasks") {
+    if (item.props.siteType == "Offshore Tasks") {
       var siteType = "OffshoreTasks";
       smartTermId = "Task" + siteType + "Id";
     } else {
@@ -1793,9 +1839,10 @@ function reverseArray(arr: any) {
 
     let itemMetadataAdded = {
       Title:
-        title != undefined &&
-          title != ""
-          ? title
+        newData != undefined &&
+          newData.Title != undefined &&
+          newData.Title != ""
+          ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
       CategoryId: Category,
@@ -1851,9 +1898,10 @@ function reverseArray(arr: any) {
 
     let itemMetadataAdded = {
       Title:
-          title != undefined &&
-          title != ""
-          ? title
+        newData != undefined &&
+          newData.Title != undefined &&
+          newData.Title != ""
+          ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
       CategoryId: Category,
@@ -1890,6 +1938,36 @@ function reverseArray(arr: any) {
 
       var DateFormate = new Date(Eyd);
       var UpdatedData: any = [];
+      let web = new Web(`${siteUrl}`);
+
+      if(item.props?.TotalTime != null){
+        if(child.TaskTimeInMin > TimeInMinutes){
+          if(TimeInMinutes != 0){
+            let time = child.TaskTimeInMin - TimeInMinutes;
+            item.props.TotalTime = item.props?.TotalTime - time;
+          }
+        
+        }
+        else{
+     
+          let time = TimeInMinutes - child.TaskTimeInMin;
+          item.props.TotalTime = item.props?.TotalTime + time;
+        }
+       
+      }
+      else{
+        item.props.TotalTime = TimeInMinutes;
+      }
+        if(item.props.TotalTime > 0){
+          await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
+            TotalTime: item.props.TotalTime
+        }).then((res: any) => {
+            console.log(res);
+        });
+        }
+
+
+
       $.each(TaskCate, function (index: any, update: any) {
         if (update.Id === child.ParentID && update.AuthorId == CurntUserId) {
           $.each(update.AdditionalTime, function (index: any, updateitem: any) {
@@ -1930,7 +2008,7 @@ function reverseArray(arr: any) {
       } else {
         var ListId = TimeSheetlistId;
       }
-      let web = new Web(`${siteUrl}`);
+      
       if (isTimes == true) {
         await web.lists
           .getById(ListId)
@@ -1948,13 +2026,43 @@ function reverseArray(arr: any) {
     }
     if (Type == "CopyTime") {
       var CurrentUser: any = {};
-
+      let web = new Web(`${CurrentSiteUrl}`);
       var counts = 0;
       var update: any = {};
       var TimeInMinute: any = changeTime / 60;
       var UpdatedData: any = [];
       var AddParent: any = "";
       var AddMainParent: any = "";
+
+      if(item.props?.TotalTime != null){
+        if(child.TaskTimeInMin > TimeInMinutes){
+          if(TimeInMinutes == 0){
+            item.props.TotalTime = item.props?.TotalTime + child.TaskTimeInMin;
+          }
+          else{
+            let time =  TimeInMinutes;
+            item.props.TotalTime = item.props?.TotalTime + time;
+          }
+         
+        }
+        else{
+     
+          let time = TimeInMinutes;
+          item.props.TotalTime = item.props?.TotalTime + time;
+        }
+       
+      }
+      else{
+        item.props.TotalTime = TimeInMinutes;
+      }
+        if(item.props.TotalTime > 0){
+          await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
+            TotalTime: item.props.TotalTime
+        }).then((res: any) => {
+            console.log(res);
+        });
+        }
+
       $.each(AllUsers, function (index: any, taskUser: any) {
         if (taskUser.AssingedToUserId === CurntUserId) {
           if (taskUser?.ApproverId?.length > 0) {
@@ -2042,7 +2150,7 @@ function reverseArray(arr: any) {
         var ListId = TimeSheetlistId;
       }
       setCopyTaskpopup(false);
-      let web = new Web(`${CurrentSiteUrl}`);
+     
       if (isTrue == true) {
         await web.lists
           .getById(ListId)
@@ -2081,7 +2189,22 @@ function reverseArray(arr: any) {
       var AddMainParentId: any = "";
       var isTrueTime: Boolean = false;
       var AddParentId: any = "";
+
       let web = new Web(`${CurrentSiteUrl}`);
+    if(item.props?.TotalTime != null){
+      item.props.TotalTime = item.props?.TotalTime + TimeInMinutes;
+    }
+    else{
+      item.props.TotalTime = TimeInMinutes;
+    }
+      if(item.props.TotalTime > 0){
+        await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
+          TotalTime: item.props.TotalTime
+      }).then((res: any) => {
+          console.log(res);
+      });
+      }
+     
       var TimeInMinute: any = changeTime / 60;
       $.each(AllUsers, function (index: any, taskUser: any) {
         if (taskUser.AssingedToUserId === CurntUserId) {
@@ -2099,7 +2222,7 @@ function reverseArray(arr: any) {
               : "";
         }
       });
-      if (item.props.siteType == "Offshore Tasks" || || item.props.siteType == "Offshore%20Tasks") {
+      if (item.props.siteType == "Offshore Tasks") {
         var siteType = "OffshoreTasks";
         var filteres = "Task" + siteType + "/Id eq " + item.props.Id;
         var linkedSite = "Task" + siteType;
@@ -2222,6 +2345,7 @@ function reverseArray(arr: any) {
         saveJsonDataAnotherCat(CurrentUser, ParentId);
       }
     }
+
   };
 
   //-------------------------------------------------Add JSON Data in Another category--------------------------------------------------------------------------
@@ -2229,7 +2353,7 @@ function reverseArray(arr: any) {
     var update: any = {};
     var UpdatedData: any = [];
     let web = new Web(`${CurrentSiteUrl}`);
-    if (item.props.siteType == "Offshore Tasks" || item.props.siteType == "Offshore%20Tasks") {
+    if (item.props.siteType == "Offshore Tasks") {
       var siteType = "OffshoreTasks";
       smartTermId = "Task" + siteType + "Id";
     } else {
@@ -2327,7 +2451,7 @@ function reverseArray(arr: any) {
     }
     var DateFormate = new Date(Eyd);
 
-    if (item.props.siteType == "Offshore Tasks" || item.props.siteType == "Offshore%20Tasks") {
+    if (item.props.siteType == "Offshore Tasks") {
       var siteType = "OffshoreTasks";
       smartTermId = "Task" + siteType + "Id";
     } else {
@@ -2459,7 +2583,7 @@ function reverseArray(arr: any) {
       .getById(ListId)
       .items.getById(CategoryyID)
       .update({
-        Title: title != undefined ? title : checkCategories,
+       Title: newData.Title != '' ? newData.Title : checkCategories,
         CategoryId:
           Category != undefined && Category != "" ? Category : CategoriesIdd,
       })
@@ -2471,7 +2595,7 @@ function reverseArray(arr: any) {
       });
   };
   const clearInput = () => {
-    setNewTitle('');
+    setNewData(initialData )
     setcheckCategoriesTitle('');
    
   }
@@ -3053,9 +3177,9 @@ function reverseArray(arr: any) {
                           type="text"
                           className="form-control"
                           name="TimeTitle"
-                          value={title==undefined?(checkCategories|| checkCategoriesTitle): title }
+                          value={newData?.Title === '' ? (checkCategories|| checkCategoriesTitle): newData?.Title }
                           onChange={(e) =>
-                            setNewTitle(e.target.value)
+                            setNewData({ ...newData, Title: e.target.value })
                           }
                         />
                          <span className="input-group-text" style={{zIndex:'9'}} onClick={() =>clearInput()}>
@@ -3744,13 +3868,13 @@ function reverseArray(arr: any) {
                         autoComplete="off"
                         className="form-control"
                         name="TimeTitle"
-                        value={
-                          title != undefined
-                            ? title
-                            : checkCategories
+                        defaultValue={
+                          checkCategories != undefined
+                            ? checkCategories
+                            : item.Title
                         }
                         onChange={(e) =>
-                          setNewTitle(e.target.value)
+                          setNewData({ ...newData, Title: e.target.value })
                         }
                       />
                     </div>
@@ -3808,12 +3932,12 @@ function reverseArray(arr: any) {
       </Panel>
       {isAlertVisible ?
         <CustomAlert
-          hidden={!isAlertVisible}
-          toggleDialog={toggleDialog}
-          message="You are not part of Team members of this site. Please click here to add yourself or contact the site administrator."
-          linkText="Please Click Here!"
-          linkUrl="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskUser-Management.aspx"
-        /> : null
+        hidden={!isAlertVisible}
+        toggleDialog={toggleDialog}
+        message="You are not part of Team members of this site. Please click here to add yourself or contact the site administrator."
+        linkText="Click Here!"
+        linkUrl={`${CurrentSiteUrl}/SitePages/TaskUser-Management.aspx`}
+      /> : null
       }
     </div>
   );
