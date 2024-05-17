@@ -925,7 +925,7 @@ const EditTaskPopup = (Items: any) => {
                     setEmailStatus(item.TaskCategories?.some((category: any) => category.Title === "Email Notification"));
                     setImmediateStatus(item.TaskCategories?.some((category: any) => category.Title === "Immediate"));
                     setOnlyCompletedStatus(item.TaskCategories?.some((category: any) => category.Title === "Only Completed"));
-                    setDesignStatus(item.TaskCategories?.some((category: any) => category.Title === "Design"));
+                    setDesignStatus(item.TaskCategories?.some((category: any) => category.Title === "Design" || category.Title === "User Experience - UX"));
                     let checkForApproval: any = item.TaskCategories?.some((category: any) => category.Title === "Approval")
                     if (checkForApproval) {
                         setApprovalStatus(true);
@@ -2845,8 +2845,8 @@ const EditTaskPopup = (Items: any) => {
 
                             if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
                                 let DataForNotification: any = {
-                                    ReceiverName: 'Robert',
-                                    sendUserEmail: ['robert.ungethuem@hochhuth-consulting.de'],
+                                    ReceiverName: 'Alina',
+                                    sendUserEmail: ['alina.chyhasova@hochhuth-consulting.de'],
                                     Context: Items.context,
                                     ActionType: "User Experience - UX",
                                     ReasonStatement: "New Task Created",
@@ -2963,15 +2963,7 @@ const EditTaskPopup = (Items: any) => {
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
                             }
-                            // if (TaskDetailsFromCall[0]?.Categories?.length > 0 && TaskDetailsFromCall[0]?.Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
-                            //     ValueStatus = CalculateStatusPercentage;
-                            //     setSendEmailNotification(true);
-                            //     Items.StatusUpdateMail = true;
-                            // }
-                            // else {
-                            //     setSendEmailComponentStatus(false);
-                            //     Items.StatusUpdateMail = false;
-                            // }
+
                             if (sendEmailGlobalCount > 0) {
                                 if (sendEmailStatus) {
                                     setSendEmailComponentStatus(false);
@@ -4488,10 +4480,17 @@ const EditTaskPopup = (Items: any) => {
     const SaveImageDataOnLoop = async (response: any, NewList: any, NewItem: any) => {
         let tempArrayJsonData: any = [];
         let arrangedArray: any = []
+        let CurrentSiteName: string = '';
+        if (Items?.Items?.siteType == "Offshore%20Tasks" || Items?.Items?.siteType == "Offshore Tasks" || NewList == "Offshore%20Tasks" || NewList == "Offshore Tasks") {
+            CurrentSiteName = "SharewebQA";
+            NewList = "SharewebQA";
+        } else {
+            CurrentSiteName = Items.Items.siteType;
+        }
         let currentUserDataObject: any;
         for (let index = 0; index < response?.AttachmentFiles?.length; index++) {
             const value = response.AttachmentFiles[index];
-            const sourceEndpoint = `${siteUrls}/_api/web/lists/getbytitle('${Items?.Items?.siteType}')/items(${Items?.Items?.Id})/AttachmentFiles/getByFileName('${value.FileName}')/$value`;
+            const sourceEndpoint = `${siteUrls}/_api/web/lists/getbytitle('${CurrentSiteName}')/items(${Items?.Items?.Id})/AttachmentFiles/getByFileName('${value.FileName}')/$value`;
 
             try {
                 const response = await fetch(sourceEndpoint, {

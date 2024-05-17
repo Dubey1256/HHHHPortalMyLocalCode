@@ -7,33 +7,30 @@ import { Web } from 'sp-pnp-js';
 import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 
 import ImageInformation from '../../EditPopupFiles/ImageInformation';
+import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
 
-let mastertaskdetails: any = []
-let copyEditData: any = {}
-let mydataa: any = [];
-let myTaskData: any = []
-let count = 0;
 var AllListId: any;
-var dynamicColumnName: any = [];
-var selectedTasks: any = [];
-let componentDetailsDaata: any = [];
-let tempmetadata: any = [];
+var taggingtype: any = '';
+var tempShareWebTypeData: any = [];
+var EditDataBackup: any;
+var tempCategoryData: any = "";
 const EditLivingDocumentpanel = (props: any) => {
   const [EditdocumentsData, setEditdocumentsData]: any = React.useState();
   const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
-  const [projectdata, setProjectData] = React.useState([]);
-  const [allProjectDaata, SetAllProjectDaata] = React.useState([]);
-  const [Metadata, setMetadata] = React.useState([]);
   const [allContactData, setallContactData] = React.useState([]);
   const [searchedNameData, setSearchedDataName] = React.useState([])
   const [listIsVisible, setListIsVisible] = React.useState(false);
   const [ShareWebTypeTopicData, setShareWebTypeTopicData] = React.useState([]);
+  const [TopicSearchKey, setTopicSearchKey] = React.useState("");
+  const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
+  const [SearchedTopicData, setSearchedTopicData] = React.useState([]);
+  const [ShareWebTypePagesData, setShareWebTypePagesData] = React.useState([]);
   const [searchKey, setSearchKey] = React.useState({
-      Title: '',
-      FirstName: '',
+    Title: '',
+    FirstName: '',
   });
   // const [selectedTasks, setselectedTasks] = React.useState([]);
-    let Status: any = ["selectStatus", "Draft", "Final", "Archived"]
+  let Status: any = ["selectStatus", "Draft", "Final", "Archived"]
   let ItemRank = [
     { rankTitle: 'Select Item Rank', rank: null },
     { rankTitle: '(8) Top Highlights', rank: 8 },
@@ -47,43 +44,43 @@ const EditLivingDocumentpanel = (props: any) => {
   ]
 
   React.useEffect(() => {
-    AllListId = props.AllListId   
+    AllListId = props.AllListId
     AllListId.Context = props.AllListId?.context
     if (props?.editData != undefined) {
-        getAllContact()
-        loadSelectedDocuments()
-    }  
+      getAllContact()
+      loadSelectedDocuments()
+    }
   }, [props?.editData != undefined])
 
- 
+
   const getAllContact = async () => {
     let web = new Web(props?.AllListId?.siteUrl);
     try {
-        let data = await web.lists.getById("45d6a95e-22ad-45d4-b1eb-b0abea83575d").items.select("WorkCity,Id,SmartActivitiesId,SmartCategories/Id,SmartCategories/Title,WorkCountry,ItemType,Email,FullName,ItemCover,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title").expand("Author,Editor,SmartCategories").orderBy("Created desc").getAll();
-        data.map((item: any) => {
-            item.Selected = false
-            item.LastName = item.Title
-            item.Title = item.FirstName + ' ' + item.LastName
-        })
-        setallContactData(data)
+      let data = await web.lists.getById("45d6a95e-22ad-45d4-b1eb-b0abea83575d").items.select("WorkCity,Id,SmartActivitiesId,SmartCategories/Id,SmartCategories/Title,WorkCountry,ItemType,Email,FullName,ItemCover,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title").expand("Author,Editor,SmartCategories").orderBy("Created desc").getAll();
+      data.map((item: any) => {
+        item.Selected = false
+        item.LastName = item.Title
+        item.Title = item.FirstName + ' ' + item.LastName
+      })
+      setallContactData(data)
     } catch (error: any) {
-        console.error(error);
+      console.error(error);
     };
-};
+  };
   const loadSelectedDocuments = async () => {
     const web = new Web(props?.AllListId?.siteUrl);
     try {
-        await web.lists.getById(props?.AllListId?.SharewebDocument)
+      await web.lists.getById(props?.AllListId?.SharewebDocument)
         .items.getById(props?.editData?.Id)
-        .select('Id', 'Title', 'PriorityRank', "Responsible/Id","SmartTopics/Id", "SmartTopics/Title","Responsible/Title","Responsible/FullName",'Year','Status', 'Body', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover','File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl')
+        .select('Id', 'Title', 'PriorityRank', "Responsible/Id", "SmartTopics/Id", "SmartTopics/Title", "Responsible/Title", "Responsible/FullName", 'Year', 'Status', 'Body', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover', 'File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl')
         .expand('Author,Editor,Responsible ,SmartTopics')
         .get()
         .then((Data) => {
-          
+
           Data.docTitle = getUploadedFileName(Data?.FileLeafRef);
-          Data.siteType = 'LivingDocs';          
+          Data.siteType = 'LivingDocs';
           Data.Item_x002d_Image = Data?.Item_x0020_Cover
-          let portfolioData: any = []        
+          let portfolioData: any = []
           setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
             if (panelMain && portfolioData[0]?.PortfolioType?.Color) {
@@ -91,6 +88,7 @@ const EditLivingDocumentpanel = (props: any) => {
             }
           }, 1000)
           console.log("document data", Data);
+          setShareWebTypeTopicData(Data?.SmartTopics)
           setEditdocumentsData(Data);
           // setShareWebTypeTopicData(Data?.SmartTopics)
         });
@@ -99,9 +97,9 @@ const EditLivingDocumentpanel = (props: any) => {
       console.log(e);
     }
   };
-    
+
   const handleClosedoc = () => {
-    mastertaskdetails = []
+  
     props.callbackeditpopup();
   }
 
@@ -110,7 +108,7 @@ const EditLivingDocumentpanel = (props: any) => {
     const web = new Web(props?.AllListId?.siteUrl);
     var text: any = "Are you sure want to Delete ?";
     if (confirm(text) == true) {
-        await web.lists.getById(props?.AllListId?.SharewebDocument)
+      await web.lists.getById(props?.AllListId?.SharewebDocument)
         .items.getById(DeletItemId).recycle()
         .then((res: any) => {
           console.log(res);
@@ -127,21 +125,21 @@ const EditLivingDocumentpanel = (props: any) => {
         });
     }
 
-  }; 
+  };
   const updateDocumentsData = async () => {
     let componetServicetagData: any = [];
     if (EditdocumentsData?.Portfolios?.length > 0) {
       EditdocumentsData?.Portfolios?.forEach((portfolioId: any) => {
         componetServicetagData.push(portfolioId?.Id);
       });
-    }   
+    }
     const postData: any = {
       Title: EditdocumentsData?.Title,
       FileLeafRef: EditdocumentsData?.docTitle,
       ItemRank: EditdocumentsData?.ItemRank == 'Select Item Rank' ? null : EditdocumentsData?.ItemRank,
       Year: EditdocumentsData.Year,
-        ItemType: EditdocumentsData.ItemType,
-        Status: EditdocumentsData.Status == 'selectStatus' ? '' : EditdocumentsData.Status,
+      ItemType: EditdocumentsData.ItemType,
+      Status: EditdocumentsData.Status == 'selectStatus' ? '' : EditdocumentsData.Status,
       Body: EditdocumentsData?.Body,
       Item_x0020_Cover: {
         "__metadata": { type: 'SP.FieldUrlValue' },
@@ -153,11 +151,11 @@ const EditLivingDocumentpanel = (props: any) => {
         'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
         'Url': EditdocumentsData?.Url?.Url ? EditdocumentsData?.Url?.Url : "",
       },
-      ResponsibleId:EditdocumentsData?.Responsible!=undefined?EditdocumentsData?.Responsible?.Id:null
+      ResponsibleId: EditdocumentsData?.Responsible != undefined ? EditdocumentsData?.Responsible?.Id : null
 
-    }   
+    }
     const web = new Web(props?.AllListId?.siteUrl);
-      await web.lists.getById(props?.AllListId?.SharewebDocument)
+    await web.lists.getById(props?.AllListId?.SharewebDocument)
       .items.getById(EditdocumentsData.Id).update(postData).then((updatedItem: any) => {
         console.log(updatedItem)
         if (EditdocumentsData?.Url != undefined) {
@@ -171,7 +169,7 @@ const EditLivingDocumentpanel = (props: any) => {
         } else {
           props.callbackeditpopup();
         }
-        mastertaskdetails = []
+     
         // getMasterTaskListTasksData()
 
       }).catch((err: any) => {
@@ -204,7 +202,7 @@ const EditLivingDocumentpanel = (props: any) => {
     if (e) {
       setisOpenImageTab(true)
     }
-  } 
+  }
 
   const getUploadedFileName = (fileName: any) => {
     const indexOfLastDot = fileName?.lastIndexOf('.');
@@ -214,8 +212,8 @@ const EditLivingDocumentpanel = (props: any) => {
     } else {
       return fileName
     }
-  }  
-   
+  }
+
 
   const IsitemExists = function (array: any, Item: any) {
     var isExists = false;
@@ -241,33 +239,124 @@ const EditLivingDocumentpanel = (props: any) => {
     copyData.Body = description
     setEditdocumentsData(copyData)
   }
-  const SetResponsibledata = (item:any) => {
+  const SetResponsibledata = (item: any) => {
     setEditdocumentsData({ ...EditdocumentsData, Responsible: item })
     setListIsVisible(false);
- 
-}
-const searchedName = async (e: any) => {
+
+  }
+  const searchedName = async (e: any) => {
     setListIsVisible(true);
-    let res:any = {}
+    let res: any = {}
     let Key: any = e.target.value;
     res.FullName = Key;
     let subString = Key.split(" ");
     setSearchKey({ ...searchKey, Title: subString[0] + " " + subString[1] })
     setSearchKey({ ...searchKey, FirstName: subString })
     const data: any = {
-        nodes: allContactData.filter((items: any) =>
-            items.FullName?.toLowerCase().includes(Key.toLowerCase())
-        ),
+      nodes: allContactData.filter((items: any) =>
+        items.FullName?.toLowerCase().includes(Key.toLowerCase())
+      ),
     };
     setSearchedDataName(data.nodes);
     setEditdocumentsData({ ...EditdocumentsData, Responsible: res })
 
     if (Key.length == 0) {
-        setSearchedDataName(allContactData);
-        setListIsVisible(false);
+      setSearchedDataName(allContactData);
+      setListIsVisible(false);
     }
-}
+  }
   //////// folora editor function end///////////
+
+  // =============smartTopic function============
+  const setSelectedTopicData = (selectCategoryData: any, usedFor: any) => {
+    setIsComponentPicker(false);
+    let uniqueIds: any = {};
+    if (usedFor == "For-Panel") {
+      let TempArrya: any = [];
+      selectCategoryData?.map((selectedData: any) => {
+        TempArrya.push(selectedData);
+      })
+      tempShareWebTypeData = TempArrya;
+    } else {
+      selectCategoryData.forEach((existingData: any) => {
+        tempShareWebTypeData.push(existingData);
+      });
+    }
+    const result: any = tempShareWebTypeData.filter((item: any) => {
+      if (!uniqueIds[item.Id]) {
+        uniqueIds[item.Id] = true;
+        return true;
+      }
+      return false;
+    });
+    tempShareWebTypeData = result;
+    let updatedItem = {
+      ...EditDataBackup,
+      TaskCategories: tempShareWebTypeData,
+    };
+    setEditdocumentsData(updatedItem);
+    EditDataBackup = updatedItem;
+    if (usedFor === "For-Panel" || usedFor === "For-Auto-Search") {
+      setShareWebTypeTopicData(result);
+      if (usedFor === "For-Auto-Search") {
+        setSearchedTopicData([]);
+
+      }
+    }
+  };
+  const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
+    let tempString: any;
+    let tempArray2: any = [];
+    tempShareWebTypeData = [];
+
+    if (TypeCategory === 'Topics') {
+      ShareWebTypeTopicData?.map((dataType: any) => {
+        if (dataType.Id != TypeId) {
+          tempArray2.push(dataType);
+          tempShareWebTypeData.push(dataType);
+        }
+      });
+    }
+    else if (TypeCategory === 'Pages') {
+      ShareWebTypePagesData?.map((dataType: any) => {
+        if (dataType.Id != TypeId) {
+          tempArray2.push(dataType);
+          tempShareWebTypeData.push(dataType);
+        }
+      });
+    }
+    if (tempArray2 != undefined && tempArray2.length > 0) {
+      tempArray2.map((itemData: any) => {
+        tempString =
+          tempString != undefined
+            ? tempString + ";" + itemData.Title
+            : itemData.Title;
+      });
+    }
+
+    if (TypeCategory === 'Topics') {
+      setShareWebTypeTopicData(tempArray2);
+    }
+
+  };
+  const EditComponentPicker = (arr: any, type: any) => {
+    setIsComponentPicker(true);
+    taggingtype = type;
+    if (taggingtype === 'Topics')
+      tempCategoryData = ShareWebTypeTopicData
+
+  }
+  const SelectCategoryCallBack = React.useCallback(
+    (selectCategoryDataCallBack: any) => {
+      if (taggingtype === 'Topics')
+        setSelectedTopicData(selectCategoryDataCallBack, "For-Panel");
+
+    }, []
+  );
+  const smartCategoryPopup = React.useCallback(() => {
+    setIsComponentPicker(false);
+  }, []);
+  //==========smart tpic page function end============
   return (
     <>
       <Panel onRenderHeader={onRenderCustomHeaderDocuments}
@@ -303,13 +392,13 @@ const searchedName = async (e: any) => {
                   <input type="text" className="form-control" value={EditdocumentsData?.Year} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Year: e.target.value })} />
                 </div>
                 <div className="input-group mx-4">
-                    <label className="full-width">Status</label>
-                    <select className="form-select" defaultValue={EditdocumentsData?.Status} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Status: e.target.value })}>
-                        {Status.map(function (h: any, i: any) {
-                            return (
-                                <option key={i} selected={EditdocumentsData?.Status == h} value={h} > {h}</option>)
-                        })}
-                    </select>
+                  <label className="full-width">Status</label>
+                  <select className="form-select" defaultValue={EditdocumentsData?.Status} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Status: e.target.value })}>
+                    {Status.map(function (h: any, i: any) {
+                      return (
+                        <option key={i} selected={EditdocumentsData?.Status == h} value={h} > {h}</option>)
+                    })}
+                  </select>
                 </div>
 
                 <div className="input-group">
@@ -325,60 +414,138 @@ const searchedName = async (e: any) => {
                   </select>
                 </div>
               </div>
-              <div className='row mt-3'>                                              
+              <div className='row mt-3'>
+                <div className='input-group'>
+                  <label className="full-width ">Title </label>
+                  <input type="text" className="form-control" value={EditdocumentsData?.Title}
+                    onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value })}
+                  />
+                </div>
+                <div className="col">
                   <div className='input-group'>
-                        <label className="full-width ">Title </label>
-                        <input type="text" className="form-control" value={EditdocumentsData?.Title}
-                        onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value })}
-                        />
-                  </div>  
-                  <div className="col">
-                                        <div className='input-group'>
-                                                <label htmlFor="Responsible" className='full-width form-label boldClable '>Responsible</label>
-                                                <input type='text' placeholder="Enter Contacts Name" value={EditdocumentsData?.Responsible?.FullName || ''} onChange={(e) => searchedName(e)} className="form-control" />
-                                                {listIsVisible ? <div className="col-12 mt-1 rounded-0">
-                                                    <ul className="list-group">
-                                                        {searchedNameData?.map((item: any) => {
-                                                            return (
-                                                                <li className="list-group-item" onClick={() => SetResponsibledata(item)}><a>{item.FullName}</a></li>
-                                                            )
-                                                        })}
-                                                    </ul>
-                                                </div>
-                                                    : null}
-                                            </div>
-                    </div>   
+                    <label htmlFor="Responsible" className='full-width form-label boldClable '>Responsible</label>
+                    <input type='text' placeholder="Enter Contacts Name" value={EditdocumentsData?.Responsible?.FullName || ''} onChange={(e) => searchedName(e)} className="form-control" />
+                    {listIsVisible ? <div className="col-12 mt-1 rounded-0">
+                      <ul className="list-group">
+                        {searchedNameData?.map((item: any) => {
+                          return (
+                            <li className="list-group-item" onClick={() => SetResponsibledata(item)}><a>{item.FullName}</a></li>
+                          )
+                        })}
+                      </ul>
+                    </div>
+                      : null}
+                  </div>
+                </div>
+                <div className="col mt-2">
+                  <div className='input-group'>
+                    <label className="form-label full-width">Main Topic</label>
+                    {/* <CustomToolTip Description={'Tag the available Topics'} /> */}
+                    {ShareWebTypeTopicData?.length > 1 ? <>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="txtCategories"
+                        placeholder="Main Topic"
+                        value={TopicSearchKey}
+                      // onChange={(e) => autoSuggestionsForTopic(e)}
+                      />
+                      {SearchedTopicData?.length > 0 ? (
+                        <div className="SmartTableOnTaskPopup">
+                          <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                            {SearchedTopicData.map((item: any) => {
+                              return (
+                                <li className="list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedTopicData([item], "For-Auto-Search")}>
+                                  <a>{item.Newlabel}</a>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      ) : null}
+                      {ShareWebTypeTopicData?.map(
+                        (type: any, index: number) => {
+                          return (
+                            <div className="block w-100">
+                              <a style={{ color: "#fff !important" }} className="textDotted">
+                                {type.Title}
+                              </a>
+                              <span onClick={() => removeCategoryItem('Topics', type.Id)} className="bg-light ml-auto svg__icon--cross svg__iconbox"></span>
+                            </div>
+                          );
+                        }
+                      )}</> :
+                      <>
+                        {ShareWebTypeTopicData?.length == 1 ?
 
+                          <div className="full-width">
+                            {ShareWebTypeTopicData?.map((CategoryItem: any) => {
+                              return (
+                                <div className="full-width replaceInput alignCenter">
+                                  <a
+                                    title={CategoryItem.Title}
+                                    target="_blank"
+                                    data-interception="off"
+                                    className="textDotted"
+                                  >
+                                    {CategoryItem.Title}
+                                  </a>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          :
+                          <>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="txtCategories"
+                              placeholder="Main Topic"
+                              value={TopicSearchKey}
+                            // onChange={(e) => autoSuggestionsForTopic(e)}
+                            />
+                            {SearchedTopicData?.length > 0 ? (
+                              <div className="SmartTableOnTaskPopup">
+                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                  {SearchedTopicData.map((item: any) => {
+                                    return (
+                                      <li
+                                        className="list-group-item p-1 rounded-0 list-group-item-action"
+                                        key={item.id}
+                                        onClick={() =>
+                                          setSelectedTopicData(
+                                            [item],
+                                            "For-Auto-Search"
+                                          )
+                                        }
+                                      >
+                                        <a>{item.Newlabel}</a>
+                                      </li>
+                                    );
+                                  })}
+                                </ul>
+                              </div>
+                            ) : null}
+                          </>
+                        }
 
-                                  <div className="col pad0">
-                                                        <div className='input-group'>
-                                                        <div className="col pad0">
-                                                                <div className='form-label alignCenter full-width gap-1'>
-                                                                    <label className="form-label">Main Topic</label>
-                                                                    {/* <CustomToolTip Description={'Tag the available Topics'} /> */}
-                                                                </div>
-                                                            
-                                                                <input
-                                                                    type="text"
-                                                                    className="form-control"
-                                                                    id="txtCategories"
-                                                                    placeholder="Main Topic"
-                                                                    value={EditdocumentsData?.SmartTopics[0]?.Title}
-                                                                   // onChange={(e) => autoSuggestionsForTopic(e)}
-                                                                />
-                                                                
-                                                        </div>  </div>
-                                                    </div>                                     
+                      </>
+                    }
+                    <span className="input-group-text" title="Smart Category Popup" onClick={(e) => EditComponentPicker(EditdocumentsData, "Topics")}>
+                      <span className="alignIcon svg__iconbox svg__icon--editBox"></span>
+                    </span>
+                  </div>
+                </div>
               </div>
 
 
               {/* ------end project--- */}
 
-           
+
               {EditdocumentsData != undefined && <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Body != undefined ? EditdocumentsData?.Body : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>}
             </div>
           </Tab>
-          
+
         </Tabs>
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
@@ -394,7 +561,7 @@ const searchedName = async (e: any) => {
             </div>
 
             <div className='col-sm-6 mt-2 p-0'>
-              <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/SharewebDocument/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form</a></span>
+              <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SharewebDocument/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form</a></span>
 
 
               <button type='button' className='btn btn-primary mx-2'
@@ -408,7 +575,18 @@ const searchedName = async (e: any) => {
             </div>
           </div>
         </footer>
-      </Panel>           
+      </Panel>
+      {IsComponentPicker && (
+        <Picker
+          props={EditdocumentsData}
+          selectedCategoryData={tempCategoryData}
+          siteUrls={props?.AllListId?.siteUrl}
+          AllListId={props?.AllListId}
+          CallBack={SelectCategoryCallBack}
+          closePopupCallBack={smartCategoryPopup}
+          usedFor={taggingtype}
+        />
+      )}
     </>
   )
 }
