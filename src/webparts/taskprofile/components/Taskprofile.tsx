@@ -27,7 +27,8 @@ import RadimadeTable from '../../../globalComponents/RadimadeTable'
 import EmailComponenet from './emailComponent';
 import AncTool from '../../../globalComponents/AncTool/AncTool'
 import { myContextValue } from '../../../globalComponents/globalCommon'
-import Tooltip from '../../../globalComponents/Tooltip'
+import GlobalTooltip from '../../../globalComponents/Tooltip'
+import { Tooltip } from "@fluentui/react-components";
 import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { ImReply } from 'react-icons/im';
@@ -1566,7 +1567,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         <div className='subheading' >
           Update Comment
         </div>
-        <Tooltip ComponentId='1683' />
+        <GlobalTooltip ComponentId='1683' />
       </>
     );
   };
@@ -2405,10 +2406,12 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                             <span className='mx-2'>{EstimatedTimeData?.EstimatedTime ? (EstimatedTimeData?.EstimatedTime > 1 ? EstimatedTimeData?.EstimatedTime + " hours" : EstimatedTimeData?.EstimatedTime + " hour") : "0 hour"}</span>
                                             <img className="ProirityAssignedUserPhoto m-0 mx-2 hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, EstimatedTimeData?.UserName, this?.taskUsers)} title={EstimatedTimeData?.UserName} src={EstimatedTimeData?.UserImage != undefined && EstimatedTimeData?.UserImage?.length > 0 ? EstimatedTimeData?.UserImage : ''} />
                                           </div>
-                                          {EstimatedTimeData?.EstimatedTimeDescription?.length > 0 && <div className='alignCenter hover-text'>
+                                          <Tooltip withArrow content={EstimatedTimeData?.EstimatedTimeDescription}  relationship="label" positioning="below">
+                                  {EstimatedTimeData?.EstimatedTimeDescription?.length > 0 && <div className='alignCenter hover-text'>
                                             <span className="svg__iconbox svg__icon--info"></span>
-                                            <span className='tooltip-text pop-right'>{EstimatedTimeData?.EstimatedTimeDescription} </span>
-                                          </div>}
+                                        </div>}
+                                 </Tooltip>
+                                         
                                         </div>
                                       )
                                     })}
