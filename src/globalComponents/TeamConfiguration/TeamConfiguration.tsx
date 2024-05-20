@@ -756,9 +756,10 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     {
                                         this.state.datesInfo != null && this.state.datesInfo.length > 0 && this.state.datesInfo.map((date: any) => {
                                             return (
-                                                <div className="width20 top-assign" onDragOver={(e) => e.preventDefault()} onDrop={(e) => this.onDropWorkingDays(e, date, this.state.taskUsers, 'UserWorkingDays')}> <label className="BdrBtm">{date.displayDate}</label>
+                                                <div className="width20 top-assign pe-1" onDragOver={(e) => e.preventDefault()} onDrop={(e) => this.onDropWorkingDays(e, date, this.state.taskUsers, 'UserWorkingDays')}> <label className="BdrBtm mb-0">{date.displayDate}</label>
+                                                    <div className='border p-1 w-100' style={{minHeight:'30px'}}>
                                                     {date?.userInformation?.length > 0 && date?.userInformation?.map((userInfo: any, index: any) =>
-                                                        <div className='me-3'>
+                                                        <span className='me-1'>
                                                             <img
                                                                 className="ProirityAssignedUserPhoto"
                                                                 src={userInfo?.Item_x0020_Cover?.Url}
@@ -768,10 +769,10 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                                 onDragStart={(e) => this.dragStart(e, index, userInfo, 'UserWorkingDays')}
                                                                 onDragOver={(e) => e.preventDefault()} />
 
-                                                        </div>
+                                                        </span>
                                                     )
 
-                                                    }
+                                                    }</div>
                                                 </div>
 
                                             )
