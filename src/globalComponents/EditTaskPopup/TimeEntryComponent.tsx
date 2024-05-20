@@ -463,11 +463,9 @@ const TimeEntryPopup = (item: any) => {
       Eyd = Moment(Dateet).format("ddd, DD MMM yyyy");
       var inputDate: any = new Date(Eyd);
       setediteddata(inputDate);
-      //setediteddata(Eyd)
       var Array: any = [];
       var Childitem: any = [];
       setAddTaskTimepopup(true);
-      // Array.push(childitem)
       setNewData(initialData );
       Childitem.push(childitem);
       backupEdit?.forEach((val: any) => {
@@ -475,7 +473,6 @@ const TimeEntryPopup = (item: any) => {
           CategryTitle = val.Category.Title;
         }
       });
-      // setsaveEditTaskTime(Array)
       setsaveEditTaskTimeChild(childitem);
     }
     if (Type == "AddTime Category") {
@@ -680,12 +677,25 @@ const TimeEntryPopup = (item: any) => {
       .get();
     AllMetadata = MetaData;
     MetaData.forEach((itemss: any) => {
-      if (
-        itemss?.Title?.toLowerCase() == item?.props?.siteType?.toLowerCase() &&
-        itemss.TaxType == "Sites"
-      ) {
-        TimesheetConfiguration = JSON.parse(itemss.Configurations);
-      }
+     if(item?.props?.siteType=="Offshore%20Tasks")
+        {
+          if (
+       
+            itemss?.Title?.toLowerCase() == 'offshore tasks' &&
+            itemss.TaxType == "Sites"
+          ) {
+            TimesheetConfiguration = JSON.parse(itemss.Configurations);
+          }
+        }
+        else{
+          if (
+       
+            itemss?.Title?.toLowerCase() == item?.props?.siteType?.toLowerCase() &&
+            itemss.TaxType == "Sites"
+          ) {
+            TimesheetConfiguration = JSON.parse(itemss.Configurations);
+          }
+        }
     });
     TimesheetConfiguration?.forEach((val: any) => {
       TimeSheetlistId = val.TimesheetListId;
@@ -1434,6 +1444,19 @@ function reverseArray(arr: any) {
   //-----------------------------------------Delete Timesheet function----------------------------------------------------------------------------------
 
   const deleteTaskTime = async (childinew: any) => {
+    let web = new Web(`${CurrentSiteUrl}`);
+    let TimeForTask = 0;
+    if(item.props?.TotalTime != null){
+      item.props.TotalTime = item.props?.TotalTime - childinew.TaskTimeInMin;
+    }
+    
+      if(item.props.TotalTime > 0){
+        await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
+          TotalTime: item.props?.TotalTime
+      }).then((res: any) => {
+          console.log(res);
+      });
+      }
     var UpdatedData: any = [];
     var deleteConfirmation = confirm("Are you sure, you want to delete this?");
     if (deleteConfirmation) {
@@ -1463,8 +1486,7 @@ function reverseArray(arr: any) {
       } else {
         var ListId = TimeSheetlistId;
       }
-      let web = new Web(`${CurrentSiteUrl}`);
-
+    
       await web.lists
         .getById(ListId)
         .items.getById(childinew.ParentID)
@@ -1579,6 +1601,7 @@ function reverseArray(arr: any) {
   // ----------------------------------------------------------Save Timesheet for old user----------------------------------------------------------------------
 
   const saveOldUserTask = async (UpdatedData: any) => {
+   
     var Available = false;
     var TimeInHours: any = changeTime / 60;
     TimeInHours = TimeInHours.toFixed(2);
@@ -1610,6 +1633,21 @@ function reverseArray(arr: any) {
     console.log(foundCategory, "foundCategory");
     console.log("UP DATA", UpdatedData);
     let web = new Web(`${CurrentSiteUrl}`);
+   
+    if(item.props?.TotalTime != null){
+      item.props.TotalTime = item.props?.TotalTime + TimeInMinutes;
+    }
+    else{
+      item.props.TotalTime = TimeInMinutes;
+    }
+
+    if(item.props.TotalTime > 0){
+      await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
+        TotalTime: item.props.TotalTime
+    }).then((res: any) => {
+        console.log(res);
+    });
+    }
 
     if (AllTimeEntry != undefined && AllTimeEntry.length > 0) {
       AllTimeEntry.forEach(async (ite: any) => {
@@ -1726,6 +1764,8 @@ function reverseArray(arr: any) {
 
   //---------------------------------------------------------------Save Timesheet Main function----------------------------------------------------------------------
   const saveTimeSpent = async () => {
+
+    
     var UpdatedData: any = {};
     if (item.props.siteType == "Offshore Tasks") {
       var siteType = "OffshoreTasks";
@@ -1898,6 +1938,36 @@ function reverseArray(arr: any) {
 
       var DateFormate = new Date(Eyd);
       var UpdatedData: any = [];
+      let web = new Web(`${siteUrl}`);
+
+      if(item.props?.TotalTime != null){
+        if(child.TaskTimeInMin > TimeInMinutes){
+          if(TimeInMinutes != 0){
+            let time = child.TaskTimeInMin - TimeInMinutes;
+            item.props.TotalTime = item.props?.TotalTime - time;
+          }
+        
+        }
+        else{
+     
+          let time = TimeInMinutes - child.TaskTimeInMin;
+          item.props.TotalTime = item.props?.TotalTime + time;
+        }
+       
+      }
+      else{
+        item.props.TotalTime = TimeInMinutes;
+      }
+        if(item.props.TotalTime > 0){
+          await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
+            TotalTime: item.props.TotalTime
+        }).then((res: any) => {
+            console.log(res);
+        });
+        }
+
+
+
       $.each(TaskCate, function (index: any, update: any) {
         if (update.Id === child.ParentID && update.AuthorId == CurntUserId) {
           $.each(update.AdditionalTime, function (index: any, updateitem: any) {
@@ -1938,7 +2008,7 @@ function reverseArray(arr: any) {
       } else {
         var ListId = TimeSheetlistId;
       }
-      let web = new Web(`${siteUrl}`);
+      
       if (isTimes == true) {
         await web.lists
           .getById(ListId)
@@ -1956,13 +2026,43 @@ function reverseArray(arr: any) {
     }
     if (Type == "CopyTime") {
       var CurrentUser: any = {};
-
+      let web = new Web(`${CurrentSiteUrl}`);
       var counts = 0;
       var update: any = {};
       var TimeInMinute: any = changeTime / 60;
       var UpdatedData: any = [];
       var AddParent: any = "";
       var AddMainParent: any = "";
+
+      if(item.props?.TotalTime != null){
+        if(child.TaskTimeInMin > TimeInMinutes){
+          if(TimeInMinutes == 0){
+            item.props.TotalTime = item.props?.TotalTime + child.TaskTimeInMin;
+          }
+          else{
+            let time =  TimeInMinutes;
+            item.props.TotalTime = item.props?.TotalTime + time;
+          }
+         
+        }
+        else{
+     
+          let time = TimeInMinutes;
+          item.props.TotalTime = item.props?.TotalTime + time;
+        }
+       
+      }
+      else{
+        item.props.TotalTime = TimeInMinutes;
+      }
+        if(item.props.TotalTime > 0){
+          await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
+            TotalTime: item.props.TotalTime
+        }).then((res: any) => {
+            console.log(res);
+        });
+        }
+
       $.each(AllUsers, function (index: any, taskUser: any) {
         if (taskUser.AssingedToUserId === CurntUserId) {
           if (taskUser?.ApproverId?.length > 0) {
@@ -2050,7 +2150,7 @@ function reverseArray(arr: any) {
         var ListId = TimeSheetlistId;
       }
       setCopyTaskpopup(false);
-      let web = new Web(`${CurrentSiteUrl}`);
+     
       if (isTrue == true) {
         await web.lists
           .getById(ListId)
@@ -2089,7 +2189,22 @@ function reverseArray(arr: any) {
       var AddMainParentId: any = "";
       var isTrueTime: Boolean = false;
       var AddParentId: any = "";
+
       let web = new Web(`${CurrentSiteUrl}`);
+    if(item.props?.TotalTime != null){
+      item.props.TotalTime = item.props?.TotalTime + TimeInMinutes;
+    }
+    else{
+      item.props.TotalTime = TimeInMinutes;
+    }
+      if(item.props.TotalTime > 0){
+        await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
+          TotalTime: item.props.TotalTime
+      }).then((res: any) => {
+          console.log(res);
+      });
+      }
+     
       var TimeInMinute: any = changeTime / 60;
       $.each(AllUsers, function (index: any, taskUser: any) {
         if (taskUser.AssingedToUserId === CurntUserId) {
@@ -2230,6 +2345,7 @@ function reverseArray(arr: any) {
         saveJsonDataAnotherCat(CurrentUser, ParentId);
       }
     }
+
   };
 
   //-------------------------------------------------Add JSON Data in Another category--------------------------------------------------------------------------
@@ -2467,7 +2583,7 @@ function reverseArray(arr: any) {
       .getById(ListId)
       .items.getById(CategoryyID)
       .update({
-        Title: newData.Title != '' ? newData.Title : checkCategories,
+       Title: newData.Title != '' ? newData.Title : checkCategories,
         CategoryId:
           Category != undefined && Category != "" ? Category : CategoriesIdd,
       })
@@ -2479,8 +2595,7 @@ function reverseArray(arr: any) {
       });
   };
   const clearInput = () => {
-    
-    newData.Title=' ';
+    setNewData(initialData )
     setcheckCategoriesTitle('');
    
   }
