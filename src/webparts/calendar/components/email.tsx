@@ -491,7 +491,7 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
             <div style="color:#2f5596; font-size:18px; font-weight:600; margin-bottom:20px;">The ${formattedDate} is a great Day! All ${availableteammeberstoday} are in Office today!</div>
     <div width="264" height="264px" style="width: 264px;height: 264px;flex-shrink: 0;border-radius: 264px;background: #EEF4FF;margin-bottom: 40px;padding: 20px;display: flex; align-items: center;justify-content: space-around; margin: 0 auto;">
     <div width="200px" height="200px" style="width: 200px;height: 200px;flex-shrink: 0;">
-    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/CalendarImages/image%2048.png">
+    <img src="https://smalsus.com/hhhh/images/party.png">
     </div>
 </div>
 <div style="margin-bottom: 40px;">
