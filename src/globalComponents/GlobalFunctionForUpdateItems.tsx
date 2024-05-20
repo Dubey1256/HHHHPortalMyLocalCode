@@ -1379,12 +1379,12 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
         <div style="padding: 12px; background-color: transparent;">
             ${(ActionType == "User Experience - UX" && ReasonStatement == "New Task Created") ? "New User Experience - UX Category Task Created. Please have a look" : ""}
             ${((ActionType == "User Experience - UX" || ActionType == "Design") && ReasonStatement == "Task Completed") ? `This ${ActionType} Category Task set to 90%. Please have a look` : ''}
-            ${(ActionType == "Bottleneck" || ActionType == "Attention") ?
-                `You have been tagged as <b>${ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}` : ''}
+            ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
+                `You have been tagged <b>${ActionType == "Phone" ? "for the discussion" : "as " + ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}` : ''}
             <p></p>
-            ${(ActionType == "Bottleneck" || ActionType == "Attention") ?
-                `<div style="background-color: #fff; padding:16px; margin-top:"10px"; display:block;">
-            <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType} Comment</b>: <span>${ReasonStatement}</span> ` : ''}
+            ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
+                `<div style="background-color: #fff; padding:16px; margin-top:10px; display:block;">
+            <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? " Discussion Point" : ActionType + " Comment"} </b>: <span>${ReasonStatement}</span> ` : ''}
             </div>
             <div style="margin-top: 16px;">  <b style="font-weight:600;">Task Link: </b>
             <a href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? `Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}` : `Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">
@@ -1420,7 +1420,7 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         <p>
         <br/>
         <div style="background-color: #fff; padding:16px; display:block;">
-        <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType} Comment</b>: <span>${ReasonStatement}</span>
+        <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? "Discussion Point" : ActionType + "Comment"}</b>: <span>${ReasonStatement}</span>
         </div>
         </br>
         <p>
@@ -1439,13 +1439,6 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
             );
         }
     })
-}
-
-export const removeHtmlFromString = (StringValue: string) => {
-    let cleanStr = StringValue?.replace(/<[^>]*>/g, '');
-    cleanStr = cleanStr?.replace(/&nbsp;/g, ' ');
-    cleanStr = cleanStr?.trim();
-    return cleanStr;
 }
 
 export const GenerateMSTeamsNotification = (RequiredData: any) => {
@@ -1585,7 +1578,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title?.length > 8 ?
                                 <div style={{ width: "100%" }}>
                                     <div><b style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Task Description:</b></div>
-                                    <div style={{ width: '100%' }}>
+                                    <div>
                                         {RequiredData["FeedBack"] != null &&
                                             RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                                             RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title != '' &&
@@ -1603,14 +1596,12 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                     {i + 1}.
                                                                 </span>
                                                                 {/* <span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span> */}
-                                                                {/* {fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")} */}
-                                                                {removeHtmlFromString(fbData['Title'])}
-
+                                                                {fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")}
                                                             </div>
 
                                                             {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
                                                                 return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px', width: '100%' }}>
-                                                                    <div style={{ marginBottom: '8px', width: '100%' }}>
+                                                                    <div style={{ marginBottom: '8px' }}>
                                                                         <div style={{ fontWeight: '600' }}>{fbComment.AuthorName} - {fbComment.Created}</div>
                                                                     </div>
                                                                     <div><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span></div>
