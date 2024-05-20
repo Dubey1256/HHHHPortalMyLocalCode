@@ -3136,7 +3136,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                             >
                               <option>
                                 {EditData?.ItemRankTitle == undefined
-                                  ? "select Item Rank"
+                                  ? "Select Item Rank"
                                   : EditData?.ItemRankTitle}
                               </option>
                               {CMSItemRank &&
