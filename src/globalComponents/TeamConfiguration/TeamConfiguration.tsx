@@ -49,7 +49,13 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
 
     private async loadData() {
         await this.loadTaskUsers();
-        await this.GetTaskDetails();
+        try {
+            if (Object.keys(this?.props?.ItemInfo)?.length > 0) {
+                await this.GetTaskDetails();
+            }
+        } catch (error) {
+            console.log()
+        }
         await this.getDatesInfo()
         this.showComposition();
     }
@@ -60,16 +66,21 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private getDatesInfo() {
         let datesInfo: any = [];
         let currentDate = moment();
-        let workingActionTest = JSON.parse(this?.state?.taskDetails?.WorkingAction)
-        let workingAction:any
-        if(workingActionTest?.length>0){
-            workingActionTest?.map((info:any)=>{
-                if(info?.Title=='WorkingDetails'){
-                    workingAction= info?.InformationData;
+        let workingActionTest: any = [];
+        try {
+            workingActionTest = JSON.parse(this?.state?.taskDetails?.WorkingAction)
+        } catch (error) {
+
+        }
+        let workingAction: any
+        if (workingActionTest?.length > 0) {
+            workingActionTest?.map((info: any) => {
+                if (info?.Title == 'WorkingDetails') {
+                    workingAction = info?.InformationData;
                 }
             })
         }
-        let oldJson: any =workingAction;
+        let oldJson: any = workingAction;
         let count = 0;
         while (datesInfo.length < 5) {
             let dateFullInfo = { displayDate: '', originalDate: '' };
@@ -206,36 +217,36 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         })
     }
     private async GetTaskDetails() {
-        if (this.props.ItemInfo.siteUrl != undefined) {
-            web = new Web(this.props.ItemInfo.siteUrl);
-        } else {
-            web = new Web(this.props.AllListId?.siteUrl);
+        try {
+            if (this.props.ItemInfo.siteUrl != undefined) {
+                web = new Web(this.props.ItemInfo.siteUrl);
+            } else {
+                web = new Web(this.props.AllListId?.siteUrl);
+            }
+            let taskDetails = [];
+            if (this.props.ItemInfo.listId != undefined) {
+                taskDetails = await web.lists
+                    .getById(this.props.ItemInfo.listId)
+                    .items
+                    .getById(this.props.ItemInfo.Id)
+                    .select("ID", "Title", "WorkingAction", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
+                    .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
+                    .get()
+            } else {
+                taskDetails = await web.lists
+                    .getByTitle('Master Tasks')
+                    .items
+                    .getById(this.props.ItemInfo.Id)
+                    .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
+                    .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
+                    .get()
+            }
+            console.log('Task Details---');
+            console.log(taskDetails);
+            this.setState({ taskDetails })
+        } catch (error) {
+            console.log(error)
         }
-        let taskDetails = [];
-        if (this.props.ItemInfo.listId != undefined) {
-            taskDetails = await web.lists
-                .getById(this.props.ItemInfo.listId)
-                .items
-                .getById(this.props.ItemInfo.Id)
-                .select("ID", "Title", "WorkingAction", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
-                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
-                .get()
-        } else {
-            taskDetails = await web.lists
-                .getByTitle('Master Tasks')
-                .items
-                .getById(this.props.ItemInfo.Id)
-                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
-                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
-                .get()
-        }
-
-
-        console.log('Task Details---');
-        console.log(taskDetails);
-
-
-        this.setState({ taskDetails })
     }
     private getChilds(item: any, items: any) {
         item.childs = [];
