@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ITestProjectProps } from "./ITestProjectProps";
-import GetMethod from "./SiteDataBackupTool";
+import SiteDataBackupTool from "./SiteDataBackupTool";
 
 export default class TestProject extends React.Component<
   ITestProjectProps,
@@ -10,7 +10,7 @@ export default class TestProject extends React.Component<
     //const { TestListID } = this.props;
     return (
       <div>
-        <GetMethod AllList={this.props} />
+        <SiteDataBackupTool AllList={this.props} />
       </div>
     );
   }
