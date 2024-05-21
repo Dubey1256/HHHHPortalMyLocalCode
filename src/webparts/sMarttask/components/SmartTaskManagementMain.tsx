@@ -21,7 +21,7 @@ export const SmartTaskManagementMain = (props: any) => {
     const AllListId = {
         SmartMetadataListID: props?.props?.SmartMetadataListID,
         MasterTaskListID: props?.props?.MasterTaskListID,
-        TaskUsertListID: props?.props?.TaskUsertListID,
+        TaskUserListID: props?.props?.TaskUserListID,
         siteUrl: baseUrl
     }
     React.useEffect(() => {
@@ -37,14 +37,14 @@ export const SmartTaskManagementMain = (props: any) => {
             let desgination: any = []
             let web = new Web(baseUrl);
             Users = await web.lists
-                .getById(props?.props?.TaskUsertListID)
+                .getById(props?.props?.TaskUserListID)
                 .items
                 .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name,UserGroup/Id,UserGroup/Title&$expand=AssingedToUser,Approver,UserGroup")
                 .get();
 
 
 
-            const forbiddenUserIds = new Set(["290", "36", "278", "242", "156", "44"]);
+            const forbiddenUserIds = new Set(["290", "36", "278", "242", "156", "44","192"]);
             Users = Users.filter((user: any) => {
                 const userId = user?.AssingedToUserId?.toString();
                 return (
@@ -68,7 +68,7 @@ export const SmartTaskManagementMain = (props: any) => {
                 var objectDesignation: any = { Title: value, classUsed: "nav-link" }
                 designationArray.push(objectDesignation)
             });
-            designationArray = designationArray.filter((desg: any) => { return (desg?.Title != "Junior Task Management" && desg?.Title != "QA Team") })
+            designationArray = designationArray.filter((desg: any) => { return (desg?.Title != "Junior Task Management" && desg?.Title != "QA Team" && desg?.Title !='HR')  })
 
             setDesignationNames(designationArray);
         } catch (error) {
@@ -109,27 +109,6 @@ export const SmartTaskManagementMain = (props: any) => {
                             allTasks.push(...tasks);
                             count++;
                             if (sitesCount == count) {
-                                let checkActvity = [];
-                                let checkWorkstream = [];
-                                let CheckTasks = [];
-                                let SomeElse = []
-                                allTasks.map((tasks7: any) => {
-                                    let checkDraft = false
-                                    if (tasks7?.TaskCategories?.some((category: any) => category.Title.toLowerCase() === "draft")) { checkDraft = true; }
-                                    if (tasks7?.TaskType?.Title == 'Activities' && checkDraft != true) {
-                                        checkActvity.push(tasks7)
-                                    }
-                                    else if (tasks7?.TaskType?.Title == 'Workstream' && checkDraft != true) {
-                                        checkWorkstream.push(tasks7)
-                                    }
-                                    else if (tasks7?.TaskType?.Title == 'Task' && checkDraft != true) {
-                                        CheckTasks.push(tasks7)
-                                    }
-                                    else {
-                                        SomeElse.push(tasks7)
-                                    }
-
-                                })
                                 getTasks(allTasks)
                                 setAllSitesTasks(allTasks)
                             }
@@ -684,7 +663,7 @@ export const SmartTaskManagementMain = (props: any) => {
                                                                 : ""
                                                         )
                                                     })
-                                                    : <span className='task-label' onDragOver={(e) => dragOver(e)} onDrop={(e) => dragDrop(e, "", "WorkingParentDrop", data?.Id)}>+</span>}
+                                                    : ''}
 
                                             </span>
                                             <span className="bucket-box">
