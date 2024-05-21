@@ -2046,7 +2046,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       <dl>
                         <dt className='bg-Fa' title="Task Id">Categories</dt>
 
-<<<<<<< HEAD
                         <dd className='bg-Ff text-break'>
                           <div className='alignCenter'>
                             <InlineEditingcolumns
@@ -2054,121 +2053,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                               callBack={this?.inlineCallBack}
                               columnName='TaskCategories'
                               item={this?.state?.Result}
-=======
-                          </dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Start Date</dt>
-                          <dd className='bg-Ff'>{this.state.Result["StartDate"] != undefined ? this.state.Result["StartDate"] : ""}</dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Completion Date</dt>
-                          <dd className='bg-Ff'> {this.state.Result["CompletedDate"] != undefined ? this.state.Result["CompletedDate"] : ""}</dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa' title="Task Id">Categories</dt>
-
-                          <dd className='bg-Ff text-break'>
-                            <div className='alignCenter'>
-                              <InlineEditingcolumns
-                                AllListId={AllListId}
-                                callBack={this?.inlineCallBack}
-                                columnName='TaskCategories'
-                                item={this?.state?.Result}
-                                TaskUsers={this?.taskUsers}
-                                pageName={'portfolioprofile'}
-                              />
-
-                            </div>
-
-
-                          </dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Item Rank</dt>
-                          <dd className='bg-Ff'>
-                            <EditableField
-                              listName={this?.state?.Result?.listName}
-                              itemId={this?.state?.Result?.Id}
-                              fieldName="ItemRank"
-                              value={
-                                this?.state?.Result?.ItemRank != undefined
-                                  ? this?.state?.Result?.ItemRank
-                                  : ""
-                              }
-                              TaskProfilePriorityCallback={null}
-                              onChange={this.handleFieldChange("ItemRank")}
-                              type=""
-                              web={AllListId?.siteUrl}
-                            />
-
-                          </dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Bottleneck</dt>
-                          <dd className='bg-Ff'>
-                            {this.state?.Result?.Bottleneck?.length > 0 && this.state?.Result?.Bottleneck?.map((BottleneckData: any) => {
-                              return (
-                                <div className="align-content-center alignCenter justify-content-between py-1">
-                                  <div className="alignCenter">
-                                    {BottleneckData.TaggedUsers.userImage != undefined && BottleneckData.TaggedUsers.userImage.length > 0 ? <img
-                                      className="ProirityAssignedUserPhoto m-0"
-                                      title={BottleneckData.TaggedUsers?.Title}
-                                      src={BottleneckData.TaggedUsers.userImage} />
-                                      :
-                                      <span title={BottleneckData.TaggedUsers?.Title != undefined ? BottleneckData.TaggedUsers?.Title : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
-                                    }
-                                    <span className="ms-1">{BottleneckData?.TaggedUsers?.Title}</span>
-                                  </div>
-
-                                  <div className="alignCenter">
-                                    <span
-                                      className="hover-text me-1"
-                                      onClick={() =>
-                                        this.SendRemindernotifications(BottleneckData, "Bottleneck")}
-                                    >
-                                      <LuBellPlus />
-                                      <span className="tooltip-text pop-left">
-                                        Send reminder notifications
-                                      </span>
-                                    </span>
-                                    {BottleneckData.Comment != undefined &&
-                                      BottleneckData.Comment?.length > 1 && <span
-                                        className="m-0 img-info hover-text"
-
-                                      >
-                                        <span className="svg__iconbox svg__icon--comment"></span>
-                                        <span className="tooltip-text pop-left">
-                                          {BottleneckData.Comment}
-                                        </span>
-                                      </span>}
-
-                                  </div>
-                                </div>
-                              )
-
-                            })}
-
-                          </dd>
-                        </dl>
-
-                      {isShowTimeEntry && <dl>
-                        <dt className='bg-Fa'>SmartTime Total</dt>
-                        <dd className='bg-Ff'>
-                          <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId} callbackTotalTime={(data: any) => this.callbackTotalTime(data)} props={this.state.Result} Context={this.props.Context} allTaskUsers={this?.taskUsers} /> : null}</span>
-                        </dd>
-
-                        </dl>}
-
-                      </div>
-                      <div className='col-md-6 p-0'>
-                        <dl>
-                          <dt className='bg-Fa'>Team Members</dt>
-
-                          <dd className='bg-Ff'>
-                            <ShowTaskTeamMembers
-                              props={this.state.Result}
->>>>>>> 275caae450e8353562831d93c9607d8535efdaa1
                               TaskUsers={this?.taskUsers}
                               pageName={'portfolioprofile'}
                             />
