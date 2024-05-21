@@ -51,7 +51,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         await this.loadTaskUsers();
         try {
             if (Object.keys(this?.props?.ItemInfo)?.length > 0) {
-        await this.GetTaskDetails();
+                await this.GetTaskDetails();
             }
         } catch (error) {
             console.log()
@@ -80,7 +80,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
             })
         }
-        let oldJson: any =workingAction;
+        let oldJson: any = workingAction;
         let count = 0;
         while (datesInfo.length < 5) {
             let dateFullInfo = { displayDate: '', originalDate: '' };
