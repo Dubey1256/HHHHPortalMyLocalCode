@@ -217,7 +217,7 @@ const LivingDocsSyncToolTable = (props: any) => {
         try {
            
                 await web.lists.getById(AllListId?.SharewebDocument)
-                .items.select('Id', 'Title', 'PriorityRank', 'Responsible/Id', 'Body', 'Responsible/Title', 'Year', 'Body', 'Status', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover', 'File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl', 'SmartTopics/Id', 'SmartTopics/Title')
+                .items.select('Id', 'Title', 'PriorityRank', 'Responsible/Id', 'Body', 'Responsible/Title','Responsible/FullName', 'Year', 'Body', 'Status', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover', 'File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl', 'SmartTopics/Id', 'SmartTopics/Title')
                 .expand('Author,Editor,Responsible,SmartTopics').getAll()
                 
                 .then((data: any) => {

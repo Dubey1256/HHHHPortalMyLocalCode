@@ -291,8 +291,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     taskDetails.TaskId = globalCommon.GetTaskId(taskDetails);
     var category = ""
     if (taskDetails["TaskCategories"] != undefined && taskDetails["TaskCategories"].length > 0) {
+     
       taskDetails["TaskCategories"]?.map((item: any, index: any) => {
-        category = category + item?.Title + ";"
+       if((index== taskDetails["TaskCategories"]?.length-1)||(taskDetails["TaskCategories"].length==1)){
+          category = category + item?.Title
+        }else{
+          category = category + item?.Title + ";"
+        }
+       
         let ApprovalCheck = category?.search("Approval");
         if (ApprovalCheck >= 0) {
           this.setState({
@@ -1911,7 +1917,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
     return (
       <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef, user: this?.taskUsers, ColorCode: this.state.Result["Portfolio"]?.PortfolioType?.Color }}>
-        <div>
+        <div  className='taskprofilesection'>
           <section className='ContentSection'> {this.state.breadCrumData != undefined &&
             <div className='row'>
               <div className="col-sm-12 p-0 ">
