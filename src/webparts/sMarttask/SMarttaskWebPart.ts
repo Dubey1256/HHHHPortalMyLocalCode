@@ -16,6 +16,7 @@ export interface ISMarttaskWebPartProps {
   description: string;
   SmartMetadataListID:string;
   MasterTaskListID:string;
+  TaskUsertListID:string;
   context:any;
 }
 
@@ -28,6 +29,7 @@ export default class SMarttaskWebPart extends BaseClientSideWebPart<ISMarttaskWe
     const element: React.ReactElement<ISMarttaskProps> = React.createElement(
       SMarttask,
       {
+        
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
@@ -35,6 +37,7 @@ export default class SMarttaskWebPart extends BaseClientSideWebPart<ISMarttaskWe
         userDisplayName: this.context.pageContext.user.displayName,
         SmartMetadataListID:this.properties.SmartMetadataListID,
         MasterTaskListID:this.properties.MasterTaskListID,
+        TaskUsertListID:this.properties.TaskUsertListID,
         context:this.context,
       }
     );
@@ -117,7 +120,10 @@ export default class SMarttaskWebPart extends BaseClientSideWebPart<ISMarttaskWe
                   label:"SmartMetadataListID"
                 })
                 , PropertyPaneTextField('MasterTaskListID', {
-                  label:" MasterTaskListID"
+                  label:"MasterTaskListID"
+                }),
+                PropertyPaneTextField('TaskUsertListID', {
+                  label:"TaskUsertListID"
                 })
                
               ]
