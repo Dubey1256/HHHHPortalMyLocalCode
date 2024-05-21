@@ -129,25 +129,8 @@ function ReadyMadeTable(SelectedProp: any) {
     React.useEffect(() => {
         if (AllSiteTasksData?.length > 0) {
             if (isUpdated != "") {
-                if (portfolioTypeData.length > 0) {
-                    portfolioTypeData?.map((elem: any) => {
-                        if (elem.Title === isUpdated || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) {
-                            portfolioColor = elem.Color;
-                            document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
-                        document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
-                        }
-                    })
-                }
-            } else {
-                if (portfolioTypeData.length > 0) {
-                    portfolioTypeData?.map((elem: any) => {
-                        if (elem.Title === "Component") {
-                            portfolioColor = elem.Color;
-                            document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
-                        }
-                    })
-
-                }
+             
+              
 
                 if (SelectedProp?.configration == "AllAwt" && SelectedProp?.SelectedItem != undefined) {
                     if ('Parent' in SelectedProp?.SelectedItem) {
