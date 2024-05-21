@@ -835,7 +835,7 @@ function CreateTaskComponent(props: any) {
             })
             if (CategoryTitle !== undefined) {
                 CategoryTitle.split(';')?.map((cat: any) => {
-                    if (cat.toLowerCase() === 'User Experience - UX') {
+                    if (cat === 'User Experience - UX') {
                         AssignedToIds.push(298)
                         TeamMembersIds.push(298);
                         ResponsibleIds.push(49);
