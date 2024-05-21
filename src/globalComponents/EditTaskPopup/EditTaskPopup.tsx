@@ -92,7 +92,7 @@ var TaskApproverBackupArray: any = [];
 let categoryTitle: any = "";
 let onHoldCategory: any = [];
 let globalSelectedProject: any = { PriorityRank: 1 };
-let oldWorkingAction:any=[]
+let oldWorkingAction: any = []
 
 const EditTaskPopup = (Items: any) => {
     const Context = Items?.context;
@@ -102,8 +102,8 @@ const EditTaskPopup = (Items: any) => {
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
     let SiteWebConfigData: any = [];
-    const[usersAssignedIDs,setusersAssignedIDs]=useState([])
-    const [workingToday,setWorkingToday]=useState(false);
+    const [usersAssignedIDs, setusersAssignedIDs] = useState([])
+    const [workingToday, setWorkingToday] = useState(false);
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
     const [IsComponentPicker, setIsComponentPicker] = useState(false);
@@ -111,6 +111,7 @@ const EditTaskPopup = (Items: any) => {
     const [openLinkedPortfolioPopup, setopenLinkedPortfolioPopup] =
         useState(false);
     const [TaggedPortfolioData, setTaggedPortfolioData] = useState([]);
+
     const [linkedPortfolioData, setLinkedPortfolioData] = useState([]);
     const [CategoriesData, setCategoriesData] = useState("");
     const [TaskCategoriesData, setTaskCategoriesData] = useState([]);
@@ -919,8 +920,8 @@ const EditTaskPopup = (Items: any) => {
                 let saveImage = [];
                 if (item?.WorkingAction?.length > 0) {
                     let WorkingActionData: any = JSON.parse(item.WorkingAction);
-                    oldWorkingAction=[]
-                    oldWorkingAction=[...WorkingActionData]
+                    oldWorkingAction = []
+                    oldWorkingAction = [...WorkingActionData]
                     setWorkingAction(WorkingActionData);
                 }
                 if (item.Categories != null) {
@@ -2489,7 +2490,7 @@ const EditTaskPopup = (Items: any) => {
 
     var smartComponentsIds: any = "";
     var RelevantPortfolioIds: any = [];
-    let assigneduserid:any=[];
+    let assigneduserid: any = [];
     let currentDate = Moment().format('DD/MM/YYYY');
     var AssignedToIds: any = [];
     var ResponsibleTeamIds: any = [];
@@ -3226,7 +3227,8 @@ const EditTaskPopup = (Items: any) => {
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
             TaskAssignedTo?.map((taskInfo) => {
                 if (taskInfo.AssingedToUserId != undefined) {
-                    AssignedToIds.push(taskInfo.AssingedToUserId);
+
+                    AssignedToIds.push(taskInfo?.AssingedToUserId);
                 }
                 else {
                     AssignedToIds.push(taskInfo.Id);
@@ -3303,25 +3305,7 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
-        if(WorkingAction?.length > 0){
-            WorkingAction.map((type:any)=>{
-                if(type?.Title=='WorkingDetails'){
-                    type?.InformationData?.map((allInfo:any)=>{
-                      if(currentDate==allInfo?.WorkingDate) { 
-                        if(allInfo?.WorkingMember?.length>0){
-                            allInfo?.WorkingMember.forEach((userIds: any) => {
-                                if (!assigneduserid?.includes(userIds?.Id)) {
-                                    assigneduserid?.push(userIds?.Id);
-                                }
-                            });
-                        }
-                    }
-                    })
-                }
-            })   
-                       
-
-        }
+        
 
         let UpdateDataObject: any = {
             IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : workingToday,
@@ -3372,8 +3356,8 @@ const EditTaskPopup = (Items: any) => {
                     : null,
             Mileage: EditData.Mileage ? EditData.Mileage : "",
             AssignedToId: {
-                results:assigneduserid != undefined && assigneduserid?.length > 0
-                ? assigneduserid
+                results: AssignedToIds != undefined && AssignedToIds?.length > 0
+                    ? AssignedToIds
                         : [],
             },
             ResponsibleTeamId: {
@@ -3478,31 +3462,46 @@ const EditTaskPopup = (Items: any) => {
             const timesheetDatass = teamConfigData;
             console.log(timesheetDatass);
         } else {
-            if(teamConfigData?.dateInfo?.length>0){
-                let storeData:any=[];
-                // let assigneduserid:any=[];
-                // let currentDate = Moment().format('DD/MM/YYYY');
-                let  storeInWorkingAction:any={"Title":"WorkingDetails","InformationData":[]}
-               if( teamConfigData?.oldWorkingDaysInfo!=undefined || teamConfigData?.oldWorkingDaysInfo!=null &&teamConfigData?.oldWorkingDaysInfo?.length>0){
-                teamConfigData?.oldWorkingDaysInfo.map((oldJson:any)=>{
+            if (teamConfigData?.dateInfo?.length > 0) {
+                let storeData: any = [];
+                let storeInWorkingAction: any = { "Title": "WorkingDetails", "InformationData": [] }
+                if (teamConfigData?.oldWorkingDaysInfo != undefined || teamConfigData?.oldWorkingDaysInfo != null && teamConfigData?.oldWorkingDaysInfo?.length > 0) {
+                    teamConfigData?.oldWorkingDaysInfo.map((oldJson: any) => {
                     storeData?.push(oldJson)
                 })
                }
-                teamConfigData?.dateInfo?.map((Info:any)=>{
-                    let dataAccordingDays:any={}
-                    if(Info?.userInformation?.length>0){
-                          
-                        dataAccordingDays.WorkingDate=Info?.originalDate
-                        dataAccordingDays.WorkingMember=[];
-                        Info?.userInformation?.map((userInfo:any)=>{
-                            dataAccordingDays.WorkingMember.push({Id:userInfo?.AssingedToUserId,Title:userInfo.Title})
+                teamConfigData?.dateInfo?.map((Info: any) => {
+                    let dataAccordingDays: any = {}
+                    if (Info?.userInformation?.length > 0) {
+                        dataAccordingDays.WorkingDate = Info?.originalDate
+                        dataAccordingDays.WorkingMember = [];
+                        Info?.userInformation?.map((userInfo: any) => {
+                           
+                            dataAccordingDays.WorkingMember.push({ Id: userInfo?.AssingedToUserId, Title: userInfo.Title })
                             })
                         storeData?.push(dataAccordingDays)
                     }
                 })
-                storeInWorkingAction.InformationData=[...storeData]  
+                storeInWorkingAction.InformationData = [...storeData]
                 oldWorkingAction = oldWorkingAction.filter((type: any) => type?.Title != "WorkingDetails");
-                setWorkingAction([...oldWorkingAction,storeInWorkingAction]);
+                // let defaultTemp: any=[]
+                if(oldWorkingAction?.length==0){
+                    oldWorkingAction= [
+                        {
+                            Title: "Bottleneck",
+                            InformationData: []
+                        },
+                        {
+                            Title: "Attention",
+                            InformationData: []
+                        },
+                        {
+                            Title: "Phone",
+                            InformationData: []
+                        }
+                    ] 
+                }
+                setWorkingAction([...oldWorkingAction, storeInWorkingAction]);
                 setWorkingToday(true)
                 // setusersAssignedIDs(assigneduserid)
             }
@@ -4336,8 +4335,8 @@ const EditTaskPopup = (Items: any) => {
                 })
             }
             console.log("Comment Added in working aaray", copyWorkAction)
-            oldWorkingAction=[]
-            oldWorkingAction=[...copyWorkAction]
+            oldWorkingAction = []
+            oldWorkingAction = [...copyWorkAction]
             setWorkingAction([...copyWorkAction])
         }
         setAddImageDescriptionsDetails(e.target.value);
@@ -4754,9 +4753,9 @@ const EditTaskPopup = (Items: any) => {
         var data: any = ApproverData;
         if (useFor == "Bottleneck" || useFor == "Attention") {
             let CreatorData: any = currentUserBackupArray[0];
-            let workingDetail:any=WorkingAction?.filter((type: any) => type?.Title == "WorkingDetails");
+            let workingDetail: any = WorkingAction?.filter((type: any) => type?.Title == "WorkingDetails");
             let copyWorkAction: any = [...WorkingAction]
-            copyWorkAction=WorkingAction?.filter((type: any) => type?.Title != "WorkingDetails");
+            copyWorkAction = WorkingAction?.filter((type: any) => type?.Title != "WorkingDetails");
             if (data?.length > 0) {
                 data?.map((selectedData: any) => {
                     if (selectedData?.Id != undefined) {
@@ -4805,9 +4804,9 @@ const EditTaskPopup = (Items: any) => {
 
                 })
             }
-            oldWorkingAction=[]
-            oldWorkingAction=[...copyWorkAction]
-            setWorkingAction([...copyWorkAction,...workingDetail]);
+            oldWorkingAction = []
+            oldWorkingAction = [...copyWorkAction]
+            setWorkingAction([...copyWorkAction, ...workingDetail]);
             console.log("Bottleneck All Details:", copyWorkAction)
             setUseFor("")
             setApproverPopupStatus(false)
