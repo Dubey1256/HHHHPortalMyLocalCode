@@ -11,5 +11,6 @@ export interface IHhhhSmartMetadataPortfolioProps {
   SPSitesListUrl: string;
   TaskUserListID: string;
   siteUrl: any
+  siteName: any
   Context: any
 }
