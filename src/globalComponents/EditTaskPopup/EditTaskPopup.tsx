@@ -92,6 +92,8 @@ var TaskApproverBackupArray: any = [];
 let categoryTitle: any = "";
 let onHoldCategory: any = [];
 let globalSelectedProject: any = { PriorityRank: 1 };
+let oldWorkingAction:any=[]
+
 const EditTaskPopup = (Items: any) => {
     const Context = Items?.context;
     const AllListIdData = Items?.AllListId;
@@ -100,6 +102,8 @@ const EditTaskPopup = (Items: any) => {
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
     let SiteWebConfigData: any = [];
+    const[usersAssignedIDs,setusersAssignedIDs]=useState([])
+    const [workingToday,setWorkingToday]=useState(false);
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
     const [IsComponentPicker, setIsComponentPicker] = useState(false);
@@ -169,10 +173,12 @@ const EditTaskPopup = (Items: any) => {
     const [ApproverPopupStatus, setApproverPopupStatus] = useState(false);
     const [ApproverSearchKey, setApproverSearchKey] = useState("");
     const [BottleneckSearchKey, setBottleneckSearchKey] = useState("");
+    const [PhoneSearchKey, setPhoneSearchKey] = useState("");
     const [AttentionSearchKey, setAttentionSearchKey] = useState("");
     const [ApproverSearchedData, setApproverSearchedData] = useState([]);
     const [BottleneckSearchedData, setBottleneckSearchedData] = useState([]);
     const [AttentionSearchedData, setAttentionSearchedData] = useState([]);
+    const [PhoneSearchedData, setPhoneSearchedData] = useState([]);
     const [ApproverSearchedDataForPopup, setApproverSearchedDataForPopup] =
         useState([]);
     const [sendEmailStatus, setSendEmailStatus] = useState(false);
@@ -915,6 +921,8 @@ const EditTaskPopup = (Items: any) => {
                 let saveImage = [];
                 if (item?.WorkingAction?.length > 0) {
                     let WorkingActionData: any = JSON.parse(item.WorkingAction);
+                    oldWorkingAction=[]
+                    oldWorkingAction=[...WorkingActionData]
                     setWorkingAction(WorkingActionData);
                 }
                 if (item.Categories != null) {
@@ -2483,6 +2491,8 @@ const EditTaskPopup = (Items: any) => {
 
     var smartComponentsIds: any = "";
     var RelevantPortfolioIds: any = [];
+    let assigneduserid:any=[];
+    let currentDate = Moment().format('DD/MM/YYYY');
     var AssignedToIds: any = [];
     var ResponsibleTeamIds: any = [];
     var TeamMemberIds: any = [];
@@ -3295,8 +3305,28 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
+        if(WorkingAction?.length > 0){
+            WorkingAction.map((type:any)=>{
+                if(type?.Title=='WorkingDetails'){
+                    type?.InformationData?.map((allInfo:any)=>{
+                      if(currentDate==allInfo?.WorkingDate) { 
+                        if(allInfo?.WorkingMember?.length>0){
+                            allInfo?.WorkingMember.forEach((userIds: any) => {
+                                if (!assigneduserid?.includes(userIds?.Id)) {
+                                    assigneduserid?.push(userIds?.Id);
+                                }
+                            });
+                        }
+                    }
+                    })
+                }
+            })   
+                       
+
+        }
+
         let UpdateDataObject: any = {
-            IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
+            IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : workingToday,
             workingThisWeek: EditData.workingThisWeek
                 ? EditData.workingThisWeek
                 : null,
@@ -3344,9 +3374,8 @@ const EditTaskPopup = (Items: any) => {
                     : null,
             Mileage: EditData.Mileage ? EditData.Mileage : "",
             AssignedToId: {
-                results:
-                    AssignedToIds != undefined && AssignedToIds.length > 0
-                        ? AssignedToIds
+                results:assigneduserid != undefined && assigneduserid?.length > 0
+                ? assigneduserid
                         : [],
             },
             ResponsibleTeamId: {
@@ -3451,6 +3480,34 @@ const EditTaskPopup = (Items: any) => {
             const timesheetDatass = teamConfigData;
             console.log(timesheetDatass);
         } else {
+            if(teamConfigData?.dateInfo?.length>0){
+                let storeData:any=[];
+                // let assigneduserid:any=[];
+                // let currentDate = Moment().format('DD/MM/YYYY');
+                let  storeInWorkingAction:any={"Title":"WorkingDetails","InformationData":[]}
+               if( teamConfigData?.oldWorkingDaysInfo!=undefined || teamConfigData?.oldWorkingDaysInfo!=null &&teamConfigData?.oldWorkingDaysInfo?.length>0){
+                teamConfigData?.oldWorkingDaysInfo.map((oldJson:any)=>{
+                    storeData?.push(oldJson)
+                })
+               }
+                teamConfigData?.dateInfo?.map((Info:any)=>{
+                    let dataAccordingDays:any={}
+                    if(Info?.userInformation?.length>0){
+                          
+                        dataAccordingDays.WorkingDate=Info?.originalDate
+                        dataAccordingDays.WorkingMember=[];
+                        Info?.userInformation?.map((userInfo:any)=>{
+                            dataAccordingDays.WorkingMember.push({Id:userInfo?.AssingedToUserId,Title:userInfo.Title})
+                            })
+                        storeData?.push(dataAccordingDays)
+                    }
+                })
+                storeInWorkingAction.InformationData=[...storeData]  
+                oldWorkingAction = oldWorkingAction.filter((type: any) => type?.Title != "WorkingDetails");
+                setWorkingAction([...oldWorkingAction,storeInWorkingAction]);
+                setWorkingToday(true)
+                // setusersAssignedIDs(assigneduserid)
+            }
 
             if (teamConfigData?.AssignedTo?.length > 0) {
                 let tempArray: any = [];
@@ -4248,7 +4305,7 @@ const EditTaskPopup = (Items: any) => {
         setAddImageDescriptions(true);
         setAddDescriptionModelName(type);
         AddImageDescriptionsIndex = Index;
-        if (type == "Bottleneck" || type == "Attention") {
+        if (type == "Bottleneck" || type == "Attention" || type == "Phone") {
             setAddImageDescriptionsDetails(Data.Comment != undefined ? Data.Comment : "")
         }
         if (type == "Image") {
@@ -4267,7 +4324,7 @@ const EditTaskPopup = (Items: any) => {
         if (UsedFor == "Image") {
             TaskImages[AddImageDescriptionsIndex].Description = e.target.value;
         }
-        if (UsedFor == "Bottleneck" || UsedFor == "Attention") {
+        if (UsedFor == "Bottleneck" || UsedFor == "Attention" || UsedFor == "Phone") {
             let copyWorkAction: any = [...WorkingAction];
             if (copyWorkAction?.length > 0) {
                 copyWorkAction?.map((DataItem: any) => {
@@ -4281,6 +4338,8 @@ const EditTaskPopup = (Items: any) => {
                 })
             }
             console.log("Comment Added in working aaray", copyWorkAction)
+            oldWorkingAction=[]
+            oldWorkingAction=[...copyWorkAction]
             setWorkingAction([...copyWorkAction])
         }
         setAddImageDescriptionsDetails(e.target.value);
@@ -4480,17 +4539,11 @@ const EditTaskPopup = (Items: any) => {
     const SaveImageDataOnLoop = async (response: any, NewList: any, NewItem: any) => {
         let tempArrayJsonData: any = [];
         let arrangedArray: any = []
-        let CurrentSiteName: string = '';
-        if (Items?.Items?.siteType == "Offshore%20Tasks" || Items?.Items?.siteType == "Offshore Tasks" || NewList == "Offshore%20Tasks" || NewList == "Offshore Tasks") {
-            CurrentSiteName = "SharewebQA";
-            NewList = "SharewebQA";
-        } else {
-            CurrentSiteName = Items.Items.siteType;
-        }
+       
         let currentUserDataObject: any;
         for (let index = 0; index < response?.AttachmentFiles?.length; index++) {
             const value = response.AttachmentFiles[index];
-            const sourceEndpoint = `${siteUrls}/_api/web/lists/getbytitle('${CurrentSiteName}')/items(${Items?.Items?.Id})/AttachmentFiles/getByFileName('${value.FileName}')/$value`;
+            const sourceEndpoint = `${siteUrls}/_api/web/lists/getbytitle('${Items?.Items?.siteType}')/items(${Items?.Items?.Id})/AttachmentFiles/getByFileName('${value.FileName}')/$value`;
 
             try {
                 const response = await fetch(sourceEndpoint, {
@@ -4529,7 +4582,7 @@ const EditTaskPopup = (Items: any) => {
                         ImageUrl:
                             siteUrls +
                             "/Lists/" +
-                            NewList +
+                            NewList.replace("Offshore Tasks", "SharewebQA")  +
                             "/Attachments/" +
                             NewItem?.Id +
                             "/" +
@@ -4695,9 +4748,11 @@ const EditTaskPopup = (Items: any) => {
 
     const UpdateApproverFunction = () => {
         var data: any = ApproverData;
-        if (useFor == "Bottleneck" || useFor == "Attention") {
+        if (useFor == "Bottleneck" || useFor == "Attention" || useFor == "Phone") {
             let CreatorData: any = currentUserBackupArray[0];
+            let workingDetail:any=WorkingAction?.filter((type: any) => type?.Title == "WorkingDetails");
             let copyWorkAction: any = [...WorkingAction]
+            copyWorkAction=WorkingAction?.filter((type: any) => type?.Title != "WorkingDetails");
             if (data?.length > 0) {
                 data?.map((selectedData: any) => {
                     if (selectedData?.Id != undefined) {
@@ -4731,6 +4786,10 @@ const EditTaskPopup = (Items: any) => {
                                 {
                                     Title: "Attention",
                                     InformationData: []
+                                },
+                                {
+                                    Title: "Phone",
+                                    InformationData: []
                                 }
                             ]
                             TempArrya?.map((TempItem: any) => {
@@ -4746,7 +4805,9 @@ const EditTaskPopup = (Items: any) => {
 
                 })
             }
-            setWorkingAction([...copyWorkAction]);
+            oldWorkingAction=[]
+            oldWorkingAction=[...copyWorkAction]
+            setWorkingAction([...copyWorkAction,...workingDetail]);
             console.log("Bottleneck All Details:", copyWorkAction)
             setUseFor("")
             setApproverPopupStatus(false)
@@ -4786,6 +4847,9 @@ const EditTaskPopup = (Items: any) => {
         if (type == "Attention") {
             setAttentionSearchKey(e.target.value)
         }
+        if (type == "Phone") {
+            setPhoneSearchKey(e.target.value)
+        }
         if (type == "OnTaskPopup") {
             setApproverSearchKey(e.target.value);
         }
@@ -4820,6 +4884,9 @@ const EditTaskPopup = (Items: any) => {
             if (type == "Attention") {
                 setAttentionSearchedData(tempArray);
             }
+            if (type == "Phone") {
+                setPhoneSearchedData(tempArray);
+            }
             if (type == "OnPanel") {
                 setApproverSearchedDataForPopup(tempArray);
             }
@@ -4827,6 +4894,7 @@ const EditTaskPopup = (Items: any) => {
             setApproverSearchedData([]);
             setBottleneckSearchedData([]);
             setAttentionSearchedData([]);
+            setPhoneSearchedData([]);
             setApproverSearchedDataForPopup([]);
         }
     };
@@ -4837,11 +4905,13 @@ const EditTaskPopup = (Items: any) => {
         setApproverSearchedData([]);
         setApproverSearchedDataForPopup([]);
         setAttentionSearchedData([]);
+        setPhoneSearchedData([]);
         setApproverSearchKey("");
         setBottleneckSearchKey("");
+        setPhoneSearchKey("");
         setAttentionSearchKey("");
         setBottleneckSearchedData([]);
-        if (usedFor == "Bottleneck" || usedFor == "Attention") {
+        if (usedFor == "Bottleneck" || usedFor == "Attention" || usedFor == "Phone") {
             let CreatorData: any = currentUserBackupArray[0];
             let copyWorkAction: any = [...WorkingAction]
             let CreateObject: any = {
@@ -4874,6 +4944,10 @@ const EditTaskPopup = (Items: any) => {
                     {
                         Title: "Attention",
                         InformationData: []
+                    },
+                    {
+                        Title: "Phone",
+                        InformationData: []
                     }
                 ]
                 TempArrya?.map((TempItem: any) => {
@@ -4892,7 +4966,7 @@ const EditTaskPopup = (Items: any) => {
             setTaskAssignedTo([ApproverData]);
             setTaskTeamMembers([ApproverData]);
             TaskApproverBackupArray = [ApproverData];
-            if (useFor == "Bottleneck" || useFor == "Attention") {
+            if (useFor == "Bottleneck" || useFor == "Attention" || useFor == "Phone") {
                 ApproverHistoryObject = {
                     ApproverName: ApproverData.Title,
                     ApprovedDate: Moment(new Date())
@@ -5704,7 +5778,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="d-flex justify-content-between align-items-center mb-0  full-width">
                                                     Title
                                                     <span className="d-flex">
-                                                        <span className="form-check mx-2">
+                                                        {/* <span className="form-check mx-2">
                                                             <input
                                                                 className="form-check-input rounded-0"
                                                                 type="checkbox"
@@ -5718,7 +5792,6 @@ const EditTaskPopup = (Items: any) => {
                                                                 Working This Week
                                                             </label>
                                                         </span>
-
                                                         <span className="form-check">
                                                             <input
                                                                 className="form-check-input rounded-0"
@@ -5732,7 +5805,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <label className="form-check-label">
                                                                 Working Today
                                                             </label>
-                                                        </span>
+                                                        </span> */}
                                                     </span>
                                                 </div>
                                                 <input
@@ -7164,10 +7237,15 @@ const EditTaskPopup = (Items: any) => {
                                         {/* This is used for bottleneck  */}
                                         <div className="col ps-0">
                                             <div className="input-group">
-                                                <label className="form-label full-width ">
+                                                <label className="form-label full-width">
                                                     Bottleneck
                                                 </label>
-                                                <input
+                                                {WorkingAction?.length > 0 ? (
+                                                    <>
+                                                        {WorkingAction.map((WAItemData, ItemIndex) => {
+                                                            if ((WAItemData.Title === "Bottleneck") && (WAItemData?.InformationData?.length === 0 || WAItemData?.InformationData?.length > 1)) {
+                                                                return (
+                                                                    <>   <input
                                                     type="text"
                                                     value={BottleneckSearchKey}
                                                     className="form-control"
@@ -7176,61 +7254,69 @@ const EditTaskPopup = (Items: any) => {
                                                 />
                                                 <span
                                                     className="input-group-text"
-                                                    // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
                                                     onClick={() => openBottleneckPopup("Bottleneck")}
                                                 >
                                                     <span
-                                                        title="Add Comment"
+                                                                                title="Edit"
                                                         className="svg__iconbox svg__icon--editBox"
                                                     ></span>
                                                 </span>
-                                                {BottleneckSearchedData?.length > 0 ? (
+                                                                    </>
+                                                                );
+                                                            }
+                                                            return null;
+                                                        })}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <input
+                                                            type="text"
+                                                            value={BottleneckSearchKey}
+                                                            className="form-control"
+                                                            placeholder="Tag user for Attention"
+                                                            onChange={(e) => autoSuggestionsForApprover(e, "Bottleneck")}
+                                                        />
+                                                        <span
+                                                            className="input-group-text"
+                                                            onClick={() => openBottleneckPopup("Attention")}
+                                                        >
+                                                            <span title="Edit" className="svg__iconbox svg__icon--editBox"></span>
+                                                        </span>
+                                                    </>
+                                                )}
+                                                {BottleneckSearchedData?.length > 0 && (
                                                     <div className="SmartTableOnTaskPopup">
                                                         <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                            {BottleneckSearchedData.map((item: any) => {
-                                                                return (
+                                                            {BottleneckSearchedData.map((item) => (
                                                                     <li
                                                                         className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                         key={item.id}
-                                                                        onClick={() =>
-                                                                            SelectApproverFromAutoSuggestion(
-                                                                                item, "Bottleneck"
-                                                                            )
-                                                                        }
+                                                                    onClick={() => SelectApproverFromAutoSuggestion(item, "Bottleneck")}
                                                                     >
                                                                         <a>{item.NewLabel}</a>
                                                                     </li>
-                                                                );
-                                                            })}
+                                                            ))}
                                                         </ul>
                                                     </div>
-                                                ) : null}
+                                                )}
                                             </div>
-                                            {WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
-                                                if (WAItemData.Title == "Bottleneck" && WAItemData?.InformationData?.length > 0) {
+                                            {WorkingAction?.map((WAItemData, ItemIndex) => {
+                                                if (WAItemData.Title === "Bottleneck" && WAItemData?.InformationData?.length > 0) {
                                                     return (
-                                                        <div className="border p-1 mt-1">
-                                                            {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: number) => {
-                                                                return (
-                                                                    <div className="align-content-center alignCenter justify-content-between py-1">
+                                                        <div className="border p-1 mt-1" key={ItemIndex}>
+                                                            {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: any) => (
+                                                                <div className="align-content-center alignCenter justify-content-between py-1" key={InfoIndex}>
                                                                         <div className="alignCenter">
                                                                             {InfoData?.TaggedUsers?.userImage?.length > 0 ? (
                                                                                 <img
                                                                                     className="ProirityAssignedUserPhoto m-0"
                                                                                     title={InfoData.TaggedUsers?.Title}
-                                                                                    src={
-                                                                                        InfoData.TaggedUsers.userImage !=
-                                                                                            undefined &&
-                                                                                            InfoData.TaggedUsers.userImage.length >
-                                                                                            0
-                                                                                            ? InfoData.TaggedUsers.userImage
-                                                                                            : ""
-                                                                                    }
+                                                                                src={InfoData.TaggedUsers.userImage}
                                                                                 />
                                                                             ) : (
                                                                                 <span
                                                                                     title={InfoData.TaggedUsers?.Title}
-                                                                                    className="alignIcon svg__iconbox ProirityAssignedUserPhoto svg__icon--defaultUser "
+                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
                                                                                 ></span>
                                                                             )}
                                                                             <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
@@ -7238,30 +7324,21 @@ const EditTaskPopup = (Items: any) => {
 
                                                                         <div className="alignCenter">
                                                                             <span
+                                                                            onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
                                                                                 className="hover-text m-1"
-                                                                                onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
                                                                             >
-                                                                                <LuBellPlus></LuBellPlus>
+                                                                            <LuBellPlus></LuBellPlus>
                                                                                 <span className="tooltip-text pop-left">
                                                                                     Send reminder notifications
                                                                                 </span>
                                                                             </span>
                                                                             <span
                                                                                 className="m-0 img-info hover-text"
-                                                                                onClick={() =>
-                                                                                    openAddImageDescriptionFunction(
-                                                                                        InfoIndex,
-                                                                                        InfoData,
-                                                                                        "Bottleneck"
-                                                                                    )
-                                                                                }
+                                                                            onClick={() => openAddImageDescriptionFunction(InfoIndex, InfoData, "Bottleneck")}
                                                                             >
                                                                                 <span className="svg__iconbox svg__icon--comment"></span>
                                                                                 <span className="tooltip-text pop-left">
-                                                                                    {InfoData.Comment != undefined &&
-                                                                                        InfoData.Comment?.length > 1
-                                                                                        ? InfoData.Comment
-                                                                                        : "Add Comment"}
+                                                                                {InfoData.Comment?.length > 1 ? InfoData.Comment : "Add Comment"}
                                                                                 </span>
                                                                             </span>
                                                                             <span
@@ -7269,89 +7346,121 @@ const EditTaskPopup = (Items: any) => {
                                                                                 onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Remove", WAItemData.Title)}
                                                                             >
                                                                                 <span className="svg__iconbox svg__icon--cross"></span>
+
                                                                                 <span className="tooltip-text pop-left">
-                                                                                    Remove user from bottleneck
+                                                                                Remove user from Bottleneck
                                                                                 </span>
                                                                             </span>
+                                                                        {WAItemData?.InformationData?.length === 1 && (
+                                                                            <span onClick={() => openBottleneckPopup("Bottleneck")}>
+                                                                                <span
+                                                                                    title="Add Comment"
+                                                                                    className="svg__iconbox svg__icon--Plus"
+                                                                                ></span>
+                                                                            </span>
+                                                                        )}
                                                                         </div>
                                                                     </div>
-                                                                )
-                                                            })}
+                                                            ))}
                                                         </div>
-                                                    )
+                                                    );
                                                 }
+                                                return null;
                                             })}
                                         </div>
+
                                         {/* This is used for Attentions  */}
                                         <div className="col mt-2 ps-0">
                                             <div className="input-group">
-                                                <label className="form-label full-width ">
-                                                    Attention
-                                                </label>
-                                                <input
+                                                <label className="form-label full-width">Attention</label>
+                                                {WorkingAction?.length > 0 ? (
+                                                    <>
+                                                        {WorkingAction.map((WAItemData, ItemIndex) => {
+                                                            if (
+                                                                WAItemData.Title === "Attention" &&
+                                                                (WAItemData?.InformationData?.length === 0 ||
+                                                                    WAItemData?.InformationData?.length > 1)
+                                                            ) {
+                                                                return (
+                                                                    <>   <input
                                                     type="text"
                                                     value={AttentionSearchKey}
                                                     className="form-control"
-                                                    placeholder="Tag user for attention"
+                                                                        placeholder="Tag user for Attention"
                                                     onChange={(e) => autoSuggestionsForApprover(e, "Attention")}
                                                 />
                                                 <span
                                                     className="input-group-text"
-                                                    // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
                                                     onClick={() => openBottleneckPopup("Attention")}
                                                 >
                                                     <span
-                                                        title="Add Comment"
+                                                                                title="Edit"
                                                         className="svg__iconbox svg__icon--editBox"
                                                     ></span>
                                                 </span>
-                                                {AttentionSearchedData?.length > 0 ? (
+                                                                    </>
+                                                                );
+                                                            }
+                                                            return null;
+                                                        })}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <input
+                                                            type="text"
+                                                            value={AttentionSearchKey}
+                                                            className="form-control"
+                                                            placeholder="Tag user for Attention"
+                                                            onChange={(e) => autoSuggestionsForApprover(e, "Attention")}
+                                                        />
+                                                        <span
+                                                            className="input-group-text"
+                                                            onClick={() => openBottleneckPopup("Attention")}
+                                                        >
+                                                            <span title="Edit" className="svg__iconbox svg__icon--editBox"></span>
+                                                        </span>
+                                                    </>
+                                                )}
+
+                                                {AttentionSearchedData?.length > 0 && (
                                                     <div className="SmartTableOnTaskPopup">
                                                         <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                            {AttentionSearchedData.map((item: any) => {
-                                                                return (
+                                                            {AttentionSearchedData.map((item) => (
                                                                     <li
                                                                         className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                         key={item.id}
-                                                                        onClick={() =>
-                                                                            SelectApproverFromAutoSuggestion(
-                                                                                item, "Attention"
-                                                                            )
-                                                                        }
+                                                                    onClick={() => SelectApproverFromAutoSuggestion(item, "Attention")}
                                                                     >
                                                                         <a>{item.NewLabel}</a>
                                                                     </li>
-                                                                );
-                                                            })}
+                                                            ))}
                                                         </ul>
                                                     </div>
-                                                ) : null}
+                                                )}
                                             </div>
-                                            {WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
-                                                if (WAItemData.Title == "Attention" && WAItemData?.InformationData?.length > 0) {
+                                            {WorkingAction?.map((WAItemData, ItemIndex) => {
+                                                if (
+                                                    WAItemData.Title === "Attention" &&
+                                                    WAItemData?.InformationData?.length > 0
+                                                ) {
                                                     return (
-                                                        <div className="border p-1 mt-1">
-                                                            {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: number) => {
-                                                                return (
-                                                                    <div className="align-content-center alignCenter justify-content-between py-1">
+                                                        <div className="border p-1 mt-1" key={ItemIndex}>
+                                                            {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: any) => (
+                                                                <div
+                                                                    className="align-content-center alignCenter justify-content-between py-1"
+                                                                    key={InfoIndex}
+                                                                >
                                                                         <div className="alignCenter">
                                                                             {InfoData?.TaggedUsers?.userImage?.length > 0 ? (
                                                                                 <img
                                                                                     className="ProirityAssignedUserPhoto m-0"
                                                                                     title={InfoData.TaggedUsers?.Title}
-                                                                                    src={
-                                                                                        InfoData.TaggedUsers.userImage !=
-                                                                                            undefined &&
-                                                                                            InfoData.TaggedUsers.userImage?.length >
-                                                                                            0
-                                                                                            ? InfoData.TaggedUsers.userImage
-                                                                                            : ""
-                                                                                    }
+                                                                                src={InfoData.TaggedUsers.userImage}
                                                                                 />
                                                                             ) : (
                                                                                 <span
                                                                                     title={InfoData.TaggedUsers?.Title}
-                                                                                    className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto "
+                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
                                                                                 ></span>
                                                                             )}
                                                                             <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
@@ -7359,10 +7468,17 @@ const EditTaskPopup = (Items: any) => {
 
                                                                         <div className="alignCenter">
                                                                             <span
-                                                                                onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
+                                                                            onClick={() =>
+                                                                                BottleneckAndAttentionFunction(
+                                                                                    InfoData,
+                                                                                    InfoIndex,
+                                                                                    "Reminder",
+                                                                                    WAItemData.Title
+                                                                                )
+                                                                            }
                                                                                 className="hover-text m-1"
                                                                             >
-                                                                                <LuBellPlus></LuBellPlus>
+                                                                            <LuBellPlus></LuBellPlus>
                                                                                 <span className="tooltip-text pop-left">
                                                                                     Send reminder notifications
                                                                                 </span>
@@ -7379,30 +7495,170 @@ const EditTaskPopup = (Items: any) => {
                                                                             >
                                                                                 <span className="svg__iconbox svg__icon--comment"></span>
                                                                                 <span className="tooltip-text pop-left">
-                                                                                    {InfoData.Comment != undefined &&
-                                                                                        InfoData.Comment?.length > 1
+                                                                                {InfoData.Comment?.length > 1
                                                                                         ? InfoData.Comment
                                                                                         : "Add Comment"}
                                                                                 </span>
                                                                             </span>
                                                                             <span
                                                                                 className="hover-text m-0 alignIcon"
-                                                                                onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Remove", WAItemData.Title)}
+                                                                            onClick={() =>
+                                                                                BottleneckAndAttentionFunction(
+                                                                                    InfoData,
+                                                                                    InfoIndex,
+                                                                                    "Remove",
+                                                                                    WAItemData.Title
+                                                                                )
+                                                                            }
                                                                             >
                                                                                 <span className="svg__iconbox svg__icon--cross"></span>
                                                                                 <span className="tooltip-text pop-left">
-                                                                                    Remove user from bottleneck
+                                                                                Remove user from Attention
                                                                                 </span>
                                                                             </span>
+                                                                        {WAItemData?.InformationData?.length === 1 ? (
+                                                                            <span onClick={() => openBottleneckPopup("Attention")}>
+                                                                                <span
+                                                                                    title="Add Comment"
+                                                                                    className="svg__iconbox svg__icon--Plus"
+                                                                                ></span>
+                                                                            </span>
+                                                                        ) : null}
                                                                         </div>
                                                                     </div>
-                                                                )
+                                                            ))}
+                                                        </div>
+                                                    );
+                                                }
+                                                return null;
                                                             })}
                                                         </div>
-                                                    )
+                                        {/* //////////////////////////////hello/////////////////////////// */}
+                                        <div className="col mt-2 ps-0">
+                                            <div className="input-group">
+                                                <label className="form-label full-width">
+                                                    Phone
+                                                </label>
+                                                {WorkingAction?.length > 0 ? <> {WorkingAction?.map((WAItemData, ItemIndex) => {
+                                                    if ((WAItemData.Title === "Phone") && (WAItemData?.InformationData?.length === 0 || WAItemData?.InformationData?.length > 1)) {
+                                                        return (
+                                                            <>   <input
+                                                                type="text"
+                                                                value={PhoneSearchKey}
+                                                                className="form-control"
+                                                                placeholder="Tag user for Phone"
+                                                                onChange={(e) => autoSuggestionsForApprover(e, "Phone")}
+                                                                key={ItemIndex}
+                                                            /><span className="input-group-text" onClick={() => openBottleneckPopup("Phone")}>
+
+                                                                    <span title="Edit" className="svg__iconbox svg__icon--editBox"></span>
+
+                                                                </span></>
+
+                                                        );
+                                                    }
+                                                    return null;
+                                                })}</> : <> <input
+                                                    type="text"
+                                                    value={PhoneSearchKey}
+                                                    className="form-control"
+                                                    placeholder="Tag user for Phone"
+                                                    onChange={(e) => autoSuggestionsForApprover(e, "Phone")}
+
+                                                />
+                                                    <span className="input-group-text" onClick={() => openBottleneckPopup("Phone")}>
+
+                                                        <span title="Edit" className="svg__iconbox svg__icon--editBox"></span>
+
+                                                    </span>
+                                                </>}
+
+                                                {PhoneSearchedData?.length > 0 && (
+                                                    <div className="SmartTableOnTaskPopup">
+                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                            {PhoneSearchedData.map((item) => (
+                                                                <li
+                                                                    className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                    key={item.id}
+                                                                    onClick={() => SelectApproverFromAutoSuggestion(item, "Phone")}
+                                                                >
+                                                                    <a>{item.NewLabel}</a>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {WorkingAction?.map((WAItemData, ItemIndex) => {
+                                                if (WAItemData.Title === "Phone" && WAItemData?.InformationData?.length > 0) {
+                                                    return (
+                                                        <div className="border p-1 mt-1" key={ItemIndex}>
+                                                            {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: any) => (
+                                                                <div className="align-content-center alignCenter justify-content-between py-1" key={InfoIndex}>
+                                                                    <div className="alignCenter">
+                                                                        {InfoData?.TaggedUsers?.userImage?.length > 0 ? (
+                                                                            <img
+                                                                                className="ProirityAssignedUserPhoto m-0"
+                                                                                title={InfoData.TaggedUsers?.Title}
+                                                                                src={InfoData.TaggedUsers.userImage}
+                                                                            />
+                                                                        ) : (
+                                                                            <span
+                                                                                title={InfoData.TaggedUsers?.Title}
+                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
+                                                                            ></span>
+                                                                        )}
+                                                                        <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
+                                                                    </div>
+
+                                                                    <div className="alignCenter">
+                                                                        <span
+                                                                            onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
+                                                                            className="hover-text m-1"
+                                                                        >
+                                                                            <LuBellPlus />
+                                                                            <span className="tooltip-text pop-left">
+                                                                                Send reminder notifications
+                                                                            </span>
+                                                                        </span>
+                                                                        <span
+                                                                            className="m-0 img-info hover-text"
+                                                                            onClick={() => openAddImageDescriptionFunction(InfoIndex, InfoData, "Phone")}
+                                                                        >
+                                                                            <span className="svg__iconbox svg__icon--comment"></span>
+                                                                            <span className="tooltip-text pop-left">
+                                                                                {InfoData.Comment?.length > 1 ? InfoData.Comment : "Add Comment"}
+                                                                            </span>
+                                                                        </span>
+                                                                        <span
+                                                                            className="hover-text m-0 alignIcon"
+                                                                            onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Remove", WAItemData.Title)}
+                                                                        >
+                                                                            <span className="svg__iconbox svg__icon--cross"></span>
+
+                                                                            <span className="tooltip-text pop-left">
+                                                                                Remove user from Phone
+                                                                            </span>
+                                                                        </span>
+                                                                        {WAItemData?.InformationData?.length === 1 ? (
+                                                                            <span onClick={() => openBottleneckPopup("Phone")}>
+                                                                                <span
+                                                                                    title="Add Comment"
+                                                                                    className="svg__iconbox svg__icon--Plus"
+                                                                                ></span>
+                                                                            </span>
+                                                                        ) : null}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    );
                                                 }
+                                                return null;
                                             })}
                                         </div>
+
+
                                         <div className="full_width mt-2">
                                             <CommentCard
                                                 siteUrl={siteUrls}
@@ -9564,10 +9820,15 @@ const EditTaskPopup = (Items: any) => {
                                                     {/* This is used for bottleneck  */}
                                                     <div className="col ps-0">
                                                         <div className="input-group">
-                                                            <label className="form-label full-width ">
+                                                            <label className="form-label full-width">
                                                                 Bottleneck
                                                             </label>
-                                                            <input
+                                                            {WorkingAction?.length > 0 ? (
+                                                                <>
+                                                                    {WorkingAction.map((WAItemData, ItemIndex) => {
+                                                                        if ((WAItemData.Title === "Bottleneck") && (WAItemData?.InformationData?.length === 0 || WAItemData?.InformationData?.length > 1)) {
+                                                                            return (
+                                                                                <>   <input
                                                                 type="text"
                                                                 value={BottleneckSearchKey}
                                                                 className="form-control"
@@ -9576,56 +9837,64 @@ const EditTaskPopup = (Items: any) => {
                                                             />
                                                             <span
                                                                 className="input-group-text"
-                                                                // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
                                                                 onClick={() => openBottleneckPopup("Bottleneck")}
                                                             >
                                                                 <span
-                                                                    title="Add Comment"
+                                                                                            title="Edit"
                                                                     className="svg__iconbox svg__icon--editBox"
                                                                 ></span>
                                                             </span>
-                                                            {BottleneckSearchedData?.length > 0 ? (
+                                                                                </>
+                                                                            );
+                                                                        }
+                                                                        return null;
+                                                                    })}
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={BottleneckSearchKey}
+                                                                        className="form-control"
+                                                                        placeholder="Tag user for Attention"
+                                                                        onChange={(e) => autoSuggestionsForApprover(e, "Bottleneck")}
+                                                                    />
+                                                                    <span
+                                                                        className="input-group-text"
+                                                                        onClick={() => openBottleneckPopup("Attention")}
+                                                                    >
+                                                                        <span title="Edit" className="svg__iconbox svg__icon--editBox"></span>
+                                                                    </span>
+                                                                </>
+                                                            )}
+                                                            {BottleneckSearchedData?.length > 0 && (
                                                                 <div className="SmartTableOnTaskPopup">
                                                                     <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                        {BottleneckSearchedData.map((item: any) => {
-                                                                            return (
+                                                                        {BottleneckSearchedData.map((item) => (
                                                                                 <li
                                                                                     className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                                     key={item.id}
-                                                                                    onClick={() =>
-                                                                                        SelectApproverFromAutoSuggestion(
-                                                                                            item, "Bottleneck"
-                                                                                        )
-                                                                                    }
+                                                                                onClick={() => SelectApproverFromAutoSuggestion(item, "Bottleneck")}
                                                                                 >
                                                                                     <a>{item.NewLabel}</a>
                                                                                 </li>
-                                                                            );
-                                                                        })}
+                                                                        ))}
                                                                     </ul>
                                                                 </div>
-                                                            ) : null}
+                                                            )}
                                                         </div>
-                                                        {WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
-                                                            if (WAItemData.Title == "Bottleneck" && WAItemData?.InformationData?.length > 0) {
+                                                        {WorkingAction?.map((WAItemData, ItemIndex) => {
+                                                            if (WAItemData.Title === "Bottleneck" && WAItemData?.InformationData?.length > 0) {
                                                                 return (
-                                                                    <div className="border p-1 mt-1">
-                                                                        {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: number) => {
-                                                                            return (
-                                                                                <div className="align-content-center alignCenter justify-content-between py-1">
+                                                                    <div className="border p-1 mt-1" key={ItemIndex}>
+                                                                        {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: any) => (
+                                                                            <div className="align-content-center alignCenter justify-content-between py-1" key={InfoIndex}>
                                                                                     <div className="alignCenter">
                                                                                         {InfoData?.TaggedUsers?.userImage?.length > 0 ? (
                                                                                             <img
                                                                                                 className="ProirityAssignedUserPhoto m-0"
                                                                                                 title={InfoData.TaggedUsers?.Title}
-                                                                                                src={
-                                                                                                    InfoData.TaggedUsers.userImage !=
-                                                                                                        undefined &&
-                                                                                                        InfoData.TaggedUsers.userImage.length >
-                                                                                                        0
-                                                                                                        ? InfoData.TaggedUsers.userImage
-                                                                                                        : ""
-                                                                                                }
+                                                                                            src={InfoData.TaggedUsers.userImage}
                                                                                             />
                                                                                         ) : (
                                                                                             <span
@@ -9638,30 +9907,21 @@ const EditTaskPopup = (Items: any) => {
 
                                                                                     <div className="alignCenter">
                                                                                         <span
+                                                                                        onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
                                                                                             className="hover-text m-1"
-                                                                                            onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
                                                                                         >
-                                                                                            <LuBellPlus></LuBellPlus>
+                                                                                        <LuBellPlus></LuBellPlus>
                                                                                             <span className="tooltip-text pop-left">
                                                                                                 Send reminder notifications
                                                                                             </span>
                                                                                         </span>
                                                                                         <span
                                                                                             className="m-0 img-info hover-text"
-                                                                                            onClick={() =>
-                                                                                                openAddImageDescriptionFunction(
-                                                                                                    InfoIndex,
-                                                                                                    InfoData,
-                                                                                                    "Bottleneck"
-                                                                                                )
-                                                                                            }
+                                                                                        onClick={() => openAddImageDescriptionFunction(InfoIndex, InfoData, "Bottleneck")}
                                                                                         >
                                                                                             <span className="svg__iconbox svg__icon--comment"></span>
                                                                                             <span className="tooltip-text pop-left">
-                                                                                                {InfoData.Comment != undefined &&
-                                                                                                    InfoData.Comment?.length > 1
-                                                                                                    ? InfoData.Comment
-                                                                                                    : "Add Comment"}
+                                                                                            {InfoData.Comment?.length > 1 ? InfoData.Comment : "Add Comment"}
                                                                                             </span>
                                                                                         </span>
                                                                                         <span
@@ -9669,84 +9929,115 @@ const EditTaskPopup = (Items: any) => {
                                                                                             onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Remove", WAItemData.Title)}
                                                                                         >
                                                                                             <span className="svg__iconbox svg__icon--cross"></span>
+
                                                                                             <span className="tooltip-text pop-left">
-                                                                                                Remove user from bottleneck
+                                                                                            Remove user from Bottleneck
                                                                                             </span>
                                                                                         </span>
+                                                                                    {WAItemData?.InformationData?.length === 1 && (
+                                                                                        <span onClick={() => openBottleneckPopup("Bottleneck")}>
+                                                                                            <span
+                                                                                                title="Add Comment"
+                                                                                                className="svg__iconbox svg__icon--Plus"
+                                                                                            ></span>
+                                                                                        </span>
+                                                                                    )}
                                                                                     </div>
                                                                                 </div>
-                                                                            )
-                                                                        })}
+                                                                        ))}
                                                                     </div>
-                                                                )
+                                                                );
                                                             }
+                                                            return null;
                                                         })}
                                                     </div>
                                                     {/* This is used for Attentions  */}
                                                     <div className="col mt-2 ps-0">
                                                         <div className="input-group">
-                                                            <label className="form-label full-width ">
-                                                                Attention
-                                                            </label>
-                                                            <input
+                                                            <label className="form-label full-width">Attention</label>
+                                                            {WorkingAction?.length > 0 ? (
+                                                                <>
+                                                                    {WorkingAction.map((WAItemData, ItemIndex) => {
+                                                                        if (
+                                                                            WAItemData.Title === "Attention" &&
+                                                                            (WAItemData?.InformationData?.length === 0 ||
+                                                                                WAItemData?.InformationData?.length > 1)
+                                                                        ) {
+                                                                            return (
+                                                                                <>   <input
                                                                 type="text"
                                                                 value={AttentionSearchKey}
                                                                 className="form-control"
-                                                                placeholder="Tag user for attention"
+                                                                                    placeholder="Tag user for Attention"
                                                                 onChange={(e) => autoSuggestionsForApprover(e, "Attention")}
                                                             />
                                                             <span
                                                                 className="input-group-text"
-                                                                // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
                                                                 onClick={() => openBottleneckPopup("Attention")}
                                                             >
                                                                 <span
-                                                                    title="Add Comment"
+                                                                                            title="Edit"
                                                                     className="svg__iconbox svg__icon--editBox"
                                                                 ></span>
                                                             </span>
-                                                            {AttentionSearchedData?.length > 0 ? (
+                                                                                </>
+                                                                            );
+                                                                        }
+                                                                        return null;
+                                                                    })}
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={AttentionSearchKey}
+                                                                        className="form-control"
+                                                                        placeholder="Tag user for Attention"
+                                                                        onChange={(e) => autoSuggestionsForApprover(e, "Attention")}
+                                                                    />
+                                                                    <span
+                                                                        className="input-group-text"
+                                                                        onClick={() => openBottleneckPopup("Attention")}
+                                                                    >
+                                                                        <span title="Edit" className="svg__iconbox svg__icon--editBox"></span>
+                                                                    </span>
+                                                                </>
+                                                            )}
+
+                                                            {AttentionSearchedData?.length > 0 && (
                                                                 <div className="SmartTableOnTaskPopup">
                                                                     <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                        {AttentionSearchedData.map((item: any) => {
-                                                                            return (
+                                                                        {AttentionSearchedData.map((item) => (
                                                                                 <li
                                                                                     className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                                     key={item.id}
-                                                                                    onClick={() =>
-                                                                                        SelectApproverFromAutoSuggestion(
-                                                                                            item, "Attention"
-                                                                                        )
-                                                                                    }
+                                                                                onClick={() => SelectApproverFromAutoSuggestion(item, "Attention")}
                                                                                 >
                                                                                     <a>{item.NewLabel}</a>
                                                                                 </li>
-                                                                            );
-                                                                        })}
+                                                                        ))}
                                                                     </ul>
                                                                 </div>
-                                                            ) : null}
+                                                            )}
                                                         </div>
-                                                        {WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
-                                                            if (WAItemData.Title == "Attention" && WAItemData?.InformationData?.length > 0) {
+                                                        {WorkingAction?.map((WAItemData, ItemIndex) => {
+                                                            if (
+                                                                WAItemData.Title === "Attention" &&
+                                                                WAItemData?.InformationData?.length > 0
+                                                            ) {
                                                                 return (
-                                                                    <div className="border p-1 mt-1">
-                                                                        {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: number) => {
-                                                                            return (
-                                                                                <div className="align-content-center alignCenter justify-content-between py-1">
+                                                                    <div className="border p-1 mt-1" key={ItemIndex}>
+                                                                        {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: any) => (
+                                                                            <div
+                                                                                className="align-content-center alignCenter justify-content-between py-1"
+                                                                                key={InfoIndex}
+                                                                            >
                                                                                     <div className="alignCenter">
                                                                                         {InfoData?.TaggedUsers?.userImage?.length > 0 ? (
                                                                                             <img
                                                                                                 className="ProirityAssignedUserPhoto m-0"
                                                                                                 title={InfoData.TaggedUsers?.Title}
-                                                                                                src={
-                                                                                                    InfoData.TaggedUsers.userImage !=
-                                                                                                        undefined &&
-                                                                                                        InfoData.TaggedUsers.userImage?.length >
-                                                                                                        0
-                                                                                                        ? InfoData.TaggedUsers.userImage
-                                                                                                        : ""
-                                                                                                }
+                                                                                            src={InfoData.TaggedUsers.userImage}
                                                                                             />
                                                                                         ) : (
                                                                                             <span
@@ -9759,10 +10050,17 @@ const EditTaskPopup = (Items: any) => {
 
                                                                                     <div className="alignCenter">
                                                                                         <span
-                                                                                            onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
+                                                                                        onClick={() =>
+                                                                                            BottleneckAndAttentionFunction(
+                                                                                                InfoData,
+                                                                                                InfoIndex,
+                                                                                                "Reminder",
+                                                                                                WAItemData.Title
+                                                                                            )
+                                                                                        }
                                                                                             className="hover-text m-1"
                                                                                         >
-                                                                                            <LuBellPlus></LuBellPlus>
+                                                                                        <LuBellPlus />
                                                                                             <span className="tooltip-text pop-left">
                                                                                                 Send reminder notifications
                                                                                             </span>
@@ -9779,30 +10077,169 @@ const EditTaskPopup = (Items: any) => {
                                                                                         >
                                                                                             <span className="svg__iconbox svg__icon--comment"></span>
                                                                                             <span className="tooltip-text pop-left">
-                                                                                                {InfoData.Comment != undefined &&
-                                                                                                    InfoData.Comment?.length > 1
+                                                                                            {InfoData.Comment?.length > 1
                                                                                                     ? InfoData.Comment
                                                                                                     : "Add Comment"}
                                                                                             </span>
                                                                                         </span>
                                                                                         <span
                                                                                             className="hover-text m-0 alignIcon"
-                                                                                            onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Remove", WAItemData.Title)}
+                                                                                        onClick={() =>
+                                                                                            BottleneckAndAttentionFunction(
+                                                                                                InfoData,
+                                                                                                InfoIndex,
+                                                                                                "Remove",
+                                                                                                WAItemData.Title
+                                                                                            )
+                                                                                        }
                                                                                         >
                                                                                             <span className="svg__iconbox svg__icon--cross"></span>
                                                                                             <span className="tooltip-text pop-left">
-                                                                                                Remove user from bottleneck
+                                                                                            Remove user from Attention
                                                                                             </span>
                                                                                         </span>
+                                                                                    {WAItemData?.InformationData?.length === 1 ? (
+                                                                                        <span onClick={() => openBottleneckPopup("Attention")}>
+                                                                                            <span
+                                                                                                title="Add Comment"
+                                                                                                className="svg__iconbox svg__icon--Plus"
+                                                                                            ></span>
+                                                                                        </span>
+                                                                                    ) : null}
                                                                                     </div>
                                                                                 </div>
-                                                                            )
+                                                                        ))}
+                                                                    </div>
+                                                                );
+                                                            }
+                                                            return null;
                                                                         })}
                                                                     </div>
-                                                                )
+                                                    {/* //////////////////////////////hello/////////////////////////// */}
+                                                    <div className="col mt-2 ps-0">
+                                                        <div className="input-group">
+                                                            <label className="form-label full-width">
+                                                                Phone
+                                                            </label>
+                                                            {WorkingAction?.length > 0 ? <> {WorkingAction?.map((WAItemData, ItemIndex) => {
+                                                                if ((WAItemData.Title === "Phone") && (WAItemData?.InformationData?.length === 0 || WAItemData?.InformationData?.length > 1)) {
+                                                                    return (
+                                                                        <>   <input
+                                                                            type="text"
+                                                                            value={PhoneSearchKey}
+                                                                            className="form-control"
+                                                                            placeholder="Tag user for Phone"
+                                                                            onChange={(e) => autoSuggestionsForApprover(e, "Phone")}
+                                                                            key={ItemIndex}
+                                                                        /><span className="input-group-text" onClick={() => openBottleneckPopup("Phone")}>
+
+                                                                                <span title="Edit" className="svg__iconbox svg__icon--editBox"></span>
+
+                                                                            </span></>
+
+                                                                    );
+                                                                }
+                                                                return null;
+                                                            })}</> : <> <input
+                                                                type="text"
+                                                                value={PhoneSearchKey}
+                                                                className="form-control"
+                                                                placeholder="Tag user for Phone"
+                                                                onChange={(e) => autoSuggestionsForApprover(e, "Phone")}
+
+                                                            />
+                                                                <span className="input-group-text" onClick={() => openBottleneckPopup("Phone")}>
+
+                                                                    <span title="Edit" className="svg__iconbox svg__icon--editBox"></span>
+
+                                                                </span>
+                                                            </>}
+
+                                                            {PhoneSearchedData?.length > 0 && (
+                                                                <div className="SmartTableOnTaskPopup">
+                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                        {PhoneSearchedData.map((item) => (
+                                                                            <li
+                                                                                className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                                key={item.id}
+                                                                                onClick={() => SelectApproverFromAutoSuggestion(item, "Phone")}
+                                                                            >
+                                                                                <a>{item.NewLabel}</a>
+                                                                            </li>
+                                                                        ))}
+                                                                    </ul>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        {WorkingAction?.map((WAItemData, ItemIndex) => {
+                                                            if (WAItemData.Title === "Phone" && WAItemData?.InformationData?.length > 0) {
+                                                                return (
+                                                                    <div className="border p-1 mt-1" key={ItemIndex}>
+                                                                        {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: any) => (
+                                                                            <div className="align-content-center alignCenter justify-content-between py-1" key={InfoIndex}>
+                                                                                <div className="alignCenter">
+                                                                                    {InfoData?.TaggedUsers?.userImage?.length > 0 ? (
+                                                                                        <img
+                                                                                            className="ProirityAssignedUserPhoto m-0"
+                                                                                            title={InfoData.TaggedUsers?.Title}
+                                                                                            src={InfoData.TaggedUsers.userImage}
+                                                                                        />
+                                                                                    ) : (
+                                                                                        <span
+                                                                                            title={InfoData.TaggedUsers?.Title}
+                                                                                            className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
+                                                                                        ></span>
+                                                                                    )}
+                                                                                    <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
+                                                                                </div>
+
+                                                                                <div className="alignCenter">
+                                                                                    <span
+                                                                                        onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
+                                                                                        className="hover-text m-1"
+                                                                                    >
+                                                                                        <LuBellPlus />
+                                                                                        <span className="tooltip-text pop-left">
+                                                                                            Send reminder notifications
+                                                                                        </span>
+                                                                                    </span>
+                                                                                    <span
+                                                                                        className="m-0 img-info hover-text"
+                                                                                        onClick={() => openAddImageDescriptionFunction(InfoIndex, InfoData, "Phone")}
+                                                                                    >
+                                                                                        <span className="svg__iconbox svg__icon--comment"></span>
+                                                                                        <span className="tooltip-text pop-left">
+                                                                                            {InfoData.Comment?.length > 1 ? InfoData.Comment : "Add Comment"}
+                                                                                        </span>
+                                                                                    </span>
+                                                                                    <span
+                                                                                        className="hover-text m-0 alignIcon"
+                                                                                        onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Remove", WAItemData.Title)}
+                                                                                    >
+                                                                                        <span className="svg__iconbox svg__icon--cross"></span>
+
+                                                                                        <span className="tooltip-text pop-left">
+                                                                                            Remove user from Phone
+                                                                                        </span>
+                                                                                    </span>
+                                                                                    {WAItemData?.InformationData?.length === 1 ? (
+                                                                                        <span onClick={() => openBottleneckPopup("Phone")}>
+                                                                                            <span
+                                                                                                title="Add Comment"
+                                                                                                className="svg__iconbox svg__icon--Plus"
+                                                                                            ></span>
+                                                                                        </span>
+                                                                                    ) : null}
+                                                                                </div>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                );
                                                             }
+                                                            return null;
                                                         })}
                                                     </div>
+
                                                     <div className="full_width mt-2">
                                                         <CommentCard
                                                             siteUrl={siteUrls}

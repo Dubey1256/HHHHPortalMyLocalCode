@@ -133,8 +133,6 @@ function ReadyMadeTable(SelectedProp: any) {
                     portfolioTypeData?.map((elem: any) => {
                         if (elem.Title === isUpdated || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) {
                             portfolioColor = elem.Color;
-                            document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
-                        document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
                         }
                     })
                 }
@@ -143,7 +141,6 @@ function ReadyMadeTable(SelectedProp: any) {
                     portfolioTypeData?.map((elem: any) => {
                         if (elem.Title === "Component") {
                             portfolioColor = elem.Color;
-                            document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
                         }
                     })
 
@@ -1614,7 +1611,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&
-                            <span><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.PortfolioType?.Color}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                            <span><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.PortfolioType?.Color}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
                         }
                     </>
@@ -2109,7 +2106,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: ({ table }: any) => (
                     <>{
                         topCompoIcon ?
-                            <span  title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
+                            <span style={{ backgroundColor: `${portfolioColor}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
                                 <span className="svg__iconbox svg__icon--re-structure"></span>
                             </span>
                             : ''
@@ -2658,13 +2655,13 @@ function ReadyMadeTable(SelectedProp: any) {
         <>
 
             {(checkedList1?.current != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2 && checkedList1?.current?.[0]?.Item_x0020_Type != "Feature" && checkedList1?.current?.[0]?.Item_x0020_Type !="Task") && (SelectedProp?.SelectedItem != undefined && SelectedProp?.SelectedItem?.Item_x0020_Type != "Feature" && 'Parent' in SelectedProp?.SelectedItem) ?
-                <button type="button" className="btn btn-primary" title=" Add Structure" onClick={() => OpenAddStructureModal()}>
+                <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure" onClick={() => OpenAddStructureModal()}>
                     {" "} Add Structure{" "}</button> :
-                <button type="button" disabled className="btn btn-primary"  title=" Add Structure"> {" "} Add Structure{" "}</button>
+                <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
             }
             {(childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2) && (checkedList != undefined || SelectedProp?.SelectedItem != undefined) ?
-                < button type="button" className="btn btn-primary" title='Add Activity-Task' onClick={() => addActivity()}>Add Activity-Task</button> :
-                <button type="button" className="btn btn-primary"  disabled={true} >Add Activity-Task</button>
+                < button type="button" className="btn btn-primary" title='Add Activity-Task' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => addActivity()}>Add Activity-Task</button> :
+                <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Add Activity-Task</button>
             }
             {
                 trueRestructuring == true ?
@@ -2673,8 +2670,8 @@ function ReadyMadeTable(SelectedProp: any) {
             }
 
             {ActiveCompareToolButton ?
-                < button type="button" className="btn btn-primary" title='Compare'  onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
-                <button type="button" className="btn btn-primary"  disabled={true} >Compare</button>
+                < button type="button" className="btn btn-primary" title='Compare' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
+                <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
             } </>
     )
     const customTableHeaderButtonsAllAWT = (
@@ -2689,8 +2686,8 @@ function ReadyMadeTable(SelectedProp: any) {
             }
 
             {ActiveCompareToolButton ?
-                < button type="button" className="btn btn-primary" title='Compare' onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
-                <button type="button" className="btn btn-primary" disabled={true} >Compare</button>
+                < button type="button" className="btn btn-primary" title='Compare' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
+                <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
             } </>
 
 
@@ -2749,7 +2746,7 @@ function ReadyMadeTable(SelectedProp: any) {
 
             </Panel>
 
-            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.AllListId} />}
+            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.AllListId} />} 
 
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}

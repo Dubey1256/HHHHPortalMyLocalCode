@@ -64,7 +64,7 @@ const AddTaskConfigPopup = (props: any) => {
         return (
             <div className=" full-width pb-1" > <div className="subheading">
                 <span className="siteColor">
-                    {props?.SelectedEditItem?.Id != undefined ? `Edit Task Configration - ${props?.SelectedEditItem?.Title}` : 'Add Task Configration'}
+                    {props?.SelectedEditItem?.Id != undefined ? `Edit Task Configuration - ${props?.SelectedEditItem?.Title}` : 'Add Task Configuration'}
                 </span>
             </div>
             </div>
