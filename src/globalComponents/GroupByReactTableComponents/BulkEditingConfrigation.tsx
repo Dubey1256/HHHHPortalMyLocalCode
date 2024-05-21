@@ -4,7 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import Tooltip from "../Tooltip";
 const BulkEditingConfrigation = (item: any) => {
-    const [checkboxValues, setCheckboxValues] = React.useState(Object?.keys(item?.bulkEditingCongration)?.length > 0 ? item?.bulkEditingCongration : { priority: false, status: false, dueDate: false, itemRank: false, categories: false, clientCategories: false, Project: false, FeatureType: false });
+    const [checkboxValues, setCheckboxValues] = React.useState(Object?.keys(item?.bulkEditingCongration)?.length > 0 ? item?.bulkEditingCongration : { priority: false, status: false, dueDate: false, itemRank: false, categories: false, clientCategories: false, Project: false, FeatureType: false, teamMember: false });
 
     const handleCheckboxChange = (checkboxName: any) => {
         setCheckboxValues((prevValues: any) => ({
@@ -68,6 +68,11 @@ const BulkEditingConfrigation = (item: any) => {
                                 <label>
                                     <input type="checkbox" className="cursor-pointer form-check-input rounded-0 me-1" checked={checkboxValues.FeatureType} onChange={() => handleCheckboxChange('FeatureType')} />
                                     Feature Type
+                                </label>
+                                <br />
+                                <label>
+                                    <input type="checkbox" className="cursor-pointer form-check-input rounded-0 me-1" checked={checkboxValues.teamMember} onChange={() => handleCheckboxChange('teamMember')} />
+                                    Team Member
                                 </label>
                                 {/* <label>
                                     <input type="checkbox" className="cursor-pointer form-check-input rounded-0" checked={checkboxValues.itemRank} onChange={() => handleCheckboxChange('itemRank')} />
