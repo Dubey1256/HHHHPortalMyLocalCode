@@ -9,7 +9,7 @@ import {
 import { Web} from "sp-pnp-js";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import Tooltip from "../../../globalComponents/Tooltip";
-// import EditPage from "../../../globalComponents/EditPanelPage/EditPage";
+import EditPage from "../../../globalComponents/EditPanelPage/EditPage";
 // import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 
 var id: any = [];
@@ -19,6 +19,7 @@ const Permission_management = (props: any) => {
   const [groups, setGroups]: any = React.useState([]);
   const [groupsMember, setGroupsMember]: any = React.useState([]);
   const [tiles, setTiles]: any = React.useState([]);
+  const [descriptionChange, setDescriptionChange]: any = React.useState("");
   const [truePanel, setTruePanel]: any = React.useState(false);
   const [optionsData, setOptionsData]: any = React.useState("");
   const [data, setData]: any = React.useState([]);
@@ -28,9 +29,9 @@ const Permission_management = (props: any) => {
   const [suggestions, setSuggestions] = React.useState([]);
   const [checkPermission, setCheckPermission] = React.useState(false);
   const [permissionUserGroup, setPermissionUserGroup]: any = React.useState([]);
-//   const [headerChange, setHeaderChange]: any = React.useState("");
+ const [headerChange, setHeaderChange]: any = React.useState("");
   const [selectedPeople, setSelectedPeople] = React.useState([]);
-//   const [checkUserPermission, setCheckUserPermission]: any = React.useState([]);
+ const [checkUserPermission, setCheckUserPermission]: any = React.useState([]);
 
    React.useEffect(() => {
      taskUserData();
@@ -97,7 +98,9 @@ const Permission_management = (props: any) => {
 
     // console.log(Group);
   };
-
+  const changeDescription = (items: any) => {
+    setDescriptionChange(items);
+  };
   const GetUserByGroupId = (groupId: any) => {
     id = groupId;
     setOptionsData(groupId);
@@ -244,6 +247,14 @@ const Permission_management = (props: any) => {
     }
   };
 
+  React.useEffect(() => {
+    if (descriptionChange != null && descriptionChange != undefined){
+        let modifiedDescription : any = descriptionChange.replace("<p>", "");
+        modifiedDescription = modifiedDescription.replace("</p>", "");
+        setDescriptionChange(modifiedDescription)
+    }
+}, [changeDescription])
+
   const onRenderCustomCalculateSC = () => {
     return (
       <>
@@ -364,9 +375,9 @@ const Permission_management = (props: any) => {
 //     }
 //   };
 
-//   const changeHeader = (items: any) => {
-//     setHeaderChange(items);
-//   };
+  const changeHeader = (items: any) => {
+    setHeaderChange(items);
+  };
 
   const handlePeoplePickerChange = (items: any) => {
     setSelectedPeople(items);
@@ -378,17 +389,25 @@ const Permission_management = (props: any) => {
         <div className="alignCenter">
           <h2 className="heading">
           Permission-Management
-            {/* {headerChange != undefined &&
+            {headerChange != undefined &&
             headerChange != null &&
             headerChange != ""
               ? headerChange
-              : "Permission-Management"}{" "} */}
+              : "Permission-Management"}{" "}
           </h2>
-          {/* <EditPage
+          <h4 className="heading">
+            {descriptionChange != undefined &&
+            descriptionChange != null &&
+            descriptionChange != ""
+              ? descriptionChange
+              : ""}
+          </h4>
+          <EditPage
             context={props?.context}
             changeHeader={changeHeader}
+            changeDescription = {changeDescription}
             tooltipId={"956"}
-          /> */}
+          /> 
         </div>
      
       <div
