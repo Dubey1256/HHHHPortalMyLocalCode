@@ -37,7 +37,7 @@ function DataCleancupTool(SelectedProp: any) {
             const LoadBackups = await web.lists.getById(SelectedProp.SelectedProp.BackupConfigurationsListID).items.getAll();
             if (LoadBackups?.length > 0 && LoadBackups !== undefined) {
                 LoadBackups.forEach((element: any) => {
-                    if (element.Columns != undefined && element.Backup == true && element.Title != "TaskTimeSheetListNew" && element.Title != "TasksTimesheet2" && element.Title != "TaskTimesheet") {                        
+                    if (element.Backup == true && element.Title != "TaskTimeSheetListNew" && element.Title != "TasksTimesheet2" && element.Title != "TaskTimesheet") {                        
                         element.MainUrl = SelectedProp.SelectedProp.siteUrl;                 
                         siteConfig.push(element);
                     }
@@ -71,8 +71,17 @@ function DataCleancupTool(SelectedProp: any) {
     const loadAllSitesItems = async () => {
         var count = 0;
         await Promise.all(siteConfig.map(async (item: Item) => {
+            let DomainUrl: string = SelectedProp?.SelectedProp.siteUrl;
+            let CurrentDomainCheck = DomainUrl.indexOf("grueneweltweit") > -1;
+            let NewDomainUrl:any= '';
+            if(CurrentDomainCheck){
+                NewDomainUrl = SelectedProp?.SelectedProp?.siteUrl.split('/sites/')[0];
+            }
+            else{
+                NewDomainUrl = SelectedProp?.SelectedProp?.siteUrl.split('/sites/')[0];
+            }
             try {
-                let web = new Web('https://hhhhteams.sharepoint.com' + item.SiteUrl);
+                let web = new Web(NewDomainUrl + item.SiteUrl);
 
                 const items = await web.lists.getById(item.List_x0020_Id).items.select(item.Query).getAll();
                 items?.map((ListItem: any) => {
@@ -93,7 +102,37 @@ function DataCleancupTool(SelectedProp: any) {
             console.log(AllDataItems)
 
         AllDataItems?.map((Item: any) => { 
-    
+           if (Item.ListName=="Images")  
+                {
+                    if( Item.Title==undefined){
+                        Item.Title=Item.FileLeafRef
+                        Item.Title=Item.FileLeafRef.split('.')[0]
+                    }
+                       
+                    if( Item.EncodedAbsUrl!=undefined)
+                        Item.PageUrl=Item.EncodedAbsUrl;
+                
+                }                
+            if(Item.ListName=="Documents")  
+                {
+                    if( Item.Title==undefined){
+                        Item.Title=Item.FileLeafRef
+                        Item.Title=Item.FileLeafRef.split('.')[0]
+                    }
+                       
+                    if( Item.EncodedAbsUrl!=undefined)
+                        Item.PageUrl=Item.EncodedAbsUrl+'?web=1';
+                
+                }                
+                if(Item.ListName=="Tasks" || Item.ListName=="Small Projects" || Item.ListName=="HHHH" ||Item.ListName=="Offshore Tasks" || Item.ListName=="QA" || Item.ListName=="DE"|| Item.ListName=="EI" || Item.ListName=="Education" || Item.ListName=="Migration" || Item.ListName=="KathaBeck"|| Item.ListName=="Shareweb" || Item.ListName=="Health" || Item.ListName=="Gruene" || Item.ListName=="DRR" || Item.ListName=="EPS" || Item.ListName=="ALAKDigital" )  
+                    {
+                        Item.PageUrl=SelectedProp.SelectedProp.siteUrl+'/SitePages/Task-Profile.aspx?taskId='+Item.Id +'&Site='+Item.ListName;
+                    }  
+                    if(Item.ListName=="Master Tasks")
+                    {
+                        Item.PageUrl=SelectedProp.SelectedProp.siteUrl+'/SitePages/Portfolio-Profile.aspx?taskId='+Item.Id;
+                    }
+
         if(Item.DoNotAllow==false) { 
             Item.CreatedDate = moment(Item?.Created).format('DD/MM/YYYY');      
             Item.ModifiedDate = moment(Item?.Modified).format('DD/MM/YYYY HH:mm')
@@ -348,7 +387,7 @@ const SaveItem = async (SelectedItem: any) => {
                 
                 <div className='alignCenter '>
                     {row?.original?.Title != undefined && row?.original?.Title != null && row?.original?.Title != '' ? 
-                    <a className='ms-2' data-interception="off" target='_blank' href={`${SelectedProp.SelectedProp.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.ListName}`}>{row?.original?.Title}</a> : ""}
+                    <a className={row?.original.PageUrl?.length > 0 ? 'ms-2' : "Disabled-Link ms-2"}  target='_blank' data-interception="off" href={`${row?.original.PageUrl}`}>{row?.original?.Title}</a> : ""}
                 </div>
             ),
         },
