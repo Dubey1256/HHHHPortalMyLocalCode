@@ -148,6 +148,7 @@ const ContentEditingDocumentsTable = (props: any) => {
             const plainText = gethtml.replace(/<[^>]*>|&#[^;]+;/g, '');
             const words = plainText.split(' ');
             first100Words = words.slice(0, 20).join(' ');
+         
         }
         return first100Words;
     };
@@ -160,16 +161,13 @@ const ContentEditingDocumentsTable = (props: any) => {
                 hasCustomExpanded: false,
                 hasExpanded: false,
                 isHeaderNotAvlable: true,
-                size: 10,
+                size: 2,
                 id: 'Id',
             },
             {
                 accessorFn: (row: any) => row?.Item_x0020_Cover,
                 cell: ({ row }: any) => (
-                    <span
-                        className="text-content hreflink"
-
-                    >
+                    <span className="text-content hreflink">
                         {row?.original?.Item_x0020_Cover?.Url != undefined ?
                             < img src={row?.original?.Item_x0020_Cover?.Url} alt="" style={{ width: "50px", height: "50px" }} /> : ''
                         }
@@ -179,16 +177,13 @@ const ContentEditingDocumentsTable = (props: any) => {
                 placeholder: 'Image',
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 35,
                 isColumnVisible: true
             },
             {
                 accessorFn: (row: any) => row?.Date,
                 cell: ({ row }: any) => (
-                    <span
-                        className="text-content hreflink"
-                        title={row?.original?.Year}
-                    >
+                    <span className="text-content hreflink" title={row?.original?.Year} >
                         {row?.original?.Year}
                     </span>
                 ),
@@ -196,71 +191,74 @@ const ContentEditingDocumentsTable = (props: any) => {
                 placeholder: "Year",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 100,
                 isColumnVisible: true
             },
             {
                 accessorFn: (row: any) => row?.Title,
                 cell: ({ row }: any) => (
-                    <span
-                        className="text-content hreflink"
-                        title={row?.original?.Title}
-                    >
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "480px" }}>
+                    <span className="text-content hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.Title}>
                         {row?.original?.Title}
-                        {/* {row?.original?.displayDescription && <InfoIconsToolTip row={row?.original} SingleColumnData={"displayDescription"} />} */}
+                    </span>
                     </span>
                 ),
                 id: "Title",
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 500,
                 isColumnVisible: true
             },
             {
                 accessorFn: (row: any) => row?.displayDescription,
                 cell: ({ row }: any) => (
-                    <span
-                        className="text-content hreflink"
-
-                    >
-                        {row?.original?.displayDescription}
-                        {row?.original?.displayDescription != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"inconDescription"} />}
+                    <div className='alignCenter'>
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "480px" }}>
+                        <span className="hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.displayDescription}>
+                            {row?.original?.displayDescription}
+                        </span>
                     </span>
+                    <span>{row?.original?.displayDescription != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"inconDescription"} />}</span>
+                </div>
                 ),
                 id: "displayDescription",
                 placeholder: "Description",
                 resetColumnFilters: false,
                 header: "",
-                size: 270,
+                size: 500,
                 isColumnVisible: true
             },
             {
                 accessorFn: (row: any) => row?.ResponsibleTitle,
                 cell: ({ row }: any) => (
-                    <span>
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "120px" }}>
+                <span className="text-content hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.Responsible?.Title}>
                         {row?.original?.Responsible?.Title}
+                    </span>
                     </span>
                 ),
                 id: "Responsible",
                 placeholder: "Responsible",
                 resetColumnFilters: false,
                 header: "",
-                size: 100,
+                size: 140,
                 isColumnVisible: true
             },
             {
                 accessorFn: (row: any) => row?.SmartTopicShowing,
                 cell: ({ row }: any) => (
-                    <span>
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "120px" }}>
+                    <span className="text-content hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.SmartTopicShowing}>
                         {row?.original?.SmartTopicShowing}
+                    </span>
                     </span>
                 ),
                 id: "SmartTopicShowing",
-                placeholder: "Smart Topic",
+                placeholder: "Page",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 140,
                 isColumnVisible: true
             },
             {
@@ -302,7 +300,7 @@ const ContentEditingDocumentsTable = (props: any) => {
                     }
                 },
                 header: "",
-                size: 115
+                size: 100
             },
             {
                 accessorFn: (row) => row?.Created,
@@ -344,7 +342,7 @@ const ContentEditingDocumentsTable = (props: any) => {
                     }
                 },
                 header: "",
-                size: 105,
+                size: 100,
                 isColumnVisible: true
             },
             // {
@@ -380,25 +378,22 @@ const ContentEditingDocumentsTable = (props: any) => {
     }
     // =========Custom button html End ================
     return (
-        <div className="container section">
+        <div className="section">
             <div className='mb-4'>
                 <h2 className="heading">LivingDocs Document Tool</h2>
             </div>
             <div>
-
                 <div className="TableContentSection">
                     <div className='Alltable mt-2 mb-2'>
                         <div className='col-md-12 p-0'>
                             <GlobalCommanTable customHeaderButtonAvailable={true}
-                                ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={false}
+                                ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={true}
                                 columns={columns} data={livingDocsSyncData} showHeader={true}
-                                callBackData={callBackData} />
+                                callBackData={callBackData} fixedWidth={true}/>
                             {!loaded && <PageLoader />}
                         </div>
                     </div>
                 </div>
-
-
             </div>
         </div>
 

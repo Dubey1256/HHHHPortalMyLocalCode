@@ -1202,13 +1202,13 @@ const inlineEditingcolumns = (props: any) => {
             className="hreflink"
           >
             &nbsp;
-            <span className="alignCenter">
+            <span className="alignCenter ml-auto">
               <ShowTaskTeamMembers
                 props={props?.item}
                 TaskUsers={props?.TaskUsers}
               />
               {showEditPencil && (
-                <a className="pancil-icons ml-auto">
+                <a className="pancil-icons">
                   <span className="svg__iconbox svg__icon--editBox alignIcon "></span>
                 </a>
               )}

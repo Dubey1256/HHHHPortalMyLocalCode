@@ -259,7 +259,7 @@ const EmailComponenet = (props: any) => {
 
 
 
-  Allteamoforganization = juniortotal.length + smalleadtotal.length + seniodevtotal.length + qaleavetotal.length + designttotal.length + 2;
+  
 
 
 
@@ -318,7 +318,7 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
   designteamavailabel = designttotal.length - designteamleave.length;
   // // <div style="margin-bottom: 40px;font-size: 32px;font-weight: 600;line-height: 40px;color: #2F5596;font-family: Segoe UI;">
 
-  //     ${Object?.keys(nameidTotals)?.length === 0 ? `The ${formattedDate} is a great Day! All ${Allteamoforganization} are in Office today!` : `${formattedDate}: ${(Object?.keys(nameidTotals)?.length - WorkfromHomeEmp?.length)} are on leave, ${Allteamoforganization - (Object?.keys(nameidTotals)?.length - WorkfromHomeEmp?.length)} are working`}
+      // {Object?.keys(nameidTotals)?.length === 0 ? `The ${formattedDate} is a great Day! All ${Allteamoforganization} are in Office today!` : `${formattedDate}: ${(Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length)} are on leave, ${Allteamoforganization - (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length)} are working`}
   // </div>
 
   const AllStaff = SPfxtotal?.length +Mobiletotal?.length +Managementtotal?.length +TotalEmployees?.length +qatotal?.length +designtotal?.length +HRtotal?.length +JTMTotal?.length  ;
@@ -326,6 +326,7 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
   const AllTrainees = SPFxTrainee?.length +ManagementTrainee?.length +MobileTrainee?.length +Totalsmalsustrainee?.length +DesignTrainee?.length +QATrainee?.length +HRTrainee?.length +JTMTrainee?.length  ;
   const AllTraineesLeave = SPFxTraineeLeave?.length +ManagementTraineeLeave?.length +MobileTraineeLeave?.length +TotalsmalsustraineeLeave?.length +DesignTraineeLeave?.length +QATraineeLeave?.length +JTMTraineeLeave?.length +HRTraineeLeave?.length  ;
   const CompleteTeam = AllStaff + AllTrainees;
+  availableteammeberstoday = CompleteTeam-(Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length);
   if (Object.keys(nameidTotals).length !== 0 ) {
     props?.data.filter((items: any) => {
       if (items?.eventType == 'Work From Home') {
@@ -487,19 +488,20 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
                 </tr>
               </table>
             </div>
+            <div style="color:#2f5596; font-size:18px; font-weight:600; margin-bottom:20px;">The ${formattedDate} is a great Day! All ${availableteammeberstoday} are in Office today!</div>
     <div width="264" height="264px" style="width: 264px;height: 264px;flex-shrink: 0;border-radius: 264px;background: #EEF4FF;margin-bottom: 40px;padding: 20px;display: flex; align-items: center;justify-content: space-around; margin: 0 auto;">
     <div width="200px" height="200px" style="width: 200px;height: 200px;flex-shrink: 0;">
     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/CalendarImages/image%2048.png">
     </div>
 </div>
-<div style="margin-bottom: 88px;">
+<div style="margin-bottom: 40px;">
     <div width="260px" height="40px" style="display: flex;justify-content: center;align-items: center;gap: 8px;flex-shrink: 0;color: #FFF;border-radius: 4px;
     background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">See Full Leave Report Online</div>
      
     </div>
 <div style="display: flex;align-items: center;padding-bottom: 56px;">
     <img width="56px" height="48px" src="https://hochhuth-consulting.de/images/logo_small2.png" style="width: 56px;height: 48px;" alt="Site Icon">
-    <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;">Hochhuth Consulting GmbH</div>
+    <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left:4px;">Hochhuth Consulting GmbH</div>
 </div>`
 
     let allEmpPresent = false;

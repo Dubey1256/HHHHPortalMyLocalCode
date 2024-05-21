@@ -82,12 +82,8 @@ const ContentEditingEventsTable = (props: any) => {
         if (gethtml !== null && gethtml !== undefined && gethtml !== '') {
             const plainText = gethtml.replace(/<[^>]*>|&#[^;]+;/g, '');
             const words = plainText.split(' ');
-          //  first100Words = words.slice(0, 20).join(' ');
-            if (words.length <= 13) {
-                first100Words = plainText;
-            } else {
-                first100Words = words.slice(0, 13).join(' ') + ' ...';
-            }
+            first100Words = words.slice(0, 20).join(' ');
+         
         }
         return first100Words;
     };
@@ -173,21 +169,21 @@ const ContentEditingEventsTable = (props: any) => {
                 hasCustomExpanded: false,
                 hasExpanded: false,
                 isHeaderNotAvlable: true,
-                size: 10,
+                size: 2,
                 id: 'Id',
             },
             {
                 accessorFn: (row: any) => row?.ItemCoverUrl,
                 cell: ({ row }: any) => (
                     <span className="text-content hreflink">
-                       {row?.original?.ItemCoverUrl && <img style={{width:'40px'}} className='me-1' src={row?.original.ItemCoverUrl} alt="Sample Image" />}
+                       {row?.original?.ItemCoverUrl != "" ? <img style={{width:'40px'}} className='me-1' src={row?.original?.ItemCoverUrl} alt="" /> : ""}
                     </span>
                 ),
                 id: "ItemCoverUrl",
                 placeholder: "Image",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 35,
                 isColumnVisible: true
             },
             {
@@ -204,68 +200,74 @@ const ContentEditingEventsTable = (props: any) => {
                 placeholder: "Start Date",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 100,
                 isColumnVisible: true
             },
             {
                 accessorFn: (row: any) => row?.Title,
                 cell: ({ row }: any) => (
-                    <span
-                        className="text-content hreflink"
-                        title={row?.original?.Title}
-                    >
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "480px" }}>
+                    <span className="text-content hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.Title}>
                         {row?.original?.Title}
-                        {/* {row?.original?.displayDescription && <InfoIconsToolTip row={row?.original} SingleColumnData={"displayDescription"} />} */}
+                    </span>
                     </span>
                 ),
                 id: "Title",
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 500,
                 isColumnVisible: true
             },
             {
                 accessorFn: (row: any) => row?.SmartTopicsName,
                 cell: ({ row }: any) => (
-                    <span className="text-content hreflink" title={row?.original?.SmartTopicsName}>
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "120px" }}>
+                    <span className="text-content hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.SmartTopicsName}>
                         {row?.original?.SmartTopicsName}
-                    </span>
+                    </span> 
+                     </span>
                 ),
                 id: "SmartTopicsName",
                 placeholder: "Page",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 140,
                 isColumnVisible: true
             },
             {
                 accessorFn: (row: any) => row?.ResponsibleName,
                 cell: ({ row }: any) => (
-                    <span className="text-content hreflink" title={row?.original?.ResponsibleName}>
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "120px" }}>
+                    <span className="text-content hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.ResponsibleName}>
                         {row?.original?.ResponsibleName}
+                    </span>
                     </span>
                 ),
                 id: "ResponsibleName",
                 placeholder: "Responsible",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 140,
                 isColumnVisible: true
             },
             {
                 accessorFn: (row: any) => row?.displayDescription,
-                cell: ({ row }: any) => (
-                    <span className="text-content hreflink" title={row?.original?.displayDescription}>
-                        {row?.original?.displayDescription}
-                        {row?.original?.displayDescription != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"inconDescription"} />}
-                    </span>
+                cell: ({ row }: any) => (                  
+                      <div className='alignCenter'>
+                      <span style={{ display: "flex", alignItems: "center", maxWidth: "480px" }}>
+                          <span className="hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.displayDescription}>
+                              {row?.original?.displayDescription}
+                          </span>
+                      </span>
+                      <span>{row?.original?.displayDescription != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"inconDescription"} />}</span>
+                  </div>
                 ),
                 id: "displayDescription",
                 placeholder: "Description",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 500,
                 isColumnVisible: true
             },
             {
@@ -307,7 +309,7 @@ const ContentEditingEventsTable = (props: any) => {
                     }
                 },
                 header: "",
-                size: 115
+                size: 100
             },
             {
                 accessorFn: (row) => row?.Created,
@@ -349,7 +351,7 @@ const ContentEditingEventsTable = (props: any) => {
                     }
                 },
                 header: "",
-                size: 105,
+                size: 100,
                 isColumnVisible: true
             },
             // {
@@ -385,7 +387,7 @@ const ContentEditingEventsTable = (props: any) => {
     }
     // =========Custom button html End ================
     return (
-        <div className="container section">
+        <div className="section">
             <div className='mb-4'>
                 <h2 className="heading">SP LivingDocs Content Library - Event </h2>
             </div>
@@ -397,7 +399,7 @@ const ContentEditingEventsTable = (props: any) => {
                             <GlobalCommanTable customHeaderButtonAvailable={true}
                                 ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={true}
                                 columns={columns} data={livingDocsSyncData} showHeader={true}
-                                callBackData={callBackData} />
+                                callBackData={callBackData} fixedWidth={true}/>
                             {!loaded && <PageLoader />}
                         </div>
                     </div>

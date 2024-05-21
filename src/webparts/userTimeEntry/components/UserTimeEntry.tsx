@@ -2903,7 +2903,7 @@ export default class UserTimeEntry extends React.Component<
       },
      
       {
-        accessorFn: (info: any) => info?.NewTimeEntryDate,
+        accessorFn: (info: any) => info?.TaskDate,
         cell: (info: any) => (
           <div className="alignCenter">
             {info?.row?.original?.NewTimeEntryDate == null ? (
@@ -2942,7 +2942,7 @@ export default class UserTimeEntry extends React.Component<
             return false;
           }
         },
-        id: "NewTimeEntryDate",
+        id: "TaskDate",
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Time Entry",
