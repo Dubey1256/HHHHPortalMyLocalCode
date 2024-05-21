@@ -22,6 +22,7 @@ import moment from 'moment';
 import { SpaTwoTone } from '@material-ui/icons';
 import AddTaskConfigPopup from './AddTaskConfigPopup';
 import EditTaskConfigPopup from './EditTaskConfigPopup';
+import Tooltip from '../../../globalComponents/Tooltip';
 let users: any = []
 let PortFolioType: any = [];
 let SelectedPortfolio: any
@@ -63,17 +64,17 @@ export const NotificationsAddPopup = (props: any) => {
         setSelectedPersonsAndGroups(people)
         // console.log(people)
     }
-    const onRenderCustomHeader = (
-    ) => {
+    const onRenderCustomHeader = () => {
         return (
-            <div className=" full-width pb-1" > <div className="subheading">
-                <span className="siteColor">
-                    {props?.SelectedEditItem?.Id != undefined ? `Edit Permission - ${props?.SelectedEditItem?.Title}` : 'Add Configuration'}
-                </span>
+          <>
+            <div className='subheading'>
+            {props?.SelectedEditItem?.Id != undefined ? `Edit Permission - ${props?.SelectedEditItem?.Title}` : 'Add Configuration'}
             </div>
-            </div>
+            <Tooltip ComponentId={'6755'} />
+          </>
         );
-    };
+      };
+  
     const closePopup = (type?: any | undefined) => {
         props.callBack(type);
 
@@ -170,7 +171,7 @@ export const NotificationsAddPopup = (props: any) => {
         PortFolioType = await web.lists.getById(props?.AllListId?.PortFolioTypeID).items.select("Id", "Title", "Color", "IdRange", "StatusOptions").get();
         let result = await web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,PortfolioType/Id,PortfolioType/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject').expand('Author,Editor,Recipients,PortfolioType').get()
 
-        if (props?.SelectedEditItem != undefined) {
+        if (props?.SelectedEditItem?.Id != undefined) {
             PortFolioType = PortFolioType?.filter((portfolio: any) => portfolio?.Id == props?.SelectedEditItem?.PortfolioType?.Id);
 
 
