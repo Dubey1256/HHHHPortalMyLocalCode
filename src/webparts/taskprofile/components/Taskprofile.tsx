@@ -27,7 +27,8 @@ import RadimadeTable from '../../../globalComponents/RadimadeTable'
 import EmailComponenet from './emailComponent';
 import AncTool from '../../../globalComponents/AncTool/AncTool'
 import { myContextValue } from '../../../globalComponents/globalCommon'
-import Tooltip from '../../../globalComponents/Tooltip'
+import GlobalTooltip from '../../../globalComponents/Tooltip'
+import { Tooltip } from "@fluentui/react-components";
 import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { ImReply } from 'react-icons/im';
@@ -291,8 +292,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     taskDetails.TaskId = globalCommon.GetTaskId(taskDetails);
     var category = ""
     if (taskDetails["TaskCategories"] != undefined && taskDetails["TaskCategories"].length > 0) {
+     
       taskDetails["TaskCategories"]?.map((item: any, index: any) => {
-        category = category + item?.Title + ";"
+       if((index== taskDetails["TaskCategories"]?.length-1)||(taskDetails["TaskCategories"].length==1)){
+          category = category + item?.Title
+        }else{
+          category = category + item?.Title + ";"
+        }
+       
         let ApprovalCheck = category?.search("Approval");
         if (ApprovalCheck >= 0) {
           this.setState({
@@ -1566,7 +1573,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         <div className='subheading' >
           Update Comment
         </div>
-        <Tooltip ComponentId='1683' />
+        <GlobalTooltip ComponentId='1683' />
       </>
     );
   };
@@ -1905,16 +1912,16 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
     return (
       <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef, user: this?.taskUsers, ColorCode: this.state.Result["Portfolio"]?.PortfolioType?.Color }}>
-        <div>
+        <div className='taskprofilesection'>
           <section className='ContentSection'> {this.state.breadCrumData != undefined &&
             <div className='row'>
               <div className="col-sm-12 p-0 ">
 
-                <ul className="webbreadcrumbs ">
+                <ul className="spfxbreadcrumb mb-0 mt-16 p-0">
                   {this.state?.Result["Portfolio"] == undefined && this.state.breadCrumData?.length == 0 && this.state.Result.Title != undefined ?
                     <>
-                      <li >
-                        <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Dashboard.aspx`}> <span>Dashboard</span> </a> <span><SlArrowRight /></span>
+                      <li  >
+                        <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Dashboard.aspx`}> <span>Dashboard</span> </a>
                       </li>
 
 
@@ -1935,19 +1942,17 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           {this.state.Result["Portfolio"] != null &&
                             <a className="fw-bold" style={{ color: this.state.Result["Portfolio"]?.PortfolioType?.Color }} target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Team-Portfolio.aspx`}>Team Portfolio</a>
                           }
-                          <span><SlArrowRight /></span>
+
                         </li>
                       }
                       {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
                         return <>
                           {breadcrumbitem?.siteType == "Master Tasks" && <li>
-                            <a style={{ color: breadcrumbitem?.PortfolioType?.Color }} target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
-                            <span><SlArrowRight /></span>
+                            <a style={{ color: breadcrumbitem?.PortfolioType?.Color }} className="fw-bold" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
                           </li>}
                           {breadcrumbitem?.siteType !== "Master Tasks" && <li>
 
                             <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
-                            <span></span>
                           </li>}
                           {this.state.breadCrumData.length == index &&
                             <li>
@@ -1960,7 +1965,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 </span>
 
                               </a>
-
                             </li>
                           }
                         </>
@@ -1970,368 +1974,354 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
               </div>
             </div>
           }
-          <section className='row p-0 '>
-            <h2 className="heading d-flex ps-0 justify-content-between align-items-center task-title">
-              <span className='alignCenter'>
-                {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}
-                {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
-                <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                  <span >{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
-                  {truncatedTitle?.length > 0 && <span className="f-13 popover__content" >
-                    {this.state.Result['Title']}
-                  </span>}
+            <section className='row p-0'>
+              <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
+                <span className='alignCenter'>
+                  {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}
+                  {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
+                  <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                    <span >{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
+                    {truncatedTitle?.length > 0 && <span className="f-13 popover__content" >
+                      {this.state.Result['Title']}
+                    </span>}
+                  </span>
+                  <a className="hreflink" title='Edit' onClick={() => this.OpenEditPopUp()}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+
+                  </a>
+                  {this.state.Result["Approver"] != undefined && this.state.Result["Approver"] != "" && this.state.Result["Categories"]?.includes("Approval") && ((this.currentUser != undefined && this?.currentUser?.length > 0 && this.state.Result?.Approver?.AssingedToUser?.Id == this.currentUser[0]?.Id) || (this.currentUser != undefined && this?.currentUser?.length > 0 && this.state.Result["Approver"]?.Approver?.length > 0 && this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) && this.state.Result["Status"] == "For Approval" &&
+                    this.state.Result["PercentComplete"] == 1 ? <span><button onClick={() => this.sendEmail("Approved")} className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger" onClick={() => this.sendEmail("Rejected")}>Reject</button></span></span> : null
+                  }
+                  {this.currentUser != undefined && this.state.sendMail && this.state.emailStatus != "" && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props.Context} emailStatus={this.state.emailStatus} currentUser={this.currentUser} items={this.state.Result} />}
                 </span>
-                <a className="hreflink" title='Edit' onClick={() => this.OpenEditPopUp()}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                {(this?.state?.Result["siteUrl"]?.includes('SP')) ? (
+                  <span className="text-end fs-6">
+                    <a className='oldtitle' target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a>
+                  </span>
+                ) : null}
 
-                </a>
-                {this.state.Result["Approver"] != undefined && this.state.Result["Approver"] != "" && this.state.Result["Categories"]?.includes("Approval") && ((this.currentUser != undefined && this?.currentUser?.length > 0 && this.state.Result?.Approver?.AssingedToUser?.Id == this.currentUser[0]?.Id) || (this.currentUser != undefined && this?.currentUser?.length > 0 && this.state.Result["Approver"]?.Approver?.length > 0 && this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) && this.state.Result["Status"] == "For Approval" &&
-                  this.state.Result["PercentComplete"] == 1 ? <span><button onClick={() => this.sendEmail("Approved")} className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger" onClick={() => this.sendEmail("Rejected")}>Reject</button></span></span> : null
-                }
-                {this.currentUser != undefined && this.state.sendMail && this.state.emailStatus != "" && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props.Context} emailStatus={this.state.emailStatus} currentUser={this.currentUser} items={this.state.Result} />}
-              </span>
-              {(this?.state?.Result["siteUrl"]?.includes('SP')) ? (
-                <span className="text-end fs-6">
-                  <a className='oldtitle' target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a>
-                </span>
-              ) : null}
+              </h2>
+            </section>
+            <section>
+              <div className='row'>
+                <div className="col-9 bg-white">
+                  <div className="team_member row">
+                    <div className='col-md-4 p-0'>
+                      <dl>
+                        <dt className='bg-Fa'>Task Id</dt>
+                        <dd className='bg-Ff position-relative'>
+                          <ReactPopperTooltipSingleLevel CMSToolId={this.state.Result['TaskId']} row={this.state.Result} singleLevel={true} masterTaskData={this.masterForHierarchy} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} />
 
-            </h2>
-          </section>
-          <section>
-            <div className='row'>
-              <div className="col-9">
-                <div className="team_member row">
-                  <div className='col-md-8  ps-0 taskidsection'>
-                    <div className='bg-Ff p-2 boxshadow  rounded-1 row'>
-                      <div className='col-md-6 p-0'>
-                        <dl>
-                          <dt className='bg-Fa'>Task Id</dt>
-                          <dd className='bg-Ff position-relative'>
-                            <ReactPopperTooltipSingleLevel CMSToolId={this.state.Result['TaskId']} row={this.state.Result} singleLevel={true} masterTaskData={this.masterForHierarchy} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} />
+                        </dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Due Date</dt>
+                        <dd className='bg-Ff'>
+                          <EditableField
+                            listName={this?.state?.Result?.listName}
+                            itemId={this?.state?.Result?.Id}
+                            fieldName="DueDate"
+                            value={
+                              this?.state?.Result?.DueDate != undefined
+                                ? this?.state?.Result?.DueDate
+                                : ""
+                            }
+                            TaskProfilePriorityCallback={null}
+                            onChange={this.handleFieldChange("DueDate")}
+                            type="Date"
+                            web={AllListId?.siteUrl}
+                          />
 
-                          </dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Due Date</dt>
-                          <dd className='bg-Ff'>
-                            <EditableField
-                              listName={this?.state?.Result?.listName}
-                              itemId={this?.state?.Result?.Id}
-                              fieldName="DueDate"
-                              value={
-                                this?.state?.Result?.DueDate != undefined
-                                  ? this?.state?.Result?.DueDate
-                                  : ""
-                              }
-                              TaskProfilePriorityCallback={null}
-                              onChange={this.handleFieldChange("DueDate")}
-                              type="Date"
-                              web={AllListId?.siteUrl}
-                            />
+                        </dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Start Date</dt>
+                        <dd className='bg-Ff'>{this.state.Result["StartDate"] != undefined ? this.state.Result["StartDate"] : ""}</dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Completion Date</dt>
+                        <dd className='bg-Ff'> {this.state.Result["CompletedDate"] != undefined ? this.state.Result["CompletedDate"] : ""}</dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa' title="Task Id">Categories</dt>
 
-                          </dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Start Date</dt>
-                          <dd className='bg-Ff'>{this.state.Result["StartDate"] != undefined ? this.state.Result["StartDate"] : ""}</dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Completion Date</dt>
-                          <dd className='bg-Ff'> {this.state.Result["CompletedDate"] != undefined ? this.state.Result["CompletedDate"] : ""}</dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa' title="Task Id">Categories</dt>
-
-                          <dd className='bg-Ff text-break'>
-                            <div className='alignCenter'>
-                              <InlineEditingcolumns
-                                AllListId={AllListId}
-                                callBack={this?.inlineCallBack}
-                                columnName='TaskCategories'
-                                item={this?.state?.Result}
-                                TaskUsers={this?.taskUsers}
-                                pageName={'portfolioprofile'}
-                              />
-
-                            </div>
-
-
-                          </dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Item Rank</dt>
-                          <dd className='bg-Ff'>
-                            <EditableField
-                              listName={this?.state?.Result?.listName}
-                              itemId={this?.state?.Result?.Id}
-                              fieldName="ItemRank"
-                              value={
-                                this?.state?.Result?.ItemRank != undefined
-                                  ? this?.state?.Result?.ItemRank
-                                  : ""
-                              }
-                              TaskProfilePriorityCallback={null}
-                              onChange={this.handleFieldChange("ItemRank")}
-                              type=""
-                              web={AllListId?.siteUrl}
-                            />
-
-                          </dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Bottleneck</dt>
-                          <dd className='bg-Ff'>
-                            {this.state?.Result?.Bottleneck?.length > 0 && this.state?.Result?.Bottleneck?.map((BottleneckData: any) => {
-                              return (
-                                <div className="align-content-center alignCenter justify-content-between py-1">
-                                  <div className="alignCenter">
-                                    {BottleneckData.TaggedUsers.userImage != undefined && BottleneckData.TaggedUsers.userImage.length > 0 ? <img
-                                      className="ProirityAssignedUserPhoto m-0"
-                                      title={BottleneckData.TaggedUsers?.Title}
-                                      src={BottleneckData.TaggedUsers.userImage} />
-                                      :
-                                      <span title={BottleneckData.TaggedUsers?.Title != undefined ? BottleneckData.TaggedUsers?.Title : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
-                                    }
-                                    <span className="ms-1">{BottleneckData?.TaggedUsers?.Title}</span>
-                                  </div>
-
-                                  <div className="alignCenter">
-                                    <span
-                                      className="hover-text me-1"
-                                      onClick={() =>
-                                        this.SendRemindernotifications(BottleneckData, "Bottleneck")}
-                                    >
-                                      <LuBellPlus />
-                                      <span className="tooltip-text pop-left">
-                                        Send reminder notifications
-                                      </span>
-                                    </span>
-                                    {BottleneckData.Comment != undefined &&
-                                      BottleneckData.Comment?.length > 1 && <span
-                                        className="m-0 img-info hover-text"
-
-                                      >
-                                        <span className="svg__iconbox svg__icon--comment"></span>
-                                        <span className="tooltip-text pop-left">
-                                          {BottleneckData.Comment}
-                                        </span>
-                                      </span>}
-
-                                  </div>
-                                </div>
-                              )
-
-                            })}
-
-                          </dd>
-                        </dl>
-
-                        {isShowTimeEntry && <dl>
-                          <dt className='bg-Fa'>SmartTime Total</dt>
-                          <dd className='bg-Ff'>
-                            <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId} callbackTotalTime={(data: any) => this.callbackTotalTime(data)} props={this.state.Result} Context={this.props.Context} allTaskUsers={this?.taskUsers} /> : null}</span>
-                          </dd>
-
-                        </dl>}
-
-                      </div>
-                      <div className='col-md-6 p-0'>
-                        <dl>
-                          <dt className='bg-Fa'>Team Members</dt>
-
-                          <dd className='bg-Ff'>
-                            <ShowTaskTeamMembers
-                              props={this.state.Result}
+                        <dd className='bg-Ff text-break'>
+                          <div className='alignCenter'>
+                            <InlineEditingcolumns
+                              AllListId={AllListId}
+                              callBack={this?.inlineCallBack}
+                              columnName='TaskCategories'
+                              item={this?.state?.Result}
                               TaskUsers={this?.taskUsers}
+                              pageName={'portfolioprofile'}
                             />
 
+                          </div>
 
-                          </dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Status</dt>
-                          <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"]?.toFixed(0) : 0} <span className='me-2'>%</span> {this.state.Result["Status"]}<br></br>
-                            {this.state.Result["ApproverHistory"] != undefined && this.state.Result["ApproverHistory"].length > 1 && this.state.Result["Categories"].includes("Approval") ?
-                              <span style={{ fontSize: "smaller" }}>Approved by
-                                <img className="workmember" title={this.state.Result["ApproverHistory"][this.state.Result?.ApproverHistory.length - 2]?.ApproverName} src={(this.state.Result?.ApproverHistory[this.state.Result?.ApproverHistory?.length - 2]?.ApproverImage != null) ? (this.state.Result.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverImage) : (this.state.Result?.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverSuffix)}></img></span>
 
-                              : null}</dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Working Today</dt>
-                          <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["IsTodaysTask"] ? "Yes" : "No"} </span>
-                          </dd>
-                        </dl>
+                        </dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Item Rank</dt>
+                        <dd className='bg-Ff'>
+                          <EditableField
+                            listName={this?.state?.Result?.listName}
+                            itemId={this?.state?.Result?.Id}
+                            fieldName="ItemRank"
+                            value={
+                              this?.state?.Result?.ItemRank != undefined
+                                ? this?.state?.Result?.ItemRank
+                                : ""
+                            }
+                            TaskProfilePriorityCallback={null}
+                            onChange={this.handleFieldChange("ItemRank")}
+                            type=""
+                            web={AllListId?.siteUrl}
+                          />
 
-                        {/* <dl>
+                        </dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Bottleneck</dt>
+                        <dd className='bg-Ff'>
+                          {this.state?.Result?.Bottleneck?.length > 0 && this.state?.Result?.Bottleneck?.map((BottleneckData: any) => {
+                            return (
+                              <div className="align-content-center alignCenter justify-content-between py-1">
+                                <div className="alignCenter">
+                                  {BottleneckData.TaggedUsers.userImage != undefined && BottleneckData.TaggedUsers.userImage.length > 0 ? <img
+                                    className="ProirityAssignedUserPhoto m-0"
+                                    title={BottleneckData.TaggedUsers?.Title}
+                                    src={BottleneckData.TaggedUsers.userImage} />
+                                    :
+                                    <span title={BottleneckData.TaggedUsers?.Title != undefined ? BottleneckData.TaggedUsers?.Title : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                  }                                  
+                                  <span className="ms-1">{BottleneckData?.TaggedUsers?.Title}</span>
+                                </div>
+
+                                <div className="alignCenter">
+                                  <span
+                                    className="hover-text me-1"
+                                    onClick={() =>
+                                      this.SendRemindernotifications(BottleneckData, "Bottleneck")}
+                                  >
+                                    <LuBellPlus />
+                                    <span className="tooltip-text pop-left">
+                                      Send reminder notifications
+                                    </span>
+                                  </span>
+                                  {BottleneckData.Comment != undefined &&
+                                    BottleneckData.Comment?.length > 1 && <span
+                                      className="m-0 img-info hover-text"
+
+                                    >
+                                      <span className="svg__iconbox svg__icon--comment"></span>
+                                      <span className="tooltip-text pop-left">
+                                        {BottleneckData.Comment}
+                                      </span>
+                                    </span>}
+
+                                </div>
+                              </div>
+                            )
+
+                          })}
+
+                        </dd>
+                      </dl>
+
+                      {isShowTimeEntry && <dl>
+                        <dt className='bg-Fa'>SmartTime Total</dt>
+                        <dd className='bg-Ff'>
+                          <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId} callbackTotalTime={(data: any) => this.callbackTotalTime(data)} props={this.state.Result} Context={this.props.Context} allTaskUsers={this?.taskUsers} /> : null}</span>
+                        </dd>
+
+                      </dl>}
+
+                    </div>
+
+                    <div className='col-md-4 p-0'>
+                      <dl>
+                        <dt className='bg-Fa'>Team Members</dt>
+
+                        <dd className='bg-Ff'>
+                          <ShowTaskTeamMembers
+                            props={this.state.Result}
+                            TaskUsers={this?.taskUsers}
+                          />
+
+
+                        </dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Status</dt>
+                        <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"]?.toFixed(0) : 0} <span className='me-2'>%</span> {this.state.Result["Status"]}<br></br>
+                          {this.state.Result["ApproverHistory"] != undefined && this.state.Result["ApproverHistory"].length > 1 && this.state.Result["Categories"].includes("Approval") ?
+                            <span style={{ fontSize: "smaller" }}>Approved by
+                              <img className="workmember" title={this.state.Result["ApproverHistory"][this.state.Result?.ApproverHistory.length - 2]?.ApproverName} src={(this.state.Result?.ApproverHistory[this.state.Result?.ApproverHistory?.length - 2]?.ApproverImage != null) ? (this.state.Result.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverImage) : (this.state.Result?.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverSuffix)}></img></span>
+
+                            : null}</dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Working Today</dt>
+                        <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["IsTodaysTask"] ? "Yes" : "No"} </span>
+                        </dd>
+                      </dl>
+
+                      {/* <dl>
                         <dt className='bg-Fa'>% Complete</dt>
 
                         <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"]?.toFixed(0) : 0}</dd>
 
 
                       </dl> */}
-                        <dl>
-                          <dt className='bg-Fa'>Priority</dt>
-                          <dd className='bg-Ff'>
-
-                            {this.state.Result.Categories != undefined && this.state.Result?.Categories?.indexOf('On-Hold') >= 0 ? (
-                              <div className="hover-text">
-                                <IoHandRightOutline
-                                  onMouseEnter={this.showOnHoldReason}
-                                  onMouseLeave={this.hideOnHoldReason}
-                                />
-                                <span className="tooltip-text tooltipboxs  pop-right">
-                                  {this.state.showOnHoldComment &&
-                                    comments.map((item: any, index: any) =>
-                                      item.CommentFor !== undefined &&
-                                        item.CommentFor === "On-Hold" ? (
-                                        <div key={index}>
-                                          <span className="siteColor H-overTitle">
-                                            Task On-Hold by{" "}
-                                            <span>
-                                              {
-                                                item.AuthorName
-                                              }
-                                            </span>{" "}
-                                            <span>
-                                              {
-                                                moment(item.Created).format('DD/MM/YY')
-                                              }
-                                            </span>
-                                          </span>
-                                          {item.CommentFor !== undefined &&
-                                            item.CommentFor !== "" ? (
-                                            <div key={index}>
-                                              <span dangerouslySetInnerHTML={{ __html: this.cleanHTML(item?.Description, "folora", index) }}>
-                                              </span>
-                                            </div>
-                                          ) : null}
-                                        </div>
-                                      ) : null
-                                    )}
-                                </span>
-                              </div>
-                            ) : null}
-                            <EditableField
-                              // key={index}
-                              listName={this?.state?.Result?.listName}
-                              itemId={this.state.Result?.Id}
-                              fieldName="Priority"
-                              value={
-                                this.state.Result?.PriorityRank != undefined
-                                  ? this.state.Result?.PriorityRank
-                                  : ""
-                              }
-                              TaskProfilePriorityCallback={(priorityValue: any) => this.TaskProfilePriorityCallback(priorityValue)}
-                              onChange={this.handleFieldChange("Priority")}
-                              type=""
-                              web={AllListId?.siteUrl}
-                            />
-
-                          </dd>
-                        </dl>
-
-                        <dl>
-                          <dt className='bg-Fa'>SmartPriority</dt>
-
-                          <dd className='bg-Ff'>
-                            <div className="boldClable" >
-                              <span className={this?.state?.Result["SmartPriority"] != undefined ? "hover-text hreflink m-0 r sxsvc" : "hover-text hreflink m-0 cssc"}>
-                                <>{this.state.Result["SmartPriority"] != undefined ? this?.state?.Result["SmartPriority"] : 0}</>
-                                <span className="tooltip-text pop-right">
-                                  {this.state?.Result?.showFormulaOnHover != undefined ?
-                                    <SmartPriorityHover editValue={this.state.Result} /> : ""}
-                                </span>
-                              </span>
-                            </div>
-
-                          </dd>
-                        </dl>
-
-                        <dl>
-                          <dt className='bg-Fa'>Created</dt>
-                          <dd className='bg-Ff alignCenter'>
-                            {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MMM/YYYY") : ""}
-                            {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
-                              <a title={this.state.Result["Author"][0].Title} className='alignCenter ms-1'>
-                                {this.state.Result["Author"][0].userImage !== "" && <img className="workmember hreflink " src={this.state.Result["Author"][0].userImage} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)} ></img>
-
-                                }
-                                {this.state.Result["Author"][0].userImage === "" && <span title={`${this.state.Result["Author"] != undefined ? this.state.Result["Author"][0].Title : "Default user icons "}`} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser" onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)}></span>}
-                              </a>
-
-                            }
-
-                          </dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Attention</dt>
-                          <dd className='bg-Ff'>
-                            {this.state?.Result?.Attention?.length > 0 && this.state?.Result?.Attention?.map((AttentionData: any) => {
-                              return (
-                                <div className="align-content-center alignCenter justify-content-between py-1">
-                                  <div className="alignCenter">
-                                    {AttentionData.TaggedUsers.userImage != undefined && AttentionData.TaggedUsers.userImage.length > 0 ? <img
-                                      className="ProirityAssignedUserPhoto m-0"
-                                      title={AttentionData.TaggedUsers?.Title}
-                                      src={AttentionData.TaggedUsers.userImage} />
-                                      :
-                                      <span title={AttentionData.TaggedUsers?.Title != undefined ? AttentionData.TaggedUsers?.Title : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
-                                    }
-                                    <span className="ms-1">{AttentionData?.TaggedUsers?.Title}</span>
-                                  </div>
-
-                                  <div className="alignCenter">
-                                    <span
-                                      className="hover-text me-1"
-                                      onClick={() =>
-                                        this.SendRemindernotifications(AttentionData, "Attention")}
-                                    >
-                                      <LuBellPlus />
-                                      <span className="tooltip-text pop-left">
-                                        Send reminder notifications
-                                      </span>
-                                    </span>
-                                    {AttentionData.Comment != undefined &&
-                                      AttentionData.Comment?.length > 1 && <span
-                                        className="m-0 img-info hover-text"
-
-                                      >
-                                        <span className="svg__iconbox svg__icon--comment"></span>
-                                        <span className="tooltip-text pop-left">
-                                          {AttentionData.Comment}
-                                        </span>
-                                      </span>}
-
-                                  </div>
-                                </div>
-                              )
-
-                            })}
-
-                          </dd>
-                        </dl>
-                      </div>
-                      <div className='col-12 p-0'>
                       <dl>
-                        <dt className='bg-Fa p-2' style={{ width: "19.5%" }}>Url</dt>
-                        <dt className='bg-Ff p-2 text-break ' style={{ width: "80%" }}>
-                          {this.state.Result["component_url"] != null &&
-                            <a target="_blank" data-interception="off" href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a>
+                        <dt className='bg-Fa'>Priority</dt>
+                        <dd className='bg-Ff'>
+
+                          {this.state.Result.Categories != undefined && this.state.Result?.Categories?.indexOf('On-Hold') >= 0 ? (
+                            <div className="hover-text">
+                              <IoHandRightOutline
+                                onMouseEnter={this.showOnHoldReason}
+                                onMouseLeave={this.hideOnHoldReason}
+                              />
+                              {this.state.showOnHoldComment && (
+                                <span className="tooltip-text tooltipboxs  pop-right">
+                                  {comments.map((item: any, index: any) =>
+                                    item.CommentFor !== undefined &&
+                                      item.CommentFor === "On-Hold" ? (
+                                      <div key={index}>
+                                        <span className="siteColor H-overTitle">
+                                          Task On-Hold by{" "}
+                                          <span>
+                                            {
+                                              item.AuthorName
+                                            }
+                                          </span>{" "}
+                                          <span>
+                                            {
+                                              moment(item.Created).format('DD/MM/YY')
+                                            }
+                                          </span>
+                                        </span>
+                                        {item.CommentFor !== undefined &&
+                                          item.CommentFor !== "" ? (
+                                          <div key={index}>
+                                            <span dangerouslySetInnerHTML={{ __html: this.cleanHTML(item?.Description, "folora", index) }}>
+                                            </span>
+                                          </div>
+                                        ) : null}
+                                      </div>
+                                    ) : null
+                                  )}
+                                </span>)}
+                            </div>
+                          ) : null}
+                          <EditableField
+                            // key={index}
+                            listName={this?.state?.Result?.listName}
+                            itemId={this.state.Result?.Id}
+                            fieldName="Priority"
+                            value={
+                              this.state.Result?.PriorityRank != undefined
+                                ? this.state.Result?.PriorityRank
+                                : ""
+                            }
+                            TaskProfilePriorityCallback={(priorityValue: any) => this.TaskProfilePriorityCallback(priorityValue)}
+                            onChange={this.handleFieldChange("Priority")}
+                            type=""
+                            web={AllListId?.siteUrl}
+                          />
+
+                        </dd>
+                      </dl>
+
+                      <dl>
+                        <dt className='bg-Fa'>SmartPriority</dt>
+
+                        <dd className='bg-Ff'>
+                          <div className="boldClable" >
+                            <span className={this?.state?.Result["SmartPriority"] != undefined ? "hover-text hreflink m-0 r sxsvc" : "hover-text hreflink m-0 cssc"}>
+                              <>{this.state.Result["SmartPriority"] != undefined ? this?.state?.Result["SmartPriority"] : 0}</>
+                              <span className="tooltip-text pop-right">
+                                {this.state?.Result?.showFormulaOnHover != undefined ?
+                                  <SmartPriorityHover editValue={this.state.Result} /> : ""}
+                              </span>
+                            </span>
+                          </div>
+
+                        </dd>
+                      </dl>
+
+                      <dl>
+                        <dt className='bg-Fa'>Created</dt>
+                        <dd className='bg-Ff alignCenter'>
+                          {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MMM/YYYY") : ""}
+                          {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
+                            <a title={this.state.Result["Author"][0].Title} className='alignCenter ms-1'>
+                              {this.state.Result["Author"][0].userImage !== "" && <img className="workmember hreflink " src={this.state.Result["Author"][0].userImage} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)} ></img>
+
+                              }
+                              {this.state.Result["Author"][0].userImage === "" && <span title={`${this.state.Result["Author"] != undefined ? this.state.Result["Author"][0].Title : "Default user icons "}`} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser" onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)}></span>}
+                            </a>
+
                           }
-                        </dt>
+
+                        </dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Attention</dt>
+                        <dd className='bg-Ff'>
+                          {this.state?.Result?.Attention?.length > 0 && this.state?.Result?.Attention?.map((AttentionData: any) => {
+                            return (
+                              <div className="align-content-center alignCenter justify-content-between py-1">
+                                <div className="alignCenter">
+                                  {AttentionData.TaggedUsers.userImage != undefined && AttentionData.TaggedUsers.userImage.length > 0 ? <img
+                                    className="ProirityAssignedUserPhoto m-0"
+                                    title={AttentionData.TaggedUsers?.Title}
+                                    src={AttentionData.TaggedUsers.userImage}/> 
+                                  :
+                                  <span title={AttentionData.TaggedUsers?.Title != undefined ? AttentionData.TaggedUsers?.Title : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                  }
+                                  <span className="ms-1">{AttentionData?.TaggedUsers?.Title}</span>
+                                </div>
+
+                                <div className="alignCenter">
+                                  <span
+                                    className="hover-text me-1"
+                                    onClick={() =>
+                                      this.SendRemindernotifications(AttentionData, "Attention")}
+                                  >
+                                    <LuBellPlus />
+                                    <span className="tooltip-text pop-left">
+                                      Send reminder notifications
+                                    </span>
+                                  </span>
+                                  {AttentionData.Comment != undefined &&
+                                    AttentionData.Comment?.length > 1 && <span
+                                      className="m-0 img-info hover-text"
+
+                                    >
+                                      <span className="svg__iconbox svg__icon--comment"></span>
+                                      <span className="tooltip-text pop-left">
+                                        {AttentionData.Comment}
+                                      </span>
+                                    </span>}
+
+                                </div>
+                              </div>
+                            )
+
+                          })}
+
+                        </dd>
                       </dl>
                     </div>
-                    </div>
-                  </div>
+                    <div className='col-md-4 p-0'>
 
-                  <div className='col-md-4 pe-0 Site_Compositionbox'>
-                    <div className='bg-Ff p-2 rounded-1 boxshadow h-100 '>
                       <dl>
 
                         <dt className='bg-Fa'>Portfolio Item</dt>
-                        <dd className='bg-Ff full-width columnFixedTitle pe-0'>
+                        <dd className='bg-Ff full-width columnFixedTitle'>
                           {this.state?.TagConceptPaper?.length > 0 &&
                             <a href={this.state?.TagConceptPaper[0].EncodedAbsUrl}>
                               <span className={`alignIcon svg__iconbox svg__icon--${this.state?.TagConceptPaper[0]?.File_x0020_Type}`} title={this.state?.TagConceptPaper[0]?.File_x0020_Type}></span>
@@ -2348,18 +2338,18 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
 
                           }
-                          <span className="ml-auto pull-right svg__icon--editBox svg__iconbox w17" onClick={() => this?.openPortfolioPopupFunction("Portfolio")}></span>
+                          <span className="ml-auto pull-right svg__icon--editBox svg__iconbox w-25" onClick={() => this?.openPortfolioPopupFunction("Portfolio")}></span>
 
                         </dd>
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Project</dt>
-                        <dd className='bg-Ff full-width columnFixedTitle pe-0'>
+                        <dd className='bg-Ff full-width columnFixedTitle'>
 
                           {ProjectData?.Title != undefined ? <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}>
 
                             <ReactPopperTooltipSingleLevel CMSToolId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></a> : null}
-                          <span className="text-end ml-auto pull-right svg__icon--editBox svg__iconbox w17" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
+                          <span className="text-end ml-auto svg__icon--editBox svg__iconbox w-25" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
 
                         </dd>
                       </dl>
@@ -2422,10 +2412,12 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                             <span className='mx-2'>{EstimatedTimeData?.EstimatedTime ? (EstimatedTimeData?.EstimatedTime > 1 ? EstimatedTimeData?.EstimatedTime + " hours" : EstimatedTimeData?.EstimatedTime + " hour") : "0 hour"}</span>
                                             <img className="ProirityAssignedUserPhoto m-0 mx-2 hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, EstimatedTimeData?.UserName, this?.taskUsers)} title={EstimatedTimeData?.UserName} src={EstimatedTimeData?.UserImage != undefined && EstimatedTimeData?.UserImage?.length > 0 ? EstimatedTimeData?.UserImage : ''} />
                                           </div>
-                                          {EstimatedTimeData?.EstimatedTimeDescription?.length > 0 && <div className='alignCenter hover-text'>
+                                          <Tooltip withArrow content={EstimatedTimeData?.EstimatedTimeDescription}  relationship="label" positioning="below">
+                                  {EstimatedTimeData?.EstimatedTimeDescription?.length > 0 && <div className='alignCenter hover-text'>
                                             <span className="svg__iconbox svg__icon--info"></span>
-                                            <span className='tooltip-text pop-right'>{EstimatedTimeData?.EstimatedTimeDescription} </span>
-                                          </div>}
+                                        </div>}
+                                 </Tooltip>
+                                         
                                         </div>
                                       )
                                     })}
@@ -2440,150 +2432,326 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           </div>
                         </dl>
                       }
-
                     </div>
                   </div>
-                </div>
-                <div className="row">
-                      <div className='p-0'> {this.state.Result.Id != undefined && <KeyDocuments AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} user={this?.taskUsers} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} keyDoc={true}></KeyDocuments>}</div>
+                  <div className='row url'>
+                    <div className="d-flex p-0">
+                      <div className='bg-Fa p-2'><label>Url</label></div>
+                      <div className='bg-Ff p-2 text-break full-width'>
+                        {this.state.Result["component_url"] != null &&
+                          <a target="_blank" data-interception="off" href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a>
+                        }
+                      </div>
                     </div>
-                    <section>
-                      <div className="col mt-2">
-                        <div className="Taskaddcomment row">
-                          {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 &&
-                            <div className="bg-white col-sm-4 mt-2 p-0 boxshadow mb-3">
-                              <label className='form-label full-width fw-semibold titleheading'>Images</label>
-                              {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.map((imgData: any, i: any) => {
-                                return <div className="taskimage border mb-3">
+                  </div>
+                  <div className="row">
+                    <div className='p-0'> {this.state.Result.Id != undefined && <KeyDocuments AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} user={this?.taskUsers} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} keyDoc={true}></KeyDocuments>}</div>
+                  </div>
+                  <section>
+                    <div className="col mt-2">
+                      <div className="Taskaddcomment row">
+                        {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 &&
+                          <div className="bg-white col-sm-4 mt-2 p-0">
+                            <label className='form-label full-width fw-semibold'>Images</label>
+                            {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.map((imgData: any, i: any) => {
+                              return <div className="taskimage border mb-3">
 
 
-                                  <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
-                                    <img alt={imgData?.ImageName} src={imgData?.ImageUrl}
-                                      onMouseOver={(e) => this.OpenModal(e, imgData)}
-                                      onMouseOut={(e) => this.CloseModal(e)} ></img>
-                                  </a>
+                                <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
+                                  <img alt={imgData?.ImageName} src={imgData?.ImageUrl}
+                                    onMouseOver={(e) => this.OpenModal(e, imgData)}
+                                    onMouseOut={(e) => this.CloseModal(e)} ></img>
+                                </a>
 
 
-                                  <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-1 ">
-                                    <div className='usericons'>
-                                      <span>
-                                        <span >{imgData?.UploadeDate}</span>
-                                        <span className='round px-1'>
-                                          {imgData?.UserImage != null && imgData?.UserImage != "" ?
-                                            <img className='align-self-start hreflink ' title={imgData?.UserName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} src={imgData?.UserImage} />
-                                            : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
-                                          }
-                                        </span>
-                                        {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
-                                          <BiInfoCircle />
-                                        </span>}
-
+                                <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-1 ">
+                                  <div className='usericons'>
+                                    <span>
+                                      <span >{imgData?.UploadeDate}</span>
+                                      <span className='round px-1'>
+                                        {imgData?.UserImage != null && imgData?.UserImage != "" ?
+                                          <img className='align-self-start hreflink ' title={imgData?.UserName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} src={imgData?.UserImage} />
+                                          : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
+                                        }
                                       </span>
-                                    </div>
-                                    <div className="expandicon">
+                                      {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
+                                        <BiInfoCircle />
+                                      </span>}
 
-                                      <span >
-                                        {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
-                                      </span>
-                                      <span>|</span>
-                                      <a className='images' title="Expand Image" target="_blank" data-interception="off" href={imgData?.ImageUrl}><span className='mx-2'><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"></path></svg></span></a>
-                                    </div>
+                                    </span>
+                                  </div>
+                                  <div className="expandicon">
 
+                                    <span >
+                                      {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
+                                    </span>
+                                    <span>|</span>
+                                    <a className='images' title="Expand Image" target="_blank" data-interception="off" href={imgData?.ImageUrl}><span className='mx-2'><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"></path></svg></span></a>
                                   </div>
 
                                 </div>
-                              })}
-                            </div>
-                          }
-                          {/*feedback comment section code */}
-                          <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 p-0 mt-2"}>
-                            {this.state.Result["TaskTypeTitle"] != null && (this.state.Result["TaskTypeTitle"] == '' ||
-                              this.state.Result["TaskTypeTitle"] == 'Task' || this.state.Result["TaskTypeTitle"] == "Workstream" || this.state.Result["TaskTypeTitle"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
-                              this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
-                              this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' && this.state.countfeedback >= 0 &&
-                              <div className={"Addcomment boxshadow " + " manage_gap"}>
-                                <label className='form-label full-width fw-semibold titleheading'>Task description</label>
-                                {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
-                                  if (typeof fbData == "object") {
-                                    let userdisplay: any = [];
-                                    userdisplay.push({ Title: this.props?.userDisplayName })
+
+                              </div>
+                            })}
+                          </div>
+                        }
+                        {/*feedback comment section code */}
+                        <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 p-0 mt-2"}>
+                          {this.state.Result["TaskTypeTitle"] != null && (this.state.Result["TaskTypeTitle"] == '' ||
+                            this.state.Result["TaskTypeTitle"] == 'Task' || this.state.Result["TaskTypeTitle"] == "Workstream" || this.state.Result["TaskTypeTitle"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
+                            this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
+                            this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' && this.state.countfeedback >= 0 &&
+                            <div className={"Addcomment " + "manage_gap"}>
+                              <label className='form-label full-width fw-semibold'>Task description</label>
+                              {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
+                                if (typeof fbData == "object") {
+                                  let userdisplay: any = [];
+                                  userdisplay.push({ Title: this.props?.userDisplayName })
 
 
-                                    if (fbData != null && fbData != undefined && fbData?.Title != "") {
+                                  if (fbData != null && fbData != undefined && fbData?.Title != "") {
 
-                                      try {
-                                        if (fbData?.Title != undefined) {
-                                          fbData.Title = fbData?.Title?.replace(/\n/g, '<br>');
+                                    try {
+                                      if (fbData?.Title != undefined) {
+                                        fbData.Title = fbData?.Title?.replace(/\n/g, '<br>');
 
-                                        }
-                                      } catch (e) {
                                       }
-                                      return (
-                                        <>
-                                          <div className='bg-white p-2'>
-                                            <div className="col mb-2">
+                                    } catch (e) {
+                                    }
+                                    return (
+                                      <>
+                                        <div>
+
+
+
+                                          <div className="col mb-2">
+                                            <div className='justify-content-between d-flex'>
+                                              <div className="alignCenter m-0">
+                                                {this.state.ApprovalStatus ?
+                                                  <span className="alignCenter">
+                                                    <span title="Rejected"
+                                                      onClick={() => this.changeTrafficLigth(i, "Reject")}
+                                                      className={fbData['isShowLight'] == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
+                                                    >
+                                                    </span>
+                                                    <span
+                                                      onClick={() => this.changeTrafficLigth(i, "Maybe")}
+                                                      title="Maybe" className={fbData['isShowLight'] == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
+                                                    </span>
+                                                    <span title="Approved"
+                                                      onClick={() => this.changeTrafficLigth(i, "Approve")}
+                                                      className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
+
+                                                    </span>
+                                                    {fbData["ApproverData"] != undefined && fbData.ApproverData?.length > 0 &&
+                                                      <>
+                                                        <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => this.ShowApprovalHistory(fbData, i, null)}>
+                                                          {fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={fbData.ApproverData[fbData.ApproverData.length - 1]?.Title}><span><a onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Id,)} target="_blank" data-interception="off" title={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Title}>
+                                                            <img className='imgAuthor hreflink ' src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl} />
+                                                          </a>
+                                                          </span></a></span>
+                                                      </>
+
+                                                    }
+                                                  </span>
+                                                  : null
+                                                }
+                                              </div>
+                                              <div className='m-0'>
+                                                <span className="d-block">
+                                                  <a className="siteColor" style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
+                                                </span>
+                                              </div>
+                                            </div>
+
+
+                                            <div className="d-flex p-0 FeedBack-comment ">
+                                              <div className="border p-1 me-1">
+                                                <span>{i + 1}.</span>
+                                                <ul className='list-none'>
+                                                  <li>
+                                                    {fbData['Completed'] != null && fbData['Completed'] &&
+
+                                                      <span className="svg__iconbox svg__icon--tick"></span>
+                                                    }
+                                                  </li>
+                                                  <li>
+                                                    {fbData['HighImportance'] != null && fbData['HighImportance'] &&
+                                                      <span className="svg__iconbox svg__icon--taskHighPriority"></span>
+                                                    }
+                                                  </li>
+                                                  <li>
+                                                    {fbData['LowImportance'] != null && fbData['LowImportance'] &&
+                                                      <span className="svg__iconbox svg__icon--lowPriority"></span>
+                                                    }
+                                                  </li>
+                                                  <li>
+                                                    {fbData['Phone'] != null && fbData['Phone'] &&
+                                                      <span className="svg__iconbox svg__icon--phone"></span>
+                                                    }
+                                                  </li>
+                                                </ul>
+                                              </div>
+
+                                              <div className="border p-2 full-width text-break"
+
+                                              >
+
+                                                <span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbData?.Title, "folora", i) }}></span>
+                                                <div className="col">
+                                                  {fbData['Comments'] != null && fbData['Comments']?.length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
+                                                    return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
+                                                      <div className="">
+                                                        <div className="d-flex p-0">
+                                                          <div className="col-1 p-0 wid30">
+                                                            {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)}
+                                                              src={fbComment.AuthorImage} /> :
+                                                              <span onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)} title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>}
+                                                          </div>
+                                                          <div className="col-11 pe-0" >
+                                                            <div className='d-flex justify-content-between align-items-center'>
+                                                              {fbComment?.AuthorName} - {fbComment?.Created}
+                                                              <span className='d-flex'>
+                                                                <a className="ps-1" title="Comment Reply" >
+                                                                  <div data-toggle="tooltip" id={buttonId + "-" + i + k}
+                                                                    onClick={() => this.openReplycommentPopup(i, k)}
+                                                                    data-placement="bottom"
+                                                                  >
+                                                                    <span className="svg__iconbox svg__icon--reply"></span>
+                                                                  </div>
+                                                                </a>
+                                                                <a title='Edit'
+                                                                  onClick={() => this.openEditModal(fbComment, k, 0, false, i)}
+                                                                >
+                                                                  <span className='svg__iconbox svg__icon--edit'></span>
+                                                                </a>
+                                                                <a title='Delete'
+                                                                  onClick={() => this.clearComment(false, k, 0, i)}
+                                                                >
+                                                                  <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                              </span>
+                                                            </div>
+                                                            <div><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbComment?.Title, null, i) }}></span></div>
+                                                          </div>
+                                                        </div>
+                                                        <div className="col-12 ps-3 pe-0 mt-1">
+                                                          {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, index: any) => {
+                                                            return (
+                                                              <div className="d-flex border ms-3 p-2  mb-1">
+                                                                <div className="col-1 p-0 wid30">
+                                                                  {replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, replymessage?.AuthorName, this?.taskUsers)}
+                                                                    src={replymessage?.AuthorImage} /> : <span title={replymessage?.AuthorName != undefined ? replymessage?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser" ></span>}
+                                                                </div>
+                                                                <div className="col-11 pe-0" >
+                                                                  <div className='d-flex justify-content-between align-items-center'>
+                                                                    {replymessage?.AuthorName} - {replymessage?.Created}
+                                                                    <span className='d-flex'>
+                                                                      <a title='Edit'
+                                                                        onClick={() => this.EditReplyComment(replymessage, k, 0, false, i, index)
+                                                                        }
+                                                                      >
+                                                                        <span className='svg__iconbox svg__icon--edit'></span>
+                                                                      </a>
+                                                                      <a title='Delete'
+                                                                        onClick={() => this.clearReplycomment(false, k, 0, i, index)
+                                                                        }
+                                                                      >
+                                                                        <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                                    </span>
+                                                                  </div>
+                                                                  <div><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(replymessage?.Title, null, i) }}></span></div>
+                                                                </div>
+                                                              </div>
+
+                                                            )
+                                                          })}
+                                                        </div>
+                                                      </div>
+
+
+                                                    </div>
+
+
+                                                  })}
+                                                </div>
+
+                                              </div>
+                                            </div>
+                                            {this.state.showhideCommentBoxIndex == i && <div className='SpfxCheckRadio'>
+                                              <div className="col-sm-12 mt-2 p-0" style={{ display: this.state.showcomment }} >
+                                                {this.state.Result["Approver"] != "" && this.state.Result["Approver"] != undefined && (this.state.Result["Approver"]?.AssingedToUser?.Id == this?.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver?.length > 0 && this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' name='approval' checked={this.state.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target.checked })} />
+                                                  Mark as Approval Comment</label>}
+                                              </div>
+                                              <div className="align-items-center d-flex"
+                                                style={{ display: this.state.showcomment }}
+                                              >  <textarea id="txtComment" onChange={(e) => this.handleInputChange(e)} className="form-control full-width"></textarea>
+                                                <button type="button" className={this.state.Result["Approver"] != undefined && this.state.Result["Approver"] != "" && (this.state.Result["Approver"]?.AssingedToUser?.Id == this.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver?.length > 0 && this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.PostButtonClick(fbData, i)}>Post</button>
+                                              </div>
+                                            </div>}
+
+                                          </div>
+
+                                          {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
+                                            return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
                                               <div className='justify-content-between d-flex'>
-                                                <div className="alignCenter m-0">
+                                                <div className='alignCenter m-0'>
                                                   {this.state.ApprovalStatus ?
                                                     <span className="alignCenter">
                                                       <span title="Rejected"
-                                                        onClick={() => this.changeTrafficLigth(i, "Reject")}
-                                                        className={fbData['isShowLight'] == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
+                                                        onClick={() => this.changeTrafficLigthsubtext(i, j, "Reject")}
+                                                        className={fbSubData.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
                                                       >
                                                       </span>
-                                                      <span
-                                                        onClick={() => this.changeTrafficLigth(i, "Maybe")}
-                                                        title="Maybe" className={fbData['isShowLight'] == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
+                                                      <span title="Maybe"
+                                                        onClick={() => this.changeTrafficLigthsubtext(i, j, "Maybe")}
+                                                        className={fbSubData?.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
                                                       </span>
                                                       <span title="Approved"
-                                                        onClick={() => this.changeTrafficLigth(i, "Approve")}
-                                                        className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
+                                                        onClick={() => this.changeTrafficLigthsubtext(i, j, "Approve")}
+                                                        className={fbSubData?.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                       </span>
-                                                      {fbData["ApproverData"] != undefined && fbData.ApproverData?.length > 0 &&
+                                                      {fbSubData?.ApproverData?.length > 0 &&
                                                         <>
-                                                          <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => this.ShowApprovalHistory(fbData, i, null)}>
-                                                            {fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={fbData.ApproverData[fbData.ApproverData.length - 1]?.Title}><span><a onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Id,)} target="_blank" data-interception="off" title={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Title}>
-                                                              <img className='imgAuthor hreflink ' src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl} />
-                                                            </a>
-                                                            </span></a></span>
-                                                        </>
+                                                          <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}>
+                                                            {fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.Title}><span><a onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.Id,)} target="_blank" data-interception="off" title={fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.Title}> <img className='imgAuthor hreflink ' src={fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.ImageUrl} /></a></span></a></span>
+                                                        </>}
 
-                                                      }
+
                                                     </span>
                                                     : null
                                                   }
                                                 </div>
                                                 <div className='m-0'>
-                                                  <span className="d-block">
-                                                    <a className="siteColor" style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
-                                                  </span>
+                                                  <a className="d-block text-end">
+                                                    <a className='siteColor' style={{ cursor: 'pointer' }}
+                                                      onClick={(e) => this.showhideCommentBoxOfSubText(j, i)}
+                                                    >Add Comment</a>
+                                                  </a>
                                                 </div>
                                               </div>
 
-
-                                              <div className="d-flex p-0 FeedBack-comment ">
+                                              <div className="d-flex pe-0 FeedBack-comment">
                                                 <div className="border p-1 me-1">
-                                                  <span>{i + 1}.</span>
-                                                  <ul className='list-none'>
+                                                  <span >{i + 1}.{j + 1}</span>
+                                                  <ul className="list-none">
                                                     <li>
-                                                      {fbData['Completed'] != null && fbData['Completed'] &&
-
+                                                      {fbSubData?.Completed != null && fbSubData?.Completed &&
                                                         <span className="svg__iconbox svg__icon--tick"></span>
                                                       }
                                                     </li>
                                                     <li>
-                                                      {fbData['HighImportance'] != null && fbData['HighImportance'] &&
+                                                      {fbSubData?.HighImportance != null && fbSubData?.HighImportance &&
                                                         <span className="svg__iconbox svg__icon--taskHighPriority"></span>
                                                       }
                                                     </li>
                                                     <li>
-                                                      {fbData['LowImportance'] != null && fbData['LowImportance'] &&
+                                                      {fbSubData?.LowImportance != null && fbSubData?.LowImportance &&
                                                         <span className="svg__iconbox svg__icon--lowPriority"></span>
                                                       }
                                                     </li>
                                                     <li>
-                                                      {fbData['Phone'] != null && fbData['Phone'] &&
+                                                      {fbSubData?.Phone != null && fbSubData?.Phone &&
                                                         <span className="svg__iconbox svg__icon--phone"></span>
                                                       }
                                                     </li>
@@ -2593,70 +2761,70 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                 <div className="border p-2 full-width text-break"
 
                                                 >
-
-                                                  <span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbData?.Title, "folora", i) }}></span>
-                                                  <div className="col">
-                                                    {fbData['Comments'] != null && fbData['Comments']?.length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
-                                                      return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
+                                                  <span ><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbSubData?.Title, null, j) }}></span></span>
+                                                  <div className="feedbackcomment col-sm-12 PadR0 mt-10">
+                                                    {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
+                                                      return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "} title={fbComment?.isShowLight != undefined ? fbComment?.isShowLight : ""}>
                                                         <div className="">
                                                           <div className="d-flex p-0">
                                                             <div className="col-1 p-0 wid30">
                                                               {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)}
-                                                                src={fbComment.AuthorImage} /> :
-                                                                <span onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)} title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>}
+                                                                src={fbComment.AuthorImage} /> : <span onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)} title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
+                                                              }
                                                             </div>
-                                                            <div className="col-11 pe-0" >
-                                                              <div className='d-flex justify-content-between align-items-center'>
+                                                            <div className="col-11 pad0" key={k}>
+                                                              <div className="d-flex justify-content-between align-items-center">
                                                                 {fbComment?.AuthorName} - {fbComment?.Created}
                                                                 <span className='d-flex'>
                                                                   <a className="ps-1" title="Comment Reply" >
-                                                                    <div data-toggle="tooltip" id={buttonId + "-" + i + k}
-                                                                      onClick={() => this.openReplycommentPopup(i, k)}
+                                                                    <div data-toggle="tooltip" id={buttonId + "-" + i + j + k}
+                                                                      onClick={() => this.openReplySubcommentPopup(i, j, k)}
                                                                       data-placement="bottom"
                                                                     >
                                                                       <span className="svg__iconbox svg__icon--reply"></span>
                                                                     </div>
                                                                   </a>
-                                                                  <a title='Edit'
-                                                                    onClick={() => this.openEditModal(fbComment, k, 0, false, i)}
+                                                                  <a title="Edit"
+                                                                    onClick={() => this.openEditModal(fbComment, k, j, true, i)}
                                                                   >
+
                                                                     <span className='svg__iconbox svg__icon--edit'></span>
                                                                   </a>
                                                                   <a title='Delete'
-                                                                    onClick={() => this.clearComment(false, k, 0, i)}
-                                                                  >
-                                                                    <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                                    onClick={() => this.clearComment(true, k, j, i)}
+                                                                  ><span className='svg__iconbox svg__icon--trash'></span></a>
                                                                 </span>
                                                               </div>
-                                                              <div><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbComment?.Title, null, i) }}></span></div>
+                                                              <div ><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbComment?.Title, null, j) }}></span></div>
                                                             </div>
                                                           </div>
                                                           <div className="col-12 ps-3 pe-0 mt-1">
-                                                            {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, index: any) => {
+                                                            {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, ReplyIndex: any) => {
                                                               return (
                                                                 <div className="d-flex border ms-3 p-2  mb-1">
                                                                   <div className="col-1 p-0 wid30">
                                                                     {replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, replymessage?.AuthorName, this?.taskUsers)}
-                                                                      src={replymessage?.AuthorImage} /> : <span title={replymessage?.AuthorName != undefined ? replymessage?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser" ></span>}
+                                                                      src={replymessage.AuthorImage} /> : <span title={replymessage?.AuthorName != undefined ? replymessage?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>}
                                                                   </div>
                                                                   <div className="col-11 pe-0" >
                                                                     <div className='d-flex justify-content-between align-items-center'>
                                                                       {replymessage?.AuthorName} - {replymessage?.Created}
                                                                       <span className='d-flex'>
                                                                         <a title='Edit'
-                                                                          onClick={() => this.EditReplyComment(replymessage, k, 0, false, i, index)
+
+                                                                          onClick={() => this.EditReplyComment(replymessage, k, 0, true, i, ReplyIndex)
                                                                           }
                                                                         >
                                                                           <span className='svg__iconbox svg__icon--edit'></span>
                                                                         </a>
                                                                         <a title='Delete'
-                                                                          onClick={() => this.clearReplycomment(false, k, 0, i, index)
-                                                                          }
+                                                                          onClick={() => this.clearReplycomment(true, k, j, i, ReplyIndex)}
+
                                                                         >
                                                                           <span className='svg__iconbox svg__icon--trash'></span></a>
                                                                       </span>
                                                                     </div>
-                                                                    <div><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(replymessage?.Title, null, i) }}></span></div>
+                                                                    <div><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(replymessage?.Title, null, j) }}></span></div>
                                                                   </div>
                                                                 </div>
 
@@ -2664,291 +2832,127 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                             })}
                                                           </div>
                                                         </div>
-
-
                                                       </div>
-
-
                                                     })}
                                                   </div>
-
                                                 </div>
                                               </div>
-                                              {this.state.showhideCommentBoxIndex == i && <div className='SpfxCheckRadio'>
-                                                <div className="col-sm-12 mt-2 p-0" style={{ display: this.state.showcomment }} >
-                                                  {this.state.Result["Approver"] != "" && this.state.Result["Approver"] != undefined && (this.state.Result["Approver"]?.AssingedToUser?.Id == this?.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver?.length > 0 && this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' name='approval' checked={this.state.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target.checked })} />
-                                                    Mark as Approval Comment</label>}
+                                              {this.state?.subchildcomment == j && this.state?.subchildParentIndex == i ? <div className='SpfxCheckRadio' >
+                                                <div className="col-sm-12 mt-2 p-0  ">
+                                                  {this.state.Result["Approver"] != "" && this.state.Result["Approver"] != undefined && (this.state.Result["Approver"]?.AssingedToUser?.Id == this.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={this.state?.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target?.checked })} />Mark as Approval Comment</label>}
+
                                                 </div>
+
                                                 <div className="align-items-center d-flex"
-                                                  style={{ display: this.state.showcomment }}
-                                                >  <textarea id="txtComment" onChange={(e) => this.handleInputChange(e)} className="form-control full-width"></textarea>
-                                                  <button type="button" className={this.state.Result["Approver"] != undefined && this.state.Result["Approver"] != "" && (this.state.Result["Approver"]?.AssingedToUser?.Id == this.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver?.length > 0 && this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.PostButtonClick(fbData, i)}>Post</button>
+
+                                                >  <textarea id="txtCommentSubtext" onChange={(e) => this.handleInputChange(e)} className="form-control full-width" ></textarea>
+                                                  <button type="button" className={this.state.Result["Approver"] != undefined && this.state.Result["Approver"] != "" && (this.state.Result["Approver"]?.AssingedToUser?.Id == this.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.SubtextPostButtonClick(j, i)}>Post</button>
                                                 </div>
-                                              </div>}
+                                              </div> : null}
 
                                             </div>
-
-                                            {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
-                                              return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
-                                                <div className='justify-content-between d-flex'>
-                                                  <div className='alignCenter m-0'>
-                                                    {this.state.ApprovalStatus ?
-                                                      <span className="alignCenter">
-                                                        <span title="Rejected"
-                                                          onClick={() => this.changeTrafficLigthsubtext(i, j, "Reject")}
-                                                          className={fbSubData.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
-                                                        >
-                                                        </span>
-                                                        <span title="Maybe"
-                                                          onClick={() => this.changeTrafficLigthsubtext(i, j, "Maybe")}
-                                                          className={fbSubData?.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
-                                                        </span>
-                                                        <span title="Approved"
-                                                          onClick={() => this.changeTrafficLigthsubtext(i, j, "Approve")}
-                                                          className={fbSubData?.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
-
-                                                        </span>
-                                                        {fbSubData?.ApproverData?.length > 0 &&
-                                                          <>
-                                                            <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}>
-                                                              {fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.Title}><span><a onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.Id,)} target="_blank" data-interception="off" title={fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.Title}> <img className='imgAuthor hreflink ' src={fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.ImageUrl} /></a></span></a></span>
-                                                          </>}
-
-
-                                                      </span>
-                                                      : null
-                                                    }
-                                                  </div>
-                                                  <div className='m-0'>
-                                                    <a className="d-block text-end">
-                                                      <a className='siteColor' style={{ cursor: 'pointer' }}
-                                                        onClick={(e) => this.showhideCommentBoxOfSubText(j, i)}
-                                                      >Add Comment</a>
-                                                    </a>
-                                                  </div>
-                                                </div>
-
-                                                <div className="d-flex pe-0 FeedBack-comment">
-                                                  <div className="border p-1 me-1">
-                                                    <span >{i + 1}.{j + 1}</span>
-                                                    <ul className="list-none">
-                                                      <li>
-                                                        {fbSubData?.Completed != null && fbSubData?.Completed &&
-                                                          <span className="svg__iconbox svg__icon--tick"></span>
-                                                        }
-                                                      </li>
-                                                      <li>
-                                                        {fbSubData?.HighImportance != null && fbSubData?.HighImportance &&
-                                                          <span className="svg__iconbox svg__icon--taskHighPriority"></span>
-                                                        }
-                                                      </li>
-                                                      <li>
-                                                        {fbSubData?.LowImportance != null && fbSubData?.LowImportance &&
-                                                          <span className="svg__iconbox svg__icon--lowPriority"></span>
-                                                        }
-                                                      </li>
-                                                      <li>
-                                                        {fbSubData?.Phone != null && fbSubData?.Phone &&
-                                                          <span className="svg__iconbox svg__icon--phone"></span>
-                                                        }
-                                                      </li>
-                                                    </ul>
-                                                  </div>
-
-                                                  <div className="border p-2 full-width text-break"
-
-                                                  >
-                                                    <span ><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbSubData?.Title, null, j) }}></span></span>
-                                                    <div className="feedbackcomment col-sm-12 PadR0 mt-10">
-                                                      {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
-                                                        return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "} title={fbComment?.isShowLight != undefined ? fbComment?.isShowLight : ""}>
-                                                          <div className="">
-                                                            <div className="d-flex p-0">
-                                                              <div className="col-1 p-0 wid30">
-                                                                {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)}
-                                                                  src={fbComment.AuthorImage} /> : <span title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
-                                                                }
-                                                              </div>
-                                                              <div className="col-11 pad0" key={k}>
-                                                                <div className="d-flex justify-content-between align-items-center">
-                                                                  {fbComment?.AuthorName} - {fbComment?.Created}
-                                                                  <span className='d-flex'>
-                                                                    <a className="ps-1" title="Comment Reply" >
-                                                                      <div data-toggle="tooltip" id={buttonId + "-" + i + j + k}
-                                                                        onClick={() => this.openReplySubcommentPopup(i, j, k)}
-                                                                        data-placement="bottom"
-                                                                      >
-                                                                        <span className="svg__iconbox svg__icon--reply"></span>
-                                                                      </div>
-                                                                    </a>
-                                                                    <a title="Edit"
-                                                                      onClick={() => this.openEditModal(fbComment, k, j, true, i)}
-                                                                    >
-
-                                                                      <span className='svg__iconbox svg__icon--edit'></span>
-                                                                    </a>
-                                                                    <a title='Delete'
-                                                                      onClick={() => this.clearComment(true, k, j, i)}
-                                                                    ><span className='svg__iconbox svg__icon--trash'></span></a>
-                                                                  </span>
-                                                                </div>
-                                                                <div ><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbComment?.Title, null, j) }}></span></div>
-                                                              </div>
-                                                            </div>
-                                                            <div className="col-12 ps-3 pe-0 mt-1">
-                                                              {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, ReplyIndex: any) => {
-                                                                return (
-                                                                  <div className="d-flex border ms-3 p-2  mb-1">
-                                                                    <div className="col-1 p-0 wid30">
-                                                                      {replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, replymessage?.AuthorName, this?.taskUsers)}
-                                                                        src={replymessage.AuthorImage} /> : <span title={replymessage?.AuthorName != undefined ? replymessage?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>}
-                                                                    </div>
-                                                                    <div className="col-11 pe-0" >
-                                                                      <div className='d-flex justify-content-between align-items-center'>
-                                                                        {replymessage?.AuthorName} - {replymessage?.Created}
-                                                                        <span className='d-flex'>
-                                                                          <a title='Edit'
-
-                                                                            onClick={() => this.EditReplyComment(replymessage, k, 0, true, i, ReplyIndex)
-                                                                            }
-                                                                          >
-                                                                            <span className='svg__iconbox svg__icon--edit'></span>
-                                                                          </a>
-                                                                          <a title='Delete'
-                                                                            onClick={() => this.clearReplycomment(true, k, j, i, ReplyIndex)}
-
-                                                                          >
-                                                                            <span className='svg__iconbox svg__icon--trash'></span></a>
-                                                                        </span>
-                                                                      </div>
-                                                                      <div><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(replymessage?.Title, null, j) }}></span></div>
-                                                                    </div>
-                                                                  </div>
-
-                                                                )
-                                                              })}
-                                                            </div>
-                                                          </div>
-                                                        </div>
-                                                      })}
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                                {this.state?.subchildcomment == j && this.state?.subchildParentIndex == i ? <div className='SpfxCheckRadio' >
-                                                  <div className="col-sm-12 mt-2 p-0  ">
-                                                    {this.state.Result["Approver"] != "" && this.state.Result["Approver"] != undefined && (this.state.Result["Approver"]?.AssingedToUser?.Id == this.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={this.state?.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target?.checked })} />Mark as Approval Comment</label>}
-
-                                                  </div>
-
-                                                  <div className="align-items-center d-flex"
-
-                                                  >  <textarea id="txtCommentSubtext" onChange={(e) => this.handleInputChange(e)} className="form-control full-width" ></textarea>
-                                                    <button type="button" className={this.state.Result["Approver"] != undefined && this.state.Result["Approver"] != "" && (this.state.Result["Approver"]?.AssingedToUser?.Id == this.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.SubtextPostButtonClick(j, i)}>Post</button>
-                                                  </div>
-                                                </div> : null}
-
-                                              </div>
-                                            })}
+                                          })}
 
 
 
-                                          </div>
+                                        </div>
 
 
-                                        </>
-                                      )
-                                    }
+                                      </>
+                                    )
                                   }
+                                }
 
-                                })}
-                              </div>
-                            }
-                          </div>
-                        </div>
-                      </div>
-
-                      {/*===================Backgroundimage code and comment========== */}
-
-                      {this.backGroundComment && <div className="col mt-2">
-                        <div className="Taskaddcomment row">
-                          {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"].length > 0 &&
-                            <div className="bg-white col-sm-4 mt-2 p-0 boxshadow">
-                              {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"]?.map((imgData: any, i: any) => {
-                                return <div className="taskimage border mb-3">
-                                  <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
-                                    <img alt={imgData?.ImageName} src={imgData?.Url}
-                                      onMouseOver={(e) => this.OpenModal(e, imgData)}
-                                      onMouseOut={(e) => this.CloseModal(e)} ></img>
-                                  </a>
-
-
-                                  <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-2 ">
-                                    <div className='usericons'>
-                                      <span>
-                                        <span >
-                                          {imgData?.ImageName?.length > 15 ? imgData?.ImageName?.substring(0, 15) + '...' : imgData?.ImageName}
-                                        </span>
-
-
-                                      </span>
-                                    </div>
-                                    <div className="expandicon">
-                                      <span >{imgData?.UploadeDate}</span>
-                                      <span className='round px-1'>
-                                        {imgData?.UserImage !== null && imgData?.UserImage != "" ?
-                                          <img className='align-self-start hreflink ' title={imgData?.UserName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} src={imgData?.UserImage} />
-                                          : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
-                                        }
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                </div>
                               })}
                             </div>
                           }
-                          {this.state.Result["OffshoreComments"] != null && this.state.Result["OffshoreComments"] != undefined && this.state.Result["OffshoreComments"].length > 0 && <div className="col-sm-8 pe-0 mt-2">
-                            <fieldset className='border p-1'>
-                              <legend className="border-bottom fs-6">Background Comments</legend>
-                              {this.state.Result["OffshoreComments"] != null && this.state.Result["OffshoreComments"].length > 0 && this.state.Result["OffshoreComments"]?.map((item: any, index: any) => {
-                                return <div>
-
-
-                                  <span className='round px-1'>
-                                    {item.AuthorImage != null &&
-                                      <img className='align-self-start hreflink ' title={item?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, item?.AuthorName, this?.taskUsers)} src={item?.AuthorImage} />
-                                    }
-                                  </span>
-
-                                  <span className="pe-1">{item.AuthorName}</span>
-                                  <span className="pe-1" >{moment(item?.Created).format("DD/MM/YY")}</span>
-                                  <div style={{ paddingLeft: "30px" }} className=" mb-4 text-break"><span dangerouslySetInnerHTML={{ __html: item?.Body }}></span>
-                                  </div>
-
-
-                                </div>
-                              })} </fieldset>
-
-                          </div>}
                         </div>
-                      </div>}
+                      </div>
+                    </div>
 
-                    </section>
-              </div>
-              <div className="col-3">
-                <div>
-                  {this.state.Result != undefined && AllListId != undefined && <CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context} counter={this.state.counter}></CommentCard>}
-                  {this.state.Result?.Id != undefined && AllListId != undefined && <>
-                    <AncTool item={this?.state?.Result} callBack={this.AncCallback} AllListId={AllListId} Context={this.props.Context} />
-                  </>}
+                    {/*===================Backgroundimage code and comment========== */}
+
+                    {this.backGroundComment && <div className="col mt-2">
+                      <div className="Taskaddcomment row">
+                        {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"].length > 0 &&
+                          <div className="bg-white col-sm-4 mt-2 p-0">
+                            {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"]?.map((imgData: any, i: any) => {
+                              return <div className="taskimage border mb-3">
+                                <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
+                                  <img alt={imgData?.ImageName} src={imgData?.Url}
+                                    onMouseOver={(e) => this.OpenModal(e, imgData)}
+                                    onMouseOut={(e) => this.CloseModal(e)} ></img>
+                                </a>
+
+
+                                <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-2 ">
+                                  <div className='usericons'>
+                                    <span>
+                                      <span >
+                                        {imgData?.ImageName?.length > 15 ? imgData?.ImageName?.substring(0, 15) + '...' : imgData?.ImageName}
+                                      </span>
+
+
+                                    </span>
+                                  </div>
+                                  <div className="expandicon">
+                                    <span >{imgData?.UploadeDate}</span>
+                                    <span className='round px-1'>
+                                      {imgData?.UserImage !== null && imgData?.UserImage != "" ?
+                                        <img className='align-self-start hreflink ' title={imgData?.UserName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} src={imgData?.UserImage} />
+                                        : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
+                                      }
+                                    </span>
+                                  </div>
+                                </div>
+
+                              </div>
+                            })}
+                          </div>
+                        }
+                        {this.state.Result["OffshoreComments"] != null && this.state.Result["OffshoreComments"] != undefined && this.state.Result["OffshoreComments"].length > 0 && <div className="col-sm-8 pe-0 mt-2">
+                          <fieldset className='border p-1'>
+                            <legend className="border-bottom fs-6">Background Comments</legend>
+                            {this.state.Result["OffshoreComments"] != null && this.state.Result["OffshoreComments"].length > 0 && this.state.Result["OffshoreComments"]?.map((item: any, index: any) => {
+                              return <div>
+
+
+                                <span className='round px-1'>
+                                  {item.AuthorImage != null &&
+                                    <img className='align-self-start hreflink ' title={item?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, item?.AuthorName, this?.taskUsers)} src={item?.AuthorImage} />
+                                  }
+                                </span>
+
+                                <span className="pe-1">{item.AuthorName}</span>
+                                <span className="pe-1" >{moment(item?.Created).format("DD/MM/YY")}</span>
+                                <div style={{ paddingLeft: "30px" }} className=" mb-4 text-break"><span dangerouslySetInnerHTML={{ __html: item?.Body }}></span>
+                                </div>
+
+
+                              </div>
+                            })} </fieldset>
+
+                        </div>}
+                      </div>
+                    </div>}
+
+                  </section>
+
                 </div>
-                <div>{this.state.Result.Id && <SmartInformation ref={this.smartInfoRef} Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
-                <div> {this.state.Result.Id != undefined && <RelevantDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
-                <div> {this.state.Result.Id != undefined && <RelevantEmail ref={this?.keyDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantEmail>}</div>
+                <div className="col-3">
+                  <div>
+                    {this.state.Result != undefined && AllListId != undefined && <CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context} counter={this.state.counter}></CommentCard>}
+                    {this.state.Result?.Id != undefined && AllListId != undefined && <>
+                      <AncTool item={this?.state?.Result} callBack={this.AncCallback} AllListId={AllListId} Context={this.props.Context} />
+                    </>}
+                  </div>
+                  <div>{this.state.Result.Id && <SmartInformation ref={this.smartInfoRef} Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
+                  <div> {this.state.Result.Id != undefined && <RelevantDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
+                  <div> {this.state.Result.Id != undefined && <RelevantEmail ref={this?.keyDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantEmail>}</div>
+                </div>
+
               </div>
-            </div>
-          </section>
-          </section>
+            </section></section>
           <section className='TableContentSection'>
             {console.log("context data ================", myContextValue)}
 
