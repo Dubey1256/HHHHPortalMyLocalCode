@@ -5,6 +5,7 @@ import { Web } from "sp-pnp-js";
 import { parseString } from 'xml2js';
 import { DatePicker, Dropdown, Panel, PanelType, TextField, Toggle } from "office-ui-fabric-react";
 import ReactQuill from "react-quill";
+import * as globalCommon from '../../../globalComponents/globalCommon'
 import { EventRecurrenceInfo } from "../../calendar/components/EventRecurrenceControls/EventRecurrenceInfo/EventRecurrenceInfo";
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import Tooltip from "../../../globalComponents/Tooltip";
@@ -30,8 +31,10 @@ let createdBY: any,
   HalfDaye: any = false,
   HalfDayT: any = false,
   localArr: any = [],
+
   vHistory: any = [];
 let startTime: any,
+
   eventPass: any = {},
   endTime: any,
   allDay: any = false,
@@ -56,6 +59,7 @@ const leaveTypes = [
 
 
 ];
+let AllTaskUser: any = []
 const Designation = [
   { key: "SPFx", text: "SPFx" },
   { key: "Shareweb (Contact)", text: "Shareweb (Contact) " },
@@ -83,6 +87,7 @@ const Apps = (props: any) => {
   const [dType, sedType]: any = React.useState("");
   const [isFirstHalfDChecked, setIsFirstHalfDChecked] = React.useState(false);
   const [isSecondtHalfDChecked, setisSecondtHalfDChecked] = React.useState(false);
+  const [EmailReciptents, setEmailReciptents] = React.useState([]);
   const [inputValueName, setInputValueName] = React.useState("");
   const [inputValueReason, setInputValueReason] = React.useState("");
   const [vId, setVId] = React.useState();
@@ -372,8 +377,54 @@ const Apps = (props: any) => {
     string = string.replace(/&amp;/g, "&");
     return string;
   };
+  const LoadAllNotificationConfigrations = async () => {
+    let pageInfo = await globalCommon.pageContext()
+    let permission = false;
+    if (pageInfo?.WebFullUrl) {
+      let web = new Web(pageInfo.WebFullUrl);
 
+      web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').filter(`Title eq 'CalendarNotification'`).expand('Author,Editor,Recipients ,PortfolioType').get().then((result: any) => {
+        result?.map((data: any) => {
+          data.showUsers = ""
+          data.DisplayModifiedDate = moment(data.Modified).format("DD/MM/YYYY");
+          if (data.DisplayModifiedDate == "Invalid date" || "") {
+            data.DisplayModifiedDate = data.DisplayModifiedDate.replaceAll("Invalid date", "");
+          }
+          data.DisplayCreatedDate = moment(data.Created).format("DD/MM/YYYY");
+          if (data.DisplayCreatedDate == "Invalid date" || "") {
+            data.DisplayCreatedDate = data.DisplayCreatedDate.replaceAll("Invalid date", "");
+          }
+          if (data?.Recipients?.length > 0) {
+            let copyRecipients = AllTaskUser.filter((user: any) => data.Recipients.find((data2: any) => user.AssingedToUserId == data2.Id))
+            setEmailReciptents(copyRecipients)
+          }
+        })
+
+      })
+
+    }
+    return permission;
+  }
+  const getTaskUser = async () => {
+    let web = new Web(props.props.siteUrl);
+    await web.lists
+      .getById(props.props.TaskUserListID)
+      .items.orderBy("Created", true)
+      .filter("UserGroupId ne 295")
+      .get()
+      .then((Data: any[]) => {
+        console.log(Data);
+        AllTaskUser = Data
+        const mydata = Data.filter((item) => item.UserGroupId != null && item?.UserGroupId != 131 && item?.UserGroupId != 147 && item.AssingedToUserId != 9)
+
+      })
+      .catch((err: any) => {
+        console.log(err.message);
+      });
+  };
   useEffect(() => {
+    getTaskUser()
+    LoadAllNotificationConfigrations()
     getEvents();
   }, []);
   function parseRecurrence(recurrenceData: any) {
@@ -785,7 +836,7 @@ const Apps = (props: any) => {
     const eventYear = eventDate.getFullYear(); // Get year of the event
     return { year: eventYear, month: eventMonth };
   }
-  const handleNavigate = (newDate: any ,newiew:any) => {
+  const handleNavigate = (newDate: any, newiew: any) => {
     setview(newiew || 'month')
     const { year: currentYear, month: currentMonth } = getYearMonthFromDate(newDate);
     const filteredData = events.filter((event: any) => {
@@ -1087,13 +1138,13 @@ const Apps = (props: any) => {
     try {
       const web = new Web(props.props.siteUrl);
 
-      
-        (newEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
-          ((newEvent.Event_x002d_Type === "Company Holiday") || (newEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
-          let mytitle = newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
-          if (newEvent != undefined && (newEvent?.type == "National Holiday" || newEvent?.type == "Company Holiday")) {
-            mytitle = newEvent.type + "-" + newEvent.title;
-          }
+
+      (newEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
+        ((newEvent.Event_x002d_Type === "Company Holiday") || (newEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
+      let mytitle = newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
+      if (newEvent != undefined && (newEvent?.type == "National Holiday" || newEvent?.type == "Company Holiday")) {
+        mytitle = newEvent.type + "-" + newEvent.title;
+      }
       const addEventItem = {
         Title: mytitle,
         Description: newEvent.Description,
@@ -1289,82 +1340,82 @@ const Apps = (props: any) => {
       return formattedDater;
     } else return "";
   };
-// for send Email
+  // for send Email
 
-const calculateTotalWorkingDays = (matchedData: any[]) => {
-  // Function to reset the time of a date string to 00:00:00
- function resetTime(dateString:any) {
-   let date = new Date(dateString);
-   date.setHours(0, 0, 0, 0);
-   return date; // Return the date object
- }
- 
- // Today's date for comparison (reset to 00:00:00)
- const today = new Date();
- today.setHours(0, 0, 0, 0);
- 
- let totalWorkingDays = 0; // Initialize the counter for total working days
- 
- matchedData.forEach((item) => {
-   let endDate = resetTime(item.EndDate);
-   let eventDate:any = resetTime(item.EventDate);
-   if (eventDate.getFullYear() === today.getFullYear()) {
-     let currentDate = new Date(eventDate);
- 
-     while (currentDate <= endDate) {
-       const dayOfWeek = currentDate.getDay();
- 
-       // Exclude weekends (Saturday and Sunday)
-       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-         // Check if the current date falls within the event range
-         if (currentDate >= eventDate && currentDate <= endDate) {
-           if (item.Event_x002d_Type !== "Work From Home") {
-             if (item.HalfDay === true || item.HalfDayTwo === true) {
-               totalWorkingDays += 0.5; // Add half-day
-             } else {
-               totalWorkingDays++; // Add full day
-             }
-           }
-         }
-       }
- 
-       currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
-     }
-   }
- });
- 
- 
-   return totalWorkingDays;
- };
- 
-const isWeekend = (startDate: any, endDate: any) => {
-  const startDay = startDate.getDay();
-  const endDay = endDate.getDay();
+  const calculateTotalWorkingDays = (matchedData: any[]) => {
+    // Function to reset the time of a date string to 00:00:00
+    function resetTime(dateString: any) {
+      let date = new Date(dateString);
+      date.setHours(0, 0, 0, 0);
+      return date; // Return the date object
+    }
 
-  return (startDay === 0 || startDay === 6) && (endDay === 0 || endDay === 6);
-};
+    // Today's date for comparison (reset to 00:00:00)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-const SendEmail = (EventData: any, MyEventData: any) => {
-  const startDate = new Date(EventData?.start);
-  const endDate = new Date(EventData?.end);
+    let totalWorkingDays = 0; // Initialize the counter for total working days
 
-  let daysDifference = calculateTotalWorkingDays([MyEventData]);
-  const formattedstartDate = startDate.toLocaleDateString('en-GB', {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-  const formattedendDate = endDate.toLocaleDateString('en-GB', {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+    matchedData.forEach((item) => {
+      let endDate = resetTime(item.EndDate);
+      let eventDate: any = resetTime(item.EventDate);
+      if (eventDate.getFullYear() === today.getFullYear()) {
+        let currentDate = new Date(eventDate);
 
-  let sp = spfi().using(spSPFx(props?.props?.context));
+        while (currentDate <= endDate) {
+          const dayOfWeek = currentDate.getDay();
 
-  let BindHtmlBody = `<div>
+          // Exclude weekends (Saturday and Sunday)
+          if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+            // Check if the current date falls within the event range
+            if (currentDate >= eventDate && currentDate <= endDate) {
+              if (item.Event_x002d_Type !== "Work From Home") {
+                if (item.HalfDay === true || item.HalfDayTwo === true) {
+                  totalWorkingDays += 0.5; // Add half-day
+                } else {
+                  totalWorkingDays++; // Add full day
+                }
+              }
+            }
+          }
+
+          currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+        }
+      }
+    });
+
+
+    return totalWorkingDays;
+  };
+
+  const isWeekend = (startDate: any, endDate: any) => {
+    const startDay = startDate.getDay();
+    const endDay = endDate.getDay();
+
+    return (startDay === 0 || startDay === 6) && (endDay === 0 || endDay === 6);
+  };
+
+  const SendEmail = (EventData: any, MyEventData: any) => {
+    const startDate = new Date(EventData?.start);
+    const endDate = new Date(EventData?.end);
+
+    let daysDifference = calculateTotalWorkingDays([MyEventData]);
+    const formattedstartDate = startDate.toLocaleDateString('en-GB', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+    const formattedendDate = endDate.toLocaleDateString('en-GB', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+
+    let sp = spfi().using(spSPFx(props?.props?.context));
+
+    let BindHtmlBody = `<div>
   <div>
     Dear Prashant,<br><br>
     I am writing to request ${daysDifference} day of leave from ${formattedstartDate} to ${formattedendDate} due to ${EventData?.title}.<br><br>
@@ -1374,27 +1425,27 @@ const SendEmail = (EventData: any, MyEventData: any) => {
   </div>
 </div>`;
 
-  let SendEmailMessage =
-    sp.utility
-      .sendEmail({
-        Body: BindHtmlBody,
-        Subject: "Leave Request - " + formattedstartDate +"-"+EventData?.Designation+"-"+EventData?.type+"-"+ EventData?.title , // Modified subject
-        To: ["ranu.trivedi@hochhuth-consulting.de","juli.kumari@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de"],
-        AdditionalHeaders: {
-          "content-type": "text/html",
-        },
-      })
-      .then(() => {
-        console.log("Email Sent!");
-        alert("Email Sent Successfully!");
-      })
-      .catch((error) => {
-        console.error("Error sending email:", error); // Log the error
-        alert("Error sending email. Please try again."); // Alert user about the error
-      });
-};
+    let SendEmailMessage =
+      sp.utility
+        .sendEmail({
+          Body: BindHtmlBody,
+          Subject: "Leave Request - " + formattedstartDate + "-" + EventData?.Designation + "-" + EventData?.type + "-" + EventData?.title, // Modified subject
+          To: ["ranu.trivedi@hochhuth-consulting.de", "juli.kumari@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"],
+          AdditionalHeaders: {
+            "content-type": "text/html",
+          },
+        })
+        .then(() => {
+          console.log("Email Sent!");
+          alert("Email Sent Successfully!");
+        })
+        .catch((error) => {
+          console.error("Error sending email:", error); // Log the error
+          alert("Error sending email. Please try again."); // Alert user about the error
+        });
+  };
 
-// Email End 
+  // Email End 
 
   const saveEvent = async () => {
     try {
@@ -1464,8 +1515,8 @@ const SendEmail = (EventData: any, MyEventData: any) => {
               .getById(props.props.SmalsusLeaveCalendar)
               .items.add(eventData)
               .then(() => {
-                if(newEvent.type !== "Work From Home"){
-                  SendEmail(newEvent,eventData)
+                if (newEvent.type !== "Work From Home") {
+                  SendEmail(newEvent, eventData)
                 }
                 getEvents();
               })
@@ -1722,9 +1773,11 @@ const SendEmail = (EventData: any, MyEventData: any) => {
         </a>
       </div>
       <div style={{ height: "500pt" }}>
-        <a className="mailBtn me-4" href="#" onClick={emailComp}>
-          <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
-        </a>
+        {EmailReciptents.some((user: any) => user?.AssingedToUserId == props?.props?.context?.pageContext?.legacyPageContext?.userId) &&
+          <a className="mailBtn me-4" href="#" onClick={emailComp}>
+            <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
+          </a>}
+
         <Calendar
           events={recurringEvents}
           selectable
@@ -1748,6 +1801,7 @@ const SendEmail = (EventData: any, MyEventData: any) => {
           Context={props.props.context}
           Listdata={props.props}
           data={todayEvent}
+          EmailReciptents={EmailReciptents}
           data2={details}
           call={emailCallback}
         />

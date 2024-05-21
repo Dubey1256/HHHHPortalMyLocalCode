@@ -45,9 +45,7 @@ function ComponentProfile(props: IComponentProfileProps) {
 
   return (
     <div>
-      {AllTaskuser?.length >0 && 
-      <Portfolio SelectedProp={props} TaskUser={AllTaskuser} />
-    }
+      <Portfolio SelectedProp={props} TaskUser={AllTaskuser?.length > 0 ? AllTaskuser : []} />
     </div>
   );
 }
