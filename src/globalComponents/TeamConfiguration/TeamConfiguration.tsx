@@ -33,7 +33,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         this.state = {
             taskUsers: [],
             taskDetails: [],
-            ResponsibleTeam: [],
+            ResponsibleTeam: [] ,
             AssignedToUsers: [],
             TeamMemberUsers: [],
             updateDragState: false,
@@ -218,32 +218,32 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     }
     private async GetTaskDetails() {
         try {
-            if (this.props.ItemInfo.siteUrl != undefined) {
-                web = new Web(this.props.ItemInfo.siteUrl);
-            } else {
-                web = new Web(this.props.AllListId?.siteUrl);
-            }
-            let taskDetails = [];
-            if (this.props.ItemInfo.listId != undefined) {
-                taskDetails = await web.lists
-                    .getById(this.props.ItemInfo.listId)
-                    .items
-                    .getById(this.props.ItemInfo.Id)
-                    .select("ID", "Title", "WorkingAction", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
-                    .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
-                    .get()
-            } else {
-                taskDetails = await web.lists
-                    .getByTitle('Master Tasks')
-                    .items
-                    .getById(this.props.ItemInfo.Id)
-                    .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
-                    .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
-                    .get()
-            }
-            console.log('Task Details---');
-            console.log(taskDetails);
-            this.setState({ taskDetails })
+        if (this.props.ItemInfo.siteUrl != undefined) {
+            web = new Web(this.props.ItemInfo.siteUrl);
+        } else {
+            web = new Web(this.props.AllListId?.siteUrl);
+        }
+        let taskDetails = [];
+        if (this.props.ItemInfo.listId != undefined) {
+            taskDetails = await web.lists
+                .getById(this.props.ItemInfo.listId)
+                .items
+                .getById(this.props.ItemInfo.Id)
+                .select("ID", "Title", "WorkingAction", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
+                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
+                .get()
+        } else {
+            taskDetails = await web.lists
+                .getByTitle('Master Tasks')
+                .items
+                .getById(this.props.ItemInfo.Id)
+                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
+                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
+                .get()
+        }
+        console.log('Task Details---');
+        console.log(taskDetails);
+        this.setState({ taskDetails })
         } catch (error) {
             console.log(error)
         }
@@ -334,17 +334,17 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
             }
         });
-        // taskUsers.forEach(function (categoryUser: any) {
-        //     for (var i = 0; i < categoryUser.childs.length; i++) {
-        //         if (categoryUser.childs[i].Item_x0020_Cover != undefined) {
-        //             self.AssignedToUsers.forEach(function (item: any) {
-        //                 if (categoryUser.childs[i] != undefined && categoryUser.childs[i].AssingedToUserId != undefined && categoryUser.childs[i].AssingedToUserId == item.Id) {
-        //                     categoryUser.childs.splice(i, 1);
-        //                 }
-        //             });
-        //         }
-        //     }
-        // });
+        taskUsers.forEach(function (categoryUser: any) {
+            for (var i = 0; i < categoryUser.childs.length; i++) {
+                if (categoryUser.childs[i].Item_x0020_Cover != undefined) {
+                    self.AssignedToUsers.forEach(function (item: any) {
+                        if (categoryUser.childs[i] != undefined && categoryUser.childs[i].AssingedToUserId != undefined && categoryUser.childs[i].AssingedToUserId == item.Id) {
+                            categoryUser.childs.splice(i, 1);
+                        }
+                    });
+                }
+            }
+        });
         taskUsers.forEach(function (categoryUser: any) {
             for (var i = 0; i < categoryUser.childs.length; i++) {
                 if (categoryUser.childs[i].Item_x0020_Cover != undefined) {
@@ -597,7 +597,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             if (dropLocation!="UserWorkingDays" && dragItem.userType == 'ResponsibleTeam')
                 this.state.ResponsibleTeam.splice(dragItem.current, 1);
         }
-        if (dragItem.userType == 'Assigned User')
+        if (dropLocation!="UserWorkingDays" && dragItem.userType == 'Assigned User')
             this.state.AssignedToUsers.splice(dragItem.current, 1);
 
         let TeamConfiguration = {
@@ -718,14 +718,16 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                                 onDragOver={(e) => e.preventDefault()} />
                                                         })
                                                         }
+
                                                     </div>
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* <div className='col-sm-3'>
+                                <div className='col-sm-3'>
                                     <h6 className='mb-1'>Working Members</h6>
                                     <div className="col"
                                         onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers, 'Assigned User')}
@@ -748,7 +750,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         </div>
 
                                     </div>
-                                </div> */}
+                                </div>
                                 <div className="col-sm-2">
                                     <div className="dustbin bg-siteColor" onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
                                         onDragOver={(e) => e.preventDefault()}>

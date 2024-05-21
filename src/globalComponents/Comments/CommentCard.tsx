@@ -644,10 +644,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             TeamsMessage = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${PreMsg} </blockquote>${CurrentMsg}`;
           }
           else {
-            TeamsMessage = `<span> You have been tagged in the comments for this task. Please have a look.</span>
+            TeamsMessage = `<span> You have been tagged in comment in the below task. </span>
             <p></p>
-          <div style="background-color: #fff; padding:16px; display:block;">
-          <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">Task Comment</b>: <span>${txtComment}</span>
+          <div style="background-color: #fff; padding:16px; margin-top:10px; display:block;">
+          <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">Comment</b>: <span>${txtComment}</span>
           </div>
           <p></p>
           Task Link: <a href=${MsgURL}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a>
