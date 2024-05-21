@@ -50,9 +50,9 @@ const EmailComponenet = (props: any) => {
 
   React.useEffect(() => {
     loadleave()
-    if (Object.keys(nameidTotals).length !== 0 ) {
+    if (Object.keys(nameidTotals).length !== 0 && AllTaskuser?.length != 0 ) {
       SendEmail()
-    } else if (props?.data?.length===0) {
+    } else if (props?.data?.length===0 && AllTaskuser?.length != 0) {
       SendEmail()
     }
 
@@ -70,8 +70,8 @@ const EmailComponenet = (props: any) => {
       sp.utility
         .sendEmail({
           Body: BindHtmlBody(),
-          Subject: "HHHH - Team Attendance " + formattedDate + " " + availableteammeberstoday + " available - " + leaveallteammemebrstoday + " on leave",
-          To: ["deepak@hochhuth-consulting.de", "stefan.hochhuth@hochhuth-consulting.de", "robert.ungethuem@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "anubhav.shukla@hochhuth-consulting.de"],
+          Subject: "HHHH - Team Attendance -" + formattedDate + ": " + availableteammeberstoday + " available; " + leaveallteammemebrstoday + " on leave",
+          To: [ "anubhav.shukla@hochhuth-consulting.de"],
           // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
           AdditionalHeaders: {
             "content-type": "text/html",
@@ -494,11 +494,25 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
     <img src="https://smalsus.com/hhhh/images/party.png">
     </div>
 </div>
-<div style="margin-bottom: 40px;">
+<div width="100%">
+              <table style="height: 48px;border-collapse: collapse;" border="0" width="100%" height="40px">
+                <tr>
+                  <td width="100%" height="40px">&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+<div>
     <div width="260px" height="40px" style="display: flex;justify-content: center;align-items: center;gap: 8px;flex-shrink: 0;color: #FFF;border-radius: 4px;
     background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">See Full Leave Report Online</div>
      
     </div>
+    <div width="100%">
+    <table style="height: 88px;border-collapse: collapse;" border="0" width="100%" height="88px">
+      <tr>
+        <td width="100%" height="88px">&nbsp;</td>
+      </tr>
+    </table>
+  </div>
 <div style="display: flex;align-items: center;padding-bottom: 56px;">
     <img width="56px" height="48px" src="https://hochhuth-consulting.de/images/logo_small2.png" style="width: 56px;height: 48px;" alt="Site Icon">
     <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left:4px;">Hochhuth Consulting GmbH</div>
