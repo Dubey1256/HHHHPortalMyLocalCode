@@ -129,22 +129,7 @@ function ReadyMadeTable(SelectedProp: any) {
     React.useEffect(() => {
         if (AllSiteTasksData?.length > 0) {
             if (isUpdated != "") {
-                if (portfolioTypeData.length > 0) {
-                    portfolioTypeData?.map((elem: any) => {
-                        if (elem.Title === isUpdated || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) {
-                            portfolioColor = elem.Color;
-                        }
-                    })
-                }
-            } else {
-                if (portfolioTypeData.length > 0) {
-                    portfolioTypeData?.map((elem: any) => {
-                        if (elem.Title === "Component") {
-                            portfolioColor = elem.Color;
-                        }
-                    })
 
-                }
 
                 if (SelectedProp?.configration == "AllAwt" && SelectedProp?.SelectedItem != undefined) {
                     if ('Parent' in SelectedProp?.SelectedItem) {
@@ -200,8 +185,11 @@ function ReadyMadeTable(SelectedProp: any) {
             if (SelectedProp?.ComponentFilter != undefined) {
                 setIsUpdated(SelectedProp?.ComponentFilter)
             }
-            if (SelectedProp?.configration == "AllCSF") {
+            if (SelectedProp?.configration == "AllCSF" && SelectedProp?.showProject != true) {
                 GetComponents();
+            }
+            else if(SelectedProp?.configration == "AllCSF" && SelectedProp?.showProject == true) {
+                GetProjectData()
             } else if (SelectedProp?.configration == "AllAwt") {
                 // GetComponents();
                 // setSiteConfig()
@@ -217,11 +205,24 @@ function ReadyMadeTable(SelectedProp: any) {
 
         }
     }, [AllMetadata?.length > 0 && portfolioTypeData?.length > 0])
+
+    const GetProjectData= async()=>{
+        let results = await globalCommon.GetServiceAndComponentAllData(ContextValue)
+        if (results?.AllData?.length > 0) {
+            let componentDetails: any = results?.AllData;
+            let groupedComponentData: any = results?.GroupByData;
+            let groupedProjectData: any = results?.ProjectData;
+            let AllProjects: any = results?.FlatProjectData
+            setData(groupedProjectData)
+            setLoaded(true)
+          }
+    }
+
     const getTaskUsers = async () => {
         let web = new Web(ContextValue.siteUrl);
         let taskUsers = [];
         taskUsers = await web.lists
-            .getById(ContextValue.TaskUsertListID)
+            .getById(ContextValue.TaskUserListID)
             .items.select(
                 "Id",
                 "Email",
@@ -1080,6 +1081,12 @@ function ReadyMadeTable(SelectedProp: any) {
         }
     }, [(AllMasterTasksData.length > 0 && AllSiteTasksData?.length > 0)]);
 
+    React.useEffect(() => {
+        if (AllMasterTasksData?.length > 0) {
+            DataPrepareForCSFAWT()
+        }
+    }, [(AllMasterTasksData.length > 0 && SelectedProp?.configration == "AllCSF")]);
+
 
     function DataPrepareForCSFAWT(){
         isColumnDefultSortingAsc = false
@@ -1611,7 +1618,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&
-                            <span><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.PortfolioType?.Color}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                            <span><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.PortfolioType?.Color}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
                         }
                     </>
@@ -2106,7 +2113,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: ({ table }: any) => (
                     <>{
                         topCompoIcon ?
-                            <span style={{ backgroundColor: `${portfolioColor}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
+                            <span  title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
                                 <span className="svg__iconbox svg__icon--re-structure"></span>
                             </span>
                             : ''
@@ -2180,6 +2187,7 @@ function ReadyMadeTable(SelectedProp: any) {
  
     const callBackData = React.useCallback((checkData: any) => {
         let array: any = [];
+        let selectedItems: any = []
         if (checkData != undefined) {
             setCheckedList(checkData);
             array.push(checkData);
@@ -2187,6 +2195,12 @@ function ReadyMadeTable(SelectedProp: any) {
             if (childRef.current.table.getSelectedRowModel().flatRows.length > 0) {
                 setTrueRestructuring(true)
             }
+            checkData?.map((item:any) => {
+                if(item.original != undefined){
+                    selectedItems.push(item.original)
+                }
+            })
+            SelectedProp.setCheckBoxData(selectedItems)
         } else {
             setCheckedList({});
             setTableProperty([])
@@ -2259,44 +2273,56 @@ function ReadyMadeTable(SelectedProp: any) {
 
 
  
-    const callbackdataAllStructure = React.useCallback((item) => {
-        if (item[0]?.SelectedItem != undefined) {
-            copyDtaArray.map((val: any) => {
-                item[0]?.subRows?.map((childs: any) => {
-                    if (item[0].SelectedItem == val.Id) {
-                        val.subRows = val.subRows === undefined ? [] : val?.subRows
-                        val?.subRows?.unshift(childs)
-                    }
-                    if (val.subRows != undefined && val.subRows.length > 0) {
-                        val.subRows?.map((child: any) => {
-                            if (item[0].SelectedItem == child.Id) {
-                                child.subRows = child.subRows === undefined ? [] : child?.subRows
-                                child?.subRows?.unshift(childs)
-                            }
-                            if (child.subRows != undefined && child.subRows.length > 0) {
-                                child.subRows?.map((Subchild: any) => {
-                                    if (item[0].SelectedItem == Subchild.Id) {
-                                        Subchild.subRows = Subchild.subRows === undefined ? [] : Subchild?.subRows
-                                        Subchild?.subRows.unshift(childs)
-                                    }
-                                })
-                            }
-                        })
-                    }
-                })
+    const AddStructureCallBackCall = React.useCallback((item) => {
+        if (checkedList1?.current.length == 0) {
+            item[0]?.subRows.map((childs: any) => {
+                copyDtaArray.unshift(childs)
+
             })
+        } else {
+            if (item[0]?.SelectedItem != undefined) {
+                copyDtaArray.map((val: any) => {
+                    if(val?.subRows==undefined){
+                        val.subRows=[]
+                    }
+                    item[0]?.subRows.map((childs: any) => {
+                        if (item[0].SelectedItem == val.Id) {
+                            val?.subRows?.unshift(childs)
+                        }
+                        if (val.subRows != undefined && val.subRows.length > 0) {
+                            val.subRows?.map((child: any) => {
+                                if (item[0].SelectedItem == child.Id) {
+                                    child.subRows.unshift(childs)
+                                }
+                                if (child.subRows != undefined && child.subRows.length > 0) {
+                                    child.subRows?.map((Subchild: any) => {
+                                        if (item[0].SelectedItem == Subchild.Id) {
+                                            Subchild.subRows.unshift(childs)
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    })
+                })
+
+            }
 
         }
-        if (item != undefined && item.length > 0 && item[0].SelectedItem == undefined) {
+        if (item != undefined && item?.length > 0 && item[0].SelectedItem == undefined) {
             item.forEach((value: any) => {
                 copyDtaArray.unshift(value)
             })
         }
+
+
+
         setOpenAddStructurePopup(false);
         console.log(item)
         renderData = [];
         renderData = renderData.concat(copyDtaArray)
         refreshData();
+        checkedList1.current = []
 
     }, [])
     const CreateOpenCall = React.useCallback((item) => { }, []);
@@ -2643,13 +2669,13 @@ function ReadyMadeTable(SelectedProp: any) {
         <>
 
             {(checkedList1?.current != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2 && checkedList1?.current?.[0]?.Item_x0020_Type != "Feature" && checkedList1?.current?.[0]?.Item_x0020_Type !="Task") && (SelectedProp?.SelectedItem != undefined && SelectedProp?.SelectedItem?.Item_x0020_Type != "Feature" && 'Parent' in SelectedProp?.SelectedItem) ?
-                <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure" onClick={() => OpenAddStructureModal()}>
+                <button type="button" className="btn btn-primary" title=" Add Structure" onClick={() => OpenAddStructureModal()}>
                     {" "} Add Structure{" "}</button> :
-                <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
+                <button type="button" disabled className="btn btn-primary"  title=" Add Structure"> {" "} Add Structure{" "}</button>
             }
             {(childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2) && (checkedList != undefined || SelectedProp?.SelectedItem != undefined) ?
-                < button type="button" className="btn btn-primary" title='Add Activity-Task' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => addActivity()}>Add Activity-Task</button> :
-                <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Add Activity-Task</button>
+                < button type="button" className="btn btn-primary" title='Add Activity-Task' onClick={() => addActivity()}>Add Activity-Task</button> :
+                <button type="button" className="btn btn-primary"  disabled={true} >Add Activity-Task</button>
             }
             {
                 trueRestructuring == true ?
@@ -2658,8 +2684,8 @@ function ReadyMadeTable(SelectedProp: any) {
             }
 
             {ActiveCompareToolButton ?
-                < button type="button" className="btn btn-primary" title='Compare' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
-                <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
+                < button type="button" className="btn btn-primary" title='Compare'  onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
+                <button type="button" className="btn btn-primary"  disabled={true} >Compare</button>
             } </>
     )
     const customTableHeaderButtonsAllAWT = (
@@ -2674,8 +2700,8 @@ function ReadyMadeTable(SelectedProp: any) {
             }
 
             {ActiveCompareToolButton ?
-                < button type="button" className="btn btn-primary" title='Compare' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
-                <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
+                < button type="button" className="btn btn-primary" title='Compare' onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
+                <button type="button" className="btn btn-primary" disabled={true} >Compare</button>
             } </>
 
 
@@ -2700,7 +2726,7 @@ function ReadyMadeTable(SelectedProp: any) {
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
-                                            <GlobalCommanTable  tableId={SelectedProp?.tableId}columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} showFilterIcon={SelectedProp?.configration != "AllAwt"}
+                                            <GlobalCommanTable multiSelect={SelectedProp?.multiSelect ? SelectedProp?.multiSelect: false} tableId={SelectedProp?.tableId}columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} showFilterIcon={SelectedProp?.configration != "AllAwt"}
                                             loadFilterTask={FilterAllTask}
                                                 masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
                                                 flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
@@ -2719,9 +2745,9 @@ function ReadyMadeTable(SelectedProp: any) {
                     </section>
                 </div>
             </section>
-            <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={callbackdataAllStructure} >
+            <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={AddStructureCallBackCall} >
                 <CreateAllStructureComponent
-                    Close={callbackdataAllStructure}
+                    Close={AddStructureCallBackCall}
                     taskUser={AllUsers}
                     portfolioTypeData={portfolioTypeData}
                     PropsValue={ContextValue}
@@ -2887,7 +2913,7 @@ export default ReadyMadeTable;
 
 // useCase:  
 
-//     AllListId:{} required alllist id  siteUrl,Context,MasterTaskListID,TaskUsertListID,SmartMetadataListID,PortFolioTypeID,TaskTypeID,
+//     AllListId:{} required alllist id  siteUrl,Context,MasterTaskListID,TaskUserListID,SmartMetadataListID,PortFolioTypeID,TaskTypeID,
 //    " CSFAWT"
 //    " AllAwt"
 //     "AllCSF"

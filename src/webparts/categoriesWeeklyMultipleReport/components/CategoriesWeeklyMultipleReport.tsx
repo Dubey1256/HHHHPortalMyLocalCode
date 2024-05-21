@@ -402,14 +402,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       //   placeholder: "Task ID",
       //   header: "",
       //   resetColumnFilters: false,
-      //   size: 120,
+    //   size: 120,
       //   id: "TaskID",
       // }, 
       {
         accessorFn: (row: any) => row?.TaskTitle,
         cell: ({ row }: any) => (
           <dd className='bg-Ff position-relative'>
-            <ReactPopperTooltipSingleLevel CMSToolId={this.state.AllTimeEntryItem['TaskId']} row={this.state.AllTimeEntryItem} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={this?.state?.AllTimeEntryItem} AllListId={AllListId} />
+            <ReactPopperTooltipSingleLevel CMSToolId={row.original?.TaskID} row={row.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={this?.state?.AllTimeEntryItem} AllListId={AllListId} />
 
           </dd>
         ),
@@ -748,7 +748,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     let results = [];
     results = await web.lists
       // .getByTitle('Task Users')
-      .getById(this.props.TaskUsertListID)
+      .getById(this.props.TaskUserListID)
       .items
       .select('Id', 'IsShowReportPage', 'UserGroupId', 'UserGroup/Title', 'Suffix', 'SmartTime', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
       //.filter("ItemType eq 'User'")

@@ -45,7 +45,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
         GetAllComponentAndServiceData();
         GetSmartMetaDataList();
         let param: any = Moment(new Date().toLocaleString());
-        GlobalFunctionForUpdateItem.GetCurrentUserData({ ListId: RequiredListIds?.TaskUsertListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context }).then((ResData: any) => {
+        GlobalFunctionForUpdateItem.GetCurrentUserData({ ListId: RequiredListIds?.TaskUserListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context }).then((ResData: any) => {
             let CurrentUserData: any = ResData?.CurrentUser;
             GlobalCurrentUserData = ResData?.CurrentUser;
             let CommentTitle: any = `This is in reference to the task: ${ItemDetails?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + ItemDetails?.Id + "&Site=" + ItemDetails?.siteType}`;
@@ -96,7 +96,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
             MasterTaskListID: RequiredListIds?.MasterTaskListID,
             siteUrl: ItemDetails?.siteUrl,
             ComponentType: "Component",
-            TaskUserListId: RequiredListIds.TaskUsertListID,
+            TaskUserListId: RequiredListIds.TaskUserListID,
         };
         let CallBackData = await GlobalCommon.GetServiceAndComponentAllData(
             PropsObject
@@ -296,7 +296,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 let UpdateJSONData: any = {
                     Title: CreateTaskInfo.Title,
                     DueDate: CreateTaskInfo.DueDate ? Moment(CreateTaskInfo.DueDate).format("MM-DD-YYYY") : null,
-                    // TeamMembersId: CreateTaskInfo?.TeamMembersId,
+                    TeamMembersId: CreateTaskInfo?.TeamMembersId,
                     ResponsibleTeamId: CreateTaskInfo?.ResponsibleTeamId,
                     FeedBack: JSON.stringify(CreateTaskInfo?.FeedBackJSON),
                     ComponentLink: {

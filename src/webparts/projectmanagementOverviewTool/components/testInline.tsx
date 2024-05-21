@@ -99,7 +99,7 @@ export default function ProjectOverview(props: any) {
         }
         AllListId = {
             MasterTaskListID: props?.props?.MasterTaskListID,
-            TaskUsertListID: props?.props?.TaskUsertListID,
+            TaskUserListID: props?.props?.TaskUserListID,
             SmartMetadataListID: props?.props?.SmartMetadataListID,
             //SiteTaskListID:this.props?.props?.SiteTaskListID,
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -141,11 +141,11 @@ export default function ProjectOverview(props: any) {
         $(' #SpfxProgressbar').hide();
     }
     const TaskUser = async () => {
-        if (AllListId?.TaskUsertListID != undefined) {
+        if (AllListId?.TaskUserListID != undefined) {
             let web = new Web(AllListId?.siteUrl);
             let taskUser = [];
             taskUser = await web.lists
-                .getById(AllListId?.TaskUsertListID)
+                .getById(AllListId?.TaskUserListID)
                 .items
                 .select("Id,UserGroupId,Suffix,Title,technicalGroup,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name")
                 .top(5000)
@@ -181,7 +181,7 @@ export default function ProjectOverview(props: any) {
         let PropsObject: any = {
             MasterTaskListID: AllListId.MasterTaskListID,
             siteUrl: AllListId.siteUrl,
-            TaskUserListId: AllListId.TaskUsertListID,
+            TaskUserListId: AllListId.TaskUserListID,
         }
         let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
         if (results?.AllData?.length > 0) {
@@ -333,7 +333,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != undefined ? <span>
-                            <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Project?.Id}`} data-interception="off" target="_blank">
+                            <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Project?.Id}`} data-interception="off" target="_blank">
                                 {row?.original?.ProjectTitle}
                             </a>
                         </span> : ''}
@@ -586,7 +586,7 @@ export default function ProjectOverview(props: any) {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
                     <div className='alignCenter'>
-                        <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
+                        <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
                         {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5'><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
                     </div>
 
@@ -824,7 +824,7 @@ export default function ProjectOverview(props: any) {
                 `<span style="font-size: 18px;margin-bottom: 10px;">
                 Hi there, <br><br>
                 Below is the working today task of all the team members <strong>(Project Wise):</strong>
-                <p><a href =${AllListId?.siteUrl}/SitePages/Project-Management-Overview.aspx?SelectedView=ProjectsTask>Click here for flat overview of the today's tasks</a></p>
+                <p><a href =${AllListId?.siteUrl}/SitePages/PX-Overview.aspx?SelectedView=ProjectsTask>Click here for flat overview of the today's tasks</a></p>
                 </span>
                 ${body}
                 <h3>
@@ -959,7 +959,7 @@ export default function ProjectOverview(props: any) {
                     `<table cellpadding="0" cellspacing="0" align="center" style="margin-top:10px; margin-left:${group?.Item_x0020_Type == 'Sprint' ? '20px' : ''}" width="100%" border="0">
                     <tr>
                     <td width="20%" height="30" align="left" valign="middle"bgcolor=${bgColor} style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:${textColor};"><strong>Title</strong></td>
-                    <td height="30" colspan="6" bgcolor="#eee" style="padding-left: 10px; color: #eee;border: 1px solid #a19f9f;"><strong><a style="text-decoration: none;" href =${AllListId.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${group?.Id}> ${group?.PortfolioStructureID} - ${group?.Title}</a></strong></td>
+                    <td height="30" colspan="6" bgcolor="#eee" style="padding-left: 10px; color: #eee;border: 1px solid #a19f9f;"><strong><a style="text-decoration: none;" href =${AllListId.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${group?.Id}> ${group?.PortfolioStructureID} - ${group?.Title}</a></strong></td>
                     </tr>
                     <tr>
                     <td width="10%" height="30" align="left" valign="middle" bgcolor=${bgColor} style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:${textColor};"><strong>Project Priority</strong></td>

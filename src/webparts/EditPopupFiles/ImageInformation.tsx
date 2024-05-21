@@ -202,6 +202,8 @@ const ImagetabFunction = (props: any) => {
                         itemFolderName: selectfolder2
                     }
                     taskItem.Item_x002d_Image = recentUploadPic
+                    taskItem.Item_x0020_Cover = recentUploadPic
+                    taskItem.ItemCover = recentUploadPic
                     //   props.EditdocumentsData=taskItem
                     setEditData(taskItem)
                     props.setData(taskItem)
@@ -241,6 +243,8 @@ const ImagetabFunction = (props: any) => {
         } else {
             let taskItem = { ...editData };
             taskItem.Item_x002d_Image = null;
+            taskItem.Item_x0020_Cover = null;
+            taskItem.ItemCover = null;
             setEditData(taskItem)
             props.setData(taskItem)
         }
@@ -254,6 +258,8 @@ const ImagetabFunction = (props: any) => {
 
         }
         taskItem.Item_x002d_Image = ExistingImagePicDetails;
+        taskItem.Item_x0020_Cover = ExistingImagePicDetails;
+        taskItem.ItemCover = ExistingImagePicDetails;
         setEditData(taskItem)
         props.setData(taskItem)
     }
@@ -272,6 +278,8 @@ const ImagetabFunction = (props: any) => {
 
             }
             taskItem.Item_x002d_Image = searchImagePicDetails;
+            taskItem.Item_x0020_Cover = searchImagePicDetails;
+            taskItem.ItemCover = searchImagePicDetails;
             setEditData(taskItem)
             props.setData(taskItem)
 
@@ -285,6 +293,8 @@ const ImagetabFunction = (props: any) => {
 
             }
             taskItem.Item_x002d_Image = searchImagePicDetails;
+            taskItem.Item_x0020_Cover = searchImagePicDetails;
+            taskItem.ItemCover = searchImagePicDetails;
             setEditData(taskItem)
             props.setData(taskItem)
         }
@@ -297,6 +307,8 @@ const ImagetabFunction = (props: any) => {
 
             }
             taskItem.Item_x002d_Image = searchImagePicDetails;
+            taskItem.Item_x0020_Cover = searchImagePicDetails;
+            taskItem.ItemCover = searchImagePicDetails;
             setEditData(taskItem)
             props.setData(taskItem)
         }

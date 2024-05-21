@@ -143,7 +143,7 @@ export const BulkUpdateTaskInfo = async (RequiredData: any): Promise<any> => {
     return new Promise(async (resolve, reject) => {
         try {
             const { ItemDetails, RequiredListIds, UpdatedData, Context, AllTaskUsers } = RequiredData || {};
-            const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUsertListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context });
+            const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUserListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context });
             const AllTaskUsersData = GetTaskUsersData?.AllUsersData;
             let StatusUpdatedJSON: any = {};
             let TaskCategoryUpdatedJSON: any = {};
@@ -226,15 +226,16 @@ export const UpdateTaskStatusFunction = async (RequiredData: any): Promise<any> 
             let CheckEmailCategoryTask = ItemDetails.TaskCategories?.some((category: any) => category.Title === "Email Notification");
             let CheckImmediateCategoryTask = ItemDetails.TaskCategories?.some((category: any) => category.Title === "Immediate");
             let CheckDesignCategoryTask = ItemDetails.TaskCategories?.some((category: any) => category.Title === "Design");
-            const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUsertListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context })
+            const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUserListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context })
             const AllTaskUsersData = GetTaskUsersData?.AllUsersData;
             const CurrentUserData = GetTaskUsersData?.CurrentUser;
             const ApproversData = GetTaskUsersData?.ApproversData;
+
             let UpdateDataJSON: any = { PercentComplete: Number(Status) / 100 };
             let TaskCategories: string = ItemDetails?.TaskCategories?.map((item: any) => item.Title).join(', ');
             let TaskCategoriesIds: any = ItemDetails?.TaskCategories?.map((Item: any) => Item.Id);
             let ApproverIds: any = GetTaskUsersData?.ApproversData?.map((Item: any) => Item.Id);
-            let UniqueIds = TaskCategoriesIds.filter((number: any, index: any, array: any) => array.indexOf(number) === index);
+            let UniqueIds = TaskCategoriesIds.filter((number: any, index: any, array: any) => array?.indexOf(number) === index);
             let ReceiveRejectedTaskUserId: any = [];
             let ReceiverEmail: any = [];
 
@@ -402,13 +403,12 @@ export const UpdateTaskStatusFunction = async (RequiredData: any): Promise<any> 
             if (Status >= 5 && Status <= 90) {
                 if (CheckImmediateCategoryTask || CheckEmailCategoryTask) {
                     try {
-                        if (ApproversData?.length > 0) {
-                            AllTaskUsersData?.map((AllUserData: any) => {
-                                if (AllUserData.AssingedToUserId === ItemDetails?.Author?.Id) {
-                                    ReceiverEmail = [AllUserData.Email];
-                                }
-                            })
-                        }
+                        AllTaskUsersData?.map((AllUserData: any) => {
+                            if (AllUserData.AssingedToUserId === ItemDetails?.Author?.Id) {
+                                ReceiverEmail = [AllUserData?.AssingedToUser?.EMail];
+                            }
+                        })
+
                         try {
                             let EmailRequiredData: any = {
                                 ItemDetails: ItemDetails,
@@ -547,7 +547,7 @@ export const UpdateTaskCategoryFunction = async (RequiredData: any): Promise<any
             let CheckApprovalCategoryTask = TaskCategories?.some((category: any) => category.Title === "Approval");
             let CheckBottleneckCategoryTask = TaskCategories?.some((category: any) => category.Title === "Bottleneck");
             let CheckAttentionCategoryTask = TaskCategories?.some((category: any) => category?.IsSendAttentionEmail?.Id !== undefined);
-            const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUsertListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context })
+            const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUserListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context })
             const AllTaskUsersData = GetTaskUsersData?.AllUsersData;
             let ReceiverEmail: any = [];
             if (ItemDetails.TaskCategories?.length > 0) {
@@ -882,7 +882,7 @@ export const SendApprovalEmailNotificationComponent = (props: any) => {
                     TaskStatus = "Rejected"
                 }
             } else {
-                TaskStatus = `Task Status Is Updated ${ItemDetails.PercentComplete} for `
+                TaskStatus = `Task Status Is Updated`
             }
             if (ItemDetails?.FeedBack?.length > 0) {
                 let FeedItemData: any = JSON.parse(ItemDetails?.FeedBack);
@@ -897,7 +897,7 @@ export const SendApprovalEmailNotificationComponent = (props: any) => {
             const containerDiv = document.createElement('div');
             const reactElement = React.createElement(EmailMessage?.type, EmailMessage?.props);
             ReactDOM.render(reactElement, containerDiv);
-            const FinalMSG = "<style>p>br {display: none;}</style>" + containerDiv.innerHTML;
+            const FinalMSG = "" + containerDiv.innerHTML;
             const EmailProps = {
                 To: ReceiverEmail,
                 Subject: "[ " + ItemDetails?.siteType + " - " + TaskStatus + " ]" + ItemDetails?.Title,
@@ -933,7 +933,13 @@ const joinObjectValues = (arr: any) => {
     arr.forEach((element: any) => {
         val += element.Title + ';'
     });
-    return val;
+    let FinalUserNames: string = '';
+    if (val?.length > 14) {
+        FinalUserNames = val?.slice(0, 14) + "...";
+    } else {
+        FinalUserNames = val;
+    }
+    return FinalUserNames;
 }
 
 // This function is used for generating the required HTML structure to handle different scenarios, such as sending email notifications for tasks that are created, approved, or rejected
@@ -1234,7 +1240,7 @@ export const SendApprovalEmailNotificationBodyContent = (props: any) => {
 
 export const SendEmailAndImmediateTaskNotificationBodyContent = (props: any) => {
     return (
-        <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
+        <div id='htmlMailBodyEmail'>
             <div style={{ backgroundColor: "#FAFAFA" }}>
                 <div style={{ width: "900px", backgroundColor: "#fff", padding: "0px 32px", margin: "0 auto" }}>
                     <div style={{ display: "flex", alignItems: "center", padding: "56px 0px" }}>
@@ -1245,7 +1251,7 @@ export const SendEmailAndImmediateTaskNotificationBodyContent = (props: any) => 
                         Hi {props?.Author?.Title},
                     </div>
                     <div style={{ marginBottom: "12px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
-                        Task created from your end has been marked to {props?.PercentComplete}%. Please follow the below link to review it.
+                        Task created from your end and Status has been updated. Please follow the below link to review it.
                     </div>
                     <div style={{ marginBottom: "32px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
                         You can track your Task Status here:
@@ -1358,45 +1364,7 @@ export const getDataByKey = (DataArray: any, keyName: any) => {
 }
 
 
-// This is used for send MS Teams Notification for Bottleneck and Attention Category Tasks 
-
-// export const SendMSTeamsNotificationForWorkingActions = (RequiredData: any) => {
-//     return new Promise(async (resolve, reject) => {
-//         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject } = RequiredData || {};
-//         let TaskInformation: any = GenerateMSTeamsNotification(UpdatedDataObject);
-//         const containerDiv = document.createElement('div');
-//         const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
-//         ReactDOM.render(reactElement, containerDiv);
-//         let finalTaskInfo: any = containerDiv.innerHTML;
-//         let TeamsMessage = `<b>Hi ${ReceiverName},</b> 
-//         <p></p>
-//         You have been tagged as <b>${ActionType}</b> in the below task.
-//         <p>
-//         <br/>
-//          <span>${ReasonStatement ? "<b>" + ActionType + " Point : </b>" + ReasonStatement + " <p></p>" : ''}</span>
-//         <b>Task Details : </b> <span>${finalTaskInfo}</span>
-//         </br>
-//         <p>
-//         Task Link:  
-//         <a href=${UpdatedDataObject?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
-//          Click-Here
-//         </a>
-//         <p></p>
-//         <b>
-//         Thanks, </br>
-//         Task Management Team
-//         </b>`;
-
-//         if (sendUserEmail?.length > 0) {
-//             await GlobalCommon.SendTeamMessage(
-//                 sendUserEmail,
-//                 TeamsMessage,
-//                 Context
-//             );
-//         }
-//     })
-
-// }
+// This is used for send MS Teams Notification for workingAction (Bottleneck and Attention Category) Tasks 
 
 export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any) => {
     try {
@@ -1409,11 +1377,22 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
 
         const TeamsMessage = `
         <div style="padding: 12px; background-color: transparent;">
+<<<<<<< HEAD
             You have been tagged as <b>${ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}
             <p><br/></p>
            
             <div style="background-color: #fff; padding:16px; display:block;">
             <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType} Comment</b>: <span>${ReasonStatement}</span>
+=======
+            ${(ActionType == "User Experience - UX" && ReasonStatement == "New Task Created") ? "New User Experience - UX Category Task Created. Please have a look" : ""}
+            ${((ActionType == "User Experience - UX" || ActionType == "Design") && ReasonStatement == "Task Completed") ? `This ${ActionType} Category Task set to 90%. Please have a look` : ''}
+            ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
+                `You have been tagged <b>${ActionType == "Phone" ? "for the discussion" : "as " + ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}` : ''}
+            <p></p>
+            ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
+                `<div style="background-color: #fff; padding:16px; margin-top:10px; display:block;">
+            <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? " Discussion Point" : ActionType + " Comment"} </b>: <span>${ReasonStatement}</span> ` : ''}
+>>>>>>> 3428795c93afda21b7922fd9c5eff5e4ba88b92f
             </div>
             <div style="margin-top: 16px;">  
                <b style="font-weight:600;">Task Title: </b>
@@ -1428,7 +1407,11 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
             </div>
             <p></p>
            <span>${finalTaskInfo}</span>
+<<<<<<< HEAD
             </div>
+=======
+          
+>>>>>>> 3428795c93afda21b7922fd9c5eff5e4ba88b92f
         `;
 
         if (sendUserEmail?.length > 0) {
@@ -1455,9 +1438,8 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         <p>
         <br/>
         <div style="background-color: #fff; padding:16px; display:block;">
-        <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType} Comment</b>: <span>${ReasonStatement}</span>
+        <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? "Discussion Point" : ActionType + "Comment"}</b>: <span>${ReasonStatement}</span>
         </div>
-       
         </br>
         <p>
         <div style="margin-top: 16px;">  <b style="font-weight:600;">Task Link: </b>
@@ -1465,8 +1447,12 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
         </a>
         </div>
+<<<<<<< HEAD
         <b>
         </b>`
+=======
+       `
+>>>>>>> 3428795c93afda21b7922fd9c5eff5e4ba88b92f
         if (sendUserEmail?.length > 0) {
             await GlobalCommon.SendTeamMessage(
                 sendUserEmail,
@@ -1497,8 +1483,13 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center', minHeight: '30px'}}>
                                 {RequiredData["Portfolio"] != null &&
+<<<<<<< HEAD
                                     <span style={{ fontSize: '10.0pt', whiteSpace: 'nowrap', width: '95%', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>
                                         {RequiredData["Portfolio"]?.Title}
+=======
+                                    <span style={{ fontSize: '10.0pt' }} title={RequiredData["Portfolio"]?.Title}>
+                                        {RequiredData["Portfolio"]?.Title?.length > 17 ? RequiredData["Portfolio"]?.Title.slice(0, 14) + "..." : RequiredData["Portfolio"]?.Title}
+>>>>>>> 3428795c93afda21b7922fd9c5eff5e4ba88b92f
                                     </span>
                                 }
                             </div>
@@ -1559,8 +1550,13 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <b style={{ fontSize: '10.0pt', color: '#333' }}>Categories:</b>
                             </div>
+<<<<<<< HEAD
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center', minHeight:'30px' }}>
                                 <span style={{ fontSize: '10.0pt', whiteSpace: 'nowrap', width: '95%', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>{RequiredData["Categories"]}</span>
+=======
+                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                                <span style={{ fontSize: '10.0pt' }} title={RequiredData["Categories"]}>{RequiredData["Categories"]?.length > 17 ? RequiredData["Categories"]?.slice(0, 14) + "..." : RequiredData["Categories"]}</span>
+>>>>>>> 3428795c93afda21b7922fd9c5eff5e4ba88b92f
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <b style={{ fontSize: '10.0pt', color: '#333' }}>Status:</b>
@@ -1632,7 +1628,9 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                 <span style={{ fontSize: "10pt", color: "#333", marginRight: '5px', fontWeight: '600' }}>
                                                                     {i + 1}.
                                                                 </span>
-                                                                <span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span></div>
+                                                                {/* <span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span> */}
+                                                                {fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")}
+                                                            </div>
 
                                                             {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
                                                                 return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px', width: '100%' }}>
@@ -1755,197 +1753,6 @@ export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: an
     try {
         if (RequiredData?.Title?.length > 0) {
             return (
-                // <table cellPadding="0" width="100%" style={{ width: "100%" }}>
-                //     <tbody>
-                //         <tr>
-                //             <td width="70%" valign="top" style={{ width: '70.0%', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                 <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
-                //                     <tbody>
-                //                         <tr>
-                //                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Id:</span></b><u></u><u></u></p>
-                //                             </td>
-                //                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData?.PortfolioStructureID}</span><u></u><u></u></p>
-                //                             </td>
-                //                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Parent:</span></b><u></u><u></u></p>
-                //                             </td>
-                //                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p>{RequiredData["Parent"] != null &&
-                //                                     <span style={{ fontSize: '10.0pt', color: 'black' }}>
-                //                                         {RequiredData["Parent"]?.Title}
-                //                                     </span>
-                //                                 }
-                //                                     <span style={{ color: "black" }}> </span><u></u><u></u></p>
-                //                             </td>
-                //                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Priority:</span></b><u></u><u></u></p>
-                //                             </td>
-                //                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["Priority"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
-                //                             </td>
-                //                         </tr>
-                //                         <tr>
-                //                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Start Date:</span></b><u></u><u></u></p>
-                //                             </td>
-                //                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD-MMMM-YYYY") : ""}</span><u></u><u></u></p>
-                //                             </td>
-                //                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Completion Date:</span></b><u></u><u></u></p>
-                //                             </td>
-                //                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
-                //                             </td>
-                //                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Due Date:</span></b><u></u><u></u></p>
-                //                             </td>
-                //                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD-MMMM-YYYY") : ''}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
-                //                             </td>
-                //                         </tr>
-                //                         <tr>
-                //                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Team Members:</span></b><u></u><u></u></p>
-                //                             </td>
-                //                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt', width:'130px' }}>
-                //                                 <p style={{wordBreak: "break-all"}}>{RequiredData["TeamMembers"] != null &&
-                //                                     RequiredData["TeamMembers"].length > 0 &&
-                //                                     <span style={{ fontSize: '10.0pt', color: 'black' }}>
-                //                                         {joinObjectValues(RequiredData["TeamMembers"])}
-                //                                     </span>
-                //                                 }
-                //                                     <span style={{ color: "black" }}> </span><u></u><u></u></p>
-                //                             </td>
-                //                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span></b><u></u><u></u></p>
-                //                             </td>
-                //                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{Moment(RequiredData["Created"]).format("DD-MMMM-YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
-                //                             </td>
-                //                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</span></b><u></u><u></u></p>
-                //                             </td>
-                //                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["Author"] != null && RequiredData["Author"] != undefined && RequiredData["Author"].Title}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
-                //                             </td>
-                //                         </tr>
-                //                         <tr>
-                //                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Categories:</span></b><u></u><u></u></p>
-                //                             </td>
-                //                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["Categories"]}</span><u></u><u></u></p>
-                //                             </td>
-                //                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Status:</span></b><u></u><u></u></p>
-                //                             </td>
-                //                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 {RequiredData["PercentComplete"]}
-                //                             </td>
-                //                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Project:</span></b><u></u><u></u></p>
-                //                             </td>
-                //                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 {RequiredData["PercentComplete"]}
-                //                             </td>
-                //                         </tr>
-
-                //                         <tr>
-                //                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Feature Type:</span></b><span style={{ color: "black" }}> </span><u></u><u></u></p>
-                //                             </td>
-                //                             <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 {RequiredData["SmartPriority"]}
-                //                             </td>
-                //                         </tr>
-                //                     </tbody>
-                //                 </table>
-                //                 <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
-                //                 <tr>
-                //                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt', width:'100px' }}>
-                //                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>URL:</span></b><span style={{ color: "black" }}> </span><u></u><u></u></p>
-                //                             </td>
-                //                             <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                 <p style={{ wordBreak: "break-all"}}><span style={{ fontSize: '10.0pt', color: 'black' }}>
-                //                                     {RequiredData["ComponentLink"] != null &&
-                //                                         <a href={RequiredData["ComponentLink"].Url} target="_blank">{RequiredData["ComponentLink"].Url}</a>
-                //                                     }</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
-                //                             </td>
-                //                         </tr>
-                //                 </table>
-                //                 {RequiredData["Short_x0020_Description_x0020_On"] != null ?
-                //                             <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
-                //                                 <tbody>
-                //                                     <tr>
-                //                                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt', width: '30%', verticalAlign: 'top' }}>
-                //                                             <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Short Description:</span></b></p>
-                //                                         </td>
-                //                                         <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                             <p style={{ fontSize: '10.0pt', color: 'black', padding: '0px 2px 0px 10px', border: '1px solid #ccc', wordBreak: 'break-word' }}>
-                //                                                 {RequiredData["Short_x0020_Description_x0020_On"]}
-                //                                             </p>
-                //                                         </td>
-                //                                     </tr>
-                //                                 </tbody>
-                //                             </table>
-                //                             :
-                //                             null
-                //                         }
-                //             </td>
-                //             {RequiredData?.CommentsArray?.length > 0 ?
-                //                 <td width="22%" style={{ width: '22.0%', padding: '.75pt .75pt .75pt .75pt', background: 'whitesmoke' }}>
-                //                     <table className='table table-striped ' cellPadding={0} width="100%" style={{ width: '100.0%', border: 'solid #dddddd 1.0pt', borderRadius: '4px', background: 'whitesmoke' }}>
-                //                         <tbody>
-                //                             <tr>
-                //                                 <td style={{ border: 'none', borderBottom: 'solid #dddddd 1.0pt', background: '#fff', color: "#f333", padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                     <b style={{ marginBottom: '1.25pt' }}><span style={{ color: 'black' }}>Comments:<u></u><u></u></span></b>
-                //                                 </td>
-                //                             </tr>
-                //                             <tr>
-                //                                 <td style={{ border: 'none', padding: '.75pt .75pt .75pt .75pt' }}>
-                //                                     {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
-                //                                         return (
-                //                                             <>
-                //                                                 <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
-                //                                                     <div style={{ marginBottom: "3.75pt" }}>
-                //                                                         <p style={{ marginBottom: '1.25pt' }}>
-                //                                                             <span style={{ color: 'black', background: '#fbfbfb' }}>{cmtData.AuthorName} - {cmtData.Created}</span></p>
-                //                                                     </div>
-                //                                                     <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
-                //                                                         <span style={{ color: 'black' }}>{cmtData.Description}</span></p>
-
-                //                                                 {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
-                //                                                     return (
-                //                                                         <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt', marginLeft: '10pt' }}>
-                //                                                             <div style={{ marginBottom: "3.75pt" }}>
-                //                                                                 <p style={{ marginBottom: '1.25pt' }}>
-                //                                                                     <span style={{ color: 'black', background: '#fbfbfb' }}>{replyData.AuthorName} - {replyData.Created}</span></p>
-                //                                                             </div>
-                //                                                             <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
-                //                                                                 <span style={{ color: 'black' }}>{replyData.Description}</span></p>
-                //                                                         </div>
-                //                                                     )
-                //                                                 })}
-                //                                                 </div>
-                //                                             </>
-
-                //                                         )
-
-                //                                     })}
-                //                                 </td>
-                //                             </tr>
-                //                         </tbody>
-                //                     </table>
-                //                 </td>
-                //                 : null
-                //             }
-                //         </tr>
-                //     </tbody>
-                // </table>
-
                 <div style={{ display: 'flex' }}>
 
                     <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '528px' } : { marginRight: '8px' }}>
@@ -2137,13 +1944,12 @@ export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredD
             messageContent = 'Task created from your end has been set to 8%. Please take necessary action';
         }
 
-        const emailBodyContent = `<p>Hi ${ReceiverName},</b></p>
+        const emailBodyContent = `
             <p>${messageContent}</p>
-            ${containerDiv.innerHTML}
             <p>Task Link: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
             ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></p>
-            <p><b>Thanks,</b></p>
-            <p><b>Task Management Team</b></p>`;
+            <span>${containerDiv.innerHTML}</span>
+            `;
 
         const emailProps = {
             To: ReceiverEmail,
@@ -2220,7 +2026,7 @@ export const PrepareDataAccordingToSortOrder = (SourceArray: any, currentArray: 
     RequiredData = { 
         ItemDetails: Selected Item all Details as object,
         RequiredListIds: AllListIdData, 
-        UpdateData: {PercentComplete : 5, TaskCategories:[{}.{}]}, 
+        UpdateData: {PercentComplete : 5, TaskCategories:[{},{}]}, 
         Context: Context 
     }
 

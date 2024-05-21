@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Web } from "sp-pnp-js";
+import { Web,sp } from "sp-pnp-js";
 import { useEffect, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
@@ -24,7 +24,8 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const [data, setData] = React.useState<any>([]);
     const [groupData, setGroupData] = useState([]);
     const [title, setTitle] = useState("");
-    const [addTitle, setAddTitle] = useState("");
+    const [addTitle, setAddTitle] = useState<any>("");
+    const [Email, setEmail] = useState<any>("");
     const [suffix, setSuffix] = useState("");
     const [selectedApprovalType, setSelectedApprovalType] = useState('');
     const [selectedCompany, setSelectedCompany] = useState('');
@@ -70,12 +71,12 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     // When the member to update is set, initialize the Member states
     useEffect(() => {
         if (memberToUpdate) {
-          if(memberToUpdate?.IsApprovalMail != null && memberToUpdate?.IsApprovalMail != undefined){
-            setSelectedApprovalType(memberToUpdate?.IsApprovalMail);
-          }
-          else{
-            setSelectedApprovalType("Decide Case By Case")
-          }            setSelectedCompany(memberToUpdate?.Company);
+            if (memberToUpdate?.IsApprovalMail != null && memberToUpdate?.IsApprovalMail != undefined) {
+                setSelectedApprovalType(memberToUpdate?.IsApprovalMail);
+            }
+            else {
+                setSelectedApprovalType("Decide Case By Case")
+            } setSelectedCompany(memberToUpdate?.Company);
             // setSelectedRoles(memberToUpdate.Role || []);
             setSelectedRoles(Array.isArray(memberToUpdate.Role) ? memberToUpdate.Role : []);
             setIsActive(memberToUpdate?.IsActive);
@@ -83,14 +84,14 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             setUserCategory(memberToUpdate?.TimeCategory)
             // setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
             if (memberToUpdate.CategoriesItemsJson) {
-                const categoriesJson = memberToUpdate.CategoriesItemsJson != 'null' ? JSON.parse(memberToUpdate.CategoriesItemsJson): [];
+                const categoriesJson = memberToUpdate.CategoriesItemsJson != 'null' ? JSON.parse(memberToUpdate.CategoriesItemsJson) : [];
                 setSelectedCategories(categoriesJson);
                 if (categoriesJson) {
                     const categoryIds = categoriesJson.map((category: any) => category.Id.toString());
                     setChecked(categoryIds);
                 }
             }
-            setAssignedToUser(memberToUpdate?.AssingedToUser?.Id)
+            setAssignedToUser(memberToUpdate?.AssingedToUser)
             // setApprover([memberToUpdate.Approver?.[0]?.Id])
             const Approvers: any = memberToUpdate?.Approver?.map((item: any) => item.Id)
             setApprover(Approvers)
@@ -137,23 +138,49 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     };
 
     const addTeamMember = async () => {
+        let userId:any =[]
         let web = new Web(baseUrl);
-        await web.lists.getById(TaskUserListId).items.add({
-            Title: addTitle,
-            ItemType: "User",
-            Company: "Smalsus",
-            IsActive: false,
-            IsTaskNotifications: false,
-        }).then((res: any) => {
-            console.log(res);
-            const newItem = res.data;
-            setData((prevData: any) => [...prevData, newItem]);
-            setTitle("");
-            setAddTitle("");
-            fetchAPIData()
-            setAutoSuggestData(null)
-            setOpenPopup(false);
+        const externalUsers = await sp.web.siteUserInfoList.items.top(1000).get();
+        console.log(externalUsers);
+        externalUsers?.forEach((item:any)=>{
+            if(item.UserName == addTitle[0]?.secondaryText){
+                userId = item?.Id;
+                setAssignedToUser(item)
+            }
         })
+
+        const taskUsers = await web.lists
+        .getById(TaskUserListId)
+        .items.filter(`AssingedToUser/Id eq '${userId}'`)
+        .getAll();
+    
+        if(taskUsers != undefined && taskUsers.length > 0){
+            alert('User already exist')
+        }
+        else{
+            await web.lists.getById(TaskUserListId).items.add({
+                Title: addTitle[0]?.text,
+                AssingedToUserId:(userId != null && userId.length > 0) ? userId : null,
+                Email:addTitle[0]?.secondaryText,
+                ItemType: "User",
+                Company:null,
+                IsActive: false,
+                IsTaskNotifications: false,
+            }).then((res: any) => {
+                console.log(res);
+                const newItem = res.data;
+                setData((prevData: any) => [...prevData, newItem]);
+                setTitle("");
+                setAddTitle("");
+                setIsUserNameValid(true);
+                setMemberToUpdate(newItem);
+                setOpenUpdateMemberPopup(true);
+                fetchAPIData()
+                setAutoSuggestData(null)
+                setOpenPopup(false);
+            })
+        }
+       
     }
 
     const addNewGroup = async () => {
@@ -198,7 +225,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         if (memberToUpdate) {
             const updatedData = {
                 Title: title ? title : memberToUpdate.Title,
-                Suffix: suffix ? suffix : memberToUpdate.Suffix,
+                Suffix: suffix != '' ? suffix : memberToUpdate.Suffix,
                 SortOrder: sortOrderValue,
                 IsActive: isActive,
                 Company: selectedCompany,
@@ -208,11 +235,11 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 Role: { "results": selectedRoles },
                 IsTaskNotifications: isTaskNotifications,
                 AssingedToUserId:
-                  assignedToUser != null ? assignedToUser?.Id: null,
+                    assignedToUser != null ? assignedToUser?.Id : null,
                 // ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
                 //     ? { "results": approver } : (approver.length > 0 && approver[0] != null && approver[0].AssingedToUser?.Id != null) ? { "results": [approver[0].AssingedToUser.Id] } : { "results": [] },
                 ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
-                ? { "results": approver } : Array.isArray(approver) && approver.length > 0 ? { "results": approver?.map(app => app?.userId) } : { "results": [] },
+                    ? { "results": approver } : Array.isArray(approver) && approver.length > 0 ? { "results": approver?.map(app => app?.userId) } : { "results": [] },
                 // ApproverId: Array.isArray(approver) && approver.length > 0 ? { "results": approver?.map(app => app?.AssingedToUser?.Id) } : { "results": [] },
                 UserGroupId: userGroup ? parseInt(userGroup) : memberToUpdate?.UserGroup?.Id,
                 Team: userTeam ? userTeam : memberToUpdate.Team,
@@ -220,7 +247,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : memberToUpdate.Item_x0020_Cover.Url},
                 Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image?.Url || imageUrl?.Item_x0020_Cover?.Url || (memberToUpdate?.Item_x0020_Cover?.Url || null) },
                 CategoriesItemsJson: JSON.stringify(selectedCategories),
-                Email: EmailNotification
+                Email: Email ? Email:memberToUpdate?.Email
             };
 
             await web.lists.getById(TaskUserListId).items.getById(memberToUpdate.Id).update(updatedData).then((res: any) => {
@@ -291,95 +318,106 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     // Table for User code
 
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
-        () => [{
-            accessorFn: '',
-            canSort: false,
-            placeholder: '',
-            header: '',
-            id: 'row.original',
-            size: 10,
+    () => [
+      {
+        accessorFn: "",
+        canSort: false,
+        placeholder: "",
+        header: "",
+        id: "row.original",
+        size: 10,
+      },
+      {
+        accessorKey: "Title",
+        header: "",
+        placeholder: "Search Name",
+        id: "Title",
+        cell: ({ row }: any) => (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <img
+              className="me-1 workmember"
+              src={
+                row.original.Item_x0020_Cover != null
+                  ? row.original?.Item_x0020_Cover?.Url
+                  : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+              }
+              alt="User"
+              // style={{ marginRight: '10px', width: '32px', height: '32px' }}
+            />
+            <span>{`${row.original.Title} (${row.original.Suffix})`}</span>
+          </div>
+        ),
+        sortDescFirst: false,
+      },
+      {
+        accessorFn: (row) => row?.UserGroupTitle,
+        header: "",
+        id: "UserGroupTitle",
+        placeholder: "Search Group",
+      },
+      {
+        accessorFn: (row) => row?.TimeCategory,
+        header: "",
+        id: "TimeCategory",
+        placeholder: "Search Category",
+        size: 80,
+      },
+      {
+        accessorFn: (row) => row?.SortOrder,
+        header: "",
+        id: "SortOrder",
+        placeholder: "SortOrder",
+        size: 42,  
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          return row?.original?.SortOrder == filterValue;
         },
-        {
-            accessorKey: 'Title',
-            header: "",
-            placeholder: "Search Name",
-            id: "Title",
-            cell: ({ row }: any) => (
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <img
-                        className='me-1 workmember'
-                        src={row.original.Item_x0020_Cover != null ? row.original?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
-                        alt="User"
-                    // style={{ marginRight: '10px', width: '32px', height: '32px' }}
-                    />
-                    <span>{`${row.original.Title} (${row.original.Suffix})`}</span>
-                </div>
-            ),
-            sortDescFirst: false
-        },
-        {
-            accessorKey: "UserGroup.Title",
-            header: "",
-            id: "Group",
-            placeholder: "Search Group"
-        },
-        {
-            accessorKey: "TimeCategory",
-            header: "",
-            id: "Category",
-            placeholder: "Search Category",
-            size: 80,
-        },
-        {
-            accessorKey: "SortOrder",
-            header: "",
-            id: "SortOrder",
-            placeholder: "SortOrder",
-            filterFn: (row: any, columnId: any, filterValue: any) => {
-                return row?.original?.SortOrder == filterValue
-            },
-            size: 42,
-        },
-        {
-            accessorKey: "RoleTitle",
-            header: "",
-            id: "RoleTitle",
-            placeholder: "Roles"
-        },
-        {
-            accessorKey: "Company",
-            header: "",
-            id: "Company",
-            placeholder: "Company",
-            size: 70,
-        },
-        {
-            accessorFn: (row) => row?.ApproverTitle,
-            header: "",
-            id: 'ApproverTitle ',
-            placeholder: "Approver"
-        },
-        {
-            accessorKey: "Team",
-            header: "",
-            id: 'Team',
-            placeholder: "Team",
-            size: 75,
-        },
-        {
-            id: "TaskId",
-            accessorKey: "TaskId",
-            header: null,
-            size: 50,
-            cell: (info) => (<div className='pull-right alignCenter'>
-                <span onClick={() => handleUpdateMemberClick(info.row.original)} className='svg__iconbox svg__icon--edit' title='Edit'></span>
-            </div>),
-            enableColumnFilter: false,
-            enableSorting: false,
-        }
-        ],
-        [data]
-    )
+      },
+      {
+        accessorFn: (row) => row?.RoleTitle,
+        header: "",
+        id: "RoleTitle",
+        placeholder: "Roles",
+      },
+      {
+        accessorFn: (row) => row?.Company,
+        header: "",
+        id: "Company",
+        placeholder: "Company",
+        size: 70,
+      },
+      {
+        accessorFn: (row) => row?.ApproverTitle,
+        header: "",
+        id: "ApproverTitle",
+        placeholder: "Approver",
+      },
+      {
+        accessorFn: (row) => row?.Team,
+        header: "",
+        id: "Team",
+        placeholder: "Team",
+        size: 75,
+      },
+      {
+        id: "TaskId",
+        accessorKey: "TaskId",
+        header: null,
+        size: 50,
+        cell: (info) => (
+          <div className="pull-right alignCenter">
+            <span
+              onClick={() => handleUpdateMemberClick(info.row.original)}
+              className="svg__iconbox svg__icon--edit"
+              title="Edit"
+            ></span>
+          </div>
+        ),
+        enableColumnFilter: false,
+        enableSorting: false,
+      },
+    ],
+    [data]
+  );
 
     // Table for Group code
 
@@ -432,77 +470,77 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         console.log(data);
     }, []);
 
-  const getUserInfo = async (userMail: string) => {
-    const userEndPoint: any = `${context?.pageContext?.web?.absoluteUrl}/_api/Web/EnsureUser`;
+    const getUserInfo = async (userMail: string) => {
+        const userEndPoint: any = `${context?.pageContext?.web?.absoluteUrl}/_api/Web/EnsureUser`;
 
-    const userData: string = JSON.stringify({
-      logonName: userMail,
-    });
+        const userData: string = JSON.stringify({
+            logonName: userMail,
+        });
 
-    const userReqData = {
-      body: userData,
+        const userReqData = {
+            body: userData,
+        };
+
+        const resUserInfo = await context?.spHttpClient.post(
+            userEndPoint,
+            SPHttpClient.configurations.v1,
+            userReqData
+        );
+        const userInfo = await resUserInfo.json();
+
+        return userInfo;
     };
 
-    const resUserInfo = await context?.spHttpClient.post(
-      userEndPoint,
-      SPHttpClient.configurations.v1,
-      userReqData
-    );
-    const userInfo = await resUserInfo.json();
-
-    return userInfo;
-  };
-
-  const AssignedToUser = async (items: any[]) => {
-    let userId: number = undefined;
-    let userTitle: any;
-    let userSuffix: string = undefined;
-    if (items.length > 0) {
-        let userMail = items[0].id.split("|")[2];
-        EmailNotification = userMail
-        let userInfo = await getUserInfo(userMail);
-        userId = userInfo.Id;
-        userTitle = userInfo.Title;
-        userSuffix = userTitle
-          .split(" ")
-          .map((i: any) => i.charAt(0))
-          .join("");
-      setAssignedToUser(userInfo);
-      setIsUserNameValid(true);
-    } else {
-      setAssignedToUser([]);
-      setIsUserNameValid(false);
-    }
-  };
-
-  const ApproverFunction = async (items: any[]) => {
-    let userId: number = undefined;
-    let userTitle: any;
-    let userSuffix: string = undefined;
-    let userMail: any
-    let userInfo: any
-    if (items.length > 0) {
-        const approvers = await Promise.all(items.map(async (selectedusers) => {
-            userMail = selectedusers?.id.split("|")[2];
-            userInfo = await getUserInfo(userMail);
+    const AssignedToUser = async (items: any[]) => {
+        let userId: number = undefined;
+        let userTitle: any;
+        let userSuffix: string = undefined;
+        if (items.length > 0) {
+            let userMail = items[0].id.split("|")[2];
+            EmailNotification = userMail
+            let userInfo = await getUserInfo(userMail);
             userId = userInfo.Id;
             userTitle = userInfo.Title;
             userSuffix = userTitle
                 .split(" ")
                 .map((i: any) => i.charAt(0))
                 .join("");
-            
-            return {
-                userId: userId,
-                userTitle: userTitle,
-                userSuffix: userSuffix
-            };
-        }));
-      setApprover(approvers);
-    } else {
-      setApprover([]);
-    }
-  };
+            setAssignedToUser(userInfo);
+            setIsUserNameValid(true);
+        } else {
+            setAssignedToUser([]);
+            setIsUserNameValid(false);
+        }
+    };
+
+    const ApproverFunction = async (items: any[]) => {
+        let userId: number = undefined;
+        let userTitle: any;
+        let userSuffix: string = undefined;
+        let userMail: any
+        let userInfo: any
+        if (items.length > 0) {
+            const approvers = await Promise.all(items.map(async (selectedusers) => {
+                userMail = selectedusers?.id.split("|")[2];
+                userInfo = await getUserInfo(userMail);
+                userId = userInfo.Id;
+                userTitle = userInfo.Title;
+                userSuffix = userTitle
+                    .split(" ")
+                    .map((i: any) => i.charAt(0))
+                    .join("");
+
+                return {
+                    userId: userId,
+                    userTitle: userTitle,
+                    userSuffix: userSuffix
+                };
+            }));
+            setApprover(approvers);
+        } else {
+            setApprover([]);
+        }
+    };
 
     // Autosuggestion code
 
@@ -657,6 +695,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     };
 
 
+
+    const getPeoplePickerItems=(items:any)=>{
+          setAddTitle(items)
+    }
     // JSX Code starts here
 
     return (
@@ -687,7 +729,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         <div className='tbl-button'>
                             <button type='button' className='btn btn-primary position-relative' style={{ zIndex: "99" }} onClick={() => setOpenPopup(true)}>Add Team Member</button>
                         </div>
-                        <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} showHeader={true} />
+                        <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                     </div>
                 </div>
                 <div className="tab-pane" id="TEAMGROUPS" role="tabpanel" aria-labelledby="TEAMGROUPS">
@@ -697,11 +739,12 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         <div className='tbl-button'>
                             <button type='button' className='btn btn-primary position-relative' style={{ zIndex: "99" }} onClick={() => setOpenGroupPopup(true)}>Add Team Group</button>
                         </div>
-                        <GlobalCommanTable columns={columns2} data={groupData} callBackData={callBackData} showHeader={true} />
+                        <GlobalCommanTable columns={columns2} data={groupData} callBackData={callBackData} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                     </div>
                 </div>
             </div>
 
+{/* ------------------Add Team Member----------------------------------------------------------------------------------- */}
             <Panel
                 onRenderHeader={onRenderCustomHeaderAddUser}
                 isOpen={openPopup}
@@ -710,14 +753,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 isBlocking={!openPopup}
             >
                 <div className="modal-body">
-                    <div className='input-group'>
-                        <label className='form-label full-width'>User Name: </label>
-                        <input className='form-control' type="text" placeholder='Enter Title' value={addTitle} onChange={(e: any) => { setAddTitle(e.target.value); autoSuggestionsForTitle(e) }} />
-                    </div>
-                    {autoSuggestData?.length > 0 ? (
+                  
                         <div>
                             <ul className="list-group">
-                                {autoSuggestData?.map((Item: any) => {
+                                {/* {autoSuggestData?.map((Item: any) => {
                                     return (
                                         <li
                                             className="hreflink list-group-item rounded-0 list-group-item-action"
@@ -726,18 +765,33 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                             <a>{Item.Title}</a>
                                         </li>
                                     );
-                                })}
+                                })} */}
+                                <div>
+                                    <PeoplePicker
+                                        context={context}
+                                        principalTypes={[PrincipalType.User]}
+                                        personSelectionLimit={1}
+                                        titleText="Select People"
+                                        resolveDelay={1000}
+                                        onChange={getPeoplePickerItems}
+                                        showtooltip={true}
+                                        required={true}
+                                        disabled={false}
+                                    ></PeoplePicker>
+                                </div>
                             </ul>
                         </div>
-                    ) : null}
+                  
                 </div>
 
                 <footer className='modal-footer mt-2'>
-                    <button type='button' className='btn me-2 btn-primary' onClick={() => addTeamMember()}>Save</button>
+                    <button type='button' disabled={addTitle==''?true:false} className='btn me-2 btn-primary' onClick={() => addTeamMember()}>Save</button>
                     <button type='button' className='btn btn-default' onClick={cancelAdd}>Cancel</button>
                 </footer>
 
             </Panel>
+
+
             <Panel
                 onRenderHeader={onRenderCustomHeaderAddGroup}
                 isOpen={openGroupPopup}
@@ -911,6 +965,12 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         </div>
                                     </div>
                                 </Col>
+                                <Col>
+                                <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Email: </label>
+                                                <input className='form-control' type="text" defaultValue={memberToUpdate?.Email} onChange={(e: any) => setEmail(e.target.value)} />
+                                            </div>
+                                </Col>
                             </Row>
 
 
@@ -936,7 +996,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Roles: </label>
                                         <Row>
-                                            <Col className='px-0' style={{width: '165px'}}>
+                                            <Col className='px-0' style={{ width: '165px' }}>
                                                 {['Component Teams', 'Service Teams'].map((role: any) => (
                                                     <React.Fragment key={role}>
                                                         <label className='SpfxCheckRadio mb-1' htmlFor={`role-${role}`}>
@@ -1016,8 +1076,8 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         >
                             <div>
                                 <ImagesC
-                                    EditdocumentsData={imageUrl}
-                                    setData={setImageUrl}
+                                    EditdocumentsData={memberToUpdate}
+                                    setData={setMemberToUpdate}
                                     AllListId={TaskUserListId}
                                     Context={context}
                                     callBack={imageTabCallBack}
@@ -1058,7 +1118,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                             </div>
                             <div className="text-left">
                                 <a onClick={() => deleteTeamMember(memberToUpdate)}>
-                                     <span style={{marginLeft:'-4px'}} className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>{" "}
+                                    <span style={{ marginLeft: '-4px' }} className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>{" "}
                                     Delete This Item
                                 </a>
                                 <span>

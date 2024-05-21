@@ -455,12 +455,59 @@
           "manifest": "./src/webparts/hhhhcontactprofile/HhhhcontactprofileWebPart.manifest.json"
         }
       ]
+    },"task-notification-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/taskNotificationManagement/TaskNotificationManagementWebPart.js",
+          "manifest": "./src/webparts/taskNotificationManagement/TaskNotificationManagementWebPart.manifest.json"
+        }
+      ]
     }
    ,"last-modified-web-part": {
     "components": [
       {
         "entrypoint": "./lib/webparts/lastModified/LastModifiedWebPart.js",
         "manifest": "./src/webparts/lastModified/LastModifiedWebPart.manifest.json"
+      }
+    ]
+  },
+  "livingdocsapi-web-part": {
+    "components": [
+      {
+        "entrypoint": "./lib/webparts/livingdocsapi/LivingdocsapiWebPart.js",
+        "manifest": "./src/webparts/livingdocsapi/LivingdocsapiWebPart.manifest.json"
+      }
+    ]
+  },
+  "living-docs-sync-tool-web-part": {
+    "components": [
+      {
+        "entrypoint": "./lib/webparts/livingDocsSyncTool/LivingDocsSyncToolWebPart.js",
+        "manifest": "./src/webparts/livingDocsSyncTool/LivingDocsSyncToolWebPart.manifest.json"
+      }
+    ]
+  },
+  "content-editing-news-web-part": {
+    "components": [
+      {
+        "entrypoint": "./lib/webparts/contentEditingNews/ContentEditingNewsWebPart.js",
+        "manifest": "./src/webparts/contentEditingNews/ContentEditingNewsWebPart.manifest.json"
+      }
+    ]
+  },
+  "content-editing-events-web-part": {
+    "components": [
+      {
+        "entrypoint": "./lib/webparts/contentEditingEvents/ContentEditingEventsWebPart.js",
+        "manifest": "./src/webparts/contentEditingEvents/ContentEditingEventsWebPart.manifest.json"
+      }
+    ]
+  },
+  "content-editing-documents-web-part": {
+    "components": [
+      {
+        "entrypoint": "./lib/webparts/contentEditingDocuments/ContentEditingDocumentsWebPart.js",
+        "manifest": "./src/webparts/contentEditingDocuments/ContentEditingDocumentsWebPart.manifest.json"
       }
     ]
   }
@@ -484,6 +531,8 @@
     }
   },
   "localizedResources": {
+    "LivingDocsSyncToolWebPartStrings": "lib/webparts/livingDocsSyncTool/loc/{locale}.js",
+    "TaskNotificationManagementWebPartStrings": "lib/webparts/taskNotificationManagement/loc/{locale}.js",
     "RootTeamPortfolioTableWebPartStrings": "lib/webparts/rootTeamPortfolioTable/loc/{locale}.js",
     "HelloSpfxWebPartStrings": "lib/webparts/helloSpfx/loc/{locale}.js",
     "EmployeProfileWebPartStrings": "lib/webparts/employeProfile/loc/{locale}.js",
@@ -543,6 +592,10 @@
     "HhhhProfileWebPartStrings": "lib/webparts/hhhhProfile/loc/{locale}.js",
     "HhhcontactWebPartStrings": "lib/webparts/hhhcontact/loc/{locale}.js",
     "HhhhcontactprofileWebPartStrings": "lib/webparts/hhhhcontactprofile/loc/{locale}.js",
-    "LastModifiedWebPartStrings": "lib/webparts/lastModified/loc/{locale}.js"
+    "LastModifiedWebPartStrings": "lib/webparts/lastModified/loc/{locale}.js",
+    "LivingdocsapiWebPartStrings": "lib/webparts/livingdocsapi/loc/{locale}.js",
+    "ContentEditingEventsWebPartStrings": "lib/webparts/contentEditingEvents/loc/{locale}.js",
+    "ContentEditingNewsWebPartStrings": "lib/webparts/contentEditingNews/loc/{locale}.js",   
+    "ContentEditingDocumentsWebPartStrings": "lib/webparts/contentEditingDocuments/loc/{locale}.js"
   }
 }

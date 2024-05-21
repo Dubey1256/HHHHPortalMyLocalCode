@@ -516,7 +516,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             preSetColumnSettingVisibility = preSetColumnsValue?.columnSettingVisibility;
                             preSetColumnOrdring = preSetColumnsValue
                             setShowHeaderLocalStored(preSetColumnsValue?.showHeader)
-                            if (Object.keys(preSetColumnSettingVisibility)?.length) {
+                            if (preSetColumnSettingVisibility != undefined && preSetColumnSettingVisibility != '' && Object.keys(preSetColumnSettingVisibility)?.length) {
                                 const columnId = updatedSortDec.id;
                                 if (preSetColumnSettingVisibility[columnId] !== undefined) {
                                     updatedSortDec.isColumnVisible = preSetColumnSettingVisibility[columnId];
@@ -546,7 +546,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 } catch (error) {
                     console.log(error);
                     localStorage.removeItem(tableId);
-                    location.reload();
+                    // location.reload();
                 }
             });
             setSelectedFilterPannelData(updatedSelectedFilterPannelData);
@@ -915,7 +915,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     // Print ANd Xls Parts//////
     const downloadPdf = () => {
-        let defaultFountsize = 20;
+        let defaultFountsize = 8;
         let headerColoumns: any = [];
         let notVisbleColumns: any = Object.keys(columnVisibility);
         let allHeaderColoumns = columns.filter((column: any) => {
@@ -923,17 +923,36 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 column.placeholder !== undefined &&
                 column.placeholder !== '');
         });
-        allHeaderColoumns.map((column: any) => {
-            headerColoumns.push(column.placeholder)
-        })
+        allHeaderColoumns?.map((column: any) => { headerColoumns.push(column.placeholder) })
         let columnLength = headerColoumns?.length;
-        defaultFountsize = defaultFountsize - columnLength;
+        if (columnLength >= 12) { defaultFountsize = defaultFountsize - 2; }
+        const flattenedData: any[] = [];
+        const flattenRowData: any = (row: any) => {
+            const flattenedRow: any = {};
+            allHeaderColoumns?.forEach((column: any) => {
+                if (column?.placeholder != undefined && column?.placeholder != '') {
+                    if (row.original[column?.id] != undefined && row.original[column?.id] != null) {
+                        flattenedRow[column?.id] = row.original[column?.id];
+                    } else { flattenedRow[column?.id] = '' }
+                }
+            });
+            flattenedData?.push(flattenedRow);
+            if (row.getCanExpand()) { row.subRows?.forEach(flattenRowData); }
+        };
+        table.getRowModel()?.rows?.forEach(flattenRowData);
+        let uniqueArray: any = removeDuplicates(flattenedData);
+        function removeDuplicates(arr: any) {
+            const uniqueArray: any = [];
+            const seen = new Set();
+            for (const obj of arr) {
+                const objString = JSON.stringify(obj);
+                if (!seen.has(objString)) { uniqueArray.push(obj); seen.add(objString); } else { console.log('check=' + obj) }
+            } return uniqueArray;
+        }
         let rowDataShow: any = []
-        table.getRowModel().rows.map((elt: any) => {
+        uniqueArray?.map((elt: any) => {
             var value: any = [];
-            allHeaderColoumns.map((itemHeader: any) => {
-                value.push(elt?.original?.[itemHeader?.id])
-            })
+            allHeaderColoumns?.map((itemHeader: any) => { value.push(elt?.[itemHeader?.id]) })
             rowDataShow.push(value)
         })
         const doc: any = new jsPDF({ orientation: 'landscape' });
@@ -945,7 +964,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
             head: [headerColoumns],
             body: rowDataShow,
             styles: styles,
-
         })
         doc.save('Data PrintOut');
     }
@@ -1135,7 +1153,18 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     React.useEffect(() => {
         if (bulkEditingCongration?.Project === true && table?.getSelectedRowModel()?.flatRows?.length > 0 && projectTiles?.length === 0) {
-            setProjectTiles(table?.getSelectedRowModel()?.flatRows)
+            let collectedProjectData: any[] = [];
+            let titlesProjectSet = new Set();
+            table?.getSelectedRowModel()?.flatRows?.forEach((elem: any) => {
+                if (elem.original?.Project) {
+                    if (!titlesProjectSet.has(elem.original?.Project?.Id)) {
+                        titlesProjectSet.add(elem.original?.Project?.Id);
+                        collectedProjectData.push(elem);
+                    }
+                }
+            });
+            let uniqueProjectDataArray = [...collectedProjectData];
+            setProjectTiles(uniqueProjectDataArray);
         }
         if (bulkEditingCongration?.categories === true && table?.getSelectedRowModel()?.flatRows?.length > 0 && categoriesTiles?.length === 0) {
             let collectedData: any = [];
@@ -1236,7 +1265,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     return (
         <>
             {items?.bulkEditIcon === true && (bulkEditingCongration?.priority === true || bulkEditingCongration?.dueDate === true || bulkEditingCongration?.status === true || bulkEditingCongration?.Project === true || bulkEditingCongration?.categories === true || bulkEditingCongration?.FeatureType === true) && <span className="toolbox">
-                <BulkEditingFeature categoriesTiles={categoriesTiles} masterTaskData={items?.masterTaskData} data={data} columns={items?.columns} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId}
+                <BulkEditingFeature dashBoardbulkUpdateCallBack={items?.dashBoardbulkUpdateCallBack} tableId={items?.tableId} DashboardContextData={items?.DashboardContextData} categoriesTiles={categoriesTiles} masterTaskData={items?.masterTaskData} data={data} columns={items?.columns} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId}
                     setBulkEditingCongration={setBulkEditingCongration} dragedTask={dragedTask} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} AllTaskUser={items.TaskUsers} />
             </span>}
             {showHeaderLocalStored === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
@@ -1328,8 +1357,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         placeholder="Search All..."
                         portfolioColor={portfolioColor}
                     />
-                    {selectedFilterCount?.selectedFilterCount == "No item is selected" ? <span className="svg__iconbox svg__icon--setting hreflink" style={{ backgroundColor: 'gray' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span> :
-                        <span className="svg__iconbox svg__icon--setting hreflink" style={selectedFilterCount?.selectedFilterCount == 'All content' ? { backgroundColor: `${portfolioColor}` } : { backgroundColor: 'rgb(68 114 199)' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>}
+                    <div className='alignCenter'>
+                        {selectedFilterCount?.selectedFilterCount == "No item is selected" ? <span className="svg__iconbox svg__icon--setting hreflink" style={{ backgroundColor: 'gray' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span> :
+                            <span className="svg__iconbox svg__icon--setting hreflink" style={selectedFilterCount?.selectedFilterCount == 'All content' ? { backgroundColor: `${portfolioColor}` } : { backgroundColor: 'rgb(68 114 199)' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>}
+                    </div>
                     <span className='mx-1'>
                         <select style={{ height: "30px", paddingTop: "3px", color: `${portfolioColor}` }}
                             className="w-100"
@@ -1587,7 +1618,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         </tbody>
                     </table>
                     {data?.length === 0 && <div className='mt-2'>
-                        <div className='d-flex justify-content-center' style={{ height: "30px", color: portfolioColor ? `${portfolioColor}` : "#000069" }}>No data available</div>
+                        <div className='d-flex justify-content-center siteColor' style={{ height: "30px" }}>No data available</div>
                     </div>}
                 </div>
             </div>

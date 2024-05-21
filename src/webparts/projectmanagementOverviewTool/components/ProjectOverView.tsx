@@ -48,6 +48,7 @@ let flatProjectsData: any
 export default function ProjectOverview(props: any) {
     const [TableProperty, setTableProperty] = React.useState([]);
     const [openTimeEntryPopup, setOpenTimeEntryPopup] = React.useState(false);
+    const [showTimeEntryIcon, setshowTimeEntryIcon] = React.useState(true);
     const [currentUserData, setCurrentUserData]: any = React.useState({});
     const [onLeaveEmployees, setOnLeaveEmployees] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
@@ -89,6 +90,9 @@ export default function ProjectOverview(props: any) {
             $("#workbenchPageContent").addClass("hundred");
             isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
             isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
+            if (isShowTimeEntry == false) {
+                setshowTimeEntryIcon(false)
+            }
             const params = new URLSearchParams(window.location.search);
             let query = params.get("SelectedView");
             if (query == 'ProjectsTask') {
@@ -102,7 +106,7 @@ export default function ProjectOverview(props: any) {
         }
         AllListId = {
             MasterTaskListID: props?.props?.MasterTaskListID,
-            TaskUsertListID: props?.props?.TaskUsertListID,
+            TaskUserListID: props?.props?.TaskUserListID,
             SmartMetadataListID: props?.props?.SmartMetadataListID,
             //SiteTaskListID:this.props?.props?.SiteTaskListID,
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -146,11 +150,11 @@ export default function ProjectOverview(props: any) {
         $(' #SpfxProgressbar').hide();
     }
     const TaskUser = async () => {
-        if (AllListId?.TaskUsertListID != undefined) {
+        if (AllListId?.TaskUserListID != undefined) {
             let web = new Web(AllListId?.siteUrl);
             let taskUser = [];
             taskUser = await web.lists
-                .getById(AllListId?.TaskUsertListID)
+                .getById(AllListId?.TaskUserListID)
                 .items
                 .select("Id,UserGroupId,Suffix,Title,technicalGroup,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name")
                 .top(5000)
@@ -187,7 +191,7 @@ export default function ProjectOverview(props: any) {
         let PropsObject: any = {
             MasterTaskListID: AllListId.MasterTaskListID,
             siteUrl: AllListId.siteUrl,
-            TaskUserListId: AllListId.TaskUsertListID,
+            TaskUserListId: AllListId.TaskUserListID,
         }
         let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
         if (results?.AllData?.length > 0) {
@@ -203,7 +207,7 @@ export default function ProjectOverview(props: any) {
                 let TaxonomyItems = [];
                 smartmeta = await web.lists
                     .getById(AllListId?.SmartMetadataListID)
-                    .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "Configurations", "Description", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+                    .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "Configurations", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
                     .top(5000)
                     .expand("Parent")
                     .get();
@@ -539,8 +543,8 @@ export default function ProjectOverview(props: any) {
                                             href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
                                             target="_blank"
                                             data-interception="off"
-                                        >{row?.original?.AuthorImg != undefined ?
-                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.AuthorImg} /> :
+                                        >{row?.original?.createdImg != undefined ?
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} /> :
                                             <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                                             }
 
@@ -573,9 +577,10 @@ export default function ProjectOverview(props: any) {
                     <>
                         {row?.original?.siteType === "Project" ? <span title={row?.original?.Item_x0020_Type != "Project" ? "Edit Sprint" : "Edit Project"} onClick={(e) => EditComponentPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span> : ''}
                         {row?.original?.Item_x0020_Type === "tasks" ? <>
-                            <span onClick={(e) => EditDataTimeEntry(e, row.original)}
-                                className="svg__iconbox svg__icon--clock"
-                                title="Click To Edit Timesheet"  ></span>
+                            {showTimeEntryIcon &&
+                                <span onClick={(e) => EditDataTimeEntry(e, row.original)}
+                                    className="svg__iconbox svg__icon--clock"
+                                    title="Click To Edit Timesheet"  ></span>}
                             <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span>
                         </> : ''}
                     </>
@@ -1667,7 +1672,7 @@ export default function ProjectOverview(props: any) {
                         });
                     }
 
-                    items.TaskID = globalCommon.getTaskId(items);
+                    items.TaskID = globalCommon.GetTaskId(items);
                     AllTaskUsers?.map((user: any) => {
                         if (user.AssingedToUserId == items.Author.Id) {
                             items.createdImg = user?.Item_x0020_Cover?.Url;
@@ -1721,7 +1726,7 @@ export default function ProjectOverview(props: any) {
                 const categorizedUsers: any = [];
 
                 // Iterate over the users
-                let filterTaskUser = AllListId.siteUrl.includes("GrueneWeltweit") ? (AllTaskUsers.filter((item:any)=>item.technicalGroup !== "SPFx Team")): AllTaskUsers
+                let filterTaskUser = AllListId.siteUrl.includes("GrueneWeltweit") ? (AllTaskUsers.filter((item: any) => item.technicalGroup !== "SPFx Team")) : AllTaskUsers
                 for (const user of filterTaskUser) {
                     const category = user?.technicalGroup;
                     let categoryObject = categorizedUsers?.find((obj: any) => obj?.Title === category);

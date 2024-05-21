@@ -82,7 +82,7 @@ const HalfClientCategory = (props: any) => {
         }
         AllListId = {
             MasterTaskListID: props?.props?.MasterTaskListID,
-            TaskUsertListID: props?.props?.TaskUsertListID,
+            TaskUserListID: props?.props?.TaskUserListID,
             SmartMetadataListID: props?.props?.SmartMetadataListID,
             //SiteTaskListID:this.props?.props?.SiteTaskListID,
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -103,11 +103,11 @@ const HalfClientCategory = (props: any) => {
 
 
     const TaskUser = async () => {
-        if (AllListId?.TaskUsertListID != undefined) {
+        if (AllListId?.TaskUserListID != undefined) {
             let web = new Web(AllListId?.siteUrl);
             let taskUser = [];
             taskUser = await web.lists
-                .getById(AllListId?.TaskUsertListID)
+                .getById(AllListId?.TaskUserListID)
                 .items
                 .select("Id,UserGroupId,Suffix,Title,technicalGroup,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name")
                 .top(5000)
@@ -765,9 +765,9 @@ const HalfClientCategory = (props: any) => {
                 resetSorting: false,
                 size: 120,
                 cell: ({ row, getValue }) => (
-                    <span className="d-flex">
+                    <div className="d-flex hreflink">
                         <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId} />
-                    </span>
+                    </div>
                 ),
             },
             {
@@ -775,10 +775,10 @@ const HalfClientCategory = (props: any) => {
                 cell: ({ row, getValue }) => (
                     <>{
                         row?.original?.siteType !== "Master Tasks" ?
-                            <span>
+                            <div>
                                 {row?.original?.SiteIcon != undefined ?
                                     <img title={row?.original?.siteType} className="workmember" src={row?.original?.SiteIcon} /> : ''}
-                            </span> : ''
+                            </div> : ''
                     }</>
                 ),
                 id: "siteType",
@@ -793,7 +793,7 @@ const HalfClientCategory = (props: any) => {
                 cell: ({ row, getValue }) => (
                     <>
 
-                        {row?.original?.siteType !== "Master Tasks" ? <span>
+                        {row?.original?.siteType !== "Master Tasks" ? <div className='alignCenter'>
                             <a className='hreflink'
                                 href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                                 data-interception="off"
@@ -802,17 +802,15 @@ const HalfClientCategory = (props: any) => {
                                 {row?.original?.Title}
                             </a>
                             {row?.original?.descriptionsSearch?.length > 0 ? (
-                                <span className="alignIcon">
                                     <InfoIconsToolTip
                                         Discription={row?.original?.bodys}
                                         row={row?.original}
                                     />
-                                </span>
                             ) : (
                                 ""
                             )}
 
-                        </span> : ''}
+                        </div> : ''}
                     </>
 
                 ),
@@ -843,7 +841,7 @@ const HalfClientCategory = (props: any) => {
             {
                 accessorFn: (row) => row?.siteCompositionSearch,
                 cell: ({ row }) => (
-                    <div>
+                    <div className='mt--3'>
                         <span>{row?.original?.siteCompositionSearch}</span>
                         {row?.original?.ClientTime?.length > 0 ?
                             <span title="Edit Site Composition" onClick={() => { setSelectedItem(row?.original), setEditSiteCompositionStatus(true) }} className="alignIcon ms-1 svg__iconbox svg__icon--editBox"></span>
@@ -953,10 +951,10 @@ const HalfClientCategory = (props: any) => {
             {
 
                 cell: ({ row }) => (
-                    <>
+                    <div className='alignCenter'>
                         {row?.original?.siteType === "Master Tasks" ? <span title="Edit" onClick={() => { EditComponentPopup(row?.original) }} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
                         {row?.original?.siteType !== "Master Tasks" ? <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
-                    </>
+                    </div>
                 ),
                 id: 'Id',
                 canSort: false,
@@ -986,9 +984,9 @@ const HalfClientCategory = (props: any) => {
                 resetSorting: false,
                 size: 95,
                 cell: ({ row, getValue }) => (
-                    <span>
+                    <div className='alignCenter hreflink'>
                         <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId} />
-                    </span>
+                    </div>
                 ),
             },
 
@@ -996,7 +994,7 @@ const HalfClientCategory = (props: any) => {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
                     <>
-                        <span>
+                        <div className='alignCenter'>
                             <a
                                 className="hreflink"
                                 href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}
@@ -1007,16 +1005,14 @@ const HalfClientCategory = (props: any) => {
                             </a>
 
                             {row?.original?.descriptionsSearch?.length > 0 ? (
-                                <span className="alignIcon">
                                     <InfoIconsToolTip
                                         Discription={row?.original?.bodys}
                                         row={row?.original}
                                     />
-                                </span>
                             ) : (
                                 ""
                             )}
-                        </span>
+                        </div>
                     </>
 
                 ),
@@ -1029,7 +1025,7 @@ const HalfClientCategory = (props: any) => {
             {
                 accessorFn: (row) => row?.siteCompositionSearch,
                 cell: ({ row }) => (
-                    <div>
+                    <div className='mt--3'>
                         <span>{row?.original?.siteCompositionSearch}</span>
                         {row?.original?.Sitestagging?.length > 0 ?
                             <span title="Edit Site Composition" onClick={() => { setSelectedItem(row?.original), setEditSiteCompositionMaster(true) }} className="alignIcon ms-1 svg__iconbox svg__icon--editBox"></span>
@@ -1129,7 +1125,7 @@ const HalfClientCategory = (props: any) => {
                                 </a>
                             </>
                         ) : (
-                            <span className='alignIcon workmember svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                            <span className='alignIcon workmember ms-1 svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                         )}
                     </span>
                 ),
@@ -1151,9 +1147,9 @@ const HalfClientCategory = (props: any) => {
             {
 
                 cell: ({ row }) => (
-                    <>
-                        {row?.original?.siteType === "Master Tasks" ? <span title="Edit" onClick={() => { EditComponentPopup(row?.original) }} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
-                    </>
+                    <div className='alignCenter'>
+                        {row?.original?.siteType === "Master Tasks" ? <span title="Edit" onClick={() => { EditComponentPopup(row?.original) }} className="svg__iconbox mt-1 svg__icon--edit hreflink" ></span> : ''}
+                    </div>
                 ),
                 id: 'Id',
                 canSort: false,

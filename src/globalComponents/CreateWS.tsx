@@ -117,11 +117,11 @@ const CreateWS = (props: any) => {
        
         //***************** Load All task Users***************** */
         const getTaskUsers = async () => {
-            if (AllListId?.TaskUsertListID != undefined) {
+            if (AllListId?.TaskUserListID != undefined) {
                 let web = new Web(AllListId?.siteUrl);
                 let taskUser = [];
                 taskUser = await web.lists
-                    .getById(AllListId?.TaskUsertListID)
+                    .getById(AllListId?.TaskUserListID)
                     .items
                     .select("Id,UserGroupId,Suffix,Title,IsTaskNotifications,IsApprovalMail,CategoriesItemsJson,technicalGroup,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name")
                     .top(5000)

@@ -6,6 +6,7 @@ import {
   IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
+import { FluentProvider, webLightTheme } from '@fluentui/react-components'
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
@@ -21,7 +22,7 @@ SPComponentLoader.loadCss("https://hhhhteams.sharepoint.com/sites/HHHH/Style%20L
 export interface ITaskprofileWebPartProps {
   description: string;
   MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
-  TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
+  TaskUserListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
   SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
   SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd';
   DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
@@ -47,31 +48,34 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
   }
 
   public render(): void {
-    const element: React.ReactElement<ITaskprofileProps> = React.createElement(
-      Taskprofile,
-      {
-        description: this.properties.description,
-        isDarkTheme: this._isDarkTheme,
-        environmentMessage: this._environmentMessage,
-        hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName,
-        siteUrl: this.context.pageContext.web.absoluteUrl,
-        // loginName:this.context.pageContext.user.loginName,
-        Context: this.context,
-        MasterTaskListID: this.properties.MasterTaskListID,
-        TaskUsertListID: this.properties.TaskUsertListID,
-        SmartMetadataListID: this.properties.SmartMetadataListID,
-        SmartInformationListID: this.properties.SmartInformationListID,
-        PortFolioTypeID:this.properties.PortFolioTypeID,
-        DocumentsListID: this.properties.DocumentsListID,
-        TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
-        TaskTypeID:this.properties.TaskTypeID,
-        TimeEntry: this.properties.TimeEntry,
-        SiteCompostion: this.properties.SiteCompostion
-      }
-    );
-
-    ReactDom.render(element, this.domElement);
+    const htmlComponent = React.createElement(
+      FluentProvider,
+      { theme: webLightTheme },
+      React.createElement(
+        Taskprofile,
+        {
+          description: this.properties.description,
+          isDarkTheme: this._isDarkTheme,
+          environmentMessage: this._environmentMessage,
+          hasTeamsContext: !!this.context.sdks.microsoftTeams,
+          userDisplayName: this.context.pageContext.user.displayName,
+          siteUrl: this.context.pageContext.web.absoluteUrl,
+          // loginName:this.context.pageContext.user.loginName,
+          Context: this.context,
+          MasterTaskListID: this.properties.MasterTaskListID,
+          TaskUserListID: this.properties.TaskUserListID,
+          SmartMetadataListID: this.properties.SmartMetadataListID,
+          SmartInformationListID: this.properties.SmartInformationListID,
+          PortFolioTypeID:this.properties.PortFolioTypeID,
+          DocumentsListID: this.properties.DocumentsListID,
+          TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
+          TaskTypeID:this.properties.TaskTypeID,
+          TimeEntry: this.properties.TimeEntry,
+          SiteCompostion: this.properties.SiteCompostion
+        }
+      )
+    )
+    ReactDom.render(htmlComponent, this.domElement);
   }
 
   private _getEnvironmentMessage(): string {
@@ -122,8 +126,8 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
                 PropertyPaneTextField('MasterTaskListID', {
                   label: "MasterTaskListID"
                 }),
-                PropertyPaneTextField('TaskUsertListID', {
-                  label: "TaskUsertListID"
+                PropertyPaneTextField('TaskUserListID', {
+                  label: "TaskUserListID"
                 }),
                 PropertyPaneTextField('SmartMetadataListID', {
                   label: "SmartMetadataListID"

@@ -98,7 +98,7 @@ function CreateTaskComponent(props: any) {
         }
         AllListId = {
             MasterTaskListID: props?.SelectedProp?.MasterTaskListID,
-            TaskUsertListID: props?.SelectedProp?.TaskUsertListID,
+            TaskUserListID: props?.SelectedProp?.TaskUserListID,
             SmartMetadataListID: props?.SelectedProp?.SmartMetadataListID,
             //SiteTaskListID:this.props?.props?.SiteTaskListID,
             TaskTimeSheetListID: props?.SelectedProp?.TaskTimeSheetListID,
@@ -107,6 +107,8 @@ function CreateTaskComponent(props: any) {
             siteUrl: props?.SelectedProp?.siteUrl,
             AdminConfigrationListID: props?.SelectedProp?.AdminConfigrationListID,
             isShowTimeEntry: isShowTimeEntry,
+            Context: props?.SelectedProp?.Context,
+            context: props?.SelectedProp?.Context,
             isShowSiteCompostion: isShowSiteCompostion
         }
         try {
@@ -127,7 +129,7 @@ function CreateTaskComponent(props: any) {
         let PropsObject: any = {
             MasterTaskListID: AllListId.MasterTaskListID,
             siteUrl: AllListId.siteUrl,
-            TaskUserListId: AllListId.TaskUsertListID,
+            TaskUserListId: AllListId.TaskUserListID,
         }
         let componentDetails: any = [];
         let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
@@ -756,7 +758,7 @@ function CreateTaskComponent(props: any) {
         try {
             let web = new Web(props?.SelectedProp?.siteUrl);
             AllTaskUsers = await web.lists
-                .getById(props?.SelectedProp?.TaskUsertListID)
+                .getById(props?.SelectedProp?.TaskUserListID)
                 .items
                 .select("Id,UserGroupId,Suffix,Title,IsApprovalMail,Email,SortOrder,Role,IsShowTeamLeader,CategoriesItemsJson,IsTaskNotifications,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
                 .get();
@@ -833,7 +835,7 @@ function CreateTaskComponent(props: any) {
             })
             if (CategoryTitle !== undefined) {
                 CategoryTitle.split(';')?.map((cat: any) => {
-                    if (cat.toLowerCase() === 'User Experience - UX') {
+                    if (cat === 'User Experience - UX') {
                         AssignedToIds.push(298)
                         TeamMembersIds.push(298);
                         ResponsibleIds.push(49);

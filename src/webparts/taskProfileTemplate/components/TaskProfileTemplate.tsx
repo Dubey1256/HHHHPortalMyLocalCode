@@ -206,7 +206,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
       MasterTaskListID: this.props?.MasterTaskListID,
       siteUrl: this.props?.siteUrl,
       ComponentType: ComponentType,
-      TaskUserListId: this.props?.TaskUsertListID,
+      TaskUserListId: this.props?.TaskUserListID,
     };
     let CallBackData = await globalCommon.GetServiceAndComponentAllData(PropsObject)
     if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
@@ -266,7 +266,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
       .get()
     AllListId = {
       MasterTaskListID: this.props.MasterTaskListID,
-      TaskUsertListID: this.props.TaskUsertListID,
+      TaskUserListID: this.props.TaskUserListID,
       SmartMetadataListID: this.props.SmartMetadataListID,
       //SiteTaskListID:this.props.SiteTaskListID,
       TaskTimeSheetListID: this.props.TaskTimeSheetListID,
@@ -524,7 +524,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
     var taskDeatails = this.state.Result;
     taskUsers = await web.lists
       // .getByTitle("Task Users")
-      .getById(this.props.TaskUsertListID)
+      .getById(this.props.TaskUserListID)
       .items
       .select('Id', 'Email', 'Approver/Id', 'Approver/Title', 'Approver/Name', 'Suffix', 'UserGroup/Id', 'UserGroup/Title', 'Team', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
       .filter("ItemType eq 'User'")
@@ -2200,7 +2200,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
 <dt className='bg-Fa'>Project</dt>
 <dd className='bg-Ff full-width'>
   <div>
-    {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
+    {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
       <ReactPopperTooltipSingleLevel CMSToolId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
     <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
   </div>

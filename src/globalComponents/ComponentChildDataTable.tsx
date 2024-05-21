@@ -117,7 +117,7 @@ function ComponentChildDataTable(SelectedProp: any) {
     let web = new Web(ContextValueGlobal.siteUrl);
     let taskUsers = [];
     taskUsers = await web.lists
-      .getById(ContextValueGlobal.TaskUsertListID)
+      .getById(ContextValueGlobal.TaskUserListID)
       .items.select(
         "Id",
         "Email",
