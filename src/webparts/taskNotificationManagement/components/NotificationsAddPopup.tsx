@@ -91,15 +91,7 @@ export const NotificationsAddPopup = (props: any) => {
                 console.log(error)
             });
         }
-        let defalutEmail:any=[]
-        props?.SelectedEditItem?.Recipients?.map((recipient:any)=>{
-            users?.map((userData:any)=>{
-                if(recipient?.Title== userData?.Title)
-                    defalutEmail?.push(userData?.Email)
-            })
-          
-        })
-        setDefaultSelectedUser(defalutEmail)
+     
     }
     const addFunction = async () => {
         let pageInfo = await globalCommon.pageContext()
