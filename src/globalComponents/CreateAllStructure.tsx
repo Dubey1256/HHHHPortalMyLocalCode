@@ -65,6 +65,7 @@ const CreateAllStructureComponent = (props: any) => {
     }
   }, []);
 
+
   const handleAddComponent = () => {
     const newComponent = { id: components.length + 1, value: "" };
     setComponents([...components, newComponent]);
@@ -267,7 +268,7 @@ const CreateAllStructureComponent = (props: any) => {
             const prefix = parts[0];
             const currentValue = parseInt(parts[1].substring(1));
             const newValue = currentValue + 1;
-            FeaPortfolioStr = `${prefix}-S${newValue}`;
+            FeaPortfolioStr = `${prefix}-F${newValue}`;
             fealevel = PortfolioStructureIdFea[0]?.PortfolioLevel + 1;
           }
           // else {
@@ -562,13 +563,20 @@ const CreateAllStructureComponent = (props: any) => {
         } else {
           if (props.SelectedItem != undefined) {
             //val.subRows = val.subRows === undefined ? [] : val?.subRows
-            val.subRows = subCompFeatures;
+            if(subCompFeatures!==undefined)
+            {
+              val.subRows = subCompFeatures;
+            }
+            
           }
         }
         if (val.compFeatures != undefined && val.compFeatures.length > 0) {
-          val.subRows = [val.subRows, val?.compFeatures];
+              
+          val.subRows = [val?.subRows, val?.compFeatures];
+           
           if (val.subRows.length > 1) {
             val.subRows = val?.subRows.flat();
+            val.subRows=val?.subRows?.filter((item:any) =>  item !== undefined);
           }
 
         }
@@ -1186,7 +1194,7 @@ const CreateAllStructureComponent = (props: any) => {
                                     )
                                   }
                                 />
-                                {component.Feature.length === 1 && component.isCheckedCompFea === true && (
+                                {((props?.SelectedItem?.Item_x0020_Type==='Component' && component.isCheckedSub==true && component.Feature.length === 1)|| (props?.SelectedItem==undefined && component.Feature.length === 1 && component.isCheckedCompFea === true) )&& (
                                   <span
                                     onClick={() =>
                                       handleDelete(index, 0, featureIndex, "ComponentFeature")
