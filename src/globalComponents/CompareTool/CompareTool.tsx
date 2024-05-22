@@ -2263,7 +2263,7 @@ const CompareTool = (props: any) => {
         setcomponentItem(item);
     };
     const CallcomponentItem = (res: any, UpdatedData: any) => {
-        setcomponentItem(undefined);
+        setTaskItem(undefined);
     }
     const Call = (res: any, UpdatedData: any) => {
         setTaskItem(undefined);
