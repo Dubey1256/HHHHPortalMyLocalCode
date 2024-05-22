@@ -2226,6 +2226,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                             </dd>
                           </dl>
+                          {/* ////////////////this is Bottleneck section/////////////// */}
+
                           <dl>
                             <dt className='bg-Fa'>Bottleneck</dt>
                             <dd className='bg-Ff'>
@@ -2273,6 +2275,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                             </dd>
                           </dl>
+                          {/* ////////////////this is Attention section/////////////// */}
+
                           <dl>
                             <dt className='bg-Fa'>Attention</dt>
                             <dd className='bg-Ff'>
@@ -2320,7 +2324,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                             </dd>
                           </dl>
-                          {/* ////////////////hello/////////////// */}
+                          {/* ////////////////this is phone section/////////////// */}
                           <dl>
                             <dt className='bg-Fa'>Phone</dt>
                             <dd className='bg-Ff'>
