@@ -118,7 +118,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                 hasCustomExpanded: false,
                 hasExpanded: false,
                 isHeaderNotAvlable: true,
-                size: 10,
+                size: 20,
                 id: 'Id',
             },
             {
