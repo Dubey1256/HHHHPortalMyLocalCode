@@ -7290,7 +7290,7 @@ const EditTaskPopup = (Items: any) => {
                                             {WorkingAction?.map((WAItemData, ItemIndex) => {
                                                 if (WAItemData.Title === "Bottleneck" && WAItemData?.InformationData?.length > 0) {
                                                     return (
-                                                        <div className="border p-1 mt-1" key={ItemIndex}>
+                                                        <div className="border px-1 mt-1" key={ItemIndex}>
                                                             {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: any) => (
                                                                 <div className="align-content-center alignCenter justify-content-between py-1" key={InfoIndex}>
                                                                     <div className="alignCenter">
@@ -7431,7 +7431,7 @@ const EditTaskPopup = (Items: any) => {
                                                     WAItemData?.InformationData?.length > 0
                                                 ) {
                                                     return (
-                                                        <div className="border p-1 mt-1" key={ItemIndex}>
+                                                        <div className="border px-1 mt-1" key={ItemIndex}>
                                                             {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: any) => (
                                                                 <div
                                                                     className="align-content-center alignCenter justify-content-between py-1"
@@ -7576,7 +7576,7 @@ const EditTaskPopup = (Items: any) => {
                                             {WorkingAction?.map((WAItemData, ItemIndex) => {
                                                 if (WAItemData.Title === "Phone" && WAItemData?.InformationData?.length > 0) {
                                                     return (
-                                                        <div className="border p-1 mt-1" key={ItemIndex}>
+                                                        <div className="border px-1 mt-1" key={ItemIndex}>
                                                             {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: any) => (
                                                                 <div className="align-content-center alignCenter justify-content-between py-1" key={InfoIndex}>
                                                                     <div className="alignCenter">
