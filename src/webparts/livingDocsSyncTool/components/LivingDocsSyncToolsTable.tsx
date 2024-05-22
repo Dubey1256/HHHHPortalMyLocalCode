@@ -230,7 +230,9 @@ const LivingDocsSyncToolTable = (props: any) => {
                         item.showSmartTopic=""
                         item.Date =  item?.Year
                         item.displayDescription = ""
-                        item.displayDescription = item?.Body,
+                        item.displayDescription = limitTo100Words(item?.Body)
+                        item.Description = item?.Body
+                      
                         item.Description=item?.Body
                         if (item?.Modified != null && item?.Modified != undefined) {
                             item.serverModifiedDate = new Date(item?.Modified).setHours(0, 0, 0, 0)
