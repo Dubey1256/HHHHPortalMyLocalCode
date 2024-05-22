@@ -3502,7 +3502,7 @@ const EditTaskPopup = (Items: any) => {
                     ] 
                 }
                 setWorkingAction([...oldWorkingAction, storeInWorkingAction]);
-                setWorkingToday(true)
+                // setWorkingToday(true)
                 // setusersAssignedIDs(assigneduserid)
             }           
 
