@@ -1058,7 +1058,7 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
-                    <div className='alignCenter'>
+                    <div>
                         <a className='hreflink'
                             href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                             data-interception="off"
@@ -1066,8 +1066,8 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.original?.Title}
                         </a>
-                        {row?.original?.descriptionsSearch !== null && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
-                        }
+                        {row?.original?.descriptionsSearch !== null &&  <span className='alignIcon'><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
+                        } 
                     </div>
                 ),
                 id: "Title",
@@ -1511,7 +1511,7 @@ const TaskDashboard = (props: any) => {
             setWorkingTodayTasks([...todayTasks]);
 
         } else {
-            alert('You do not have the necessary Permissions to move Tasks in this User's Dashboard')
+            alert('You do not have the necessary Permissions to move Tasks in this User Dashboard')
         }
 
     }
