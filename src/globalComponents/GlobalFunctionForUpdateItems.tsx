@@ -1251,7 +1251,7 @@ export const SendEmailAndImmediateTaskNotificationBodyContent = (props: any) => 
                         Hi {props?.Author?.Title},
                     </div>
                     <div style={{ marginBottom: "12px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
-                        Task created from your end and Status has been updated. Please follow the below link to review it.
+                        Task created from your end has been marked to {props?.PercentComplete}%. Please follow the below link to review it.
                     </div>
                     <div style={{ marginBottom: "32px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
                         You can track your Task Status here:
@@ -1261,7 +1261,7 @@ export const SendEmailAndImmediateTaskNotificationBodyContent = (props: any) => 
                             display: "flex", padding: "8px", justifyContent: "center", alignItems: 'center', gap: "8px", flexShrink: "0", color: "#FFF", borderRadius: "4px",
                             background: " #2F5596", width: "260px", height: "40px", fontFamily: "Segoe UI", fontSize: "14px", fontStyle: "normal", fontWeight: "600", lineHeight: "normal"
                         }}> <a style={{ color: "#fff", textDecorationLine: "underline" }} data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                            href={`${props.siteUrl}/SitePages/Task-Profile.aspx?taskId=` + props?.items?.Id + '&Site=' + props?.items?.siteType}
+                            href={`${props.siteUrl}/SitePages/Task-Profile.aspx?taskId=` + props?.Id + '&Site=' + props?.siteType}
                         >Track the Task Status</a>
                         </div>
                     </div>
@@ -1572,7 +1572,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         </div>
                     </div>
                     <div style={{ display: 'flex', marginTop: '24px' }}>
-                        <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '528px', marginRight: '8px' } : { marginRight: '8px' }}>
+                        <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '528px', marginRight: '8px' } : { width: '100%', marginRight: '8px' }}>
                             {RequiredData["FeedBack"] != null &&
                                 RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                                 RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title?.length > 8 ?
@@ -1585,18 +1585,13 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                             RequiredData["FeedBack"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
                                                 return (<>
                                                     <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff' }}>
-                                                        {/* <div style={{width:'3%'}}>
-                                                        <span style={{ fontSize: "10pt", color: "#333", marginRight:'5px' }}>
-                                                            {i + 1}.
-                                                        </span>
-                                                    </div> */}
                                                         <div style={{ width: '100%' }}>
                                                             <div style={{ display: 'flex' }}>
                                                                 <span style={{ fontSize: "10pt", color: "#333", marginRight: '5px', fontWeight: '600' }}>
                                                                     {i + 1}.
                                                                 </span>
-                                                                {/* <span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span> */}
-                                                                {fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")}
+                                                                {/* {fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")} */}
+                                                                {removeHtmlTagsFromString(fbData['Title'])}
                                                             </div>
 
                                                             {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
@@ -1963,6 +1958,16 @@ export const PrepareDataAccordingToSortOrder = (SourceArray: any, currentArray: 
     } catch (error) {
         console.log("Error in PrepareDataAccordingToSortOrder function:", error.message)
     }
+}
+
+
+// this is used for removing HTML tags from the string value 
+
+function removeHtmlTagsFromString(StringValue: string) {
+    let cleanStr = StringValue?.replace(/<[^>]*>/g, '');
+    cleanStr = cleanStr?.replace(/&nbsp;/g, ' ');
+    cleanStr = cleanStr?.trim();
+    return cleanStr;
 }
 
 

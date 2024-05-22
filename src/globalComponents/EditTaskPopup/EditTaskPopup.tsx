@@ -7625,12 +7625,11 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 ? (
-                                                                            <span onClick={() => openBottleneckPopup("Phone")}>
-                                                                                <span
-                                                                                    title="Add Comment"
-                                                                                    className="svg__iconbox svg__icon--Plus"
-                                                                                ></span>
-                                                                            </span>
+                                                                            <span
+                                                                                onClick={() => openBottleneckPopup("Phone")}
+                                                                                title="Add User Popup"
+                                                                                className="svg__iconbox svg__icon--Plus"
+                                                                            ></span>
                                                                         ) : null}
                                                                     </div>
                                                                 </div>
