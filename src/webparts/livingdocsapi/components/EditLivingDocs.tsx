@@ -3,6 +3,8 @@ import { useState, useCallback, useEffect } from 'react';
 import { Web } from 'sp-pnp-js';
 import moment from 'moment';
 import { Panel, PanelType } from 'office-ui-fabric-react';
+import HtmlEditorCard from "../../../globalComponents/HtmlEditor/HtmlEditor";
+import SelectContactpopup from "./SelectContactpopup";
 let backuplivingDocsData: any = []
 const Editlivingdocspop = (props: any) => {
     const [state, rerender] = React.useReducer(() => ({}), {});
@@ -12,6 +14,7 @@ const Editlivingdocspop = (props: any) => {
     const [listIsVisible, setListIsVisible] = useState(false);
     const [searchedNameData, setSearchedDataName] = useState([])
     const [SelecteditlivingDocs, setSelecteditlivingDocs] = useState(true)
+    const [Selectpopupflag, setSelectpopupflag] = useState(false);
     const [searchKey, setSearchKey] = useState({
         Title: '',
         FirstName: '',
@@ -51,14 +54,15 @@ const Editlivingdocspop = (props: any) => {
             // Create a deep copy of processedData for backupprofilePagedata
             data.forEach((i: any) => {
                 if (i?.Created != null && i?.Created != undefined) {
-                    i.Created = moment(i?.Created, "DD-MM-YYYY").format("DD/MM/YYYY");
+                    i.Created = moment(i.Created).format("DD/MM/YYYY");
                 }
                 if (i?.Modified != null && i?.Modified != undefined) {
-                    i.Modified = moment(i?.Modified, "DD-MM-YYYY").format("DD/MM/YYYY");
+                    i.Modified = moment(i.Modified).format("DD/MM/YYYY");
                 }
-            })
 
-            const processedData = data.map((item: any) => ({ ...item, Description: item.Description.replace(/<[^>]+>/g, '') }));
+            })
+            const processedData = data
+            //const processedData = data.map((item: any) => ({ ...item, Description: item.Description.replace(/<[^>]+>/g, '') }));
 
             backuplivingDocsData = JSON.parse(JSON.stringify(processedData));
             // Update setprofilePagedata with the original processedData
@@ -87,7 +91,7 @@ const Editlivingdocspop = (props: any) => {
             let postData = {
                 Title: livingDocsData?.Title,
                 Description: livingDocsData?.Description,
-                ResponsibleId: livingDocsData?.Responsible.Id,
+                ResponsibleId: livingDocsData?.Responsible?.Id != undefined ? livingDocsData?.Responsible?.Id : null,
                 Item_x0020_Cover: {
                     "__metadata": { type: "SP.FieldUrlValue" },
                     Description: Item?.Item_x0020_Cover != undefined ? Item?.Item_x0020_Cover?.Url : (Item?.Item_x0020_Cover != undefined ? Item?.Item_x0020_Cover?.Url : ""),
@@ -109,6 +113,31 @@ const Editlivingdocspop = (props: any) => {
         setlivingDocsData({ ...livingDocsData, Responsible: item })
         setListIsVisible(false);
         rerender()
+    }
+    /////////folara editor function start//////////
+    const HtmlEditorCallBack = (items: any) => {
+        console.log(items);
+        var description = ""
+        if (items == '<p></p>\n') {
+            description = ""
+        } else {
+            description = items
+        }
+        let copyData = { ...livingDocsData }
+        copyData.Description = description
+        setlivingDocsData(copyData)
+    }
+    //////// folora editor function end///////////
+
+    const openSelectContactpopup = () => {
+        setSelectpopupflag(true)
+    }
+    const closeSelectContactpopup = () => {
+        setSelectpopupflag(false)
+    }
+    const selectCallback = (item: any) => {
+        setlivingDocsData({ ...livingDocsData, Responsible: item })
+        setSelectpopupflag(false)
     }
 
     const onRenderCustomHeadersmartinfo = () => {
@@ -169,6 +198,7 @@ const Editlivingdocspop = (props: any) => {
                                 <div className='input-group'>
                                     <label htmlFor="Responsible" className='full-width form-label boldClable '>Responsible</label>
                                     <input type='text' placeholder="Enter Contacts Name" value={livingDocsData?.Responsible?.FullName || ''} onChange={(e) => searchedName(e)} className="form-control" />
+                                    <span className="input-group-text"><span className="svg__iconbox svg__icon--editBox" onClick={() => openSelectContactpopup()}></span></span>
                                     {listIsVisible ? <div className="col-12 mt-1 rounded-0">
                                         <ul className="list-group">
                                             {searchedNameData?.map((item: any) => {
@@ -200,15 +230,20 @@ const Editlivingdocspop = (props: any) => {
                                         }}
                                     />
                                 </div></div>
+
                             <div className="col-sm-12">
                                 <label className='full-width form-label boldClable '>Page Teaser</label>
-                                <textarea className='w-100'
+                                {/* <textarea className='w-100'
                                     defaultValue={livingDocsData.Description}
                                     onChange={(e) => setlivingDocsData({ ...livingDocsData, Description: e.target.value })}
                                     rows={15}
                                     cols={50}
                                     placeholder="Enter text here..."
-                                />
+                                /> */}
+                                <div className="mt-3">
+                                    {livingDocsData?.Id != undefined ? <HtmlEditorCard editorValue={livingDocsData?.Description != null ? livingDocsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack} /> : null}
+                                    {/* <HtmlEditorCard editorValue={livingDocsData?.Description != undefined ? livingDocsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard> */}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -216,6 +251,7 @@ const Editlivingdocspop = (props: any) => {
                 </div>
 
             </Panel>
+            {Selectpopupflag && (<SelectContactpopup allContactData={allContactData} closeSelectContactpopup={closeSelectContactpopup} selectCallback={selectCallback}></SelectContactpopup>)}
         </>
     )
 }

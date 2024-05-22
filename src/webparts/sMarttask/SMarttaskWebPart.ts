@@ -16,6 +16,7 @@ export interface ISMarttaskWebPartProps {
   description: string;
   SmartMetadataListID:string;
   MasterTaskListID:string;
+  TaskUserListID:string
   context:any;
 }
 
@@ -35,6 +36,7 @@ export default class SMarttaskWebPart extends BaseClientSideWebPart<ISMarttaskWe
         userDisplayName: this.context.pageContext.user.displayName,
         SmartMetadataListID:this.properties.SmartMetadataListID,
         MasterTaskListID:this.properties.MasterTaskListID,
+        TaskUserListID:this.properties.TaskUserListID,
         context:this.context,
       }
     );
@@ -119,7 +121,10 @@ export default class SMarttaskWebPart extends BaseClientSideWebPart<ISMarttaskWe
                 , PropertyPaneTextField('MasterTaskListID', {
                   label:" MasterTaskListID"
                 })
-               
+                , PropertyPaneTextField('TaskUserListID', {
+                  label:" TaskUserListID"
+                })
+  
               ]
             }
           ]

@@ -457,7 +457,7 @@ const TaskDashboard = (props: any) => {
                             task.descriptionsSearch = '';
                         }
                         // task.PercentComplete = (task.PercentComplete * 100).toFixed(2);
-                        task.DisplayDueDate =
+                        task.Duedate =
                             task.DueDate != null
                                 ? Moment(task.DueDate).format("DD/MM/YYYY")
                                 : "";
@@ -490,7 +490,7 @@ const TaskDashboard = (props: any) => {
                                 }
                             });
                         });
-                        task.DisplayCreateDate =
+                        task.CreateDate =
                             task.Created != null
                                 ? Moment(task.Created).format("DD/MM/YYYY")
                                 : "";
@@ -887,21 +887,21 @@ const TaskDashboard = (props: any) => {
                 size: 60,
             },
             {
-                accessorFn: (row) => row?.DisplayDueDate,
+                accessorFn: (row) => row?.Duedate,
 
                 cell: ({ row }: any) =>
                     <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
-                        {row?.original?.DisplayDueDate}
+                        {row?.original?.Duedate}
                     </div>
                 , filterFn: (row: any, columnName: any, filterValue: any) => {
-                    if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+                    if (row?.original?.Duedate?.includes(filterValue)) {
                         return true
                     } else {
                         return false
                     }
                 },
 
-                id: "DisplayDueDate",
+                id: "Duedate",
                 placeholder: "Due Date",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -979,7 +979,7 @@ const TaskDashboard = (props: any) => {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row, getValue }) => (
                     <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
-                        <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
+                        <span className="ms-1">{row?.original?.CreateDate}</span>
                         {row?.original?.createdImg != undefined ?
                             <>
                                 <a href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank"
@@ -990,9 +990,9 @@ const TaskDashboard = (props: any) => {
                             : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
-                id: "DisplayCreateDate",
+                id: "CreateDate",
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.CreateDate?.includes(filterValue)) {
                         return true
                     } else {
                         return false
@@ -1058,7 +1058,7 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
-                    <div className='alignCenter'>
+                    <div>
                         <a className='hreflink'
                             href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                             data-interception="off"
@@ -1066,8 +1066,8 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.original?.Title}
                         </a>
-                        {row?.original?.descriptionsSearch !== null && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
-                        }
+                        {row?.original?.descriptionsSearch !== null &&  <span className='alignIcon'><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
+                        } 
                     </div>
                 ),
                 id: "Title",
@@ -1176,7 +1176,7 @@ const TaskDashboard = (props: any) => {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row, getValue }) => (
                     <span>
-                        <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
+                        <span className="ms-1">{row?.original?.CreateDate}</span>
                         {row?.original?.createdImg != undefined ?
                             <>
                                 <a href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank"
@@ -1187,9 +1187,9 @@ const TaskDashboard = (props: any) => {
                             : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
-                id: "DisplayCreateDate",
+                id: "CreateDate",
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.CreateDate?.includes(filterValue)) {
                         return true
                     } else {
                         return false
@@ -1511,7 +1511,7 @@ const TaskDashboard = (props: any) => {
             setWorkingTodayTasks([...todayTasks]);
 
         } else {
-            alert('You do not have the necessary Permissions to move Tasks in this User's Dashboard')
+            alert('You do not have the necessary Permissions to move Tasks in this User Dashboard')
         }
 
     }
