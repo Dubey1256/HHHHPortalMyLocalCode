@@ -8,7 +8,7 @@ export default function SiteDataBackupTool(selectedProps: any) {
     const [ListData, setListData] = useState<Item[]>([]);
     const [successMessage, setSuccessMessage] = useState(false);
     const [selectedFile, setselectedFile]: any = useState([]);
-    let Domain=selectedProps.SPBackupConfigListUrl.toLowerCase();
+    let Domain=selectedProps?.SPBackupConfigListUrl?.toLowerCase();
     let labelSiteName='';
     if(Domain?.indexOf("sp") > -1){
         labelSiteName='SP Site';
@@ -16,7 +16,7 @@ export default function SiteDataBackupTool(selectedProps: any) {
     else{
         labelSiteName='GMBH Site';
     }
-    let DomainUrl=Domain.split('/sites/')[0];
+    let DomainUrl=Domain?.split('/sites/')[0];
     var listData: any[] = [];
     interface Item {
         SiteUrl: string;

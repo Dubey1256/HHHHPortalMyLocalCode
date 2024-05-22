@@ -250,7 +250,7 @@ export const NotificationsSearchPage = (props: any) => {
 }
   const customTableHeaderButtons = (
     <div>
-      <button type="button" className="btn btn-primary" title="Click to Sync all selected items" onClick={() => setIsPopupOpen(true)}>Add Configuration</button>
+      <button type="button" className="btn btn-primary" title="Add Configuration" onClick={() => setIsPopupOpen(true)}>Add Configuration</button>
     </div>
   )
   return (

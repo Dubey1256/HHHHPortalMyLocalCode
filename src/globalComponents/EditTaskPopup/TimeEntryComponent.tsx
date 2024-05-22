@@ -1450,7 +1450,7 @@ function reverseArray(arr: any) {
       item.props.TotalTime = item.props?.TotalTime - childinew.TaskTimeInMin;
     }
     
-      if(item.props.TotalTime > 0){
+      if(item.props?.TotalTime > 0){
         await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
           TotalTime: item.props?.TotalTime
       }).then((res: any) => {

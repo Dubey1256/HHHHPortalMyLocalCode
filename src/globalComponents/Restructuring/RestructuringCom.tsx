@@ -1133,10 +1133,10 @@ const RestructuringCom = (props: any, ref: any) => {
           });
           if((restructureItem?.[0].TaskType?.Id === 2 ||restructureItem?.[0].TaskType?.Id === 1 || restructureItem?.[0].TaskType?.Id === 3) && (props?.queryItems?.Item_x0020_Type == 'Feature' || props?.queryItems?.Item_x0020_Type == 'SubComponent' || props?.queryItems?.Item_x0020_Type == 'Component')){
             if(restructureItem?.[0].TaskType?.Id === 2){
+              topCompo = true;                     
+            }else if(restructureItem?.[0].TaskType?.Id === 1 && !restructureItem.some((obj : any) => Array.isArray(obj.subRows) && obj.subRows.length > 0)){
               topCompo = true;
-            }else if(restructureItem?.[0].TaskType?.Id === 1 && restructureItem.some((item:any) => Array.isArray(item?.subRows) && item.subRows.length == 0)){
-              topCompo = true;
-            }else if(restructureItem?.[0].TaskType?.Id === 3 && restructureItem.some((item:any) => Array.isArray(item?.subRows) && item.subRows.length == 0)){
+            }else if(restructureItem?.[0].TaskType?.Id === 3 && !restructureItem.some((obj : any) => Array.isArray(obj.subRows) && obj.subRows.length > 0)){
               topCompo = true;
             }
             
@@ -3467,21 +3467,22 @@ const RestructuringCom = (props: any, ref: any) => {
 
   const makeMultiSameTask = async () => {
     if (restructureItem[0]?.Item_x0020_Type == "Task") {
-      let ParentTask_Portfolio: any =
-        newItemBackUp?.Item_x0020_Type == "Task"
-          ? newItemBackUp?.Portfolio?.Id
-          : newItemBackUp?.Id;
-      let ParentTask_ID: any =
-        newItemBackUp?.Item_x0020_Type == "Task" ? newItemBackUp?.Id : null;
-      let TaskId =
-        newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
+      let ParentTask_Portfolio: any = newItemBackUp?.Item_x0020_Type == "Task"   ? newItemBackUp?.Portfolio?.Id   : newItemBackUp?.Id;
+      let ParentTask_ID: any = newItemBackUp?.Item_x0020_Type == "Task" ? newItemBackUp?.Id : null;
+      let TaskId = newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
       let TaskLevel: number = 0;
       let Level: number = 0;
-      if (
-        newItemBackUp?.subRows != undefined &&
-        newItemBackUp?.subRows?.length > 0 &&
-        RestructureChecked[0]?.TaskType?.Id == 3
-      ) {
+
+      if(newItemBackUp == null && props?.queryItems?.Item_x0020_Type != "Task" && restructureItem[0]?.TaskType?.Id == 1 && RestructureChecked[0]?.TaskType?.Id == 1){
+        RestructureChecked[0].TaskType.Id = 2
+      }else if(newItemBackUp == null && props?.queryItems?.Item_x0020_Type != "Task" && restructureItem[0]?.TaskType?.Id == 2 && RestructureChecked[0]?.TaskType?.Id == 2){
+        RestructureChecked[0].TaskType.Id = 1
+      }else if(newItemBackUp == null && props?.queryItems?.Item_x0020_Type != "Task" && restructureItem[0]?.TaskType?.Id == 3 && RestructureChecked[0]?.TaskType?.Id == 3){
+        RestructureChecked[0].TaskType.Id = 1
+      }
+
+
+      if ( newItemBackUp?.subRows != undefined && newItemBackUp?.subRows?.length > 0 && RestructureChecked[0]?.TaskType?.Id == 3) {
         newItemBackUp?.subRows?.map((sub: any) => {
           if (RestructureChecked[0]?.TaskType?.Id === sub?.TaskType?.Id) {
             if (TaskLevel <= sub.TaskLevel) {
@@ -3493,14 +3494,12 @@ const RestructuringCom = (props: any, ref: any) => {
       }
       let array: any = [...allData];
       let count: number = 0;
-
       let activityCount = 0;
 
-      restructureItem?.map(async (items: any, index: any) => {
-        let TaskId =
-          newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
+      restructureItem?.map(async (items: any) => {
+        let TaskId = newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
         TaskLevel = TaskLevel + 1;
-
+        
         if (RestructureChecked[0]?.TaskType?.Id === 1) {
           // ParentTask_Id = null;
           let web = new Web(items?.siteUrl);
@@ -3531,34 +3530,20 @@ const RestructuringCom = (props: any, ref: any) => {
         }
 
         let web = new Web(items.siteUrl);
-        TaskId =
-          RestructureChecked[0]?.TaskType?.Id == 2
-            ? "T" + items?.Id
-            : RestructureChecked[0]?.TaskType?.Id == 1
-            ? items?.TaskID
-            : TaskId + "-" + "W" + TaskLevel;
+        // TaskId = newItemBackUp == null && props?.queryItems?.Item_x0020_Type != "Task" ? '' : TaskId ;
+        TaskId = RestructureChecked[0]?.TaskType?.Id == 2   ? "T" + items?.Id   : RestructureChecked[0]?.TaskType?.Id == 1   ? items?.TaskID   : TaskId + "-" + "W" + TaskLevel;
 
         if (newItemBackUp?.Item_x0020_Type != "Task") {
           ParentTask_ID = null;
-          ParentTask_Portfolio = {
-            Id: newItemBackUp?.Id,
-            ItemType: newItemBackUp?.Item_x0020_Type,
-            PortfolioStructureID: newItemBackUp?.PortfolioStructureID,
-            Title: newItemBackUp?.Title,
-          };
+          ParentTask_Portfolio = { Id: newItemBackUp?.Id, ItemType: newItemBackUp?.Item_x0020_Type, PortfolioStructureID: newItemBackUp?.PortfolioStructureID, Title: newItemBackUp?.Title,};
         } else {
-          (ParentTask_Portfolio = {
-            Id: newItemBackUp?.Portfolio?.Id,
-            ItemType: newItemBackUp?.Portfolio?.ItemType,
-            PortfolioStructureID:
-              newItemBackUp?.Portfolio?.PortfolioStructureID,
-            Title: newItemBackUp?.Portfolio?.Title,
+          (ParentTask_Portfolio = { Id: newItemBackUp?.Portfolio?.Id, ItemType: newItemBackUp?.Portfolio?.ItemType, PortfolioStructureID:   newItemBackUp?.Portfolio?.PortfolioStructureID, Title: newItemBackUp?.Portfolio?.Title,
           }),
-            (ParentTask_ID = {
-              Id: newItemBackUp?.Id,
-              Title: newItemBackUp?.Title,
-              TaskID: newItemBackUp?.TaskID,
-            });
+            (ParentTask_ID = {Id: newItemBackUp?.Id,Title: newItemBackUp?.Title,TaskID: newItemBackUp?.TaskID,});
+        }
+
+        if (newItemBackUp == null && props?.queryItems != undefined) {
+          ParentTask_Portfolio = {Id : props?.queryItems?.Id}
         }
 
         var postData: any = {
@@ -3658,14 +3643,17 @@ const RestructuringCom = (props: any, ref: any) => {
           props?.queryItems?.Item_x0020_Type  == "Component" && restructureItem[0]?.Item_x0020_Type  == "Feature" ? "SubComponent" : ''
         )
       );
-
-
        
 
-      if (
-        newItemBackUp?.subRows != undefined &&
-        newItemBackUp?.subRows?.length > 0
-      ) {
+       if(newItemBackUp == null && props?.queryItems == undefined && (restructureItem[0]?.Item_x0020_Type  == "SubComponent" || restructureItem[0]?.Item_x0020_Type  == "Feature")){
+        Item_x0020_Type = 'Component';
+        ParentTask = null
+        }else{
+          Item_x0020_Type = Item_x0020_Type;
+          ParentTask = ParentTask;
+        }
+
+      if (newItemBackUp?.subRows != undefined &&newItemBackUp?.subRows?.length > 0) {
         newItemBackUp?.subRows?.map((sub: any) => {
           if (Item_x0020_Type === sub?.Item_x0020_Type) {
             if (PortfolioLevel <= sub?.PortfolioLevel) {
@@ -3676,30 +3664,39 @@ const RestructuringCom = (props: any, ref: any) => {
           }
         });
       } else {
-        newItemBackUp?.Item_x0020_Type != undefined &&
-
-        allData?.map((sub: any) => {
+        newItemBackUp?.Item_x0020_Type != undefined || (newItemBackUp == null && props?.queryItems == undefined)
+         allData?.map((sub: any) => {
           if (Item_x0020_Type === sub?.Item_x0020_Type) {
             if (PortfolioLevel <= sub?.PortfolioLevel) {
               PortfolioLevel = sub.PortfolioLevel;
             }
           } else {
-            PortfolioLevel = 1;
+            if(sub?.Title != 'Others'){
+              PortfolioLevel = 1;
+            }
+           
           }
         });
       }
       let array: any = [...allData];
       let count: number = 0;
+      let PortfolioStructureID1 : any;
       restructureItem?.map(async (items: any, index: any) => {
         PortfolioLevel = PortfolioLevel + 1;
         let level: number = PortfolioLevel;
+        if(newItemBackUp == null && props?.queryItems == undefined && (restructureItem[0]?.Item_x0020_Type  == "SubComponent" || restructureItem[0]?.Item_x0020_Type  == "Feature")){
+          PortfolioStructureID1 = "C" + level
+          SiteIconTitle = 'C'
+          }else{
+            SiteIconTitle = SiteIconTitle;
+            PortfolioStructureID1 =  PortfolioStructureID + "-" + SiteIconTitle + level
+          }
         let web = new Web(props?.contextValue?.siteUrl);
         var postData: any = {
           ParentId: ParentTask,
           PortfolioLevel: level,
           Item_x0020_Type: Item_x0020_Type,
-          PortfolioStructureID:
-            PortfolioStructureID + "-" + SiteIconTitle + level,
+          PortfolioStructureID: PortfolioStructureID1,
         };
         await web.lists
           .getById(props?.contextValue?.MasterTaskListID)
@@ -3708,6 +3705,13 @@ const RestructuringCom = (props: any, ref: any) => {
           .then(async (res: any) => {
             // let checkUpdate: number = 1;
             PortfolioLevel = PortfolioLevel + 1;
+            if(newItemBackUp == null && props?.queryItems == undefined && (restructureItem[0]?.Item_x0020_Type  == "SubComponent" || restructureItem[0]?.Item_x0020_Type  == "Feature")){
+              PortfolioStructureID1 = "C" + level
+              SiteIconTitle = 'C'
+              }else{
+                SiteIconTitle = SiteIconTitle;
+                PortfolioStructureID1 =  PortfolioStructureID + "-" + SiteIconTitle + level
+              }
             let backupCheckedList: any = [];
             let latestCheckedList: any = [];
             latestCheckedList?.push({ ...items });
@@ -3719,9 +3723,9 @@ const RestructuringCom = (props: any, ref: any) => {
                 (items.Item_x0020_Type = Item_x0020_Type),
                 (items.SiteIconTitle = SiteIconTitle),
                 (items.PortfolioStructureID =
-                  PortfolioStructureID + "-" + SiteIconTitle + PortfolioLevel),
+                  PortfolioStructureID1 ),
                 (items.TaskID =
-                  PortfolioStructureID + "-" + SiteIconTitle + PortfolioLevel);
+                  PortfolioStructureID1 );
             });
 
             function processArray(arr: any, pushData: any, spliceData: any) {
@@ -3729,28 +3733,18 @@ const RestructuringCom = (props: any, ref: any) => {
                 if (!spliceData || !pushData) {
                   obj.isRestructureActive = false;
 
-                  if (
-                    !spliceData &&
-                    obj.Id === backupCheckedList[0]?.Id &&
-                    obj.Item_x0020_Type ===
-                      backupCheckedList[0]?.Item_x0020_Type &&
-                    obj.TaskType?.Title ===
-                      backupCheckedList[0]?.TaskType?.Title &&
-                    obj.Parent?.Id == backupCheckedList[0]?.Parent?.Id &&
-                    obj.Portfolio?.Id == backupCheckedList[0]?.Portfolio?.Id
-                  ) {
+                  if ( !spliceData && obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type ===   backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title ===   backupCheckedList[0]?.TaskType?.Title && obj.Parent?.Id == backupCheckedList[0]?.Parent?.Id && obj.Portfolio?.Id == backupCheckedList[0]?.Portfolio?.Id) {
                     arr.splice(index, 1);
                     spliceData = true;
                   }
 
-                  if (
-                    !pushData &&
-                    obj.Id === newItemBackUp?.Id &&
-                    obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type &&
-                    obj.TaskType?.Title === newItemBackUp?.TaskType?.Title &&
-                    obj.Parent?.Id == newItemBackUp?.Parent?.Id
-                  ) {
+                  if ( !pushData && obj.Title != 'Others' && obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && obj.Parent?.Id == newItemBackUp?.Parent?.Id ) {
                     obj.subRows?.push(...latestCheckedList);
+                    pushData = true;
+                  }
+
+                  if ( !pushData && obj.Title != 'Others' && newItemBackUp == null && props?.queryItems == undefined ) {
+                    array?.push(...latestCheckedList);
                     pushData = true;
                   }
 
@@ -3762,9 +3756,14 @@ const RestructuringCom = (props: any, ref: any) => {
             }
 
             processArray(array, false, false);
+            const sortedArray = array.sort((a: any, b: any) => {
+              if (a.Title === "Others") return 1;
+              if (b.Title === "Others") return -1;
+              return 0;
+            });
             if (count === restructureItem?.length) {
               setResturuningOpen(false);
-              restructureCallBack(array, false);
+              restructureCallBack(sortedArray, false);
             }
           });
       });
@@ -6372,7 +6371,14 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
           onDismiss={closePanel}
         >
           <div className="mt-2">
-            These all Tasks will restructuring inside
+            {
+               ((props?.queryItems == undefined || props?.queryItems == null) &&
+               (newItemBackUp == undefined || newItemBackUp == null)) ?
+               "These all items will restructuring as a Component" : 
+              "These all items will restructuring inside" 
+              
+            }
+            
             {
               newItemBackUp != undefined && newItemBackUp != null ?
               <span>
@@ -6417,16 +6423,23 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             </span>
             :
             <span>
-            {props?.queryItems?.Item_x0020_Type != "Task" ? (
-              <span className="Dyicons mx-1">{props?.queryItems?.Item_x0020_Type[0]}</span>
-            ) : (
-                <img
-                  className="workmember mx-1"
-                  src={props?.queryItems?.SiteIcon}
-                />
-            )}
+              {
+                props?.queryItems != undefined && props?.queryItems != null ?
+                (props?.queryItems?.Item_x0020_Type != "Task" ? (
+                  <span className="Dyicons mx-1">{props?.queryItems?.Item_x0020_Type[0]}</span>
+                ) : (
+                    <img
+                      className="workmember mx-1"
+                      src={props?.queryItems?.SiteIcon}
+                    />
+                )) :
+                " "
+              }
+          
 
-            {props?.queryItems?.Item_x0020_Type != "Task" ? (
+          {
+             props?.queryItems != undefined && props?.queryItems != null ?
+             (props?.queryItems?.Item_x0020_Type != "Task" ? (
               <a
                 data-interception="off"
                 target="_blank"
@@ -6454,7 +6467,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
               >
                 <span>{props?.queryItems?.Title} </span>
               </a>
-            )}
+            )) :
+            " "
+          }
+
+            
           </span>
             }
            
@@ -6528,8 +6545,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
 
 
         
-          {selectedItems != undefined &&
-          selectedItems?.length > 1 &&
+          {selectedItems != undefined && selectedItems?.length > 1 && newItemBackUp != null && 
           restructureItem[0]?.Item_x0020_Type == "Task" &&
           (restructureItem[0]?.TaskType?.Id == 2 || selectedItems[0]?.TaskType?.Id == 2) ? (
             <div className="mt-2">
@@ -6916,7 +6932,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         target="_blank"
                         className="hreflink serviceColor_Active "
                         href={props?.contextValue?.siteUrl +
-                                "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                "/SitePages/Project-Management.aspx?ProjectId" +
                                 obj?.Id
                         }
                       >
@@ -6941,7 +6957,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             data-interception="off"
                             target="_blank"
                             href={props?.contextValue?.siteUrl +
-                                    "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                    "/SitePages/Project-Management.aspx?ProjectId" +
                                     obj?.newSubChild?.Id
                             }
                           >
@@ -7066,7 +7082,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                           target="_blank"
                           className="hreflink serviceColor_Active fw-semibold reStuTile"
                           href={ props?.contextValue?.siteUrl +
-                                "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                "/SitePages/Project-Management.aspx?ProjectId" +
                                 obj?.Id
                           }
                         >
@@ -7092,6 +7108,75 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         </a>
                       </div>
                     ))}
+                     {restructureItem != undefined && restructureItem?.length > 0 &&  restructureItem[0]?.TaskType?.Id == 2 && 
+            newItemBackUp?.TaskType?.Id == 1 && (
+              <div className="mt-2">
+                  <label className="form-label me-2">{"Select Task Type :"}</label>
+                  <label className="SpfxCheckRadio">
+                    <input
+                      type="radio"
+                      className="radio"                 
+                      value="Workstream"
+                      checked={
+                        RestructureChecked[0]?.TaskType?.Id == 3
+                          ? true
+                          : RestructureChecked[0]?.TaskType?.Id == 1
+                          ? true
+                          : false
+                      }
+                      onChange={(e) => setRestructure(RestructureChecked, 3)}
+                       />
+                     {"Workstream"}
+                  </label>
+                  <label className="SpfxCheckRadio">
+                    <input
+                      type="radio"
+                      className="radio"
+                      name="fav_language"
+                      value="Task"
+                      checked={
+                        RestructureChecked[0]?.TaskType?.Id === 2 ? true : false
+                      }
+                      onChange={(e) => setRestructure(RestructureChecked, 2)}
+                    /> {"Task"}
+                  </label>
+              </div>
+            ) }
+
+            {restructureItem != undefined && restructureItem?.length > 0 &&  restructureItem[0]?.TaskType?.Id == 2 && 
+           ( newItemBackUp?.Item_x0020_Type == 'Project' || newItemBackUp?.Item_x0020_Type == 'Sprint')  && (
+              <div className="mt-2">
+                  <label className="form-label me-2">{"Select Task Type :"}</label>
+                  <label className="SpfxCheckRadio">
+                    <input
+                      type="radio"
+                      className="radio"                 
+                      value="Activity"
+                      checked={
+                        RestructureChecked[0]?.TaskType?.Id == 3
+                          ? true
+                          : RestructureChecked[0]?.TaskType?.Id == 1
+                          ? true
+                          : false
+                      }
+                      onChange={(e) => setRestructure(RestructureChecked, 1)}
+                       />
+                     {"Activity"}
+                  </label>
+                  <label className="SpfxCheckRadio">
+                    <input
+                      type="radio"
+                      className="radio"
+                      name="fav_language"
+                      value="Task"
+                      checked={
+                        RestructureChecked[0]?.TaskType?.Id === 2 ? true : false
+                      }
+                      onChange={(e) => setRestructure(RestructureChecked, 2)}
+                    /> {"Task"}
+                  </label>
+              </div>
+            ) }
                   </div>
                 );
               })}
@@ -7236,7 +7321,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 "/SitePages/Task-Profile.aspx?taskId=" +
                                 obj?.Id + "&Site=" + obj?.siteType }
                       >
-                         {/* <div className="alignCenter">{obj?.TaskID}</div> */}
                       
                           {obj?.newSubChild != undefined &&
                     obj?.newSubChild != null ? (
@@ -7396,7 +7480,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         target="_blank"
                         className="hreflink serviceColor_Active "
                         href={props?.contextValue?.siteUrl +
-                                "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                "/SitePages/Project-Management.aspx?ProjectId" +
                                 obj?.Id
                         }
                       >
@@ -7423,7 +7507,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             data-interception="off"
                             target="_blank"
                             href={props?.contextValue?.siteUrl +
-                                    "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                    "/SitePages/Project-Management.aspx?ProjectId" +
                                     obj?.newSubChild?.Id
                             }
                           >
