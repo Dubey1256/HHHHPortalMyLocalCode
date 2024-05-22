@@ -43,7 +43,7 @@ const Picker = (item: any) => {
         }
     }, [])
     const closePopupSmartTaxanomy = () => {
-        setPopupSmartTaxanomy(false)
+        // setPopupSmartTaxanomy(false)
         if (usedFor == "Task-Footertable") {
             item?.Call(selectedCategoryData, "Category-Task-Footertable")
             NewArray = []
