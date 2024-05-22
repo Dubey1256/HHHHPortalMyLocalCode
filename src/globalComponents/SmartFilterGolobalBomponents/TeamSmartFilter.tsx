@@ -48,6 +48,7 @@ const TeamSmartFilter = (item: any) => {
     const [loadeAllData, setLoadeAllData] = React.useState(false)
     const [PreSetPanelIsOpen, setPreSetPanelIsOpen] = React.useState(false);
     const [TaskUsersData, setTaskUsersData] = React.useState([]);
+    const [selectedUsers, setSelectedUsers] = React.useState<any[]>([]);
     const [AllUsers, setTaskUser] = React.useState([]);
     const [smartmetaDataDetails, setSmartmetaDataDetails] = React.useState([])
     const [expanded, setExpanded] = React.useState([]);
@@ -314,7 +315,7 @@ const TeamSmartFilter = (item: any) => {
                     if (elem.Title === '90% Task completed' || elem.Title === '93% For Review' || elem.Title === '96% Follow-up later' || elem.Title === '99% Completed' || elem.Title === '99% Completed') {
                         return true
                     }
-                    return false
+                    return false;
                 })
                 if (checkCallData === true) {
                     item?.setLoaded(false);
@@ -2032,6 +2033,61 @@ const TeamSmartFilter = (item: any) => {
                 });
         }
     };
+
+
+    ///////////////////////////////+++++++++++++++++++++ team User Selection + ///////////////////////////////////////////////////
+    const handleUserClick = (user: any) => {
+        let found = false;
+        for (let i = 0; i < selectedUsers.length; i++) { if (selectedUsers[i].Id === user.Id) { found = true; break; } }
+        if (!found) {
+            setSelectedUsers([...selectedUsers, user]);
+        } else {
+            const updatedUsers = selectedUsers.filter((selectedUser: any) => selectedUser.Id !== user.Id);
+            setSelectedUsers(updatedUsers);
+        }
+    };
+    const handleGroupClick = (group: any) => {
+        const groupUsers: any = group.values;
+        let allSelected = true;
+        for (let i = 0; i < groupUsers.length; i++) {
+            let userFound = false;
+            for (let j = 0; j < selectedUsers.length; j++) {
+                if (selectedUsers[j].Id === groupUsers[i].Id) {
+                    userFound = true;
+                    break;
+                }
+            } if (!userFound) { allSelected = false; break; }
+        }
+        if (allSelected) {
+            const updatedUsers = selectedUsers.filter((user: any) => !groupUsers.some((groupUser: any) => groupUser.Id === user.Id));
+            setSelectedUsers(updatedUsers);
+        } else {
+            const updatedUsers = [...selectedUsers, ...groupUsers.filter((user: any) => !selectedUsers.some((selectedUser: any) => selectedUser.Id === user.Id))];
+            setSelectedUsers(updatedUsers);
+        }
+    };
+
+    const handleTeamMemberClick = async (user: any, groupIndex: number) => {
+        const isChecked = !user.isChecked;
+        const eventId = "FilterTeamMembers";
+
+        let updatedTaskUsersData = [...TaskUsersData];
+        updatedTaskUsersData[groupIndex].values = updatedTaskUsersData[groupIndex].values.map((item: any) => {
+            if (item.Id === user.Id) {
+                return {
+                    ...item,
+                    isChecked: isChecked
+                };
+            }
+            return item;
+        });
+        const checkedIds = updatedTaskUsersData[groupIndex].values.filter((item: any) => item.isChecked).map((item: any) => item.Id);
+        await onCheck(checkedIds, groupIndex, eventId);
+        setTaskUsersData(updatedTaskUsersData);
+    }
+
+
+    ///////////////////////////////+++++++++++++++++++++ team User Selection end + ///////////////////////////////////////////////////
     return (
         <>
             {/* {isSmartFevShowHide === true && <div className='row text-end' >
@@ -2525,7 +2581,7 @@ const TeamSmartFilter = (item: any) => {
                                             <input className='form-check-input' type="checkbox" value="isTodaysTask" checked={isTodaysTask} onChange={() => setIsTodaysTask(!isTodaysTask)} /> Working Today
                                         </label>
                                     </Col>
-                                    <div className="col-sm-12 pad0">
+                                    {/* <div className="col-sm-12 pad0">
                                         <div className="togglecontent mt-1">
                                             <table width="100%" className="indicator_search">
                                                 <tr className=''>
@@ -2576,6 +2632,65 @@ const TeamSmartFilter = (item: any) => {
                                                                                         leaf: null,
                                                                                     }}
                                                                                 />
+                                                                            </div>
+                                                                        </fieldset>
+                                                                    </div>
+                                                                )
+                                                            })
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div> */}
+
+                                    <div className="col-sm-12 pad0">
+                                        <div className="togglecontent mt-1">
+                                            <table width="100%" className="indicator_search">
+                                                <tr className=''>
+                                                    <td valign="top" className='parentFilterSec w-100'>
+                                                        {TaskUsersData != null && TaskUsersData.length > 0 &&
+                                                            TaskUsersData?.map((Group: any, index: any) => {
+                                                                return (
+                                                                    <div className='filterContentSec'>
+                                                                        <fieldset className='smartFilterStyle'>
+                                                                            <legend className='SmartFilterHead'>
+                                                                                {/* <div className="fw-semibold fw-medium mx-1 text-dark" onClick={() => handleGroupClick(Group)} style={{ cursor: "pointer" }}>{Group.Title}</div> */}
+                                                                                <span className="mparent d-flex pb-1" style={{ borderBottom: "1.5px solid #BDBDBD", color: portfolioColor }}>
+                                                                                    <input className={"form-check-input cursor-pointer"}
+                                                                                        style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
+                                                                                        type="checkbox"
+                                                                                        checked={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
+                                                                                        onChange={(e) => handleSelectAll(index, e.target.checked, "FilterTeamMembers")}
+                                                                                        ref={(input) => {
+                                                                                            if (input) {
+                                                                                                const isIndeterminate = Group?.checked?.length > 0 && Group?.checked?.length !== Group?.values?.length;
+                                                                                                input.indeterminate = isIndeterminate;
+                                                                                                if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+                                                                                    <div className="fw-semibold fw-medium mx-1 text-dark">{Group.Title}</div>
+                                                                                </span>
+                                                                            </legend>
+                                                                            <div className="custom-checkbox-tree">
+                                                                                <div style={{ display: "flex", flexWrap: "wrap" }}>
+                                                                                    {Group?.values?.map((user: any) => {
+                                                                                        const isSelected = Group?.checked?.some((selectedUser: any) => selectedUser === user.Id);
+                                                                                        return (
+                                                                                            <>
+                                                                                                {
+                                                                                                    user?.Item_x0020_Cover != undefined && user?.Item_x0020_Cover?.Url != undefined && user?.AssingedToUser != undefined ? <div key={user.Id} style={{ marginRight: "4px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "3px solid var(--SiteBlue)" : "3px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)}>
+                                                                                                        <img src={user?.Item_x0020_Cover?.Url} title={user.Title} alt={user.Title} style={{ width: "24px", height: "24px", borderRadius: "50%" }} />
+                                                                                                    </div> :
+                                                                                                        <div key={user.Id} style={{ marginRight: "4px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "3px solid var(--SiteBlue)" : "3px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)} >
+                                                                                                            <span title={user.Title} className='suffix_Usericon showSuffixIcon'>{user.Suffix}</span>
+                                                                                                        </div>
+                                                                                                }
+                                                                                            </>
+                                                                                        );
+                                                                                    })}
+                                                                                </div>
                                                                             </div>
                                                                         </fieldset>
                                                                     </div>

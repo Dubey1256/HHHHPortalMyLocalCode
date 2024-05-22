@@ -447,7 +447,7 @@ const MeetingOverviewMain = (props: any) => {
 
                             <div className='header-section justify-content-between row'>
                                 <div className="col-sm-8">
-                                    <h2 style={{ color: "#000066", fontWeight: "600" }}>Meeting Overview</h2>
+                                    <h2 className='heading'>Meeting Overview</h2>
                                 </div>
                                 <div className="col-sm-4 text-end">
                                     <AddMeeting CallBack={CallBack} AllListId={AllListId} />

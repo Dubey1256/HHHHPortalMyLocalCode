@@ -5,14 +5,28 @@ import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/People
 import * as Moment from 'moment';
 import Button from 'react-bootstrap/Button';
 import * as globalCommon from "../../../globalComponents/globalCommon";
+
+
+import {
+    makeStyles,
+    shorthands,
+
+    Caption1,
+    Text,
+    tokens,
+    Subtitle1,
+} from "@fluentui/react-components";
+import { MoreHorizontal20Regular } from "@fluentui/react-icons";
 import { Card, CardHeader, CardPreview } from "@fluentui/react-components";
 import moment from 'moment';
 import { SpaTwoTone } from '@material-ui/icons';
 import AddTaskConfigPopup from './AddTaskConfigPopup';
 import EditTaskConfigPopup from './EditTaskConfigPopup';
+import Tooltip from '../../../globalComponents/Tooltip';
 let users: any = []
 let PortFolioType: any = [];
 let SelectedPortfolio: any
+
 export const NotificationsAddPopup = (props: any) => {
     const [selectedConfigType, setselectedConfigType] = React.useState('Report')
     const [ConfigTitle, setConfigTitle] = React.useState('')
@@ -31,7 +45,15 @@ export const NotificationsAddPopup = (props: any) => {
            if(props?.SelectedEditItem?.ConfigType=="Report"){
             setConfigTitle(props?.SelectedEditItem?.Title)
             setEmailSubjectReport(props?.SelectedEditItem?.Subject)
-           
+        setSelectedPersonsAndGroups(props?.SelectedEditItem?.Recipients)
+        let DefaultSelectedUseremail:any=[]
+        if(props?.SelectedEditItem?.Recipients?.length>0){
+            props?.SelectedEditItem?.Recipients?.map((data:any)=>{
+                DefaultSelectedUseremail.push(data?.Email)
+            })
+            setDefaultSelectedUser(DefaultSelectedUseremail)
+        }
+       
            }
         }
         Promise.all([loadusersAndGroups(), getPortFolioType()])
@@ -42,17 +64,17 @@ export const NotificationsAddPopup = (props: any) => {
         setSelectedPersonsAndGroups(people)
         // console.log(people)
     }
-    const onRenderCustomHeader = (
-    ) => {
+    const onRenderCustomHeader = () => {
         return (
-            <div className=" full-width pb-1" > <div className="subheading">
-                <span className="siteColor">
-                    {props?.SelectedEditItem?.Id != undefined ? `Edit Permission - ${props?.SelectedEditItem?.Title}` : 'Add Configration'}
-                </span>
+          <>
+            <div className='subheading'>
+            {props?.SelectedEditItem?.Id != undefined ? `Edit Permission - ${props?.SelectedEditItem?.Title}` : 'Add Configuration'}
             </div>
-            </div>
+            <Tooltip ComponentId={'6755'} />
+          </>
         );
-    };
+      };
+  
     const closePopup = (type?: any | undefined) => {
         props.callBack(type);
 
@@ -88,7 +110,7 @@ export const NotificationsAddPopup = (props: any) => {
             if (pageInfo?.WebFullUrl) {
 
                 selectedPersonsAndGroups?.map((user: any) => {
-                    let foundPerson = users?.find((person: any) => person?.LoginName == user?.id);
+                    let foundPerson = users?.find((person: any) => (person?.LoginName == user?.id)||(person?.Title==user?.Title));
                     if (foundPerson?.Id != undefined) {
                         peopleAndGroupId?.push(foundPerson?.Id)
                     }
@@ -111,7 +133,7 @@ export const NotificationsAddPopup = (props: any) => {
 
 
         }
-        if (props?.SelectedEditItem == undefined) {
+        if (props?.SelectedEditItem?.Id == undefined) {
 
             let web = new Web(pageInfo.WebFullUrl);
             await web.lists.getByTitle('NotificationsConfigration').items.add(postData).then((data: any) => {
@@ -122,7 +144,7 @@ export const NotificationsAddPopup = (props: any) => {
             })
         }
 
-        if (props?.SelectedEditItem != undefined) {
+        if (props?.SelectedEditItem?.Id != undefined) {
             if (selectedConfigType == "Report") {
                 updateData = {
                     Title: ConfigTitle,
@@ -149,7 +171,7 @@ export const NotificationsAddPopup = (props: any) => {
         PortFolioType = await web.lists.getById(props?.AllListId?.PortFolioTypeID).items.select("Id", "Title", "Color", "IdRange", "StatusOptions").get();
         let result = await web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,PortfolioType/Id,PortfolioType/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject').expand('Author,Editor,Recipients,PortfolioType').get()
 
-        if (props?.SelectedEditItem != undefined) {
+        if (props?.SelectedEditItem?.Id != undefined) {
             PortFolioType = PortFolioType?.filter((portfolio: any) => portfolio?.Id == props?.SelectedEditItem?.PortfolioType?.Id);
 
 
@@ -238,20 +260,21 @@ export const NotificationsAddPopup = (props: any) => {
                     </span>
                     {selectedConfigType == 'Report' ?
                         <div>
-                            <div className="mb-2">
-                                <span>
-                                    <input type='text' className='form-control' placeholder='Enter Report Title' value={ConfigTitle} onChange={(e) => { setConfigTitle(e.target.value) }} />
+                            
+                            <div className="mb-2 input-group">
+                               
+                            <label className='form-label full-width'>Report Title</label>
+                                    <input type='text' className='from-control w-75' placeholder='Enter Report Title' value={ConfigTitle} onChange={(e) => { setConfigTitle(e.target.value) }} />
+                                    
 
-                                </span>
                             </div>
-                            <div>
-                                <span>
-                                    <input type='text' className='form-control' placeholder='Enter Report subject' value={EmailSubjectReport} onChange={(e) => { setEmailSubjectReport(e.target.value) }} />
+                            <div className="mb-2 input-group">
+                            <label className='form-label full-width'>Report subject</label>
+                                    <input type='text' className='from-control w-75' placeholder='Enter Report subject' value={EmailSubjectReport} onChange={(e) => { setEmailSubjectReport(e.target.value) }} />
 
-                                </span>
+                               
                             </div>
                             <div className='peoplePickerPermission mb-2' style={{ zIndex: '999999999999' }}>
-                                
                                 <PeoplePicker
                                     context={props?.AllListId?.Context}
                                     principalTypes={[PrincipalType.User, PrincipalType.SharePointGroup, PrincipalType.SecurityGroup, PrincipalType.DistributionList]}
@@ -366,7 +389,7 @@ export const NotificationsAddPopup = (props: any) => {
                 </div>
                 <footer className='alignCenter'>
                     <div className="col text-end">
-                        <Button type="button" variant="primary" className='me-1' onClick={() => addFunction()}>Create</Button>
+                        <Button type="button" variant="primary" className='me-1' onClick={() => addFunction()}>{props?.SelectedEditItem?.Id!=undefined?"Save":"Create"}</Button>
                         <Button type="button" className="btn btn-default" variant="secondary" onClick={() => closePopup()}>Cancel</Button>
                     </div>
                 </footer>

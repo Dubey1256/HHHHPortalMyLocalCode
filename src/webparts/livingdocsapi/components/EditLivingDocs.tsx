@@ -3,6 +3,8 @@ import { useState, useCallback, useEffect } from 'react';
 import { Web } from 'sp-pnp-js';
 import moment from 'moment';
 import { Panel, PanelType } from 'office-ui-fabric-react';
+import HtmlEditorCard from "../../../globalComponents/HtmlEditor/HtmlEditor";
+import SelectContactpopup from "./SelectContactpopup";
 let backuplivingDocsData: any = []
 const Editlivingdocspop = (props: any) => {
     const [state, rerender] = React.useReducer(() => ({}), {});
@@ -12,6 +14,7 @@ const Editlivingdocspop = (props: any) => {
     const [listIsVisible, setListIsVisible] = useState(false);
     const [searchedNameData, setSearchedDataName] = useState([])
     const [SelecteditlivingDocs, setSelecteditlivingDocs] = useState(true)
+    const [Selectpopupflag, setSelectpopupflag] = useState(false);
     const [searchKey, setSearchKey] = useState({
         Title: '',
         FirstName: '',
@@ -24,7 +27,7 @@ const Editlivingdocspop = (props: any) => {
 
     const searchedName = async (e: any) => {
         setListIsVisible(true);
-        let res:any = {}
+        let res: any = {}
         let Key: any = e.target.value;
         res.FullName = Key;
         let subString = Key.split(" ");
@@ -49,16 +52,17 @@ const Editlivingdocspop = (props: any) => {
         try {
             data = await webs.lists.getById("59D8FE3B-3910-4586-8762-A9EBAB68B8AA").items.select(select).expand('Author', 'Editor', 'Responsible').filter(query).get();
             // Create a deep copy of processedData for backupprofilePagedata
-            data.forEach((i:any)=>{
+            data.forEach((i: any) => {
                 if (i?.Created != null && i?.Created != undefined) {
-                    i.Created = moment(i?.Created, "DD-MM-YYYY").format("DD/MM/YYYY");
+                    i.Created = moment(i.Created).format("DD/MM/YYYY");
                 }
                 if (i?.Modified != null && i?.Modified != undefined) {
-                    i.Modified = moment(i?.Modified, "DD-MM-YYYY").format("DD/MM/YYYY");
+                    i.Modified = moment(i.Modified).format("DD/MM/YYYY");
                 }
+
             })
-           
-            const processedData = data.map((item: any) => ({ ...item, Description: item.Description.replace(/<[^>]+>/g, '') }));
+            const processedData = data
+            //const processedData = data.map((item: any) => ({ ...item, Description: item.Description.replace(/<[^>]+>/g, '') }));
 
             backuplivingDocsData = JSON.parse(JSON.stringify(processedData));
             // Update setprofilePagedata with the original processedData
@@ -87,7 +91,7 @@ const Editlivingdocspop = (props: any) => {
             let postData = {
                 Title: livingDocsData?.Title,
                 Description: livingDocsData?.Description,
-                ResponsibleId: livingDocsData?.Responsible.Id,
+                ResponsibleId: livingDocsData?.Responsible?.Id != undefined ? livingDocsData?.Responsible?.Id : null,
                 Item_x0020_Cover: {
                     "__metadata": { type: "SP.FieldUrlValue" },
                     Description: Item?.Item_x0020_Cover != undefined ? Item?.Item_x0020_Cover?.Url : (Item?.Item_x0020_Cover != undefined ? Item?.Item_x0020_Cover?.Url : ""),
@@ -105,12 +109,37 @@ const Editlivingdocspop = (props: any) => {
         setSelecteditlivingDocs(false)
         props.closeEditLivingDocs()
     }
-    const SetResponsibledata = (item:any) => {
+    const SetResponsibledata = (item: any) => {
         setlivingDocsData({ ...livingDocsData, Responsible: item })
         setListIsVisible(false);
         rerender()
     }
-    
+    /////////folara editor function start//////////
+    const HtmlEditorCallBack = (items: any) => {
+        console.log(items);
+        var description = ""
+        if (items == '<p></p>\n') {
+            description = ""
+        } else {
+            description = items
+        }
+        let copyData = { ...livingDocsData }
+        copyData.Description = description
+        setlivingDocsData(copyData)
+    }
+    //////// folora editor function end///////////
+
+    const openSelectContactpopup = () => {
+        setSelectpopupflag(true)
+    }
+    const closeSelectContactpopup = () => {
+        setSelectpopupflag(false)
+    }
+    const selectCallback = (item: any) => {
+        setlivingDocsData({ ...livingDocsData, Responsible: item })
+        setSelectpopupflag(false)
+    }
+
     const onRenderCustomHeadersmartinfo = () => {
         return (
             <>
@@ -121,7 +150,28 @@ const Editlivingdocspop = (props: any) => {
             </>
         );
     };
-   
+    const onRenderCustomFootersmartinfo = () => {
+        return (
+            <footer className='bg-f4 fixed-bottom'>
+                <div className="align-items-center d-flex justify-content-between px-4 py-2">
+                    <div>
+                        <div>Created <span>{livingDocsData?.Created}</span> by
+                            <span className="primary-color"> {livingDocsData?.Author?.Title}</span>
+                        </div>
+                        <div>Last modified <span> {livingDocsData?.Modified}</span> by
+                            <span className="primary-color"> {livingDocsData?.Editor?.Title}</span>
+                        </div>
+                        <div></div>
+                    </div>
+                    <div>
+                        <a href={`https://hhhhteams.sharepoint.com/sites/HHHH/livingdocs/Lists/LivingDocs/EditForm.aspx?ID=${livingDocsData.Id}`} target="_blank" data-interception="off">Open out-of-the-box form</a>
+                        <button className="btn btn-primary ms-1 mx-2" onClick={() => UpdatelivingDocs(livingDocsData)}>Save</button>
+                        <button onClick={() => closelivingDocsPopup()} className="btn btn-default">Cancel</button>
+                    </div>
+                </div>
+            </footer>
+        )
+    }
 
     return (
         <>
@@ -132,75 +182,76 @@ const Editlivingdocspop = (props: any) => {
                 customWidth="1200px"
                 isBlocking={false}
                 isFooterAtBottom={true}
+                onRenderFooter={onRenderCustomFootersmartinfo}
                 onDismiss={() => closelivingDocsPopup()}
             >
                 <div className="modal-body">
-                    <table className="full-width table table-hover">
-                        <tr>
-                            <td>
-                                <div className="col-sm-12">
-                                    <div className="row form-group">
-                                        <div className="col-sm-6">
-                                            <div className='input-group'>
-                                                <label htmlFor="Title" className='full-width form-label boldClable '>Title</label>
-                                                <input type="text" id="Title" className="form-control" defaultValue={livingDocsData.Title} onChange={(e) => setlivingDocsData({ ...livingDocsData, Title: e.target.value })} />
-                                            </div></div>
-                                        <div className="col-sm-6">
-                                            <div className='input-group'>
-                                                <label htmlFor="Responsible" className='full-width form-label boldClable '>Responsible</label>
-                                                <input type='text' placeholder="Enter Contacts Name" value={livingDocsData?.Responsible?.FullName || ''} onChange={(e) => searchedName(e)} className="form-control" />
-                                                {listIsVisible ? <div className="col-12 mt-1 rounded-0">
-                                                    <ul className="list-group">
-                                                        {searchedNameData?.map((item: any) => {
-                                                            return (
-                                                                <li className="list-group-item" onClick={() => SetResponsibledata(item)}><a>{item.FullName}</a></li>
-                                                            )
-                                                        })}
-                                                    </ul>
-                                                </div>
-                                                    : null}
-                                            </div></div>
-                                    </div>
 
-                                    <div className="col-sm-12 mt-2">
-                                        <div className="row form-group">
-                                                <div className="col-sm-12">
-                                                    <label className='full-width form-label boldClable '>Description</label>
-                                                    <textarea className='w-100'
-                                                        defaultValue={livingDocsData.Description}
-                                                        onChange={(e) => setlivingDocsData({ ...livingDocsData, Description: e.target.value })}
-                                                        rows={6}
-                                                        cols={50}
-                                                        placeholder="Enter text here..."
-                                                    />
-                                                </div>
-                                          
-                                        </div>
+                    <div className="col-sm-12">
+                        <div className="row form-group">
+                            <div className="col-sm-6 mb-3">
+                                <div className='input-group'>
+                                    <label htmlFor="Title" className='full-width form-label boldClable '>Title</label>
+                                    <input type="text" id="Title" className="form-control" defaultValue={livingDocsData.Title} onChange={(e) => setlivingDocsData({ ...livingDocsData, Title: e.target.value })} />
+                                </div></div>
+                            <div className="col-sm-6 mb-3">
+                                <div className='input-group'>
+                                    <label htmlFor="Responsible" className='full-width form-label boldClable '>Responsible</label>
+                                    <input type='text' placeholder="Enter Contacts Name" value={livingDocsData?.Responsible?.FullName || ''} onChange={(e) => searchedName(e)} className="form-control" />
+                                    <span className="input-group-text"><span className="svg__iconbox svg__icon--editBox" onClick={() => openSelectContactpopup()}></span></span>
+                                    {listIsVisible ? <div className="col-12 mt-1 rounded-0">
+                                        <ul className="list-group">
+                                            {searchedNameData?.map((item: any) => {
+                                                return (
+                                                    <li className="list-group-item" onClick={() => SetResponsibledata(item)}><a>{item.FullName}</a></li>
+                                                )
+                                            })}
+                                        </ul>
                                     </div>
+                                        : null}
+                                </div></div>
+                            <div className="col-sm-12 mb-3">
+                                <div className='input-group'>
+                                    <label htmlFor="Title" className='full-width form-label boldClable '>Image Url</label>
+                                    <input
+                                        type="text"
+                                        id="Title"
+                                        className="form-control"
+                                        defaultValue={livingDocsData?.Item_x0020_Cover?.Url}
+                                        onInput={(e) => {
+                                            const target = e.target as HTMLInputElement;
+                                            setlivingDocsData({
+                                                ...livingDocsData,
+                                                Item_x0020_Cover: {
+                                                    ...livingDocsData.Item_x0020_Cover,
+                                                    Url: target.value !== "" ? target.value : "" // Check if value is empty, assign blank if true
+                                                }
+                                            });
+                                        }}
+                                    />
+                                </div></div>
+
+                            <div className="col-sm-12">
+                                <label className='full-width form-label boldClable '>Page Teaser</label>
+                                {/* <textarea className='w-100'
+                                    defaultValue={livingDocsData.Description}
+                                    onChange={(e) => setlivingDocsData({ ...livingDocsData, Description: e.target.value })}
+                                    rows={15}
+                                    cols={50}
+                                    placeholder="Enter text here..."
+                                /> */}
+                                <div className="mt-3">
+                                    {livingDocsData?.Id != undefined ? <HtmlEditorCard editorValue={livingDocsData?.Description != null ? livingDocsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack} /> : null}
+                                    {/* <HtmlEditorCard editorValue={livingDocsData?.Description != undefined ? livingDocsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard> */}
                                 </div>
-                                <div className="clearfix"></div>
-                            </td>
-                        </tr>
-                    </table>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-                <footer className='alignCenter'>
-                <div className="col text-start">
-                    <div>Created <span>{livingDocsData?.Created}</span> by
-                        <span className="primary-color"> {livingDocsData?.Author?.Title}</span>
-                    </div>
-                    <div>Last modified <span> {livingDocsData?.Modified}</span>
-                        by
-                        <span className="primary-color"> {livingDocsData?.Editor?.Title}</span>
-                    </div>
-                    <div></div>
-                </div>
-                <div className="col text-end mt-2">
-                <a href={`https://hhhhteams.sharepoint.com/sites/HHHH/livingdocs/Lists/LivingDocs/?ID=${livingDocsData.Id}`} target="_blank">Open out-of-the-box form</a>
-                        <button className="btn btn-primary ms-1 mx-2" onClick={() => UpdatelivingDocs(livingDocsData)}>Save</button>
-                        <button onClick={() => closelivingDocsPopup()} className="btn btn-default">Cancel</button>
-                    </div>
-            </footer>        
+
             </Panel>
+            {Selectpopupflag && (<SelectContactpopup allContactData={allContactData} closeSelectContactpopup={closeSelectContactpopup} selectCallback={selectCallback}></SelectContactpopup>)}
         </>
     )
 }

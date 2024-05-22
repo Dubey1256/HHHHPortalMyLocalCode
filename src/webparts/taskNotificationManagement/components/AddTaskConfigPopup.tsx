@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/Button';
 let copyAllCategory:any=[]
 let DefaultSelectedUseremail:any=[]
 const AddTaskConfigPopup = (props: any) => {
-    const [NotificationType ,setnotificationType]:any= useState(["Teams", "Email"])
+    const [NotificationType ,setnotificationType]:any= useState(["Teams", "Email","Assigned To"])
     const [Notify,setnotify]:any=useState(["Creator","Approval","Specific"])
     const [notificationType, setNotificationType] = useState("")
     const [Category, setCategory] = useState("")
@@ -64,7 +64,7 @@ const AddTaskConfigPopup = (props: any) => {
         return (
             <div className=" full-width pb-1" > <div className="subheading">
                 <span className="siteColor">
-                    {props?.SelectedEditItem?.Id != undefined ? `Edit Task Configration - ${props?.SelectedEditItem?.Title}` : 'Add Task Configration'}
+                    {props?.SelectedEditItem?.Id != undefined ? `Edit Task Configuration - ${props?.SelectedEditItem?.Title}` : 'Add Task Configuration'}
                 </span>
             </div>
             </div>

@@ -516,7 +516,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             preSetColumnSettingVisibility = preSetColumnsValue?.columnSettingVisibility;
                             preSetColumnOrdring = preSetColumnsValue
                             setShowHeaderLocalStored(preSetColumnsValue?.showHeader)
-                            if (Object.keys(preSetColumnSettingVisibility)?.length) {
+                            if (preSetColumnSettingVisibility != undefined && preSetColumnSettingVisibility != '' && Object.keys(preSetColumnSettingVisibility)?.length) {
                                 const columnId = updatedSortDec.id;
                                 if (preSetColumnSettingVisibility[columnId] !== undefined) {
                                     updatedSortDec.isColumnVisible = preSetColumnSettingVisibility[columnId];
@@ -546,7 +546,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 } catch (error) {
                     console.log(error);
                     localStorage.removeItem(tableId);
-                    location.reload();
+                    // location.reload();
                 }
             });
             setSelectedFilterPannelData(updatedSelectedFilterPannelData);
@@ -1264,7 +1264,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     /**************************************** Drag And Drop Functionality End ***************************************/
     return (
         <>
-            {items?.bulkEditIcon === true && (bulkEditingCongration?.priority === true || bulkEditingCongration?.dueDate === true || bulkEditingCongration?.status === true || bulkEditingCongration?.Project === true || bulkEditingCongration?.categories === true || bulkEditingCongration?.FeatureType === true) && <span className="toolbox">
+            {items?.bulkEditIcon === true && (bulkEditingCongration?.priority === true || bulkEditingCongration?.dueDate === true || bulkEditingCongration?.status === true || bulkEditingCongration?.Project === true || bulkEditingCongration?.categories === true || bulkEditingCongration?.FeatureType === true || bulkEditingCongration?.teamMember === true) && <span className="toolbox">
                 <BulkEditingFeature dashBoardbulkUpdateCallBack={items?.dashBoardbulkUpdateCallBack} tableId={items?.tableId} DashboardContextData={items?.DashboardContextData} categoriesTiles={categoriesTiles} masterTaskData={items?.masterTaskData} data={data} columns={items?.columns} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId}
                     setBulkEditingCongration={setBulkEditingCongration} dragedTask={dragedTask} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} AllTaskUser={items.TaskUsers} />
             </span>}
@@ -1357,7 +1357,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         placeholder="Search All..."
                         portfolioColor={portfolioColor}
                     />
-                    <div>
+                    <div className='alignCenter'>
                         {selectedFilterCount?.selectedFilterCount == "No item is selected" ? <span className="svg__iconbox svg__icon--setting hreflink" style={{ backgroundColor: 'gray' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span> :
                             <span className="svg__iconbox svg__icon--setting hreflink" style={selectedFilterCount?.selectedFilterCount == 'All content' ? { backgroundColor: `${portfolioColor}` } : { backgroundColor: 'rgb(68 114 199)' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>}
                     </div>
@@ -1483,7 +1483,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 </span>
             </div >}
             <div ref={parentRef} style={{ overflow: "auto" }}>
-                <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
+                <div style={{ height: `${virtualizer?.getTotalSize()}px` }}>
                     <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
                         <thead className={showHeaderLocalStored === true ? 'fixedSmart-Header top-0' : 'fixed-Header top-0'}>
                             {table.getHeaderGroups().map((headerGroup: any) => (
@@ -1584,13 +1584,13 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                     <td className="col-span-full" style={{ height: before }}></td>
                                 </tr>
                             )}
-                            {virtualizer.getVirtualItems().map((virtualRow: any, index: any) => {
-                                const row = rows[virtualRow.index] as Row<any>;
+                            {virtualizer?.getVirtualItems()?.map((virtualRow: any, index: any) => {
+                                const row = rows[virtualRow?.index] as Row<any>;
                                 return (
                                     <tr
                                         className={row?.original?.lableColor}
                                         key={row.id} data-index={virtualRow.index} ref={virtualizer.measureElement} onDragStart={(e) => startDrag(row?.original, row?.original?.TaskId)} onDragOver={(e) => e.preventDefault()}>
-                                        {row.getVisibleCells().map((cell: any) => {
+                                        {row?.getVisibleCells()?.map((cell: any) => {
                                             if (cell.column.columnDef.id == "Id" && row?.original?.IsSCProtected == true) {
                                                 return (
                                                     <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>
@@ -1678,7 +1678,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
             {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} bulkEditingCongration={bulkEditingCongration} />}
             {columnSettingPopup && <ColumnsSetting showProgres={showProgress} ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} wrapperHeight={wrapperHeight} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility}
-                smartFabBasedColumnsSettingToggle={smartFabBasedColumnsSettingToggle} setSmartFabBasedColumnsSettingToggle={setSmartFabBasedColumnsSettingToggle} data={items?.data} setData={items?.setData} />}
+                smartFabBasedColumnsSettingToggle={smartFabBasedColumnsSettingToggle} setSmartFabBasedColumnsSettingToggle={setSmartFabBasedColumnsSettingToggle} data={items?.data} setData={items?.setData} portfolioColor={portfolioColor}/>}
 
             {coustomButtonMenuPopup && <HeaderButtonMenuPopup isOpen={coustomButtonMenuPopup} coustomButtonMenuToolBoxCallback={coustomButtonMenuToolBoxCallback} setCoustomButtonMenuPopup={setCoustomButtonMenuPopup}
                 selectedRow={table?.getSelectedRowModel()?.flatRows} ShowTeamFunc={ShowTeamFunc} portfolioColor={portfolioColor}
