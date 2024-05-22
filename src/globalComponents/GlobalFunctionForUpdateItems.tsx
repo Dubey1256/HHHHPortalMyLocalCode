@@ -1450,13 +1450,13 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         <div><b style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Task Details:</b></div>
                         <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginBottom: '8px' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Task Id:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Task Id:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData?.TaskId}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Component:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Component:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 {RequiredData["Portfolio"] != null &&
@@ -1466,7 +1466,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 }
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Priority:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Priority:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["Priority"]}</span>
@@ -1474,19 +1474,19 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Start Date:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Start Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD-MMMM-YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Completion Date:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Completion Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Due Date:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Due Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD-MMMM-YYYY") : ''}</span>
@@ -1494,7 +1494,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Team Members:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Team Members:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <div style={{ wordBreak: "break-all" }}>{RequiredData["TeamMembers"] != null &&
@@ -1506,13 +1506,13 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 </div>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Created:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Created:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{Moment(RequiredData["Created"]).format("DD-MMMM-YYYY")}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Created By:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Created By:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["Author"] != null && RequiredData["Author"] != undefined && RequiredData["Author"].Title}</span>
@@ -1520,19 +1520,19 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Categories:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Categories:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }} title={RequiredData["Categories"]}>{RequiredData["Categories"]?.length > 17 ? RequiredData["Categories"]?.slice(0, 14) + "..." : RequiredData["Categories"]}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Status:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Status:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 {RequiredData["Status"]}
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>% Complete:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>% Complete:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 {RequiredData["PercentComplete"]}
@@ -1541,7 +1541,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
 
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
                             <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '120px', background: '#fff', padding: '5px', display: 'flex', alignItems: 'center' } : { width: '120px', background: '#fff', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Smart Priority:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Smart Priority:</span>
                             </div>
                             <div style={{ padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 {RequiredData["SmartPriority"]}
@@ -1561,7 +1561,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         </div>
                         <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>URL:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>URL:</span>
                             </div>
                             <div style={{ wordBreak: "break-all", padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>
