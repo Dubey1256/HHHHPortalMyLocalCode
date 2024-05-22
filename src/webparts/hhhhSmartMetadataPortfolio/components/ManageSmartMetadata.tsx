@@ -44,6 +44,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         childRefdata = { ...childRef };
 
     }
+    const siteName = selectedProps.AllList.siteName;
     const params = new URLSearchParams(window.location.search);
     UrlTabName = params.get('TabName');
     console.log(params.get('TabName'));
@@ -110,7 +111,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     if (UrlTabName !== null) {
                         ShowingTabsData(UrlTabName)
                     } else {
-                        ShowingTabsData("Categories");
+                        if (siteName === 'SP' || siteName === 'ILF')
+                            ShowingTabsData("Categories");
+                        if (siteName === 'GmbH')
+                            ShowingTabsData("Topics");
                     }
                 })
             }
@@ -186,7 +190,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         });
         CopySmartmetadata = TabsFilter;
         setSmartmetadata(TabsFilter);
-        childRefdata?.current?.setRowSelection({});
+        //childRefdata?.current?.setRowSelection({});
     }
     const EditSmartMetadataPopup = (item: any) => {
         setSelectedSmartMetadataItem(item);
