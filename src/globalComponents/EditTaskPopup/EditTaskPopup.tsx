@@ -3305,7 +3305,7 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
-        
+
 
         let UpdateDataObject: any = {
             IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : workingToday,
@@ -3356,8 +3356,8 @@ const EditTaskPopup = (Items: any) => {
                     : null,
             Mileage: EditData.Mileage ? EditData.Mileage : "",
             AssignedToId: {
-                results:  AssignedToIds != undefined &&  AssignedToIds?.length > 0
-                    ?  AssignedToIds
+                results: AssignedToIds != undefined && AssignedToIds?.length > 0
+                    ? AssignedToIds
                     : [],
             },
             ResponsibleTeamId: {
@@ -3476,17 +3476,17 @@ const EditTaskPopup = (Items: any) => {
                         dataAccordingDays.WorkingDate = Info?.originalDate
                         dataAccordingDays.WorkingMember = [];
                         Info?.userInformation?.map((userInfo: any) => {
-                           
+
                             dataAccordingDays.WorkingMember.push({ Id: userInfo?.AssingedToUserId, Title: userInfo.Title })
                         })
                         storeData?.push(dataAccordingDays)
                     }
                 })
                 storeInWorkingAction.InformationData = [...storeData]
-                oldWorkingAction = oldWorkingAction.filter((type: any) => type?.Title != "WorkingDetails");   
+                oldWorkingAction = oldWorkingAction.filter((type: any) => type?.Title != "WorkingDetails");
                 // let defaultTemp: any=[]
-                if(oldWorkingAction?.length==0){
-                    oldWorkingAction= [
+                if (oldWorkingAction?.length == 0) {
+                    oldWorkingAction = [
                         {
                             Title: "Bottleneck",
                             InformationData: []
@@ -3499,12 +3499,12 @@ const EditTaskPopup = (Items: any) => {
                             Title: "Phone",
                             InformationData: []
                         }
-                    ] 
+                    ]
                 }
                 setWorkingAction([...oldWorkingAction, storeInWorkingAction]);
                 setWorkingToday(true)
                 // setusersAssignedIDs(assigneduserid)
-            }           
+            }
 
             if (teamConfigData?.AssignedTo?.length > 0) {
                 let tempArray: any = [];
@@ -7219,17 +7219,6 @@ const EditTaskPopup = (Items: any) => {
                                                 ) : null}
                                             </div>
                                         </div>
-                                        {/* <div className="Sitecomposition mb-3">
-                                            <a className="sitebutton bg-fxdark alignCenter justify-content-between">
-                                                <span className="alignCenter">
-                                                    <span className="svg__iconbox svg__icon--docx"></span>
-                                                    <span className="mx-2">Submit EOD Report</span>
-                                                </span>
-                                                <span className="svg__iconbox svg__icon--editBox hreflink" title="Submit EOD Report Popup"
-                                                    onClick={() => setOpenEODReportPopup(true)}>
-                                                </span>
-                                            </a>
-                                        </div> */}
                                     </div>
                                     <div className="col-md-4">
                                         {/* This is used for bottleneck  */}
@@ -7350,12 +7339,11 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 && (
-                                                                            <span onClick={() => openBottleneckPopup("Bottleneck")}>
-                                                                                <span
-                                                                                    title="Add Comment"
-                                                                                    className="svg__iconbox svg__icon--Plus"
-                                                                                ></span>
-                                                                            </span>
+                                                                            <span
+                                                                                onClick={() => openBottleneckPopup("Bottleneck")}
+                                                                                title="Add User Popup"
+                                                                                className="svg__iconbox svg__icon--Plus"
+                                                                            ></span>
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -7436,6 +7424,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                 )}
                                             </div>
+
                                             {WorkingAction?.map((WAItemData, ItemIndex) => {
                                                 if (
                                                     WAItemData.Title === "Attention" &&
@@ -7463,7 +7452,6 @@ const EditTaskPopup = (Items: any) => {
                                                                         )}
                                                                         <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
                                                                     </div>
-
                                                                     <div className="alignCenter">
                                                                         <span
                                                                             onClick={() =>
@@ -7515,12 +7503,10 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 ? (
-                                                                            <span onClick={() => openBottleneckPopup("Attention")}>
-                                                                                <span
-                                                                                    title="Add Comment"
-                                                                                    className="svg__iconbox svg__icon--Plus"
-                                                                                ></span>
-                                                                            </span>
+                                                                            <span onClick={() => openBottleneckPopup("Attention")}
+                                                                                title="Add User Popup"
+                                                                                className="svg__iconbox svg__icon--Plus"
+                                                                            ></span>
                                                                         ) : null}
                                                                     </div>
                                                                 </div>
@@ -7531,7 +7517,7 @@ const EditTaskPopup = (Items: any) => {
                                                 return null;
                                             })}
                                         </div>
-                                        {/* //////////////////////////////hello/////////////////////////// */}
+                                        {/* //////////////////////////////This is phone section/////////////////////////// */}
                                         <div className="col mt-2 ps-0">
                                             <div className="input-group">
                                                 <label className="form-label full-width">
@@ -7540,19 +7526,19 @@ const EditTaskPopup = (Items: any) => {
                                                 {WorkingAction?.length > 0 ? <> {WorkingAction?.map((WAItemData, ItemIndex) => {
                                                     if ((WAItemData.Title === "Phone") && (WAItemData?.InformationData?.length === 0 || WAItemData?.InformationData?.length > 1)) {
                                                         return (
-                                                            <>   <input
-                                                                type="text"
-                                                                value={PhoneSearchKey}
-                                                                className="form-control"
-                                                                placeholder="Tag user for Phone"
-                                                                onChange={(e) => autoSuggestionsForApprover(e, "Phone")}
-                                                                key={ItemIndex}
-                                                            /><span className="input-group-text" onClick={() => openBottleneckPopup("Phone")}>
-
+                                                            <>
+                                                                <input
+                                                                    type="text"
+                                                                    value={PhoneSearchKey}
+                                                                    className="form-control"
+                                                                    placeholder="Tag user for Phone"
+                                                                    onChange={(e) => autoSuggestionsForApprover(e, "Phone")}
+                                                                    key={ItemIndex}
+                                                                />
+                                                                <span className="input-group-text" onClick={() => openBottleneckPopup("Phone")}>
                                                                     <span title="Edit" className="svg__iconbox svg__icon--editBox"></span>
-
-                                                                </span></>
-
+                                                                </span>
+                                                            </>
                                                         );
                                                     }
                                                     return null;
