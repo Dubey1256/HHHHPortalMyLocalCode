@@ -482,8 +482,8 @@ function ReadyMadeTable(SelectedProp: any) {
 
                 console.log(AllTasksMatches);
                 Counter++;
-                console.log(AllTasksMatches.length);
-                if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
+                console.log(AllTasksMatches?.length);
+                if (AllTasksMatches != undefined && AllTasksMatches?.length > 0) {
                     $.each(AllTasksMatches, function (index: any, item: any) {
                         item.isDrafted = false;
                         item.flag = true;
@@ -703,13 +703,16 @@ function ReadyMadeTable(SelectedProp: any) {
                         // let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
                         // allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
                         try {
-                            allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
+                            allTaskDataFlatLoadeViewBackup = AllTasksData?.length>0?JSON.parse(JSON.stringify(AllTasksData)):[]
                         } catch (error) {
                             console.log("backup Json parse error Page Loade Task Data");
                         }
                         // allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
                     }
-                
+                if(AllTasksMatches?.length==0){
+                    let data=[{}];
+                    setAllSiteTasksData(data);
+                }
             });
             // GetComponents();
         }
@@ -2640,6 +2643,10 @@ function ReadyMadeTable(SelectedProp: any) {
     const restructureFunct = (items: any) => {
         setTrueRestructuring(items);
     }
+    const selectedTask = () => {
+        SelectedProp?.callBack(childRef?.current?.table?.getSelectedRowModel()?.flatRows)
+        SelectedProp?.closepopup()
+    }
     React.useEffect(() => {
         if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
             if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
@@ -2677,7 +2684,7 @@ function ReadyMadeTable(SelectedProp: any) {
     const customTableHeaderButtonsAllAWT = (
         <>
 
-            {childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2|| SelectedProp?.SelectedItem != undefined ? <button type="button" className="btn btn-primary" onClick={() => Createbutton()} >{checkedList?.TaskType?.Title == "Workstream" || SelectedProp?.SelectedItem?.TaskType?.Title == "Workstream" ? "Add Task" : "Add Workstream-Task"}</button> :
+            { SelectedProp?.usedFor != 'editdocument' ? <>{childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2|| SelectedProp?.SelectedItem != undefined ? <button type="button" className="btn btn-primary" onClick={() => Createbutton()} >{checkedList?.TaskType?.Title == "Workstream" || SelectedProp?.SelectedItem?.TaskType?.Title == "Workstream" ? "Add Task" : "Add Workstream-Task"}</button> :
                 <button type="button" className="btn btn-primary" disabled={true} >{checkedList?.TaskType?.Title == "Workstream" || SelectedProp?.SelectedItem?.TaskType?.Title == "Workstream" ? "Add Task" : "Add Workstream-Task"}</button>}
             {
                 trueRestructuring == true ?
@@ -2688,11 +2695,12 @@ function ReadyMadeTable(SelectedProp: any) {
             {ActiveCompareToolButton ?
                 < button type="button" className="btn btn-primary" title='Compare' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
                 <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
-            } </>
+                }
+            </> :
+                <>{childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length >= 1 ? <button title='Tag Task' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={selectedTask}>Tag Task</button> : <button title='Tag Task' disabled={true}>Tag Task</button>}</>
+            }
 
-
-
-
+        </>
 
     )
 

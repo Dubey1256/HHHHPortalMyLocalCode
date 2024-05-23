@@ -266,7 +266,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "WorkingAction","TotalTime", "Sitestagging", "ApproverHistory", "Approvee/Id", "Approvee/Title", "EstimatedTime", "SiteCompositionSettings", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "PriorityRank", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title", "Project/PriorityRank", "Project/PortfolioStructureID", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "WorkingAction", "TotalTime", "Sitestagging", "ApproverHistory", "Approvee/Id", "Approvee/Title", "EstimatedTime", "SiteCompositionSettings", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "PriorityRank", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title", "Project/PriorityRank", "Project/PortfolioStructureID", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("TeamMembers", "Project", "Approver", "Approvee", "ParentTask", "Portfolio", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
@@ -291,14 +291,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     taskDetails.TaskId = globalCommon.GetTaskId(taskDetails);
     var category = ""
     if (taskDetails["TaskCategories"] != undefined && taskDetails["TaskCategories"].length > 0) {
-     
+
       taskDetails["TaskCategories"]?.map((item: any, index: any) => {
-       if((index== taskDetails["TaskCategories"]?.length-1)||(taskDetails["TaskCategories"].length==1)){
+        if ((index == taskDetails["TaskCategories"]?.length - 1) || (taskDetails["TaskCategories"].length == 1)) {
           category = category + item?.Title
-        }else{
+        } else {
           category = category + item?.Title + ";"
         }
-       
+
         let ApprovalCheck = category?.search("Approval");
         if (ApprovalCheck >= 0) {
           this.setState({
@@ -1917,7 +1917,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
     return (
       <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef, user: this?.taskUsers, ColorCode: this.state.Result["Portfolio"]?.PortfolioType?.Color }}>
-        <div  className='taskprofilesection'>
+        <div className='taskprofilesection'>
           <section className='ContentSection'> {this.state.breadCrumData != undefined &&
             <div className='row'>
               <div className="col-sm-12 p-0 ">
@@ -2210,28 +2210,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 type=""
                                 web={AllListId?.siteUrl}
                               />
-
                             </dd>
                           </dl>
+                          {/* ////////////////this is Bottleneck section/////////////// */}
 
-
-
-                          <dl>
-                            <dt className='bg-Fa'>Created</dt>
-                            <dd className='bg-Ff alignCenter'>
-                              {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MMM/YYYY") : ""}
-                              {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
-                                <a title={this.state.Result["Author"][0].Title} className='alignCenter ms-1'>
-                                  {this.state.Result["Author"][0].userImage !== "" && <img className="workmember hreflink " src={this.state.Result["Author"][0].userImage} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)} ></img>
-
-                                  }
-                                  {this.state.Result["Author"][0].userImage === "" && <span title={`${this.state.Result["Author"] != undefined ? this.state.Result["Author"][0].Title : "Default user icons "}`} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser" onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)}></span>}
-                                </a>
-
-                              }
-
-                            </dd>
-                          </dl>
                           <dl>
                             <dt className='bg-Fa'>Bottleneck</dt>
                             <dd className='bg-Ff'>
@@ -2279,6 +2261,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                             </dd>
                           </dl>
+                          {/* ////////////////this is Attention section/////////////// */}
+
                           <dl>
                             <dt className='bg-Fa'>Attention</dt>
                             <dd className='bg-Ff'>
@@ -2326,7 +2310,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                             </dd>
                           </dl>
-                          {/* ////////////////hello/////////////// */}
+                          {/* ////////////////this is phone section/////////////// */}
                           <dl>
                             <dt className='bg-Fa'>Phone</dt>
                             <dd className='bg-Ff'>
@@ -2372,6 +2356,20 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                               })}
 
+                            </dd>
+                          </dl>
+                          {/* ////////////////this is Creaded by section/////////////// */}
+                          <dl>
+                            <dt className='bg-Fa'>Created</dt>
+                            <dd className='bg-Ff alignCenter'>
+                              {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MMM/YYYY") : ""}
+                              {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
+                                <a title={this.state.Result["Author"][0].Title} className='alignCenter ms-1'>
+                                  {this.state.Result["Author"][0].userImage !== "" && <img className="workmember hreflink " src={this.state.Result["Author"][0].userImage} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)} ></img>
+                                  }
+                                  {this.state.Result["Author"][0].userImage === "" && <span title={`${this.state.Result["Author"] != undefined ? this.state.Result["Author"][0].Title : "Default user icons "}`} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser" onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)}></span>}
+                                </a>
+                              }
                             </dd>
                           </dl>
                         </div>

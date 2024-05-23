@@ -91,21 +91,14 @@ export const NotificationsAddPopup = (props: any) => {
                 console.log(error)
             });
         }
-        let defalutEmail:any=[]
-        props?.SelectedEditItem?.Recipients?.map((recipient:any)=>{
-            users?.map((userData:any)=>{
-                if(recipient?.Title== userData?.Title)
-                    defalutEmail?.push(userData?.Email)
-            })
-          
-        })
-        setDefaultSelectedUser(defalutEmail)
+     
     }
     const addFunction = async () => {
         let pageInfo = await globalCommon.pageContext()
         let postData: any;
         let updateData: any;
         let peopleAndGroupId: any = [];
+        let applyPost=true;
         if (selectedConfigType == "Report") {
             if (pageInfo?.WebFullUrl) {
 
@@ -115,12 +108,18 @@ export const NotificationsAddPopup = (props: any) => {
                         peopleAndGroupId?.push(foundPerson?.Id)
                     }
                 })
-                postData = {
-                    Title: ConfigTitle,
-                    RecipientsId: { 'results': peopleAndGroupId },
-                    Subject: EmailSubjectReport,
-                    ConfigType: selectedConfigType
+                if(peopleAndGroupId.length>0){
+                    postData = {
+                        Title: ConfigTitle,
+                        RecipientsId: { 'results': peopleAndGroupId },
+                        Subject: EmailSubjectReport,
+                        ConfigType: selectedConfigType
+                    }
+                }else{
+                    applyPost=false;
+                    alert("Please fill the Report Recipient")
                 }
+               
             }
         } else {
 
@@ -133,7 +132,7 @@ export const NotificationsAddPopup = (props: any) => {
 
 
         }
-        if (props?.SelectedEditItem?.Id == undefined) {
+        if (props?.SelectedEditItem?.Id == undefined && applyPost) {
 
             let web = new Web(pageInfo.WebFullUrl);
             await web.lists.getByTitle('NotificationsConfigration').items.add(postData).then((data: any) => {
