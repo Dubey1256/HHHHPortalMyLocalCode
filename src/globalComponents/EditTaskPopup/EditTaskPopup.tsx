@@ -102,8 +102,6 @@ const EditTaskPopup = (Items: any) => {
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
     let SiteWebConfigData: any = [];
-    const [usersAssignedIDs, setusersAssignedIDs] = useState([])
-    const [workingToday, setWorkingToday] = useState(false);
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
     const [IsComponentPicker, setIsComponentPicker] = useState(false);
@@ -3308,7 +3306,6 @@ const EditTaskPopup = (Items: any) => {
         
 
         let UpdateDataObject: any = {
-            IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : workingToday,
             workingThisWeek: EditData.workingThisWeek
                 ? EditData.workingThisWeek
                 : null,
@@ -3502,8 +3499,7 @@ const EditTaskPopup = (Items: any) => {
                     ] 
                 }
                 setWorkingAction([...oldWorkingAction, storeInWorkingAction]);
-                // setWorkingToday(true)
-                // setusersAssignedIDs(assigneduserid)
+              
             }           
 
             if (teamConfigData?.AssignedTo?.length > 0) {
