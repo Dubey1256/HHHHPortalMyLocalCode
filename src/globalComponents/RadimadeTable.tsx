@@ -482,8 +482,8 @@ function ReadyMadeTable(SelectedProp: any) {
 
                 console.log(AllTasksMatches);
                 Counter++;
-                console.log(AllTasksMatches.length);
-                if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
+                console.log(AllTasksMatches?.length);
+                if (AllTasksMatches != undefined && AllTasksMatches?.length > 0) {
                     $.each(AllTasksMatches, function (index: any, item: any) {
                         item.isDrafted = false;
                         item.flag = true;
@@ -703,13 +703,16 @@ function ReadyMadeTable(SelectedProp: any) {
                         // let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
                         // allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
                         try {
-                            allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
+                            allTaskDataFlatLoadeViewBackup = AllTasksData?.length>0?JSON.parse(JSON.stringify(AllTasksData)):[]
                         } catch (error) {
                             console.log("backup Json parse error Page Loade Task Data");
                         }
                         // allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
                     }
-                
+                if(AllTasksMatches?.length==0){
+                    let data=[{}];
+                    setAllSiteTasksData(data);
+                }
             });
             // GetComponents();
         }
