@@ -1125,7 +1125,7 @@ const HalfClientCategory = (props: any) => {
                                 </a>
                             </>
                         ) : (
-                            <span className='workmember ms-1 svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                            <span className='alignIcon workmember svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                         )}
                     </div>
                 ),
@@ -1147,9 +1147,9 @@ const HalfClientCategory = (props: any) => {
             {
 
                 cell: ({ row }) => (
-                    <div className='alignCenter'>
+                    <>
                         {row?.original?.siteType === "Master Tasks" ? <span title="Edit" onClick={() => { EditComponentPopup(row?.original) }} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
-                    </div>
+                    </>
                 ),
                 id: 'Id',
                 canSort: false,

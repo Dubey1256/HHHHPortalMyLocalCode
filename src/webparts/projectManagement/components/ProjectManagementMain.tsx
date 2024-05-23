@@ -1523,7 +1523,7 @@ const ProjectManagementMain = (props: any) => {
           return row?.original?.PriorityRank == filterValue
         },
         resetSorting: false,
-        size: 75,
+        size: 55,
       },
       {
         accessorFn: (row) => row?.SmartPriority,
@@ -1538,7 +1538,7 @@ const ProjectManagementMain = (props: any) => {
           return row?.original?.SmartPriority == filterValue
         },
         header: "",
-        size: 42,
+        size: 57,
         fixedColumnWidth: true
       },
       {
@@ -1642,7 +1642,7 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         placeholder: "Remarks",
         header: '',
-        size: 50,
+        size: 55,
         isColumnVisible: true
       },
 
@@ -1763,7 +1763,7 @@ const ProjectManagementMain = (props: any) => {
       },
       {
         cell: ({ row }) => (
-          <div className="text-end">
+          <div className="alignCenter ml-auto">
             {row?.original?.TaskType != undefined &&
               (row?.original?.TaskType?.Title == "Activities" ||
                 row?.original?.TaskType?.Title == "Workstream" ||
@@ -1771,20 +1771,20 @@ const ProjectManagementMain = (props: any) => {
               <>
                 {showTimeEntryIcon && <span
                   onClick={(e) => EditDataTimeEntry(e, row.original)}
-                  className=" alignIcon svg__iconbox svg__icon--clock"
+                  className="svg__iconbox svg__icon--clock"
                   title="Click To Edit Timesheet"
                 ></span>}
                 <span
                   title="Edit Task"
                   onClick={(e) => EditPopup(row?.original)}
-                  className="alignIcon svg__iconbox svg__icon--edit hreflink"
+                  className="svg__iconbox svg__icon--edit hreflink"
                 ></span>
               </>
             ) : (
               <span
                 title="Edit Project"
                 onClick={(e) => EditPopup(row?.original)}
-                className="alignIcon svg__iconbox svg__icon--edit hreflink"
+                className="svg__iconbox svg__icon--edit hreflink"
               ></span>
             )}
           </div>
@@ -2100,14 +2100,13 @@ const ProjectManagementMain = (props: any) => {
                                         )}`
                                       : "X"}
                                   </div>
-                                  <span>
+                                  
                                     {`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`}
                                     <span
                                       onClick={() => EditComponentPopup(Masterdata)}
-                                      className="mx-1 svg__iconbox svg__icon--edit alignIcon hreflink"
+                                      className="mx-1 svg__iconbox svg__icon--edit hreflink" style={{width:'24px', height:'24px'}}
                                       title="Edit Project"
                                     ></span>
-                                  </span>
 
                                 </h2>
                                 <div>
@@ -2220,7 +2219,7 @@ const ProjectManagementMain = (props: any) => {
                                       </dl>
                                     </div>
                                     {/* <div className="col-md-12 url"><div className="d-flex p-0"><div className="bg-fxdark p-2"><label>Url</label></div><div className="bg-light p-2 text-break full-width"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></div></div></div> */}
-                                    <div className="col-md-12 pe-1"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
+                                    <div className="col-md-12 pe-1"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField" style={{width:'93.9%'}}><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
                                     {
                                       Masterdata?.Body != undefined ? <div className="mt-2 col-md-12  detailsbox">
                                         <details className="pe-0" open>
