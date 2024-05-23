@@ -81,7 +81,16 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
             })
         }
-        let oldJson: any = JSON.parse(JSON.stringify(workingAction));
+   
+        let oldJson:any=[]
+        try {
+             oldJson= JSON.parse(JSON.stringify(workingAction));
+        } catch (error) {
+
+        }
+
+
+    
         let count = 0;
         while (datesInfo.length < 5) {
             let dateFullInfo :any= {};
