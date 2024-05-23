@@ -67,6 +67,11 @@ const CreateActivity = (props: any) => {
   const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
   const [selectPriority, setselectPriority] = React.useState("4");
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
+  const [workingAction, setWorkingAction] = React.useState([
+    { Title: "Bottleneck", InformationData: []   },
+   {Title: "Attention",InformationData: [] },
+     { Title: "Phone", InformationData: [] }
+    ]);
   // const [ClientCategoriesData, setClientCategoriesData] = React.useState<any>(
   //     []
   // );
@@ -131,6 +136,10 @@ const CreateActivity = (props: any) => {
       ClientCategoriesData = props?.selectedItem?.ClientCategory;
     } else if (props?.selectedItem?.ClientCategory?.results?.length > 0) {
       ClientCategoriesData = props?.selectedItem?.ClientCategory?.results;
+    }
+    if(props?.selectedItem?.WorkingAction?.length>0 && props?.selectedItem?.WorkingAction!=undefined){
+      let InheritedWorkingAction=JSON?.parse(props?.selectedItem?.WorkingAction)
+      setWorkingAction(InheritedWorkingAction)
     }
     let targetDiv: any = document?.querySelector(".ms-Panel-main");
     if (props?.selectedItem?.PortfolioType?.Color != undefined) { //Changes Made by Robin
@@ -647,8 +656,14 @@ const CreateActivity = (props: any) => {
     }
   };
   function DDComponentCallBack(TeamData: any) {
-    // setTeamConfig(dt)
+  
+ if(TeamData?.dateInfo?.length>0){
+  let copyWorkingAction=[...workingAction]
+  let getWorkingDetails= globalCommon?. getWorkingActionJSON(TeamData)
+  copyWorkingAction.push(getWorkingDetails)
+  setWorkingAction(copyWorkingAction)
 
+ }
     if (TeamData?.AssignedTo?.length > 0) {
       let AssignedUser: any = [];
       TeamData.AssignedTo?.map((arrayData: any) => {
@@ -1079,6 +1094,7 @@ const CreateActivity = (props: any) => {
               PortfolioId: props?.UsedFrom === "ProjectManagement" ? props?.taggedPortfolioItem?.Id : selectedItem?.Id,
               PriorityRank: priorityRank,
               Priority: priority,
+              WorkingAction: JSON.stringify(workingAction),
               TaskTypeId: 1,
               FeedBack:
                 FeedbackPost?.length > 0 ? JSON.stringify(FeedbackPost) : null,

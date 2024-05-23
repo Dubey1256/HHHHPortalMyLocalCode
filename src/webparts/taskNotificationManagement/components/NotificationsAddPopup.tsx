@@ -68,7 +68,7 @@ export const NotificationsAddPopup = (props: any) => {
         return (
           <>
             <div className='subheading'>
-            {props?.SelectedEditItem?.Id != undefined ? `Edit Permission - ${props?.SelectedEditItem?.Title}` : 'Add Configuration'}
+            {props?.SelectedEditItem?.Id != undefined ? `Edit Configuration - ${props?.SelectedEditItem?.Title}` : 'Add Configuration'}
             </div>
             <Tooltip ComponentId={'6755'} />
           </>
@@ -99,60 +99,77 @@ export const NotificationsAddPopup = (props: any) => {
         let updateData: any;
         let peopleAndGroupId: any = [];
         let applyPost=true;
-        if (selectedConfigType == "Report") {
-            if (pageInfo?.WebFullUrl) {
-
-                selectedPersonsAndGroups?.map((user: any) => {
-                    let foundPerson = users?.find((person: any) => (person?.LoginName == user?.id)||(person?.Title==user?.Title));
-                    if (foundPerson?.Id != undefined) {
-                        peopleAndGroupId?.push(foundPerson?.Id)
+        selectedPersonsAndGroups?.map((user: any) => {
+            let foundPerson = users?.find((person: any) => (person?.LoginName == user?.id)||(person?.Title==user?.Title));
+            if (foundPerson?.Id != undefined) {
+                peopleAndGroupId?.push(foundPerson?.Id)
+            }
+        })
+        if(props?.SelectedEditItem?.Id == undefined){
+            if (selectedConfigType == "Report" ) {
+                if (pageInfo?.WebFullUrl) {
+               if(peopleAndGroupId.length>0 && ConfigTitle!='' && ConfigTitle!=null){
+                        postData = {
+                            Title: ConfigTitle,
+                            RecipientsId: { 'results': peopleAndGroupId },
+                            Subject: EmailSubjectReport,
+                            ConfigType: selectedConfigType
+                        }
+                    }else{
+                        applyPost=false;
+                        alert("Please fill the Report Recipient and Report Title")
                     }
-                })
-                if(peopleAndGroupId.length>0){
-                    postData = {
-                        Title: ConfigTitle,
-                        RecipientsId: { 'results': peopleAndGroupId },
-                        Subject: EmailSubjectReport,
-                        ConfigType: selectedConfigType
-                    }
-                }else{
-                    applyPost=false;
-                    alert("Please fill the Report Recipient")
+                   
                 }
-               
+            } 
+            else {
+                if(peopleAndGroupId.length>0 && SelectedPortfolio?.Title!='' && SelectedPortfolio?.Title !=null  ){
+                    postData = {
+                        Title: "TaskNotificationConfig" +""+ SelectedPortfolio?.Title,
+                        ConfigType: selectedConfigType,
+                        PortfolioTypeId: SelectedPortfolio?.Id,
+                        ConfigrationJSON: allTaskStatusToConfigure?.length > 0 ? JSON?.stringify(allTaskStatusToConfigure) : []
+                    }
+                }
+                else{
+                    applyPost=false;
+                    alert("Please Select Portfolio Type")
+                } 
+            }  
+            
+    
+            
+            if (applyPost) {
+    
+                let web = new Web(pageInfo.WebFullUrl);
+                await web.lists.getByTitle('NotificationsConfigration').items.add(postData).then((data: any) => {
+                    closePopup('add')
+                }).catch((error: any) => {
+                    console.error('Error While adding ', error);
+                    alert(error?.data?.responseBody["odata.error"].message?.value)
+                })
             }
-        } else {
-
-            postData = {
-                Title: "TaskNotificationConfig" + SelectedPortfolio?.Title,
-                ConfigType: selectedConfigType,
-                PortfolioTypeId: SelectedPortfolio?.Id,
-                ConfigrationJSON: allTaskStatusToConfigure?.length > 0 ? JSON?.stringify(allTaskStatusToConfigure) : []
-            }
-
-
         }
-        if (props?.SelectedEditItem?.Id == undefined && applyPost) {
-
-            let web = new Web(pageInfo.WebFullUrl);
-            await web.lists.getByTitle('NotificationsConfigration').items.add(postData).then((data: any) => {
-                closePopup('add')
-            }).catch((error: any) => {
-                console.error('Error While adding ', error);
-                alert(error?.data?.responseBody["odata.error"].message?.value)
-            })
-        }
+      
 
         if (props?.SelectedEditItem?.Id != undefined) {
             if (selectedConfigType == "Report") {
-                updateData = {
-                    Title: ConfigTitle,
-                    RecipientsId: { 'results': peopleAndGroupId },
-                    Subject: EmailSubjectReport,
+                if(peopleAndGroupId.length>0 && ConfigTitle!='' && ConfigTitle!=null){
+                    updateData = {
+                        Title: ConfigTitle,
+                        RecipientsId: { 'results': peopleAndGroupId },
+                        Subject: EmailSubjectReport,
+                       
+                    }
+                }else{
+                    applyPost=false;
+                    alert("Please fill the Report Recipient and Report Title")
                 }
+               
             } else {
                 updateData = { ConfigrationJSON: allTaskStatusToConfigure?.length > 0 ? JSON?.stringify(allTaskStatusToConfigure) : [] }
             }
+            if (applyPost) {
             let web = new Web(pageInfo.WebFullUrl);
             await web.lists.getByTitle('NotificationsConfigration').items.getById(props?.SelectedEditItem?.Id).update(updateData).then((data: any) => {
                 closePopup('update')
@@ -160,6 +177,7 @@ export const NotificationsAddPopup = (props: any) => {
                 console.error('Error While adding ', error);
                 alert(error?.data?.responseBody["odata.error"].message?.value)
             })
+        }
         }
 
     }
@@ -234,23 +252,23 @@ export const NotificationsAddPopup = (props: any) => {
                                         className="radio" />Task Notifications
                                 </span>
 
-                            </> :
-                            <>
+                            </> :""
+                            // <>
 
-                                {selectedConfigType == "TaskNotifications" && <span className='SpfxCheckRadio'>
-                                    <input type="radio"
-                                        checked={selectedConfigType == 'TaskNotifications'} onClick={() => setselectedConfigType('TaskNotifications')}
-                                        className="radio" />Task Notifications
-                                </span>}
+                            //     {selectedConfigType == "TaskNotifications" && <span className='SpfxCheckRadio'>
+                            //         <input type="radio"
+                            //             checked={selectedConfigType == 'TaskNotifications'} onClick={() => setselectedConfigType('TaskNotifications')}
+                            //             className="radio" />Task Notifications
+                            //     </span>}
 
-                                {selectedConfigType == "Report" && <span className='SpfxCheckRadio'>
-                                    <input type="radio"
-                                        checked={selectedConfigType == 'Report'} onClick={() => setselectedConfigType('Report')}
-                                        className="radio" /> Email Report
-                                </span>}
+                            //     {selectedConfigType == "Report" && <span className='SpfxCheckRadio'>
+                            //         <input type="radio"
+                            //             checked={selectedConfigType == 'Report'} onClick={() => setselectedConfigType('Report')}
+                            //             className="radio" /> Email Report
+                            //     </span>}
 
 
-                            </>
+                            // </>
 
 
 
@@ -263,7 +281,7 @@ export const NotificationsAddPopup = (props: any) => {
                             <div className="mb-2 input-group">
                                
                             <label className='form-label full-width'>Report Title</label>
-                                    <input type='text' className='from-control w-75' placeholder='Enter Report Title' value={ConfigTitle} onChange={(e) => { setConfigTitle(e.target.value) }} />
+                                    <input type='text' className='from-control w-75' placeholder='Enter Report Title' value={ConfigTitle} disabled={props?.SelectedEditItem?.Id!=undefined?true:false} onChange={(e) => { setConfigTitle(e.target.value) }} />
                                     
 
                             </div>
@@ -273,7 +291,7 @@ export const NotificationsAddPopup = (props: any) => {
 
                                
                             </div>
-                            <div className='peoplePickerPermission mb-2' style={{ zIndex: '999999999999' }}>
+                            <div className='peoplePickerPermission mb-2 w-75' style={{ zIndex: '999999999999' }}>
                                 <PeoplePicker
                                     context={props?.AllListId?.Context}
                                     principalTypes={[PrincipalType.User, PrincipalType.SharePointGroup, PrincipalType.SecurityGroup, PrincipalType.DistributionList]}

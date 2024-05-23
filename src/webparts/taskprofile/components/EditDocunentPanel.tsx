@@ -49,7 +49,7 @@ const EditDocumentpanel = (props: any) => {
     { rankTitle: '(1) Archive', rank: 1 },
     { rankTitle: '(0) No Show', rank: 0 }
   ]
-  let Status: any = ["selectStatus", "Draft", "Final", "Archived"]
+  let Status: any = ["Select Status", "Draft", "Final", "Archived"]
 
   React.useEffect(() => {
     AllListId = props.AllListId
