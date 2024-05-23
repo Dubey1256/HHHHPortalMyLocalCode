@@ -853,6 +853,7 @@ const EmployeProfile = (props: any) => {
           }
           let EstimatedDesc: any = [];
           items.EstimatedTime = 0;
+          items.EstimatedTimeDescr = '';
           if (items?.EstimatedTimeDescription != undefined && items?.EstimatedTimeDescription != '' && items?.EstimatedTimeDescription != null) {
             EstimatedDesc = JSON.parse(items?.EstimatedTimeDescription)
           }
@@ -862,6 +863,9 @@ const EmployeProfile = (props: any) => {
           if (EstimatedDesc?.length > 0) {
             EstimatedDesc?.map((time: any) => {
               items.EstimatedTime += Number(time?.EstimatedTime)
+              if (time?.EstimatedTimeDescription != undefined && time?.EstimatedTimeDescription != '') {
+                items.EstimatedTimeDescr += time?.EstimatedTimeDescription;
+              }
             })
           }
           items.portfolioItemsSearch = '';

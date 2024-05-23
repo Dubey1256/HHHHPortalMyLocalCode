@@ -20,6 +20,7 @@ export interface IHhhhSmartMetadataPortfolioWebPartProps {
   TaskUserListID: string
   description: string;
   PageUrl: any
+  siteName: any
   siteUrl: any
   Context: any
 }
@@ -45,6 +46,7 @@ export default class HhhhSmartMetadataPortfolioWebPart extends BaseClientSideWeb
         TaskUserListID: this.properties.TaskUserListID,
         PageUrl: this.context?.pageContext?.site?.serverRequestPath,
         siteUrl: this.context.pageContext.web.absoluteUrl,
+        siteName: this.context.pageContext.web.title,
         Context: this.context
       }
     );
@@ -73,7 +75,7 @@ export default class HhhhSmartMetadataPortfolioWebPart extends BaseClientSideWeb
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-           
+
             default:
               environmentMessage = strings.UnknownEnvironment;
           }
