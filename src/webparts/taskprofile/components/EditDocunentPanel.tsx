@@ -143,7 +143,7 @@ const EditDocumentpanel = (props: any) => {
                   AllTasks.push(item)
                   return temp;
                 });
-                tempArray.push(tempArraycopy)
+                tempArray.push(tempArraycopy[0])
                 setTaggedSitesTask(AllTasks);
               }
             })
@@ -626,9 +626,7 @@ const EditDocumentpanel = (props: any) => {
     });
     return isExists;
   }
-  const TaskCallback = async (value: any) => {
-    let tempArraycopy = [];
-    tempArray = []
+  const TaskCallback = async (value: any) => {   
     selectedTasks = TaggedSitesTask
     value?.map((item: any) => {
       if (!IsitemExists(selectedTasks, item?.original))
@@ -638,7 +636,7 @@ const EditDocumentpanel = (props: any) => {
       let temp: any = {}
       temp.Task = []
       temp.TaskIds = []
-      tempArraycopy = selectedTasks.map((item: any) => {
+      tempArray = selectedTasks.map((item: any) => {
         temp.Title = `${item?.siteType}Id`
         temp.Task.push(item)
 
@@ -646,8 +644,7 @@ const EditDocumentpanel = (props: any) => {
           temp.TaskIds.push(item.Id);
         }
         return temp;
-      });
-      tempArray.push(tempArraycopy);
+      });     
     }
     setTaggedSitesTask(selectedTasks);
   }

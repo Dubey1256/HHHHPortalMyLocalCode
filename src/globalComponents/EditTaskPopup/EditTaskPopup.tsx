@@ -3308,7 +3308,6 @@ const EditTaskPopup = (Items: any) => {
 
 
         let UpdateDataObject: any = {
-            IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : workingToday,
             workingThisWeek: EditData.workingThisWeek
                 ? EditData.workingThisWeek
                 : null,
@@ -3502,7 +3501,7 @@ const EditTaskPopup = (Items: any) => {
                     ]
                 }
                 setWorkingAction([...oldWorkingAction, storeInWorkingAction]);
-                setWorkingToday(true)
+                // setWorkingToday(true)
                 // setusersAssignedIDs(assigneduserid)
             }
 
