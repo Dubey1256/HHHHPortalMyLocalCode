@@ -65,7 +65,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private dragUser: any;
     private getDatesInfo() {
         let datesInfo: any = [];
-        let currentDate = moment();
+        let currentDate:any = moment();
         currentDate._d.setHours(0, 0, 0, 0)
         let workingActionTest: any = [];
         try {
