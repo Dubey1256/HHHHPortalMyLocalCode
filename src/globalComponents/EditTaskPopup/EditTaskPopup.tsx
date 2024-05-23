@@ -4695,7 +4695,7 @@ const EditTaskPopup = (Items: any) => {
         let tempArray: any = [];
         if (searchedKey?.length > 0) {
             AllProjectData?.map((itemData: any) => {
-                if (itemData.Title.toLowerCase().includes(searchedKey.toLowerCase())) {
+                if (itemData.Path.toLowerCase().includes(searchedKey.toLowerCase()) || itemData.TaskID.toLowerCase().includes(searchedKey.toLowerCase())) {
                     tempArray.push(itemData);
                 }
             });
@@ -6729,7 +6729,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <span className="svg__iconbox svg__icon--editBox"></span>
                                                         </span>
                                                         {SearchedProjectData?.length > 0 ? (
-                                                            <div className="SmartTableOnTaskPopup">
+                                                            <div className="SmartTableOnTaskPopup" style={{ width: "max-content" }}>
                                                                 <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                     {SearchedProjectData.map((item: any) => {
                                                                         return (
@@ -6740,7 +6740,20 @@ const EditTaskPopup = (Items: any) => {
                                                                                     SelectProjectFromAutoSuggestion([item])
                                                                                 }
                                                                             >
-                                                                                <a>{item?.Path}</a>
+                                                                                <a>
+                                                                                    <span>
+                                                                                        {item?.Item_x0020_Type == "Sprint" ?
+                                                                                            <div title={item?.Item_x0020_Type} style={{ backgroundColor: `${item?.PortfolioType?.Color}` }} className={"Dyicons me-1"}>
+                                                                                                X
+                                                                                            </div>
+                                                                                            :
+                                                                                            <div title={item?.Item_x0020_Type} style={{ backgroundColor: `${item?.PortfolioType?.Color}` }} className={"Dyicons me-1"}>
+                                                                                                P
+                                                                                            </div>
+                                                                                        }
+                                                                                    </span>
+                                                                                    {item?.TaskID}-{item?.Path}
+                                                                                </a>
                                                                             </li>
                                                                         );
                                                                     })}
@@ -9306,7 +9319,20 @@ const EditTaskPopup = (Items: any) => {
                                                                                                 SelectProjectFromAutoSuggestion([item])
                                                                                             }
                                                                                         >
-                                                                                            <a>{item?.Path}</a>
+                                                                                            <a>
+                                                                                                <span>
+                                                                                                    {item?.Item_x0020_Type == "Sprint" ?
+                                                                                                        <div title={item?.Item_x0020_Type} style={{ backgroundColor: `${item?.PortfolioType?.Color}` }} className={"Dyicons me-1"}>
+                                                                                                            X
+                                                                                                        </div>
+                                                                                                        :
+                                                                                                        <div title={item?.Item_x0020_Type} style={{ backgroundColor: `${item?.PortfolioType?.Color}` }} className={"Dyicons me-1"}>
+                                                                                                            P
+                                                                                                        </div>
+                                                                                                    }
+                                                                                                </span>
+                                                                                                {item?.TaskID}-{item?.Path}
+                                                                                            </a>
                                                                                         </li>
                                                                                     );
                                                                                 })}
