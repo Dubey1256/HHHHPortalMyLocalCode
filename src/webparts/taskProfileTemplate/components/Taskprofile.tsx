@@ -565,7 +565,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
       .getById(this.props.SmartMetadataListID)
       .items
-      .select('Id', 'Title', 'IsVisible', 'TaxType', 'Parent/Id', 'Parent/Title', 'siteName', 'siteUrl', 'SmartSuggestions', "SmartFilters",)
+      .select('Id', 'Title', 'IsVisible', 'TaxType', 'Parent/Id', 'Parent/Title', 'siteName', 'siteUrl', 'SmartSuggestions', "SmartFilters")
 
       .expand('Parent').filter("TaxType eq 'Client Category'").top(4000)
       .get();
