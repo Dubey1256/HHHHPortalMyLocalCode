@@ -21,6 +21,7 @@ import Slider from "react-slick";
 import HighlightableCell from "../../../globalComponents/highlight";
 import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
 import { Panel } from '@fluentui/react';
+import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -31,6 +32,7 @@ let emailStatus: any = "";
 let IsShowConfigBtn = false;
 let dragItem: any;
 let DragDropType: any = '';
+let isUpdateTask: any = true;
 let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1, taskStatusComment: "For Approval" }, { value: 2, taskStatusComment: "Follow Up" }, { value: 3, taskStatusComment: "Approved" },
 { value: 4, taskStatusComment: "Checking" }, { value: 5, taskStatusComment: "Acknowledged" }, { value: 8, taskStatusComment: "Priority Check" }, { value: 9, taskStatusComment: "Ready To Go" },
 { value: 10, taskStatusComment: "working on it" }, { value: 70, taskStatusComment: "Re-Open" }, { value: 75, taskStatusComment: "Deployment Pending" }, { value: 80, taskStatusComment: "In QA Review" },
@@ -42,7 +44,9 @@ const TaskStatusTbl = (Tile: any) => {
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
   const [editPopup, setEditPopup]: any = React.useState(false);
+  const [EditCompPopup, setEditCompPopup]: any = React.useState(false);
   const [result, setResult]: any = React.useState(false);
+  const [CompResult, setCompResult]: any = React.useState(false);
   const [ActiveTile, setActiveTile] = React.useState(Tile?.activeTile);
   const [dateRange, setDateRange] = React.useState<any>([]);
   const [isRejectItem, setisRejectItem] = React.useState<any>(undefined);
@@ -126,12 +130,12 @@ const TaskStatusTbl = (Tile: any) => {
       setDateRange(ContextData?.DataRange)
     }
   }, [ContextData?.DashboardConfig]);
-  const ShowWorkingTask = (config: any, User: any, Time: any) => {
+  const ShowWorkingTask = (config: any, User: any, Time: any, ShowHideTable: any) => {
     DashboardConfig.forEach((configuration: any) => {
       if (configuration?.WebpartTitle == config?.WebpartTitle && configuration?.Tasks != undefined && configuration?.Tasks?.length > 0) {
         configuration?.Tasks.forEach((user: any) => {
           if (user?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && user?.AssingedToUserId == User?.AssingedToUserId) {
-            user.IsShowTask = !user.IsShowTask
+            user.IsShowTask = ShowHideTable;
           }
           if (user?.dates != undefined && user?.dates?.length > 0) {
             user?.dates.forEach((Date: any) => {
@@ -146,18 +150,18 @@ const TaskStatusTbl = (Tile: any) => {
     setActiveTile((prevString: any) => Tile?.activeTile);
     rerender();
   }
-  const ShowUnAssignedTask = (config: any, User: any, Time: any) => {
+  const ShowUnAssignedTask = (config: any, User: any, Time: any, ShowHideTable: any) => {
     DashboardConfig.forEach((configuration: any) => {
       if (configuration?.WebpartTitle == config?.WebpartTitle && configuration?.Tasks != undefined && configuration?.Tasks?.length > 0) {
         configuration?.Tasks.forEach((user: any) => {
           if (user?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && user?.AssingedToUserId == User?.AssingedToUserId) {
-            user.IsActiveUser = !user.IsActiveUser
+            user.IsActiveUser = ShowHideTable
             // user.IsShowTask = !user.IsShowTask
           }
           if (user?.dates != undefined && user?.dates?.length > 0) {
             user?.dates.forEach((Date: any) => {
               if (Date?.DisplayDate == 'Un-Assigned' && user?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && user?.AssingedToUserId == User?.AssingedToUserId) {
-                Date.IsShowTask = !Date.IsShowTask
+                Date.IsShowTask = ShowHideTable
               }
             })
           }
@@ -168,8 +172,11 @@ const TaskStatusTbl = (Tile: any) => {
     rerender();
   }
   const handleDragStart = (e: any, sourceUser: any, DragType: any) => {
+    isUpdateTask = true;
     e.dataTransfer.setData("sourceUser", JSON.stringify(sourceUser));
     DragDropType = DragType;
+    if (sourceUser?.TileName == 'WorkingToday')
+      isUpdateTask = false;
   };
   const startDrag = (e: any, Item: any, ItemId: any, draggedItem: any) => {
     dragItem = draggedItem;
@@ -229,7 +236,7 @@ const TaskStatusTbl = (Tile: any) => {
               let IsAddNew: boolean = true;
               let IsWorkingDetailsExist = false;
               Item?.WorkingAction?.map((workingMember: any) => {
-                if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
+                if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
                   IsWorkingDetailsExist = true;
                   workingMember?.InformationData?.map((workingDetails: any) => {
                     if (workingDetails?.WorkingDate == WorkingDate) {
@@ -447,119 +454,167 @@ const TaskStatusTbl = (Tile: any) => {
     }
   }
   const onDropTable = (e: any, Type: any, config: any) => {
-    let sourceUser = globalCommon.parseJSON(e.dataTransfer.getData("sourceUser"))
-    let Status = 0;
-    let count = 0;
-    if (Type != undefined) {
-      Status = Type
-    }
-    // let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
-    let UpdatedItem: any = []
-    if (RefSelectedItem != undefined && RefSelectedItem?.length > 0) {
-      RefSelectedItem?.map((DraggedItem: any) => {
-        UpdatedItem.push(DraggedItem?.original)
-      })
-    }
-    else {
-      UpdatedItem.push(globalCommon.parseJSON(e.dataTransfer.getData("DataId")))
-    }
-    if (UpdatedItem != undefined && UpdatedItem?.length > 0) {
-      UpdatedItem?.map((item: any) => {
-        let Item = item;
-        Item.percentage = Status + '%';
-        StatusOptions?.map((item: any) => {
-          if (Status == item.value) {
-            Item.Status = item?.taskStatusComment
-          }
-        });
-        Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item?.WorkingAction))
-        if (Item != undefined && Item != '') {
-          if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0)
-            Item.WorkingAction = Item?.WorkingAction.filter((Category: any) => Category?.Title !== 'WorkingDetails')
-          let web = new Web(ContextData?.propsValue?.siteUrl);
-          web.lists.getById(Item.listId).items.getById(Item?.Id).update({
-            PercentComplete: Status / 100,
-            Status: Item?.Status,
-            WorkingAction: Item?.WorkingAction?.length > 0 ? JSON.stringify(Item?.WorkingAction) : '',
-            AssignedToId: { results: [], },
-            IsTodaysTask: false,
-          }).then((res: any) => {
-            console.log('Drop successfuly');
-            count++;
-            DashboardConfig?.forEach((item: any) => {
-              if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
-                if (item?.Tasks != undefined) {
-                  item?.Tasks.map((user: any) => {
-                    // if (user?.AssingedToUserId == sourceUser?.AssingedToUserId) {
-                    Item.WorkingDate = '';
-                    if (Item.PrevWorkingAction != undefined && Item.PrevWorkingAction != '' && Item.PrevWorkingAction?.length > 0) {
-                      Item.PrevWorkingAction?.map((workingMember: any) => {
-                        if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
-                          workingMember?.InformationData?.map((workingDetails: any) => {
-                            if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
-                              let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
-                              WorkingDate?._d.setHours(0, 0, 0, 0)
-                              user?.dates.map((Time: any) => {
-                                if (Time?.ServerDate?.getTime() == WorkingDate?._d.getTime()) {
-                                  Time.Tasks = Time?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
-                                  Time.TotalTask = Time?.Tasks?.length;
-                                  Time.TotalEstimatedTime -= Item?.EstimatedTime;
-
-                                  user.Tasks = Time?.Tasks
-                                  user.TotalTask = Time?.TotalTask
-                                  user.TotalEstimatedTime -= Time?.TotalEstimatedTime
-                                }
-                              })
-                            }
-                          })
-                        }
-                      })
-                    }
-                    //}
-                  });
-                  if (sourceUser == undefined || sourceUser == '') {
-                    item.Tasks = item?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
-                  }
-                }
-              }
-              if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle) {
-                item?.Tasks.push(Item)
-              }
-            });
-            DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
-            DashboardConfigCopy?.map((Config: any) => {
-              if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
-                Config?.Tasks?.map((Date: any) => {
-                  if (Date?.dates != undefined && Date?.dates?.length > 0) {
-                    Date?.dates?.map((Time: any) => {
-                      if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
-                        Time.ServerDate = Moment(Time?.ServerDate)
-                        Time.ServerDate = Time.ServerDate?._d;
-                        Time.ServerDate.setHours(0, 0, 0, 0)
+    if (isUpdateTask == true) {
+      let sourceUser = globalCommon.parseJSON(e.dataTransfer.getData("sourceUser"))
+      let Status: any = 0;
+      let count = 0;
+      if (Type != undefined) {
+        Status = Type
+      }
+      // let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
+      let UpdatedItem: any = []
+      if (RefSelectedItem != undefined && RefSelectedItem?.length > 0) {
+        RefSelectedItem?.map((DraggedItem: any) => {
+          UpdatedItem.push(DraggedItem?.original)
+        })
+      }
+      else {
+        UpdatedItem.push(globalCommon.parseJSON(e.dataTransfer.getData("DataId")))
+      }
+      if (UpdatedItem != undefined && UpdatedItem?.length > 0) {
+        UpdatedItem?.map((item: any) => {
+          let Item = item;
+          Status = Status == undefined || Status == '' ? Item?.PercentComplete : Status
+          Item.percentage = Status != undefined && Status != '' ? Status : Item?.PercentComplete;
+          StatusOptions?.map((item: any) => {
+            if (Status == item.value) {
+              Item.Status = item?.taskStatusComment
+            }
+          });
+          Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item?.WorkingAction))
+          if (Item != undefined && Item != '') {
+            if (config?.TileName == 'WorkingToday') {
+              let today: any = new Date();
+              today.setDate(today.getDate());
+              today.setHours(0, 0, 0, 0);
+              let WorkingDate: any = Moment(today).format("DD/MM/YYYY");
+              Item.WorkingDate = WorkingDate
+              if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0) {
+                let IsAddNew: boolean = true;
+                let IsWorkingDetailsExist = false;
+                Item?.WorkingAction?.map((workingMember: any) => {
+                  if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
+                    IsWorkingDetailsExist = true;
+                    workingMember?.InformationData?.map((workingDetails: any) => {
+                      if (workingDetails?.WorkingDate == WorkingDate) {
+                        IsAddNew = false;
+                        if (workingDetails?.WorkingMember == undefined)
+                          workingDetails.WorkingMember = []
+                        if (!IsUserIdExist(workingDetails?.WorkingMember, ContextData?.currentUserData))
+                          workingDetails?.WorkingMember.push({ 'Id': ContextData?.currentUserData?.AssingedToUserId, 'Title': ContextData?.currentUserData?.Title })
                       }
                     })
                   }
-                });
-              }
-            });
-            if (count == UpdatedItem?.length) {
-              try {
-                if (childRef?.current != undefined)
-                  childRef?.current?.setRowSelection({});
-                setRefSelectedItem([])
-              } catch (e) {
-                console.log(e)
-              }
-            }
-            setActiveTile(Tile?.activeTile)
-            rerender();
-          }).catch((err: any) => {
-            console.log(err);
-          })
-        }
-      })
-    }
+                })
+                if (IsAddNew == true) {
+                  if (IsWorkingDetailsExist == false) {
+                    Item?.WorkingAction.push({ 'Title': "WorkingDetails", 'InformationData': [] })
+                  }
+                  Item?.WorkingAction?.map((workingMember: any) => {
+                    if (workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
+                      if (workingMember?.InformationData == undefined)
+                        workingMember.InformationData = [];
+                      workingMember.InformationData.push({ 'WorkingDate': WorkingDate, 'WorkingMember': [{ 'Id': ContextData?.currentUserData?.AssingedToUserId, 'Title': ContextData?.currentUserData?.Title }] })
 
+                    }
+                  })
+                }
+              }
+              Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item?.WorkingAction))
+            }
+            else {
+              if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0)
+                Item.WorkingAction = Item?.WorkingAction.filter((Category: any) => Category?.Title !== 'WorkingDetails')
+            }
+            let web = new Web(ContextData?.propsValue?.siteUrl);
+            web.lists.getById(Item.listId).items.getById(Item?.Id).update({
+              PercentComplete: Status / 100,
+              Status: Item?.Status,
+              WorkingAction: Item?.WorkingAction?.length > 0 ? JSON.stringify(Item?.WorkingAction) : '',
+              AssignedToId: { results: config?.TileName == 'WorkingToday' ? [ContextData?.currentUserData?.AssingedToUserId] : [], },
+              IsTodaysTask: false,
+            }).then((res: any) => {
+              console.log('Drop successfuly');
+              count++;
+              DashboardConfig?.forEach((item: any) => {
+                if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
+                  if (item?.Tasks != undefined) {
+                    item?.Tasks.map((user: any) => {
+                      // if (user?.AssingedToUserId == sourceUser?.AssingedToUserId) {
+                      if (config?.TileName != 'WorkingToday')
+                        Item.WorkingDate = '';
+                      if (Item.PrevWorkingAction != undefined && Item.PrevWorkingAction != '' && Item.PrevWorkingAction?.length > 0) {
+                        Item.PrevWorkingAction?.map((workingMember: any) => {
+                          if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
+                            workingMember?.InformationData?.map((workingDetails: any) => {
+                              if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                                let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
+                                WorkingDate?._d.setHours(0, 0, 0, 0)
+                                if (user?.dates != undefined && user?.dates?.length > 0) {
+                                  user?.dates.map((Time: any) => {
+                                    if (Time?.ServerDate?.getTime() == WorkingDate?._d.getTime()) {
+                                      Time.Tasks = Time?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                                      Time.TotalTask = Time?.Tasks?.length;
+                                      Time.TotalEstimatedTime -= Item?.EstimatedTime;
+                                      user.Tasks = Time?.Tasks
+                                      user.TotalTask = Time?.TotalTask
+                                      user.TotalEstimatedTime -= Time?.TotalEstimatedTime
+                                    }
+                                  })
+                                }
+                              }
+                            })
+                          }
+                        })
+                      }
+                      //}
+                    });
+                    if ((sourceUser?.AssingedToUserId == undefined || sourceUser?.AssingedToUserId == '') && config?.TileName != 'WorkingToday') {
+                      item.Tasks = item?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                    }
+                  }
+                }
+                if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle && !isTaskItemExists(item?.Tasks, Item)) {
+                  item?.Tasks.push(Item)
+                }
+              });
+              DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+              DashboardConfigCopy?.map((Config: any) => {
+                if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+                  Config?.Tasks?.map((Date: any) => {
+                    if (Date?.dates != undefined && Date?.dates?.length > 0) {
+                      Date?.dates?.map((Time: any) => {
+                        if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
+                          Time.ServerDate = Moment(Time?.ServerDate)
+                          Time.ServerDate = Time.ServerDate?._d;
+                          Time.ServerDate.setHours(0, 0, 0, 0)
+                        }
+                      })
+                    }
+                  });
+                }
+              });
+              if (count == UpdatedItem?.length) {
+                try {
+                  if (childRef?.current != undefined)
+                    childRef?.current?.setRowSelection({});
+                  setRefSelectedItem([])
+                } catch (e) {
+                  console.log(e)
+                }
+              }
+              setActiveTile(Tile?.activeTile)
+              rerender();
+            }).catch((err: any) => {
+              console.log(err);
+            })
+          }
+        })
+      }
+    }
+    else {
+      alert('You cannot drag today tasks')
+    }
   }
   const isTaskItemExists = (array: any, items: any) => {
     let isExists = false;
@@ -770,9 +825,15 @@ const TaskStatusTbl = (Tile: any) => {
       {
         accessorFn: (row: any) => row?.portfolioItemsSearch,
         cell: ({ row, getValue }: any) => (
-          <div draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)}>
-            <img width={"20px"} height={"20px"} className="rounded-circle" src={row?.original?.SiteIcon} />
-          </div>
+          <>
+            {item?.DataSource != 'Project' && <div draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)}>
+              <img width={"20px"} height={"20px"} className="rounded-circle" src={row?.original?.SiteIcon} />
+            </div>}
+            {item?.DataSource == 'Project' && <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+              row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"}>
+              {row?.original?.SiteIconTitle}
+            </div>}
+          </>
         ),
         id: "portfolioItemsSearch",
         placeholder: "Type",
@@ -966,7 +1027,7 @@ const TaskStatusTbl = (Tile: any) => {
         header: "",
         resetColumnFilters: false,
         size: 80,
-        isColumnVisible: true,
+        isColumnVisible: item?.DataSource == 'Tasks' ? true : false,
         fixedColumnWidth: true
       },
       {
@@ -1070,12 +1131,17 @@ const TaskStatusTbl = (Tile: any) => {
         header: "",
         resetColumnFilters: false,
         size: 49,
-        isColumnVisible: true,
+        isColumnVisible: item?.DataSource == 'Tasks' ? true : false,
         fixedColumnWidth: true
       },
       {
         cell: ({ row, getValue }: any) => (
-          <span title="Edit Task" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
+          <>
+            {item?.DataSource != 'Project' ? <span title="Edit Task" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span> :
+              <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span>}
+
+          </>
+
 
         ),
         id: 'EditTaskPopup',
@@ -1204,7 +1270,14 @@ const TaskStatusTbl = (Tile: any) => {
     setEditPopup(true);
     setResult(item)
   }
+  const EditComponentPopup = (item: any) => {
+    item['siteUrl'] = `${AllListId?.siteUrl}`;
+    item['listName'] = 'Master Tasks';
+    setEditCompPopup(true);
+    setCompResult(item)
+  }
   function CallBack() {
+    setEditCompPopup(false);
     setEditPopup(false);
   }
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
@@ -1345,7 +1418,7 @@ const TaskStatusTbl = (Tile: any) => {
   const customWorkingTableHeaderButtons = (config: any, user: any, Time: any, ShowType: any) => {
     return (
       <span className="alignCenter">
-        <span className="empCol me-1 hreflink" onClick={() => ShowType == 'DateTask' ? ShowWorkingTask(config, user, undefined) : ShowUnAssignedTask(config, user, undefined)}>Hide</span>
+        <span className="empCol me-1 hreflink" onClick={() => ShowType == 'DateTask' ? ShowWorkingTask(config, user, undefined, false) : ShowUnAssignedTask(config, user, undefined, false)}>Hide</span>
       </span>
     )
   }
@@ -1363,13 +1436,13 @@ const TaskStatusTbl = (Tile: any) => {
           const box = (
             <div className={`col-${12 / config.highestColumn} px-1 mb-2 `} key={index}>
               {config?.ShowWebpart == true && config?.GroupByView != undefined && <section>
-                {config?.DataSource == 'Tasks' && <div className="workingSec empAllSec clearfix">
+                {(config?.DataSource == 'Tasks' || config?.DataSource == 'Project') && <div className="workingSec empAllSec clearfix">
                   <div className="alignCenter mb-2 justify-content-between">
                     <span className="fw-bold">
                       {`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}
                     </span>
                   </div>
-                  <div className="Alltable" draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
+                  <div className="Alltable" draggable={true} onDragStart={(e) => handleDragStart(e, config, '')} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
                       <GlobalCommanTable wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                         pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
@@ -1420,7 +1493,7 @@ const TaskStatusTbl = (Tile: any) => {
                               <>
                                 <div className="top-assign p-1 mb-2">
                                   {user.Item_x0020_Cover != undefined && user.AssingedToUser != undefined &&
-                                    <span onClick={() => ShowWorkingTask(config, user, undefined)}>
+                                    <span onClick={() => ShowWorkingTask(config, user, undefined, true)}>
                                       <img className={user.IsShowTask == true || user?.IsActiveUser == true ? 'large_teamsimg activeimg' : 'large_teamsimg'} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
                                     </span>
                                   }
@@ -1439,7 +1512,8 @@ const TaskStatusTbl = (Tile: any) => {
                                       {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => (
                                         user?.dates != null && user?.dates?.length > 0 && user?.dates.map((time: any, index: number) => (
                                           date?.ServerDate?.getTime() == time?.ServerDate?.getTime() && <>
-                                            <dt onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, time?.DisplayDate)} className={time.IsShowTask == true && time?.DisplayDate == 'Un-Assigned' ? 'px-2 shadow-sm text-center activeblock' : 'px-2 shadow-sm text-center'} onClick={() => time?.DisplayDate != 'Un-Assigned' ? ShowWorkingTask(config, user, time) : ShowUnAssignedTask(config, user, time)}>
+                                            {/* activeblock */}
+                                            <dt onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, time?.DisplayDate)} className={time.IsShowTask == true && time?.DisplayDate == 'Un-Assigned' ? 'px-2 shadow-sm text-center' : 'px-2 shadow-sm text-center'} onClick={() => time?.DisplayDate != 'Un-Assigned' ? ShowWorkingTask(config, user, time, true) : ShowUnAssignedTask(config, user, time, true)}>
                                               {time?.TotalTask != undefined && time?.TotalTask != '' && <><span title="Total Task">{time?.TotalTask}</span> | <span title="Total Estimation Time">{time?.TotalEstimatedTime}</span></>}
                                               {time?.TotalTask == undefined || time?.TotalTask == '' && <span>N/A</span>}
                                             </dt>
@@ -1474,7 +1548,7 @@ const TaskStatusTbl = (Tile: any) => {
                                     {/* {Date?.DisplayDate} */}
                                     {/* onDragOver={(e) => e.preventDefault()} */}
                                     {Date?.DisplayDate == 'Un-Assigned' &&
-                                      <><h3 className="f-15">Un-Assigned Tasks</h3>
+                                      <><h3 className="f-15">{user?.Title} Un-Assigned Tasks</h3>
                                         <div onDragStart={(e) => handleDragStart(e, user, 'Un-Assigned')} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} key={index} className="Alltable mb-2">
                                           <GlobalCommanTable bulkEditIcon={true} updatedSmartFilterFlatView={true} customHeaderButtonAvailable={true} customTableHeaderButtons={customWorkingTableHeaderButtons(config, user, undefined, 'Un-AssignedTask')} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date?.Tasks}
                                             callBackData={callBackData} pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
@@ -1555,6 +1629,9 @@ const TaskStatusTbl = (Tile: any) => {
         {ActiveTile != undefined && generateDashboard()}
         <span>
           {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
+        </span>
+        <span>
+          {EditCompPopup && <EditProjectPopup props={CompResult} AllListId={AllListId} Call={() => { CallBack() }} />}
         </span>
         <span>
           {/* {IsManageConfigPopup && <ManageConfigPopup DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} props={ContextData?.propsValue} SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />} */}

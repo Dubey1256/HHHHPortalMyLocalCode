@@ -915,7 +915,7 @@ const HalfClientCategory = (props: any) => {
             {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row }) => (
-                    <span >
+                    <div className='alignCenter'>
                         <span>{row?.original?.DisplayCreateDate} </span>
 
                         {row?.original?.createdImg != undefined ? (
@@ -931,7 +931,7 @@ const HalfClientCategory = (props: any) => {
                         ) : (
                             <span className=' ms-1 workmember svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                         )}
-                    </span>
+                    </div>
                 ),
                 id: 'DisplayCreateDate',
                 canSort: false,
@@ -1111,7 +1111,7 @@ const HalfClientCategory = (props: any) => {
             {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row }) => (
-                    <span>
+                    <div className='alignCenter'>
                         <span>{row?.original?.DisplayCreateDate} </span>
 
                         {row?.original?.createdImg != undefined ? (
@@ -1125,9 +1125,9 @@ const HalfClientCategory = (props: any) => {
                                 </a>
                             </>
                         ) : (
-                            <span className='alignIcon workmember ms-1 svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                            <span className='alignIcon workmember svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                         )}
-                    </span>
+                    </div>
                 ),
                 id: 'DisplayCreateDate',
                 canSort: false,
@@ -1147,9 +1147,9 @@ const HalfClientCategory = (props: any) => {
             {
 
                 cell: ({ row }) => (
-                    <div className='alignCenter'>
-                        {row?.original?.siteType === "Master Tasks" ? <span title="Edit" onClick={() => { EditComponentPopup(row?.original) }} className="svg__iconbox mt-1 svg__icon--edit hreflink" ></span> : ''}
-                    </div>
+                    <>
+                        {row?.original?.siteType === "Master Tasks" ? <span title="Edit" onClick={() => { EditComponentPopup(row?.original) }} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
+                    </>
                 ),
                 id: 'Id',
                 canSort: false,

@@ -22,6 +22,7 @@ import moment from 'moment';
 import { SpaTwoTone } from '@material-ui/icons';
 import AddTaskConfigPopup from './AddTaskConfigPopup';
 import EditTaskConfigPopup from './EditTaskConfigPopup';
+import Tooltip from '../../../globalComponents/Tooltip';
 let users: any = []
 let PortFolioType: any = [];
 let SelectedPortfolio: any
@@ -63,17 +64,17 @@ export const NotificationsAddPopup = (props: any) => {
         setSelectedPersonsAndGroups(people)
         // console.log(people)
     }
-    const onRenderCustomHeader = (
-    ) => {
+    const onRenderCustomHeader = () => {
         return (
-            <div className=" full-width pb-1" > <div className="subheading">
-                <span className="siteColor">
-                    {props?.SelectedEditItem?.Id != undefined ? `Edit Permission - ${props?.SelectedEditItem?.Title}` : 'Add Configuration'}
-                </span>
+          <>
+            <div className='subheading'>
+            {props?.SelectedEditItem?.Id != undefined ? `Edit Permission - ${props?.SelectedEditItem?.Title}` : 'Add Configuration'}
             </div>
-            </div>
+            <Tooltip ComponentId={'6755'} />
+          </>
         );
-    };
+      };
+  
     const closePopup = (type?: any | undefined) => {
         props.callBack(type);
 
@@ -90,21 +91,14 @@ export const NotificationsAddPopup = (props: any) => {
                 console.log(error)
             });
         }
-        let defalutEmail:any=[]
-        props?.SelectedEditItem?.Recipients?.map((recipient:any)=>{
-            users?.map((userData:any)=>{
-                if(recipient?.Title== userData?.Title)
-                    defalutEmail?.push(userData?.Email)
-            })
-          
-        })
-        setDefaultSelectedUser(defalutEmail)
+     
     }
     const addFunction = async () => {
         let pageInfo = await globalCommon.pageContext()
         let postData: any;
         let updateData: any;
         let peopleAndGroupId: any = [];
+        let applyPost=true;
         if (selectedConfigType == "Report") {
             if (pageInfo?.WebFullUrl) {
 
@@ -114,12 +108,18 @@ export const NotificationsAddPopup = (props: any) => {
                         peopleAndGroupId?.push(foundPerson?.Id)
                     }
                 })
-                postData = {
-                    Title: ConfigTitle,
-                    RecipientsId: { 'results': peopleAndGroupId },
-                    Subject: EmailSubjectReport,
-                    ConfigType: selectedConfigType
+                if(peopleAndGroupId.length>0){
+                    postData = {
+                        Title: ConfigTitle,
+                        RecipientsId: { 'results': peopleAndGroupId },
+                        Subject: EmailSubjectReport,
+                        ConfigType: selectedConfigType
+                    }
+                }else{
+                    applyPost=false;
+                    alert("Please fill the Report Recipient")
                 }
+               
             }
         } else {
 
@@ -132,7 +132,7 @@ export const NotificationsAddPopup = (props: any) => {
 
 
         }
-        if (props?.SelectedEditItem?.Id == undefined) {
+        if (props?.SelectedEditItem?.Id == undefined && applyPost) {
 
             let web = new Web(pageInfo.WebFullUrl);
             await web.lists.getByTitle('NotificationsConfigration').items.add(postData).then((data: any) => {
@@ -170,7 +170,7 @@ export const NotificationsAddPopup = (props: any) => {
         PortFolioType = await web.lists.getById(props?.AllListId?.PortFolioTypeID).items.select("Id", "Title", "Color", "IdRange", "StatusOptions").get();
         let result = await web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,PortfolioType/Id,PortfolioType/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject').expand('Author,Editor,Recipients,PortfolioType').get()
 
-        if (props?.SelectedEditItem != undefined) {
+        if (props?.SelectedEditItem?.Id != undefined) {
             PortFolioType = PortFolioType?.filter((portfolio: any) => portfolio?.Id == props?.SelectedEditItem?.PortfolioType?.Id);
 
 

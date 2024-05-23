@@ -1193,7 +1193,7 @@ function reverseArray(arr: any) {
     getStructurefTimesheetCategories();
     setEditItem(items.Title);
 
-    if (items.siteType == "Offshore Tasks" || items.siteType == "SharewebQA") {
+    if (items.siteType == "Offshore Tasks" || items.siteType == "SharewebQA" || items.siteType == "Offshore%20Tasks") {
       var siteType = "OffshoreTasks";
       var filteres = "Task" + siteType + "/Id eq " + items.Id;
       var linkedSite = "Task" + siteType;
@@ -1450,7 +1450,7 @@ function reverseArray(arr: any) {
       item.props.TotalTime = item.props?.TotalTime - childinew.TaskTimeInMin;
     }
     
-      if(item.props.TotalTime > 0){
+      if(item.props?.TotalTime > 0){
         await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
           TotalTime: item.props?.TotalTime
       }).then((res: any) => {
@@ -1767,7 +1767,7 @@ function reverseArray(arr: any) {
 
     
     var UpdatedData: any = {};
-    if (item.props.siteType == "Offshore Tasks") {
+    if (item.props.siteType == "Offshore Tasks" || item.props?.siteType == "Offshore%20Tasks" || item.props?.siteType == 'SharewebQA') {
       var siteType = "OffshoreTasks";
       smartTermId = "Task" + siteType + "Id";
     } else {
@@ -2222,7 +2222,7 @@ function reverseArray(arr: any) {
               : "";
         }
       });
-      if (item.props.siteType == "Offshore Tasks") {
+      if (item.props.siteType == "Offshore Tasks" || item.props?.siteType == "Offshore%20Tasks" || item.props?.siteType == 'SharewebQA') {
         var siteType = "OffshoreTasks";
         var filteres = "Task" + siteType + "/Id eq " + item.props.Id;
         var linkedSite = "Task" + siteType;
@@ -2353,7 +2353,7 @@ function reverseArray(arr: any) {
     var update: any = {};
     var UpdatedData: any = [];
     let web = new Web(`${CurrentSiteUrl}`);
-    if (item.props.siteType == "Offshore Tasks") {
+    if (item.props.siteType == "Offshore Tasks" || item.props?.siteType == "Offshore%20Tasks" || item.props?.siteType == 'SharewebQA') {
       var siteType = "OffshoreTasks";
       smartTermId = "Task" + siteType + "Id";
     } else {
@@ -2451,7 +2451,7 @@ function reverseArray(arr: any) {
     }
     var DateFormate = new Date(Eyd);
 
-    if (item.props.siteType == "Offshore Tasks") {
+    if (item.props.siteType == "Offshore Tasks" || item.props?.siteType == "Offshore%20Tasks" || item.props?.siteType == 'SharewebQA') {
       var siteType = "OffshoreTasks";
       smartTermId = "Task" + siteType + "Id";
     } else {

@@ -7,15 +7,25 @@ import { Web } from 'sp-pnp-js';
 import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import ImageInformation from '../../EditPopupFiles/ImageInformation';
+import ReadyMadeTable from '../../../globalComponents/RadimadeTable';
 let mastertaskdetails: any = []
 let copyEditData: any = {}
 let mydataa: any = [];
+let myTaskData: any = []
 let count = 0;
 let componentDetailsDaata: any = [];
+let tempmetadata: any = [];
+var tempArray: any = [];
+var selectedTasks: any = [];
+var AllListId: any;
+
 
 const EditDocumentpanel = (props: any) => {
   const [EditdocumentsData, setEditdocumentsData]: any = React.useState();
   const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
+  const [isopenTaskpopup, setisopenTaskpopup] = React.useState(false);
+  const [TaskItem, setTaskItem] = React.useState("");
+  const [TaskSearchKey, setTaskSearchKey] = React.useState("");
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = React.useState(false);
   const [isopenprojectservicepopup, setisopenprojectservicepopup] = React.useState(false);
   const [projectdata, setProjectData] = React.useState([]);
@@ -23,6 +33,11 @@ const EditDocumentpanel = (props: any) => {
   const [allProjectDaata, SetAllProjectDaata] = React.useState([]);
   const [ProjectSearchKey, setProjectSearchKey] = React.useState("");
   const [searchedProjectDaata, setSearchedProjectDaata] = React.useState([]);
+  const [Metadata, setMetadata] = React.useState([]);
+  const [allTaskData, SetAllTaskData] = React.useState([]);
+  const [searchedTaskData, setSearchedTaskData] = React.useState([]);
+  const [TaggedSitesTask, setTaggedSitesTask] = React.useState<any>([]);
+
   let ItemRank = [
     { rankTitle: 'Select Item Rank', rank: null },
     { rankTitle: '(8) Top Highlights', rank: 8 },
@@ -34,9 +49,13 @@ const EditDocumentpanel = (props: any) => {
     { rankTitle: '(1) Archive', rank: 1 },
     { rankTitle: '(0) No Show', rank: 0 }
   ]
-  let  Status:any=["selectStatus","Draft","Final","Archived"]
+  let Status: any = ["selectStatus", "Draft", "Final", "Archived"]
 
   React.useEffect(() => {
+    AllListId = props.AllListId
+    AllListId.TaskTypeID = "21b55c7b-5748-483a-905a-62ef663972dc";
+    AllListId.PortFolioTypeID = "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
+    AllListId.Context = props.AllListId?.context
     if (props?.editData != undefined) {
       LoadMasterTaskList().then((smartData: any) => {
         loadSelectedDocuments()
@@ -44,38 +63,102 @@ const EditDocumentpanel = (props: any) => {
         console.log(error)
       })
     }
+    LoadSmartmetadata()
   }, [props?.editData != undefined])
 
+
+  const LoadSmartmetadata = async () => {
+    let siteConfigSites: any = [];
+    let web = new Web(props?.AllListId?.siteUrl);
+    let smartmetaDetails: any = [];
+    smartmetaDetails = await web.lists
+      .getById(props?.AllListId?.SmartMetadataListID)
+      .items.select(
+        "Id",
+        "Title",
+        "IsVisible",
+        "ParentID",
+        "SmartSuggestions",
+        "TaxType",
+        "Description1",
+        "Configurations",
+        "Item_x005F_x0020_Cover",
+        "listId",
+        "siteName",
+        "siteUrl",
+        "SortOrder",
+        "SmartFilters",
+        "Selectable",
+        "Color_x0020_Tag",
+        "Parent/Id",
+        "Parent/Title"
+      )
+      .filter("TaxType eq 'Documentquery'")
+      .top(4999)
+      .expand("Parent")
+      .get();
+
+    tempmetadata = JSON.parse(smartmetaDetails[0].Configurations)
+    setMetadata(smartmetaDetails);
+  };
+
   const loadSelectedDocuments = async () => {
-    const web = new Web(props?.AllListId?.siteUrl);
+    let AllTasks: any = []
+    tempArray = []
+    let tempArraycopy = [];
+    const web = new Web(tempmetadata[0]?.siteUrl);
     try {
-      await web.lists.getById(props?.AllListId?.DocumentsListID)
+      await web.lists.getById(tempmetadata[0]?.listId)
         .items.getById(props?.editData?.Id)
-        .select('Id', 'Title', 'PriorityRank', 'Year', 'Body','Status', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover', 'Portfolios/Id', 'Portfolios/Title', 'File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl')
-        .expand('Author,Editor,Portfolios')
+        .select(tempmetadata[0]?.query)
         .get()
         .then((Data) => {
           let Title: any = " "
           Data.docTitle = getUploadedFileName(Data?.FileLeafRef);
           Title = Data?.docTitle;
-          Data.Title = Title;       
-          if (Data?.Title?.includes(Data?.File_x0020_Type)) {
+          Data.Title = (Data?.Title != undefined && Data?.Title != '' && Data?.Title != null) ? Data.Title : Title;
+          if (Data?.Title.includes(Data?.File_x0020_Type)) {
             Data.Title = getUploadedFileName(Data?.Title);
           }
-          Data.siteType = 'sp';
+          Data.siteType = tempmetadata[0]?.siteType;
           // Data.docTitle = getUploadedFileName(Data?.FileLeafRef);
           Data.Item_x002d_Image = Data?.Item_x0020_Cover
           let portfolioData: any = []
           let projectData: any = []
           let projectDataforsuggestion: any = []
 
+          try {
+            tempmetadata[0].taskSites.map((site: any) => {
+              if (Data[site]?.length > 0) {
+                let temp: any = {}
+                temp.Task = []
+                temp.TaskIds = []
+                tempArraycopy = Data[site].map((item: any) => {
+                  temp.Title = `${site}Id`
+                  temp.Task.push(item)
+                  item.siteType = site;
+                  if (temp?.Title?.toLowerCase()?.indexOf(site.toLowerCase()) > -1) {
+                    temp.TaskIds.push(item.Id);
+                  }
+                  AllTasks.push(item)
+                  return temp;
+                });
+                tempArray.push(tempArraycopy[0])
+                setTaggedSitesTask(AllTasks);
+              }
+            })
+          }
+          catch (e) {
+            console.log(e)
+          }
+
           if (Data.Portfolios != undefined && Data?.Portfolios?.length > 0) {
             Data?.Portfolios?.map((portfolio: any) => {
               mastertaskdetails.map((mastertask: any) => {
-                if (mastertask.Id == portfolio.Id && mastertask?.Item_x0020_Type != "Project") {
+                if (mastertask.Id == portfolio.Id && mastertask?.Item_x0020_Type != "Project" && mastertask.Item_x0020_Type != "Sprint") {
                   portfolioData.push(mastertask);
                 }
-                if (mastertask.Id == portfolio.Id && mastertask?.Item_x0020_Type == "Project") {
+                if (mastertask.Id == portfolio.Id && (mastertask?.Item_x0020_Type == "Project" || mastertask.Item_x0020_Type == "Sprint")) {
                   projectData.push(mastertask);
                 }
                 if (mastertask?.Item_x0020_Type == "Project") {
@@ -101,7 +184,7 @@ const EditDocumentpanel = (props: any) => {
     } catch (e: any) {
       console.log(e);
     }
-  };
+  }; 
 
   async function updateMultiLookup(
     itemIds: number[],
@@ -249,30 +332,34 @@ const EditDocumentpanel = (props: any) => {
         componetServicetagData.push(com.Id);
       });
     }
+    const postData: any = {
+      Title: EditdocumentsData?.Title,
+      FileLeafRef: EditdocumentsData?.docTitle,
+      ItemRank: EditdocumentsData?.ItemRank == 'Select Item Rank' ? null : EditdocumentsData?.ItemRank,
+      Year: EditdocumentsData.Year,
+      ItemType: EditdocumentsData.ItemType,
+      Status: EditdocumentsData.Status,
+      PortfoliosId: { "results": componetServicetagData.length > 0 ? componetServicetagData : [] },
+      Body: EditdocumentsData?.Body,
+      Item_x0020_Cover: {
+        "__metadata": { type: 'SP.FieldUrlValue' },
+        'Description': EditdocumentsData?.Item_x002d_Image?.Url != "" ? EditdocumentsData?.UrItem_x002d_Imagel?.Url : "",
+        'Url': EditdocumentsData?.Item_x002d_Image?.Url ? EditdocumentsData?.Item_x002d_Image?.Url : "",
+      },
+      Url: {
+        "__metadata": { type: 'SP.FieldUrlValue' },
+        'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
+        'Url': EditdocumentsData?.Url?.Url ? EditdocumentsData?.Url?.Url : "",
+      }
+
+    }
+    tempArray?.map((item: any) => {
+      postData[item.Title] = { results: item.TaskIds }
+    })
 
     const web = new Web(props?.AllListId?.siteUrl);
     await web.lists.getById(props?.AllListId?.DocumentsListID)
-      .items.getById(EditdocumentsData.Id).update({
-        Title: EditdocumentsData?.Title,
-        FileLeafRef: EditdocumentsData?.docTitle,
-        ItemRank: EditdocumentsData?.ItemRank == 'Select Item Rank' ? null : EditdocumentsData?.ItemRank,
-        Year: EditdocumentsData.Year,
-        ItemType: EditdocumentsData.ItemType,
-        Status:EditdocumentsData.Status,
-        PortfoliosId: { "results": componetServicetagData.length > 0 ? componetServicetagData : [] },
-        Body: EditdocumentsData?.Body,
-        Item_x0020_Cover: {
-          "__metadata": { type: 'SP.FieldUrlValue' },
-          'Description': EditdocumentsData?.Item_x002d_Image?.Url != "" ? EditdocumentsData?.UrItem_x002d_Imagel?.Url : "",
-          'Url': EditdocumentsData?.Item_x002d_Image?.Url ? EditdocumentsData?.Item_x002d_Image?.Url : "",
-        },
-        Url: {
-          "__metadata": { type: 'SP.FieldUrlValue' },
-          'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
-          'Url': EditdocumentsData?.Url?.Url ? EditdocumentsData?.Url?.Url : "",
-        }
-
-      }).then((updatedItem: any) => {
+      .items.getById(EditdocumentsData.Id).update(postData).then((updatedItem: any) => {
         console.log(updatedItem)
         if (EditdocumentsData?.Url != undefined) {
           alert(" Link update successfully");
@@ -386,7 +473,30 @@ const EditDocumentpanel = (props: any) => {
       setSearchedProjectDaata([]);
     }
   };
-
+  const autoSuggestionForTask = (e: any) => {
+    let searchedKey: any = e.target.value;
+    setTaskSearchKey(e.target.value);
+    let tempArray: any = [];
+    if (searchedKey?.length > 0) {
+      allTaskData?.map((itemData: any) => {
+        if (itemData.Title.toLowerCase().includes(searchedKey.toLowerCase())) {
+          tempArray.push(itemData);
+        }
+      });
+      setSearchedTaskData(tempArray);
+    } else {
+      setSearchedTaskData([]);
+    }
+  };
+  
+  const handleSuggestionforTask = (suggestion: any) => {
+    // allProjectDaata?.map((items: any) => {
+    //   if (items?.Id === suggestion?.Id) {
+    //     callServiceComponents([items], "Multi", "Save");
+    //   }
+    // });
+    setSearchedTaskData([]);
+  };
   const handleSuggestionforProject = (suggestion: any) => {
     allProjectDaata?.map((items: any) => {
       if (items?.Id === suggestion?.Id) {
@@ -429,6 +539,11 @@ const EditDocumentpanel = (props: any) => {
     mydataa.push(props?.editData?.Id);
     setCMSToolComponentProjectpopup(itemm);
   };
+  const openTaskPopup = (itemm: any) => {
+    setisopenTaskpopup(true);
+    myTaskData.push(props?.editData);
+    setTaskItem(itemm);
+  };
 
   const callServiceComponents = React.useCallback(
     (item1: any, type: any, functionType: any) => {
@@ -452,6 +567,23 @@ const EditDocumentpanel = (props: any) => {
     },
     []
   );
+  const DeleteCrossIconDataForTask = async (titleToRemove: any) => {
+    var selectedTasks1 = TaggedSitesTask.filter(
+      (itemmm: any) => itemmm.Id !== titleToRemove
+    );
+    selectedTasks = selectedTasks1
+    tempArray.map((item: any) => {
+      item.Task = item?.Task?.filter(
+        (itemmm: any) => itemmm.Id !== titleToRemove
+      );
+      item?.TaskIds?.map((id: any, index: any) => {
+        if (id == titleToRemove)
+          item?.TaskIds?.splice(index, 1)
+      })
+    })
+    console.log("remove data", selectedTasks1);
+    setTaggedSitesTask(selectedTasks1);
+  };
 
   const DeleteCrossIconDataForProject = async (titleToRemove: any) => {
     try {
@@ -484,6 +616,39 @@ const EditDocumentpanel = (props: any) => {
       console.log(error);
     }
   };
+  const IsitemExists = function (array: any, Item: any) {
+    var isExists = false;
+    array.map((item: any) => {
+      if (item.Id === Item.Id && item.siteType === Item.siteType) {
+        isExists = true;
+        return false;
+      }
+    });
+    return isExists;
+  }
+  const TaskCallback = async (value: any) => {   
+    selectedTasks = TaggedSitesTask
+    value?.map((item: any) => {
+      if (!IsitemExists(selectedTasks, item?.original))
+        selectedTasks.push(item?.original)
+    })
+    if (selectedTasks?.length > 0) {
+      let temp: any = {}
+      temp.Task = []
+      temp.TaskIds = []
+      tempArray = selectedTasks.map((item: any) => {
+        temp.Title = `${item?.siteType}Id`
+        temp.Task.push(item)
+
+        if (temp?.Title?.toLowerCase()?.indexOf(item.siteType.toLowerCase()) > -1) {
+          temp.TaskIds.push(item.Id);
+        }
+        return temp;
+      });     
+    }
+    setTaggedSitesTask(selectedTasks);
+  }
+
   /////////folara editor function start//////////
   const HtmlEditorCallBack = (items: any) => {
     console.log(items);
@@ -563,14 +728,83 @@ const EditDocumentpanel = (props: any) => {
                 </div>
               </div>
               <div className='row mt-3'>
-                <div className="col-sm-6">
+                <div className="col-sm-6 mb-3">
                   <div className='input-group'>
                     <label className="full-width ">Title </label>
                     <input type="text" className="form-control" value={EditdocumentsData?.Title}
                       onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value })}
                     />
                   </div>
+                </div>
+                {/* -------For Task--- */}
+                <div className="col-sm-6 mb-3">
+                  <div className="input-group">
+                    <label className="full_width">Task</label>
+                    {TaggedSitesTask != undefined && TaggedSitesTask.length == 1 ? (
+                      <div className="w-100">
+                        {TaggedSitesTask?.map((items: any, Index: any) => (
+                          <div className="full-width replaceInput alignCenter" key={Index}>
+                            <a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items.Id}&Site=${items.siteType}`} className="textDotted hreflink" data-interception="off" target="_blank">
+                              {items?.Title}
+                            </a>
+                            <span className="input-group-text" placeholder="Task" >
+                              <span className="bg-dark svg__icon--cross svg__iconbox" onClick={() => DeleteCrossIconDataForTask(items?.Id)}></span>
+                              <span title="Task" onClick={(e) => openTaskPopup("Task")} className="svg__iconbox svg__icon--editBox" ></span>
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (<>
+                      <input type="text" className="form-control" placeholder="Search Task Here" onChange={(e) => autoSuggestionForTask(e)} />
+                      <span className="input-group-text" placeholder="Task">
+                        <span title="Task" onClick={(e) => openTaskPopup("Task")} className="svg__iconbox svg__icon--editBox" ></span>
+                      </span>
+                    </>
+                    )}
+
+                    {searchedTaskData?.length > 0 && (
+                      <div className="SmartTableOnTaskPopup">
+                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                          {searchedTaskData.map(
+                            (suggestion: any, index: any) => (
+                              <li
+                                className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                key={index}
+                                onClick={() =>
+                                  handleSuggestionforTask(suggestion)
+                                }
+                              >
+                                {suggestion?.Title}
+                              </li>
+                            )
+                          )}
+                        </ul>
+                      </div>
+                    )}
+
+                    <div className="col-sm-12  inner-tabb">
+                      {TaggedSitesTask != undefined && TaggedSitesTask.length > 1 ? (
+                        <div className="w=100">
+                          {TaggedSitesTask?.map((items: any, Index: any) => (
+                            <div className="block d-flex justify-content-between mb-1" key={Index} >
+                              <a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items.Id}&Site=${items.siteType}`} className="wid-90 light" data-interception="off" target="_blank" >
+                                {items?.Title}
+                              </a>
+                              <a className="text-end">
+                                {" "}
+                                <span className="bg-light svg__icon--cross svg__iconbox" onClick={() => DeleteCrossIconDataForTask(items?.Id)} ></span>
+                              </a>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  </div>
+                </div>     
                   {/* -------For Project--- */}
+                <div className="col-sm-6 mb-3">
                   <div className="input-group">
                     <label className="full_width">Project</label>
 
@@ -682,100 +916,9 @@ const EditDocumentpanel = (props: any) => {
                       )}
                     </div>
                   </div>
-
-                </div>
-                {/* <div className="col-sm-6">
-                  <div className="input-group">
-                    <label className="form-label full-width">
-                      Task
-                    </label>
-                    {EditdocumentsData?.Title != undefined  ? (
-                            <div
-                            className="full-width replaceInput alignCenter"
-                            
-                          >
-                            <a
-                              href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditdocumentsData.Id}`}
-                              className="textDotted hreflink"
-                              data-interception="off"
-                              target="_blank"
-                            >
-                              {EditdocumentsData?.Title }
-                            </a>
-                            <span
-                              className="input-group-text"
-                              placeholder="Portfolio"
-                            >
-                              <span
-                                className="bg-dark svg__icon--cross svg__iconbox"
-                                onClick={() =>
-                                  DeleteTagPortfolios([EditdocumentsData?.Id])
-                                }
-                              ></span>
-                              <span
-                                title="Portfolio"
-                                onClick={(e) => opencomonentservicepopup()
-                                }
-                                className="svg__iconbox svg__icon--editBox"
-                              ></span>
-                            </span>
-                          </div>
-                       
-                    
-                    ) : (
-                      <>
-                        <input
-                          type="text"
-                          className="form-control"
-                          readOnly
-                        />
-                        <span
-                          className="input-group-text"
-                          placeholder="Linked Component Task Popup"
-                        >
-                          <span
-                            onClick={(e) => opencomonentservicepopup()
-                            }
-                            className="svg__iconbox svg__icon--editBox"
-                          ></span>
-                        </span>
-                      </>
-                    )}
-
-                    <div className="col-sm-12  inner-tabb">
-                      {EditdocumentsData?.Portfolios != undefined && EditdocumentsData?.Portfolios?.length > 1 ? (
-                        <div className="w=100">
-                          {EditdocumentsData?.Portfolios?.map((itemss: any, Index: any) => (
-                            <div
-                              className="block d-flex justify-content-between mb-1"
-                              key={Index}
-                            >
-                              <a
-                                href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${itemss.Id}`}
-                                className="wid-90 light"
-                                data-interception="off"
-                                target="_blank"
-                              >
-                                {itemss?.Title}
-                              </a>
-                              <a className="text-end">
-                                {" "}
-                                <span
-                                  className="bg-light svg__icon--cross svg__iconbox"
-                                  onClick={() =>
-                                    DeleteTagPortfolios([itemss?.Id])
-                                  }
-                                ></span>
-                              </a>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                 </div></div> */}
-                <div className="col-sm-6">
+                </div>  
+                {/* -------For Portfolio--- */}
+                <div className="col-sm-6 mb-3">
                   <div className="input-group">
                     <label className="form-label full-width">
                       Portfolios
@@ -868,7 +1011,8 @@ const EditDocumentpanel = (props: any) => {
                         ""
                       )}
                     </div>
-                 </div></div>
+                  </div>
+                </div>
 
               </div>
 
@@ -1025,8 +1169,11 @@ const EditDocumentpanel = (props: any) => {
         />
       }
 
+      <Panel isOpen={isopenTaskpopup} isBlocking={false} onDismiss={() => setisopenTaskpopup(false)} type={PanelType.large} >
+        <ReadyMadeTable AllListId={AllListId} configration={"AllAwt"} TaskFilter={"PercentComplete lt '0.90'"} usedFor={'editdocument'} callBack={TaskCallback} closepopup={() => setisopenTaskpopup(false)} />
+      </Panel>
+
     </>
   )
 }
 export default EditDocumentpanel;
-

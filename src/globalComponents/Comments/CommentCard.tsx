@@ -28,7 +28,6 @@ export interface ICommentCardProps {
   onHoldCallBack?: any;
   commentFor?: string;
   postCommentCallBack?: any;
-  item?: any;
 }
 const sp = spfi();
 export interface ICommentCardState {
@@ -45,6 +44,7 @@ export interface ICommentCardState {
   AllCommentModal: boolean;
   mentionValue: string;
   ReplymentionValue: string;
+  //editorState : EditorState;
   htmlContent: any;
   updateCommentPost: any;
   editorValue: string;
@@ -56,8 +56,6 @@ export interface ICommentCardState {
   topCommenterShow: boolean;
   keyPressed: boolean;
   onHoldCallBack: any;
-  counter: any;
-  propsItem: any;
 }
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
   private taskUsers: any = [];
@@ -70,11 +68,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     this.params1 = new URLSearchParams(window.location.search);
     this.state = {
       Result: {},
-      counter: props?.counter,
-      propsItem: props?.item,
+      // listName: (this.params1.get('Site') != undefined ? this.params1.get('Site') : props?.listName),
       listName: (props?.listName != undefined ? props?.listName : this.params1.get('Site') != undefined ? this.params1.get('Site') : null),
+      // itemID: (this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : props?.itemID),
       itemID: (props?.itemID != undefined ? props?.itemID : this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : null),
-      listId: props?.AllListId?.listId,
+      listId: props.AllListId.listId,
       onHoldCallBack: props.onHoldCallBack,
       CommenttoPost: '',
       updateComment: false,
@@ -89,6 +87,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       mailReply: { isMailReply: false, Index: null, },
       postButtonHide: false,
       keyPressed: false,
+      /*editorState:EditorState.createWithContent(
+        ContentState.createFromBlockArray(
+          convertFromHTML('').contentBlocks
+        )
+      ),*/
+      //editorState:EditorState.createEmpty(),
       htmlContent: '',
       updateCommentPost: null,
       editorValue: '',
@@ -109,18 +113,25 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       if (this.state.listName != undefined && this.state.listName != null && this.state.listName != "") {
         if (this.state.listName == "Master Tasks") {
           taskDetails = await web.lists
-            .getByTitle(this.state.listName).items.getById(this.state.itemID)
+            .getByTitle(this.state.listName)
+            .items
+            .getById(this.state.itemID)
             .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Editor/Title", "Modified", "Comments")
-            .expand("TeamMembers", "Author", "ResponsibleTeam", "PortfolioType", "Editor").get()
+            .expand("TeamMembers", "Author", "ResponsibleTeam", "PortfolioType", "Editor")
+            .get()
         } else {
           taskDetails = await web.lists
-            .getByTitle(this.state.listName).items.getById(this.state.itemID)
-            .select("ID", "Title", "TaskID", "ParentTask/TaskID", "ParentTask/Id", "Id", "TaskType/Title", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
-            .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "Portfolio", "Editor", "Project", "TaskCategories", "ParentTask", "TaskType").get()
+            .getByTitle(this.state.listName)
+            .items
+            .getById(this.state.itemID)
+            .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+            .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "Portfolio", "Editor", "Project", "TaskCategories")
+            .get()
         }
       } else {
-        taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "TaskID", "ParentTask/TaskID", "ParentTask/Id", "Id", "TaskType/Title", "ComponentLink", "PriorityRank", "DueDate", "TaskCategories/Id", "TaskCategories/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
-          .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "Portfolio", "PortfolioType", "Editor", "Project", "TaskCategories", "ParentTask", "TaskType").get()
+        taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "ComponentLink", "PriorityRank", "DueDate", "TaskCategories/Id", "TaskCategories/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+          .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "Portfolio", "PortfolioType", "Editor", "Project", "TaskCategories")
+          .get()
       }
     } catch (e) {
       console.log(e)
@@ -128,17 +139,26 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     if (this?.state?.Result?.ID == undefined)
       await this.GetTaskUsers();
     console.log("this is result function")
+    //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
     Title = taskDetails["Title"];
     if (taskDetails.PriorityRank == undefined || taskDetails.PriorityRank == null || taskDetails.PriorityRank == 0) {
       if (taskDetails.Priority != undefined) {
-        if (taskDetails.Priority == "(3) Low")
+        if (taskDetails.Priority == "(3) Low") {
           taskDetails.PriorityRank = 1;
-        if (taskDetails.Priority == "(2) Normal")
+        }
+        if (taskDetails.Priority == "(2) Normal") {
           taskDetails.PriorityRank = 4;
-        if (taskDetails.Priority == "(1) High")
+        }
+        if (taskDetails.Priority == "(1) High") {
           taskDetails.PriorityRank = 8;
+        }
       }
     }
+    // taskDetails.SmartPriority;
+    // taskDetails.TaskTypeValue = '';
+    // taskDetails.projectPriorityOnHover = '';
+    // taskDetails.taskPriorityOnHover = taskDetails?.PriorityRank;
+    // taskDetails.showFormulaOnHover;
     taskDetails.SmartPriority = globalCommon?.calculateSmartPriority(taskDetails);
     try {
       let tempTask = {
@@ -162,7 +182,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         ModifiedBy: this.GetUserObjectArr(taskDetails["Editor"]),
         Author: this.GetUserObjectArr(taskDetails["Author"]),
         component_url: taskDetails["component_x0020_link"],
-        Comments: JSON.parse(taskDetails["Comments"]),
+        Comments: this?.state?.Result != undefined && this?.state?.Result?.Comments != undefined ? this?.state?.Result?.Comments : JSON.parse(taskDetails["Comments"]),
         FeedBack: JSON.parse(taskDetails["FeedBack"]),
         PortfolioType: taskDetails["PortfolioType"],
         TaskUrl: `${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`
@@ -170,29 +190,41 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       if (tempTask["PortfolioType"] != undefined && tempTask["PortfolioType"] == "Service") {
         color = true;
       }
-      if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
-        commentlength = tempTask?.Comments?.length;
-      }
-      if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
-        tempTask["Comments"]?.map((item: any) => {
-          if (item?.AuthorImage != undefined && item?.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
-            var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
-            item.AuthorImage = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
-          }
-        })
-        tempTask["Comments"].sort(function (a: any, b: any) {
-          let keyA = new Date(a.Created),
-            keyB = new Date(b.Created);
-          // Compare the 2 dates
-          if (keyA < keyB) return 1;
-          if (keyA > keyB) return -1;
-          return 0;
-        });
+      if (this?.state?.Result?.ID == undefined) {
+        if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
+          commentlength = tempTask?.Comments?.length;
+        }
+        if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
+          tempTask["Comments"]?.map((item: any) => {
+            if (item?.AuthorImage != undefined && item?.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
+              var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
+              // item.AuthorImage = `${this.props.Context._pageContext._site.absoluteUrl}` + imgurl;
+              item.AuthorImage = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
+            }
+            // item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
+            // })
+            // this.taskUsers.map((user: any) => {
+            //   if (user.AssingedToUser !=undefined && user.AssingedToUser.Id === item.AuthorId)
+            //     item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
+            // })
+          })
+          tempTask["Comments"].sort(function (a: any, b: any) {
+            // let keyA = a.ID,
+            //   keyB = b.ID;
+            let keyA = new Date(a.Created),
+              keyB = new Date(b.Created);
+            // Compare the 2 dates
+            if (keyA < keyB) return 1;
+            if (keyA > keyB) return -1;
+            return 0;
+          });
+        }
       }
       this.setState({
         Result: tempTask
       });
     } catch (e) { console.log(e) }
+
   }
   private GetUserObjectFromCollection(UsersValues: any) {
     console.log("this is GetUserObjectFromCollection function")
@@ -206,7 +238,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         });
         if (senderObject.length > 0) {
           userDeatails.push({
-            'Id': senderObject[0]?.Id, 'Name': senderObject[0]?.AssingedToUser?.EMail, 'Suffix': senderObject[0]?.Suffix, 'Title': senderObject[0]?.Title, 'userImage': senderObject[0]?.Item_x0020_Cover?.Url
+            'Id': senderObject[0]?.Id,
+            'Name': senderObject[0]?.AssingedToUser?.EMail,
+            'Suffix': senderObject[0]?.Suffix,
+            'Title': senderObject[0]?.Title,
+            'userImage': senderObject[0]?.Item_x0020_Cover?.Url
           })
         }
       }
@@ -217,6 +253,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     console.log("this is GetTaskUsers function")
     let web = new Web(this.props.siteUrl);
     let currentUser = await web.currentUser?.get();
+    //.then((r: any) => {  
+    // console.log("Cuurent User Name - " + r['Title']);  
+    //}); 
     let taskUsers = [];
     taskUsers = await web.lists.getById(this.props?.AllListId?.TaskUserListID).items.select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'UserGroup/Id', 'UserGroup/Title').filter("ItemType eq 'User'").expand('AssingedToUser', 'UserGroup').get();
     taskUsers = taskUsers?.filter((User: any) => User?.UserGroup == undefined || User?.UserGroup?.Title != "Ex Staff")
@@ -233,7 +272,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             display: this.taskUsers[index].Title,
             Title: this.taskUsers[index].Title,
             ItemCoverURL: (this.taskUsers[index].Item_x0020_Cover != undefined) ?
-              this.taskUsers[index].Item_x0020_Cover.Url : this.props?.Context?.pageContext?.web?.absoluteUrl + "/SiteCollectionImages/ICONS/32/icon_user.jpg"
+              this.taskUsers[index].Item_x0020_Cover.Url :
+              "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
           })
         }
         if (this.taskUsers[index].AssingedToUser != null && this.taskUsers[index].AssingedToUser.Title == currentUser['Title'])
@@ -281,6 +321,14 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       //Add object in feedback
       let isPushOnRoot: any = true
       if (this.state.Result["Comments"] != undefined) {
+        // if(this.state.mailReply.isMailReply && this.state.mailReply.index!=null){
+        //   if( this.state.Result["Comments"][ this.state.mailReply.index].replyData!=undefined&&  this.state.Result["Comments"][ this.state.mailReply.index].replyData.length>0){
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData.push(temp)
+        //   }else{
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData=[]
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData.push(temp)
+        //   }
+        // }else{
         if (this.state?.Result != undefined && this.state?.Result?.Comments != undefined && this.state?.Result?.Comments?.length > 0) {
           this.state?.Result?.Comments?.forEach((element: any) => {
             if (element.isReplyMsg == true && element?.ReplyMessages != undefined) {
@@ -308,7 +356,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       console.log(this.state.Result);
       (document.getElementById(txtCommentControlId) as HTMLTextAreaElement).value = '';
       let web = new Web(this.props.siteUrl);
-      const i = await web.lists.getByTitle(this.state.listName).items.getById(this.state.itemID).update({ Comments: JSON.stringify(this.state.Result["Comments"]) });
+      const i = await web.lists.getByTitle(this.state.listName)
+        .items
+        .getById(this.state.itemID).update({
+          Comments: JSON.stringify(this.state.Result["Comments"])
+        });
+
       if (isPushOnRoot != false)
         this.setState({ updateComment: true }, () => this.GetEmailObjects(txtComment, this.state.mentionValue));
       else
@@ -329,6 +382,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   }
   private async updateComment() {
     let updateCommentPost = this.state.updateCommentPost;
+    //let txtComment = draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()));
     let txtComment = this.state.editorChangeValue;
     if (txtComment != '') {
       let temp: any = {
@@ -358,14 +412,25 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 if (elementId == temp.ID) {
                   elementPosition = Childindex;
                   this.state.Result["Comments"][index]?.ReplyMessages.splice(elementPosition, 1);
-                  if (this.state?.Result["Comments"][index]?.ReplyMessages != undefined)
+                  if (this.state?.Result["Comments"][index]?.ReplyMessages != undefined) {
                     this.state?.Result["Comments"][index]?.ReplyMessages.unshift(temp);
-                  else
+                  }
+                  else {
                     this.state.Result["Comments"][index]["ReplyMessages"] = [temp];
+                  }
                   break;
                 }
+                // this.state?.Result["Comments"][index]["ReplyMessages"]?.sort(function (a: any, b: any) {
+                //   let keyA = a.ID,
+                //     keyB = b.ID;
+                //   // Compare the 2 dates
+                //   if (keyA < keyB) return 1;
+                //   if (keyA > keyB) return -1;
+                //   return 0;
+                // });
               }
             }
+            //delete this.state.Result["Comments"][elementPosition];
           }
           //Add new value in 
         }
@@ -377,6 +442,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               break;
             }
           }
+          //delete this.state.Result["Comments"][elementPosition];
           this.state.Result["Comments"].splice(elementPosition, 1);
           //Add new value in 
           if (this.state.Result["Comments"] != undefined) {
@@ -397,7 +463,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       });
       console.log(this.state.Result);
       let web = new Web(this.props.siteUrl);
-      const i = await web.lists.getByTitle(this.state.listName).items.getById(this.state.itemID).update({ Comments: JSON.stringify(this.state.Result["Comments"]) });
+      const i = await web.lists.getByTitle(this.state.listName)
+        .items
+        .getById(this.state.itemID).update({
+          Comments: JSON.stringify(this.state.Result["Comments"])
+        });
       this.setState({
         updateComment: true,
         updateCommentPost: null,
@@ -426,6 +496,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         let regExpLiteral = /\[(.*?)\]/gi;
         allMention = regExpStr.match(regExpLiteral);
       }
+
       if (allMention.length > 0) {
         for (let index = 0; index < allMention.length; index++) {
           mention_str += allMention[index].replace('[', '@').replace(']', '').trim() + ' ';
@@ -465,7 +536,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       });
       if (senderObject.length > 0) {
         userDeatails = {
-          'Id': senderObject[0].Id, 'Name': senderObject[0]?.AssingedToUser?.EMail, 'Suffix': senderObject[0].Suffix, 'Title': senderObject[0].Title, 'userImage': senderObject[0]?.Item_x0020_Cover?.Url
+          'Id': senderObject[0].Id,
+          'Name': senderObject[0]?.AssingedToUser?.EMail,
+          'Suffix': senderObject[0].Suffix,
+          'Title': senderObject[0].Title,
+          'userImage': senderObject[0]?.Item_x0020_Cover?.Url
         }
       }
       return userDeatails;
@@ -514,6 +589,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       isModalOpen: false,
       ChildLevel: false,
       ReplyParent: {}
+      /*editorState : EditorState.createWithContent(
+        ContentState.createFromBlockArray(
+          convertFromHTML('').contentBlocks
+        )
+      )*/
+      //editorState: EditorState.createEmpty()
     });
   }
   private topCommentersClick(e: any) {
@@ -584,12 +665,17 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         let regExpLiteral = /\{(.*?)\}/gi;
         allMention = regExpStr.match(regExpLiteral);
       }
+
       if (allMention.length > 0) {
         for (let index = 0; index < allMention.length; index++) {
           /*For Prod when mail is open for all */
           if (allMention[index].indexOf(null) < 0) {
             mention_To.push(allMention[index].replace('{', '').replace('}', '').trim());
           }
+          /*testing*/
+          /*if (allMention[index].indexOf('mitesh.jha@hochhuth-consulting.de') > 0 || allMention[index].indexOf('ranu.trivedi@hochhuth-consulting.de') > 0) {
+            mention_To.push(allMention[index].replace('{', '').replace('}', '').trim());
+          }*/
         }
         console.log(mention_To);
         if (mention_To.length > 0) {
@@ -610,6 +696,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             MsgURL = `${this.props.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${this.state.itemID}`
             MsgTitle = `${this.state?.Result?.Title}`
           }
+          // if (window.location.href.toLowerCase().indexOf('workbench.aspx?projectid=') > -1) {
+          //   MsgURL = `${this.props.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${this.state.itemID}`
+          //   MsgTitle = `${this.state?.Result?.Title}`
+          // }
           this.state.Result["CommentsArray"] = this.state?.Result?.Comments
           const TaskInformation = await GlobalFunctionForUpdateItems.GenerateMSTeamsNotification(this.state?.Result)
           const containerDiv = document.createElement('div');
@@ -633,14 +723,17 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               <p></p>
               Task Link: <a href=${MsgURL}>Click here</a>
               <p></p>
-              <span>${finalTaskInfo}</span>`;
+              <span>${finalTaskInfo}</span>
+             
+          `;
             const CurrentMsg = `
               Task Comment:<span style="background-color: yellow;">${txtComment}.</span>
               <p><br/></p>
               Task Link: <a href=${MsgURL}>Click here</a>
               <p></p>
               <span>${finalTaskInfo}</span>
-              <p></p>  `;
+              <p></p>
+          `;
             TeamsMessage = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${PreMsg} </blockquote>${CurrentMsg}`;
           }
           else {
@@ -654,7 +747,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           <p></p>
           <span>${finalTaskInfo}</span> `;
           }
+
           await globalCommon.SendTeamMessage(mention_To, TeamsMessage, this.props.Context, this.props?.AllListId)
+          //  this.SendEmail(emailprops);
           this.setState({
             ChildLevel: false,
             ReplyParent: {}
@@ -687,6 +782,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       console.log("Email Sent!");
     });
   }
+  /*private onEditorStateChange = (editorState:EditorState):void => { 
+    console.log('set as HTML:', draftToHtml(convertToRaw(editorState.getCurrentContent()))); 
+    this.setState({  
+      editorState,  
+    });  
+  }*/
   private customHeaderforEditCommentpopup() {
     return (
       <>
@@ -730,6 +831,15 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private replyMailFunction = (replyData: any, index: any) => {
     console.log(replyData)
     console.log(this.mentionUsers)
+    //  var mentionEmail = this.mentionUsers.filter((items:any)=>{
+    //  if(items.display==replyData.AuthorName){
+    //     return items.id
+    //  }
+    //  }) 
+    // var replyData2:any={
+    //   isMailReply:true,
+    //   index:index
+    // } 
     if (replyData?.ReplyMessages == undefined)
       replyData.ReplyMessages = []
     replyData.isReplyMsg = true
@@ -775,7 +885,28 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private handleMouseClick = (e: any) => {
     this.setState({ keyPressed: false });
   };
+  // private detectAndRenderLinks = (text: any) => {
+  //   const tempElement = document.createElement('div');
+  //   tempElement.innerHTML = text;
+  //   text = tempElement.textContent || tempElement.innerText || '';
+  //   text = text.replace(/\s+/g, ' ').trim();
+
+  //   const urlRegex = /(https?:\/\/[^\s]+)/g;
+  //   return text.split(urlRegex).map((part: any, index: any) => {
+  //     if (part.match(urlRegex)) {
+  //       return (
+  //         <a key={index} href={part} target="_blank" rel="noopener noreferrer">
+  //           {part}
+  //         </a>
+  //       );
+  //     }
+  //     return part;
+  //   });
+  // };
+
+
   private detectAndRenderLinks = (html: any) => {
+
     const div = document.createElement('div');
     div.innerHTML = html;
     const paragraphs = div.querySelectorAll('p');
@@ -789,9 +920,15 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
     // Update anchor tags
     const anchorTags = div.querySelectorAll('a');
+    // anchorTags.forEach((a) => {
+    //   a.setAttribute('target', '_blank');
+    //   a.setAttribute('data-interception', 'off');
+    // });
+
+
     return globalCommon?.replaceURLsWithAnchorTags(div.innerHTML);
   };
-  render() {
+  public render(): React.ReactElement<ICommentCardProps> {
     return (
       <div >
         <div className='mb-3 card commentsection boxshadow'>
@@ -811,11 +948,16 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                   </span>
                 })}
               </div>
+              {/* onKeyDown={this.handleKeyDown} onMouseDown={this.handleMouseClick} */}
               <span className='clintlist'>
                 <MentionsInput placeholder='Recipients Name' value={this.state?.mentionValue ? this.state?.mentionValue : ""} onChange={(e) => this.setMentionValue(e)}
                   className="form-control"
                   classNames={mentionClass}>
                   <Mention trigger="@" data={this.mentionUsers} appendSpaceOnAdd={true} />
+                  {/* {this.state.keyPressed && this.mentionUsers && this.state?.mentionValue ? 
+                    <Mention trigger="" data={this.mentionUsers} appendSpaceOnAdd={true} />:
+                    <Mention trigger="" data={[]} appendSpaceOnAdd={true} />
+                  } */}
                 </MentionsInput>
               </span>
             </div>
@@ -843,7 +985,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                 <img className="align-self-start " title={cmtData?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(this.props?.AllListId?.siteUrl, undefined, cmtData?.AuthorName, this?.taskUsers)}
                                   src={cmtData?.AuthorImage != undefined && cmtData?.AuthorImage != '' ?
                                     cmtData?.AuthorImage :
-                                    this.props?.Context?.pageContext?.web?.absoluteUrl + "/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                 />
                               </span>
                               {cmtData.Created}</span>
@@ -852,19 +994,59 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                 onClick={() => this.openReplycommentPopup(cmtData, i)} data-placement="bottom"  >
                                 <span className="svg__iconbox svg__icon--reply"></span>
                               </div></a>
+                              {/* <a onClick={() => this.replyMailFunction(cmtData, i)}><span><ImReply /></span></a> */}
                               <a onClick={() => this.openEditModal(cmtData, i, false)}>
+                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
                                 <span className='svg__iconbox svg__icon--edit'></span>
                               </a>
                               <a title="Delete" onClick={() => this.clearComment(i, undefined, undefined)}>
+                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" /> */}
                                 <span className='svg__iconbox svg__icon--trash'></span>
                               </a>
                             </div>
                           </div>
                           <div className="media-text">
                             {cmtData.Header != '' && <h6 className="userid m-0"><a className="align-top">{cmtData?.Header}</a></h6>}
+                            {/* <p className='m-0'>
+                            <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}>
+                            </span></p> */}
                             <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}></span>
+                            {/* {this.detectAndRenderLinks(cmtData?.Description)} */}
                           </div>
+
                         </div>
+                        {/* {cmtData?.replyData!=undefined&& cmtData?.replyData.length>0 && cmtData?.replyData?.map((replyerData:any)=>{
+                          return(
+                            <li className="media  p-1 my-1">
+                            <div className="media-bodyy">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <span className="comment-date ng-binding">
+                                <span className="round  pe-1">
+                                  <img className="align-self-start " title={replyerData?.AuthorName}
+                                    src={replyerData?.AuthorImage != undefined && replyerData?.AuthorImage != '' ?
+                                    replyerData?.AuthorImage :
+                                      "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                  />
+                                </span>
+                                {replyerData.Created}</span>
+                              <div className="d-flex ml-auto media-icons ">
+                                <a onClick={()=>this.replyMailFunction(replyerData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a>
+                                <a  onClick={() => this.openEditModal(replyerData, i)}>                      
+                                  <span className='svg__iconbox svg__icon--edit'></span>                           
+                                </a>
+                                <a title="Delete" onClick={() => this.clearComment(i)}>                             
+                                  <span className='svg__iconbox svg__icon--trash'></span>
+                                </a>
+                              </div>
+                            </div>
+                            <div className="media-text">
+                              {replyerData.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{replyerData?.Header}</a></h6>}
+                              <p className='m-0'><span dangerouslySetInnerHTML={{ __html: replyerData?.Description }}></span></p>
+                            </div>
+                          </div>
+                          </li>
+                          )
+                        })} */}
                         <div className="commentMedia">
                           {cmtData?.ReplyMessages != null && cmtData?.ReplyMessages != undefined && cmtData?.ReplyMessages?.length > 0 &&
                             <div>
@@ -878,11 +1060,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                             <img className="align-self-start hreflink " title={ReplyMsg?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(this.props?.AllListId?.siteUrl, undefined, ReplyMsg?.AuthorName, this?.taskUsers)}
                                               src={ReplyMsg?.AuthorImage != undefined && ReplyMsg?.AuthorImage != '' ?
                                                 ReplyMsg?.AuthorImage :
-                                                this.props?.Context?.pageContext?.web?.absoluteUrl + "/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                                "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                             />
                                           </span>
                                           {/* {ReplyMsg?.AuthorName} - */}{ReplyMsg?.Created}</span>
                                         <div className="d-flex ml-auto media-icons ">
+                                          {/* <a onClick={() => this.replyMailFunction(ReplyMsg, j)}><span><ImReply /></span></a> */}
                                           <a onClick={() => this.openEditModal(ReplyMsg, j, true)}>
                                             <span className='svg__iconbox svg__icon--edit'></span>
                                           </a>
@@ -892,7 +1075,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                         </div>
                                       </div>
                                       <div className="media-text">
+                                        {/* {ReplyMsg.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{ReplyMsg?.Header}</a></h6>} */}
+                                        {/* <p className='m-0'><span dangerouslySetInnerHTML={{ __html: ReplyMsg?.Description }}></span></p> */}
                                         <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(ReplyMsg?.Description) }}></span>
+                                        {/* {this.detectAndRenderLinks(ReplyMsg?.Description)} */}
                                       </div>
                                     </div>
                                   </li>
@@ -919,7 +1105,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           type={PanelType.custom}
           customWidth="500px"
           onRenderHeader={this.customHeaderforEditCommentpopup}
-          onDismiss={(e) => this.CloseModal(e)} > <div className={color ? "serviepannelgreena" : ""}>
+          onDismiss={(e) => this.CloseModal(e)}
+        > <div className={color ? "serviepannelgreena" : ""}>
             <div className='modal-body'>
               <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
             </div>
@@ -957,7 +1144,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                 <img className="align-self-start " title={cmtData?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(this.props?.AllListId?.siteUrl, undefined, cmtData?.AuthorName, this?.taskUsers)}
                                   src={cmtData?.AuthorImage != undefined && cmtData?.AuthorImage != '' ?
                                     cmtData?.AuthorImage :
-                                    this.props?.Context?.pageContext?.web?.absoluteUrl + "/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                />
                               </span>
                               {cmtData.Created}</span>
                             <div className="d-flex ml-auto media-icons px-1 " >
@@ -965,20 +1153,59 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                 onClick={() => this.openReplycommentPopup(cmtData, i)} data-placement="bottom"  >
                                 <span className="svg__iconbox svg__icon--reply"></span>
                               </div></a>
+                              {/* <a onClick={() => this.replyMailFunction(cmtData, i)}><span><ImReply /></span></a> */}
                               <a onClick={() => this.openEditModal(cmtData, i, false)}>
+                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
                                 <span className='svg__iconbox svg__icon--edit'></span>
                               </a>
                               <a title="Delete" onClick={() => this.clearComment(i, undefined, undefined)}>
+                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" /> */}
                                 <span className='svg__iconbox svg__icon--trash'></span>
                               </a>
                             </div>
                           </div>
                           <div className="media-text">
                             {cmtData.Header != '' && <h6 className="userid m-0"><a className="align-top">{cmtData?.Header}</a></h6>}
+                            {/* <p className='m-0'>
+                        <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}>
+                        </span></p> */}
                             <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}></span>
+                            {/* {this.detectAndRenderLinks(cmtData?.Description)} */}
                           </div>
 
                         </div>
+                        {/* {cmtData?.replyData!=undefined&& cmtData?.replyData.length>0 && cmtData?.replyData?.map((replyerData:any)=>{
+                      return(
+                        <li className="media  p-1 my-1">
+                        <div className="media-bodyy">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <span className="comment-date ng-binding">
+                            <span className="round  pe-1">
+                              <img className="align-self-start " title={replyerData?.AuthorName}
+                                src={replyerData?.AuthorImage != undefined && replyerData?.AuthorImage != '' ?
+                                replyerData?.AuthorImage :
+                                  "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                              />
+                            </span>
+                            {replyerData.Created}</span>
+                          <div className="d-flex ml-auto media-icons ">
+                            <a onClick={()=>this.replyMailFunction(replyerData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a>
+                            <a  onClick={() => this.openEditModal(replyerData, i)}>                      
+                              <span className='svg__iconbox svg__icon--edit'></span>                           
+                            </a>
+                            <a title="Delete" onClick={() => this.clearComment(i)}>                             
+                              <span className='svg__iconbox svg__icon--trash'></span>
+                            </a>
+                          </div>
+                        </div>
+                        <div className="media-text">
+                          {replyerData.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{replyerData?.Header}</a></h6>}
+                          <p className='m-0'><span dangerouslySetInnerHTML={{ __html: replyerData?.Description }}></span></p>
+                        </div>
+                      </div>
+                      </li>
+                      )
+                    })} */}
                         <div className="commentMedia">
                           {cmtData?.ReplyMessages != null && cmtData?.ReplyMessages != undefined && cmtData?.ReplyMessages?.length > 0 &&
                             <div>
@@ -992,11 +1219,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                             <img className="align-self-start hreflink " title={ReplyMsg?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(this.props?.AllListId?.siteUrl, undefined, ReplyMsg?.AuthorName, this?.taskUsers)}
                                               src={ReplyMsg?.AuthorImage != undefined && ReplyMsg?.AuthorImage != '' ?
                                                 ReplyMsg?.AuthorImage :
-                                                this.props?.Context?.pageContext?.web?.absoluteUrl + "/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                                "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                             />
                                           </span>
                                           {/* {ReplyMsg?.AuthorName} - */}{ReplyMsg?.Created}</span>
                                         <div className="d-flex ml-auto media-icons ">
+                                          {/* <a onClick={() => this.replyMailFunction(ReplyMsg, j)}><span><ImReply /></span></a> */}
                                           <a onClick={() => this.openEditModal(ReplyMsg, j, true)}>
                                             <span className='svg__iconbox svg__icon--edit'></span>
                                           </a>
@@ -1006,7 +1234,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                         </div>
                                       </div>
                                       <div className="media-text">
+                                        {/* {ReplyMsg.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{ReplyMsg?.Header}</a></h6>} */}
+                                        {/* <p className='m-0'><span dangerouslySetInnerHTML={{ __html: ReplyMsg?.Description }}></span></p> */}
                                         <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(ReplyMsg?.Description) }}></span>
+                                        {/* {this.detectAndRenderLinks(ReplyMsg?.Description)} */}
                                       </div>
                                     </div>
                                   </li>
