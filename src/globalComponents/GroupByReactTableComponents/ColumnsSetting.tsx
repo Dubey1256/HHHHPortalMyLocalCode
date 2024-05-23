@@ -489,13 +489,13 @@ const ColumnsSetting = (props: any) => {
                     <table className="w-100">
                         <thead>
                             <tr>
-                                <th className="f-16 border-0" style={{ width: "28%" }}> <div className="alignCenter"><span>Columns</span> <span className="alignCenter"><CoustomInfoIcon Discription="Default settings are stored in centralized database the changes done here will be only for current user on this table it will not impact anyone else. For centralized changes suggestions contact admin." /></span></div></th>
+                                <th className="border-0" style={{ width: "28%" }}> <div className="alignCenter"><span className="f-16">Columns</span> <span className="alignCenter fw-normal"><CoustomInfoIcon Discription="Default settings are stored in centralized database the changes done here will be only for current user on this table it will not impact anyone else. For centralized changes suggestions contact admin." /></span></div></th>
                                 <th className="f-16 border-0" style={{ width: "21%" }}>Column Width</th>
                                 <th className="f-16 border-0" style={{ width: "30%" }}>
                                     <div className="alignCenter position-relative">
                                         Column Ordering
-                                        <div className="sorticon" style={{ top: '-6px', background: "#e9e9e9" }}>
-                                            <div className="up hreflink" style={{ display: 'grid', textAlign: 'center', borderBottom: '1px solid #a09c9c', padding: "2px" }} onClick={() => sortByAsc("desc")}>
+                                        <div className="sorticon ms-2" style={{ top: '-6px' }}>
+                                            <div className="up hreflink" style={{ display: 'grid', textAlign: 'center', padding: "2px" }} onClick={() => sortByAsc("desc")}>
                                                 <SlArrowUp style={colunOredrAsc === "desc" ? { color: "var(--SiteBlue)", height: "16px", width: "16px" } : { color: "gray", height: "16px", width: "16px" }} />
                                             </div>
                                             <div className="down hreflink" style={{ display: 'grid', textAlign: 'center', padding: "2px" }} onClick={() => sortByAsc("asc")}>
@@ -517,7 +517,7 @@ const ColumnsSetting = (props: any) => {
                                                         {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && column.id != "showProgress") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <tr key={column?.id} style={columnSorting[column?.id]?.asc === true || columnSorting[column.id]?.desc === true ? { background: "#ddd" } : {}}>
                                                             <td style={{ width: "40%" }}>
                                                                 {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && column.id != "showProgress") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <div className={column.id === "Type" || column.id === "Attention" || column.id === "Admin" || column.id === "Actions" ? "alignCenter mx-3" : "alignCenter"}>
-                                                                    <input className="form-check-input cursor-pointer me-1" id={column.id} type='checkbox' disabled={column?.id === "Title" || column?.id === "TaskID" || column?.id === "portfolioItemsSearch" ? true : false} checked={column?.isColumnVisible}
+                                                                    <input className="form-check-input cursor-pointer mt-0 me-1" id={column.id} type='checkbox' disabled={column?.id === "Title" || column?.id === "TaskID" || column?.id === "portfolioItemsSearch" ? true : false} checked={column?.isColumnVisible}
                                                                         onChange={(e: any) => coustomColumnsSetting(column, event)} name={column.id}
                                                                     />
                                                                     <ColumnSettingSortingToolTip columnSorting={columnSorting} column={column} placeholder={column?.placeholder} handleSortClick={handleSortClick} />
@@ -564,11 +564,11 @@ const ColumnsSetting = (props: any) => {
                     </table>
                 </div>
             </div>
-            <footer>
-                <button type="button" className="btn btn-default pull-right" style={{ backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` }} onClick={handleClosePopup}>
+            <footer className="modal-footer">
+                <button type="button" className="btn btn-default" style={{ backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` }} onClick={handleClosePopup}>
                     Cancel
                 </button>
-                <button type="button" className="btn btn-primary mx-1 pull-right" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={handleChangeDateAndDataCallBack}>
+                <button type="button" className="btn btn-primary mx-1" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={handleChangeDateAndDataCallBack}>
                     Apply
                 </button>
             </footer>
