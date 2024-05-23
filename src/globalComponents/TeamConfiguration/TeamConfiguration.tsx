@@ -66,7 +66,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private getDatesInfo() {
         let datesInfo: any = [];
         let currentDate = moment();
-        currentDate._d.setHours(0, 0, 0, 0)
+        // currentDate._d.setHours(0, 0, 0, 0)
         let workingActionTest: any = [];
         try {
             workingActionTest = JSON.parse(this?.state?.taskDetails?.WorkingAction)

@@ -302,8 +302,8 @@ const CompareTool = (props: any) => {
 
         var site = Item.siteType.replace(' ', '');
         var listID = "";//"464FB776-E4B3-404C-8261-7D3C50FF343F";
-        // if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
-        //     listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+         if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
+            listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
         timesheetListConfigrations?.forEach((time: any) => {
             if (time?.taskSites?.length > 0) {
                 time?.taskSites?.forEach((obj: any) => {
