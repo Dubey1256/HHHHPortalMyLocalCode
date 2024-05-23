@@ -151,7 +151,7 @@ const EditLivingDocumentpanel = (props: any) => {
         'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
         'Url': EditdocumentsData?.Url?.Url ? EditdocumentsData?.Url?.Url : "",
       },
-      ResponsibleId: EditdocumentsData?.Responsible != undefined ? EditdocumentsData?.Responsible?.Id : null
+      ResponsibleId: EditdocumentsData?.Responsible?.Id != undefined ? EditdocumentsData?.Responsible?.Id : null
 
     }
     const web = new Web(props?.AllListId?.siteUrl);
