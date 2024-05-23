@@ -572,6 +572,9 @@ const TaskStatusTbl = (Tile: any) => {
                     if ((sourceUser?.AssingedToUserId == undefined || sourceUser?.AssingedToUserId == '') && config?.TileName != 'WorkingToday') {
                       item.Tasks = item?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
                     }
+                    if (DragDropType == "Un-Assigned" && item?.Tasks[0] != undefined && item?.Tasks[0]?.dates?.length > 0 && item?.Tasks[0]?.dates[0]?.Tasks != undefined && item?.Tasks[0]?.dates[0]?.Tasks?.length > 0) {
+                      item.Tasks[0].dates[0].Tasks = item?.Tasks[0]?.dates[0]?.Tasks?.filter((Task: any) => Task?.Id != Item.Id);
+                    }
                   }
                 }
                 if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle && !isTaskItemExists(item?.Tasks, Item)) {
@@ -1303,64 +1306,98 @@ const TaskStatusTbl = (Tile: any) => {
     const data: any = AllapprovalTask.filter((i: any) => { return i.Id != approveItem.Id })
     setapprovalTask(data);
   }
-  const sendAllWorkingTodayTasks = async (sharingTasks: any) => {
-    let to: any = [ContextData.approverEmail];
+  const sendAllWorkingTodayTasks = async (sharingTasks: any, config: any) => {
+    let today = new Date();
+    const yesterdays = new Date(today.setDate(today.getDate() - 1))
+    const yesterday = Moment(yesterdays).format("DD/MM/YYYY")
     let body: any = '';
-    let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
-    if (confirmation) {
-      var subject = "Today's Working Tasks Under Projects";
-      let tasksCopy: any = [];
-      let text = '';
-      tasksCopy = sharingTasks;
-      if (tasksCopy?.length > 0) {
-        let taskCount = 0;
-        tasksCopy?.map(async (item: any) => {
-          try {
-            item.smartTime = 0;
-            item.showDesc = '';
-            let memberOnLeave = false;
-            if (!memberOnLeave) {
-              taskCount++;
-              text +=
-                `<tr>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.site} </td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${ContextData?.siteUrl}/SitePages/Task-Profile.aspx?taskId= ${item?.Id}&Site=${item?.site}> ${item?.Title} </a></p></td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.percentage} </td>
-                  </tr>`;
-            }
-          } catch (error) {
-            console.log(error)
-          }
-        })
-        if (taskCount > 0) {
-          body += `<table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
-                        <thead>
-                        <tr>
-                        <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Site</th>
-                        <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;x">Task ID</th>
-                        <th width="500" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Title</th>
-                        <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Category</th>
-                        <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">% </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        ${text}
-                        </tbody>
-                        </table>`
-        }
+    let text = '';
+    let to: any = [];
+    let body1: any = [];
+    let userApprover = '';
+    let tasksCopy = config?.Tasks;
+    ContextData.currentUserData.UserManagerMail = [];
+    ContextData.currentUserData.UserManagerName = ''
+    ContextData?.currentUserData?.Approver?.map((Approver: any, index: any) => {
+      if (index == 0) {
+        ContextData.currentUserData.UserManagerName = Approver?.Title;
+      } else {
+        ContextData.currentUserData.UserManagerName += ' ,' + Approver?.Title
       }
-      let sendAllTasks = `<span style="font-size: 18px;margin-bottom: 10px;">
-            Hi there, <br><br>
-            Below is the working today task of all the team members <strong>(Project Wise):</strong>
-            <p><a href =${ContextData?.siteUrl}/SitePages/Project-Management-Overview.aspx>Click here for flat overview of the today's tasks</a></p>
-            </span>
-            ${body}
-            <h3>
-            Thanks.
-            </h3>`
-      SendEmailFinal(to, subject, sendAllTasks);
+      let Mail = Approver?.Name?.split('|')[2]
+      ContextData?.currentUserData.UserManagerMail.push(Mail)
+    })
+
+    to = ContextData?.currentUserData?.UserManagerMail;
+    userApprover = ContextData?.currentUserData?.UserManagerName;
+    tasksCopy.sort((a: any, b: any) => {
+      return b.PriorityRank - a.PriorityRank;
+    });
+    let confirmation = confirm('Your' + ' ' + config?.WebpartTitle + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + ContextData?.currentUserData?.Approver[0]?.Title + ')' + '.' + '\n' + 'Do you want to continue?')
+    if (confirmation) {
+      let totalTime = 0;
+      var subject = ContextData?.currentUserData?.Title + ' - ' + config?.WebpartTitle;
+      let Currentdate = new Date(); // Use your JavaScript Date object here
+      let CurrentformattedDate = Moment(Currentdate).format('YYYY-MM-DD');
+      tasksCopy?.map((item: any) => {
+        totalTime += item?.EstimatedTime
+        let teamUsers: any = [];
+        item?.TeamMembers?.map((item1: any) => {
+          teamUsers.push(item1?.Title)
+        });
+        if (item.DueDate != undefined) {
+          item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
+        }
+        if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
+          item.TaskDueDatenew = '';
+        if (item.Categories == undefined || item.Categories == '')
+          item.Categories = '';
+        text =
+          `<tr>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.PercentComplete} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.EstimatedTime} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${item.EstimatedTimeDescr} </td>
+                  </tr>`
+        body1.push(text);
+      });
+      body =
+        '<h2>'
+        + ContextData?.currentUserData?.Title + ' - ' + config?.WebpartTitle
+        + '</h2>'
+        + ` <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
+                    <thead>
+                    <tr>
+                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Site</th>
+                    <th width="60" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;x">Task ID</th>
+                    <th width="400" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Title</th>
+                    <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Category</th>
+                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">% </th>
+                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Smart Priority</th>
+                    <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px" >Est Time</th>
+                    <th height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px; border-right:0px" >Est Desc.</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    ${body1}
+                    </tbody>
+                    </table>`
+        + '<p>' + 'For the complete Dashboard of ' + ContextData?.currentUserData?.Title + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx?` + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx?UserId` + '</span>' + '</a>' + '</p>'
+      subject = `[${config?.WebpartTitle} - ${ContextData?.currentUserData?.Title}] ${CurrentformattedDate}: ${tasksCopy?.length} Tasks; ${totalTime}hrs scheduled`
+
+    }
+    body = body.replaceAll('>,<', '><').replaceAll(',', '')
+    if (body1.length > 0 && body1 != undefined) {
+      if (ContextData?.currentUserData?.Email != undefined) {
+        to.push(ContextData?.currentUserData?.Email)
+      }
+      SendEmailFinal(to, subject, body);
+    } else {
+      // alert("No entries available");
     }
   }
   const SendEmailFinal = async (to: any, subject: any, body: any) => {
@@ -1371,10 +1408,11 @@ const TaskStatusTbl = (Tile: any) => {
       To: to,
       AdditionalHeaders: {
         "content-type": "text/html",
-        'Reply-To': 'abhishek.tiwari@smalsus.com'
+        'Reply-To': 'Piyoosh@smalsus.com'
       },
     }).then(() => {
       console.log("Email Sent!");
+      alert("Your Tasks shared successfully")
     }).catch((err) => {
       console.log(err.message);
     });
@@ -1401,7 +1439,7 @@ const TaskStatusTbl = (Tile: any) => {
         </a>}
         {config?.WebpartTitle == 'Draft Tasks' && <a className="empCol hreflink me-3">Approve</a>}
         {config?.WebpartTitle == 'Waiting for Approval' && <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>}
-        {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
+        {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks, config)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
       </span>
     )
   }
