@@ -127,6 +127,7 @@ const AddTaskConfigPopup = (props: any) => {
         else{
             allConfigData.push(configData)
         }
+        DefaultSelectedUseremail=[]
       props?.setAllTaskStatusToConfigure(allConfigData)
       props?.TaskconfigCallback()
     }
