@@ -503,6 +503,22 @@
       }
     ]
   },
+  "event-management-web-part": {
+    "components": [
+      {
+        "entrypoint": "./lib/webparts/eventManagement/EventManagementWebPart.js",
+        "manifest": "./src/webparts/eventManagement/EventManagementWebPart.manifest.json"
+      }
+    ]
+  },
+  "event-detail-web-part": {
+    "components": [
+      {
+        "entrypoint": "./lib/webparts/eventDetail/EventDetailWebPart.js",
+        "manifest": "./src/webparts/eventDetail/EventDetailWebPart.manifest.json"
+      }
+    ]
+  },
   "content-editing-documents-web-part": {
     "components": [
       {
@@ -531,6 +547,8 @@
     }
   },
   "localizedResources": {
+    "EventManagementWebPartStrings": "lib/webparts/eventManagement/loc/{locale}.js",
+    "EventDetailWebPartStrings": "lib/webparts/eventDetail/loc/{locale}.js",
     "LivingDocsSyncToolWebPartStrings": "lib/webparts/livingDocsSyncTool/loc/{locale}.js",
     "TaskNotificationManagementWebPartStrings": "lib/webparts/taskNotificationManagement/loc/{locale}.js",
     "RootTeamPortfolioTableWebPartStrings": "lib/webparts/rootTeamPortfolioTable/loc/{locale}.js",
