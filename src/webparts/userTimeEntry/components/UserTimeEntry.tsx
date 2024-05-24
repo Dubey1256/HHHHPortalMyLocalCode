@@ -307,7 +307,6 @@ export default class UserTimeEntry extends React.Component<
                 "ResponsibleTeam/Title",
                 "ResponsibleTeam/Id",
                 "TaskType/Title",
-                "ClientTime",
                 "Portfolio/Id",
                 "Portfolio/Title",
                 "Modified"
@@ -553,7 +552,6 @@ export default class UserTimeEntry extends React.Component<
         "ItemRank",
         "Item_x0020_Type",
         "PortfolioStructureID",
-        "ClientTime",
         "SiteCompositionSettings",
         "PortfolioType/Title",
         "PortfolioType/Id",
@@ -1869,7 +1867,6 @@ export default class UserTimeEntry extends React.Component<
             .items.select(
               "ParentTask/Title",
               "ParentTask/Id",
-              "ClientTime",
               "ItemRank",
               "Portfolio/Id",
               "Portfolio/Title",
