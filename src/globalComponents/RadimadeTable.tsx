@@ -709,10 +709,10 @@ function ReadyMadeTable(SelectedProp: any) {
                         }
                         // allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
                     }
-                if(AllTasksMatches?.length==0){
-                    let data=[{}];
-                    setAllSiteTasksData(data);
-                }
+                    if(AllTasksMatches?.length==0 && Counter == siteConfig?.length){
+                        let data=[{}];
+                        setAllSiteTasksData(data);
+                    }
             });
             // GetComponents();
         }
