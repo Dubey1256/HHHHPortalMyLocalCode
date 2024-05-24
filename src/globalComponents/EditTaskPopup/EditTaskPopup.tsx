@@ -2422,6 +2422,7 @@ const EditTaskPopup = (Items: any) => {
         StatusID: any
     ) => {
         let tempArray: any = [];
+        let updateUserArray1: any = [];
         filterArray.map((TeamItems: any) => {
             taskUsers?.map((TaskUserData: any) => {
                 if (TeamItems.Id == TaskUserData.AssingedToUserId) {
@@ -2432,16 +2433,14 @@ const EditTaskPopup = (Items: any) => {
                         ) {
                             tempArray.push(TaskUserData);
                             EditData.TaskAssignedUsers = tempArray;
-                            let updateUserArray1: any = [];
-                            updateUserArray1.push(tempArray[0].AssingedToUser);
+                            updateUserArray1.push(TaskUserData.AssingedToUser);
                             setTaskAssignedTo(updateUserArray1);
                         }
                     } else {
                         if (TaskUserData.TimeCategory == filterType) {
                             tempArray.push(TaskUserData);
                             EditData.TaskAssignedUsers = tempArray;
-                            let updateUserArray1: any = [];
-                            updateUserArray1.push(tempArray[0].AssingedToUser);
+                            updateUserArray1.push(TaskUserData.AssingedToUser);
                             setTaskAssignedTo(updateUserArray1);
                         } else {
                             if (tempArray?.length == 0) {
