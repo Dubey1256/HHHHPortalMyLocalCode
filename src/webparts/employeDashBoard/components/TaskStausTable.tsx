@@ -527,13 +527,17 @@ const TaskStatusTbl = (Tile: any) => {
                 Item.WorkingAction = Item?.WorkingAction.filter((Category: any) => Category?.Title !== 'WorkingDetails')
             }
             let web = new Web(ContextData?.propsValue?.siteUrl);
-            web.lists.getById(Item.listId).items.getById(Item?.Id).update({
+            DragDropType == "Un-Assigned"
+            let PostData: any = {
               PercentComplete: Status / 100,
               Status: Item?.Status,
               WorkingAction: Item?.WorkingAction?.length > 0 ? JSON.stringify(Item?.WorkingAction) : '',
               AssignedToId: { results: config?.TileName == 'WorkingToday' ? [ContextData?.currentUserData?.AssingedToUserId] : [], },
               IsTodaysTask: false,
-            }).then((res: any) => {
+            }
+            if (DragDropType == "Un-Assigned")
+              PostData.ResponsibleTeamId = { results: [ContextData?.currentUserData?.AssingedToUserId] }
+            web.lists.getById(Item.listId).items.getById(Item?.Id).update(PostData).then((res: any) => {
               console.log('Drop successfuly');
               count++;
               DashboardConfig?.forEach((item: any) => {
@@ -1386,7 +1390,7 @@ const TaskStatusTbl = (Tile: any) => {
                     ${body1}
                     </tbody>
                     </table>`
-        + '<p>' + 'For the complete Dashboard of ' + ContextData?.currentUserData?.Title + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx?` + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx?UserId` + '</span>' + '</a>' + '</p>'
+        + '<p>' + 'For the complete Dashboard of ' + ContextData?.currentUserData?.Title + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx` + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx` + '</span>' + '</a>' + '</p>'
       subject = `[${config?.WebpartTitle} - ${ContextData?.currentUserData?.Title}] ${CurrentformattedDate}: ${tasksCopy?.length} Tasks; ${totalTime}hrs scheduled`
 
     }
