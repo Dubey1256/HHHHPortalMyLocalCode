@@ -42,6 +42,11 @@ const CreateWS = (props: any) => {
     const [ClientCategoriesData, setClientCategoriesData] = React.useState<any>(
         []
     );
+    const [workingAction, setWorkingAction] = React.useState([
+        { Title: "Bottleneck", InformationData: []   },
+       {Title: "Attention",InformationData: [] },
+         { Title: "Phone", InformationData: [] }
+        ]);
     const [inputFields, setInputFields]: any = React.useState([{
         Title: '',
         ItemRank: '',
@@ -104,7 +109,10 @@ const CreateWS = (props: any) => {
         }
         setSelectedItem(props?.selectedItem)
         GetParentHierarchy(props?.selectedItem)
-      
+        if(props?.selectedItem?.WorkingAction?.length>0 && props?.selectedItem?.WorkingAction!=undefined){
+            let InheritedWorkingAction=JSON?.parse(props?.selectedItem?.WorkingAction)
+            setWorkingAction(InheritedWorkingAction)
+          }
         if(props?.selectedItem?.PortfolioType?.Color!=undefined){
             setTimeout(()=>{
                 let targetDiv :any = document?.querySelector('.ms-Panel-main');
@@ -273,6 +281,14 @@ const CreateWS = (props: any) => {
 
     function DDComponentCallBack(TeamData: any) {
         // setTeamConfig(dt)
+        
+ if(TeamData?.dateInfo?.length>0){
+    let copyWorkingAction=[...workingAction]
+    let getWorkingDetails= globalCommon?. getWorkingActionJSON(TeamData)
+    copyWorkingAction.push(getWorkingDetails)
+    setWorkingAction(copyWorkingAction)
+  
+   }
         if (selectedWSTaskIndex != null) {
             let allWSTasks = JSON.parse(JSON.stringify(inputFields));
             setRefreshData(!refreshData)
@@ -460,6 +476,7 @@ const CreateWS = (props: any) => {
                 // PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                 TaskTypeId: selectedTaskType,
                 ProjectId: ProjectId,
+                WorkingAction: JSON.stringify(workingAction),
                 ParentTaskId: selectedItem.Id,
                 ItemRank: inputValue.ItemRank == '' ? null : inputValue.ItemRank,
                 DueDate: inputValue.DueDate != null && inputValue.DueDate != '' && inputValue.DueDate != undefined ? new Date(inputValue?.DueDate)?.toISOString() : null,
