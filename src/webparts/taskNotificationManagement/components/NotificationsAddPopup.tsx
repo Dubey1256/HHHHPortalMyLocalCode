@@ -225,6 +225,25 @@ export const NotificationsAddPopup = (props: any) => {
         setEditTaskconfigData(selectedData)
         setOpenEditConfigPopup(true)
     }
+    const deleteDocumentsData = async (DeletItemId: any) => {
+        console.log(DeletItemId);
+        const web = new Web(props?.AllListId?.siteUrl);
+        var text: any = "Are you sure want to Delete ?";
+        if (confirm(text) == true) {
+          await web.lists.getByTitle("NotificationsConfigration")
+            .items.getById(DeletItemId).recycle()
+            .then((res: any) => {
+              console.log(res);
+    
+              closePopup('update')
+    
+            })
+            .catch((err) => {
+              console.log(err.message);
+            });
+        }
+    
+      };
     return (
         <>
             <Panel
@@ -404,10 +423,32 @@ export const NotificationsAddPopup = (props: any) => {
 
                     }
                 </div>
+                <footer className='text-end mt-2'>
+          <div className='col-sm-12 row m-0'>
+
+
+            <div className="col-sm-6 ps-0 text-lg-start">
+              {props?.SelectedEditItem?.Id!=undefined &&<div>
+                {console.log("footerdiv")}
+                <div><span className='pe-2'>Created</span><span className='pe-2'>{props?.SelectedEditItem?.Created !== null ? moment(props?.SelectedEditItem?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Author?.Title}</a></span></div>
+                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{props?.SelectedEditItem?.Modified !== null ? moment(props?.SelectedEditItem?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Editor?.Title}</a></span></div>
+                <div 
+                onClick={() => deleteDocumentsData(props?.SelectedEditItem?.Id)}
+                     className="hreflink"><span style={{ marginLeft: '-4px' }} className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item</div>
+              </div>}
+            </div>
+
+            <div className='col-sm-6 mt-2 p-0'>
+            {props?.SelectedEditItem?.Id!=undefined &&  <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/Lists/NotificationsConfigration/EditForm.aspx?ID=${props?.SelectedEditItem?.Id != null ? props?.SelectedEditItem?.Id : null}`}>Open out-of-the-box form</a></span>}
+
+              <Button type="button" variant="primary" className='me-1' onClick={() => addFunction()}>{props?.SelectedEditItem?.Id!=undefined?"Save":"Create"}</Button>
+               <Button type="button" className="btn btn-default" variant="secondary" onClick={() => closePopup()}>Cancel</Button>
+            </div>
+          </div>
+        </footer>
                 <footer className='alignCenter'>
                     <div className="col text-end">
-                        <Button type="button" variant="primary" className='me-1' onClick={() => addFunction()}>{props?.SelectedEditItem?.Id!=undefined?"Save":"Create"}</Button>
-                        <Button type="button" className="btn btn-default" variant="secondary" onClick={() => closePopup()}>Cancel</Button>
+                       
                     </div>
                 </footer>
 

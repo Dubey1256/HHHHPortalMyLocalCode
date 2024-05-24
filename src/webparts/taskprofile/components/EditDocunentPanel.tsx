@@ -128,25 +128,51 @@ const EditDocumentpanel = (props: any) => {
           let projectDataforsuggestion: any = []
 
           try {
-            tempmetadata[0].taskSites.map((site: any) => {
+            // tempmetadata[0].taskSites.map((site: any) => {
+            //   if (Data[site]?.length > 0) {
+            //     let temp: any = {}
+            //     temp.Task = []
+            //     temp.TaskIds = []
+            //     tempArraycopy = Data[site].map((item: any) => {
+            //       temp.Title = `${site}Id`
+            //       temp.Task.push(item)
+            //       item.siteType = site;
+            //       if (temp?.Title?.toLowerCase()?.indexOf(site.toLowerCase()) > -1) {
+            //         temp.TaskIds.push(item.Id);
+            //       }
+            //       AllTasks.push(item)
+            //       return temp;
+            //     });
+            //     tempArray.push(tempArraycopy[0])
+            //     setTaggedSitesTask(AllTasks);
+            //   }
+            // })
+            tempmetadata[0].taskSites.forEach((site: any) => {
               if (Data[site]?.length > 0) {
-                let temp: any = {}
-                temp.Task = []
-                temp.TaskIds = []
+                let temp: any = {
+                  Title: `${site}Id`,
+                  Task: [],
+                  TaskIds: []
+                };
+
                 tempArraycopy = Data[site].map((item: any) => {
-                  temp.Title = `${site}Id`
-                  temp.Task.push(item)
+                  temp.Task.push(item);
                   item.siteType = site;
-                  if (temp?.Title?.toLowerCase()?.indexOf(site.toLowerCase()) > -1) {
+
+                  if (temp.Title.toLowerCase().indexOf(site.toLowerCase()) > -1) {
                     temp.TaskIds.push(item.Id);
                   }
-                  AllTasks.push(item)
+
+                  AllTasks.push(item);
                   return temp;
                 });
-                tempArray.push(tempArraycopy[0])
-                setTaggedSitesTask(AllTasks);
+
+                tempArray.push(temp);
               }
-            })
+            });
+
+            setTaggedSitesTask(AllTasks);
+
           }
           catch (e) {
             console.log(e)
@@ -567,19 +593,21 @@ const EditDocumentpanel = (props: any) => {
     },
     []
   );
-  const DeleteCrossIconDataForTask = async (titleToRemove: any) => {
-    var selectedTasks1 = TaggedSitesTask.filter(
-      (itemmm: any) => itemmm.Id !== titleToRemove
-    );
-    selectedTasks = selectedTasks1
+  const DeleteCrossIconDataForTask = async (titleToRemove: any,site:any) => {    
+    var selectedTasks1:any = []
     tempArray.map((item: any) => {
-      item.Task = item?.Task?.filter(
-        (itemmm: any) => itemmm.Id !== titleToRemove
-      );
-      item?.TaskIds?.map((id: any, index: any) => {
-        if (id == titleToRemove)
-          item?.TaskIds?.splice(index, 1)
+      if(item.Title.indexOf(site)>-1){
+        item.Task = item?.Task?.filter(
+          (itemmm: any) => itemmm.Id !== titleToRemove
+        );
+        item.TaskIds = item?.TaskIds?.filter(
+          (itemmm: any) => itemmm !== titleToRemove
+        );          
+      }
+      item?.Task?.map((itm: any) => {
+        selectedTasks1.push(itm)
       })
+         
     })
     console.log("remove data", selectedTasks1);
     setTaggedSitesTask(selectedTasks1);
@@ -626,28 +654,66 @@ const EditDocumentpanel = (props: any) => {
     });
     return isExists;
   }
-  const TaskCallback = async (value: any) => {   
-    selectedTasks = TaggedSitesTask
-    value?.map((item: any) => {
-      if (!IsitemExists(selectedTasks, item?.original))
-        selectedTasks.push(item?.original)
-    })
-    if (selectedTasks?.length > 0) {
-      let temp: any = {}
-      temp.Task = []
-      temp.TaskIds = []
-      tempArray = selectedTasks.map((item: any) => {
-        temp.Title = `${item?.siteType}Id`
-        temp.Task.push(item)
+  // const TaskCallback = async (value: any) => {   
+  //   selectedTasks = TaggedSitesTask
+  //   value?.map((item: any) => {
+  //     if (!IsitemExists(selectedTasks, item?.original))
+  //       selectedTasks.push(item?.original)
+  //   })
+  //   if (selectedTasks?.length > 0) {
+  //     let temp: any = {}
+  //     temp.Task = []
+  //     temp.TaskIds = []
+  //     tempArray = selectedTasks.map((item: any) => {
+  //       temp.Title = `${item?.siteType}Id`
+  //       temp.Task.push(item)
 
-        if (temp?.Title?.toLowerCase()?.indexOf(item.siteType.toLowerCase()) > -1) {
-          temp.TaskIds.push(item.Id);
+  //       if (temp?.Title?.toLowerCase()?.indexOf(item.siteType.toLowerCase()) > -1) {
+  //         temp.TaskIds.push(item.Id);
+  //       }
+  //       return temp;
+  //     });     
+  //   }
+  //   setTaggedSitesTask(selectedTasks);
+  // }
+
+  const TaskCallback = async (value: any) => {
+    let selectedTasks = TaggedSitesTask;
+
+    value?.forEach((item: any) => {
+      if (!IsitemExists(selectedTasks, item?.original)) {
+        selectedTasks.push(item?.original);
+      }
+    });
+
+    if (selectedTasks?.length > 0) {
+      const groupedTasks: any = {};
+
+      selectedTasks.forEach((item: any) => {
+        const siteTypeKey = `${item.siteType}Id`;
+
+        if (!groupedTasks[siteTypeKey]) {
+          groupedTasks[siteTypeKey] = {
+            Title: siteTypeKey,
+            Task: [],
+            TaskIds: []
+          };
         }
-        return temp;
-      });     
+
+        groupedTasks[siteTypeKey].Task.push(item);
+
+        if (groupedTasks[siteTypeKey].Title.toLowerCase().indexOf(item.siteType.toLowerCase()) > -1) {
+          groupedTasks[siteTypeKey].TaskIds.push(item.Id);
+        }
+      });
+
+      // Convert the grouped tasks object to an array if needed
+      tempArray = Object.keys(groupedTasks).map(key => groupedTasks[key]);
     }
+
     setTaggedSitesTask(selectedTasks);
   }
+
 
   /////////folara editor function start//////////
   const HtmlEditorCallBack = (items: any) => {
@@ -748,7 +814,7 @@ const EditDocumentpanel = (props: any) => {
                               {items?.Title}
                             </a>
                             <span className="input-group-text" placeholder="Task" >
-                              <span className="bg-dark svg__icon--cross svg__iconbox" onClick={() => DeleteCrossIconDataForTask(items?.Id)}></span>
+                              <span className="bg-dark svg__icon--cross svg__iconbox" onClick={() => DeleteCrossIconDataForTask(items?.Id, items.siteType)}></span>
                               <span title="Task" onClick={(e) => openTaskPopup("Task")} className="svg__iconbox svg__icon--editBox" ></span>
                             </span>
                           </div>
@@ -792,7 +858,7 @@ const EditDocumentpanel = (props: any) => {
                               </a>
                               <a className="text-end">
                                 {" "}
-                                <span className="bg-light svg__icon--cross svg__iconbox" onClick={() => DeleteCrossIconDataForTask(items?.Id)} ></span>
+                                <span className="bg-light svg__icon--cross svg__iconbox" onClick={() => DeleteCrossIconDataForTask(items?.Id, items.siteType)} ></span>
                               </a>
                             </div>
                           ))}
