@@ -850,7 +850,8 @@ function TeamPortlioTable(SelectedProp: any) {
             portfolioTypeData?.map((elem: any) => {
                 if (isUpdated === "") {
                     filt = "";
-                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(PortfolioType/Title eq '" + elem.Title + "')" }
+                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(PortfolioType/Title eq '" + elem.Title + "' ) or (Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint')" }
+                // else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(PortfolioType/Title eq '" + elem.Title + "')" }
             })
         }
         let web = new Web(ContextValue.siteUrl);
