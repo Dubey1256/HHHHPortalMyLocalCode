@@ -656,7 +656,7 @@ function SmartConnectTable(SelectedProp: any) {
                 AllTasksMatches = await web.lists
                     .getById(config.listId)
                     .items
-                    .select('ParentTask/Title', 'ParentTask/Id', 'Portfolio/Title', 'ClientTime', 'Portfolio/Id','ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'TaskLevel',
+                    .select('ParentTask/Title', 'ParentTask/Id', 'Portfolio/Title',  'Portfolio/Id','ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'TaskLevel',
                         'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID',
                         'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title',
                         'TaskType/Level', 'PriorityRank', 'TeamMembers/Title', 'TeamMembers/Name', 'Portfolio/ItemType',
