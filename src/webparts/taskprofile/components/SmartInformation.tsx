@@ -343,8 +343,8 @@ const SmartInformation = (props: any, ref: any) => {
             allSmartInformationglobaltagdocuments.push(items)
 
             if (allSmartInformationglobal?.length == allSmartInformationglobaltagdocuments?.length) {
-              setSmartInformation((prev: any) => [...prev, ...allSmartInformationglobaltagdocuments]);
-              if (props.showHide === "projectManagement" || props.showHide == "ANCTaskProfile") {
+              setSmartInformation(allSmartInformationglobaltagdocuments);
+              if (addSmartInfoPopupAddlinkDoc2 == true && (props.showHide === "projectManagement" || props.showHide == "ANCTaskProfile")) {
                 if (props?.callback != undefined || null) {
                   props?.callback()
                 }
@@ -748,10 +748,25 @@ const SmartInformation = (props: any, ref: any) => {
   //===============create folder function========================
 
   const createFolder = async (folderName: any) => {
+    const web: any = new Web(props?.AllListId?.siteUrl);    
     if (folderName != "") {
       var libraryName = "Documents";
-      var newFolderResult = await sp.web?.rootFolder?.folders.getByName(libraryName).folders.add(folderName);
+      var newFolderResult = await web?.rootFolder?.folders.getByName(libraryName).folders.add(folderName);
       console.log("Four folders created", newFolderResult);
+      // try {
+      //   const libraryName = "Documents";
+      //   const folders = web?.rootFolder?.folders;
+
+      //   if (folders) {
+      //     const libraryFolder = await folders.getByName(libraryName);
+      //     await libraryFolder.folders.add(folderName);
+      //     console.log("Folder created successfully.");
+      //   } else {
+      //     console.error("Unable to access folders.");
+      //   }
+      // } catch (error) {
+      //   console.error("Error creating folder:", error);
+      // }
     }
     uploadDocumentFinal(folderName);
   }
@@ -791,15 +806,7 @@ const SmartInformation = (props: any, ref: any) => {
   // ===========get file upload data and Id ============= .
 
   const getAll = async (folderName: any, folderPath: any) => {
-    const web: any = new Web(props?.AllListId?.siteUrl);
-    try {
-      const currentUrl = web._url;
-      const adjustedUrl = currentUrl?.replace("/SitePages", "");
-      web._url = adjustedUrl;
-    }
-    catch (e) {
-      console.log(e)
-    }
+    const web: any = new Web(props?.AllListId?.siteUrl);    
     let fileName: any = "";
     if (allValue?.fileupload != "") {
       fileName = allValue?.fileupload;
@@ -1112,12 +1119,12 @@ const SmartInformation = (props: any, ref: any) => {
 
   const closeDoc = () => {
     addSmartInfoPopupAddlinkDoc2 = false;
-    handleClose()
     if (props.showHide === "projectManagement" || props.showHide == "ANCTaskProfile") {
       if (props?.callback != undefined || null) {
         props?.callback()
       }
     }
+    handleClose()
 
   }
   return (
