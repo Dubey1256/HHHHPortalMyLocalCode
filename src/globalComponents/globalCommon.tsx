@@ -3451,3 +3451,29 @@ const GetleaveUser = async (TaskUser: any, Context: any) => {
     console.log(finalData)
     return finalData
 }
+export const getWorkingActionJSON = (teamConfigData: any) => {
+    let storeData: any = [];
+    let storeInWorkingAction: any = { "Title": "WorkingDetails", "InformationData": [] }    
+    if (teamConfigData?.dateInfo?.length > 0) {
+            if (teamConfigData?.oldWorkingDaysInfo != undefined || teamConfigData?.oldWorkingDaysInfo != null && teamConfigData?.oldWorkingDaysInfo?.length > 0) {
+                teamConfigData?.oldWorkingDaysInfo.map((oldJson: any) => {
+                    storeData?.push(oldJson)
+                })
+            }
+            teamConfigData?.dateInfo?.map((Info: any) => {
+                let dataAccordingDays: any = {}
+                if (Info?.userInformation?.length > 0) {
+                    dataAccordingDays.WorkingDate = Info?.originalDate
+                    dataAccordingDays.WorkingMember = [];
+                    Info?.userInformation?.map((userInfo: any) => {
+
+
+                        dataAccordingDays.WorkingMember.push({ Id: userInfo?.AssingedToUserId, Title: userInfo.Title })
+                    })
+                    storeData?.push(dataAccordingDays)
+                }
+            })
+            storeInWorkingAction.InformationData = [...storeData]            
+        }
+            return storeInWorkingAction
+};
