@@ -2442,13 +2442,8 @@ const TaskDashboard = (props: any) => {
                                                 <div className='AccordionContent timeEntryReport'  >
                                                     {weeklyTimeReport?.length > 0 ?
                                                         <>
-<<<<<<< HEAD
-                                                            <div className='Alltable border-0  dashboardTable float-none' >
-                                                                <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnTimeReport} data={weeklyTimeReport} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
-=======
                                                             <div className='Alltable border-0 dashboardTable float-none' >
                                                                 <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnTimeReport} data={weeklyTimeReport} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
->>>>>>> 0dc7e339aa315bcb52918617341d8b99024825fd
                                                             </div>
                                                         </> : <div className='text-center full-width border p-3'>
                                                             <span>No Time Entry Available</span>
