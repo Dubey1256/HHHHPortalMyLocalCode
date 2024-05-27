@@ -968,12 +968,14 @@ export default function ProjectOverview(props: any) {
                         let EstimatedDesc: any = []
 
                         item.showDesc = '';
+                        item.EstimatedTimeEntryDesc = ''
                         try {
                             AllTimeEntries?.map((entry: any) => {
                                 if (entry[`Task${item?.siteType}`] != undefined && entry[`Task${item?.siteType}`].Id == item.Id) {
                                     let AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
                                     AdditionalTimeEntry?.map((time: any) => {
                                         item.smartTime += parseFloat(time?.TaskTime);
+                                        item.EstimatedTimeEntryDesc += ' ' + time?.Description
                                     })
                                 }
                             })
@@ -1041,6 +1043,7 @@ export default function ProjectOverview(props: any) {
                             <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item.TaskDueDatenew} </td>
                             <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item.smartTime} </td>
                             <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${item.EstimatedTime} </td>
+                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${item.EstimatedTimeEntryDesc} </td>
                             </tr>`
                                 ;
                         }
@@ -1083,7 +1086,8 @@ export default function ProjectOverview(props: any) {
                     <th width="130" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Team</th>
                     <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Duedate</th>
                     <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Smart Time</th>
-                    <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px; border-right:0px" >Est</th>
+                    <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;" >Est</th>
+                    <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px; border-right:0px" >Smart Time Desc</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -1657,7 +1661,11 @@ export default function ProjectOverview(props: any) {
                         items.Categories = items.TaskTypeValue;
                     }
                     items.TeamMembersSearch = "";
-                    items.AssignedToIds = [];
+                    if(items?.AssignedToIds?.length>0){
+                           
+                    }else{
+                        items.AssignedToIds = [];
+                    }
                     if (items.AssignedTo != undefined) {
                         items?.AssignedTo?.map((taskUser: any) => {
                             items.AssignedToIds.push(taskUser?.Id)
@@ -1925,7 +1933,7 @@ export default function ProjectOverview(props: any) {
                                     </dl>
                                     <div className="m-0 text-end">
 
-                                        {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
+                                        {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" || currentUserData?.Title == "Anupam Rawat" ?
                                             <>
                                                 <a className="hreflink  ms-1" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
                                             : ''}
