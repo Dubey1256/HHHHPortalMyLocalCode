@@ -54,13 +54,13 @@ export const NotificationsSearchPage = (props: any) => {
       web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').expand('Author,Editor,Recipients ,PortfolioType').get().then((result: any) => {
         result?.map((data: any) => {
           data.showUsers =""
-          data.DisplayModifiedDate = moment(data.Modified).format("DD/MM/YYYY");
-          if (data.DisplayModifiedDate == "Invalid date" || "") {
-            data.DisplayModifiedDate = data.DisplayModifiedDate.replaceAll("Invalid date", "");
+          data.Modified = moment(data.Modified).format("DD/MM/YYYY");
+          if (data.Modified == "Invalid date" || "") {
+            data.Modified = data.Modified.replaceAll("Invalid date", "");
           }
-          data.DisplayCreatedDate = moment(data.Created).format("DD/MM/YYYY");
-          if (data.DisplayCreatedDate == "Invalid date" || "") {
-            data.DisplayCreatedDate = data.DisplayCreatedDate.replaceAll("Invalid date", "");
+          data.Created = moment(data.Created).format("DD/MM/YYYY");
+          if (data.Created == "Invalid date" || "") {
+            data.Created = data.Created.replaceAll("Invalid date", "");
           }
           if (data?.Editor) {
             data.Editor.EditorImage = findUserByName(data?.Editor?.Id)
@@ -138,7 +138,7 @@ export const NotificationsSearchPage = (props: any) => {
             <div className="alignCenter">
                 {row?.original?.Modified == null ? ("") : (
                     <>
-                        <div style={{ width: "70px" }} className="me-1">{row?.original?.DisplayModifiedDate}</div>
+                        <div style={{ width: "70px" }} className="me-1">{row?.original?.Modified}</div>
                         {row?.original?.Editor != undefined || row?.original?.Editor != undefined ? (
                             <>
                                 <a
@@ -182,7 +182,7 @@ export const NotificationsSearchPage = (props: any) => {
                     ""
                 ) : (
                     <>
-                        <div style={{ width: "70px" }} className="me-1">{row?.original?.DisplayCreatedDate}</div>
+                        <div style={{ width: "70px" }} className="me-1">{row?.original?.Created}</div>
                         {row?.original?.Author != undefined || row?.original?.AuthoId != undefined ? (
                             <>
                                 <a
