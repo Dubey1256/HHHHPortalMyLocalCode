@@ -1628,7 +1628,7 @@ const SendEmail = (EventData: any, MyEventData: any) => {
 
   const emailComp = () => {
     const currentDate = new Date();
-    const currentDayEvents: any = [];
+    let currentDayEvents: any = [];
 
     chkName.map((item: any) => {
       if (item.start.setHours(0, 0, 0, 0) <= currentDate.setHours(0, 0, 0, 0) && currentDate.setHours(0, 0, 0, 0) <= item.end.setHours(0, 0, 0, 0)) {
