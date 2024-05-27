@@ -51,11 +51,11 @@ export const MonthlyLeaveReport = (props: any) => {
     let web = new Web(props.props.siteUrl);
     // let taskUsers = [];
     try {
-      const Data: any[] = await web.lists.getById(props.props.TaskUserListID).items.select("Id,Title,TimeCategory,Team,CategoriesItemsJson,Suffix,SortOrder,IsApprovalMail,Item_x0020_Cover,ItemType,Created,Company,Role,Modified,IsActive,IsTaskNotifications,DraftCategory,UserGroup/Title,UserGroup/Id,AssingedToUser/Title,AssingedToUser/Name,AssingedToUser/Id,Author/Name,Author/Title,Editor/Name,Approver/Id,Approver/Title,Approver/Name,Editor/Title,Email")
+      const Data: any[] = await web.lists.getById(props.props.TaskUsertListID).items.select("Id,Title,TimeCategory,Team,CategoriesItemsJson,Suffix,SortOrder,IsApprovalMail,Item_x0020_Cover,ItemType,Created,Company,Role,Modified,IsActive,IsTaskNotifications,DraftCategory,UserGroup/Title,UserGroup/Id,AssingedToUser/Title,AssingedToUser/Name,AssingedToUser/Id,Author/Name,Author/Title,Editor/Name,Approver/Id,Approver/Title,Approver/Name,Editor/Title,Email")
         .expand("Author,Editor,AssingedToUser,UserGroup,Approver").orderBy("Title", true).get();
 
       let filteredData = Data.filter((item: any) =>
-        item.Title != 'HHHH Team' && item.Title != 'External Staff' && item.Title != 'Ex Staff' && item.Title != "Kristina Kovach" && item.Title!="Alina Chyhasova"
+        item.Title != 'HHHH Team' && item.Title != 'External Staff' && item.Title != 'Ex Staff' && item.Title != "Kristina Kovach" && item.Title != "Alina Chyhasova"
       )
       // const mydata = Data.filter((item) => item.UserGroupId != null && item.UserGroupId !== 131 && item.UserGroupId !== 147 && item.UserGroupId !== 7 && item.AssingedToUserId !== 9);
       for (let index = 0; index < filteredData?.length; index++) {
@@ -395,13 +395,17 @@ export const MonthlyLeaveReport = (props: any) => {
       const timezoneOffset = item.EventDate.getTimezoneOffset();
       const timezoneOffsetInHours = timezoneOffset / 60;
       const adjustedEndDate = new Date(item.EndDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
+      adjustedEndDate.setMinutes(adjustedEndDate.getMinutes() + 30);
+      adjustedEndDate.setHours(0, 0, 0, 0);
       const adjustedEventDate: any = new Date(item.EventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
+      adjustedEventDate.setHours(adjustedEventDate.getHours() + 1);
+      adjustedEventDate.setHours(0, 0, 0, 0);
       if (
         adjustedEventDate.getFullYear() === today.getFullYear() &&
         (leaveType === "HalfDay" || leaveType === "HalfDayTwo")
       ) {
         const adjustedEndDateToToday = today < adjustedEndDate ? today : adjustedEndDate;
-        adjustedEndDateToToday.setHours(0);
+        adjustedEndDateToToday.setHours(0, 0, 0, 0);
         let workingDays = 0;
         let currentDate = new Date(adjustedEventDate);
         currentDate.setHours(0, 0, 0, 0);
@@ -430,7 +434,15 @@ export const MonthlyLeaveReport = (props: any) => {
       const timezoneOffset = endDate.getTimezoneOffset();
       const timezoneOffsetInHours = timezoneOffset / 60;
       const adjustedEndDate = new Date(endDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
+      if (item.HalfDay === true || item.HalfDayTwo === true) {
+        adjustedEndDate.setMinutes(adjustedEndDate.getMinutes() + 30);
+        adjustedEndDate.setHours(0, 0, 0, 0);
+      }
       const adjustedEventDate: any = new Date(eventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
+      if (item.HalfDay === true || item.HalfDayTwo === true) {
+        adjustedEventDate.setHours(adjustedEventDate.getHours() + 1);
+        adjustedEventDate.setHours(0, 0, 0, 0)
+      }
       if (adjustedEventDate.getFullYear() === today.getFullYear()) {
         const adjustedEndDateToToday = today < adjustedEndDate ? today : adjustedEndDate;
         adjustedEndDateToToday.setHours(0);
@@ -567,17 +579,17 @@ export const MonthlyLeaveReport = (props: any) => {
             }
           }
         }).filter((date: any) => date);
-        let leavediscriptionPlanned:any=[]
+        let leavediscriptionPlanned: any = []
           matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Planned Leave" && item.Title != undefined) {
-            let eventDateFormat:any=moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-            leavediscriptionPlanned.push({Short_x0020_Description_x0020_On:item.Title,eventDate:eventDateFormat}) 
+            let eventDateFormat: any = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+            leavediscriptionPlanned.push({ Short_x0020_Description_x0020_On: item.Title, eventDate: eventDateFormat })
           }
         })
         let plannedLeaveString = `${PlanedEventDates.join(', ')}`;
         // let plannedDiscription = leavediscription
         const UnPlanedEventDates = matchedData.map((item: any) => {
-          if (item.Event_x002d_Type === "Un-Planned") {
+          if (item.Event_x002d_Type === "Un-Planned" || item.Event_x002d_Type === "Sick") {
             let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
             let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
            // if (item.fAllDayEvent == false) {
@@ -593,11 +605,11 @@ export const MonthlyLeaveReport = (props: any) => {
             }
           }
         }).filter((date: any) => date);
-        let leavediscriptionUnPlanned:any=[]
+        let leavediscriptionUnPlanned: any = []
         matchedData.map((item: any) => {
-        if (item.Event_x002d_Type === "Un-Planned" && item.Title != undefined) {
-          let eventDateFormat:any=moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-          leavediscriptionUnPlanned.push({Short_x0020_Description_x0020_On:item.Title,eventDate:eventDateFormat}) 
+          if ((item.Event_x002d_Type === "Un-Planned" || item.Event_x002d_Type === "Sick") && item.Title != undefined) {
+            let eventDateFormat: any = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+            leavediscriptionUnPlanned.push({ Short_x0020_Description_x0020_On: item.Title, eventDate: eventDateFormat })
         }
       })
         let UnplannedLeaveString = `${UnPlanedEventDates.join(', ')}`;
@@ -621,16 +633,16 @@ export const MonthlyLeaveReport = (props: any) => {
           }
 
         }).filter((date: any) => date);
-        let leavediscriptionHalfday:any=[]
+        let leavediscriptionHalfday: any = []
         matchedData.map((item: any) => {
-        if ( item?.HalfDay === true || item?.HalfDayTwo === true && item.Title != undefined) {
-          let eventDateFormat:any=moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-          leavediscriptionHalfday.push({Short_x0020_Description_x0020_On:item.Title,eventDate:eventDateFormat}) 
+          if (item?.HalfDay === true || item?.HalfDayTwo === true && item.Title != undefined) {
+            let eventDateFormat: any = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+            leavediscriptionHalfday.push({ Short_x0020_Description_x0020_On: item.Title, eventDate: eventDateFormat })
         }
       })
         let HalfplannedLeaveString = `${HalfdayEventDates.join(', ')}`;
-        const MyRHdayData = matchedData.map((item: any) =>{
-        if(item.Event_x002d_Type === "Restricted Holiday") {
+        const MyRHdayData = matchedData.map((item: any) => {
+          if (item.Event_x002d_Type === "Restricted Holiday") {
        
         let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
         // let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
@@ -659,18 +671,20 @@ export const MonthlyLeaveReport = (props: any) => {
         user.Plannedleave = calculatePlannedLeave(matchedData, "Planned Leave");
         user.Plannedleave = `${user.Plannedleave} ${plannedLeaveString.length != 0 ? ` ${plannedLeaveString} ` : ''} `
         
-        user.PlanedEventDates=PlanedEventDates
-        user.leavediscriptionPlanned = leavediscriptionPlanned!=undefined ? leavediscriptionPlanned :''
+        user.PlanedEventDates = PlanedEventDates
+        user.leavediscriptionPlanned = leavediscriptionPlanned != undefined ? leavediscriptionPlanned : ''
   
-        user.unplannedleave = calculatePlannedLeave(matchedData, "Un-Planned");
+        user.unplannedleave = calculatePlannedLeave(matchedData, ["Un-Planned", "Sick"]);
+       // user.unplannedleave = [...unplannedLeave, ...sickLeave].map(item => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
+        user.unplannedleave = user.unplannedleave.map((item:any) => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
         user.unplannedleave = `${user.unplannedleave}${UnplannedLeaveString.length != 0 ? `[ ${UnplannedLeaveString} ]` : ''} `
-        user.UnPlanedEventDates=UnPlanedEventDates
-        user.leavediscriptionUnPlanned=leavediscriptionUnPlanned!=undefined ? leavediscriptionUnPlanned :''
+        user.UnPlanedEventDates = UnPlanedEventDates
+        user.leavediscriptionUnPlanned = leavediscriptionUnPlanned != undefined ? leavediscriptionUnPlanned : ''
         // user.Short_x0020_Description_x0020_On = UnplannedDiscription!=undefined ? ` ${UnplannedDiscription} ` : ''
         user.Halfdayleave = calculateTotalHalfday(MyHalfdayData, "HalfDay" || "HalfDayTwo");
         user.Halfdayleave = `${user.Halfdayleave}${HalfplannedLeaveString.length != 0 ? `[ ${HalfplannedLeaveString} ]` : ''} `
         user.HalfdayEventDates = HalfdayEventDates
-        user.leavediscriptionHalfday=leavediscriptionHalfday!=undefined ? leavediscriptionHalfday :''
+        user.leavediscriptionHalfday = leavediscriptionHalfday != undefined ? leavediscriptionHalfday : ''
         user.RestrictedHoliday = calculatePlannedLeave(matchedData, "Restricted Holiday");
         user.RestrictedHoliday = `${user.RestrictedHoliday}${RhplannedLeaveString.length != 0 ? `[ ${RhplannedLeaveString} ]` : ''} `
         user.MyRHdayData = MyRHdayData

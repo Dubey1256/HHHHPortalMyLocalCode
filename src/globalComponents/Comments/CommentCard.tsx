@@ -136,7 +136,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     } catch (e) {
       console.log(e)
     }
-    await this.GetTaskUsers();
+    if (this?.state?.Result?.ID == undefined)
+      await this.GetTaskUsers();
     console.log("this is result function")
     //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
     Title = taskDetails["Title"];
@@ -181,7 +182,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         ModifiedBy: this.GetUserObjectArr(taskDetails["Editor"]),
         Author: this.GetUserObjectArr(taskDetails["Author"]),
         component_url: taskDetails["component_x0020_link"],
-        Comments: JSON.parse(taskDetails["Comments"]),
+        Comments: this?.state?.Result != undefined && this?.state?.Result?.Comments != undefined ? this?.state?.Result?.Comments : JSON.parse(taskDetails["Comments"]),
         FeedBack: JSON.parse(taskDetails["FeedBack"]),
         PortfolioType: taskDetails["PortfolioType"],
         TaskUrl: `${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`
@@ -189,38 +190,41 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       if (tempTask["PortfolioType"] != undefined && tempTask["PortfolioType"] == "Service") {
         color = true;
       }
-      if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
-        commentlength = tempTask?.Comments?.length;
-      }
-      if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
-        tempTask["Comments"]?.map((item: any) => {
-          if (item?.AuthorImage != undefined && item?.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
-            var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
-            // item.AuthorImage = `${this.props.Context._pageContext._site.absoluteUrl}` + imgurl;
-            item.AuthorImage = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
-          }
-          // item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
-          // })
-          // this.taskUsers.map((user: any) => {
-          //   if (user.AssingedToUser !=undefined && user.AssingedToUser.Id === item.AuthorId)
-          //     item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
-          // })
-        })
-        tempTask["Comments"].sort(function (a: any, b: any) {
-          // let keyA = a.ID,
-          //   keyB = b.ID;
-          let keyA = new Date(a.Created),
-            keyB = new Date(b.Created);
-          // Compare the 2 dates
-          if (keyA < keyB) return 1;
-          if (keyA > keyB) return -1;
-          return 0;
-        });
+      if (this?.state?.Result?.ID == undefined) {
+        if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
+          commentlength = tempTask?.Comments?.length;
+        }
+        if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
+          tempTask["Comments"]?.map((item: any) => {
+            if (item?.AuthorImage != undefined && item?.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
+              var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
+              // item.AuthorImage = `${this.props.Context._pageContext._site.absoluteUrl}` + imgurl;
+              item.AuthorImage = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
+            }
+            // item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
+            // })
+            // this.taskUsers.map((user: any) => {
+            //   if (user.AssingedToUser !=undefined && user.AssingedToUser.Id === item.AuthorId)
+            //     item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
+            // })
+          })
+          tempTask["Comments"].sort(function (a: any, b: any) {
+            // let keyA = a.ID,
+            //   keyB = b.ID;
+            let keyA = new Date(a.Created),
+              keyB = new Date(b.Created);
+            // Compare the 2 dates
+            if (keyA < keyB) return 1;
+            if (keyA > keyB) return -1;
+            return 0;
+          });
+        }
       }
       this.setState({
         Result: tempTask
       });
     } catch (e) { console.log(e) }
+
   }
   private GetUserObjectFromCollection(UsersValues: any) {
     console.log("this is GetUserObjectFromCollection function")
@@ -283,6 +287,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     this.setState({ CommenttoPost: e.target.value });
   }
   private async PostComment(txtCommentControlId: any) {
+    await this.GetResult();
     this.setState({
       postButtonHide: true
     })
@@ -732,17 +737,15 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             TeamsMessage = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${PreMsg} </blockquote>${CurrentMsg}`;
           }
           else {
-            TeamsMessage = `
-          <b>Hi ${combinedNames},</b>
+            TeamsMessage = `<span> You have been tagged in comment in the below task. </span>
+            <p></p>
+          <div style="background-color: #fff; padding:16px; margin-top:10px; display:block;">
+          <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">Comment</b>: <span>${txtComment}</span>
+          </div>
           <p></p>
-          Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
-          <p><br/></p>
-          <span>${finalTaskInfo}</span>
+          Task Link: <a href=${MsgURL}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a>
           <p></p>
-          Task Link: <a href=${MsgURL}>Click here</a>
-          <p></p>
-          <b>Thanks,<br/>Task Management Team</b>
-      `;
+          <span>${finalTaskInfo}</span> `;
           }
 
           await globalCommon.SendTeamMessage(mention_To, TeamsMessage, this.props.Context, this.props?.AllListId)

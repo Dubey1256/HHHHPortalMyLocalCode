@@ -389,7 +389,7 @@ const Apps = (props: any) => {
         const { recurrence } = result;
         const rule = recurrence?.rule?.[0];
         const firstDayOfWeek = rule?.firstDayOfWeek || 'su';
-        function resetTime(dateString:any) {
+        function resetTime(dateString: any) {
           let date = new Date(dateString);
           date.setHours(0, 0, 0, 0);
           return date; // Return the date object
@@ -1008,11 +1008,11 @@ const Apps = (props: any) => {
 
         setSelectedTime(moment(item.start).tz("Asia/Kolkata").format("HH:mm"));
         setSelectedTimeEnd(moment(item.end).tz("Asia/Kolkata").format("HH:mm"));
-        if (item.alldayevent && (!item.HalfDay && !item.HalfDayTwo)) {
+        //if (item.alldayevent && (!item.HalfDay && !item.HalfDayTwo)) {
           setType(item.eventType);
-        } else if (!item.alldayevent && (item.HalfDay || item.HalfDayTwo)) {
-          setType('Half Day');
-        }
+        // } else if (!item.alldayevent && (item.HalfDay || item.HalfDayTwo)) {
+        //   setType('Half Day');
+        // }
         sedType(item.Designation);
         setInputValueReason(item.desc);
         setRecurrenceData(item.RecurrenceData);
@@ -1464,7 +1464,7 @@ const SendEmail = (EventData: any, MyEventData: any) => {
               start: startDate,
               end: endDate,
               reason: inputValueReason,
-              type: HalfDaye == true ? "Half Day" : HalfDayT == true ? "Half Day" : type,
+              type: HalfDaye === true ? `Half Day ${type}` : HalfDayT === true ? `Half Day ${type}` : type,
               loc: location,
               Designation: dType,
             };
@@ -1550,17 +1550,35 @@ const SendEmail = (EventData: any, MyEventData: any) => {
       setSelectedTimeEnd(selectedTimeEnd);
       return;
     }
-
+    const replaceType = (input:any, type:any) => {
+      const replacements = [
+        "Half Day Un-Planned",
+        "Half Day Planned Leave",
+        "Un-Planned",
+        "Sick",
+        "Planned Leave",
+        "Restricted Holiday",
+        "Work From Home",
+        "fulldayevent",
+        "LWP"
+      ];
+      const replacementsLower = replacements.map(replacement => replacement.toLowerCase());
+      const replacementMap = new Map();
+      replacements.forEach((replacement, index) => {
+        const normalized = replacement.toLowerCase().replace(/[-\s]+/g, '');
+        replacementMap.set(normalized, replacement);
+      });
+      const normalize = (text:any) => text.toLowerCase().replace(/[-\s]+/g, '');
+      let result = input;
+      replacements.forEach(replacement => {
+        const regex = new RegExp(`\\b${normalize(replacement)}\\b`, 'gi');
+        result = result.replace(regex, type);
+      });
+      return result;
+    };
     const web = new Web(props.props.siteUrl);
     const newEvent = {
-      title: inputValueName.replace("Un-Planned", type)
-        .replace("Sick", type)
-        .replace("Planned Leave", type)
-        .replace("Restricted Holiday", type)
-        .replace("Work From Home", type)
-        .replace("Half Day", type)
-        .replace("fulldayevent", type)
-        .replace("LWP", type),
+      title: replaceType(inputValueName, type),
       name: peopleName,
       start: startDate,
       end: endDate,
@@ -1618,6 +1636,22 @@ const SendEmail = (EventData: any, MyEventData: any) => {
       }
     });
 
+    if (currentDayEvents?.length > 0) {
+      currentDayEvents = currentDayEvents.reduce(function (
+        previous: any,
+        current: any
+      ) {
+        var alredyExists =
+          previous.filter(function (item: any) {
+            return item.Name === current.Name && item.end.getTime() <= currentDate.getTime();
+          }).length > 0;
+        if (!alredyExists) {
+          previous.push(current);
+        }
+        return previous;
+      },
+        []);
+    }
 
     console.log(currentDayEvents);
     setTodayEvent(currentDayEvents);
@@ -1669,7 +1703,7 @@ const SendEmail = (EventData: any, MyEventData: any) => {
       HalfDayT = false;
       HalfDaye = true;
       setisSecondtHalfDChecked(false)
-      setType('Half Day')
+      // setType('Half Day')
       setIsChecked(false);
     } else {
       maxD = new Date(8640000000000000);
@@ -1693,8 +1727,9 @@ const SendEmail = (EventData: any, MyEventData: any) => {
       HalfDaye = false;
       HalfDayT = true;
       setIsFirstHalfDChecked(false)
-      setType('Half Day')
+
       setIsChecked(false);
+      // setType('Half Day')
       //console.log("allDay", allDay);
     } else {
       maxD = new Date(8640000000000000);

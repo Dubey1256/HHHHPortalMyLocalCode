@@ -204,6 +204,132 @@ const EmployeProfile = (props: any) => {
   const loadMasterTask = () => {
     globalCommon.GetServiceAndComponentAllData(props?.props).then((data: any) => {
       AllMasterTasks = data?.AllData;
+      AllMasterTasks = AllMasterTasks.concat(data?.ProjectData)
+      AllMasterTasks?.map((items: any) => {
+        items.descriptionsSearch = '';
+        items.SiteIconTitle = items?.Item_x0020_Type == "Sprint" ? "X" : items?.Item_x0020_Type.charAt(0);
+        if (items?.FeedBack != undefined) {
+          let DiscriptionSearchData: any = '';
+          let feedbackdata: any = JSON.parse(items?.FeedBack)
+          DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+            const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+            const subtextText = (child?.Subtext || [])?.map((elem: any) => elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')).join('');
+            return childText + subtextText;
+          }).join('');
+          items.descriptionsSearch = DiscriptionSearchData
+        }
+        let EstimatedDesc: any = [];
+        items.EstimatedTime = 0;
+        if (items?.EstimatedTimeDescription != undefined && items?.EstimatedTimeDescription != '' && items?.EstimatedTimeDescription != null) {
+          EstimatedDesc = JSON.parse(items?.EstimatedTimeDescription)
+        }
+        if (items?.WorkingAction != undefined && items?.WorkingAction != '' && items?.WorkingAction != null) {
+          items.WorkingAction = JSON.parse(items?.WorkingAction)
+        }
+        if (EstimatedDesc?.length > 0) {
+          EstimatedDesc?.map((time: any) => {
+            items.EstimatedTime += Number(time?.EstimatedTime)
+          })
+        }
+        items.portfolioItemsSearch = '';
+        if (items?.TaskType) {
+          items.portfolioItemsSearch = items?.TaskType?.Title;
+        }
+        items.TaskTypeValue = '';
+        if (items?.TaskCategories?.length > 0) {
+          items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
+        }
+        items.ClientCategorySearch = ''
+        if (items?.ClientCategory?.length > 0) {
+          items.ClientCategorySearch = items?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
+        }
+        items.AllTeamName = "";
+        if (items.AssignedTo != undefined && items.AssignedTo.length > 0) {
+          map(items.AssignedTo, (Assig: any) => {
+            if (Assig.Id != undefined) {
+              map(taskUsers, (users: any) => {
+                if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                  users.ItemCover = users.Item_x0020_Cover;
+                  items.AllTeamName += users.Title + ";";
+                }
+              });
+            }
+          });
+        }
+        if (items.ResponsibleTeam != undefined && items.ResponsibleTeam.length > 0) {
+          map(items.ResponsibleTeam, (Assig: any) => {
+            if (Assig.Id != undefined) {
+              map(taskUsers, (users: any) => {
+                if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                  users.ItemCover = users.Item_x0020_Cover;
+                  items.AllTeamName += users.Title + ";";
+                }
+              });
+            }
+          });
+        }
+        if (items.TeamMembers != undefined && items.TeamMembers.length > 0) {
+          map(items.TeamMembers, (Assig: any) => {
+            if (Assig.Id != undefined) {
+              map(taskUsers, (users: any) => {
+                if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                  users.ItemCover = users.Item_x0020_Cover;
+                  items.AllTeamName += users.Title + ";";
+                }
+              });
+            }
+          });
+        }
+        if (items.Project) {
+          items.ProjectTitle = items?.Project?.Title;
+          items.ProjectId = items?.Project?.Id;
+          items.projectStructerId = items?.Project?.PortfolioStructureID
+          const title = items?.Project?.Title || '';
+          const formattedDueDate = Moment(items?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+          items.joinedData = [];
+          if (items?.projectStructerId && title || formattedDueDate) {
+            items.joinedData.push(`Project ${items?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+          }
+        }
+        if (items?.Created != null && items?.Created != undefined)
+          items.serverCreatedDate = new Date(items?.Created).setHours(0, 0, 0, 0)
+        items.DisplayCreateDate = Moment(items.Created).format("DD/MM/YYYY");
+        if (items.DisplayCreateDate == "Invalid date" || "")
+          items.DisplayCreateDate = items.DisplayCreateDate.replaceAll("Invalid date", "");
+        if (items.Author)
+          items.Author.autherImage = findUserByName(items.Author?.Id)
+        if (items?.DueDate != null && items?.DueDate != undefined)
+          items.serverDueDate = new Date(items?.DueDate).setHours(0, 0, 0, 0)
+        items.DisplayDueDate = Moment(items?.DueDate).format("DD/MM/YYYY");
+        if (items.DisplayDueDate == "Invalid date" || "")
+          items.DisplayDueDate = items?.DisplayDueDate.replaceAll("Invalid date", "");
+        if (items?.Modified != null && items?.Modified != undefined)
+          items.serverModifiedDate = new Date(items?.Modified).setHours(0, 0, 0, 0)
+        items.DisplayModifiedDate = Moment(items?.Modified).format("DD/MM/YYYY");
+        if (items.Editor) {
+          items.Editor.autherImage = findUserByName(items.Editor?.Id)
+        }
+        items.percentage = items.PercentComplete
+        //  + "%";
+        if (items.PercentComplete != undefined && items.PercentComplete != '' && items.PercentComplete != null)
+          items.percentCompleteValue = parseInt(items?.PercentComplete);
+        items.site = items.siteType;
+        items.subRows = [];
+        items.isShifted = false;
+        items.TaskID = items?.PortfolioStructureID;
+        items.SmartPriority = globalCommon.calculateSmartPriority(items);
+        if (items.SmartPriority != undefined && items.SmartPriority != '')
+          items.SmartPriority = items.SmartPriority.toString()
+        if (items?.TaskCategories != undefined && items?.TaskCategories.length > 0) {
+          items.Categories = '';
+          items?.TaskCategories.forEach((category: any, index: any) => {
+            if (index == 0)
+              items.Categories += category.Title;
+            else
+              items.Categories += ';' + category.Title;
+          });
+        }
+      })
     }).catch((error: any) => {
       console.log(error)
     })
@@ -376,7 +502,7 @@ const EmployeProfile = (props: any) => {
     DashboardConfig?.forEach((config: any) => {
       if (config?.Tasks == undefined)
         config.Tasks = [];
-      if (config?.DataSource == 'Tasks') {
+      if (config?.DataSource == 'Tasks' || config?.DataSource == 'Project') {
         if (config?.selectFilterType != 'custom') {
           if (config?.smartFevId != undefined && config?.smartFevId != '' && config?.isShowEveryone === false && currentUserData?.AssingedToUser?.Id == config?.CurrentUserID) {
             config.LoadDefaultFilter = false;
@@ -389,12 +515,24 @@ const EmployeProfile = (props: any) => {
         }
         else if (config?.selectFilterType == 'custom') {
           config.LoadDefaultFilter = false;
-          if (Array.isArray(array) && array.length > 0) {
-            array.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
-              if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id === currentUserData?.AssingedToUser?.Id)) {
-                config.Tasks.push(task);
-              }
-            });
+          if (config?.DataSource == 'Tasks') {
+            if (Array.isArray(array) && array.length > 0) {
+              array.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
+                if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id === currentUserData?.AssingedToUser?.Id)) {
+                  config.Tasks.push(task);
+                }
+              });
+            }
+          }
+          if (config?.DataSource == 'Project') {
+            if (Array.isArray(AllMasterTasks) && AllMasterTasks.length > 0) {
+              let filteredProject = AllMasterTasks.filter((item: any) => item.Item_x0020_Type == 'Project');
+              filteredProject.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
+                if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id === currentUserData?.AssingedToUser?.Id)) {
+                  config.Tasks.push(task);
+                }
+              });
+            }
           }
         }
         if (filteredConfig == undefined || filteredConfig == '')
@@ -438,16 +576,21 @@ const EmployeProfile = (props: any) => {
                 Date.TotalTask = 0;
                 Date.TotalEstimatedTime = 0
                 array.map((Task: any) => {
-                  // if (Task.WorkingDate == undefined)
                   Task.WorkingDate = ''
                   let IsUnAssigedTask: any = true;
                   if (Task?.WorkingAction != undefined && Task?.WorkingAction != '' && Task?.WorkingAction?.length > 0) {
                     Task?.WorkingAction?.map((workingMember: any) => {
                       if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
-                        IsUnAssigedTask = false
                         workingMember?.InformationData?.map((workingDetails: any) => {
                           if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
                             workingDetails?.WorkingMember?.forEach((workingUser: any) => {
+                              if (Task?.AssignedTo != undefined && Task?.AssignedTo?.length > 0) {
+                                Task?.AssignedTo?.forEach((assign: any) => {
+                                  if (assign.Id != undefined && User.AssingedToUserId != undefined && assign.Id === User.AssingedToUserId && assign.Id == workingUser?.Id) {
+                                    IsUnAssigedTask = false
+                                  }
+                                })
+                              }
                               if (User.AssingedToUserId != undefined && workingUser?.Id === User.AssingedToUserId) {
                                 Task.WorkingDate += workingDetails?.WorkingDate + ' | '
                               }
@@ -478,11 +621,13 @@ const EmployeProfile = (props: any) => {
                       }
                     })
                   }
-                  else if (IsUnAssigedTask == true && Date?.DisplayDate == 'Un-Assigned') {
+                  if (IsUnAssigedTask == true && Date?.DisplayDate == 'Un-Assigned') {
                     if (Task?.AssignedTo != undefined && Task?.AssignedTo?.length > 0) {
                       Task?.AssignedTo?.forEach((assign: any) => {
                         if (assign.Id != undefined && User.AssingedToUserId != undefined && assign.Id === User.AssingedToUserId && !isTaskItemExists(User?.Tasks, Task)) {
-                          Date.Tasks.push(Task)
+                          let CopyTask = { ...Task }
+                          CopyTask.WorkingDate = '';
+                          Date.Tasks.push(CopyTask)
                           Date.TotalTask += 1;
                           Date.TotalEstimatedTime += Task?.EstimatedTime;
                         }
@@ -708,6 +853,7 @@ const EmployeProfile = (props: any) => {
           }
           let EstimatedDesc: any = [];
           items.EstimatedTime = 0;
+          items.EstimatedTimeDescr = '';
           if (items?.EstimatedTimeDescription != undefined && items?.EstimatedTimeDescription != '' && items?.EstimatedTimeDescription != null) {
             EstimatedDesc = JSON.parse(items?.EstimatedTimeDescription)
           }
@@ -717,6 +863,9 @@ const EmployeProfile = (props: any) => {
           if (EstimatedDesc?.length > 0) {
             EstimatedDesc?.map((time: any) => {
               items.EstimatedTime += Number(time?.EstimatedTime)
+              if (time?.EstimatedTimeDescription != undefined && time?.EstimatedTimeDescription != '') {
+                items.EstimatedTimeDescr += time?.EstimatedTimeDescription;
+              }
             })
           }
           items.portfolioItemsSearch = '';
