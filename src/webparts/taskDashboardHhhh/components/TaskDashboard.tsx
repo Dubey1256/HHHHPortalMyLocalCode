@@ -430,10 +430,6 @@ const TaskDashboard = (props: any) => {
                             EstimatedDesc = JSON.parse(task?.EstimatedTimeDescription)
                         }
                         let workingAct: any = []
-                        if (task?.WorkingAction != undefined && task?.WorkingAction != '' && task?.WorkingAction != null) {
-                            workingAct = JSON.parse(task?.WorkingAction)
-                            task.WorkingAction = workingAct;
-                        }
                         task.HierarchyData = [];
                         task.EstimatedTime = 0;
                         task.SmartPriority;
@@ -478,7 +474,11 @@ const TaskDashboard = (props: any) => {
                         task?.Approver?.map((approverUser: any) => {
                             task.ApproverIds.push(approverUser?.Id);
                         })
-                        task.AssignedToIds = [];
+                        if(task?.AssignedToIds?.length>0){
+                           
+                        }else{
+                            task.AssignedToIds = [];
+                        }
                         task?.AssignedTo?.map((assignedUser: any) => {
                             task.AssignedToIds.push(assignedUser.Id)
                             taskUsers?.map((user: any) => {
