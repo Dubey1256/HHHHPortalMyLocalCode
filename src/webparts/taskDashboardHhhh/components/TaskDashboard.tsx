@@ -430,10 +430,6 @@ const TaskDashboard = (props: any) => {
                             EstimatedDesc = JSON.parse(task?.EstimatedTimeDescription)
                         }
                         let workingAct: any = []
-                        if (task?.WorkingAction != undefined && task?.WorkingAction != '' && task?.WorkingAction != null) {
-                            workingAct = JSON.parse(task?.WorkingAction)
-                            task.WorkingAction = workingAct;
-                        }
                         task.HierarchyData = [];
                         task.EstimatedTime = 0;
                         task.SmartPriority;
@@ -478,7 +474,11 @@ const TaskDashboard = (props: any) => {
                         task?.Approver?.map((approverUser: any) => {
                             task.ApproverIds.push(approverUser?.Id);
                         })
-                        task.AssignedToIds = [];
+                        if (task?.AssignedToIds?.length > 0) {
+
+                        } else {
+                            task.AssignedToIds = [];
+                        }
                         task?.AssignedTo?.map((assignedUser: any) => {
                             task.AssignedToIds.push(assignedUser.Id)
                             taskUsers?.map((user: any) => {
@@ -665,19 +665,29 @@ const TaskDashboard = (props: any) => {
                 const isEmailNotfication = checkUserExistence('Email Notification', task?.TaskCategories);
                 let isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
                 let isBottleneckTaskNew = false;
-                if (task?.WorkingAction?.length > 0) {
-                    task?.WorkingAction?.forEach((data: any) => {
-                        if (data?.Title === "Bottleneck") {
+                try {
+                    let workingAct: any = []
+                    if (task?.WorkingAction != undefined && task?.WorkingAction != '' && task?.WorkingAction != null) {
+                        workingAct = JSON.parse(task?.WorkingAction)
+                        task.WorkingAction = workingAct;
+                    }
+                    if (task?.WorkingAction?.length > 0) {
 
-                            data?.InformationData?.forEach((userBottleneckTasks: any) => {
-                                if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currentUserId) {
-                                    // userBottleneckTasks.TaggedUsers.isBottleneck = true;
-                                    // AllBottleNeckTasks.push(userBottleneckTasks)
-                                    isBottleneckTaskNew = true;
-                                }
-                            });
-                        }
-                    });
+                        task?.WorkingAction?.forEach((data: any) => {
+                            if (data?.Title === "Bottleneck") {
+
+                                data?.InformationData?.forEach((userBottleneckTasks: any) => {
+                                    if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currentUserId) {
+                                        // userBottleneckTasks.TaggedUsers.isBottleneck = true;
+                                        // AllBottleNeckTasks.push(userBottleneckTasks)
+                                        isBottleneckTaskNew = true;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                } catch (e) {
+
                 }
 
                 // Testing Only Please Remove Before deployement
@@ -1066,8 +1076,8 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.original?.Title}
                         </a>
-                        {row?.original?.descriptionsSearch !== null &&  <span className='alignIcon'><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
-                        } 
+                        {row?.original?.descriptionsSearch !== null && <span className='alignIcon'><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
+                        }
                     </div>
                 ),
                 id: "Title",
@@ -1463,7 +1473,10 @@ const TaskDashboard = (props: any) => {
         setCurrentView("Home")
         setSelectedUser({})
         createGroupUsers();
+
     }
+
+
     // End
 
     //On Drop Handle
