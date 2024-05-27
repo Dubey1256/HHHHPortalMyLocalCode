@@ -1979,6 +1979,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
           <div className="ps-4">
             {" "}
             <ul className=" m-0 p-0 spfxbreadcrumb">
+            <li>
+                  <a
+                    target="_blank"
+                    data-interception="off"
+                    href={`${RequireData.siteUrl}/SitePages/Team-Portfolio.aspx`}
+                  >
+                    Team-Portfolio
+                  </a>
+              </li>
               <li>
                 {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
                 {EditData?.Portfolio_x0020_Type != undefined && (
@@ -3127,7 +3136,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                             >
                               <option>
                                 {EditData?.ItemRankTitle == undefined
-                                  ? "select Item Rank"
+                                  ? "Select Item Rank"
                                   : EditData?.ItemRankTitle}
                               </option>
                               {CMSItemRank &&
@@ -3400,7 +3409,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                       </div>
                       <div className="mx-0 row mt-2 ">
                         <div className="col-sm-4 ps-0 ">
-                          <div className="input-group">
+                          <div className="input-group Synonymsinpt">
                             <label className="form-label  full-width">
                               Synonyms{" "}
                             </label>
@@ -3677,9 +3686,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                       </div>
                       <div className="row mt-2">
                         <div className="col-sm-12">
-                          <div className="col-sm-12 padding-0 input-group">
-                            <label className="full_width">Categories</label>
-                                  <input
+                          <div className="input-group mb-2">
+                            <label className="full_width form-label">Categories</label>
+                            {(CategoriesData?.length == 0 ||
+                              CategoriesData?.length !== 1) && (
+                                <>
+                                <input
                                     type="text"
                                     className="ui-autocomplete-input form-control"
                                     id="txtCategories"
@@ -3695,6 +3707,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                                       className="svg__iconbox svg__icon--editBox"
                                     ></span>
                                   </span>
+                                  </>)}
+
                                    {CategoriesData &&
                               CategoriesData?.length == 1 &&
                               CategoriesData != undefined ? (
@@ -3771,7 +3785,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                             );
 
                             return (
-                              <div key={index} className="form-check mt-2">
+                              <div key={index} className="form-check  ">
                                 <input
                                   className="form-check-input rounded-0"
                                   type="checkbox"

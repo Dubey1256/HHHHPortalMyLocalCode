@@ -307,7 +307,6 @@ export default class UserTimeEntry extends React.Component<
                 "ResponsibleTeam/Title",
                 "ResponsibleTeam/Id",
                 "TaskType/Title",
-                "ClientTime",
                 "Portfolio/Id",
                 "Portfolio/Title",
                 "Modified"
@@ -553,7 +552,6 @@ export default class UserTimeEntry extends React.Component<
         "ItemRank",
         "Item_x0020_Type",
         "PortfolioStructureID",
-        "ClientTime",
         "SiteCompositionSettings",
         "PortfolioType/Title",
         "PortfolioType/Id",
@@ -1405,7 +1403,7 @@ export default class UserTimeEntry extends React.Component<
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(25, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(30, "days").format();
       var b = new Date(change);
       formattedDate = b;
     } else if (startDateOf == "Last Week") {
@@ -1869,7 +1867,6 @@ export default class UserTimeEntry extends React.Component<
             .items.select(
               "ParentTask/Title",
               "ParentTask/Id",
-              "ClientTime",
               "ItemRank",
               "Portfolio/Id",
               "Portfolio/Title",
@@ -2903,7 +2900,7 @@ export default class UserTimeEntry extends React.Component<
       },
      
       {
-        accessorFn: (info: any) => info?.NewTimeEntryDate,
+        accessorFn: (info: any) => info?.TaskDate,
         cell: (info: any) => (
           <div className="alignCenter">
             {info?.row?.original?.NewTimeEntryDate == null ? (
@@ -2942,7 +2939,7 @@ export default class UserTimeEntry extends React.Component<
             return false;
           }
         },
-        id: "NewTimeEntryDate",
+        id: "TaskDate",
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Time Entry",

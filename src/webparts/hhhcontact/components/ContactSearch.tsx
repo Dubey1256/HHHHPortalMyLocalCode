@@ -36,9 +36,6 @@ const ContactSearch = (props: any) => {
             let data = await webs.lists.getById(allListId?.TeamContactSearchlistIds).items.select("WorkCity,Id,SmartActivitiesId,SmartCategories/Id,SmartCategories/Title,WorkCountry,ItemType,Email,FullName,ItemCover,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title").expand("Author,Editor,SmartCategories").orderBy("Created desc").getAll();
             data.map((item: any) => {
                 item.Selected = false
-                if (item.ItemCover != null && item.ItemCover != undefined) {
-                    item.Item_x002d_Image = item.ItemCover
-                }
                 if (item?.SmartCategories) {
                     item.SmartCategories.forEach((i: any) => {
                         if (i.Title == 'Member OV' || i.Title == 'Member' || i.Title == 'Friends' || i.Title == 'Friends - Active' || i.Title == 'Interest' || i.Title == 'Info' || i.Title == 'Partner' || i.Title == 'Ex')
@@ -162,14 +159,16 @@ const ContactSearch = (props: any) => {
     const sendEmail = () => {
         let emails = '';
         var ContactsNotHavingEmail: any = [];
-        userEmails?.forEach((item: any) => {
-            if (item.original != undefined) {
-                if (item.original.isSelect === true) {
-                    if (item.original.Email == null) {
-                        ContactsNotHavingEmail.push(item?.original);
-                    }
-                    if (item.original.Email != null) {
-                        emails += item?.original?.Email + ';';
+        userEmails?.forEach((item: any, index: number) => {
+            if (item.original != undefined && item.original.isSelect === true) {
+                if (item.original.Email == null) {
+                    ContactsNotHavingEmail.push(item.original);
+                }
+                else {
+                    if (index !== userEmails.length - 1 && userEmails.length > 1) {
+                        emails += item.original.Email + ";";
+                    } else {
+                        emails += item.original.Email;
                     }
                 }
             }

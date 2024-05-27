@@ -440,13 +440,13 @@ const ArticleComponent = () => {
 
                             {profilePagedata && profilePagedata.map((page: any) => {
                                 // Truncate description to 50 words
-                                const truncatedDescription = truncateString(page.Description, 30);
+                                const truncatedDescription = truncateString(page?.Description, 30);
                                 return (
-                                    <tr><td><img className='CoverImg' src={page.Item_x0020_Cover.Url} alt={page.Title} /></td>
+                                    <tr><td><img className='CoverImg' src={page?.Item_x0020_Cover?.Url} alt={page.Title} /></td>
                                         <td>{page.Title}</td>
                                         <td>{truncatedDescription}</td>
                                         <td><div className='LDURl'><a target='_blank' data-interception="off" style={{cursor: 'pointer'}} href={page.LivingDocsUrl?.Url}>{page.LivingDocsUrl?.Url}</a></div></td>
-                                        <td>{page.Responsible?.FullName}</td>
+                                        <td>{page?.Responsible?.FullName}</td>
                                         <td className="text-center">
                                             <button title='Sync Page Content to Livingdocs' className='btn btn-sm btn-primary' onClick={() => uploadImages(page, 'singleupdate')}>Sync
                                             </button>

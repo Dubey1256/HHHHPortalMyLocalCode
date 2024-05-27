@@ -343,7 +343,12 @@ const SmartInformation = (props: any, ref: any) => {
             allSmartInformationglobaltagdocuments.push(items)
 
             if (allSmartInformationglobal?.length == allSmartInformationglobaltagdocuments?.length) {
-              setSmartInformation([...allSmartInformationglobaltagdocuments]);
+              setSmartInformation(allSmartInformationglobaltagdocuments);
+              if (addSmartInfoPopupAddlinkDoc2 == true && (props.showHide === "projectManagement" || props.showHide == "ANCTaskProfile")) {
+                if (props?.callback != undefined || null) {
+                  props?.callback()
+                }
+              }
               rerender();
             }
 
@@ -361,7 +366,6 @@ const SmartInformation = (props: any, ref: any) => {
     }
     console.log(allSmartInformationglobaltagdocuments)
   }
-
 
 
   //===============move folder to get the forlderName in the choice column ==================
@@ -405,8 +409,8 @@ const SmartInformation = (props: any, ref: any) => {
   // ============set infoType function ==============
 
   const InfoType = (InfoType: any) => {
-    if (InfoType?.text === 'Information Source') {      
-      setallSetValue({ ...allValue, InfoType: InfoType?.text, Id: InfoType?.key })      
+    if (InfoType?.text === 'Information Source') {
+      setallSetValue({ ...allValue, InfoType: InfoType?.text, Id: InfoType?.key })
       if (popupEdit) {
         setHtmleditorcall(false);
         var title = `Information Source - ${InfoSource.text}`;
@@ -423,10 +427,10 @@ const SmartInformation = (props: any, ref: any) => {
         setallSetValue({ ...allValue, InfoType: InfoType?.text, Id: InfoType?.key, Title: '' })
       }
       else {
-        setallSetValue({ ...allValue, InfoType: InfoType?.text, Id: InfoType?.key})
-      }    
+        setallSetValue({ ...allValue, InfoType: InfoType?.text, Id: InfoType?.key })
+      }
       setsourceTitle('');
-      setHtmleditorcall(false);                
+      setHtmleditorcall(false);
     }
 
   }
@@ -744,10 +748,25 @@ const SmartInformation = (props: any, ref: any) => {
   //===============create folder function========================
 
   const createFolder = async (folderName: any) => {
+    const web: any = new Web(props?.AllListId?.siteUrl);    
     if (folderName != "") {
       var libraryName = "Documents";
-      var newFolderResult = await sp.web?.rootFolder?.folders.getByName(libraryName).folders.add(folderName);
+      var newFolderResult = await web?.rootFolder?.folders.getByName(libraryName).folders.add(folderName);
       console.log("Four folders created", newFolderResult);
+      // try {
+      //   const libraryName = "Documents";
+      //   const folders = web?.rootFolder?.folders;
+
+      //   if (folders) {
+      //     const libraryFolder = await folders.getByName(libraryName);
+      //     await libraryFolder.folders.add(folderName);
+      //     console.log("Folder created successfully.");
+      //   } else {
+      //     console.error("Unable to access folders.");
+      //   }
+      // } catch (error) {
+      //   console.error("Error creating folder:", error);
+      // }
     }
     uploadDocumentFinal(folderName);
   }
@@ -787,15 +806,7 @@ const SmartInformation = (props: any, ref: any) => {
   // ===========get file upload data and Id ============= .
 
   const getAll = async (folderName: any, folderPath: any) => {
-    const web:any = new Web(props?.AllListId?.siteUrl);
-    try {
-      const currentUrl = web._url;
-      const adjustedUrl = currentUrl?.replace("/SitePages", "");
-      web._url = adjustedUrl;
-    }
-    catch (e) {
-      console.log(e)
-    }
+    const web: any = new Web(props?.AllListId?.siteUrl);    
     let fileName: any = "";
     if (allValue?.fileupload != "") {
       fileName = allValue?.fileupload;
@@ -860,7 +871,7 @@ const SmartInformation = (props: any, ref: any) => {
         GetResult();
         setshowAdddocument(false)
       })
-      .catch((err:any) => {
+      .catch((err: any) => {
         console.log(err.message);
       });
   }
@@ -1108,13 +1119,13 @@ const SmartInformation = (props: any, ref: any) => {
 
   const closeDoc = () => {
     addSmartInfoPopupAddlinkDoc2 = false;
-    handleClose()
     if (props.showHide === "projectManagement" || props.showHide == "ANCTaskProfile") {
       if (props?.callback != undefined || null) {
         props?.callback()
       }
     }
-  
+    handleClose()
+
   }
   return (
     <div>
@@ -1172,7 +1183,7 @@ const SmartInformation = (props: any, ref: any) => {
                               </a></span>
                             </li>
                             <li>
-                              {item.Url == null && <span><a className='px-2'  href={`${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
+                              {item.Url == null && <span><a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
                               {item.Url != null && <span><a className='px-2' href={`${item?.Url?.Url}`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
                             </li>
                             <li className='ml-auto'>
@@ -1320,7 +1331,7 @@ const SmartInformation = (props: any, ref: any) => {
         </div>
         {!Htmleditorcall && allValue.InfoType !== 'Information Source' && <div className='mt-2'><HtmlEditorCard editorValue={allValue?.Description != null ? allValue?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>}
 
-        {Htmleditorcall  && <div className='text-end my-1'><a title='Add Description' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDescription()}>Add Source Description</a></div>}
+        {Htmleditorcall && <div className='text-end my-1'><a title='Add Description' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDescription()}>Add Source Description</a></div>}
         {(Htmleditorcall || (popupEdit && allValue.InfoType === 'Information Source')) && <div className='mt-2'> <EditorComponent editorState={editorState} setEditorState={setEditorState} /> </div>}
 
         <footer className='text-end mt-2'>

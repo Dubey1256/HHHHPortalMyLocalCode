@@ -8,6 +8,8 @@ var AllTimeSpentDetails: any = [];
 let AllAvailableTitle: any = [];
 let allTaskUsers:any;
      const SmartTimeTotalFunction = (item: any) => {
+        let TimeData = item?.props?.TotalTime
+        let TotalTime = TimeData/60
     var TaskTimeSheetCategoriesGrouping: any = [];
    const [isTimeEntry, setisTimeEntry] = React.useState(false);
     const [timeEntry, setTimeEntry] = React.useState(null);
@@ -256,6 +258,7 @@ let allTaskUsers:any;
             {console.log(AllAvailableTitle)}
             {console.log(additionalTime)}
             {smartTimeTotal.toFixed(1)}
+            {/* {TotalTime}  */}
             <span className='openhoverpopup hoverimg'>
             <span className="svg__iconbox svg__icon--clock dark" onClick={OpenTimeEntry}></span>
                <div className='hoverpopup overlay'>

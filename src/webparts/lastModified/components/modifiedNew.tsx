@@ -1,4 +1,6 @@
+
 import PageLoader from '../../../globalComponents/pageLoader';
+import * as globalCommon from "../../../globalComponents/globalCommon";
 import moment from 'moment';
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useEffect, useRef, useState } from 'react'
@@ -20,7 +22,7 @@ let baseUrl: any
 let editLists:any
 export const Modified = (props: any) => {
   let columns: any = [];
-  let portfolioColor: any = '#000066';
+  let portfolioColor: any = '#008939';
   const [gmbhSite, setGmbhSite] = useState(false);
   const [sites, setSites] = useState<any>([])
   const [allSiteData, setallSiteData] = useState<any>([])
@@ -56,7 +58,7 @@ export const Modified = (props: any) => {
 
   const storeEditList = () => {
     const editListsAll = {
-      TaskUserListID: props?.props?.TaskUserListID,
+      TaskUsertListID: props?.props?.TaskUsertListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
       MasterTaskListID: props?.props.MasterTaskListID,
       TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -74,7 +76,7 @@ export const Modified = (props: any) => {
       NewsListId:props?.props?.NewsListId,
       EventListId:props?.props?.EventListId,
       context: props?.props?.context,
-      TaskUserListId: props?.props?.TaskUserListID,
+      TaskUserListId: props?.props?.TaskUsertListID,
       isShowTimeEntry: props?.props?.TimeEntry,
 
     }
@@ -108,26 +110,26 @@ export const Modified = (props: any) => {
     setType(allSite.TabName);
     setIsButtonDisabled(false)
     // to show all sites task data
-    if (allSite.TabName == 'ALL') {
-      allSite.allEditFunction = true;
-      if (allSite.noRepeat != true) {
-        sites.map((allData: any) => {
-          if (allData.TabName != 'DOCUMENTS' && allData.TabName != 'FOLDERS' && allData.TabName != 'COMPONENTS' && allData.TabName != 'SERVICES' && allData.TabName != 'ALL') {
-            allSitesDummy.push(allData)
-          }
-        })
-        allSitesDummy.map((check: any) => {
-          check.AllTask = true;
-          getCurrentData(check);
-        })
-        allSite.noRepeat = true;
-        allSite.firstRepeat = true;
-        allSite.allNorepeat = true;
-      } else {
-        allSite.allNorepeat = false;
-        allSite.firstRepeat = false;
-      }
-    }
+    // if (allSite.TabName == 'ALL') {
+    //   allSite.allEditFunction = true;
+    //   if (allSite.noRepeat != true) {
+    //     sites.map((allData: any) => {
+    //       if (allData.TabName != 'DOCUMENTS' && allData.TabName != 'FOLDERS' && allData.TabName != 'COMPONENTS' && allData.TabName != 'SERVICES' && allData.TabName != 'ALL') {
+    //         allSitesDummy.push(allData)
+    //       }
+    //     })
+    //     allSitesDummy.map((check: any) => {
+    //       check.AllTask = true;
+    //       getCurrentData(check);
+    //     })
+    //     allSite.noRepeat = true;
+    //     allSite.firstRepeat = true;
+    //     allSite.allNorepeat = true;
+    //   } else {
+    //     allSite.allNorepeat = false;
+    //     allSite.firstRepeat = false;
+    //   }
+    // }
     if (allSite.AllTask != true) {
       setType(allSite.TabName);
       if (allSite.TabName != "ALL") {
@@ -229,6 +231,11 @@ export const Modified = (props: any) => {
 
   const arangeData=(data:any,allSite:any)=>{
     data?.map((item: any) => {
+      if(allSite?.TabName == 'DOCUMENTS'&& item?.Title==undefined|| allSite.TabName=="WEB PAGES"){
+        item.Title=item?.FileLeafRef
+      }
+      item.SiteIcon="https://grueneweltweit.sharepoint.com/sites/GrueneWeltweit/Site%20Collection%20Images/ICONS/logo-gruene.png"
+      item.TaskID = globalCommon.GetTaskId(item);
       item.siteType = allSite.TabName;
       item.siteUrl = baseUrl
       if (item.DueDate != undefined) {
@@ -251,7 +258,10 @@ export const Modified = (props: any) => {
       if (allSite.TabName == 'FOLDERS') {
         item.File_x0020_Type = 'folder';
       }
-
+      if (item.Portfolio != undefined) {
+        item.PortfolioTitle = item.Portfolio?.Title;
+        item.PortfolioID = item.Portfolio?.Id
+      }
       if (item.Author != undefined) {
         item.authorName = item?.Author?.Title;
         item.authorDefaultImage = 'https://grueneweltweit.sharepoint.com/sites/GrueneWeltweit/washington/public/PublishingImages/Icons/icon_user.jpg';
@@ -363,7 +373,6 @@ export const Modified = (props: any) => {
     if(SitesConfig.length==count){
       arangeData(allEvents,allSite)   
     }
-
   })
    });
     return allEvents
@@ -1342,8 +1351,8 @@ export const Modified = (props: any) => {
           accessorFn: (row) => row?.TaskID,
           cell: ({ row, getValue }) => (
             <>
-              {row.original.GmBHSiteCheck == false ? <img className='workmember me-1' src={`${row.original.SiteIcon}`}></img> : undefined}
-              <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
+               <img className='me-1 workmember' src={`${row?.original?.SiteIcon}`}></img> 
+              <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
             </>
           ),
           id: "TaskID",
@@ -1516,7 +1525,7 @@ export const Modified = (props: any) => {
                 <div className="Alltable mt-2">
                   <div className="col-md-12 p-0 smart">
                     <div className="wrapper">
-                      <GlobalCommanTable columns={columns} ref={childRef} data={allSiteData} showHeader={true} callBackData={callBackData} multiSelect={true} hideTeamIcon={gmbhSite} TaskUsers={allUsers} portfolioColor={portfolioColor} AllListId={editLists} />
+                      <GlobalCommanTable hideOpenNewTableIcon={true} hideTeamIcon={true} columns={columns} ref={childRef} data={allSiteData} showHeader={true} callBackData={callBackData} multiSelect={true}  TaskUsers={allUsers} portfolioColor={portfolioColor} AllListId={editLists} />
                     </div>
                   </div>
                 </div>

@@ -76,13 +76,23 @@ const ContentEditingEventsTable = (props: any) => {
             }
             return user?.length > 0 ? Image : null;
         }
-
+    };
+    const limitTo100Words = (gethtml: any) => {
+        let first100Words = '';
+        if (gethtml !== null && gethtml !== undefined && gethtml !== '') {
+            const plainText = gethtml.replace(/<[^>]*>|&#[^;]+;/g, '');
+            const words = plainText.split(' ');
+            first100Words = words.slice(0, 20).join(' ');
+         
+        }
+        return first100Words;
     };
     const LoadEventListData = async () => {
         try {
             const web = new Web(props?.props?.siteUrl);
             await web.lists.getById(AllListId?.LivingEvent)
-                .items.getAll()
+            .items.select('Id', 'Title', 'EventDescription', 'EventDate','Item_x0020_Cover', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title','Responsible/Id', 'Responsible/Title', 'SmartTopics/Title', 'SmartTopics/Id')
+            .expand('Author,Editor,Responsible,SmartTopics').getAll()  
                 .then((Data: any[]) => {
                     copyData = JSON.parse(JSON.stringify(Data))
                     console.log(Data)
@@ -105,15 +115,28 @@ const ContentEditingEventsTable = (props: any) => {
                         if (item.DisplayModifiedDate == "Invalid date" || "") {
                             item.DisplayModifiedDate = item.DisplayModifiedDate.replaceAll("Invalid date", "");
                         }
-                        item.EventDate
+                        item.EventedDate="";
                         if (item?.EventDate != undefined) {
-                            item.EventDate = moment(item.Modified).format("DD/MM/YYYY");
-                            if (item.EventDate == "Invalid date" || "") {
-                                item.EventDate = item.EventDate.replaceAll("Invalid date", "");
+                            item.EventedDate = moment(item.EventDate).format("DD/MM/YYYY");
+                            if (item.EventedDate == "Invalid date" || "") {
+                                item.EventedDate = item.EventedDate.replaceAll("Invalid date", "");
                             }
                         }
+                        item.ResponsibleName=""; 
+                        if(item?.Responsible!=="" && item?.Responsible!==null && item?.Responsible?.Title!==null)
+                            item.ResponsibleName= item?.Responsible?.Title;
 
-                        item.displayDescription = item?.EventDescription;
+                        item.SmartTopicsName=""; 
+                        if(item?.SmartTopics!=="" && item?.SmartTopics!==null && item?.SmartTopics?.length>0)
+                            item.SmartTopicsName= item?.SmartTopics?.map((elem: any) => elem.Title).join("; ")
+
+                        item.ItemCoverUrl=""; 
+                        if(item?.Item_x0020_Cover!=="" && item?.Item_x0020_Cover!==null && item?.Item_x0020_Cover?.Url!==null)
+                            item.ItemCoverUrl= item?.Item_x0020_Cover.Url;
+
+                        item.displayDescription=limitTo100Words(item?.EventDescription);
+                        item.inconDescription=  item?.EventDescription;
+                       // item.displayDescription = item?.EventDescription;
 
                         if (item?.AuthorId) {
                             item.Editor.EditorImage = findUserByName(item?.EditorId)
@@ -146,42 +169,105 @@ const ContentEditingEventsTable = (props: any) => {
                 hasCustomExpanded: false,
                 hasExpanded: false,
                 isHeaderNotAvlable: true,
-                size: 10,
+                size: 2,
                 id: 'Id',
+            },
+            {
+                accessorFn: (row: any) => row?.ItemCoverUrl,
+                cell: ({ row }: any) => (
+                    <span className="text-content hreflink">
+                       {row?.original?.ItemCoverUrl != "" ? <img style={{width:'40px'}} className='me-1' src={row?.original?.ItemCoverUrl} alt="" /> : ""}
+                    </span>
+                ),
+                id: "ItemCoverUrl",
+                placeholder: "Image",
+                resetColumnFilters: false,
+                header: "",
+                size: 35,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row: any) => row?.EventedDate,
+                cell: ({ row }: any) => (
+                    <span
+                        className="text-content hreflink"
+                        title={row?.original?.EventedDate}
+                    >
+                        {row?.original?.EventedDate}
+                    </span>
+                ),
+                id: "EventedDate",
+                placeholder: "Start Date",
+                resetColumnFilters: false,
+                header: "",
+                size: 100,
+                isColumnVisible: true
             },
             {
                 accessorFn: (row: any) => row?.Title,
                 cell: ({ row }: any) => (
-                    <span
-                        className="text-content hreflink"
-                        title={row?.original?.Title}
-                    >
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "480px" }}>
+                    <span className="text-content hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.Title}>
                         {row?.original?.Title}
-                        {row?.original?.displayDescription && <InfoIconsToolTip row={row?.original} SingleColumnData={"displayDescription"} />}
+                    </span>
                     </span>
                 ),
                 id: "Title",
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 500,
                 isColumnVisible: true
             },
             {
-                accessorFn: (row: any) => row?.EventDate,
+                accessorFn: (row: any) => row?.SmartTopicsName,
                 cell: ({ row }: any) => (
-                    <span
-                        className="text-content hreflink"
-                        title={row?.original?.EventDate}
-                    >
-                        {row?.original?.EventDate}
-                    </span>
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "120px" }}>
+                    <span className="text-content hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.SmartTopicsName}>
+                        {row?.original?.SmartTopicsName}
+                    </span> 
+                     </span>
                 ),
-                id: "EventDate",
-                placeholder: "Date",
+                id: "SmartTopicsName",
+                placeholder: "Page",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 140,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row: any) => row?.ResponsibleName,
+                cell: ({ row }: any) => (
+                    <span style={{ display: "flex", alignItems: "center", maxWidth: "120px" }}>
+                    <span className="text-content hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.ResponsibleName}>
+                        {row?.original?.ResponsibleName}
+                    </span>
+                    </span>
+                ),
+                id: "ResponsibleName",
+                placeholder: "Responsible",
+                resetColumnFilters: false,
+                header: "",
+                size: 140,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row: any) => row?.displayDescription,
+                cell: ({ row }: any) => (                  
+                      <div className='alignCenter'>
+                      <span style={{ display: "flex", alignItems: "center", maxWidth: "480px" }}>
+                          <span className="hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.displayDescription}>
+                              {row?.original?.displayDescription}
+                          </span>
+                      </span>
+                      <span>{row?.original?.displayDescription != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"inconDescription"} />}</span>
+                  </div>
+                ),
+                id: "displayDescription",
+                placeholder: "Description",
+                resetColumnFilters: false,
+                header: "",
+                size: 500,
                 isColumnVisible: true
             },
             {
@@ -223,7 +309,7 @@ const ContentEditingEventsTable = (props: any) => {
                     }
                 },
                 header: "",
-                size: 115
+                size: 100
             },
             {
                 accessorFn: (row) => row?.Created,
@@ -265,7 +351,7 @@ const ContentEditingEventsTable = (props: any) => {
                     }
                 },
                 header: "",
-                size: 105,
+                size: 100,
                 isColumnVisible: true
             },
             // {
@@ -301,9 +387,9 @@ const ContentEditingEventsTable = (props: any) => {
     }
     // =========Custom button html End ================
     return (
-        <div className="container section">
+        <div className="section">
             <div className='mb-4'>
-                <h2 className="heading">LivingDocs Event Tool</h2>
+                <h2 className="heading">SP LivingDocs Content Library - Event </h2>
             </div>
             <div>
 
@@ -311,9 +397,9 @@ const ContentEditingEventsTable = (props: any) => {
                     <div className='Alltable mt-2 mb-2'>
                         <div className='col-md-12 p-0'>
                             <GlobalCommanTable customHeaderButtonAvailable={true}
-                                ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={false}
+                                ref={childRef} hideTeamIcon={true} hideOpenNewTableIcon={true}
                                 columns={columns} data={livingDocsSyncData} showHeader={true}
-                                callBackData={callBackData} />
+                                callBackData={callBackData} fixedWidth={true}/>
                             {!loaded && <PageLoader />}
                         </div>
                     </div>
