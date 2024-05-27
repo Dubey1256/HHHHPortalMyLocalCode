@@ -1885,6 +1885,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         ActionType: ActionType,
         ReasonStatement: InfoData.Comment,
         UpdatedDataObject: this.state.Result,
+        RequiredListIds:AllListId
       }
       GlobalFunctionForUpdateItems.MSTeamsReminderMessage(RequiredData);
       alert("The reminder has been sent to the user.");
