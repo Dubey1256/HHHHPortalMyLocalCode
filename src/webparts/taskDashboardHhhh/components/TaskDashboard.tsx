@@ -1463,7 +1463,10 @@ const TaskDashboard = (props: any) => {
         setCurrentView("Home")
         setSelectedUser({})
         createGroupUsers();
+       
     }
+   
+
     // End
 
     //On Drop Handle
