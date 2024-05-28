@@ -26,7 +26,7 @@ let masterTaskData: any;
 let ActualSites: any = []
 export const Modified = (props: any) => {
   let columns: any = [];
-  let portfolioColor: any = '#000066';
+  let portfolioColor: any = '#2F5596';
   var baseUrl: any = props?.props.context?._pageContext?.web?.absoluteUrl;
 const [checkBoxVisble,SetCheckboxVisble]=useState(false)
   const [gmbhSite, setGmbhSite] = useState(false);
@@ -239,7 +239,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           if (allSite.TabName == 'SERVICES') {
             item.fontColorTask = '#228b22'
           } else {
-            item.fontColorTask = '#000066'
+            item.fontColorTask = '#2F5596'
           }
 
           if (item.ItemType != undefined) {
@@ -900,7 +900,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
               <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
                   <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.editorSuffix}</span>
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="suffix_Usericon ms-1 bg-fxdark mt--2" >{row.original.editorSuffix}</span>
                     : <img title={row.original.editorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
@@ -927,7 +927,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
                   <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="suffix_Usericon ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
                     : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
@@ -995,7 +995,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
               <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
                   <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.editorSuffix}</span>
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="suffix_Usericon ms-1 bg-fxdark mt--2" >{row.original.editorSuffix}</span>
                     : <img title={row.original.editorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
@@ -1022,7 +1022,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
                   <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="suffix_Usericon ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
                     : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
@@ -1537,13 +1537,13 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
             <>
                <span className='Dyicons mx-1 '>{row?.original?.ItemType?.toUpperCase()?.charAt(0)}
                                 </span>
-              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>{row.original.PortfolioStructureID}</span>
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596 ' }}>{row.original.PortfolioStructureID}</span>
             </>
         },
         {
           accessorKey: "Title", placeholder: "Component Name", header: "", id: "Title",
           cell: ({ row }) =>
-            <div>  <a data-interception="off" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
+            <div>  <a data-interception="off" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596' }} target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
               {row.original.Title}
             </a></div>
 
@@ -1552,7 +1552,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           accessorKey: 'DueDate',
           cell: ({ row }) =>
             <>
-              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596 ' }}>
                 {row.original.dueDateNew}
               </span>
             </>
@@ -1581,13 +1581,13 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           accessorKey: 'Modified'
           , cell: ({ row }) =>
             <>
-              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596' }}>
                 {row.original.modifiedNew}
               </span>
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
                   <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="suffix_Usericon ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
                     : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>
@@ -1611,13 +1611,13 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           accessorKey: "Created",
           cell: ({ row }) =>
             <>
-              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596' }}>
                 {row.original.createdNew}
               </span>
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
                   <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 mt--2 bg-fxdark" >{row.original.authorSuffix}</span>
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="suffix_Usericon ms-1 mt--2 bg-fxdark" >{row.original.authorSuffix}</span>
                     : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>
@@ -1681,7 +1681,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           cell: ({ row }) => (
             <div className="alignCenter">
               <span className={row.original.Title!= undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
-                <>{row.original.Title != undefined ?<a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
+                <>{row.original.Title != undefined ?<a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596 ' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
               {row.original.Title}
               </a> : ''}</>
                 <span className="tooltip-text pop-right">
@@ -1700,7 +1700,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
         {
           accessorKey: 'PortfolioTitle', placeholder: 'Component', header: '', id: 'PortfolioTitle',
           cell: ({ row }) =>
-            <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.PortfolioID}`}>
+            <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596 ' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.PortfolioID}`}>
               {row.original.PortfolioTitle}
             </a>
 
@@ -1748,7 +1748,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
                   <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember mt--2 ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="suffix_Usericon mt--2 ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
                     : <img title={row.original.editorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
@@ -1776,7 +1776,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
                   <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="suffix_Usericon ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
                     : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
@@ -1830,7 +1830,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
   return (
     <>
       <div className="p-0  d-flex justify-content-between align-items-center " style={{ verticalAlign: "top" }}>
-        <h2 className="heading ">
+        <h2 className="heading task-title">
           <span>Last Modified Views</span></h2>
           {checkBoxVisble&&
         <div className="d-flex float-end">

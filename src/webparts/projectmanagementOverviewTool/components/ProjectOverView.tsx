@@ -662,7 +662,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row, getValue }) => (
                     <div className='alignCenter'>
                         <a className='hreflink' href={row?.original?.siteType == "Project" ? `${AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Id}` : `${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
-                        {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5'><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
+                        {row?.original?.descriptionsSearch?.length > 0 && <InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} />}
                     </div>
 
                 ),
@@ -699,10 +699,10 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.PriorityRank,
                 cell: ({ row }) => (
-                    <span>
+                    <div className='alignCenter'>
                         <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectManagment'} />
 
-                    </span>
+                    </div>
                 ),
                 id: "PriorityRank",
                 placeholder: "Priority",
@@ -877,12 +877,12 @@ export default function ProjectOverview(props: any) {
             {
 
                 cell: ({ row }) => (
-                    <>
-                        {row?.original?.siteType === "Project" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span> : ''}
+                    <div className='alignCenter ml-auto'>
+                        {row?.original?.siteType === "Project" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
                         {row?.original?.Item_x0020_Type === "tasks" ? <>
-                            <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span>
+                            <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span>
                         </> : ''}
-                    </>
+                    </div>
                 ),
                 id: 'EditPopup',
                 canSort: false,
@@ -905,8 +905,8 @@ export default function ProjectOverview(props: any) {
         }
 
 
+        // let to: any = ["abhishek.tiwari@hochhuth-consulting.de", "ranu.trivedi@hochhuth-consulting.de"];
         let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
-        // let to: any = ["abhishek.tiwari@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let groupedData = data;
@@ -919,15 +919,33 @@ export default function ProjectOverview(props: any) {
             })
 
             let sendAllTasks =
-                `<span style="font-size: 18px;margin-bottom: 10px;">
-                Hi there, <br><br>
-                Below is the working today task of all the team members <strong>(Project Wise):</strong>
-                <p><a href =${AllListId?.siteUrl}/SitePages/PX-Overview.aspx?SelectedView=ProjectsTask>Click here for flat overview of the today's tasks</a></p>
-                </span>
+                `<div style="margin-bottom: 20px;">
+               
+                <strong style="color:#2f5596;font-size: 32px; font-family: Segoe UI;">Working Today Tasks by Project - ${Moment(new Date()).format("DD/MM/YYYY")}</strong>
+             
+                <div width="100%">
+                    <table align="left" style="margin: 25px 0px;">
+                        <tr>
+                        <td width="260px" height="40px" align="center" style="background: #2F5596; display: flex; justify-content: center; align-items: center; gap: 8px; flex-shrink: 0; border-radius: 4px; font-family: Segoe UI; width: 260px; height: 40px; font-size: 14px; font-style: normal; font-weight: 600; line-height: normal">
+                            <a style="color: #fff; font-size: 14px; text-decoration: none" href ="${AllListId?.siteUrl}/SitePages/PX-Overview.aspx?SelectedView=ProjectsTask" target="_blank">
+                            View Tasks in Online Dashboard
+                            </a>
+                        </td>
+                        </tr>
+                   </table>
+                </div>
+                <div width="100%">
+                <table width="100%">
+                    <tr>
+                        <td> <strong style="margin-top: 20px;font-size: 16px;font-family: Segoe UI;">Project Data</strong>
+                        </td>
+                    </tr>
+                </table>
+                </div>
+               
+                </div>
                 ${body}
-                <h3>
-                Thanks.
-                </h3>`
+                `
             setPageLoader(false);
             sendAllTasks = sendAllTasks.replace(/(?:undefined)+/g, "");
             SendEmailFinal(to, subject, sendAllTasks);
@@ -968,12 +986,20 @@ export default function ProjectOverview(props: any) {
                         let EstimatedDesc: any = []
 
                         item.showDesc = '';
+                        item.EstimatedTimeEntryDesc = ''
+                        item.EstimatedTimeEntry = 0
                         try {
                             AllTimeEntries?.map((entry: any) => {
                                 if (entry[`Task${item?.siteType}`] != undefined && entry[`Task${item?.siteType}`].Id == item.Id) {
                                     let AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
                                     AdditionalTimeEntry?.map((time: any) => {
                                         item.smartTime += parseFloat(time?.TaskTime);
+                                        let parts = time?.TaskDate?.split('/');
+                                        let timeEntryDate: any = new Date(parts[2], parts[1] - 1, parts[0]);
+                                        if (timeEntryDate?.setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0)){
+                                            item.EstimatedTimeEntryDesc += ' ' + time?.Description
+                                            item.EstimatedTimeEntry += parseFloat(time?.TaskTime);
+                                        }
                                     })
                                 }
                             })
@@ -1026,21 +1052,22 @@ export default function ProjectOverview(props: any) {
                             }
                             text +=
                                 `<tr>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.showDesc} </td>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.PercentComplete} </td>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${(item?.AssignedTo?.length > 0 ? item?.AssignedTo?.map((AssignedUser: any) => {
+                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;border-left: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;">${item?.siteType} </td>
+                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.TaskID} </td>
+                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"><p style="margin:0px; color:#333;"><a href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
+                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
+
+                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.PercentComplete} </td>
+                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;">${item.TaskDueDatenew} </td>
+                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${(item?.AssignedTo?.length > 0 ? item?.AssignedTo?.map((AssignedUser: any) => {
                                     return (
                                         '<p style="margin:0px;">' + '<a style="text-decoration: none;" href =' + AllListId.siteUrl + '/SitePages/UserTimeEntry.aspx?userId=' + AssignedUser?.Id + '><span>' + AssignedUser?.Title + '</span></a>' + '</p>'
                                     )
                                 }) : '')} </td>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item.TaskDueDatenew} </td>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item.smartTime} </td>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${item.EstimatedTime} </td>
+                                <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;">${item.smartTime} </td>
+    
+                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item?.EstimatedTimeEntryDesc} </td>
+                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.EstimatedTimeEntry} </td>
                             </tr>`
                                 ;
                         }
@@ -1052,38 +1079,41 @@ export default function ProjectOverview(props: any) {
                 }
             })
             if (taskCount > 0) {
-                let bgColor = group?.Item_x0020_Type == 'Sprint' ? '#6cacf3' : '#2d89ef';
+                let bgColor = group?.Item_x0020_Type == 'Sprint' ? '#eef4ff' : '#fafafa';
                 let textColor = '#ffffff'
                 body +=
-                    `<table cellpadding="0" cellspacing="0" align="center" style="margin-top:10px; margin-left:${group?.Item_x0020_Type == 'Sprint' ? '20px' : ''}" width="100%" border="0">
-                    <tr>
-                    <td width="20%" height="30" align="left" valign="middle"bgcolor=${bgColor} style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:${textColor};"><strong>Title</strong></td>
-                    <td height="30" colspan="6" bgcolor="#eee" style="padding-left: 10px; color: #eee;border: 1px solid #a19f9f;"><strong><a style="text-decoration: none;" href =${AllListId.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${group?.Id}> ${group?.PortfolioStructureID} - ${group?.Title}</a></strong></td>
-                    </tr>
-                    <tr>
-                    <td width="10%" height="30" align="left" valign="middle" bgcolor=${bgColor} style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:${textColor};"><strong>Project Priority</strong></td>
-                    <td  width="20%" height="30" bgcolor="#eee" style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;">${group?.PriorityRank}</td>
-                    <td width="10%" align="left" valign="middle" bgcolor=${bgColor} style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:${textColor};"><strong>Due Date</strong></td>
-                    <td width="20%" height="30" bgcolor="#eee" style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;"> ${group?.DisplayDueDate} </td>
-                    <td width="10%" align="left" valign="middle" bgcolor=${bgColor} style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:${textColor};"><strong>Team Leader</strong></td>
-                    <td width="20%" height="30" bgcolor="#eee" style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;"><a style="text-decoration: none;" href = ${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${projectLeaderId} >${projectLeaderTitle} </a></td>
-                    </tr>
-                    <tr><td colspan="4" height="10"></td></tr>
+                    `<table cellpadding="0" height="30px" cellspacing="0" style="height:30px;" border="0">
+                        <tr>
+                            <td colspan="8" height="30px">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td width="130px" height="12" align="left" valign="middle" bgcolor=${bgColor} style="padding: 5px 8px;border:0px;  font-family: Segoe UI;height:30px;"><strong style="font-size: 16px;margin-right: 4px;">${group?.Item_x0020_Type == 'Sprint' ? 'X' : 'P'}</strong><strong style="font-size: 14px;"> Title</strong></td>
+                            <td height="12" style="padding: 5px 8px; color: #2f5596; border: 0px;font-size: 14px;"><a style="margin-right:20px; font-family: Segoe UI;height:30px;" href =${AllListId.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${group?.Id}> ${group?.PortfolioStructureID} - ${group?.Title}</a></td>
+                            
+                            <td width="130px" height="12" align="left" valign="middle" bgcolor=${bgColor} style="padding: 5px 8px;border: 0px;  font-family: Segoe UI;font-size: 14px;height:30px;"><strong>Project Priority</strong></td>
+                            <td height="12" style="padding: 5px 8px;border: 0px;"><span style="margin-right:20px; font-family: Segoe UI;font-size: 14px;height:30px;">${group?.PriorityRank}</span></td>
+                            <td width="130px" align="left" valign="middle" bgcolor=${bgColor} style="padding: 5px 8px;border: 0px;  font-family: Segoe UI;font-size: 14px;height:30px;"><strong>Due Date</strong></td>
+                            <td height="12" style="padding: 5px 8px;border: 0px;"> <span style="margin-right:20px; font-family: Segoe UI;font-size: 14px;height:30px;">${group?.DisplayDueDate} </span></td>
+                            <td width="130px" align="left" valign="middle" bgcolor=${bgColor} style="padding: 5px 8px;border: 0px;  font-family: Segoe UI;font-size: 14px;height:30px;"><strong>Team Leader</strong></td>
+                            <td height="12" style="padding: 5px 8px;border: 0px;color: #2f5596; "><a style="margin-right:20px; font-family: Segoe UI;font-size: 14px;height:30px;" href = ${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${projectLeaderId} >${projectLeaderTitle} </a></td>
+                        </tr>
+                        <tr>
+                            <td colspan="8" height="30px">&nbsp;</td>
+                        </tr>
                     </table >
-                    <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px;margin-left:${group?.Item_x0020_Type == 'Sprint' ? '20px' : ''}">
+                    <table cellpadding="0" cellspacing="0" align="left" width="100%" border="0">
                     <thead>
                     <tr>
-                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Site</th>
-                    <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;x">Task ID</th>
-                    <th width="500" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Title</th>
-                    <th width="140" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;" >Desc.</th>
-                    <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Category</th>
-                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">% </th>
-                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Smart Priority</th>
-                    <th width="130" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Team</th>
-                    <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Duedate</th>
-                    <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Smart Time</th>
-                    <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px; border-right:0px" >Est</th>
+                    <th width="40" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Site</th>
+                    <th width="80" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;"> Task ID</th>
+                    <th width="300" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Title</th>
+                    <th width="40" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Priority</th>
+                    <th width="40" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Status </th>
+                    <th width="80" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Duedate</th>
+                    <th width="120" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Team Member</th>
+                    <th width="80" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Smart Time</th>
+                    <th width="300" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Time Description</th>
+                    <th width="100" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Estimated Time</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -1105,6 +1135,8 @@ export default function ProjectOverview(props: any) {
             })
             return body != undefined ? body : ''
         }
+        
+        
 
     }
 
@@ -1657,7 +1689,11 @@ export default function ProjectOverview(props: any) {
                         items.Categories = items.TaskTypeValue;
                     }
                     items.TeamMembersSearch = "";
-                    items.AssignedToIds = [];
+                    if(items?.AssignedToIds?.length>0){
+                           
+                    }else{
+                        items.AssignedToIds = [];
+                    }
                     if (items.AssignedTo != undefined) {
                         items?.AssignedTo?.map((taskUser: any) => {
                             items.AssignedToIds.push(taskUser?.Id)
