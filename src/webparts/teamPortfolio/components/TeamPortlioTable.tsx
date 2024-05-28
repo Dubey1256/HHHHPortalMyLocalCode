@@ -850,7 +850,8 @@ function TeamPortlioTable(SelectedProp: any) {
             portfolioTypeData?.map((elem: any) => {
                 if (isUpdated === "") {
                     filt = "";
-                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(PortfolioType/Title eq '" + elem.Title + "')" }
+                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(PortfolioType/Title eq '" + elem.Title + "' ) or (Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint')" }
+                // else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(PortfolioType/Title eq '" + elem.Title + "')" }
             })
         }
         let web = new Web(ContextValue.siteUrl);
@@ -1293,6 +1294,15 @@ function TeamPortlioTable(SelectedProp: any) {
             setLoaded(true);
         }
     }, []);
+
+    React.useEffect(() => {
+        setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && portfolioColor) {
+                $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
+            }
+        }, 1500)
+    }, [isOpenActivity, isOpenWorkstream, openCompareToolPopup,OpenAddStructurePopup,ActivityPopup]);
 
     React.useEffect(() => {
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
@@ -3633,9 +3643,11 @@ function TeamPortlioTable(SelectedProp: any) {
     React.useEffect(() => {
         if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
             if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
-                setActiveCompareToolButton(true);
+                if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type === childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type)
+                    setActiveCompareToolButton(true);
             } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
-                setActiveCompareToolButton(true);
+                if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType === childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType)
+                    setActiveCompareToolButton(true);
             }
         } else {
             setActiveCompareToolButton(false);

@@ -2376,6 +2376,7 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                         if (title) task.joinedData.push(`Title: ${title}`);
                         if (dueDate) task.joinedData.push(`Due Date: ${dueDate}`);
                     }
+                    task.IsWp
                     if (task?.SiteCompositionSettings != undefined) {
                         let TempSCSettingsData: any = JSON.parse(task?.SiteCompositionSettings);
                         if (TempSCSettingsData?.length > 0) {
@@ -2393,7 +2394,29 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                         task.IsSCProtectedStatus = "";
                     }
                     task.portfolioItemsSearch = site.Title;
+                    task.AssignedToIds = []
                     task.TaskID = GetTaskId(task);
+                    try {
+                        task.IsTodaysTask = false;
+                        if (task?.WorkingAction != undefined) {
+                            let workingAct = JSON.parse(task?.WorkingAction)
+                            task.WorkingActionParsed = workingAct;
+                            let workingInfo = task?.WorkingActionParsed?.find((info: any) => info?.Title == "WorkingDetails")
+                            if (workingInfo?.InformationData?.length > 0) {
+                                let currentDate = moment(new Date()).format("DD/MM/YYYY")
+                                let todaysWorkMembers = workingInfo?.InformationData?.find((userInfo: any) => userInfo?.WorkingDate == currentDate)
+                                if (todaysWorkMembers?.WorkingMember?.length > 0) {
+                                    task.IsTodaysTask = true;
+                                    task.AssignedTo = todaysWorkMembers?.WorkingMember
+                                    task.AssignedToIds = todaysWorkMembers?.WorkingMember?.map((mem:any)=>{
+                                        return mem?.Id
+                                    })
+                                }
+                            }
+                        }
+                    } catch (e) {
+
+                    }
                 })
                 AllSiteTasks = [...AllSiteTasks, ...data];
             } catch (error) {
@@ -3123,10 +3146,9 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
         if (items?.UserGroup?.Title == 'Portfolio Lead Team' || items?.UserGroup?.Title == 'Smalsus Lead Team' || items?.UserGroup?.Title == 'Developers Team') {
             DevCount++
         }
-        if(items?.UserGroup?.Title == 'Trainees')
-            {
-                Trainee++;
-            }
+        if (items?.UserGroup?.Title == 'Trainees') {
+            Trainee++;
+        }
         if ((items?.TimeCategory == 'Design' && items.Company == 'Smalsus') || items?.UserGroup?.Title == 'Design Team') {
             DesignCount++
         }
@@ -3143,7 +3165,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
                 if (val?.UserGroup?.Title == 'Portfolio Lead Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff')
                     item.Department = 'Developer';
                 item.userName = val?.Title
-                if(val?.UserGroup?.Title == 'Trainees')
+                if (val?.UserGroup?.Title == 'Trainees')
                     item.Department = 'Trainees';
                 item.userName = val?.Title
                 if (val?.UserGroup?.Title == 'Developers Team')
@@ -3451,3 +3473,29 @@ const GetleaveUser = async (TaskUser: any, Context: any) => {
     console.log(finalData)
     return finalData
 }
+export const getWorkingActionJSON = (teamConfigData: any) => {
+    let storeData: any = [];
+    let storeInWorkingAction: any = { "Title": "WorkingDetails", "InformationData": [] }
+    if (teamConfigData?.dateInfo?.length > 0) {
+        if (teamConfigData?.oldWorkingDaysInfo != undefined || teamConfigData?.oldWorkingDaysInfo != null && teamConfigData?.oldWorkingDaysInfo?.length > 0) {
+            teamConfigData?.oldWorkingDaysInfo.map((oldJson: any) => {
+                storeData?.push(oldJson)
+            })
+        }
+        teamConfigData?.dateInfo?.map((Info: any) => {
+            let dataAccordingDays: any = {}
+            if (Info?.userInformation?.length > 0) {
+                dataAccordingDays.WorkingDate = Info?.originalDate
+                dataAccordingDays.WorkingMember = [];
+                Info?.userInformation?.map((userInfo: any) => {
+
+
+                    dataAccordingDays.WorkingMember.push({ Id: userInfo?.AssingedToUserId, Title: userInfo.Title })
+                })
+                storeData?.push(dataAccordingDays)
+            }
+        })
+        storeInWorkingAction.InformationData = [...storeData]
+    }
+    return storeInWorkingAction
+};

@@ -1386,7 +1386,13 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
                 `<div style="background-color: #fff; padding:16px; margin-top:10px; display:block;">
             <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? " Discussion Point" : ActionType + " Comment"} </b>: <span>${ReasonStatement}</span> ` : ''}
             </div>
-            <div style="margin-top: 16px;">  <b style="font-weight:600;">Task Link: </b>
+            <div style="margin-top: 16px;">  
+               <b style="font-weight:600;">Task Title: </b>
+                <span>
+                ${UpdatedDataObject?.Title}
+                </span>
+            </div>
+            <div style="margin-top: 16px;">  <b style="font-weight:600;">Task Title: </b>
             <a href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? `Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}` : `Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">
             ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
             </a>
@@ -1458,7 +1464,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Component:</span>
                             </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center', minHeight: '30px'}}>
                                 {RequiredData["Portfolio"] != null &&
                                     <span style={{ fontSize: '10.0pt' }} title={RequiredData["Portfolio"]?.Title}>
                                         {RequiredData["Portfolio"]?.Title?.length > 17 ? RequiredData["Portfolio"]?.Title.slice(0, 14) + "..." : RequiredData["Portfolio"]?.Title}
@@ -1496,10 +1502,10 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Team Members:</span>
                             </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <div style={{ wordBreak: "break-all" }}>{RequiredData["TeamMembers"] != null &&
+                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center', minHeight: '30px' }}>
+                                <div style={{ wordBreak: 'break-all',  }}>{RequiredData["TeamMembers"] != null &&
                                     RequiredData["TeamMembers"].length > 0 &&
-                                    <span style={{ fontSize: '10.0pt' }}>
+                                    <span style={{ fontSize: '10.0pt', whiteSpace: 'nowrap', width: '95%', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>
                                         {joinObjectValues(RequiredData["TeamMembers"])}
                                     </span>
                                 }

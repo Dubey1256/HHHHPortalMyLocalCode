@@ -66,6 +66,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private getDatesInfo() {
         let datesInfo: any = [];
         let currentDate = moment();
+        // currentDate._d.setHours(0, 0, 0, 0)
         let workingActionTest: any = [];
         try {
             workingActionTest = JSON.parse(this?.state?.taskDetails?.WorkingAction)
@@ -80,23 +81,41 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
             })
         }
-        let oldJson: any = workingAction;
+   
+        let oldJson:any=[]
+        try {
+             oldJson= JSON.parse(JSON.stringify(workingAction));
+        } catch (error) {
+
+        }
+
+
+    
         let count = 0;
         while (datesInfo.length < 5) {
-            let dateFullInfo = { displayDate: '', originalDate: '' };
+            let dateFullInfo :any= {};
             if (currentDate.day() !== 0 && currentDate.day() !== 6) {
                 count++;
                 if (count == 1) {
+                    dateFullInfo.originalDate=currentDate.format('DD/MM/YYYY')
+                    dateFullInfo.serverDate = moment(dateFullInfo?.originalDate, 'DD/MM/YYYY');
+                    dateFullInfo.serverDate._d.setHours(0, 0, 0, 0)
                     dateFullInfo.displayDate = "Today"
-                    dateFullInfo.originalDate = currentDate.format('DD/MM/YYYY')
+                    
                 }
                 else if (count == 2) {
+                    dateFullInfo.originalDate=currentDate.format('DD/MM/YYYY')
+                    dateFullInfo.serverDate = moment(dateFullInfo?.originalDate, 'DD/MM/YYYY');
+                    dateFullInfo.serverDate._d.setHours(0, 0, 0, 0)
                     dateFullInfo.displayDate = "Tomorrow"
-                    dateFullInfo.originalDate = currentDate.format('DD/MM/YYYY')
+                    
                 }
                 else {
+                    dateFullInfo.originalDate=currentDate.format('DD/MM/YYYY')
+                    dateFullInfo.serverDate = moment(dateFullInfo?.originalDate, 'DD/MM/YYYY');
+                    dateFullInfo.serverDate._d.setHours(0, 0, 0, 0)
                     dateFullInfo.displayDate = currentDate.format('DD/MM/YYYY')
-                    dateFullInfo.originalDate = currentDate.format('DD/MM/YYYY')
+                    
                 }
                 datesInfo.push(dateFullInfo);
                 currentDate = currentDate.add(1, 'day');
@@ -112,10 +131,13 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 return !datesInfo.some((newDate: any) => oldDate.WorkingDate == newDate.originalDate);
             });
         }
+
         datesInfo?.map((dates: any) => {
             dates.userInformation = [];
             workingAction?.map((workActionData: any) => {
-                if (workActionData?.WorkingDate == dates?.originalDate) {
+                workActionData.WorkingDate= moment(workActionData?.WorkingDate, 'DD/MM/YYYY');  
+                workActionData.WorkingDate._d.setHours(0, 0, 0, 0)
+                if (workActionData?.WorkingDate?._d.getTime() == dates?.serverDate?._d.getTime()) {
                     this?.state?.taskUsers?.map((users: any) => {
                         users?.childs.map((userValue: any, index: any) => {
                             workActionData?.WorkingMember?.map((workingMember: any) => {
@@ -149,10 +171,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             datesInfo: datesInfo,
             oldWorkingDaysInfo: oldJson
         })
-
     }
-
-
     private async loadTaskUsers() {
         if (this.props.ItemInfo.siteUrl != undefined) {
             web = new Web(this.props.ItemInfo.siteUrl);
@@ -560,7 +579,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 })
             })
             this?.state?.datesInfo.map((dataDetail: any) => {
-                if (dataDetail?.originalDate == dateLocationData?.originalDate) {
+                if (dataDetail?.serverDate._d.getTime() == dateLocationData?.serverDate._d.getTime()) {
                     if (!this.isItemExists(dataDetail.userInformation, dataUser.ID)) {
                         dataUser.workingDateUser = dateLocationData?.originalDate;
                         dataDetail.userInformation.push(dataUser)
@@ -572,7 +591,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         }
         else if (draguserType == userType) {
             this?.state?.datesInfo?.map((dataDetail: any) => {
-                if (dataDetail?.originalDate == dateLocationData?.originalDate) {
+                if (dataDetail?.serverDate._d.getTime() == dateLocationData?.serverDate._d.getTime()) {
                     if (!this.isItemExists(dataDetail.userInformation, dataUser.ID)) {
                         dataUser.workingDateUser = dataDetail?.originalDate
                         dataDetail.userInformation.push(dataUser)

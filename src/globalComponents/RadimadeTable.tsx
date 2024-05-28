@@ -129,22 +129,22 @@ function ReadyMadeTable(SelectedProp: any) {
     React.useEffect(() => {
         if (AllSiteTasksData?.length > 0) {
             if (isUpdated != "") {
-                if (portfolioTypeData.length > 0) {
-                    portfolioTypeData?.map((elem: any) => {
-                        if (elem.Title === isUpdated || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) {
-                            portfolioColor = elem.Color;
-                        }
-                    })
-                }
+                // if (portfolioTypeData.length > 0) {
+                //     portfolioTypeData?.map((elem: any) => {
+                //         if (elem.Title === isUpdated || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) {
+                //             portfolioColor = elem.Color;
+                //         }
+                //     })
+                // }
             } else {
-                if (portfolioTypeData.length > 0) {
-                    portfolioTypeData?.map((elem: any) => {
-                        if (elem.Title === "Component") {
-                            portfolioColor = elem.Color;
-                        }
-                    })
+                // if (portfolioTypeData.length > 0) {
+                //     portfolioTypeData?.map((elem: any) => {
+                //         if (elem.Title === "Component") {
+                //             portfolioColor = elem.Color;
+                //         }
+                //     })
 
-                }
+                // }
 
                 if (SelectedProp?.configration == "AllAwt" && SelectedProp?.SelectedItem != undefined) {
                     if ('Parent' in SelectedProp?.SelectedItem) {
@@ -482,8 +482,8 @@ function ReadyMadeTable(SelectedProp: any) {
 
                 console.log(AllTasksMatches);
                 Counter++;
-                console.log(AllTasksMatches.length);
-                if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
+                console.log(AllTasksMatches?.length);
+                if (AllTasksMatches != undefined && AllTasksMatches?.length > 0) {
                     $.each(AllTasksMatches, function (index: any, item: any) {
                         item.isDrafted = false;
                         item.flag = true;
@@ -703,13 +703,16 @@ function ReadyMadeTable(SelectedProp: any) {
                         // let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
                         // allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
                         try {
-                            allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
+                            allTaskDataFlatLoadeViewBackup = AllTasksData?.length>0?JSON.parse(JSON.stringify(AllTasksData)):[]
                         } catch (error) {
                             console.log("backup Json parse error Page Loade Task Data");
                         }
                         // allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
                     }
-                
+                    if(AllTasksMatches?.length==0 && Counter == siteConfig?.length){
+                        let data=[{}];
+                        setAllSiteTasksData(data);
+                    }
             });
             // GetComponents();
         }

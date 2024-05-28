@@ -147,7 +147,19 @@ const TeamSmartFilter = (item: any) => {
             year.push(i);
         }
         setYear(year);
+        
     }, [])
+
+    React.useEffect(() => {
+        setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && item?.portfolioColor) {
+                $('.ms-Panel-main').css('--SiteBlue', item?.portfolioColor
+                ); // Set the desired color value here
+            }
+        }, 1000)
+    }, [PreSetPanelIsOpen, selectedFilterPanelIsOpenUpdate, selectedFilterPanelIsOpen,ProjectManagementPopup]);
+
     ///// Year Range Using Piker end////////
 
     const getTaskUsers = async () => {
@@ -894,8 +906,8 @@ const TeamSmartFilter = (item: any) => {
             filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
             setTaskUsersData((prev: any) => filterGroups);
             rerender()
-        } 
-        
+        }
+
         // else if (event == "ClintCatogry") {
         //     let filterGroups = [...allFilterClintCatogryData];
         //     filterGroups[index].selectAllChecked = selectAllChecked;
@@ -1727,7 +1739,7 @@ const TeamSmartFilter = (item: any) => {
             </div>
         )
     }
-   
+
     // ************** this is for Project Management Section Functions ************
 
     let selectedProjectData: any = []
@@ -1745,7 +1757,7 @@ const TeamSmartFilter = (item: any) => {
         })
         setSelectedProject(selectedTempArray);
     }
-    
+
     const autoSuggestionsForProject = (e: any) => {
         let allSuggestion: any = [];
         let searchedKey: any = e.target.value;
@@ -1778,13 +1790,13 @@ const TeamSmartFilter = (item: any) => {
         })
         setSelectedProject(tempArray)
     }
-   
-    const callBackData = React.useCallback((checkData: any,Type:any, functionType:any) => {
+
+    const callBackData = React.useCallback((checkData: any, Type: any, functionType: any) => {
         let MultiSelectedData: any = [];
-        if (checkData?.length>0 && functionType=="Save") {
+        if (checkData?.length > 0 && functionType == "Save") {
             checkData.map((item: any) => MultiSelectedData?.push(item))
             SelectProjectFunction(MultiSelectedData);
-            setProjectManagementPopup(false);  
+            setProjectManagementPopup(false);
         } else {
             setProjectManagementPopup(false);
         }
@@ -2068,23 +2080,24 @@ const TeamSmartFilter = (item: any) => {
     };
 
     const handleTeamMemberClick = async (user: any, groupIndex: number) => {
-        const isChecked = !user.isChecked;
+        const isChecked = !user.checked;
         const eventId = "FilterTeamMembers";
 
         let updatedTaskUsersData = [...TaskUsersData];
-        updatedTaskUsersData[groupIndex].values = updatedTaskUsersData[groupIndex].values.map((item: any) => {
+        updatedTaskUsersData[groupIndex].values = updatedTaskUsersData[groupIndex]?.values?.map((item: any) => {
             if (item.Id === user.Id) {
                 return {
                     ...item,
-                    isChecked: isChecked
+                    checked: isChecked
                 };
             }
             return item;
         });
-        const checkedIds = updatedTaskUsersData[groupIndex].values.filter((item: any) => item.isChecked).map((item: any) => item.Id);
+        const checkedIds = updatedTaskUsersData[groupIndex]?.values?.filter((item: any) => item.checked).map((item: any) => item.Id);
         await onCheck(checkedIds, groupIndex, eventId);
         setTaskUsersData(updatedTaskUsersData);
     }
+
 
 
     ///////////////////////////////+++++++++++++++++++++ team User Selection end + ///////////////////////////////////////////////////
@@ -2918,12 +2931,12 @@ const TeamSmartFilter = (item: any) => {
             </section>
             {/* ********************* this is Project Management panel ****************** */}
             {item?.ProjectData != undefined && item?.ProjectData?.length > 0 && ProjectManagementPopup ?
-                 <ServiceComponentPortfolioPopup
-                 Dynamic={item?.ContextValue}
-                 Call={(DataItem: any, Type: any, functionType: any) => {callBackData(DataItem, Type, functionType) }}  
-                 showProject={ProjectManagementPopup}
-                 selectionType = 'Multi'
-               />
+                <ServiceComponentPortfolioPopup
+                    Dynamic={item?.ContextValue}
+                    Call={(DataItem: any, Type: any, functionType: any) => { callBackData(DataItem, Type, functionType) }}
+                    showProject={ProjectManagementPopup}
+                    selectionType='Multi'
+                />
                 : null
             }
             <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>

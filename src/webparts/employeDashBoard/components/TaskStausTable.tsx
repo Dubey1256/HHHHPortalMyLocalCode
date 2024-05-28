@@ -32,6 +32,7 @@ let emailStatus: any = "";
 let IsShowConfigBtn = false;
 let dragItem: any;
 let DragDropType: any = '';
+let isUpdateTask: any = true;
 let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1, taskStatusComment: "For Approval" }, { value: 2, taskStatusComment: "Follow Up" }, { value: 3, taskStatusComment: "Approved" },
 { value: 4, taskStatusComment: "Checking" }, { value: 5, taskStatusComment: "Acknowledged" }, { value: 8, taskStatusComment: "Priority Check" }, { value: 9, taskStatusComment: "Ready To Go" },
 { value: 10, taskStatusComment: "working on it" }, { value: 70, taskStatusComment: "Re-Open" }, { value: 75, taskStatusComment: "Deployment Pending" }, { value: 80, taskStatusComment: "In QA Review" },
@@ -171,8 +172,11 @@ const TaskStatusTbl = (Tile: any) => {
     rerender();
   }
   const handleDragStart = (e: any, sourceUser: any, DragType: any) => {
+    isUpdateTask = true;
     e.dataTransfer.setData("sourceUser", JSON.stringify(sourceUser));
     DragDropType = DragType;
+    if (sourceUser?.TileName == 'WorkingToday')
+      isUpdateTask = false;
   };
   const startDrag = (e: any, Item: any, ItemId: any, draggedItem: any) => {
     dragItem = draggedItem;
@@ -232,7 +236,7 @@ const TaskStatusTbl = (Tile: any) => {
               let IsAddNew: boolean = true;
               let IsWorkingDetailsExist = false;
               Item?.WorkingAction?.map((workingMember: any) => {
-                if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
+                if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
                   IsWorkingDetailsExist = true;
                   workingMember?.InformationData?.map((workingDetails: any) => {
                     if (workingDetails?.WorkingDate == WorkingDate) {
@@ -450,119 +454,174 @@ const TaskStatusTbl = (Tile: any) => {
     }
   }
   const onDropTable = (e: any, Type: any, config: any) => {
-    let sourceUser = globalCommon.parseJSON(e.dataTransfer.getData("sourceUser"))
-    let Status = 0;
-    let count = 0;
-    if (Type != undefined) {
-      Status = Type
-    }
-    // let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
-    let UpdatedItem: any = []
-    if (RefSelectedItem != undefined && RefSelectedItem?.length > 0) {
-      RefSelectedItem?.map((DraggedItem: any) => {
-        UpdatedItem.push(DraggedItem?.original)
-      })
-    }
-    else {
-      UpdatedItem.push(globalCommon.parseJSON(e.dataTransfer.getData("DataId")))
-    }
-    if (UpdatedItem != undefined && UpdatedItem?.length > 0) {
-      UpdatedItem?.map((item: any) => {
-        let Item = item;
-        Item.percentage = Status + '%';
-        StatusOptions?.map((item: any) => {
-          if (Status == item.value) {
-            Item.Status = item?.taskStatusComment
-          }
-        });
-        Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item?.WorkingAction))
-        if (Item != undefined && Item != '') {
-          if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0)
-            Item.WorkingAction = Item?.WorkingAction.filter((Category: any) => Category?.Title !== 'WorkingDetails')
-          let web = new Web(ContextData?.propsValue?.siteUrl);
-          web.lists.getById(Item.listId).items.getById(Item?.Id).update({
-            PercentComplete: Status / 100,
-            Status: Item?.Status,
-            WorkingAction: Item?.WorkingAction?.length > 0 ? JSON.stringify(Item?.WorkingAction) : '',
-            AssignedToId: { results: [], },
-            IsTodaysTask: false,
-          }).then((res: any) => {
-            console.log('Drop successfuly');
-            count++;
-            DashboardConfig?.forEach((item: any) => {
-              if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
-                if (item?.Tasks != undefined) {
-                  item?.Tasks.map((user: any) => {
-                    // if (user?.AssingedToUserId == sourceUser?.AssingedToUserId) {
-                    Item.WorkingDate = '';
-                    if (Item.PrevWorkingAction != undefined && Item.PrevWorkingAction != '' && Item.PrevWorkingAction?.length > 0) {
-                      Item.PrevWorkingAction?.map((workingMember: any) => {
-                        if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
-                          workingMember?.InformationData?.map((workingDetails: any) => {
-                            if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
-                              let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
-                              WorkingDate?._d.setHours(0, 0, 0, 0)
-                              user?.dates.map((Time: any) => {
-                                if (Time?.ServerDate?.getTime() == WorkingDate?._d.getTime()) {
-                                  Time.Tasks = Time?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
-                                  Time.TotalTask = Time?.Tasks?.length;
-                                  Time.TotalEstimatedTime -= Item?.EstimatedTime;
-
-                                  user.Tasks = Time?.Tasks
-                                  user.TotalTask = Time?.TotalTask
-                                  user.TotalEstimatedTime -= Time?.TotalEstimatedTime
-                                }
-                              })
-                            }
-                          })
-                        }
-                      })
-                    }
-                    //}
-                  });
-                  if (sourceUser == undefined || sourceUser == '') {
-                    item.Tasks = item?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
-                  }
-                }
-              }
-              if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle) {
-                item?.Tasks.push(Item)
-              }
-            });
-            DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
-            DashboardConfigCopy?.map((Config: any) => {
-              if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
-                Config?.Tasks?.map((Date: any) => {
-                  if (Date?.dates != undefined && Date?.dates?.length > 0) {
-                    Date?.dates?.map((Time: any) => {
-                      if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
-                        Time.ServerDate = Moment(Time?.ServerDate)
-                        Time.ServerDate = Time.ServerDate?._d;
-                        Time.ServerDate.setHours(0, 0, 0, 0)
+    if (isUpdateTask == true) {
+      let sourceUser = globalCommon.parseJSON(e.dataTransfer.getData("sourceUser"))
+      let Status: any = 0;
+      let count = 0;
+      if (Type != undefined) {
+        Status = Type
+      }
+      // let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
+      let UpdatedItem: any = []
+      if (RefSelectedItem != undefined && RefSelectedItem?.length > 0) {
+        RefSelectedItem?.map((DraggedItem: any) => {
+          UpdatedItem.push(DraggedItem?.original)
+        })
+      }
+      else {
+        UpdatedItem.push(globalCommon.parseJSON(e.dataTransfer.getData("DataId")))
+      }
+      if (UpdatedItem != undefined && UpdatedItem?.length > 0) {
+        UpdatedItem?.map((item: any) => {
+          let Item = item;
+          Status = Status == undefined || Status == '' ? Item?.PercentComplete : Status
+          Item.percentage = Status != undefined && Status != '' ? Status : Item?.PercentComplete;
+          StatusOptions?.map((item: any) => {
+            if (Status == item.value) {
+              Item.Status = item?.taskStatusComment
+            }
+          });
+          Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item?.WorkingAction))
+          if (Item != undefined && Item != '') {
+            if (config?.TileName == 'WorkingToday') {
+              let today: any = new Date();
+              today.setDate(today.getDate());
+              today.setHours(0, 0, 0, 0);
+              let WorkingDate: any = Moment(today).format("DD/MM/YYYY");
+              Item.WorkingDate = WorkingDate
+              if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0) {
+                let IsAddNew: boolean = true;
+                let IsWorkingDetailsExist = false;
+                Item?.WorkingAction?.map((workingMember: any) => {
+                  if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
+                    IsWorkingDetailsExist = true;
+                    workingMember?.InformationData?.map((workingDetails: any) => {
+                      if (workingDetails?.WorkingDate == WorkingDate) {
+                        IsAddNew = false;
+                        if (workingDetails?.WorkingMember == undefined)
+                          workingDetails.WorkingMember = []
+                        if (!IsUserIdExist(workingDetails?.WorkingMember, ContextData?.currentUserData))
+                          workingDetails?.WorkingMember.push({ 'Id': ContextData?.currentUserData?.AssingedToUserId, 'Title': ContextData?.currentUserData?.Title })
                       }
                     })
                   }
-                });
-              }
-            });
-            if (count == UpdatedItem?.length) {
-              try {
-                if (childRef?.current != undefined)
-                  childRef?.current?.setRowSelection({});
-                setRefSelectedItem([])
-              } catch (e) {
-                console.log(e)
-              }
-            }
-            setActiveTile(Tile?.activeTile)
-            rerender();
-          }).catch((err: any) => {
-            console.log(err);
-          })
-        }
-      })
-    }
+                })
+                if (IsAddNew == true) {
+                  if (IsWorkingDetailsExist == false) {
+                    Item?.WorkingAction.push({ 'Title': "WorkingDetails", 'InformationData': [] })
+                  }
+                  Item?.WorkingAction?.map((workingMember: any) => {
+                    if (workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
+                      if (workingMember?.InformationData == undefined)
+                        workingMember.InformationData = [];
+                      workingMember.InformationData.push({ 'WorkingDate': WorkingDate, 'WorkingMember': [{ 'Id': ContextData?.currentUserData?.AssingedToUserId, 'Title': ContextData?.currentUserData?.Title }] })
 
+                    }
+                  })
+                }
+              }
+              Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item?.WorkingAction))
+            }
+            else {
+              if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0)
+                Item.WorkingAction = Item?.WorkingAction.filter((Category: any) => Category?.Title !== 'WorkingDetails')
+            }
+            let web = new Web(ContextData?.propsValue?.siteUrl);
+            DragDropType == "Un-Assigned"
+            let PostData: any = {
+              PercentComplete: Status / 100,
+              Status: Item?.Status,
+              WorkingAction: Item?.WorkingAction?.length > 0 ? JSON.stringify(Item?.WorkingAction) : '',
+              AssignedToId: { results: config?.TileName == 'WorkingToday' ? [ContextData?.currentUserData?.AssingedToUserId] : [], },
+              IsTodaysTask: false,
+            }
+            if (DragDropType == "Un-Assigned")
+              PostData.ResponsibleTeamId = { results: [ContextData?.currentUserData?.AssingedToUserId] }
+            web.lists.getById(Item.listId).items.getById(Item?.Id).update(PostData).then((res: any) => {
+              console.log('Drop successfuly');
+              count++;
+              DashboardConfig?.forEach((item: any) => {
+                if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
+                  if (item?.Tasks != undefined) {
+                    item?.Tasks.map((user: any) => {
+                      // if (user?.AssingedToUserId == sourceUser?.AssingedToUserId) {
+                      if (config?.TileName != 'WorkingToday')
+                        Item.WorkingDate = '';
+                      if (Item.PrevWorkingAction != undefined && Item.PrevWorkingAction != '' && Item.PrevWorkingAction?.length > 0) {
+                        Item.PrevWorkingAction?.map((workingMember: any) => {
+                          if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
+                            workingMember?.InformationData?.map((workingDetails: any) => {
+                              if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                                let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
+                                WorkingDate?._d.setHours(0, 0, 0, 0)
+                                if (user?.dates != undefined && user?.dates?.length > 0) {
+                                  user?.dates.map((Time: any) => {
+                                    if (Time?.ServerDate?.getTime() == WorkingDate?._d.getTime()) {
+                                      Time.Tasks = Time?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                                      Time.TotalTask = Time?.Tasks?.length;
+                                      Time.TotalEstimatedTime -= Item?.EstimatedTime;
+                                      user.Tasks = Time?.Tasks
+                                      user.TotalTask = Time?.TotalTask
+                                      user.TotalEstimatedTime -= Time?.TotalEstimatedTime
+                                    }
+                                  })
+                                }
+                              }
+                            })
+                          }
+                        })
+                      }
+                      //}
+                    });
+                    if ((sourceUser?.AssingedToUserId == undefined || sourceUser?.AssingedToUserId == '') && config?.TileName != 'WorkingToday') {
+                      item.Tasks = item?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                    }
+                    if (DragDropType == "Un-Assigned" && item?.Tasks[0] != undefined && item?.Tasks[0]?.dates?.length > 0 && item?.Tasks[0]?.dates[0]?.Tasks != undefined && item?.Tasks[0]?.dates[0]?.Tasks?.length > 0) {
+                      item.Tasks[0].dates[0].Tasks = item?.Tasks[0]?.dates[0]?.Tasks?.filter((Task: any) => Task?.Id != Item.Id);
+                    }
+                  }
+                }
+                if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle && !isTaskItemExists(item?.Tasks, Item)) {
+                  item?.Tasks.push(Item)
+                }
+              });
+              DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+              DashboardConfigCopy?.map((Config: any) => {
+                if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+                  Config?.Tasks?.map((Date: any) => {
+                    if (Date?.dates != undefined && Date?.dates?.length > 0) {
+                      Date?.dates?.map((Time: any) => {
+                        if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
+                          Time.ServerDate = Moment(Time?.ServerDate)
+                          Time.ServerDate = Time.ServerDate?._d;
+                          Time.ServerDate.setHours(0, 0, 0, 0)
+                        }
+                      })
+                    }
+                  });
+                }
+              });
+              if (count == UpdatedItem?.length) {
+                try {
+                  if (childRef?.current != undefined)
+                    childRef?.current?.setRowSelection({});
+                  setRefSelectedItem([])
+                } catch (e) {
+                  console.log(e)
+                }
+              }
+              setActiveTile(Tile?.activeTile)
+              rerender();
+            }).catch((err: any) => {
+              console.log(err);
+            })
+          }
+        })
+      }
+    }
+    else {
+      alert('You cannot drag today tasks')
+    }
   }
   const isTaskItemExists = (array: any, items: any) => {
     let isExists = false;
@@ -1251,64 +1310,98 @@ const TaskStatusTbl = (Tile: any) => {
     const data: any = AllapprovalTask.filter((i: any) => { return i.Id != approveItem.Id })
     setapprovalTask(data);
   }
-  const sendAllWorkingTodayTasks = async (sharingTasks: any) => {
-    let to: any = [ContextData.approverEmail];
+  const sendAllWorkingTodayTasks = async (sharingTasks: any, config: any) => {
+    let today = new Date();
+    const yesterdays = new Date(today.setDate(today.getDate() - 1))
+    const yesterday = Moment(yesterdays).format("DD/MM/YYYY")
     let body: any = '';
-    let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
-    if (confirmation) {
-      var subject = "Today's Working Tasks Under Projects";
-      let tasksCopy: any = [];
-      let text = '';
-      tasksCopy = sharingTasks;
-      if (tasksCopy?.length > 0) {
-        let taskCount = 0;
-        tasksCopy?.map(async (item: any) => {
-          try {
-            item.smartTime = 0;
-            item.showDesc = '';
-            let memberOnLeave = false;
-            if (!memberOnLeave) {
-              taskCount++;
-              text +=
-                `<tr>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.site} </td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${ContextData?.siteUrl}/SitePages/Task-Profile.aspx?taskId= ${item?.Id}&Site=${item?.site}> ${item?.Title} </a></p></td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.percentage} </td>
-                  </tr>`;
-            }
-          } catch (error) {
-            console.log(error)
-          }
-        })
-        if (taskCount > 0) {
-          body += `<table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
-                        <thead>
-                        <tr>
-                        <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Site</th>
-                        <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;x">Task ID</th>
-                        <th width="500" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Title</th>
-                        <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Category</th>
-                        <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">% </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        ${text}
-                        </tbody>
-                        </table>`
-        }
+    let text = '';
+    let to: any = [];
+    let body1: any = [];
+    let userApprover = '';
+    let tasksCopy = config?.Tasks;
+    ContextData.currentUserData.UserManagerMail = [];
+    ContextData.currentUserData.UserManagerName = ''
+    ContextData?.currentUserData?.Approver?.map((Approver: any, index: any) => {
+      if (index == 0) {
+        ContextData.currentUserData.UserManagerName = Approver?.Title;
+      } else {
+        ContextData.currentUserData.UserManagerName += ' ,' + Approver?.Title
       }
-      let sendAllTasks = `<span style="font-size: 18px;margin-bottom: 10px;">
-            Hi there, <br><br>
-            Below is the working today task of all the team members <strong>(Project Wise):</strong>
-            <p><a href =${ContextData?.siteUrl}/SitePages/Project-Management-Overview.aspx>Click here for flat overview of the today's tasks</a></p>
-            </span>
-            ${body}
-            <h3>
-            Thanks.
-            </h3>`
-      SendEmailFinal(to, subject, sendAllTasks);
+      let Mail = Approver?.Name?.split('|')[2]
+      ContextData?.currentUserData.UserManagerMail.push(Mail)
+    })
+
+    to = ContextData?.currentUserData?.UserManagerMail;
+    userApprover = ContextData?.currentUserData?.UserManagerName;
+    tasksCopy.sort((a: any, b: any) => {
+      return b.PriorityRank - a.PriorityRank;
+    });
+    let confirmation = confirm('Your' + ' ' + config?.WebpartTitle + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + ContextData?.currentUserData?.Approver[0]?.Title + ')' + '.' + '\n' + 'Do you want to continue?')
+    if (confirmation) {
+      let totalTime = 0;
+      var subject = ContextData?.currentUserData?.Title + ' - ' + config?.WebpartTitle;
+      let Currentdate = new Date(); // Use your JavaScript Date object here
+      let CurrentformattedDate = Moment(Currentdate).format('YYYY-MM-DD');
+      tasksCopy?.map((item: any) => {
+        totalTime += item?.EstimatedTime
+        let teamUsers: any = [];
+        item?.TeamMembers?.map((item1: any) => {
+          teamUsers.push(item1?.Title)
+        });
+        if (item.DueDate != undefined) {
+          item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
+        }
+        if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
+          item.TaskDueDatenew = '';
+        if (item.Categories == undefined || item.Categories == '')
+          item.Categories = '';
+        text =
+          `<tr>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.PercentComplete} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.EstimatedTime} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${item.EstimatedTimeDescr} </td>
+                  </tr>`
+        body1.push(text);
+      });
+      body =
+        '<h2>'
+        + ContextData?.currentUserData?.Title + ' - ' + config?.WebpartTitle
+        + '</h2>'
+        + ` <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
+                    <thead>
+                    <tr>
+                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Site</th>
+                    <th width="60" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;x">Task ID</th>
+                    <th width="400" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Title</th>
+                    <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Category</th>
+                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">% </th>
+                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Smart Priority</th>
+                    <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px" >Est Time</th>
+                    <th height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px; border-right:0px" >Est Desc.</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    ${body1}
+                    </tbody>
+                    </table>`
+        + '<p>' + 'For the complete Dashboard of ' + ContextData?.currentUserData?.Title + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx` + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx` + '</span>' + '</a>' + '</p>'
+      subject = `[${config?.WebpartTitle} - ${ContextData?.currentUserData?.Title}] ${CurrentformattedDate}: ${tasksCopy?.length} Tasks; ${totalTime}hrs scheduled`
+
+    }
+    body = body.replaceAll('>,<', '><').replaceAll(',', '')
+    if (body1.length > 0 && body1 != undefined) {
+      if (ContextData?.currentUserData?.Email != undefined) {
+        to.push(ContextData?.currentUserData?.Email)
+      }
+      SendEmailFinal(to, subject, body);
+    } else {
+      // alert("No entries available");
     }
   }
   const SendEmailFinal = async (to: any, subject: any, body: any) => {
@@ -1319,10 +1412,11 @@ const TaskStatusTbl = (Tile: any) => {
       To: to,
       AdditionalHeaders: {
         "content-type": "text/html",
-        'Reply-To': 'abhishek.tiwari@smalsus.com'
+        'Reply-To': 'Piyoosh@smalsus.com'
       },
     }).then(() => {
       console.log("Email Sent!");
+      alert("Your Tasks shared successfully")
     }).catch((err) => {
       console.log(err.message);
     });
@@ -1349,7 +1443,7 @@ const TaskStatusTbl = (Tile: any) => {
         </a>}
         {config?.WebpartTitle == 'Draft Tasks' && <a className="empCol hreflink me-3">Approve</a>}
         {config?.WebpartTitle == 'Waiting for Approval' && <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>}
-        {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
+        {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks, config)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
       </span>
     )
   }
@@ -1390,7 +1484,7 @@ const TaskStatusTbl = (Tile: any) => {
                       {`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}
                     </span>
                   </div>
-                  <div className="Alltable" draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
+                  <div className="Alltable" draggable={true} onDragStart={(e) => handleDragStart(e, config, '')} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
                       <GlobalCommanTable wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                         pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />

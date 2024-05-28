@@ -66,6 +66,7 @@
     "react-bootstrap": "^1.0.1",
     "react-bootstrap-icons": "^1.10.3",
     "react-checkbox-tree": "^1.8.0",
+    "react-components": "^0.5.1",
     "react-csv": "^2.2.2",
     "react-datepicker": "^4.8.0",
     "react-dnd": "^16.0.1",

@@ -191,7 +191,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(26, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(35, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -429,11 +429,6 @@ const TaskDashboard = (props: any) => {
                         if (task?.EstimatedTimeDescription != undefined && task?.EstimatedTimeDescription != '' && task?.EstimatedTimeDescription != null) {
                             EstimatedDesc = JSON.parse(task?.EstimatedTimeDescription)
                         }
-                        let workingAct: any = []
-                        if (task?.WorkingAction != undefined && task?.WorkingAction != '' && task?.WorkingAction != null) {
-                            workingAct = JSON.parse(task?.WorkingAction)
-                            task.WorkingAction = workingAct;
-                        }
                         task.HierarchyData = [];
                         task.EstimatedTime = 0;
                         task.SmartPriority;
@@ -478,7 +473,11 @@ const TaskDashboard = (props: any) => {
                         task?.Approver?.map((approverUser: any) => {
                             task.ApproverIds.push(approverUser?.Id);
                         })
-                        task.AssignedToIds = [];
+                        if (task?.AssignedToIds?.length > 0) {
+
+                        } else {
+                            task.AssignedToIds = [];
+                        }
                         task?.AssignedTo?.map((assignedUser: any) => {
                             task.AssignedToIds.push(assignedUser.Id)
                             taskUsers?.map((user: any) => {
@@ -526,22 +525,23 @@ const TaskDashboard = (props: any) => {
                         const isImmediate = checkUserExistence('Immediate', task?.TaskCategories);
                         const isEmailNotification = checkUserExistence('Email Notification', task?.TaskCategories);
                         const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
+                        try {
+                            let workingAct: any = []
+                            if (task?.WorkingAction != undefined && task?.WorkingAction != '' && task?.WorkingAction != null) {
+                                workingAct = JSON.parse(task?.WorkingAction)
+                                task.WorkingAction = workingAct;
+                            }
+                            if (task?.WorkingAction?.length > 0) {
+                                task?.WorkingAction?.forEach((data: any) => {
+                                    if (data?.Title === "Bottleneck") {
+                                        isBottleneckTask = true;
+                                    }
+                                });
+                            }
 
-                        if (task?.WorkingAction?.length > 0) {
-                            task?.WorkingAction?.forEach((data: any) => {
-                                if (data?.Title === "Bottleneck") {
-                                    isBottleneckTask = true;
-                                    // data?.InformationData?.forEach((userBottleneckTasks:any) => {
-                                    //      if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currenUserAssignedToUserId) {
-                                    //             // userBottleneckTasks.TaggedUsers.isBottleneck = true;
-                                    //             // AllBottleNeckTasks.push(userBottleneckTasks)
-                                    //             isBottleneckTask=true;
-                                    //         }
-                                    //   });
-                                }
-                            });
+                        } catch (e) {
+
                         }
-
                         if (isCurrentUserApprover && task?.PercentComplete == '1') {
                             approverTask.push(task)
                         }
@@ -665,19 +665,25 @@ const TaskDashboard = (props: any) => {
                 const isEmailNotfication = checkUserExistence('Email Notification', task?.TaskCategories);
                 let isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
                 let isBottleneckTaskNew = false;
-                if (task?.WorkingAction?.length > 0) {
-                    task?.WorkingAction?.forEach((data: any) => {
-                        if (data?.Title === "Bottleneck") {
+                try {
 
-                            data?.InformationData?.forEach((userBottleneckTasks: any) => {
-                                if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currentUserId) {
-                                    // userBottleneckTasks.TaggedUsers.isBottleneck = true;
-                                    // AllBottleNeckTasks.push(userBottleneckTasks)
-                                    isBottleneckTaskNew = true;
-                                }
-                            });
-                        }
-                    });
+                    if (task?.WorkingAction?.length > 0) {
+
+                        task?.WorkingAction?.forEach((data: any) => {
+                            if (data?.Title === "Bottleneck") {
+
+                                data?.InformationData?.forEach((userBottleneckTasks: any) => {
+                                    if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currentUserId) {
+                                        // userBottleneckTasks.TaggedUsers.isBottleneck = true;
+                                        // AllBottleNeckTasks.push(userBottleneckTasks)
+                                        isBottleneckTaskNew = true;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                } catch (e) {
+
                 }
 
                 // Testing Only Please Remove Before deployement
@@ -987,7 +993,7 @@ const TaskDashboard = (props: any) => {
                                     <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
                                 </a>
                             </>
-                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
+                            : <span title={row?.original?.Author?.Title} className=" alignIcon svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
                 id: "CreateDate",
@@ -1066,8 +1072,8 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.original?.Title}
                         </a>
-                        {row?.original?.descriptionsSearch !== null &&  <span className='alignIcon'><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
-                        } 
+                        {row?.original?.descriptionsSearch !== null && <span className='alignIcon'><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
+                        }
                     </div>
                 ),
                 id: "Title",
@@ -1184,7 +1190,7 @@ const TaskDashboard = (props: any) => {
                                     <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
                                 </a>
                             </>
-                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
+                            : <span title={row?.original?.Author?.Title} className="alignIcon svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
                 id: "CreateDate",
@@ -1463,7 +1469,10 @@ const TaskDashboard = (props: any) => {
         setCurrentView("Home")
         setSelectedUser({})
         createGroupUsers();
+
     }
+
+
     // End
 
     //On Drop Handle
@@ -1767,6 +1776,7 @@ const TaskDashboard = (props: any) => {
                             }
                         })
                     }
+
                     text =
                         `<tr>
                         <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
@@ -1930,7 +1940,7 @@ const TaskDashboard = (props: any) => {
     }
     const sendAllWorkingTodayTasks = () => {
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
         // let to: any = ["prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
@@ -2009,24 +2019,27 @@ const TaskDashboard = (props: any) => {
                                         })
                                     }
 
+                                    if (EstimatedTimeEntry > 0) {
+                                        text = `<tr>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.PercentComplete} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${EstimatedTimeEntry} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${EstimatedTimeEntryDesc} </td>
+                                        </tr>`
+                                        body1.push(text);
+                                    }
 
-                                    text = `<tr>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.PercentComplete} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${EstimatedTimeEntry} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${EstimatedTimeEntryDesc} </td>
-                                    </tr>`
-                                    body1.push(text);
                                 })
-                                body =
-                                    '<h3><strong>'
-                                    + teamMember?.Title + ` (${teamMember?.Group != null ? teamMember?.Group : ''}) - ${UserTotalTime} hrs Scheduled`
-                                    + '</strong></h3>'
-                                    + ` <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
+                                if (body1?.length > 0) {
+                                    body =
+                                        '<h3><strong>'
+                                        + teamMember?.Title + ` (${teamMember?.Group != null ? teamMember?.Group : ''}) - ${UserTotalTime} hrs Scheduled`
+                                        + '</strong></h3>'
+                                        + ` <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
                                     <thead>
                                     <tr>
                                     <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Site</th>
@@ -2043,7 +2056,9 @@ const TaskDashboard = (props: any) => {
                                     ${body1}
                                     </tbody>
                                     </table>`
-                                body = body.replaceAll('>,<', '><').replaceAll(',', '')
+                                    body = body.replaceAll('>,<', '><').replaceAll(',', '')
+                                }
+
                             } else {
                                 body = '<h3><strong>'
                                     + teamMember?.Title + ` (${teamMember?.Group != null ? teamMember?.Group : ''})`
