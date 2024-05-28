@@ -527,21 +527,29 @@ const TaskDashboard = (props: any) => {
                         const isEmailNotification = checkUserExistence('Email Notification', task?.TaskCategories);
                         const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
 
-                        if (task?.WorkingAction?.length > 0) {
-                            task?.WorkingAction?.forEach((data: any) => {
-                                if (data?.Title === "Bottleneck") {
-                                    isBottleneckTask = true;
-                                    // data?.InformationData?.forEach((userBottleneckTasks:any) => {
-                                    //      if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currenUserAssignedToUserId) {
-                                    //             // userBottleneckTasks.TaggedUsers.isBottleneck = true;
-                                    //             // AllBottleNeckTasks.push(userBottleneckTasks)
-                                    //             isBottleneckTask=true;
-                                    //         }
-                                    //   });
-                                }
-                            });
-                        }
+                        try {
+                            if (task?.WorkingAction != undefined && task?.WorkingAction != '' && task?.WorkingAction != null) {
+                                workingAct = JSON.parse(task?.WorkingAction)
+                                task.WorkingAction = workingAct;
+                            }
+                            if (task?.WorkingAction?.length > 0) {
+                                task?.WorkingAction?.forEach((data: any) => {
+                                    if (data?.Title === "Bottleneck") {
+                                        isBottleneckTask = true;
+                                        // data?.InformationData?.forEach((userBottleneckTasks:any) => {
+                                        //      if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currenUserAssignedToUserId) {
+                                        //             // userBottleneckTasks.TaggedUsers.isBottleneck = true;
+                                        //             // AllBottleNeckTasks.push(userBottleneckTasks)
+                                        //             isBottleneckTask=true;
+                                        //         }
+                                        //   });
+                                    }
+                                });
+                            }
 
+                        } catch (e) {
+
+                        }
                         if (isCurrentUserApprover && task?.PercentComplete == '1') {
                             approverTask.push(task)
                         }
@@ -666,11 +674,7 @@ const TaskDashboard = (props: any) => {
                 let isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
                 let isBottleneckTaskNew = false;
                 try {
-                    let workingAct: any = []
-                    if (task?.WorkingAction != undefined && task?.WorkingAction != '' && task?.WorkingAction != null) {
-                        workingAct = JSON.parse(task?.WorkingAction)
-                        task.WorkingAction = workingAct;
-                    }
+
                     if (task?.WorkingAction?.length > 0) {
 
                         task?.WorkingAction?.forEach((data: any) => {
