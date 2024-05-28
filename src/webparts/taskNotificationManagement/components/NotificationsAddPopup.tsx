@@ -430,8 +430,8 @@ export const NotificationsAddPopup = (props: any) => {
             <div className="col-sm-6 ps-0 text-lg-start">
               {props?.SelectedEditItem?.Id!=undefined &&<div>
                 {console.log("footerdiv")}
-                <div><span className='pe-2'>Created</span><span className='pe-2'>{props?.SelectedEditItem?.Created !== null ? moment(props?.SelectedEditItem?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Author?.Title}</a></span></div>
-                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{props?.SelectedEditItem?.Modified !== null ? moment(props?.SelectedEditItem?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Editor?.Title}</a></span></div>
+                <div><span className='pe-2'>Created</span><span className='pe-2'>{props?.SelectedEditItem?.Created !== null ? props?.SelectedEditItem?.Created:""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Author?.Title}</a></span></div>
+                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{props?.SelectedEditItem?.Modified !== null ? props?.SelectedEditItem?.Modified: ""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Editor?.Title}</a></span></div>
                 <div 
                 onClick={() => deleteDocumentsData(props?.SelectedEditItem?.Id)}
                      className="hreflink"><span style={{ marginLeft: '-4px' }} className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item</div>

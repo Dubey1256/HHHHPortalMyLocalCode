@@ -379,6 +379,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     let Bottleneck: any = [];
     let Attention: any = [];
     let Phone: any = [];
+    taskDetails["IsTodaysTask"]=false;
     if (WorkingAction?.length > 0) {
       WorkingAction?.map((Action: any) => {
         if (Action?.Title == "Bottleneck") {
