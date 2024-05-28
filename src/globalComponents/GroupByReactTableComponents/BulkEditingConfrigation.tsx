@@ -96,7 +96,7 @@ const BulkEditingConfrigation = (item: any) => {
 
                 <footer>
                     <button type="button" className="btn btn-default pull-right" onClick={() => handleClosePopup()}>Clear</button>
-                    <button type="button" className="btn btn-primary mx-1 pull-right" onClick={handleChangeDateAndDataCallBack}>Save</button>
+                    <button type="button" className="btn btn-primary mx-1 pull-right" onClick={handleChangeDateAndDataCallBack}>Apply</button>
                 </footer>
             </Panel>
         </>
