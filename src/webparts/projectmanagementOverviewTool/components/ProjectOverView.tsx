@@ -987,13 +987,19 @@ export default function ProjectOverview(props: any) {
 
                         item.showDesc = '';
                         item.EstimatedTimeEntryDesc = ''
+                        item.EstimatedTimeEntry = 0
                         try {
                             AllTimeEntries?.map((entry: any) => {
                                 if (entry[`Task${item?.siteType}`] != undefined && entry[`Task${item?.siteType}`].Id == item.Id) {
                                     let AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
                                     AdditionalTimeEntry?.map((time: any) => {
                                         item.smartTime += parseFloat(time?.TaskTime);
-                                        item.EstimatedTimeEntryDesc += ' ' + time?.Description
+                                        let parts = time?.TaskDate?.split('/');
+                                        let timeEntryDate: any = new Date(parts[2], parts[1] - 1, parts[0]);
+                                        if (timeEntryDate?.setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0)){
+                                            item.EstimatedTimeEntryDesc += ' ' + time?.Description
+                                            item.EstimatedTimeEntry += parseFloat(time?.TaskTime);
+                                        }
                                     })
                                 }
                             })
@@ -1058,10 +1064,10 @@ export default function ProjectOverview(props: any) {
                                         '<p style="margin:0px;">' + '<a style="text-decoration: none;" href =' + AllListId.siteUrl + '/SitePages/UserTimeEntry.aspx?userId=' + AssignedUser?.Id + '><span>' + AssignedUser?.Title + '</span></a>' + '</p>'
                                     )
                                 }) : '')} </td>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item.TaskDueDatenew} </td>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item.smartTime} </td>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${item.EstimatedTime} </td>
-                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${item.EstimatedTimeEntryDesc} </td>
+                                <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;">${item.smartTime} </td>
+    
+                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item?.EstimatedTimeEntryDesc} </td>
+                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.EstimatedTimeEntry} </td>
                             </tr>`
                                 ;
                         }
@@ -1098,18 +1104,16 @@ export default function ProjectOverview(props: any) {
                     <table cellpadding="0" cellspacing="0" align="left" width="100%" border="0">
                     <thead>
                     <tr>
-                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Site</th>
-                    <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;x">Task ID</th>
-                    <th width="500" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Title</th>
-                    <th width="140" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;" >Desc.</th>
-                    <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Category</th>
-                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">% </th>
-                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Smart Priority</th>
-                    <th width="130" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Team</th>
-                    <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Duedate</th>
-                    <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Smart Time</th>
-                    <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;" >Est</th>
-                    <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px; border-right:0px" >Smart Time Desc</th>
+                    <th width="40" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Site</th>
+                    <th width="80" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;"> Task ID</th>
+                    <th width="300" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Title</th>
+                    <th width="40" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Priority</th>
+                    <th width="40" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Status </th>
+                    <th width="80" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Duedate</th>
+                    <th width="120" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Team Member</th>
+                    <th width="80" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Smart Time</th>
+                    <th width="300" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Time Description</th>
+                    <th width="100" height="12" align="left" valign="middle" bgcolor="#fafafa" style="padding:10px 8px;border-top: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;font-family: Segoe UI;font-size: 13px;">Estimated Time</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -1131,6 +1135,8 @@ export default function ProjectOverview(props: any) {
             })
             return body != undefined ? body : ''
         }
+        
+        
 
     }
 
@@ -1955,7 +1961,7 @@ export default function ProjectOverview(props: any) {
                                     </dl>
                                     <div className="m-0 text-end">
 
-                                        {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" || currentUserData?.Title == "Anupam Rawat" ?
+                                        {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                             <>
                                                 <a className="hreflink  ms-1" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
                                             : ''}

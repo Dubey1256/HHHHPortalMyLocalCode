@@ -1296,6 +1296,15 @@ function TeamPortlioTable(SelectedProp: any) {
     }, []);
 
     React.useEffect(() => {
+        setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && portfolioColor) {
+                $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
+            }
+        }, 1500)
+    }, [isOpenActivity, isOpenWorkstream, openCompareToolPopup,OpenAddStructurePopup,ActivityPopup]);
+
+    React.useEffect(() => {
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
             isColumnDefultSortingAsc = false
             hasCustomExpanded = true

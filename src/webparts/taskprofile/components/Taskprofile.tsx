@@ -390,6 +390,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         if (Action?.Title == "Phone") {
           Phone = Action?.InformationData;
         }
+        if(Action?.Title == "WorkingDetails"){
+          let currentDate = moment(new Date()).format("DD/MM/YYYY")
+          Action?.InformationData?.map((isworkingToday:any)=>{
+            if(isworkingToday?.WorkingDate==currentDate && isworkingToday?.WorkingMember?.length>0){
+              taskDetails["IsTodaysTask"]=true
+            }
+          })
+        }
       })
     }
     let tempTask = {
