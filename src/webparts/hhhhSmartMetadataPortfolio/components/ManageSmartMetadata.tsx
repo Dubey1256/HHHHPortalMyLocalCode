@@ -149,10 +149,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
             ParentMetaDataItems = [];
         SmartmetadataItems?.filter((comp: any) => {
             if (comp.TaxType === 'Smart Pages') {
-                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Pages.aspx?SmartId=${comp.Id}&Item=${comp.Title}`
+                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Pages.aspx?SmartID=${comp.Id}&Item=${comp.Title}`
             }
             if (comp.TaxType === 'Topics') {
-                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Profiles.aspx?SmartId=${comp.Id}&Item=${comp.Title}`
+                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Profiles.aspx?SmartID=${comp.Id}&Item=${comp.Title}`
             }
             if (comp?.TaxType === Tab && comp?.ParentID === 0) {
                 comp['flag'] = true;

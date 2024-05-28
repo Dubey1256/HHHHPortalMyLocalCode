@@ -5,13 +5,14 @@ import GrueneWeltweitForm from "./GrueneWeltweitForm"
 import WahlWeltweit from './WahlWeltweit';
 import Briefwahl2021 from './Briefwahl2021';
 let AllMetaDataItems: any = [];
-let SmartId: any;
-export default function GrueneSmartPages(props: any) {
+let SmartID: any;
+export default function SPSmartPages(props: any) {
     const [smartPageItem, setSmartPageItem]: any = React.useState([]);
     const [SmartMetadataEditPopupOpen, setSmartMetadataEditPopupOpen]: any = React.useState(false);
     React.useEffect(() => {
         loadSmartpage();
     }, [])
+    const siteName = props?.AllList?.siteName;
     const getParameterByName = (name: any) => {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         const regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
@@ -20,9 +21,9 @@ export default function GrueneSmartPages(props: any) {
     };
     const loadSmartpage = async () => {
         try {
-            SmartId = getParameterByName('SmartId').trim();
+            SmartID = getParameterByName('SmartID').trim();
             let web = new Web(props?.AllList?.SitesListUrl);
-            AllMetaDataItems = await web.lists.getById(props?.AllList?.SmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title").filter(`Id eq ${SmartId}`).getAll();
+            AllMetaDataItems = await web.lists.getById(props?.AllList?.SmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title").filter(`Id eq ${SmartID}`).getAll();
             AllMetaDataItems?.map((item: any) => {
                 const tempElement = document.createElement('div');
                 const textarea = document.createElement('textarea');
@@ -67,33 +68,41 @@ export default function GrueneSmartPages(props: any) {
     };
     return (
         <>
-            {smartPageItem[0]?.Title != "Warum aus dem Ausland wählen?" && smartPageItem[0]?.Title != "Europawahl-2024 - Briefwahl Suchmaschine" ? (
-                <><section id="page-title" className="page-title-parallax page-title-dark skrollable skrollable-between SmartPages" style={{
-                    backgroundImage: `url("https://www.gruene-washington.de/PhotoGallery/SiteCollectionImages/default_coverImg.jpg")`,
-                    backgroundPosition: `0px -117.949px`
-                }}
-                    data-bottom-top="background-position:0px 300px;"
-                    data-top-bottom="background-position:0px -300px;"
-                >
+            {siteName === 'ILF' ? (
+                <>
+                    <section id="page-title" className="page-title-parallax page-title-dark skrollable skrollable-between SmartPages" style={{
+                        backgroundImage: `url("https://www.gruene-washington.de/PhotoGallery/SiteCollectionImages/default_coverImg.jpg")`,
+                        backgroundPosition: `0px -117.949px`
+                    }}
+                        data-bottom-top="background-position:0px 300px;"
+                        data-top-bottom="background-position:0px -300px;"
+                    >
+                        <div className="container text-center clearfix">
+                            <h1 className="nott mb-3" style={{ fontSize: '54px' }}>
+                                {smartPageItem[0]?.Title}
+                                {(<a> <i className="ms-Icon ms-Icon--WindowEdit ms-auto light" aria-hidden="true" title="Edit" onClick={EditSmartMetadataPopup}></i>
+                                </a>)}
+                            </h1>
+                            <section className="container section SmartPages">
+                                <div dangerouslySetInnerHTML={{ __html: smartPageItem[0]?.ShortDescription }}></div>
+                            </section>
+                        </div>
+                    </section><section className="container section SmartPages">
+                        <div dangerouslySetInnerHTML={{ __html: smartPageItem[0]?.PageContent }}></div>
+                    </section>
+                </>
+            ) :
+                <section id="page-title" className="pull-left page-title-parallax" >
                     <div className="container text-center clearfix">
-                        <h1 className="nott mb-3" style={{ fontSize: '54px' }}>
+                        <h1 className="nott mb-3">
                             {smartPageItem[0]?.Title}
-                            {(<a> <i className="ms-Icon ms-Icon--WindowEdit ms-auto light" aria-hidden="true" title="Edit" onClick={EditSmartMetadataPopup}></i>
+                            {(<a> <i className=" alignIcon svg__iconbox svg__icon--edit" aria-hidden="true" title="Edit" onClick={EditSmartMetadataPopup}></i>
                             </a>)}
                         </h1>
-                        <section className="container section SmartPages">
-                            <div dangerouslySetInnerHTML={{ __html: smartPageItem[0]?.ShortDescription }}></div>
-                        </section>
                     </div>
-                </section><section className="container section SmartPages">
-                        <div dangerouslySetInnerHTML={{ __html: smartPageItem[0]?.PageContent }}></div>
-                    </section></>
-            ) : (smartPageItem[0]?.Title != "Europawahl-2024 - Briefwahl Suchmaschine" && <WahlWeltweit />
-            )}
-            {smartPageItem[0]?.Title == "Grüne Weltweit" ? <GrueneWeltweitForm AllList={props.AllList} /> : ''}
-            {smartPageItem[0]?.Title == "Europawahl-2024 - Briefwahl Suchmaschine" ? <Briefwahl2021/> : ''}
+                </section>
+            }
             {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={props.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} modalInstance={smartPageItem[0]} AllMetadata={AllMetaDataItems} /> : ''}
-            {/* <RelevantNews AllList={props.AllList}/> */}
         </>
     );
 }
