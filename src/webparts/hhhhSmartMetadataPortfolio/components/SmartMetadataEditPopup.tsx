@@ -113,6 +113,9 @@ export default function SmartMetadataEditPopup(props: any) {
                 });
         }
     };
+    const formatDate = (date: any) => {
+        return (date && date !== "") ? moment(date).format("DD/MM/YYYY") : '';
+    };
     const loadtaggedTasks = async () => {
         const TaggedTasks: any = []
         setloaded(true);
@@ -120,9 +123,9 @@ export default function SmartMetadataEditPopup(props: any) {
         SitesConfig.filter((item: any) => {
             if (item.Categories !== null && item.Categories !== undefined) {
                 if (props?.modalInstance?.TaxType === "Categories" && item?.Categories === props?.modalInstance?.Title) {
-                    item.Modified = (item.Modified !== "" && item.Modified !== undefined) ? moment(item.Modified).format("DD/MM/YYYY") : ''
-                    item.Created = (item.Created !== "" && item.Created !== undefined) ? moment(item.Created).format("DD/MM/YYYY") : ''
-                    item.DueDate = (item.DueDate !== "" && item.Created !== undefined) ? moment(item.DueDate).format("DD/MM/YYYY") : ''
+                    item.Modified = formatDate(item.Modified);
+                    item.Created = formatDate(item.Created);
+                    item.DueDate = formatDate(item.DueDate);
                     TaggedTasks.push(item)
                 }
 
@@ -295,7 +298,7 @@ export default function SmartMetadataEditPopup(props: any) {
                         selctitemid = smart.Id;
                         if (smart.siteType == selecteditem.Title) {
                             let postData = {
-                               TaskCategoriesId: { "results": Category },
+                                TaskCategoriesId: { "results": Category },
                             };
                             const web = new Web(props?.AllList?.SPSitesListUrl);
                             await web.lists.getById(ListId).items.getById(smart.Id).update(postData);

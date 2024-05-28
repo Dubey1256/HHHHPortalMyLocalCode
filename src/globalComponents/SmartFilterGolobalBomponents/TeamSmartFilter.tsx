@@ -147,7 +147,19 @@ const TeamSmartFilter = (item: any) => {
             year.push(i);
         }
         setYear(year);
+        
     }, [])
+
+    React.useEffect(() => {
+        setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && item?.portfolioColor) {
+                $('.ms-Panel-main').css('--SiteBlue', item?.portfolioColor
+                ); // Set the desired color value here
+            }
+        }, 1000)
+    }, [PreSetPanelIsOpen, selectedFilterPanelIsOpenUpdate, selectedFilterPanelIsOpen,ProjectManagementPopup]);
+
     ///// Year Range Using Piker end////////
 
     const getTaskUsers = async () => {

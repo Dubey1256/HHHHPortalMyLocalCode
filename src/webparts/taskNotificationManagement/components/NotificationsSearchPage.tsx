@@ -165,7 +165,7 @@ export const NotificationsSearchPage = (props: any) => {
         fixedColumnWidth: true,
         isColumnVisible: false,
         filterFn: (row: any, columnName: any, filterValue: any) => {
-            if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
+            if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.Modified?.includes(filterValue)) {
                 return true
             } else {
                 return false
@@ -207,7 +207,7 @@ export const NotificationsSearchPage = (props: any) => {
         placeholder: "Created",
         fixedColumnWidth: true,
         filterFn: (row: any, columnName: any, filterValue: any) => {
-            if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.Created?.includes(filterValue)) {
                 return true
             } else {
                 return false

@@ -329,7 +329,7 @@ const ColumnsSetting = (props: any) => {
         return (
             <>
                 <div className="alignCenter subheading">
-                    <span style={{ color: `${props?.portfolioColor}` }} className="siteColor">General Settings</span>
+                    <span style={{ color: `${props?.portfolioColor}` }} className="siteColor">Global SmartTable Settings</span>
                 </div>
                 <Tooltip ComponentId={7464} />
             </>
