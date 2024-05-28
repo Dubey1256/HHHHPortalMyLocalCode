@@ -108,10 +108,18 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
     const OpenModal = async (item: any, TopTrue: any) => {
         if (TopTrue) {
             if (props?.restructureItem[0] !== undefined && item !== undefined) {
-                var postData: any = {
-                    ParentId: item?.Id,
-                    ParentID: item?.Id,
-                };
+                if (props?.siteName === 'GmbH') {
+                    var postData: any = {
+                        ParentId: null,
+                        ParentID: item
+                    };
+                } else {
+                    var postData: any = {
+                        ParentId: item.Id,
+                        ParentID: item.Id
+                    };
+                }
+
                 let web = new Web(props?.AllList?.SPSitesListUrl);
                 await web.lists
                     .getById(props?.AllList?.SmartMetadataListID)
