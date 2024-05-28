@@ -913,6 +913,19 @@ const inlineEditingcolumns = (props: any) => {
       setInputFieldDisable(false);
     }
 
+    if (StatusData.value == 75) {
+      setEditData((prevState: any) => ({
+        ...prevState,
+        IsTodaysTask: false,
+      }));
+      StatusArray?.map((item: any) => {
+        if (StatusData.value == item.value) {
+          setPercentCompleteStatus(item.status);
+          setTaskStatus(item.taskStatusComment);
+        }
+      })
+    }
+
     if (StatusData.value == 80) {
       setEditData((prevState: any) => ({
         ...prevState,
