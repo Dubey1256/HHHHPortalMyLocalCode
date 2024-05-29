@@ -7,7 +7,7 @@ import TaskStatusTbl from './TaskStausTable';
 import * as Moment from "moment";
 import PageLoader from '../../../globalComponents/pageLoader';
 import { map } from "jquery";
-import { Filter } from '../../../globalComponents/GlobalCommanTable';
+// import { Filter } from '../../../globalComponents/GlobalCommanTable';
 
 var taskUsers: any;
 let GroupByUsers: any = [];
