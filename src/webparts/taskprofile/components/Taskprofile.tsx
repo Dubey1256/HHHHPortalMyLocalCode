@@ -379,6 +379,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     let Bottleneck: any = [];
     let Attention: any = [];
     let Phone: any = [];
+    taskDetails["IsTodaysTask"]=false;
     if (WorkingAction?.length > 0) {
       WorkingAction?.map((Action: any) => {
         if (Action?.Title == "Bottleneck") {
@@ -389,6 +390,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         }
         if (Action?.Title == "Phone") {
           Phone = Action?.InformationData;
+        }
+        if(Action?.Title == "WorkingDetails"){
+          let currentDate = moment(new Date()).format("DD/MM/YYYY")
+          Action?.InformationData?.map((isworkingToday:any)=>{
+            if(isworkingToday?.WorkingDate==currentDate && isworkingToday?.WorkingMember?.length>0){
+              taskDetails["IsTodaysTask"]=true
+            }
+          })
         }
       })
     }
