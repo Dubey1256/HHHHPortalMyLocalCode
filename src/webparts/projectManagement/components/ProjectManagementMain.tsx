@@ -811,6 +811,8 @@ const ProjectManagementMain = (props: any) => {
           allSprintActivities = AllTask.filter((task: any) => {
             if (task?.TaskType?.Id == 1 && task?.Project?.Id == Sprint?.Id) {
               task.isTaskPushed = true;
+              task.project = Sprint;
+              task.portfolio = Sprint?.Portfolio
               return true
             } else {
               return false
@@ -820,6 +822,8 @@ const ProjectManagementMain = (props: any) => {
             Activity.subRows = AllTask.filter((workstream: any) => {
               if (workstream?.ParentTask?.Id == Activity?.Id && workstream?.Project?.Id == Sprint?.Id && (workstream?.TaskType?.Id == 3 || workstream?.TaskType?.Id == 2)) {
                 workstream.isTaskPushed = true;
+                workstream.project = Sprint;
+                workstream.portfolio = Sprint?.Portfolio
                 return true
               } else {
                 return false
@@ -830,6 +834,8 @@ const ProjectManagementMain = (props: any) => {
                 workstream.subRows = AllTask.filter((task: any) => {
                   if (task?.ParentTask?.Id == workstream?.Id && task?.TaskType?.Id == 2 && task?.Project?.Id == Sprint?.Id) {
                     task.isTaskPushed = true;
+                    task.project = Sprint;
+                    task.portfolio = Sprint?.Portfolio
                     return true
                   } else {
                     return false
@@ -842,6 +848,8 @@ const ProjectManagementMain = (props: any) => {
           allSprintWorkStream = AllTask.filter((task: any) => {
             if (task?.TaskType?.Id == 3 && task?.isTaskPushed !== true && task?.Project?.Id == Sprint?.Id) {
               task.isTaskPushed = true;
+              task.project = Sprint;
+              task.portfolio = Sprint?.Portfolio
               return true
             } else {
               return false
@@ -851,6 +859,8 @@ const ProjectManagementMain = (props: any) => {
             workstream.subRows = AllTask.filter((task: any) => {
               if (task?.ParentTask?.Id == workstream?.Id && task?.TaskType?.Id == 2 && task?.isTaskPushed !== true && task?.Project?.Id == Sprint?.Id) {
                 task.isTaskPushed = true;
+                task.project = Sprint;
+                task.portfolio = Sprint?.Portfolio
                 return true
               } else {
                 return false
@@ -860,6 +870,8 @@ const ProjectManagementMain = (props: any) => {
           let AllSprintTask = AllTask.filter((item: any) => {
             if (item?.isTaskPushed !== true && item?.Project?.Id == Sprint?.Id) {
               item.isTaskPushed = true;
+              item.project = Sprint;
+              item.portfolio = Sprint?.Portfolio
               return true
             } else {
               return false
@@ -1027,7 +1039,7 @@ const ProjectManagementMain = (props: any) => {
     }
     let componentDetails: any = [];
     let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
-    if (results?.AllData?.length > 0) {
+    if (results?.AllData?.length > 0 || results?.AllData?.length == 0) {
       componentDetails = results?.AllData;
       groupedComponentData = results?.GroupByData;
       AllFlatProject = results?.FlatProjectData
@@ -1634,7 +1646,15 @@ const ProjectManagementMain = (props: any) => {
         accessorFn: (row) => row?.SmartInformationTitle,
         cell: ({ row }) => (
           <span className='d-flex hreflink' >
-            &nbsp; {row?.original?.SmartInformation?.length > 0 ? <span onClick={() => openRemark(row?.original)} className="commentDetailFill-active"><BiCommentDetail /></span> : <span onClick={() => openRemark(row?.original)} className="commentDetailFill"><BiCommentDetail /></span>}
+            &nbsp; {row?.original?.SmartInformation?.length > 0 ? (
+              <>
+                <span onClick={() => openRemark(row?.original)} className="commentDetailFill-active svg__iconbox svg__icon--commentBlank"></span>
+              </>
+            ) : (
+              <>
+                <span onClick={() => openRemark(row?.original)} className="commentDetailFill svg__iconbox svg__icon--commentBlank"></span>
+              </>
+            )}
           </span>
         ),
         id: 'SmartInformation',

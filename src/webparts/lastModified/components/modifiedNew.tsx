@@ -1352,7 +1352,7 @@ export const Modified = (props: any) => {
           cell: ({ row, getValue }) => (
             <>
                <img className='me-1 workmember' src={`${row?.original?.SiteIcon}`}></img> 
-              <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
+              <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
             </>
           ),
           id: "TaskID",

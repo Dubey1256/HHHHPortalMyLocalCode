@@ -1302,7 +1302,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
             }
         }, 1500)
-    }, [isOpenActivity, isOpenWorkstream, openCompareToolPopup,OpenAddStructurePopup,ActivityPopup]);
+    }, [isOpenActivity, isOpenWorkstream, openCompareToolPopup, OpenAddStructurePopup, ActivityPopup]);
 
     React.useEffect(() => {
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
@@ -3294,7 +3294,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain1 = () => {
         return (
             <>
-                <div className="subheading alignCenter">
+                <div className="subheading">
                     <>
                         {checkedList != null && checkedList != undefined && checkedList?.SiteIconTitle != undefined && checkedList?.SiteIconTitle != null ? <span className="Dyicons me-2" >{checkedList?.SiteIconTitle}</span> : ''} {`${checkedList != null && checkedList != undefined && checkedList?.Title != undefined && checkedList?.Title != null ? checkedList?.Title
                             + '- Create Child Component' : 'Create Component'}`}</>
@@ -3642,9 +3642,10 @@ function TeamPortlioTable(SelectedProp: any) {
     }
     React.useEffect(() => {
         if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
-            if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
+            if ((childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined) && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Task' && childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Task')) {
                 setActiveCompareToolButton(true);
             } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
+
                 setActiveCompareToolButton(true);
             }
         } else {

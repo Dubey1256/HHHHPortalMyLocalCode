@@ -379,6 +379,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     let Bottleneck: any = [];
     let Attention: any = [];
     let Phone: any = [];
+    taskDetails["IsTodaysTask"]=false;
     if (WorkingAction?.length > 0) {
       WorkingAction?.map((Action: any) => {
         if (Action?.Title == "Bottleneck") {
@@ -389,6 +390,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         }
         if (Action?.Title == "Phone") {
           Phone = Action?.InformationData;
+        }
+        if(Action?.Title == "WorkingDetails"){
+          let currentDate = moment(new Date()).format("DD/MM/YYYY")
+          Action?.InformationData?.map((isworkingToday:any)=>{
+            if(isworkingToday?.WorkingDate==currentDate && isworkingToday?.WorkingMember?.length>0){
+              taskDetails["IsTodaysTask"]=true
+            }
+          })
         }
       })
     }
@@ -1919,7 +1928,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef, user: this?.taskUsers, ColorCode: this.state.Result["Portfolio"]?.PortfolioType?.Color }}>
         <div className='taskprofilesection'>
           <section className='ContentSection'> {this.state.breadCrumData != undefined &&
-            <div className='row'>
+            <div className='row px-1'>
               <div className="col-sm-12 p-0 ">
 
                 <ul className="webbreadcrumbs ">
@@ -1982,7 +1991,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
               </div>
             </div>
           }
-            <section className='row p-0 '>
+            <section className='row px-1'>
               <h2 className="heading d-flex ps-0 justify-content-between align-items-center task-title">
                 <span className='alignCenter'>
                   {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}
@@ -2011,7 +2020,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
               </h2>
             </section>
             <section>
-              <div className='row'>
+              <div className='row px-1'>
                 <div className="col-9">
                   <div className="team_member row">
                     <div className='col-md-8 taskidsection'>
@@ -2582,7 +2591,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                     }
                                     return (
                                       <>
-                                        <div className='bg-white p-2'>
+                                        <div className='bg-white p-2 rounded-1'>
                                           <div className="col mb-2">
                                             <div className='justify-content-between d-flex'>
                                               <div className="alignCenter m-0">

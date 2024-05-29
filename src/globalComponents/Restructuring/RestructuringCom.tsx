@@ -1787,6 +1787,11 @@ const RestructuringCom = (props: any, ref: any) => {
                   })
                 }
             })
+
+            if(restructureItem[0]?.Project?.Item_x0020_Type == 'Project'){
+              topCompo = false
+            }
+             
           }
     }else{
         alert('You are not allowed to restructure this item !')
@@ -5040,26 +5045,6 @@ const RestructuringCom = (props: any, ref: any) => {
     );
   };
 
-  // <div className="my-1">
-  //             Selected Item will restructure into the
-  //               {
-  //                newItemBackUp?.Item_x0020_Type == "Project" && newItemBackUp?.Item_x0020_Type !== undefined && newItemBackUp?.Item_x0020_Type !== null ?
-  //                (RestructureChecked?.Item_x0020_Type == "Sprint" ? " Sprint " : RestructureChecked?.TaskType?.Title)  : " Project "
-  //               }
-  //             inside
-  //             {newItemBackUp?.Item_x0020_Type == "Project" ?
-  //               <span className="Dyicons me-1 ms-1">
-  //                 P
-  //               </span> : 
-  //                 <img
-  //                 className="workmember"
-  //                 src={
-  //                   newItemBackUp.SiteIcon
-  //                 }
-  //               />
-  //             }
-  //             {" " + newItemBackUp?.Title }
-  //           </div>
   const onRenderCustomCalculateSCProject = () => {
     return (
       <>
@@ -5263,9 +5248,10 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
         let Project_ID: any = newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3  ? newItemBackUp?.Project?.Id : null;
         let TaskLevel: number = 0;
         let Level: number = 0;
-        if ( newItemBackUp?.subRows != undefined && newItemBackUp?.subRows?.length > 0 && restructureItem[0]?.TaskType?.Id == 3) {
+        let taskType :any = null;
+        if ( newItemBackUp?.subRows != undefined && newItemBackUp?.subRows?.length > 0 && RestructureChecked[0]?.TaskType?.Id == 3) {
           newItemBackUp?.subRows?.map((sub: any) => {
-            if (restructureItem[0]?.TaskType?.Id === sub?.TaskType?.Id) {
+            if (RestructureChecked[0]?.TaskType?.Id === sub?.TaskType?.Id) {
               if (TaskLevel <= sub.TaskLevel) {
                 TaskLevel = sub.TaskLevel;
                 Level = sub.TaskLevel;
@@ -5281,7 +5267,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
           TaskLevel = TaskLevel + 1;
           let web = new Web(items.siteUrl);
           TaskId = RestructureChecked[0]?.TaskType?.Id == 2   ? "T" + items?.Id   : RestructureChecked[0]?.TaskType?.Id == 1   ? items?.TaskID   : TaskId + "-" + "W" + TaskLevel;
-  
+             
+          if(newItemBackUp?.TaskType?.Id == 3 ){
+            TaskId = newItemBackUp?.TaskID + "-" + "T" + items?.Id;
+            taskType = 2;
+          }
           if (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3) {
             ParentTask_Portfolio = {  Id: newItemBackUp?.Portfolio?.Id,  ItemType: newItemBackUp?.Portfolio?.ItemType,  PortfolioStructureID:    newItemBackUp?.Portfolio?.PortfolioStructureID,  Title: newItemBackUp?.Portfolio?.Title,},
               ParentTask_ID = {Id: newItemBackUp?.Id,Title: newItemBackUp?.Title,TaskID: newItemBackUp?.TaskID,};
@@ -5292,7 +5282,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             PortfolioId: ParentTask_Portfolio.Id,
             ProjectId: Project_ID.Id,
             TaskLevel: TaskLevel,
-            TaskTypeId: RestructureChecked[0]?.TaskType.Id,
+            TaskTypeId: taskType == null ? RestructureChecked[0]?.TaskType.Id : taskType,
             TaskID: TaskId,
           };
   
@@ -7591,9 +7581,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                  className="workmember"
                                   src={items?.SiteIcon}
                                 />
-                                <span className="mx-2">
+                                {/* <span className="mx-2">
                                 {items?.TaskID}
-                                </span>
+                                </span> */}
                         
                           {items?.Title}
                         </a>
@@ -7608,7 +7598,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
              
             </div>
             <div>
-            {restructureItem != undefined && restructureItem?.length > 0 &&  restructureItem[0]?.TaskType?.Id == 2 && 
+            {restructureItem != undefined && (restructureItem[0]?.TaskType?.Id == 3 && restructureItem[0]?.subRows?.length > 0) &&  restructureItem[0]?.TaskType?.Id == 2 && restructureItem[0]?.TaskType?.Id == 1 && 
             newItemBackUp?.TaskType?.Id == 1 && (
               <div className="mt-2">
                   <label className="form-label me-2">{"Select Task Type :"}</label>
@@ -7617,16 +7607,10 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                       type="radio"
                       className="radio"                 
                       value="Workstream"
-                      checked={
-                        RestructureChecked[0]?.TaskType?.Id == 3
-                          ? true
-                          : RestructureChecked[0]?.TaskType?.Id == 1
-                          ? true
-                          : false
-                      }
+                      checked={ RestructureChecked[0]?.TaskType?.Id == 3   ? true   : RestructureChecked[0]?.TaskType?.Id == 1   ? true   : false}
                       onChange={(e) => setRestructure(RestructureChecked, 3)}
                        />
-                     {"Workstream"}
+                     Workstream
                   </label>
                   <label className="SpfxCheckRadio">
                     <input
@@ -7634,16 +7618,14 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                       className="radio"
                       name="fav_language"
                       value="Task"
-                      checked={
-                        RestructureChecked[0]?.TaskType?.Id === 2 ? true : false
-                      }
+                      checked={RestructureChecked[0]?.TaskType?.Id === 2 ? true : false}
                       onChange={(e) => setRestructure(RestructureChecked, 2)}
-                    /> {"Task"}
+                    /> Task
                   </label>
               </div>
             ) }
 
-            {restructureItem != undefined && restructureItem?.length > 0 &&  restructureItem[0]?.TaskType?.Id == 2 && 
+            {restructureItem != undefined &&  restructureItem[0]?.TaskType?.Id == 2 && 
            ( newItemBackUp?.Item_x0020_Type == 'Project' || newItemBackUp?.Item_x0020_Type == 'Sprint')  && (
               <div className="mt-2">
                   <label className="form-label me-2">{"Select Task Type :"}</label>
@@ -7652,16 +7634,10 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                       type="radio"
                       className="radio"                 
                       value="Activity"
-                      checked={
-                        RestructureChecked[0]?.TaskType?.Id == 3
-                          ? true
-                          : RestructureChecked[0]?.TaskType?.Id == 1
-                          ? true
-                          : false
-                      }
+                      checked={RestructureChecked[0]?.TaskType?.Id == 3  ? true  : RestructureChecked[0]?.TaskType?.Id == 1  ? true  : false}
                       onChange={(e) => setRestructure(RestructureChecked, 1)}
                        />
-                     {"Activity"}
+                     Activity
                   </label>
                   <label className="SpfxCheckRadio">
                     <input
@@ -7669,9 +7645,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                       className="radio"
                       name="fav_language"
                       value="Task"
-                      checked={
-                        RestructureChecked[0]?.TaskType?.Id === 2 ? true : false
-                      }
+                      checked={RestructureChecked[0]?.TaskType?.Id === 2 ? true : false}
                       onChange={(e) => setRestructure(RestructureChecked, 2)}
                     /> {"Task"}
                   </label>

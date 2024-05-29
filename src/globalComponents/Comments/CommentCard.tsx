@@ -937,7 +937,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           </div>
           <div className='card-body'>
             <div className="comment-box  mb-2">
-              <div className='mb-1'>
+              <div className='mb-2'>
                 <span> <strong>To:</strong>  </span>
                 {this.topCommenters != null && this.topCommenters.length > 0 && this.topCommenters?.map((topCmnt: any, i: any) => {
                   return <span>
@@ -962,7 +962,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               </span>
             </div>
             <div>
-              <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" className='form-control' ></textarea>
+              <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" style={{padding:'5px'}} className='form-control' ></textarea>
               {this.state.postButtonHide ?
                 <button disabled onClick={() => this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
                   Post
@@ -1129,7 +1129,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <div className="col-sm-12">
                   <div className="row d-flex mb-2">
                     <div>
-                      <textarea id="txtCommentModal" onChange={(e) => this.handleInputChange(e)} className="form-control p-1 ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>
+                      <textarea id="txtCommentModal" onChange={(e) => this.handleInputChange(e)} className="form-control p-1 ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" style={{padding:'5px'}} placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>
                       <span role="status" aria-live="polite" className="ui-helper-hidden-accessible"></span>
                     </div>
                     <div className='text-end mt-1'> <span className='btn btn-primary hreflink' onClick={() => this.PostComment('txtCommentModal')} >Post</span></div>
