@@ -971,7 +971,7 @@ const CreateAllStructureComponent = (props: any) => {
                     )}
                   </div>
                 )}
-                <div className="mt-2 ps-4">
+                <div className="mt-2">
                   {component?.SubComponent?.map(
                     (Subcomponent: any, indexSub: number) => (
                       <div key={Subcomponent.id} className="form-group">
@@ -1078,7 +1078,7 @@ const CreateAllStructureComponent = (props: any) => {
                           isDisableSub == true ||
                           props?.SelectedItem?.Item_x0020_Type ==
                           "SubComponent") && (
-                            <div className="mt-2 ps-4">
+                            <div className="mt-2">
                               {Subcomponent?.Feature?.map(
                                 (Features: any, indexFea: any) => (
                                   <div key={Features.id} className="form-group">
@@ -1164,7 +1164,7 @@ const CreateAllStructureComponent = (props: any) => {
                   )}
                 </div>
                 {
-                  <div className="mt-2 ps-4">
+                  <div className="mt-2">
                     {component?.Feature?.map((feature: any, featureIndex: number) => (
                       <div key={feature.id} className="form-group">
                         {(
@@ -1241,7 +1241,9 @@ const CreateAllStructureComponent = (props: any) => {
             ))}
           </div>
 
-          <footer className="modal-footer mt-2">
+         
+        </div>
+        <footer className="modal-footer mt-2">
             {components[0].value != "" || props.SelectedItem != undefined ? (
               <button className="btn btn-primary" onClick={handleSave}>
                 Save
@@ -1256,7 +1258,6 @@ const CreateAllStructureComponent = (props: any) => {
               </button>
             )}
           </footer>
-        </div>
       </div>
       {!loaded && <PageLoader />}
 
