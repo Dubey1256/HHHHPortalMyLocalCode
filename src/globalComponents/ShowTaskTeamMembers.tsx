@@ -46,8 +46,15 @@ function ShowTaskTeamMembers(item: any) {
         LeadCount=taskDetails["ResponsibleTeam"].length;
       }
         if( taskDetails["WorkingAction"] != null){
+          let WorkingAction:any=[];
           let changeAssignToData:any=taskDetails?.AssignedTo;
-          let WorkingAction = taskDetails["WorkingAction"] != null ? JSON.parse(taskDetails["WorkingAction"]) : [];
+          if (typeof taskDetails["WorkingAction"] == "object") {
+             WorkingAction = taskDetails["WorkingAction"] != null ? JSON.parse(taskDetails["WorkingAction"]) : [];
+
+            }else{
+              WorkingAction=taskDetails["WorkingAction"] 
+            }
+          
           if (taskDetails?.WorkingAction?.length > 0) {
             WorkingAction?.map((Action: any) => {
               if(Action?.Title == "WorkingDetails"){
