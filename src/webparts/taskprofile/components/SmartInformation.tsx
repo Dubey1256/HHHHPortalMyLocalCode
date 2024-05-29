@@ -35,7 +35,8 @@ const SmartInformation = (props: any, ref: any) => {
     { text: 'MS Teams', key: 1 },
     { text: 'Call', key: 2 },
     { text: 'Email', key: 3 },
-    { text: 'Task', key: 4 }
+    { text: 'Task', key: 4 },
+    { text: 'F2F Discussion', key: 5 }
   ]
   const initialState = () => EditorState.createEmpty();
   const [editorState, setEditorState] = useState(initialState);
@@ -347,9 +348,9 @@ const SmartInformation = (props: any, ref: any) => {
               if (addSmartInfoPopupAddlinkDoc2 == true && (props.showHide === "projectManagement" || props.showHide == "ANCTaskProfile")) {
                 if (props?.callback != undefined || null) {
                   props?.callback()
+                  addSmartInfoPopupAddlinkDoc2 = false
                 }
-              }
-              rerender();
+              }              
             }
 
           }).catch((err) => {
@@ -891,7 +892,7 @@ const SmartInformation = (props: any, ref: any) => {
         .then((res: any) => {
           console.log(res);
           alert("task created")
-          addSmartInfoPopupAddlinkDoc2 = false;
+          // addSmartInfoPopupAddlinkDoc2 = false;
           GetResult();
           handleClose();
           setshowAdddocument(false)

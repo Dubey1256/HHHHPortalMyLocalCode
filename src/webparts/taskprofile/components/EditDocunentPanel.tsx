@@ -53,8 +53,15 @@ const EditDocumentpanel = (props: any) => {
 
   React.useEffect(() => {
     AllListId = props.AllListId
-    AllListId.TaskTypeID = "21b55c7b-5748-483a-905a-62ef663972dc";
-    AllListId.PortFolioTypeID = "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
+    if (window.location.href.toLowerCase()?.indexOf('gmbh') > -1) {
+      AllListId.TaskTypeID = "d255609f-7f22-4e40-a857-a3ffd2c57101";
+      AllListId.PortFolioTypeID = "63031812-949e-46a0-a6f5-dc6be912a193";
+    }
+    else {
+      AllListId.TaskTypeID = "21b55c7b-5748-483a-905a-62ef663972dc";
+      AllListId.PortFolioTypeID = "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
+    }
+    
     AllListId.Context = props.AllListId?.context
     if (props?.editData != undefined) {
       LoadMasterTaskList().then((smartData: any) => {
