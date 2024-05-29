@@ -1646,7 +1646,15 @@ const ProjectManagementMain = (props: any) => {
         accessorFn: (row) => row?.SmartInformationTitle,
         cell: ({ row }) => (
           <span className='d-flex hreflink' >
-            &nbsp; {row?.original?.SmartInformation?.length > 0 ? <span onClick={() => openRemark(row?.original)} className="commentDetailFill-active"><BiCommentDetail /></span> : <span onClick={() => openRemark(row?.original)} className="commentDetailFill"><BiCommentDetail /></span>}
+            &nbsp; {row?.original?.SmartInformation?.length > 0 ? (
+              <>
+                <span onClick={() => openRemark(row?.original)} className="commentDetailFill-active svg__iconbox svg__icon--commentBlank"></span>
+              </>
+            ) : (
+              <>
+                <span onClick={() => openRemark(row?.original)} className="commentDetailFill svg__iconbox svg__icon--commentBlank"></span>
+              </>
+            )}
           </span>
         ),
         id: 'SmartInformation',
