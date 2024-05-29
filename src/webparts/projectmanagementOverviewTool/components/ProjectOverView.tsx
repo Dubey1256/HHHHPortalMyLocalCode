@@ -1021,7 +1021,6 @@ export default function ProjectOverview(props: any) {
                         });
 
                         if (!memberOnLeave && item?.AssignedTo?.length > 0) {
-                            taskCount++;
                             let teamUsers: any = [];
                             if (item?.AssignedTo?.length > 0) {
                                 item.AssignedTitle = item?.AssignedTo?.map((elem: any) => elem?.Title).join(" ")
@@ -1050,7 +1049,9 @@ export default function ProjectOverview(props: any) {
 
                                 })
                             }
-                            text +=
+                            if (item.EstimatedTimeEntry > 0){
+                                taskCount++;
+                                text +=
                                 `<tr>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;border-left: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;">${item?.siteType} </td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.TaskID} </td>
@@ -1070,6 +1071,7 @@ export default function ProjectOverview(props: any) {
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.EstimatedTimeEntry} </td>
                             </tr>`
                                 ;
+                            }   
                         }
                     }
 
@@ -1081,7 +1083,7 @@ export default function ProjectOverview(props: any) {
             if (taskCount > 0) {
                 let bgColor = group?.Item_x0020_Type == 'Sprint' ? '#eef4ff' : '#fafafa';
                 let textColor = '#ffffff'
-                body +=
+                    body +=
                     `<table cellpadding="0" height="30px" cellspacing="0" style="height:30px;" border="0">
                         <tr>
                             <td colspan="8" height="30px">&nbsp;</td>
