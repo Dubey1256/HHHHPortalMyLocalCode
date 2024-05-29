@@ -48,7 +48,7 @@ function ShowTaskTeamMembers(item: any) {
         if( taskDetails["WorkingAction"] != null){
           let WorkingAction:any=[];
           let changeAssignToData:any=taskDetails?.AssignedTo;
-          if (typeof taskDetails["WorkingAction"] == "object") {
+          if (typeof taskDetails["WorkingAction"] != "object") {
              WorkingAction = taskDetails["WorkingAction"] != null ? JSON.parse(taskDetails["WorkingAction"]) : [];
 
             }else{
