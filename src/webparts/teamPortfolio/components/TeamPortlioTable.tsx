@@ -1302,7 +1302,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
             }
         }, 1500)
-    }, [isOpenActivity, isOpenWorkstream, openCompareToolPopup,OpenAddStructurePopup,ActivityPopup]);
+    }, [isOpenActivity, isOpenWorkstream, openCompareToolPopup, OpenAddStructurePopup, ActivityPopup]);
 
     React.useEffect(() => {
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
@@ -3642,12 +3642,11 @@ function TeamPortlioTable(SelectedProp: any) {
     }
     React.useEffect(() => {
         if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
-            if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
-                if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type === childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type)
-                    setActiveCompareToolButton(true);
+            if ((childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined) && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Task' && childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Task')) {
+                setActiveCompareToolButton(true);
             } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
-                if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType === childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType)
-                    setActiveCompareToolButton(true);
+
+                setActiveCompareToolButton(true);
             }
         } else {
             setActiveCompareToolButton(false);
