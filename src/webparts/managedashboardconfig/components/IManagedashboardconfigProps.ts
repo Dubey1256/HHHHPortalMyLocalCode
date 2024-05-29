@@ -6,5 +6,6 @@ export interface IManagedashboardconfigProps {
   userDisplayName: string;
   Context: any;
   AdminConfigurationListId: string;
-  TaskUserListId:any;
+  TaskUserListId: any;
+  SmartMetadataListID: any;
 }
