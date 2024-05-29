@@ -905,8 +905,8 @@ export default function ProjectOverview(props: any) {
         }
 
 
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
-        // let to: any = ["abhishek.tiwari@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"];
+        // let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
+         let to: any = ["abhishek.tiwari@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let groupedData = data;
@@ -949,7 +949,6 @@ export default function ProjectOverview(props: any) {
             setPageLoader(false);
             sendAllTasks = sendAllTasks.replace(/(?:undefined)+/g, "");
             SendEmailFinal(to, subject, sendAllTasks);
-
         }
 
 
@@ -1021,7 +1020,7 @@ export default function ProjectOverview(props: any) {
                         });
 
                         if (!memberOnLeave && item?.AssignedTo?.length > 0) {
-                            taskCount++;
+                         
                             let teamUsers: any = [];
                             if (item?.AssignedTo?.length > 0) {
                                 item.AssignedTitle = item?.AssignedTo?.map((elem: any) => elem?.Title).join(" ")
@@ -1050,7 +1049,9 @@ export default function ProjectOverview(props: any) {
 
                                 })
                             }
-                            text +=
+                            if(item.EstimatedTimeEntry>0){
+                                taskCount++;
+                                text +=
                                 `<tr>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;border-left: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;">${item?.siteType} </td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.TaskID} </td>
@@ -1070,6 +1071,8 @@ export default function ProjectOverview(props: any) {
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.EstimatedTimeEntry} </td>
                             </tr>`
                                 ;
+                            }
+                          
                         }
                     }
 
