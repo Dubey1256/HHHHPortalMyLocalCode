@@ -7,7 +7,7 @@ import TaskStatusTbl from './TaskStausTable';
 import * as Moment from "moment";
 import PageLoader from '../../../globalComponents/pageLoader';
 import { map } from "jquery";
-import { Filter } from '../../../globalComponents/GlobalCommanTable';
+//import { Filter } from '../../../globalComponents/GlobalCommanTable';
 
 var taskUsers: any;
 let GroupByUsers: any = [];
@@ -209,7 +209,7 @@ const EmployeProfile = (props: any) => {
       AllMasterTasks?.map((items: any) => {
         items.descriptionsSearch = '';
         items.SiteIconTitle = items?.Item_x0020_Type == "Sprint" ? "X" : items?.Item_x0020_Type.charAt(0);
-        if (items?.FeedBack != undefined) {
+        if (items?.FeedBack != undefined && Array.isArray(items?.FeedBack)) {
           let DiscriptionSearchData: any = '';
           let feedbackdata: any = JSON.parse(items?.FeedBack)
           DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
@@ -891,7 +891,7 @@ const EmployeProfile = (props: any) => {
       await globalCommon?.loadAllSiteTasks(props?.props, undefined).then((data: any) => {
         data?.map((items: any) => {
           items.descriptionsSearch = '';
-          if (items?.FeedBack != undefined) {
+          if (items?.FeedBack != undefined && Array.isArray(items?.FeedBack)) {
             let DiscriptionSearchData: any = '';
             let feedbackdata: any = JSON.parse(items?.FeedBack)
             DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
