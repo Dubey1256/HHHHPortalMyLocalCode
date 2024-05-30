@@ -106,7 +106,7 @@ const SelectFilterPanel = (props: any) => {
                 <div className="col-sm-12 p-0 smart">
                     <div className="">
                         <div className="modal-body p-0 mt-2 mb-3 clearfix">
-                            <div className="tableSettingTable">
+                            <div>
                                 <table className="w-100">
                                     <tbody className="border-0">
                                         <tr>

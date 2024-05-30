@@ -29,6 +29,7 @@ import TrafficLightComponent from "../../../globalComponents/TrafficLightVerific
 import CreateAllStructureComponent from "../../../globalComponents/CreateAllStructure";
 import { myContextValue } from "../../../globalComponents/globalCommon";
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import WorkingActionInformation from "../../../globalComponents/WorkingActionInformation";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -320,7 +321,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
                         "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                        "Created", "Modified", "IsTodaysTask", "workingThisWeek"
+                        "Created", "Modified", "IsTodaysTask", "workingThisWeek", "WorkingAction"
                     )
                     .expand(
                         "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
@@ -603,7 +604,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
                         "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                        "Created", "Modified", "IsTodaysTask", "workingThisWeek"
+                        "Created", "Modified", "IsTodaysTask", "workingThisWeek", "WorkingAction"
                     )
                     .expand(
                         "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
@@ -753,6 +754,21 @@ function TeamPortlioTable(SelectedProp: any) {
                                 }, "").trim();
                                 result.commentsSearch = cleanText(searchData);
                             }
+                        } catch (error) {
+                            console.error("An error occurred:", error);
+                        }
+                        try {
+                            if (result?.WorkingAction != null) {
+                                result.workingActionValue = [];
+                                result.workingActionValue = JSON.parse(result?.WorkingAction);
+                                result.workingActionTitle = ""; result.workingActionIcon = {};
+                                result?.workingActionValue?.forEach((elem: any) => {
+                                    if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
+                                        result.workingActionTitle = result.workingActionTitle ? result.workingActionTitle + " " + elem.Title : elem.Title;
+                                    }
+                                });
+                            }
+
                         } catch (error) {
                             console.error("An error occurred:", error);
                         }
@@ -2754,6 +2770,25 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 size: 100,
                 isColumnVisible: true
+            },         
+            {
+                accessorFn: (row) => row?.workingActionTitle,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.workingActionValue?.map((elem: any) => {
+                            const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                            return relevantTitles?.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
+                                <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
+                            );
+                        })}
+                    </div>
+                ),
+                placeholder: "Working Actions",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "workingActionTitle",
+                isColumnVisible: false
             },
             {
                 accessorFn: (row) => row?.PercentComplete,
@@ -3294,7 +3329,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain1 = () => {
         return (
             <>
-                <div className="subheading alignCenter">
+                <div className="subheading">
                     <>
                         {checkedList != null && checkedList != undefined && checkedList?.SiteIconTitle != undefined && checkedList?.SiteIconTitle != null ? <span className="Dyicons me-2" >{checkedList?.SiteIconTitle}</span> : ''} {`${checkedList != null && checkedList != undefined && checkedList?.Title != undefined && checkedList?.Title != null ? checkedList?.Title
                             + '- Create Child Component' : 'Create Component'}`}</>
