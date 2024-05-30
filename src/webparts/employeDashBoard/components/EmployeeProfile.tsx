@@ -7,6 +7,7 @@ import TaskStatusTbl from './TaskStausTable';
 import * as Moment from "moment";
 import PageLoader from '../../../globalComponents/pageLoader';
 import { map } from "jquery";
+import { Filter } from '../../../globalComponents/GlobalCommanTable';
 
 var taskUsers: any;
 let GroupByUsers: any = [];
@@ -208,7 +209,7 @@ const EmployeProfile = (props: any) => {
       AllMasterTasks?.map((items: any) => {
         items.descriptionsSearch = '';
         items.SiteIconTitle = items?.Item_x0020_Type == "Sprint" ? "X" : items?.Item_x0020_Type.charAt(0);
-        if (items?.FeedBack != undefined) {
+        if (items?.FeedBack != undefined && Array.isArray(items?.FeedBack)) {
           let DiscriptionSearchData: any = '';
           let feedbackdata: any = JSON.parse(items?.FeedBack)
           DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
@@ -517,11 +518,60 @@ const EmployeProfile = (props: any) => {
           config.LoadDefaultFilter = false;
           if (config?.DataSource == 'Tasks') {
             if (Array.isArray(array) && array.length > 0) {
-              array.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
-                if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id === currentUserData?.AssingedToUser?.Id)) {
-                  config.Tasks.push(task);
+              if (config['selectUserFilterType'] && !config['FilterType']) {
+                array.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
+                  if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id === currentUserData?.AssingedToUser?.Id)) {
+                    config.Tasks.push(task);
+                  }
+                });
+              }
+              if (!config['selectUserFilterType'] && !config['FilterType']) {
+                config.Tasks = array.filter((item: any) => item?.PercentComplete == config?.Status);
+              }
+              if (config['FilterType']) {
+                if (config['FilterType'] == 'Priority') {
+                  config.Tasks = array.filter((item: any) => item?.PriorityRank == config?.Status);
                 }
-              });
+                if (config['FilterType'] == 'Sites') {
+                  config.Tasks = array.filter((item: any) => item?.siteType == config?.Status);
+                }
+                if (config['FilterType'] == 'Actions') {
+                  if (Array.isArray(array) && array.length) {
+                    array.forEach((task: any) => {
+                      if (task?.WorkingAction?.length) {
+                        task?.WorkingAction?.forEach((Action: any) => {
+                          if (Action?.Title != undefined && config?.Status != undefined && Action?.Title == config?.Status) {
+                            if ((config?.UserId == undefined || config?.UserId == '') && !isTaskItemExists(config.Tasks, task))
+                              config.Tasks.push(task);
+                            if (config?.UserId != undefined && config?.UserId != '' && Action?.InformationData?.length) {
+                              Action?.InformationData?.map((UserInfo: any) => {
+                                if (UserInfo?.TaggedUsers?.AssingedToUserId != undefined && config?.UserId == UserInfo?.TaggedUsers?.AssingedToUserId && !isTaskItemExists(config.Tasks, task)) {
+                                  config.Tasks.push(task);
+                                }
+                              })
+                            }
+                          }
+                        });
+                      }
+                    });
+                  }
+                }
+                if (config['FilterType'] == 'Categories') {
+                  if (config?.Status && Array.isArray(array) && array.length) {
+                    config.Status.forEach((FilterCat: any) => {
+                      array.forEach((task: any) => {
+                        if (task?.TaskCategories?.length) {
+                          task.TaskCategories.forEach((category: any) => {
+                            if (category?.Id && FilterCat?.Id && category.Id === FilterCat.Id && !isTaskItemExists(config.Tasks, task)) {
+                              config.Tasks.push(task);
+                            }
+                          });
+                        }
+                      });
+                    });
+                  }
+                }
+              }
             }
           }
           if (config?.DataSource == 'Project') {
@@ -841,7 +891,7 @@ const EmployeProfile = (props: any) => {
       await globalCommon?.loadAllSiteTasks(props?.props, undefined).then((data: any) => {
         data?.map((items: any) => {
           items.descriptionsSearch = '';
-          if (items?.FeedBack != undefined) {
+          if (items?.FeedBack != undefined && Array.isArray(items?.FeedBack)) {
             let DiscriptionSearchData: any = '';
             let feedbackdata: any = JSON.parse(items?.FeedBack)
             DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
