@@ -12,7 +12,7 @@ let imageOTT = false;
 let Imageshow: number;
 let imgdefaultContent = "";
 
-let count = 20;
+let count = 18;
 const ImagetabFunction = (props: any) => {
     const [editData, setEditData] = useState(props.EditdocumentsData)
     const [selectfolder, setSelectfolder] = useState("Logos");
@@ -26,8 +26,6 @@ const ImagetabFunction = (props: any) => {
     console.log(props)
     console.log(props)
     React.useEffect(() => {
-
-
         getAllImageData()
     }, []);
 
@@ -323,13 +321,13 @@ const ImagetabFunction = (props: any) => {
 
     const loadMore = async () => {
         // Load the remaining images
-        count = count + 20;
+        count = count + 18;
         if (selectfolder == "Logos") {
-            let imagesData: any = []
+            let imagesData: any = []        
             imagesData = chooseExistingFile?.ChooseExistinglogo;
             if (count != 0 && imagesData?.length > 0) {
                 let myimagedata: any[] = [];
-                for (let i = 0; i <= count; i++) {
+                for (let i = 0; i < count; i++) {
                     if (imagesData[i] != undefined)
                         myimagedata?.push(imagesData[i]);
                 }
@@ -340,7 +338,7 @@ const ImagetabFunction = (props: any) => {
             imagesData = chooseExistingFile?.ChooseExistingCover;
             if (count != 0 && imagesData?.length > 0) {
                 let myimagedata: any[] = [];
-                for (let i = 0; i <= count; i++) {
+                for (let i = 0; i < count; i++) {
                     if (imagesData[i] != undefined)
                         myimagedata?.push(imagesData[i]);
                 }
@@ -351,7 +349,7 @@ const ImagetabFunction = (props: any) => {
             imagesData = chooseExistingFile?.ChooseExistingImages1;
             if (count != 0 && imagesData?.length > 0) {
                 let myimagedata: any[] = [];
-                for (let i = 0; i <= count; i++) {
+                for (let i = 0; i < count; i++) {
                     if (imagesData[i] != undefined)
                         myimagedata?.push(imagesData[i]);
                 }
