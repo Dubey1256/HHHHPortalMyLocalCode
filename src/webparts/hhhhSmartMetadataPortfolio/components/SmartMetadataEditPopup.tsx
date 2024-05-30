@@ -627,18 +627,6 @@ export default function SmartMetadataEditPopup(props: any) {
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    {/* <div className="col">
-                                                        <div className=' input-group'>
-                                                            <label className='full-width'>SmartFilters</label>
-                                                            <select className="form-control no-padding" value={SmartTaxonomyItem.SmartFilters} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, SmartFilters: e.target.value })}>
-                                                                {dropdownArraySmartfilter.map((item: any, index: any) => (
-                                                                    <option key={index} value={item}>
-                                                                        {item}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                        </div>
-                                                    </div> */}
                                                     <div className="col">
                                                         <div className=' input-group'>
                                                             <label className='full-width'>Item Rank</label>
@@ -708,7 +696,7 @@ export default function SmartMetadataEditPopup(props: any) {
                             </div>
                         )}
                         </div>
-                        <div className={activeTab == 'ImageInfo' ? 'tab-pane fade show active' : 'tab-pane fade show active tab-pane fade'} id="ImageInfo" role="tabpanel" aria-labelledby="ImageInfo">   {activeTab == 'ImageInfo' && (
+                        <div className={activeTab == 'ImageInfo' ? 'tab-pane fade show active' : 'tab-pane fade show active tab-pane fade'} id="ImageInfo" role="tabpanel" aria-labelledby="ImageInfo-tab">   {activeTab == 'ImageInfo' && (
                             <div className="modal-body" style={{ overflowY: 'auto' }}>
                                 <ImagetabFunction EditdocumentsData={props?.modalInstance}
                                     setData={setSmartTaxonomyItem}
