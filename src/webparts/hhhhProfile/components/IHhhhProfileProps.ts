@@ -5,5 +5,6 @@ export interface IHhhhProfileProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   SitesListUrl: string;
-  SmartMetadataListID: string
+  SmartMetadataListID: string;
+  siteName: any;
 }
