@@ -8,36 +8,29 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'ManagedashboardconfigWebPartStrings';
-import Managedashboardconfig from './components/Managedashboardconfig';
-import { IManagedashboardconfigProps } from './components/IManagedashboardconfigProps';
+import * as strings from 'ComponentPermissionMgmtWebPartStrings';
+import ComponentPermissionMgmt from './components/ComponentPermissionMgmt';
+import { IComponentPermissionMgmtProps } from './components/IComponentPermissionMgmtProps';
 
-export interface IManagedashboardconfigWebPartProps {
+export interface IComponentPermissionMgmtWebPartProps {
   description: string;
-  AdminConfigurationListId: string;
-  TaskUserListId: string;
-  Context: string;
-  SmartMetadataListID:any
 }
 
-export default class ManagedashboardconfigWebPart extends BaseClientSideWebPart<IManagedashboardconfigWebPartProps> {
+export default class ComponentPermissionMgmtWebPart extends BaseClientSideWebPart<IComponentPermissionMgmtWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IManagedashboardconfigProps> = React.createElement(
-      Managedashboardconfig,
+    const element: React.ReactElement<IComponentPermissionMgmtProps> = React.createElement(
+      ComponentPermissionMgmt,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        Context: this.context,
-        AdminConfigurationListId: this.properties.AdminConfigurationListId,
-        SmartMetadataListID: this.properties.SmartMetadataListID,
-        TaskUserListId: this.properties.TaskUserListId,
+        context: this.context
       }
     );
 
@@ -64,7 +57,10 @@ export default class ManagedashboardconfigWebPart extends BaseClientSideWebPart<
             case 'Outlook': // running in Outlook
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
-            case 'Teams': // running in Teams           
+            case 'Teams': // running in Teams
+            case 'TeamsModern':
+              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
+              break;
             default:
               environmentMessage = strings.UnknownEnvironment;
           }
@@ -79,17 +75,6 @@ export default class ManagedashboardconfigWebPart extends BaseClientSideWebPart<
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
     if (!currentTheme) {
       return;
-    }
-
-    this._isDarkTheme = !!currentTheme.isInverted;
-    const {
-      semanticColors
-    } = currentTheme;
-
-    if (semanticColors) {
-      this.domElement.style.setProperty('--bodyText', semanticColors.bodyText || null);
-      this.domElement.style.setProperty('--link', semanticColors.link || null);
-      this.domElement.style.setProperty('--linkHovered', semanticColors.linkHovered || null);
     }
 
   }
@@ -115,16 +100,7 @@ export default class ManagedashboardconfigWebPart extends BaseClientSideWebPart<
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                }),
-                PropertyPaneTextField("AdminConfigurationListId", {
-                  label: "AdminConfigurationListId"
-                }),
-                PropertyPaneTextField("TaskUserListId", {
-                  label: "TaskUserListId"
-                }),
-                PropertyPaneTextField('SmartMetadataListID', {
-                  label: "SmartMetadataListID"
-                }),
+                })
               ]
             }
           ]

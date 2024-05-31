@@ -15,6 +15,7 @@ let compareSeletected: any = [];
 let childRefdata: any;
 let ParentMetaDataItems: any = [];
 let TabsData: any = [];
+let CurrentSelectedMetadataItem: any = [];
 let SelectedMetadataItem: any = [];
 let CopySmartmetadata: any = []
 let UrlTabName: any = ""
@@ -177,7 +178,8 @@ export default function ManageSmartMetadata(selectedProps: any) {
         });
         if (TabSelected === 'Categories') {
             ShowingCategoriesTabsData(TabsFilter[0])
-        } else {
+        }
+        else {
             CopySmartmetadata = TabsFilter;
             setSmartmetadata(TabsFilter);
             childRefdata?.current?.setRowSelection({});
@@ -291,75 +293,100 @@ export default function ManageSmartMetadata(selectedProps: any) {
             size: 55,
             cell: ({ row }) => (
                 <>
-                    <div className='alignCenter'>
-                        {row?.original?.SortOrder != undefined &&
-                            row?.original?.SortOrder != null &&
-                            row?.original?.SortOrder != '' ? (
-                            <a>{row?.original?.SortOrder}</a>
-                        ) : null}
-                    </div>
-                </>
-            ),
-        },
-        {
-            cell: ({ row }) => (
-                <>
-                    <div className='text-end'>
-                        <span onClick={() => EditSmartMetadataPopup(row?.original)} title="Edit" className=" alignIcon svg__iconbox svg__icon--edit"></span>
-                    </div>
-                </>
-            ),
-            accessorKey: '',
-            canSort: false,
-            placeholder: '',
-            header: '',
-            id: 'row.original',
-            size: 10,
-        },
-        {
-            cell: ({ row }) => (
-                <>
-                    <div className='text-end'>
-                        <span onClick={() => DeleteSmartMetadataOpenPopup(row?.original)} title="Edit" className="  alignIcon svg__iconbox svg__icon--trash"></span>
-                    </div>
-                </>
-            ),
-            accessorKey: '',
-            canSort: false,
-            placeholder: '',
-            header: '',
-            id: 'row.original',
-            size: 10,
-        },
-        {
-            header: ({ table }: any) => (
-                <>
-                    {
-                        RestructureIcon ?
-                            <span style={{ backgroundColor: `${'portfolioColor'}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => OpenTopRestructureIcon()}>
-                                <span className="svg__iconbox svg__icon--re-structure"></span>
+            {
+                accessorKey: 'SortOrder',
+                placeholder: 'SortOrder',
+                id: 'SortOrder',
+                header: '',
+                size: 55,
+                cell: ({ row }: any) => (
+                    <>
+                        <div className='alignCenter'>
+                            {row?.original?.SortOrder != undefined &&
+                                row?.original?.SortOrder != null &&
+                                row?.original?.SortOrder != '' ? (
+                                <a>{row?.original?.SortOrder}</a>
+                            ) : null}
+                        </div>
+                    </>
+                ),
+            },
+            {
+                cell: ({ row }: any) => (
+                    <>
+                        <div className='text-end'>
+                            <span onClick={() => EditSmartMetadataPopup(row?.original)} title="Edit" className=" alignIcon svg__iconbox svg__icon--edit"></span>
+                        </div>
+                    </>
+                ),
+                accessorKey: '',
+                canSort: false,
+                placeholder: '',
+                header: '',
+                id: 'row.original',
+                size: 10,
+            },
+            {
+                cell: ({ row }: any) => (
+                    <>
+                        <div className='text-end'>
+                            <span onClick={() => DeleteSmartMetadataOpenPopup(row?.original)} title="Edit" className="  alignIcon svg__iconbox svg__icon--trash"></span>
+                        </div>
+                    </>
+                ),
+                accessorKey: '',
+                canSort: false,
+                placeholder: '',
+                header: '',
+                id: 'row.original',
+                size: 10,
+            },
+            {
+                header: ({ table }: any) => (
+                    <>
+                        {
+                            RestructureIcon ?
+                                <span style={{ backgroundColor: `${'portfolioColor'}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => OpenTopRestructureIcon()}>
+                                    <span className="svg__iconbox svg__icon--re-structure"></span>
+                                </span>
+                                : ''
+                        }
+                    </>
+                ),
+                cell: ({ row, getValue }: any) => (
+                    <>
+                        {row?.original?.isRestructureActive && (
+                            <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
+                                <span className="alignIcon svg__iconbox svg__icon--re-structure"> </span>
                             </span>
-                            : ''
-                    }
-                </>
-            ),
-            cell: ({ row, getValue }) => (
-                <>
-                    {row?.original?.isRestructureActive && (
-                        <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
-                            <span className="alignIcon svg__iconbox svg__icon--re-structure"> </span>
-                        </span>
-                    )}
-                    {getValue()}
-                </>
-            ),
-            id: "row?.original.Id",
-            canSort: false,
-            placeholder: "",
-            size: 10,
-        },
-    ],
-        [Smartmetadata]);
+                        )}
+                        {getValue()}
+                    </>
+                ),
+                id: "row?.original.Id",
+                canSort: false,
+                placeholder: "",
+                size: 10,
+
+            },
+        ]
+
+        if (siteName !== 'GmbH') {
+            baseColumns.splice(2, 0, {
+                accessorKey: 'TestColumns',
+                placeholder: 'TestColumns',
+                id: 'TestColumns',
+                header: '',
+                size: 400,
+                cell: ({ row }: any) => (
+                    <div className='alignCenter'>
+                        {row?.original?.TestColumns ? <a>{row?.original?.TestColumns}</a> : null}
+                    </div>
+                ),
+            });
+        }
+        return baseColumns;
+    }, [siteName, Smartmetadata]);
     const closeCreateSmartMetadataPopup = () => {
         setSmartmetadataAdd(false);
         childRefdata?.current?.setRowSelection({});
@@ -377,22 +404,24 @@ export default function ManageSmartMetadata(selectedProps: any) {
     //-------------------------------------------------- RESTRUCTURING FUNCTION start---------------------------------------------------------------
 
     const callBackSmartMetaData = useCallback((Array: any, unSelectTrue: any, Taxtype: any, checkData: any) => {
-        if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length > 0) {
-            childRef?.current?.table?.getSelectedRowModel()?.flatRows.filter((item: any) => {
+        if (childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length > 0) {
+            CurrentSelectedMetadataItem = childRef?.current?.table?.getSelectedRowModel()?.flatRows;
+        } else
+            CurrentSelectedMetadataItem = [];
+        if (CurrentSelectedMetadataItem.length > 0) {
+            CurrentSelectedMetadataItem?.filter((item: any) => {
                 if (item.original !== undefined) {
-                    if (!isItemExists(SelectedMetadataItem, item.original.Id))
-                        SelectedMetadataItem.push(item.original);
+                    if (!isItemExists(SelectedMetadataItem, item?.original?.Id))
+                        SelectedMetadataItem.push(item?.original);
                 }
             })
-            if (SelectedMetadataItem.length === 1) {
+            if (CurrentSelectedMetadataItem?.length === 1) {
                 setSmartmetadataRestructureButton(true)
                 setSmartmetadataCompareButton(false);
-            } else if (SelectedMetadataItem.length === 2) {
+            } else if (CurrentSelectedMetadataItem?.length === 2) {
                 setSmartmetadataRestructureButton(false)
                 setSmartmetadataCompareButton(true);
             } else {
-                if (SelectedMetadataItem.length > 0)
-                    SelectedMetadataItem = [];
                 setSmartmetadataCompareButton(false);
                 setSmartmetadataRestructureButton(false);
             }
@@ -400,7 +429,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         } else {
             SelectedMetadataItem = [];
             setRestructureIcon(false)
-            if (CopySmartmetadata !== undefined && CopySmartmetadata.length !== 0) {
+            if (CopySmartmetadata.length > 0) {
                 let array = CopySmartmetadata;
                 array?.map((obj: any) => {
                     obj.isRestructureActive = false;
@@ -434,7 +463,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     setSmartmetadata(array);
                 setSmartmetadataCompareButton(false);
                 setSmartmetadataRestructureButton(false);
-
+                setSmartmetadataRestructure(false)
             }
         }
         if (unSelectTrue === true) {
@@ -442,8 +471,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         }
         if (Taxtype) {
             setSmartmetadataAdd(false)
-            setSmartmetadataCompare(false)
-            setSmartmetadataRestructure(false)
+
             SmartmetadataItems = [];
             Array = {};
             setRestructureIcon(false)
@@ -458,7 +486,12 @@ export default function ManageSmartMetadata(selectedProps: any) {
     };
     const OpenTopRestructureIcon = () => {
         if (MyContextValue) {
-            MyContextValue?.OpenModal(categoriesTabName, true);
+            if (siteName === 'GmbH') {
+                const FilterItemParentID = 0;
+                MyContextValue?.OpenModal(FilterItemParentID, true);
+            }
+            else
+                MyContextValue?.OpenModal(categoriesTabName, true);
         }
     }
     const SmartrestructureFunct = (restr: any) => {
@@ -545,15 +578,22 @@ export default function ManageSmartMetadata(selectedProps: any) {
             <div className='TableContentSection'>
                 <section className='col-sm-12 clearfix'>
                     <div className='d-flex justify-content-between align-items-center siteColor  serviceColor_Active mb-2'>
-                        <h3 className="heading">ManageSmartMetaData
-                        </h3>
-                        <span><a data-interception="off" target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata-old.aspx">Old ManageSmartMetadata</a></span>
+                        {siteName !== 'GmbH' ?
+                            <h3 className="heading">ManageSmartMetaData</h3>
+                            :
+                            <h3 className="heading">Manage Smart MetaData</h3>
+                        }
+                        <span>
+                            <a data-interception="off" target="_blank" href={`${selectedProps?.AllList?.SPSitesListUrl}/SitePages/managesmartmetadata-old.aspx`} >
+                                Old ManageSmartMetadata
+                            </a>
+                        </span>
                     </div>
                     <div>
                         <span>
                             {
                                 SmartmetadataAdd === true ?
-                                    <CreateMetadataItem AddButton={SmartmetadataAdd} childRefdata={childRefdata} AllList={selectedProps.AllList} addItemCallBack={callBackSmartMetaData} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} closeCreateSmartMetadataPopup={closeCreateSmartMetadataPopup} SelectedItem={SelectedMetadataItem} setName={setName} ParentItem={Smartmetadata} TabSelected={TabSelected} categoriesTabName={categoriesTabName}></CreateMetadataItem>
+                                    <CreateMetadataItem AddButton={SmartmetadataAdd} childRefdata={childRefdata} AllList={selectedProps.AllList} addItemCallBack={callBackSmartMetaData} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} closeCreateSmartMetadataPopup={closeCreateSmartMetadataPopup} SelectedItem={SelectedMetadataItem} setName={setName} ParentItem={Smartmetadata} siteName={siteName} TabSelected={TabSelected} categoriesTabName={categoriesTabName}></CreateMetadataItem>
                                     : ''
                             }
                         </span>
@@ -568,13 +608,14 @@ export default function ManageSmartMetadata(selectedProps: any) {
                             {
                                 SmartmetadataRestructure === true ?
                                     <RestructureSmartMetaData
+                                        siteName={siteName}
                                         closeRestructurepopup={closeCompareAndRestructuepopup}
                                         RestructureButton={SmartmetadataRestructure} childRefdata={childRefdata} AllList={selectedProps.AllList} ref={childRef} AllMetaData={Smartmetadata} restructureItemCallBack={callBackSmartMetaData} restructureItem={SelectedMetadataItem} SmartrestructureFunct={SmartrestructureFunct} TabSelected={TabSelected} />
                                     : ''
                             }
                         </span>
                     </div>
-                </section>
+                </section >
                 <ul className="nav nav-tabs" role="tablist">
                     {Tabs?.map((item: any, index: any) => (
                         <button className={`nav-link ${item.Title === TabSelected ? "active" : ""}`}
@@ -615,35 +656,37 @@ export default function ManageSmartMetadata(selectedProps: any) {
                         </div>
                     </div>
                 </div>
-                {isVisible && (<div>
-                    <Panel
-                        isOpen={true}
-                        onDismiss={CloseGenerateJSONpopup}
-                        type={PanelType.custom}
-                        isBlocking={false}
-                        onRenderHeader={onRenderCustomHeaderDocuments}
-                        customWidth="750px"
-                    >
-                        <div className="modal-body">
-                            <div className="col-sm-12 tab-content bdrbox">
-                                <div className="divPanelBody mt-10 mb-10  col-sm-12 padL-0 PadR0" id="#CopyJSON">
-                                    {AllCombinedJSON}
+                {
+                    isVisible && (<div>
+                        <Panel
+                            isOpen={true}
+                            onDismiss={CloseGenerateJSONpopup}
+                            type={PanelType.custom}
+                            isBlocking={false}
+                            onRenderHeader={onRenderCustomHeaderDocuments}
+                            customWidth="750px"
+                        >
+                            <div className="modal-body">
+                                <div className="col-sm-12 tab-content bdrbox">
+                                    <div className="divPanelBody mt-10 mb-10  col-sm-12 padL-0 PadR0" id="#CopyJSON">
+                                        {AllCombinedJSON}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className='applyLeavePopup'>
-                            <div className="modal-footer border-0 px-0">
-                                <button className='btnCol btn btn-primary mx-2 mt-0' onClick={CopyJSON}>
-                                    <span>{isCopied ? 'Copied!' : 'CopyJSON'}</span>
-                                </button>
-                                <button className='btn btn-default m-0' onClick={() => CloseGenerateJSONpopup()}> Cancel</button>
+                            <div className='applyLeavePopup'>
+                                <div className="modal-footer border-0 px-0">
+                                    <button className='btnCol btn btn-primary mx-2 mt-0' onClick={CopyJSON}>
+                                        <span>{isCopied ? 'Copied!' : 'CopyJSON'}</span>
+                                    </button>
+                                    <button className='btn btn-default m-0' onClick={() => CloseGenerateJSONpopup()}> Cancel</button>
+                                </div>
                             </div>
-                        </div>
-                    </Panel>
-                </div>)}
+                        </Panel>
+                    </div>)
+                }
                 {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} TabSelected={TabSelected} ParentMetaDataItems={ParentMetaDataItems} childRefdata={childRefdata} /> : ''}
                 {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata AllList={selectedProps.AllList} CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} childRefdata={childRefdata} /> : ''}
-            </div>
+            </div >
         </>
     );
 }
