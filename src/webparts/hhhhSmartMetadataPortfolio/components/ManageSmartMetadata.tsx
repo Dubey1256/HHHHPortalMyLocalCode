@@ -144,6 +144,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         TabsFilter = [];
         TabSelected = Tab;
         setCategoriesTabName({});
+        childRefdata?.current?.clearAll();
         if (ParentMetaDataItems.length > 0)
             ParentMetaDataItems = [];
         SmartmetadataItems?.filter((comp: any) => {
@@ -157,10 +158,17 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 comp['flag'] = true;
                 ParentMetaDataItems.push(comp)
             }
+            comp.smartFilterSearch='';
+            if(comp?.SmartFilters!=null &&comp?.SmartFilters?.length>0){
+               comp.smartFilterSearch= comp?.SmartFilters?.map((elem: any) => elem).join(" ")
+              
+            }
         });
         ParentMetaDataItems.filter((item: any) => {
             GroupByItems(item, SmartmetadataItems);
         })
+
+
         ParentMetaDataItems.filter((item: any) => {
             if (item.TaxType && item.TaxType === Tab) {
                 TabsFilter.push(item);
@@ -173,6 +181,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             CopySmartmetadata = TabsFilter;
             setSmartmetadata(TabsFilter);
             childRefdata?.current?.setRowSelection({});
+            
         }
     };
     const ShowingCategoriesTabsData = (tabData: any) => {
@@ -239,18 +248,18 @@ export default function ManageSmartMetadata(selectedProps: any) {
             ),
         },
         {
-            accessorKey: 'SmartFilters',
+            accessorFn: (row) => row?.smartFilterSearch,
             placeholder: 'SmartFilters',
-            id: 'SmartFilters',
+            id: 'smartFilterSearch',
             header: '',
             size: 400,
             cell: ({ row }) => (
                 <>
                     <div className='alignCenter'>
-                        {row?.original?.SmartFilters != undefined &&
-                            row?.original?.SmartFilters != null &&
-                            row?.original?.SmartFilters != '' ? (
-                            <a>{row?.original?.SmartFilters}</a>
+                        {
+                         row?.original?.smartFilterSearch!=undefined &&row?.original?.smartFilterSearch != null &&
+                            row?.original?.smartFilterSearch != '' ? (
+                            <a>{row?.original?.smartFilterSearch}</a>
                         ) : null}
                     </div>
                 </>
