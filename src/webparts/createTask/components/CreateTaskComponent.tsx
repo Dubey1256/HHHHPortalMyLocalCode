@@ -1800,7 +1800,7 @@ function CreateTaskComponent(props: any) {
         const filteredProjects = SuggestedProjectsOfporfolio.filter((item: any) =>
             item?.Title.toLowerCase().includes(searchQuery.toLowerCase()) || item?.PortfolioStructureID.toLowerCase().includes(searchQuery.toLowerCase())
         );
-        setRelevantProjects(
+        setSuggestedProjectsOfporfolio(
           searchQuery === "" ? suggestedProjects : filteredProjects
         );
     };
