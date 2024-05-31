@@ -1387,12 +1387,6 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
             <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? " Discussion Point" : ActionType + " Comment"} </b>: <span>${ReasonStatement}</span> ` : ''}
             </div>
             <div style="margin-top: 16px; font-size:16px;">  
-               <b style="font-weight:600;">Task Title: </b>
-                <span>
-                ${UpdatedDataObject?.Title}
-                </span>
-            </div>
-            <div style="margin-top: 16px; font-size:16px;">  
             <b style="font-weight:600;">Task Title: </b>
             <a href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? `Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}` : `Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">
             ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
