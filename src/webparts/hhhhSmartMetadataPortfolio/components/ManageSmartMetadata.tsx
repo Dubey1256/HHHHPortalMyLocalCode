@@ -293,100 +293,75 @@ export default function ManageSmartMetadata(selectedProps: any) {
             size: 55,
             cell: ({ row }) => (
                 <>
-            {
-                accessorKey: 'SortOrder',
-                placeholder: 'SortOrder',
-                id: 'SortOrder',
-                header: '',
-                size: 55,
-                cell: ({ row }: any) => (
-                    <>
-                        <div className='alignCenter'>
-                            {row?.original?.SortOrder != undefined &&
-                                row?.original?.SortOrder != null &&
-                                row?.original?.SortOrder != '' ? (
-                                <a>{row?.original?.SortOrder}</a>
-                            ) : null}
-                        </div>
-                    </>
-                ),
-            },
-            {
-                cell: ({ row }: any) => (
-                    <>
-                        <div className='text-end'>
-                            <span onClick={() => EditSmartMetadataPopup(row?.original)} title="Edit" className=" alignIcon svg__iconbox svg__icon--edit"></span>
-                        </div>
-                    </>
-                ),
-                accessorKey: '',
-                canSort: false,
-                placeholder: '',
-                header: '',
-                id: 'row.original',
-                size: 10,
-            },
-            {
-                cell: ({ row }: any) => (
-                    <>
-                        <div className='text-end'>
-                            <span onClick={() => DeleteSmartMetadataOpenPopup(row?.original)} title="Edit" className="  alignIcon svg__iconbox svg__icon--trash"></span>
-                        </div>
-                    </>
-                ),
-                accessorKey: '',
-                canSort: false,
-                placeholder: '',
-                header: '',
-                id: 'row.original',
-                size: 10,
-            },
-            {
-                header: ({ table }: any) => (
-                    <>
-                        {
-                            RestructureIcon ?
-                                <span style={{ backgroundColor: `${'portfolioColor'}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => OpenTopRestructureIcon()}>
-                                    <span className="svg__iconbox svg__icon--re-structure"></span>
-                                </span>
-                                : ''
-                        }
-                    </>
-                ),
-                cell: ({ row, getValue }: any) => (
-                    <>
-                        {row?.original?.isRestructureActive && (
-                            <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
-                                <span className="alignIcon svg__iconbox svg__icon--re-structure"> </span>
-                            </span>
-                        )}
-                        {getValue()}
-                    </>
-                ),
-                id: "row?.original.Id",
-                canSort: false,
-                placeholder: "",
-                size: 10,
-
-            },
-        ]
-
-        if (siteName !== 'GmbH') {
-            baseColumns.splice(2, 0, {
-                accessorKey: 'TestColumns',
-                placeholder: 'TestColumns',
-                id: 'TestColumns',
-                header: '',
-                size: 400,
-                cell: ({ row }: any) => (
                     <div className='alignCenter'>
-                        {row?.original?.TestColumns ? <a>{row?.original?.TestColumns}</a> : null}
+                        {row?.original?.SortOrder != undefined &&
+                            row?.original?.SortOrder != null &&
+                            row?.original?.SortOrder != '' ? (
+                            <a>{row?.original?.SortOrder}</a>
+                        ) : null}
                     </div>
-                ),
-            });
-        }
-        return baseColumns;
-    }, [siteName, Smartmetadata]);
+                </>
+            ),
+        },
+        {
+            cell: ({ row }) => (
+                <>
+                    <div className='text-end'>
+                        <span onClick={() => EditSmartMetadataPopup(row?.original)} title="Edit" className=" alignIcon svg__iconbox svg__icon--edit"></span>
+                    </div>
+                </>
+            ),
+            accessorKey: '',
+            canSort: false,
+            placeholder: '',
+            header: '',
+            id: 'row.original',
+            size: 10,
+        },
+        {
+            cell: ({ row }) => (
+                <>
+                    <div className='text-end'>
+                        <span onClick={() => DeleteSmartMetadataOpenPopup(row?.original)} title="Edit" className="  alignIcon svg__iconbox svg__icon--trash"></span>
+                    </div>
+                </>
+            ),
+            accessorKey: '',
+            canSort: false,
+            placeholder: '',
+            header: '',
+            id: 'row.original',
+            size: 10,
+        },
+        {
+            header: ({ table }: any) => (
+                <>
+                    {
+                        RestructureIcon ?
+                            <span style={{ backgroundColor: `${'portfolioColor'}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => OpenTopRestructureIcon()}>
+                                <span className="svg__iconbox svg__icon--re-structure"></span>
+                            </span>
+                            : ''
+                    }
+                </>
+            ),
+            cell: ({ row, getValue }) => (
+                <>
+                    {row?.original?.isRestructureActive && (
+                        <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
+                            <span className="alignIcon svg__iconbox svg__icon--re-structure"> </span>
+                        </span>
+                    )}
+                    {getValue()}
+                </>
+            ),
+            id: "row?.original.Id",
+            canSort: false,
+            placeholder: "",
+            size: 10,
+        },
+    ],
+        [Smartmetadata]);
     const closeCreateSmartMetadataPopup = () => {
         setSmartmetadataAdd(false);
         childRefdata?.current?.setRowSelection({});
