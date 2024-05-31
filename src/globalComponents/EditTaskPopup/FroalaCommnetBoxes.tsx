@@ -275,8 +275,11 @@ export default function FroalaCommnetBoxes(textItems: any) {
 
     const CreateSeparateTaskFunction = async (FeedbackData: any, Index: any) => {
         setIsOpenCreateTaskPanel(true);
-        setCreateTaskForThis(FeedbackData);
+        setCreateTaskForThis(UpdatedFeedBackParentArray[Index]);
         CreateTaskIndex = Index;
+        const updatedState = [...State];
+        updatedState[Index].TaskCreatedForThis = true;
+        setState(updatedState);
     }
 
 
@@ -297,6 +300,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
         }]
         let UpdateJSONIndex = Index;
         UpdatedFeedBackParentArray[UpdateJSONIndex].Completed = true;
+        UpdatedFeedBackParentArray[Index].TaskCreatedForThis = true;
         if (UpdatedFeedBackParentArray[UpdateJSONIndex].Comments?.length > 0) {
             UpdatedFeedBackParentArray[UpdateJSONIndex].Comments.unshift(CreateTaskFor[0]);
         } else {
@@ -337,7 +341,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                             <div className={"FeedBack-comment row my-1"}>
                                 <div
                                     data-id={i}
-                                    className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9 col py-3" : "col"}
+                                    className= "col"
                                     onChange={handleChange}
                                 >
                                     <div className="Task-panel d-flex justify-content-between">
@@ -453,7 +457,8 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <span className="siteColor hreflink commentSectionLabel" onClick={() => CreateSeparateTaskFunction(obj, i)}>
+                                                <span className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9 siteColor hreflink commentSectionLabel" : "siteColor hreflink commentSectionLabel"}
+                                                 onClick={() => CreateSeparateTaskFunction(obj, i)}>
                                                     Create Task
                                                 </span>
                                             </span>
@@ -465,12 +470,12 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             </a>
                                         </div>
                                     </div>
-                                    <div className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9" : ""}>
+                                    <div>
                                         <div className="d-flex" title={obj.isShowLight}>
                                             <span className="SubTestBorder p-1 me-1">{index + 1}</span>
                                             <textarea
                                                 style={{ width: "100%" }}
-                                                className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "form-control Disabled-Link bg-e9" : "form-control"}
+                                                className="form-control"
                                                 defaultValue={obj?.Title?.replace(/<[^>]*>/g, ' ')}
                                                 value={obj?.Title?.replace(/<[^>]*>/g, ' ')}
                                                 name='Title'
@@ -549,3 +554,5 @@ export default function FroalaCommnetBoxes(textItems: any) {
         </div>
     );
 }
+
+
