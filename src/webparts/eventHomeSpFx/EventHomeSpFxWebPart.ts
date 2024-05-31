@@ -8,34 +8,36 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'HhhhSmartPagesWebPartStrings';
-import HhhhSmartPages from './components/HhhhSmartPages';
-import { IHhhhSmartPagesProps } from './components/IHhhhSmartPagesProps';
+import * as strings from 'EventHomeSpFxWebPartStrings';
+import EventHomeSpFx from './components/EventHomeSpFx';
+import { IEventHomeSpFxProps } from './components/IEventHomeSpFxProps';
 
-export interface IHhhhSmartPagesWebPartProps {
+export interface IEventHomeSpFxWebPartProps {
   description: string;
-  SitesListUrl: any,
-  SmartMetadataListID: any;
-  siteName: any;
+  context: any;
+  EventsListID:any;
+  SitePagesList:any;
 }
 
-export default class HhhhSmartPagesWebPart extends BaseClientSideWebPart<IHhhhSmartPagesWebPartProps> {
+export default class EventHomeSpFxWebPart extends BaseClientSideWebPart<IEventHomeSpFxWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IHhhhSmartPagesProps> = React.createElement(
-      HhhhSmartPages,
+    const element: React.ReactElement<IEventHomeSpFxProps> = React.createElement(
+      EventHomeSpFx,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        SitesListUrl: this.context.pageContext.web.absoluteUrl,
-        siteName: this.context.pageContext.web.title,
-        SmartMetadataListID: this.properties.SmartMetadataListID,
+        Context:this.context,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        siteType:this.context.pageContext.web.title,
+        EventsListID:this.properties.EventsListID,
+        SitePagesList:this.properties.SitePagesList
       }
     );
 
@@ -59,11 +61,7 @@ export default class HhhhSmartPagesWebPart extends BaseClientSideWebPart<IHhhhSm
             case 'Office': // running in Office
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOffice : strings.AppOfficeEnvironment;
               break;
-            case 'Outlook': // running in Outlook
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
-              break;
             case 'Teams': // running in Teams
-
             default:
               environmentMessage = strings.UnknownEnvironment;
           }
@@ -112,9 +110,15 @@ export default class HhhhSmartPagesWebPart extends BaseClientSideWebPart<IHhhhSm
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('SmartMetadataListID', {
-                  label: 'SmartMetadataListID'
+                PropertyPaneTextField('description', {
+                  label: strings.DescriptionFieldLabel
                 }),
+                PropertyPaneTextField('EventsListID', {
+                  label: 'EventsListID'
+                }),
+                PropertyPaneTextField('SitePagesList', {
+                  label: 'SitePagesList'
+                })           
               ]
             }
           ]

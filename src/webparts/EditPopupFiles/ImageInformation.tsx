@@ -392,7 +392,7 @@ const ImagetabFunction = (props: any) => {
                                 </Nav.Item>
 
                                 <div className='mt-1 me-1'>
-                                    {editData.Item_x002d_Image != undefined && <div><div><img className="img-fluid" src={editData?.Item_x002d_Image?.Url} /></div>
+                                    {editData?.Item_x002d_Image != undefined && <div><div><img className="img-fluid" src={editData?.Item_x002d_Image?.Url} /></div>
                                         <span><a href={editData?.Item_x002d_Image?.Url} target="_blank" data-interception="off"><span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span></a></span>
                                     </div>}
 
