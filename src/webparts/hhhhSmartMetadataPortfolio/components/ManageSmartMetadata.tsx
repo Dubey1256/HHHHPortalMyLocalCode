@@ -145,6 +145,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         TabsFilter = [];
         TabSelected = Tab;
         setCategoriesTabName({});
+        childRefdata?.current?.clearAll();
         if (ParentMetaDataItems.length > 0)
             ParentMetaDataItems = [];
         SmartmetadataItems?.filter((comp: any) => {
@@ -158,10 +159,17 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 comp['flag'] = true;
                 ParentMetaDataItems.push(comp)
             }
+            comp.smartFilterSearch='';
+            if(comp?.SmartFilters!=null &&comp?.SmartFilters?.length>0){
+               comp.smartFilterSearch= comp?.SmartFilters?.map((elem: any) => elem).join(" ")
+              
+            }
         });
         ParentMetaDataItems.filter((item: any) => {
             GroupByItems(item, SmartmetadataItems);
         })
+
+
         ParentMetaDataItems.filter((item: any) => {
             if (item.TaxType && item.TaxType === Tab) {
                 TabsFilter.push(item);
@@ -175,6 +183,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             CopySmartmetadata = TabsFilter;
             setSmartmetadata(TabsFilter);
             childRefdata?.current?.setRowSelection({});
+            
         }
     };
     const ShowingCategoriesTabsData = (tabData: any) => {
@@ -205,78 +214,85 @@ export default function ManageSmartMetadata(selectedProps: any) {
     useEffect(() => {
         GetAdminConfig();
     }, [0]);
-    const columns = useMemo<ColumnDef<any, unknown>[]>(() => {
-        const baseColumns = [
-            {
-                accessorKey: "",
-                placeholder: "",
-                hasCheckbox: true,
-                hasCustomExpanded: true,
-                hasExpanded: true,
-                size: 10,
-                id: 'Id',
-            },
-            {
-                accessorKey: 'Title',
-                placeholder: 'Title',
-                header: '',
-                id: 'Title',
-                cell: ({ row }: any) => (
-                    <>
-                        <div className='alignCenter'>
-                            {row?.original?.Title != undefined &&
-                                row?.original?.Title != null &&
-                                row?.original?.Title != '' ? (
-                                <a>
-                                    {row?.original?.TaxType === 'Smart Pages' || row?.original?.TaxType === 'Topics' ? <a className="hreflink" href={row?.original?.href} target="_blank" data-interception="off" rel="noopener noreferrer">
-                                        {row?.original?.Title}
-                                    </a> : row?.original?.Title}
-                                    {(row?.original?.Description !== null && row?.original?.Description !== undefined) && <div className='hover-text'>
-                                        <span className="alignIcon svg__iconbox svg__icon--info"></span>
-                                        <span className='tooltip-text pop-right'>{row?.original?.Description} </span>
-                                    </div>}
-                                </a>
-                            ) : null}
-                        </div>
-                    </>
-                ),
-            },
-            {
-                accessorKey: 'SmartFilters',
-                placeholder: 'SmartFilters',
-                id: 'SmartFilters',
-                header: '',
-                size: 400,
-                cell: ({ row }: any) => (
-                    <>
-                        <div className='alignCenter'>
-                            {row?.original?.SmartFilters != undefined &&
-                                row?.original?.SmartFilters != null &&
-                                row?.original?.SmartFilters != '' ? (
-                                <a>{row?.original?.SmartFilters}</a>
-                            ) : null}
-                        </div>
-                    </>
-                ),
-            },
-            {
-                accessorKey: 'Status',
-                placeholder: 'Status',
-                id: 'Status',
-                header: '',
-                size: 90,
-                cell: ({ row }: any) => (
-                    <>
-                        <div className='alignCenter'>
-                            {row?.original?.Status != undefined &&
-                                row?.original?.Status != null &&
-                                row?.original?.Status != '' ? (
-                                <a>{row?.original?.Status}</a>
-                            ) : null}
-                        </div>
-                    </>
-                ),
-            },
+    const columns = useMemo<ColumnDef<any, unknown>[]>(() => [
+        {
+            accessorKey: "",
+            placeholder: "",
+            hasCheckbox: true,
+            hasCustomExpanded: true,
+            hasExpanded: true,
+            size: 10,
+            id: 'Id',
+        },
+        {
+            accessorKey: 'Title',
+            placeholder: 'Title',
+            header: '',
+            id: 'Title',
+            cell: ({ row }) => (
+                <>
+                    <div className='alignCenter'>
+                        {row?.original?.Title != undefined &&
+                            row?.original?.Title != null &&
+                            row?.original?.Title != '' ? (
+                            <a>
+                                {row?.original?.TaxType === 'Smart Pages' || row?.original?.TaxType === 'Topics' ? <a className="hreflink" href={row?.original?.href} target="_blank" data-interception="off" rel="noopener noreferrer">
+                                    {row?.original?.Title}
+                                </a> : row?.original?.Title}
+                                {(row?.original?.Description !== null && row?.original?.Description !== undefined) && <div className='hover-text'>
+                                    <span className="alignIcon svg__iconbox svg__icon--info"></span>
+                                    <span className='tooltip-text pop-right'>{row?.original?.Description} </span>
+                                </div>}
+                            </a>
+                        ) : null}
+                    </div>
+                </>
+            ),
+        },
+        {
+            accessorFn: (row) => row?.smartFilterSearch,
+            placeholder: 'SmartFilters',
+            id: 'smartFilterSearch',
+            header: '',
+            size: 400,
+            cell: ({ row }) => (
+                <>
+                    <div className='alignCenter'>
+                        {
+                         row?.original?.smartFilterSearch!=undefined &&row?.original?.smartFilterSearch != null &&
+                            row?.original?.smartFilterSearch != '' ? (
+                            <a>{row?.original?.smartFilterSearch}</a>
+                        ) : null}
+                    </div>
+                </>
+            ),
+        },
+        {
+            accessorKey: 'Status',
+            placeholder: 'Status',
+            id: 'Status',
+            header: '',
+            size: 90,
+            cell: ({ row }) => (
+                <>
+                    <div className='alignCenter'>
+                        {row?.original?.Status != undefined &&
+                            row?.original?.Status != null &&
+                            row?.original?.Status != '' ? (
+                            <a>{row?.original?.Status}</a>
+                        ) : null}
+                    </div>
+                </>
+            ),
+        },
+        {
+            accessorKey: 'SortOrder',
+            placeholder: 'SortOrder',
+            id: 'SortOrder',
+            header: '',
+            size: 55,
+            cell: ({ row }) => (
+                <>
             {
                 accessorKey: 'SortOrder',
                 placeholder: 'SortOrder',

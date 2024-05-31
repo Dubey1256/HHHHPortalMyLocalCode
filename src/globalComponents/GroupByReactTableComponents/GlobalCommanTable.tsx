@@ -1078,6 +1078,13 @@ const GlobalCommanTable = (items: any, ref: any) => {
             items?.openCompareTool()
         }
     }
+
+    const clearAll=()=>{
+        setGlobalFilter(''); 
+        setColumnFilters([]); 
+        setRowSelection({}); 
+    }
+
     ///////////////// code with neha /////////////////////
     const callChildFunction = (items: any) => {
         if (childRef.current) {
@@ -1096,7 +1103,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     };
     React.useImperativeHandle(ref, () => ({
-        callChildFunction, trueTopIcon, setRowSelection, globalFilter, projectTopIcon, setColumnFilters, setGlobalFilter, coustomFilterColumns, table, openTableSettingPopup, setSmartFabBasedColumnsSetting
+        callChildFunction, trueTopIcon, setRowSelection, globalFilter, projectTopIcon, setColumnFilters, setGlobalFilter, coustomFilterColumns, table, openTableSettingPopup, setSmartFabBasedColumnsSetting,clearAll
     }));
 
     const restructureFunct = (items: any) => {
@@ -1472,7 +1479,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         <a className='smartTotalTime hover-text m-0' onClick={() => openCreationAllStructure("Groupby-View")}><FaListAlt /><span className='tooltip-text pop-left'>Switch to Groupby View</span></a>}</>}
                     {items?.flatView === true && items?.updatedSmartFilterFlatView === true && <a className='smartTotalTime hreflink hover-text m-0'><FaListAlt /> <span className='tooltip-text pop-left'>Deactivated To Groupby View</span></a>}
 
-                    <a className='brush hover-text m-0'><i className="fa fa-paint-brush hreflink" aria-hidden="true" onClick={() => { setGlobalFilter(''); setColumnFilters([]); setRowSelection({}); }}></i> <span className='tooltip-text pop-left'>Clear All</span></a>
+                    <a className='brush hover-text m-0'><i className="fa fa-paint-brush hreflink" aria-hidden="true" onClick={() => clearAll()}></i> <span className='tooltip-text pop-left'>Clear All</span></a>
 
                     <a className='Prints hover-text m-0' onClick={() => downloadPdf()}>
                         <i className="fa fa-print" aria-hidden="true"></i>
