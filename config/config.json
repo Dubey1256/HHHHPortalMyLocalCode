@@ -487,6 +487,22 @@
       }
     ]
   },
+  "component-permission-mgmt-web-part": {
+    "components": [
+      {
+        "entrypoint": "./lib/webparts/componentPermissionMgmt/ComponentPermissionMgmtWebPart.js",
+        "manifest": "./src/webparts/componentPermissionMgmt/ComponentPermissionMgmtWebPart.manifest.json"
+      }
+    ]
+  },
+  "event-home-sp-fx-web-part": {
+    "components": [
+      {
+        "entrypoint": "./lib/webparts/eventHomeSpFx/EventHomeSpFxWebPart.js",
+        "manifest": "./src/webparts/eventHomeSpFx/EventHomeSpFxWebPart.manifest.json"
+      }
+    ]
+  },
   "content-editing-news-web-part": {
     "components": [
       {
@@ -559,6 +575,7 @@
     "AlertManagementWebPartStrings": "lib/webparts/alertManagement/loc/{locale}.js",
     "SmartConnectWebPartStrings": "lib/webparts/smartConnect/loc/{locale}.js",
     "ComponentProfileWebPartStrings": "lib/webparts/componentProfile/loc/{locale}.js",
+    "ComponentPermissionMgmtWebPartStrings": "lib/webparts/componentPermissionMgmt/loc/{locale}.js",
     "RecruitmentLandingPageWebPartStrings": "lib/webparts/recruitmentLandingPage/loc/{locale}.js",
     "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
@@ -586,6 +603,7 @@
     "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js",
     "LoadMastertaskWebPartStrings": "lib/webparts/loadMastertask/loc/{locale}.js",
     "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
+    "EventHomeSpFxWebPartStrings": "lib/webparts/eventHomeSpFx/loc/{locale}.js",
     "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js",
     "TestWebPartWebPartStrings": "lib/webparts/ClientCategoryVerification/loc/{locale}.js",
     "RootDashboardWebPartStrings": "lib/webparts/rootDashboard/loc/{locale}.js",

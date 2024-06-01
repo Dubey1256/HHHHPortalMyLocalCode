@@ -37,6 +37,8 @@ var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 var AllListId: any = {}
 let AllProjects: any = [];
+let URLRelatedProjects: any = [];
+let suggestedProjects: any = []
 let DirectTask = false;
 function CreateTaskComponent(props: any) {
     let base_Url = props?.pageContext?._web?.absoluteUrl;
@@ -62,6 +64,8 @@ function CreateTaskComponent(props: any) {
     const [IsOpenPortfolio, setIsOpenPortfolio] = React.useState(false);
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [relevantProjects, setRelevantProjects] = React.useState([]);
+    const [searchedRelevantProject, setSearchedRelevantProject] = React.useState("");
+    const [searchedSuggestedProject, setSearchedSuggestedProject] = React.useState("");
     const [Timing, setTiming] = React.useState([])
     const [isActive, setIsActive] = React.useState({
         siteType: false,
@@ -177,7 +181,24 @@ function CreateTaskComponent(props: any) {
                         Component: DataItem,
                         portfolioType: "Component"
                     }));
-                    let suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == DataItem[0]?.Id));
+                    suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == DataItem[0]?.Id));
+                    suggestedProjects = suggestedProjects.sort((a: any, b: any) =>{ 
+                        let numA_P_match = a.PortfolioStructureID.match(/P(\d+)/);
+                        let numB_P_match = b.PortfolioStructureID.match(/P(\d+)/);
+                        let numA_X_match = a.PortfolioStructureID.match(/X(\d+)/);
+                        let numB_X_match = b.PortfolioStructureID.match(/X(\d+)/);
+                        if (!numA_P_match || !numB_P_match) {
+                            return numA_P_match ? -1 : numB_P_match ? 1 : 0;
+                        }
+                        let numA_X = numA_X_match ? parseInt(numA_X_match[1]) : 0;
+                        let numB_X = numB_X_match ? parseInt(numB_X_match[1]) : 0;
+                        let numA_P = parseInt(numA_P_match[1]);
+                        let numB_P = parseInt(numB_P_match[1]);
+                        if (numA_P !== numB_P) {
+                            return numA_P - numB_P;
+                        }
+                        return numA_X - numB_X;
+                    })
                     setSuggestedProjectsOfporfolio(suggestedProjects);
                     // setSave({ ...save, Component: DataItem });
                     setSmartComponentData(DataItem);
@@ -543,7 +564,6 @@ function CreateTaskComponent(props: any) {
 
     const loadRelevantTask = async (PortfolioId: any, UrlTask: any, PageTask: any) => {
         let allData: any = [];
-        let URLRelatedProjects: any = [];
         let query = '';
         query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskID,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,FeedBack,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/TaskID,ParentTask/Title,ParentTask/Id,Project/Id,Project/Title&$expand=AssignedTo,Project,ParentTask,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
         let PageRelevant = PageRelevantTask;
@@ -640,7 +660,23 @@ function CreateTaskComponent(props: any) {
                             })
                             count++;
                             if (count == SitesTypes.length) {
-                                URLRelatedProjects = URLRelatedProjects.sort((a: any, b: any) => { return b.Count - a.Count })
+                                URLRelatedProjects = URLRelatedProjects.sort((a: any, b: any) => { 
+                                    let numA_P_match = a.PortfolioStructureID.match(/P(\d+)/);
+                                    let numB_P_match = b.PortfolioStructureID.match(/P(\d+)/);
+                                    let numA_X_match = a.PortfolioStructureID.match(/X(\d+)/);
+                                    let numB_X_match = b.PortfolioStructureID.match(/X(\d+)/);
+                                    if (!numA_P_match || !numB_P_match) {
+                                        return numA_P_match ? -1 : numB_P_match ? 1 : 0;
+                                    }
+                                    let numA_X = numA_X_match ? parseInt(numA_X_match[1]) : 0;
+                                    let numB_X = numB_X_match ? parseInt(numB_X_match[1]) : 0;
+                                    let numA_P = parseInt(numA_P_match[1]);
+                                    let numB_P = parseInt(numB_P_match[1]);
+                                    if (numA_P !== numB_P) {
+                                        return numA_P - numB_P;
+                                    }
+                                    return numA_X - numB_X; 
+                                })
                                 setRelevantProjects(URLRelatedProjects)
                                 console.log("inside Set Task")
                                 setPageRelevantTask(PageRelevant)
@@ -1744,6 +1780,30 @@ function CreateTaskComponent(props: any) {
     const callBackData = (a: any) => {
         console.log();
     }
+
+    // code by Anupam for searching 
+
+    const searchRelevantProjects = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const searchQuery = e?.target?.value;
+        setSearchedRelevantProject(searchQuery);
+        const filteredProjects = relevantProjects.filter((item: any) =>
+          item?.Title.toLowerCase().includes(searchQuery.toLowerCase()) || item?.PortfolioStructureID.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setRelevantProjects(
+          searchQuery === "" ? URLRelatedProjects : filteredProjects
+        );
+    };
+
+    const searchSuggestedProjects = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const searchQuery = e?.target?.value;
+        setSearchedSuggestedProject(searchQuery);
+        const filteredProjects = SuggestedProjectsOfporfolio.filter((item: any) =>
+            item?.Title.toLowerCase().includes(searchQuery.toLowerCase()) || item?.PortfolioStructureID.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setSuggestedProjectsOfporfolio(
+          searchQuery === "" ? suggestedProjects : filteredProjects
+        );
+    };
     return (
         <>  <div className={save.portfolioType == "Service" ? "justify-content-center align-items-start d-flex" : 'justify-content-center align-items-start d-flex'}>
             <div className='creatTaskPage' >
@@ -2055,13 +2115,18 @@ function CreateTaskComponent(props: any) {
                 {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup context={props?.SelectedProp.Context} SDCTaskDetails={burgerMenuTaskDetails}
                     sendApproverMail={sendApproverMail} AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} pageType={'createTask'} /> : ''}
             </div >
-            {(SuggestedProjectsOfporfolio?.length > 0 || relevantProjects?.length > 0) ?
                 <span className="ms-4">
-                    {SuggestedProjectsOfporfolio?.length > 0 ?
                         <div className="card mb-3">
                             <div className="card-body">
                                 <h6 className="f-15 title titleBorder">Suggested Projects</h6>
-                                <ul className="SpfxCheckRadio list-group list-group-flush">
+                                <input
+                                  type="search"
+                                  value={searchedSuggestedProject}
+                                  onChange={(e) => searchSuggestedProjects(e)}
+                                  placeholder="Search Suggested Projects"
+                                  className='full-width px-1 py-0 mt-1'
+                                />
+                            {SuggestedProjectsOfporfolio?.length > 0 ? <ul className="SpfxCheckRadio list-group list-group-flush">
                                     {SuggestedProjectsOfporfolio?.map((project: any) => {
                                         return (
                                             <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action' >
@@ -2071,15 +2136,20 @@ function CreateTaskComponent(props: any) {
                                             </li>
                                         )
                                     })}
-                                </ul>
+                                </ul>: <h6 className="f-15 title">No Suggested Projects</h6>}
                             </div>
                         </div>
-                        : ''}
-                    {relevantProjects?.length > 0 ?
                         <div className="card mb-3">
                             <div className="card-body">
                                 <h6 className="f-15 title titleBorder">Relevant Projects</h6>
-                                <ul className="SpfxCheckRadio  list-group list-group-flush">
+                                <input
+                                  type="search"
+                                  value={searchedRelevantProject}
+                                  onChange={(e) => searchRelevantProjects(e)}
+                                  placeholder="Search Relevant Projects"
+                                  className='full-width px-1 py-0 mt-1'
+                                />
+                                {relevantProjects?.length > 0 ?<ul className="SpfxCheckRadio  list-group list-group-flush">
                                     {relevantProjects?.map((project: any) => {
                                         return (
                                             <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action'>
@@ -2089,14 +2159,10 @@ function CreateTaskComponent(props: any) {
                                             </li>
                                         )
                                     })}
-                                </ul>
+                                </ul> : <h6 className="f-15 title">No Relevant Projects</h6>}
                             </div>
                         </div>
-                        : ''}
-
-
-                </span> : ''
-            }
+                </span>
         </div >
         </>
     )
