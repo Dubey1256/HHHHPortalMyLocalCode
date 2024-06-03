@@ -386,7 +386,24 @@ function CreateTaskComponent(props: any) {
                             setComponent.push(item)
                             setSave((prev: any) => ({ ...prev, Component: setComponent }));
                             setSmartComponentData(setComponent);
-                            let suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == paramComponentId));
+                            suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == paramComponentId));
+                            suggestedProjects = suggestedProjects.sort((a: any, b: any) =>{ 
+                                let numA_P_match = a.PortfolioStructureID.match(/P(\d+)/);
+                                let numB_P_match = b.PortfolioStructureID.match(/P(\d+)/);
+                                let numA_X_match = a.PortfolioStructureID.match(/X(\d+)/);
+                                let numB_X_match = b.PortfolioStructureID.match(/X(\d+)/);
+                                if (!numA_P_match || !numB_P_match) {
+                                    return numA_P_match ? -1 : numB_P_match ? 1 : 0;
+                                }
+                                let numA_X = numA_X_match ? parseInt(numA_X_match[1]) : 0;
+                                let numB_X = numB_X_match ? parseInt(numB_X_match[1]) : 0;
+                                let numA_P = parseInt(numA_P_match[1]);
+                                let numB_P = parseInt(numB_P_match[1]);
+                                if (numA_P !== numB_P) {
+                                    return numA_P - numB_P;
+                                }
+                                return numA_X - numB_X;
+                            })
                             setSuggestedProjectsOfporfolio(suggestedProjects);
                             selectedPortfolio = setComponent
                             return true;
@@ -409,7 +426,24 @@ function CreateTaskComponent(props: any) {
                             setComponent.push(item)
                             setSave((prev: any) => ({ ...prev, Component: setComponent }));
                             setSmartComponentData(setComponent);
-                            let suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == paramComponentId));
+                            suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == paramComponentId));
+                            suggestedProjects = suggestedProjects.sort((a: any, b: any) =>{ 
+                                let numA_P_match = a.PortfolioStructureID.match(/P(\d+)/);
+                                let numB_P_match = b.PortfolioStructureID.match(/P(\d+)/);
+                                let numA_X_match = a.PortfolioStructureID.match(/X(\d+)/);
+                                let numB_X_match = b.PortfolioStructureID.match(/X(\d+)/);
+                                if (!numA_P_match || !numB_P_match) {
+                                    return numA_P_match ? -1 : numB_P_match ? 1 : 0;
+                                }
+                                let numA_X = numA_X_match ? parseInt(numA_X_match[1]) : 0;
+                                let numB_X = numB_X_match ? parseInt(numB_X_match[1]) : 0;
+                                let numA_P = parseInt(numA_P_match[1]);
+                                let numB_P = parseInt(numB_P_match[1]);
+                                if (numA_P !== numB_P) {
+                                    return numA_P - numB_P;
+                                }
+                                return numA_X - numB_X;
+                            })
                             setSuggestedProjectsOfporfolio(suggestedProjects);
                             selectedPortfolio = setComponent
                             return true;
@@ -1800,8 +1834,8 @@ function CreateTaskComponent(props: any) {
         const filteredProjects = SuggestedProjectsOfporfolio.filter((item: any) =>
             item?.Title.toLowerCase().includes(searchQuery.toLowerCase()) || item?.PortfolioStructureID.toLowerCase().includes(searchQuery.toLowerCase())
         );
-        setRelevantProjects(
-            searchQuery === "" ? suggestedProjects : filteredProjects
+        setSuggestedProjectsOfporfolio(
+          searchQuery === "" ? suggestedProjects : filteredProjects
         );
     };
     return (

@@ -13,9 +13,10 @@ import HhhhProfile from './components/HhhhProfile';
 import { IHhhhProfileProps } from './components/IHhhhProfileProps';
 
 export interface IHhhhProfileWebPartProps {
-  description:any,
+  description: any,
   SitesListUrl: any,
   SmartMetadataListID: any;
+  siteName: any;
 }
 
 export default class HhhhProfileWebPart extends BaseClientSideWebPart<IHhhhProfileWebPartProps> {
@@ -33,6 +34,7 @@ export default class HhhhProfileWebPart extends BaseClientSideWebPart<IHhhhProfi
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         SitesListUrl: this.context.pageContext.web.absoluteUrl,
+        siteName: this.context.pageContext.web.title,
         SmartMetadataListID: this.properties.SmartMetadataListID,
       }
     );
@@ -61,7 +63,7 @@ export default class HhhhProfileWebPart extends BaseClientSideWebPart<IHhhhProfi
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-           
+
             default:
               environmentMessage = strings.UnknownEnvironment;
           }

@@ -90,9 +90,6 @@ const EventHome = (props: any) => {
 
     return (
         <>
-            <div>
-                <span style={{ cursor: "pointer" }}>AdminIn preparationEventsHome</span>
-            </div><br></br>
             <div className='event_home'>
                 <span className='heading siteColor'>Events Home
                     {<EditPage context={context} changeHeader={changeHeader} />}
