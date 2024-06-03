@@ -5,7 +5,8 @@ import ServiceComponentPortfolioPopup from "../EditTaskPopup/ServiceComponentPor
 import SelectedTaskUpdateOnPopup from "./selectedTaskUpdateOnPopup";
 import Picker from "../EditTaskPopup/SmartMetaDataPicker";
 import * as GlobalFunctionForUpdateItem from '../GlobalFunctionForUpdateItems';
-
+import TeamConfigurationCard from "../TeamConfiguration/TeamConfiguration";
+import * as globalCommon from "../../globalComponents/globalCommon";
 
 export const addedCreatedDataFromAWT = (itemData: any, dataToPush: any) => {
     for (let val of itemData) {
@@ -49,7 +50,63 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
     }
     return false;
 };
-
+export function BulkUpdateTeamMember(taskValue: any) {
+    const DDComponentCallBack = (dt: any) => {
+        let updateJsonOfAssignTo: any = [{ "Title": "WorkingDetails", "InformationData": [] }];
+        if (dt?.TeamMemberUsers?.length > 0) {
+            taskValue?.setTeamMember(dt?.TeamMemberUsers)
+        }
+        if (dt?.ResponsibleTeam?.length > 0) {
+            taskValue?.setResponsibleTeamMember(dt?.ResponsibleTeam)
+        }
+        let findAiignUser: any = []
+        extractUniqueUserInformation(dt.dateInfo, findAiignUser, updateJsonOfAssignTo);
+        if (findAiignUser?.length > 0) {
+            taskValue?.setWorkingMember(findAiignUser);
+        }
+        if (updateJsonOfAssignTo?.length > 0) {
+            taskValue?.setWorkingMemberUserJson(updateJsonOfAssignTo)
+        }
+    };
+    function extractUniqueUserInformation(dateInfo: any, findAiignUser: any, updateJsonOfAssignTo: any) {
+        const uniqueIds = new Set();
+        dateInfo.forEach((e: any) => {
+            const workingMembers: any = [];
+            const uniqueMemberIds = new Set();
+            if (e?.userInformation) {
+                e.userInformation?.forEach((e: any) => {
+                    if (e?.AssingedToUser && !uniqueMemberIds?.has(e.AssingedToUser?.Id)) {
+                        uniqueMemberIds.add(e.AssingedToUser.Id);
+                        workingMembers.push({
+                            Id: e.AssingedToUser.Id,
+                            Title: e.AssingedToUser.Title
+                        });
+                    }
+                    if (!uniqueIds.has(e.Id)) {
+                        uniqueIds.add(e.Id);
+                        findAiignUser.push(e);
+                    }
+                });
+            }
+            const workingDateEntry: any = {
+                "WorkingDate": e.originalDate,
+                "WorkingMember": workingMembers
+            };
+            updateJsonOfAssignTo[0]?.InformationData?.push(workingDateEntry);
+        });
+    }
+    return (
+        <>
+            <div className="col-sm-12 pad0">
+                <div className="border col p-2 border-top-0" ng-show="teamUserExpanded">
+                    <div className="taskTeamBox">
+                        <TeamConfigurationCard ItemInfo={{}} AllListId={taskValue?.ContextValue} parentCallback={DDComponentCallBack} />
+                    </div>
+                </div>
+            </div>
+        </>
+    )
+}
 export function BulkUpdateFeatureType(taskValue: any) {
     const handleDrop = (destination: any, event: any) => {
         if (event === 'FeatureType' && destination != undefined) {
@@ -83,7 +140,12 @@ export function BulkUpdateFeatureType(taskValue: any) {
         try {
             const results = await Promise.all(updatePromises);
             console.log("All projects updated successfully!", results);
-            let allData = JSON.parse(JSON.stringify(taskValue?.data))
+            let allData: any = []
+            try {
+                allData = globalCommon.deepCopy(taskValue?.data);
+            } catch (error) {
+                console.log(error)
+            }
             let checkBoolian: any = null;
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
                 if (taskValue?.selectedData?.length > 0) {
@@ -214,7 +276,12 @@ export function CategoriesUpdate(taskValue: any) {
         try {
             const results = await Promise.all(updatePromises);
             console.log("All projects updated successfully!", results);
-            let allData = JSON.parse(JSON.stringify(taskValue?.data))
+            let allData: any = []
+            try {
+                allData = globalCommon.deepCopy(taskValue?.data);
+            } catch (error) {
+                console.log(error)
+            }
             let checkBoolian: any = null;
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
                 if (taskValue?.selectedData?.length > 0) {
@@ -385,7 +452,12 @@ export function DueDateTaskUpdate(taskValue: any) {
         try {
             const results = await Promise.all(updatePromises);
             console.log("All projects updated successfully!", results);
-            let allData = JSON.parse(JSON.stringify(taskValue?.data))
+            let allData: any = []
+            try {
+                allData = globalCommon.deepCopy(taskValue?.data);
+            } catch (error) {
+                console.log(error)
+            }
             let checkBoolian: any = null;
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
                 if (taskValue?.selectedData?.length > 0) {
@@ -524,7 +596,12 @@ export function PrecentCompleteUpdate(taskValue: any) {
         try {
             const results = await Promise.all(updatePromises);
             console.log("All projects updated successfully!", results);
-            let allData = JSON.parse(JSON.stringify(taskValue?.data))
+            let allData: any = []
+            try {
+                allData = globalCommon.deepCopy(taskValue?.data);
+            } catch (error) {
+                console.log(error)
+            }
             let checkBoolian: any = null;
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
                 if (taskValue?.selectedData?.length > 0) {
@@ -610,7 +687,12 @@ export function ProjectTaskUpdate(taskValue: any) {
         try {
             const results = await Promise.all(updatePromises);
             console.log("All projects updated successfully!", results);
-            let allData = JSON.parse(JSON.stringify(taskValue?.data))
+            let allData: any = []
+            try {
+                allData = globalCommon.deepCopy(taskValue?.data);
+            } catch (error) {
+                console.log(error)
+            }
             let checkBoolian: any = null;
             const makeProjectData = { Id: project?.Id, PortfolioStructureID: project?.PortfolioStructureID, PriorityRank: project?.PriorityRank, Title: project?.Title }
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
@@ -778,7 +860,11 @@ const BulkEditingFeature = (props: any) => {
     const [precentComplete, setPrecentComplete] = React.useState([]);
     const [featureTypeItemTiles, setFeatureTypeItemTiles] = React.useState([]);
     const [AllClientCategory, setAllClientCategory] = React.useState([])
-
+    const [teamMember, setTeamMember] = React.useState([])
+    const [responsibleTeamMember, setResponsibleTeamMember] = React.useState([])
+    const [workingMember, setWorkingMember] = React.useState([])
+    const [workingMemberUserJson, setWorkingMemberUserJson] = React.useState([])
+    const [AllTeamUsers, setAllTeamUser] = React.useState([]);
     const selectSubTaskCategory = (Id: any, Title: any) => {
         let catId: any = [...activeCategory];
         const index = catId.findIndex((item: any) => item.Id === Id);
@@ -790,8 +876,6 @@ const BulkEditingFeature = (props: any) => {
         }
         setActiveCategory(catId);
     };
-
-
     const handleDrop = (destination: any, priority: any) => {
         console.log("dragedTaskdragedTask", props?.dragedTask)
         console.log("destinationdestinationdestination", destination)
@@ -818,24 +902,82 @@ const BulkEditingFeature = (props: any) => {
     }
     //Update Task After Drop
     const UpdateBulkTaskUpdate = async (task: any, priority: any, priorityRank: any) => {
+        const updatePromises: Promise<any>[] = [];
         if (props?.selectedData?.length > 0) {
-            props?.selectedData?.map(async (elem: any) => {
+            for (const elem of props?.selectedData || []) {
                 let web = new Web(elem?.original?.siteUrl);
-                await web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
+                let updatePromise: any = await web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
                     Priority: priority,
                     PriorityRank: priorityRank,
                 }).then((res: any) => {
+                    updatePromise = res
+                    updatePromises.push(updatePromise);
                     console.log("Drop Updated!", res);
                 })
-            })
+            }
         } else {
             let web = new Web(task?.task?.siteUrl);
-            await web.lists.getById(task?.task?.listId).items.getById(task?.task?.Id).update({
+            let updatePromise: any = await web.lists.getById(task?.task?.listId).items.getById(task?.task?.Id).update({
                 Priority: priority,
                 PriorityRank: priorityRank,
             }).then((res: any) => {
+                updatePromise = res
+                updatePromises.push(updatePromise);
                 console.log("Drop Updated", res);
             })
+        }
+
+        try {
+            const results = await Promise.all(updatePromises);
+            console.log("All projects updated successfully!", results);
+            let allData: any = []
+            try {
+                allData = globalCommon.deepCopy(props?.data);
+            } catch (error) {
+                console.log(error)
+            }
+            let checkBoolian: any = null;
+            if (props?.updatedSmartFilterFlatView != true && props?.clickFlatView != true) {
+                if (props?.selectedData?.length > 0) {
+                    props?.selectedData?.forEach((value: any) => {
+                        value.original.Priority = priority;
+                        value.original.PriorityRank = priorityRank;
+                        checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+                    });
+                } else {
+                    task.task.Priority = priority;
+                    task.task.PriorityRank = priorityRank;
+                    checkBoolian = addedCreatedDataFromAWT(allData, task?.task);
+                }
+                if (checkBoolian) {
+                    props.setData(allData);
+                }
+            } else if (props?.updatedSmartFilterFlatView === true || props?.clickFlatView === true) {
+                let updatedAllData: any = []
+                if (props?.selectedData?.length > 0) {
+                    updatedAllData = props?.data?.map((elem: any) => {
+                        const match = props?.selectedData?.find((match: any) => match?.original?.Id === elem?.Id && match?.original?.siteType === elem?.siteType);
+                        if (match) {
+                            match.original.Priority = priority;
+                            match.original.PriorityRank = priorityRank;
+                            // match.original.PercentComplete = TaskStatus;
+                            return match?.original;
+                        } return elem;
+                    });
+                } else {
+                    updatedAllData = props?.data?.map((elem: any) => {
+                        if (task?.task?.Id === elem?.Id && task?.task?.siteType === elem?.siteType) {
+                            task.task.Priority = priority;
+                            task.task.PriorityRank = priorityRank;
+                            // task.taskValue.PercentComplete = TaskStatus;
+                            return task?.task;
+                        } return elem;
+                    });
+                }
+                props.setData((prev: any) => updatedAllData);
+            }
+        } catch (error) {
+            console.error("Error updating projects:", error);
         }
     }
     //ends
@@ -852,13 +994,14 @@ const BulkEditingFeature = (props: any) => {
         }
     }, []);
     const bulkEditingSettingPopupEvent = () => {
-        if (props?.selectedData.length > 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true && activeCategory?.length === 0)) {
+
+        if (props?.selectedData.length > 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true && activeCategory?.length === 0 && (teamMember?.length === 0 && responsibleTeamMember?.length === 0 && workingMember?.length === 0))) {
             alert("No Tiles are selected")
-        } else if (props?.selectedData.length <= 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true || activeCategory?.length > 0)) {
+        } else if (props?.selectedData.length <= 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true || activeCategory?.length > 0 || (teamMember?.length > 0 || responsibleTeamMember?.length > 0 || workingMember?.length === 0))) {
             alert("No items are selected")
-        } else if (props?.selectedData.length <= 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true && activeCategory?.length === 0)) {
+        } else if (props?.selectedData.length <= 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true && activeCategory?.length === 0 && (teamMember?.length === 0 && responsibleTeamMember?.length === 0 && workingMember?.length === 0))) {
             alert("No items are selected")
-        } else if (props?.selectedData.length > 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true || activeCategory?.length > 0)) {
+        } else if (props?.selectedData.length > 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true || activeCategory?.length > 0 || (teamMember?.length > 0 || responsibleTeamMember?.length > 0 || workingMember?.length === 0))) {
             setBulkEditingSettingPopup(true);
         }
     }
@@ -896,8 +1039,6 @@ const BulkEditingFeature = (props: any) => {
             }));
         }
     };
-
-
     const GetSmartmetadata = async () => {
         var Priority: any = []
         let PrecentComplete: any = [];
@@ -934,9 +1075,20 @@ const BulkEditingFeature = (props: any) => {
         setpriorityRank(Priority)
         setPrecentComplete(PrecentComplete)
     };
+    const getTaskUsers = async () => {
+        let web = new Web(props?.ContextValue?.siteUrl);
+        let taskUsers = [];
+        taskUsers = await web.lists
+            .getById(props?.ContextValue?.TaskUserListID)
+            .items.select("Id", "Email", "Suffix", "Title", "Item_x0020_Cover", "AssingedToUser/Title", "AssingedToUser/EMail", "AssingedToUser/Id", "AssingedToUser/Name", "UserGroup/Id", "ItemType")
+            .expand("AssingedToUser", "UserGroup")
+            .get();
+        setAllTeamUser(taskUsers);
+    };
 
     React.useEffect(() => {
         GetSmartmetadata();
+        getTaskUsers();
     }, [])
 
 
@@ -971,14 +1123,16 @@ const BulkEditingFeature = (props: any) => {
             {props?.bulkEditingCongration?.categories && <div>
                 <CategoriesUpdate activeCategory={activeCategory} selectSubTaskCategory={selectSubTaskCategory} taskValue={props?.dragedTask?.task} data={props?.data} save={save} setActiveTile={setActiveTile} isActive={isActive} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} setData={props?.setData} selectedData={props?.selectedData} ContextValue={props?.ContextValue} categoriesTiles={props?.categoriesTiles} />
             </div>}
-
             {props?.bulkEditingCongration?.FeatureType && <div>
                 <BulkUpdateFeatureType taskValue={props?.dragedTask?.task} setActiveTile={setActiveTile} save={save} isActive={isActive} featureTypeItemTiles={featureTypeItemTiles} selectedData={props?.selectedData} data={props?.data} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} setData={props?.setData} ContextValue={props?.ContextValue} />
             </div>}
-            {bulkEditingSettingPopup && <SelectedTaskUpdateOnPopup activeCategory={activeCategory} precentComplete={precentComplete} featureTypeItemTiles={featureTypeItemTiles} priorityRank={priorityRank} AllTaskUser={props?.AllTaskUser} save={save} selectedData={props?.selectedData} isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} columns={props?.columns} data={props?.data} setData={props?.setData} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} ContextValue={props?.ContextValue} masterTaskData={props?.masterTaskData} />}
+            {props?.bulkEditingCongration?.teamMember && <div>
+                <BulkUpdateTeamMember setTeamMember={setTeamMember} setResponsibleTeamMember={setResponsibleTeamMember} setWorkingMemberUserJson={setWorkingMemberUserJson} setWorkingMember={setWorkingMember} ContextValue={props?.ContextValue} />
+            </div>}
+            {bulkEditingSettingPopup && <SelectedTaskUpdateOnPopup AllTeamUsers={AllTeamUsers} dashBoardbulkUpdateCallBack={props?.dashBoardbulkUpdateCallBack} tableId={props?.tableId} DashboardContextData={props?.DashboardContextData} activeCategory={activeCategory} precentComplete={precentComplete} featureTypeItemTiles={featureTypeItemTiles} priorityRank={priorityRank} AllTaskUser={props?.AllTaskUser} save={save} selectedData={props?.selectedData} isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} columns={props?.columns} data={props?.data} setData={props?.setData} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} ContextValue={props?.ContextValue} masterTaskData={props?.masterTaskData} teamMember={teamMember} responsibleTeamMember={responsibleTeamMember} workingMember={workingMember} workingMemberUserJson={workingMemberUserJson} />}
             {/* {(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project) && <div onClick={(e) => bulkEditingSettingPopupEvent()}><span className="svg__iconbox svg__icon--edit"></span></div>} */}
-
-            <div className='d-flex justify-content-end mx-2 mb-2'>{(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project || props?.bulkEditingCongration?.FeatureType || props?.bulkEditingCongration?.categories) && <button onClick={(e) => bulkEditingSettingPopupEvent()} className='btn btn-primary'>Bulk Update</button>} <button onClick={(e) => ClearBulkUpdateFeature()} className='btn btn-primary ms-2'>Clear</button></div>
+            <div className='d-flex justify-content-end mx-2 mb-2'>{(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project || props?.bulkEditingCongration?.FeatureType || props?.bulkEditingCongration?.categories || props?.bulkEditingCongration?.teamMember) &&
+                <button onClick={(e) => bulkEditingSettingPopupEvent()} className='btn btn-primary'>Bulk Update</button>} <button onClick={(e) => ClearBulkUpdateFeature()} className='btn btn-primary ms-2'>Clear</button></div>
         </>
     )
 }

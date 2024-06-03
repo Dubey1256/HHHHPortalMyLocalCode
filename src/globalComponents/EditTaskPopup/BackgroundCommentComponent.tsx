@@ -84,8 +84,8 @@ const BackgroundCommentComponent = (Props: any) => {
                 editable: false,
                 Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
                 Body: BackgroundComment,
-                AuthorImage: CurrentUser.Item_x0020_Cover != null ? CurrentUser.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                AuthorName: CurrentUser.Title != undefined ? CurrentUser.Title : Context.pageContext._user.displayName,
+                AuthorImage: CurrentUser?.Item_x0020_Cover != null ? CurrentUser?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                AuthorName: CurrentUser?.Title != undefined ? CurrentUser?.Title : Context?.pageContext?._user.displayName,
                 ID: (BackgroundComments != undefined ? BackgroundComments?.length + 1 : 0)
             }
             BackgroundComments.push(CommentJSON);
@@ -259,7 +259,7 @@ const BackgroundCommentComponent = (Props: any) => {
                                     src={dataItem.AuthorImage != undefined && dataItem.AuthorImage != '' ?
                                         dataItem.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                             </div>
-                            <div className="col-11 pe-0 ms-3" >
+                            <div className="col-11 ms-3 pe-0 text-break" >
                                 <div className='d-flex justify-content-between align-items-center'>
                                     <span className="siteColor font-weight-normal">
                                         {dataItem.AuthorName} - {dataItem.Created}

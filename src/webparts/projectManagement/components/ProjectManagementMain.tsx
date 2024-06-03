@@ -411,7 +411,7 @@ const ProjectManagementMain = (props: any) => {
                   const titleWords = masterItm?.Title.toLowerCase();
                   const includesAnyKeyword = suggestedKeywords.some((keyword: any) => titleWords.includes(keyword));
                   const isNotMatchingTitles = titleWords !== fetchedProject?.Title.toLowerCase() && titleWords !== 'latest annual report';
-                  return includesAnyKeyword && isNotMatchingTitles
+                  return includesAnyKeyword && isNotMatchingTitles && masterItm?.Item_x0020_Type !== 'Project' && masterItm?.Item_x0020_Type !== 'Sprint';
                 });
               }
             }
@@ -811,6 +811,8 @@ const ProjectManagementMain = (props: any) => {
           allSprintActivities = AllTask.filter((task: any) => {
             if (task?.TaskType?.Id == 1 && task?.Project?.Id == Sprint?.Id) {
               task.isTaskPushed = true;
+              task.project = Sprint;
+              task.portfolio = Sprint?.Portfolio
               return true
             } else {
               return false
@@ -820,6 +822,8 @@ const ProjectManagementMain = (props: any) => {
             Activity.subRows = AllTask.filter((workstream: any) => {
               if (workstream?.ParentTask?.Id == Activity?.Id && workstream?.Project?.Id == Sprint?.Id && (workstream?.TaskType?.Id == 3 || workstream?.TaskType?.Id == 2)) {
                 workstream.isTaskPushed = true;
+                workstream.project = Sprint;
+                workstream.portfolio = Sprint?.Portfolio
                 return true
               } else {
                 return false
@@ -830,6 +834,8 @@ const ProjectManagementMain = (props: any) => {
                 workstream.subRows = AllTask.filter((task: any) => {
                   if (task?.ParentTask?.Id == workstream?.Id && task?.TaskType?.Id == 2 && task?.Project?.Id == Sprint?.Id) {
                     task.isTaskPushed = true;
+                    task.project = Sprint;
+                    task.portfolio = Sprint?.Portfolio
                     return true
                   } else {
                     return false
@@ -842,6 +848,8 @@ const ProjectManagementMain = (props: any) => {
           allSprintWorkStream = AllTask.filter((task: any) => {
             if (task?.TaskType?.Id == 3 && task?.isTaskPushed !== true && task?.Project?.Id == Sprint?.Id) {
               task.isTaskPushed = true;
+              task.project = Sprint;
+              task.portfolio = Sprint?.Portfolio
               return true
             } else {
               return false
@@ -851,6 +859,8 @@ const ProjectManagementMain = (props: any) => {
             workstream.subRows = AllTask.filter((task: any) => {
               if (task?.ParentTask?.Id == workstream?.Id && task?.TaskType?.Id == 2 && task?.isTaskPushed !== true && task?.Project?.Id == Sprint?.Id) {
                 task.isTaskPushed = true;
+                task.project = Sprint;
+                task.portfolio = Sprint?.Portfolio
                 return true
               } else {
                 return false
@@ -860,6 +870,8 @@ const ProjectManagementMain = (props: any) => {
           let AllSprintTask = AllTask.filter((item: any) => {
             if (item?.isTaskPushed !== true && item?.Project?.Id == Sprint?.Id) {
               item.isTaskPushed = true;
+              item.project = Sprint;
+              item.portfolio = Sprint?.Portfolio
               return true
             } else {
               return false
@@ -1027,7 +1039,7 @@ const ProjectManagementMain = (props: any) => {
     }
     let componentDetails: any = [];
     let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
-    if (results?.AllData?.length > 0) {
+    if (results?.AllData?.length > 0 || results?.AllData?.length == 0) {
       componentDetails = results?.AllData;
       groupedComponentData = results?.GroupByData;
       AllFlatProject = results?.FlatProjectData
@@ -1523,7 +1535,7 @@ const ProjectManagementMain = (props: any) => {
           return row?.original?.PriorityRank == filterValue
         },
         resetSorting: false,
-        size: 75,
+        size: 55,
       },
       {
         accessorFn: (row) => row?.SmartPriority,
@@ -1538,7 +1550,7 @@ const ProjectManagementMain = (props: any) => {
           return row?.original?.SmartPriority == filterValue
         },
         header: "",
-        size: 42,
+        size: 57,
         fixedColumnWidth: true
       },
       {
@@ -1634,7 +1646,15 @@ const ProjectManagementMain = (props: any) => {
         accessorFn: (row) => row?.SmartInformationTitle,
         cell: ({ row }) => (
           <span className='d-flex hreflink' >
-            &nbsp; {row?.original?.SmartInformation?.length > 0 ? <span onClick={() => openRemark(row?.original)} className="commentDetailFill-active"><BiCommentDetail /></span> : <span onClick={() => openRemark(row?.original)} className="commentDetailFill"><BiCommentDetail /></span>}
+            &nbsp; {row?.original?.SmartInformation?.length > 0 ? (
+              <>
+                <span onClick={() => openRemark(row?.original)} className="commentDetailFill-active svg__iconbox svg__icon--commentBlank"></span>
+              </>
+            ) : (
+              <>
+                <span onClick={() => openRemark(row?.original)} className="commentDetailFill svg__iconbox svg__icon--commentBlank"></span>
+              </>
+            )}
           </span>
         ),
         id: 'SmartInformation',
@@ -1642,7 +1662,7 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         placeholder: "Remarks",
         header: '',
-        size: 50,
+        size: 55,
         isColumnVisible: true
       },
 
@@ -1763,7 +1783,7 @@ const ProjectManagementMain = (props: any) => {
       },
       {
         cell: ({ row }) => (
-          <div className="text-end">
+          <div className="alignCenter ml-auto">
             {row?.original?.TaskType != undefined &&
               (row?.original?.TaskType?.Title == "Activities" ||
                 row?.original?.TaskType?.Title == "Workstream" ||
@@ -1771,20 +1791,20 @@ const ProjectManagementMain = (props: any) => {
               <>
                 {showTimeEntryIcon && <span
                   onClick={(e) => EditDataTimeEntry(e, row.original)}
-                  className=" alignIcon svg__iconbox svg__icon--clock"
+                  className="svg__iconbox svg__icon--clock"
                   title="Click To Edit Timesheet"
                 ></span>}
                 <span
                   title="Edit Task"
                   onClick={(e) => EditPopup(row?.original)}
-                  className="alignIcon svg__iconbox svg__icon--edit hreflink"
+                  className="svg__iconbox svg__icon--edit hreflink"
                 ></span>
               </>
             ) : (
               <span
                 title="Edit Project"
                 onClick={(e) => EditPopup(row?.original)}
-                className="alignIcon svg__iconbox svg__icon--edit hreflink"
+                className="svg__iconbox svg__icon--edit hreflink"
               ></span>
             )}
           </div>
@@ -2090,23 +2110,23 @@ const ProjectManagementMain = (props: any) => {
                             <div>
                               <div className="align-items-center d-flex justify-content-between">
                                 <h2 className="heading alignCenter">
-
-                                  {Masterdata?.Item_x0020_Type == "Sprint" ?
-                                    <div title={Masterdata?.Item_x0020_Type} style={{ backgroundColor: '#000066' }} className={"Dyicons me-1"}>
-                                      X
-                                    </div>
-                                    : <img
-                                      className="circularImage rounded-circle "
-                                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
-                                    />}
-                                  <span>
+                                  <div
+                                    title={Masterdata?.Item_x0020_Type}
+                                    className={"Dyicons me-1"}
+                                  >
+                                    {Masterdata?.Item_x0020_Type !== "Sprint"
+                                      ? `${Masterdata?.Item_x0020_Type?.charAt(
+                                          0
+                                        )}`
+                                      : "X"}
+                                  </div>
+                                  
                                     {`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`}
                                     <span
                                       onClick={() => EditComponentPopup(Masterdata)}
-                                      className="mx-1 svg__iconbox svg__icon--edit alignIcon hreflink"
+                                      className="mx-1 svg__iconbox svg__icon--edit hreflink" style={{width:'24px', height:'24px'}}
                                       title="Edit Project"
                                     ></span>
-                                  </span>
 
                                 </h2>
                                 <div>
@@ -2219,7 +2239,7 @@ const ProjectManagementMain = (props: any) => {
                                       </dl>
                                     </div>
                                     {/* <div className="col-md-12 url"><div className="d-flex p-0"><div className="bg-fxdark p-2"><label>Url</label></div><div className="bg-light p-2 text-break full-width"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></div></div></div> */}
-                                    <div className="col-md-12 pe-1"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
+                                    <div className="col-md-12 pe-1"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField" style={{width:'93.9%'}}><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
                                     {
                                       Masterdata?.Body != undefined ? <div className="mt-2 col-md-12  detailsbox">
                                         <details className="pe-0" open>

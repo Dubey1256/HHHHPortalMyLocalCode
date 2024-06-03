@@ -1,44 +1,40 @@
 import * as React from "react";
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import Tooltip from "../../globalComponents/Tooltip";
-import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
-import { usePopperTooltip } from "react-popper-tooltip";
+import GlobalTooltip from "../../globalComponents/Tooltip";
+import { Tooltip } from "@fluentui/react-components";
 import "react-popper-tooltip/dist/styles.css";
 import ColumnSettingSortingToolTip from "./ColumnSettingSortingToolTip";
 import { Web } from "sp-pnp-js";
 import CoustomInfoIcon from "./CoustomInfoIcon";
-import { myContextValue, deepCopy } from '../globalCommon';
-// let propColumns: any = [];
+import { myContextValue } from '../globalCommon';
+import { SlArrowDown, SlArrowUp } from "react-icons/sl";
 const ColumnsSetting = (props: any) => {
     let MyContextdata: any = React.useContext(myContextValue);
     const [columnSettingVisibility, setColumnSettingVisibility] = React.useState<any>({});
     const [showHeader, setShowHeader] = React.useState<any>(props?.showHeader);
-    const [editing, setEditing] = React.useState<any>({});
-    const [widthCol, setWidthCol] = React.useState<any>({});
     const [columanSize, setcolumnsSize] = React.useState<any>([]);
     const [propColumns, setPropColumns] = React.useState([])
     const [columnSorting, setColumnSorting] = React.useState<any>({});
     const [columnOrderValue, setColumnOrderValue] = React.useState([]);
     const [draggedIndex, setDraggedIndex] = React.useState(null);
     const [editMode, setEditMode] = React.useState(false);
-
     const [tableHeightValue, setTableHeightValue] = React.useState(props?.tableHeight);
     const [heightOption, setHeightOption] = React.useState(props?.wrapperHeight ? "fixed" : "flexible");
-
     const [tablePageSize, setTablePageSize] = React.useState(props?.tableSettingPageSize);
     const [showProgress, setShowProgress] = React.useState(props?.showProgres);
+    const [colunOredrAsc, setcolunOredrAsc] = React.useState("")
     const rerender = React.useReducer(() => ({}), {})[1]
-    // const [showTilesView, setShowTilesView] = React.useState<any>(false);
     let columnIndexPostion = 0;
     let tableId = props?.tableId
     React.useEffect(() => {
         try {
-            // if (localStorage.getItem(tableId) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0) {
             if (props?.settingConfrigrationData?.length > 0 && props?.settingConfrigrationData[0]?.tableId === tableId) {
-                // const eventSetting = JSON.parse(localStorage.getItem(tableId));
                 const eventSetting = props?.settingConfrigrationData[0]
                 if (eventSetting?.columanSize?.length > 0) {
-                    setcolumnsSize(eventSetting?.columanSize)
+                    setcolumnsSize(eventSetting?.columanSize);
+                }
+                if (eventSetting?.colunOredrAsc) {
+                    setcolunOredrAsc(eventSetting?.colunOredrAsc)
                 }
             }
             props?.headerGroup?.map((elem: any) => {
@@ -111,7 +107,6 @@ const ColumnsSetting = (props: any) => {
     const handleClosePopup = () => {
         props?.columnSettingCallBack('close');
     };
-
     const handleChangeDateAndDataCallBack = async () => {
         if (props?.smartFabBasedColumnsSettingToggle != true) {
             const updatedData = { ...props?.columnVisibilityData };
@@ -142,10 +137,9 @@ const ColumnsSetting = (props: any) => {
                 columnSorting: columnSorting,
                 tableId: props?.tableId,
                 columnOrderValue: columnOrderValue,
-                // tableHeightValue: tableHeightValue,
                 tableHeightValue: heightOption === "fixed" ? tableHeightValue : "",
                 showProgress: showProgress,
-                // showTilesView: showTilesView
+                colunOredrAsc: colunOredrAsc,
             }
             if (tablePageSize > 0) {
                 preSetColumnSettingVisibility.showPageSizeSetting = {
@@ -160,8 +154,8 @@ const ColumnsSetting = (props: any) => {
                 };
             }
             const dataString = JSON.stringify(preSetColumnSettingVisibility);
+            let updatePromises: Promise<any>[] = [];
             try {
-                const updatePromises: Promise<any>[] = [];
                 if (tableId && props?.settingConfrigrationData?.length > 0 && props?.settingConfrigrationData[0]?.tableId === tableId) {
                     const web = new Web(props?.ContextValue.siteUrl);
                     const updatePromise = web.lists.getByTitle("AdminConfigurations").items.getById(props?.settingConfrigrationData[0]?.ConfrigId).update({
@@ -169,20 +163,21 @@ const ColumnsSetting = (props: any) => {
                         Key: tableId,
                         Title: tableId,
                     });
+                    await updatePromise;
                     updatePromises.push(updatePromise);
                 } else if (tableId != undefined && tableId != "") {
                     const web = new Web(props?.ContextValue.siteUrl);
-                    const updatePromise = web.lists.getByTitle("AdminConfigurations").items.add({
+                    const addPromise = web.lists.getByTitle("AdminConfigurations").items.add({
                         Configurations: dataString,
                         Key: tableId,
                         Title: tableId,
                     });
-                    updatePromises.push(updatePromise);
+                    await addPromise;
+                    updatePromises.push(addPromise);
                 }
             } catch (error) {
-                console.log(error)
+                console.log(error);
             }
-            // localStorage.setItem(tableId, dataString);
             let columnsVisibllityDataAll: any = {
                 columnSettingVisibility: columnSettingVisibility,
                 showHeader: showHeader,
@@ -190,10 +185,9 @@ const ColumnsSetting = (props: any) => {
                 columnSorting: columnSorting,
                 tableId: props?.tableId,
                 columnOrderValue: columnOrderValue,
-                // tableHeightValue: tableHeightValue,
                 tableHeightValue: heightOption === "fixed" ? tableHeightValue : "",
                 showProgress: showProgress,
-                // showTilesView: showTilesView
+                colunOredrAsc: colunOredrAsc,
             }
             if (tablePageSize > 0) {
                 columnsVisibllityDataAll.showPageSizeSetting = {
@@ -271,6 +265,7 @@ const ColumnsSetting = (props: any) => {
                 // tableHeightValue: tableHeightValue,
                 tableHeightValue: heightOption === "fixed" ? tableHeightValue : "",
                 showProgress: showProgress,
+                colunOredrAsc: colunOredrAsc,
                 // showTilesView: showTilesView
 
             }
@@ -291,7 +286,6 @@ const ColumnsSetting = (props: any) => {
             props?.setSmartFabBasedColumnsSettingToggle(false);
         }
     };
-
     const coustomColumnsSetting = (item: any, event: any) => {
         const { name, checked } = event.target;
         if (name != "toggleAll") {
@@ -332,25 +326,19 @@ const ColumnsSetting = (props: any) => {
             });
         }
     }
-
     const onRenderCustomHeader = () => {
         return (
             <>
                 <div className="alignCenter subheading">
-                    <span style={{ color: `${props?.portfolioColor}` }} className="siteColor">General Settings</span>
+                    <span style={{ color: `${props?.portfolioColor}` }} className="siteColor">Global SmartTable Settings</span>
                 </div>
-                <Tooltip ComponentId={7464} />
+                <GlobalTooltip ComponentId={7464} />
             </>
         );
     };
-
     const handleCheckboxChange = (event: any) => {
         setShowHeader(event.target.checked);
     };
-    // const handleToggleViewTailView = () => {
-    //     setShowTilesView(!showTilesView);
-    // };
-
     const handleSave = async (widthCol: any, event: any) => {
         if (Object?.keys(widthCol)?.length > 0 && event.id === widthCol.id) {
             let width = { size: widthCol.size, id: event.id };
@@ -366,40 +354,18 @@ const ColumnsSetting = (props: any) => {
                 event.size = parseInt(widthCol.size)
                 setcolumnsSize((prevColumnSize: any) => [...prevColumnSize, width]);
             }
-            // setEditing({});
-            // setWidthCol({});
         }
     };
     const handleChangeWidth = (event: any, value: any) => {
         let width = { size: event.target.value, id: value.id }
-        // setWidthCol(width);
         handleSave(width, value);
     };
-    // const handleCancel = (columnId: any) => {
-    //     setEditing((prevEditingColumns: any) => ({
-    //         ...prevEditingColumns,
-    //         [columnId]: false
-    //     }));
-    //     setWidthCol({});
-    // };
-    // const handleEdit = (columnId: any) => {
-    //     setEditing((prevEditingColumns: any) => ({
-    //         ...prevEditingColumns,
-    //         [columnId]: true
-    //     }));
-    // };
-
     const handleSortClick = (columnId: string, currentSorting: any) => {
         let newSorting: any;
         setColumnSorting({})
-        // if (!currentSorting || currentSorting.id !== columnId) {
-        //     newSorting = { id: columnId, asc: true, desc: false, };
-        // } else if (currentSorting.asc) {
-        //     newSorting = { id: columnId, asc: false, desc: true, };
-        // } else { newSorting = null; }
-        if (currentSorting.asc === true) {
+        if (currentSorting?.asc === true) {
             newSorting = { id: columnId, asc: true, desc: false, };
-        } else if (currentSorting.desc === true) {
+        } else if (currentSorting?.desc === true) {
             newSorting = { id: columnId, asc: false, desc: true, };
         } else if (currentSorting === null) {
             { newSorting = null; }
@@ -418,17 +384,6 @@ const ColumnsSetting = (props: any) => {
             newColumns.splice(index, 0, draggedColumn);
             setColumnOrderValue(newColumns);
             setDraggedIndex(index);
-            // let sortedColumn: any = [];
-            // columnOrderValue?.forEach((orderItem: any) => {
-            //     for (let i = 0; i < propColumns?.length; i++) {
-            //         if (propColumns[i].id === orderItem.id) {
-            //             sortedColumn.push({ ...propColumns[i] });
-            //             break;
-            //         }
-            //     }
-            // });
-            // setPropColumns(sortedColumn);
-            // rerender();
         }
     };
 
@@ -451,27 +406,39 @@ const ColumnsSetting = (props: any) => {
     const handleDragEnd = () => {
         setDraggedIndex(null);
     };
-    const handleEditClick = () => {
-        setEditMode(true);
-    };
-    const handleSaveClick = () => {
-        setEditMode(false);
-    };
-    const handleCancelClick = () => {
-        setEditMode(false);
+    const sortByAsc = (type: any) => {
+        let array = [...columnOrderValue];
+        let placeholdersToSort = array?.map((item: any, index: any) => ({ item, index }))?.filter((entry: any) => entry.item.placeholder !== "");
+        placeholdersToSort?.sort((a: any, b: any) => a.index - b.index);
+        const result = array?.map((item: any) => {
+            if (item.placeholder === "") {
+                return item;
+            }
+            return placeholdersToSort.pop().item;
+        });
+        if (colunOredrAsc === "" || colunOredrAsc === "desc") {
+            setcolunOredrAsc("asc");
+        } else {
+            setcolunOredrAsc("desc");
+        }
+        setColumnOrderValue(result);
     };
     const handleClearLocalStorage = async () => {
         let confirmDelete = confirm("Restore the Column Settings to their Default Value ?");
         if (confirmDelete) {
-            const web = new Web(props?.ContextValue.siteUrl);
-            await web.lists
-                .getByTitle("AdminConfigurations")
-                .items.getById(props?.settingConfrigrationData[0]?.ConfrigId)
-                .recycle()
-                .then((i: any) => {
-                    console.log(i, "deleted Favorites");
-                    location.reload();
-                });
+            if (props?.settingConfrigrationData[0]?.ConfrigId != undefined && props?.settingConfrigrationData[0]) {
+                const web = new Web(props?.ContextValue.siteUrl);
+                await web.lists
+                    .getByTitle("AdminConfigurations")
+                    .items.getById(props?.settingConfrigrationData[0]?.ConfrigId)
+                    .recycle()
+                    .then((i: any) => {
+                        console.log(i, "deleted Favorites");
+                        location.reload();
+                    });
+            } else {
+                alert("Column settings have already been restored.");
+            }
         }
     };
     return (
@@ -484,16 +451,6 @@ const ColumnsSetting = (props: any) => {
             isBlocking={false}
         >
             <div className="modal-body p-0 mb-3 clearfix">
-                {/* <div className="px-1 siteColor" style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }}>Table Columns Settings</div> */}
-                {/* <div className="px-1 border-b border-black">
-                            <label>
-                                <input type='checkbox' checked={propColumns.every((e: any) => e.isColumnVisible === true)}
-                                    onChange={() => coustomColumnsSetting(propColumns, event)} name="toggleAll"
-                                />{' '}
-                                Select All
-                            </label>
-                        </div> */}
-
                 <div className=" mb-3 tableSettingTable">
                     <table className="w-100">
                         <thead>
@@ -506,30 +463,18 @@ const ColumnsSetting = (props: any) => {
                         </thead>
                         <tbody>
                             <tr>
-                                <td><label><input className="form-check-input cursor-pointer me-1" type="checkbox" checked={showHeader} onChange={handleCheckboxChange} name="showHeader" />Show Header</label></td>
+                                <td><div className="alignCenter"><label><input className="form-check-input cursor-pointer me-1" type="checkbox" checked={showHeader} onChange={handleCheckboxChange} name="showHeader" />Show Header</label><CoustomInfoIcon Discription="If the item is unchecked the Table Header (the CSF AWT, search field, buttons, icons) won’t be visible" /></div></td>
                                 <td>
-                                    {/* <button className="width30" type="button" onClick={handleClearLocalStorage}>Clear</button> */}
-                                <div className="alignCenter hreflink siteColor" onClick={handleClearLocalStorage}><span>Restore default table</span> <span className="alignCenter"><CoustomInfoIcon Discription="Restore the Column Settings to their Default Value." /></span> </div>
+                                    <div className="alignCenter hreflink siteColor" onClick={handleClearLocalStorage}><span>Restore default table</span>
+                                        {/* <CoustomInfoIcon Discription="Pressing on “Restore default table” will remove all changes and set the table to the default view." /> */}
+                                        <Tooltip withArrow content="Pressing on “Restore default table” will remove all changes and set the table to the default view." relationship="label" positioning="below">
+                                               <div className='alignCenter hover-text'>
+                                                <span className="svg__iconbox svg__icon--info"></span>
+                                              </div>
+                                            </Tooltip>
+                                        </div>
                                 </td>
                                 <td>
-                                    {/* {editMode ? (
-                                    <div className="alignCenter">
-                                        <div title="Table Height" className="columnSettingWidth" style={{ width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" }}>{tableHeightValue}</div>
-                                        <div className="alignCenter">
-                                            <input style={{ width: "20%", height: "27px" }} type="text" className="ms-1" onChange={(e) => setTableHeightValue(e.target.value)} />
-                                            <span className="svg__iconbox svg__icon--Save" onClick={handleSaveClick}></span>
-                                            <span className="svg__iconbox svg__icon--cross" onClick={handleCancelClick}></span>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className=" d-flex">
-                                        <div title="Table Height" className="columnSettingWidth" style={{ width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" }}>{tableHeightValue}</div>
-                                        <div className="pancil-icons">
-                                            <span className="svg__iconbox svg__icon--editBox" onClick={handleEditClick}></span>
-                                        </div>
-                                    </div>
-                                )} */}
-
                                     <div className="SpfxCheckRadio alignCenter">
                                         <input type="radio" className="radio" id="flexible" value="flexible" checked={heightOption === 'flexible'} onChange={() => setHeightOption('flexible')} />
                                         <label htmlFor="flexible" className="me-3">Flexible</label>
@@ -541,27 +486,60 @@ const ColumnsSetting = (props: any) => {
                                     </div>
 
                                 </td>
-                                <td><div className=" d-flex"><input style={{ width: "36%", height: "27px" }} type="number" className="ms-1" value={tablePageSize} onChange={(e) => setTablePageSize(e.target.value)} /></div></td>
+                                <td><div className="d-flex"><input style={{ width: "36%", height: "27px" }} type="number" className="ms-1" value={tablePageSize} onChange={(e) => setTablePageSize(e.target.value)} />
+                                    {/* <CoustomInfoIcon Discription="These features enable you to adjust the page size, determining the amount of data you wish to display." /> */}
+                                    <Tooltip withArrow content="These features enable you to adjust the page size, determining the amount of data you wish to display." relationship="label" positioning="below">
+                                               <div className='alignCenter hover-text'>
+                                                <span className="svg__iconbox svg__icon--info"></span>
+                                              </div>
+                                            </Tooltip> 
+                                    </div></td>
                             </tr>
                         </tbody>
-                        {/* <div className="col-sm-2">
-                        <div style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }}><span className="siteColor">Views</span></div>
-                        <div>
-                            <label><input className="form-check-input cursor-pointer me-1" type="checkbox" checked={showTilesView} onChange={handleToggleViewTailView} name="showTilesView" />Tile View</label>
-                        </div>
-                    </div> */}
                     </table>
                 </div>
 
-                <div className="boldClable f-18"> Column Setting</div>
+                <div className="boldClable f-18"> Column Settings</div>
                 <div className="tableSettingTable">
                     <table className="w-100">
                         <thead>
                             <tr>
-                                <th className="f-16 border-0" style={{ width: "28%" }}> <div className="alignCenter"><span>Columns</span> <span className="alignCenter"><CoustomInfoIcon Discription="Default settings are stored in centralized database the changes done here will be only for current user on this table it will not impact anyone else. For centralized changes suggestions contact admin." /></span></div></th>
-                                <th className="f-16 border-0" style={{ width: "21%" }}>Column Width</th>
-                                {/* <th className="f-16 border-0" style={{ width: "21%" }}>Column Sorting</th> */}
-                                <th className="f-16 border-0" style={{ width: "30%" }}>Column Ordering</th>
+                                <th className="border-0" style={{ width: "28%" }}> <div className="alignCenter"><span className="f-16">Columns</span>
+                                    {/* <CoustomInfoIcon Discription="Default settings are stored in centralized database the changes done here will be only for current user on this table it will not impact anyone else. For centralized changes suggestions contact admin." /> */}
+                                    <Tooltip withArrow content="Default settings are stored in centralized database the changes done here will be only for current user on this table it will not impact anyone else. For centralized changes suggestions contact admin." relationship="label" positioning="below">
+                                               <div className='alignCenter hover-text'>
+                                                <span className="svg__iconbox svg__icon--info"></span>
+                                              </div>
+                                            </Tooltip>
+                                    </div></th>
+                                <th className="f-16 border-0" style={{ width: "21%" }}><div className="alignCenter"><span className="f-16">Column Width</span> 
+                                    {/* <CoustomInfoIcon Discription="Enter the column width of the particular item. Note: the width of some items can’t be changed (those items has grey background)." /> */}
+                                    <Tooltip withArrow content="Enter the column width of the particular item. Note: the width of some items can’t be changed (those items has grey background)." relationship="label" positioning="below">
+                                               <div className='alignCenter hover-text'>
+                                                <span className="svg__iconbox svg__icon--info"></span>
+                                              </div>
+                                            </Tooltip>
+                                    </div></th>
+                                <th className="f-16 border-0" style={{ width: "30%" }}>
+                                    <div className="alignCenter position-relative">
+                                    <div className="alignCenter"><span className="f-16">Column Ordering</span> 
+                                        {/* <CoustomInfoIcon Discription="To change the column order drag and drop the items." /> */}
+                                        <Tooltip withArrow content="To change the column order drag and drop the items." relationship="label" positioning="below">
+                                               <div className='alignCenter hover-text'>
+                                                <span className="svg__iconbox svg__icon--info"></span>
+                                              </div>
+                                            </Tooltip>
+                                            </div>
+                                        <div className="sorticon ms-2" style={{ top: '-6px' }}>
+                                            <div className="up hreflink" style={{ display: 'grid', textAlign: 'center', padding: "2px" }} onClick={() => sortByAsc("desc")}>
+                                                <SlArrowUp style={colunOredrAsc === "desc" ? { color: "var(--SiteBlue)", height: "16px", width: "16px" } : { color: "gray", height: "16px", width: "16px" }} />
+                                            </div>
+                                            <div className="down hreflink" style={{ display: 'grid', textAlign: 'center', padding: "2px" }} onClick={() => sortByAsc("asc")}>
+                                                <SlArrowDown style={colunOredrAsc === "asc" ? { color: "var(--SiteBlue)", height: "16px", width: "16px" } : { color: "gray", height: "16px", width: "16px" }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="border-0">
@@ -575,7 +553,7 @@ const ColumnsSetting = (props: any) => {
                                                         {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && column.id != "showProgress") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <tr key={column?.id} style={columnSorting[column?.id]?.asc === true || columnSorting[column.id]?.desc === true ? { background: "#ddd" } : {}}>
                                                             <td style={{ width: "40%" }}>
                                                                 {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && column.id != "showProgress") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <div className={column.id === "Type" || column.id === "Attention" || column.id === "Admin" || column.id === "Actions" ? "alignCenter mx-3" : "alignCenter"}>
-                                                                    <input className="form-check-input cursor-pointer me-1" id={column.id} type='checkbox' disabled={column?.id === "Title" || column?.id === "TaskID" || column?.id === "portfolioItemsSearch" ? true : false} checked={column?.isColumnVisible}
+                                                                    <input className="form-check-input cursor-pointer mt-0 me-1" id={column.id} type='checkbox' disabled={column?.id === "Title" || column?.id === "TaskID" || column?.id === "portfolioItemsSearch" ? true : false} checked={column?.isColumnVisible}
                                                                         onChange={(e: any) => coustomColumnsSetting(column, event)} name={column.id}
                                                                     />
                                                                     <ColumnSettingSortingToolTip columnSorting={columnSorting} column={column} placeholder={column?.placeholder} handleSortClick={handleSortClick} />
@@ -584,18 +562,7 @@ const ColumnsSetting = (props: any) => {
                                                             </td>
                                                             <td style={{ width: "30%" }}>
                                                                 {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && column.id != "showProgress") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <div className="alignCenter">
-                                                                    {/* <div title={column?.placeholder} className="columnSettingWidth" style={(column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" } : { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px", background: "gray", color: "white" }}>
-                                                                    </div> */}
                                                                     <input className="columnSettingWidth text-center ms-1" disabled={(column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? false : true} style={(column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" } : { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px", background: "#ddd" }} value={column?.size} type="number" placeholder={`${column?.placeholder}`} title={column?.placeholder} onChange={(e: any) => handleChangeWidth(e, column)} />
-
-                                                                    {/* {!editing[column?.id] && ((column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? (<div className="pencil-icons" onClick={() => handleEdit(column.id)}> <span className="svg__iconbox svg__icon--editBox"></span></div>) : (!editing[column?.id] && (<div className="pencil-icons"> <span style={{ background: "gray" }} className="svg__iconbox svg__icon--editBox"></span></div>)))} */}
-                                                                    {/* {editing[column?.id] && (
-                                                                        <div className="alignCenter">
-                                                                            <input style={{ width: "36%", height: "27px" }} value={widthCol?.size} type="number" className="ms-1" placeholder={`${column?.placeholder}`} title={column?.placeholder} onChange={(e: any) => handleChangeWidth(e, column)} />
-                                                                            <span onClick={() => handleSave(column)} className="svg__iconbox svg__icon--Save"></span>
-                                                                            <span onClick={() => handleCancel(column.id)} className="svg__iconbox svg__icon--cross"></span>
-                                                                        </div>
-                                                                    )} */}
                                                                 </div> : ""}
                                                             </td>
                                                         </tr> : ""}
@@ -620,7 +587,6 @@ const ColumnsSetting = (props: any) => {
                                                             onDragEnd={handleDragEnd}
                                                             style={columnSorting[column1.id]?.asc === true || columnSorting[column1.id]?.desc === true ? { cursor: "grab", background: "#ddd" } : { cursor: "grab" }}
                                                         >
-                                                            {/* <td style={{ width: "80%" }}>{column1?.placeholder}</td> */}
                                                             <td style={{ width: "20%" }}>{++columnIndexPostion}</td>
                                                         </tr>
                                                     ) : ""}
@@ -634,12 +600,12 @@ const ColumnsSetting = (props: any) => {
                     </table>
                 </div>
             </div>
-            <footer>
-                <button type="button" className="btn btn-default pull-right" style={{ backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` }} onClick={handleClosePopup}>
-                    Cancel
-                </button>
-                <button type="button" className="btn btn-primary mx-1 pull-right" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={handleChangeDateAndDataCallBack}>
+            <footer className="modal-footer pe-0">
+            <button type="button" className="btn btn-primary mx-1" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={handleChangeDateAndDataCallBack}>
                     Apply
+                </button>
+                <button type="button" className="btn btn-default" style={{ backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` }} onClick={handleClosePopup}>
+                    Cancel
                 </button>
             </footer>
         </Panel>

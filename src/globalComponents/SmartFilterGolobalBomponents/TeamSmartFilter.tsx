@@ -25,6 +25,7 @@ import "react-popper-tooltip/dist/styles.css";
 import TeamSmartFavoritesCopy from './Smart Favrorites/TeamSmartFavoritesCopy';
 import { GlobalConstants } from '../LocalCommon';
 import { myContextValue } from '../globalCommon';
+import ServiceComponentPortfolioPopup from '../EditTaskPopup/ServiceComponentPortfolioPopup';
 
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
@@ -47,6 +48,7 @@ const TeamSmartFilter = (item: any) => {
     const [loadeAllData, setLoadeAllData] = React.useState(false)
     const [PreSetPanelIsOpen, setPreSetPanelIsOpen] = React.useState(false);
     const [TaskUsersData, setTaskUsersData] = React.useState([]);
+    const [selectedUsers, setSelectedUsers] = React.useState<any[]>([]);
     const [AllUsers, setTaskUser] = React.useState([]);
     const [smartmetaDataDetails, setSmartmetaDataDetails] = React.useState([])
     const [expanded, setExpanded] = React.useState([]);
@@ -145,7 +147,19 @@ const TeamSmartFilter = (item: any) => {
             year.push(i);
         }
         setYear(year);
+        
     }, [])
+
+    React.useEffect(() => {
+        setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && item?.portfolioColor) {
+                $('.ms-Panel-main').css('--SiteBlue', item?.portfolioColor
+                ); // Set the desired color value here
+            }
+        }, 1000)
+    }, [PreSetPanelIsOpen, selectedFilterPanelIsOpenUpdate, selectedFilterPanelIsOpen,ProjectManagementPopup]);
+
     ///// Year Range Using Piker end////////
 
     const getTaskUsers = async () => {
@@ -313,7 +327,7 @@ const TeamSmartFilter = (item: any) => {
                     if (elem.Title === '90% Task completed' || elem.Title === '93% For Review' || elem.Title === '96% Follow-up later' || elem.Title === '99% Completed' || elem.Title === '99% Completed') {
                         return true
                     }
-                    return false
+                    return false;
                 })
                 if (checkCallData === true) {
                     item?.setLoaded(false);
@@ -854,21 +868,23 @@ const TeamSmartFilter = (item: any) => {
             rerender()
         } else if (event == "FilterCategoriesAndStatus") {
             let filterGroups = [...filterGroupsData];
-            filterGroups[index].selectAllChecked = selectAllChecked;
-            let selectedId: any = [];
-            filterGroups[index].values.forEach((item: any) => {
+            const selectedIds: any[] = [];
+
+            const processItem = (item: any) => {
                 item.checked = selectAllChecked;
                 if (selectAllChecked) {
-                    selectedId.push(item?.Id)
+                    selectedIds.push(item?.Id);
                 }
                 item?.children?.forEach((chElement: any) => {
-                    if (selectAllChecked) {
-                        selectedId.push(chElement?.Id)
-                    }
+                    processItem(chElement);
                 });
+            };
+            filterGroups[index].selectAllChecked = selectAllChecked;
+            filterGroups[index]?.values?.forEach((item: any) => {
+                processItem(item);
             });
-            filterGroups[index].checked = selectedId;
-            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
+            filterGroups[index].checked = selectedIds;
+            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedIds);
             setFilterGroups((prev: any) => filterGroups);
             rerender()
         } else if (event == "FilterTeamMembers") {
@@ -890,49 +906,51 @@ const TeamSmartFilter = (item: any) => {
             filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
             setTaskUsersData((prev: any) => filterGroups);
             rerender()
-        } else if (event == "ClintCatogry") {
-            let filterGroups = [...allFilterClintCatogryData];
-            filterGroups[index].selectAllChecked = selectAllChecked;
-            let selectedId: any = [];
-            filterGroups[index].values.forEach((item: any) => {
-                item.checked = selectAllChecked;
-                if (selectAllChecked) {
-                    selectedId.push(item?.Id)
-                }
-                item?.children?.forEach((chElement: any) => {
-                    if (selectAllChecked) {
-                        selectedId.push(chElement?.Id)
-                    }
-                });
-            });
-            filterGroups[index].checked = selectedId;
-            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
-            setFilterClintCatogryData((prev: any) => filterGroups);
-            rerender()
         }
-        // else if (event === "ClintCatogry") {
-        //     const filterGroups = [...allFilterClintCatogryData];
-        //     const selectedIds: any[] = [];
 
-        //     const processItem = (item: any) => {
+        // else if (event == "ClintCatogry") {
+        //     let filterGroups = [...allFilterClintCatogryData];
+        //     filterGroups[index].selectAllChecked = selectAllChecked;
+        //     let selectedId: any = [];
+        //     filterGroups[index].values.forEach((item: any) => {
         //         item.checked = selectAllChecked;
         //         if (selectAllChecked) {
-        //             selectedIds.push(item?.Id);
+        //             selectedId.push(item?.Id)
         //         }
         //         item?.children?.forEach((chElement: any) => {
-        //             processItem(chElement);
+        //             if (selectAllChecked) {
+        //                 selectedId.push(chElement?.Id)
+        //             }
         //         });
-        //     };
-
-        //     filterGroups[index].selectAllChecked = selectAllChecked;
-        //     filterGroups[index]?.values?.forEach((item: any) => {
-        //         processItem(item);
         //     });
-        //     filterGroups[index].checked = selectedIds;
-        //     filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index]?.values, selectedIds);
-        //     setFilterClintCatogryData(filterGroups);
-        //     rerender();
+        //     filterGroups[index].checked = selectedId;
+        //     filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
+        //     setFilterClintCatogryData((prev: any) => filterGroups);
+        //     rerender()
         // }
+        else if (event === "ClintCatogry") {
+            const filterGroups = [...allFilterClintCatogryData];
+            const selectedIds: any[] = [];
+
+            const processItem = (item: any) => {
+                item.checked = selectAllChecked;
+                if (selectAllChecked) {
+                    selectedIds.push(item?.Id);
+                }
+                item?.children?.forEach((chElement: any) => {
+                    processItem(chElement);
+                });
+            };
+
+            filterGroups[index].selectAllChecked = selectAllChecked;
+            filterGroups[index]?.values?.forEach((item: any) => {
+                processItem(item);
+            });
+            filterGroups[index].checked = selectedIds;
+            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index]?.values, selectedIds);
+            setFilterClintCatogryData(filterGroups);
+            rerender();
+        }
         headerCountData();
     }
     const FilterDataOnCheck = function () {
@@ -1721,24 +1739,7 @@ const TeamSmartFilter = (item: any) => {
             </div>
         )
     }
-    const customFooterForProjectManagement = () => {
-        return (
-            <footer className="text-end me-4">
-                <button type="button" className="btn btn-primary">
-                    <a target="_blank" className="text-light" data-interception="off"
-                        href={`${ContextValue?.siteUrl}/SitePages/PX-Overview.aspx`}>
-                        <span className="text-light">Create New One</span>
-                    </a>
-                </button>
-                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
-                    Save
-                </button>
-                <button type="button" className="btn btn-default px-3" onClick={closeProjectManagementPopup}>
-                    Cancel
-                </button>
-            </footer>
-        )
-    }
+
     // ************** this is for Project Management Section Functions ************
 
     let selectedProjectData: any = []
@@ -1756,10 +1757,7 @@ const TeamSmartFilter = (item: any) => {
         })
         setSelectedProject(selectedTempArray);
     }
-    const saveSelectedProject = () => {
-        SelectProjectFunction(AllProjectSelectedData);
-        setProjectManagementPopup(false);
-    }
+
     const autoSuggestionsForProject = (e: any) => {
         let allSuggestion: any = [];
         let searchedKey: any = e.target.value;
@@ -1776,15 +1774,7 @@ const TeamSmartFilter = (item: any) => {
         }
 
     }
-    const closeProjectManagementPopup = () => {
-        let TempArray: any = [];
-        setProjectManagementPopup(false);
-        AllProjectBackupArray?.map((ProjectData: any) => {
-            ProjectData.Checked = false;
-            TempArray.push(ProjectData);
-        })
-        SetAllProjectData(TempArray);
-    }
+
     const SelectProjectFromAutoSuggestion = (data: any) => {
         setProjectSearchKey('');
         setSearchedProjectData([]);
@@ -1800,98 +1790,15 @@ const TeamSmartFilter = (item: any) => {
         })
         setSelectedProject(tempArray)
     }
-    const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
-        () => [
-            {
-                accessorKey: "",
-                placeholder: "",
-                hasCheckbox: true,
-                hasCustomExpanded: false,
-                hasExpanded: false,
-                isHeaderNotAvlable: true,
-                size: 45,
-                id: 'Id',
-            },
-            {
-                accessorFn: (row) => row?.Title,
-                cell: ({ row }) => (
-                    <span>
-                        <a style={{ textDecoration: "none", color: "#000066" }} href={`${ContextValue?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
-                    </span>
-                ),
-                placeholder: "Title",
-                header: "",
-                resetColumnFilters: false,
-                id: "Title",
-            },
-            {
-                accessorFn: (row) => row?.PercentComplete,
-                cell: ({ row }) => (
-                    <div className="text-center">{row?.original?.PercentComplete}</div>
-                ),
-                id: "PercentComplete",
-                placeholder: "Status",
-                resetColumnFilters: false,
-                header: "",
-                size: 42,
-            },
-            {
-                accessorFn: (row) => row?.ItemRank,
-                cell: ({ row }) => (
-                    <div className="text-center">{row?.original?.ItemRank}</div>
-                ),
-                id: "ItemRank",
-                placeholder: "Item Rank",
-                resetColumnFilters: false,
-                header: "",
-                size: 42,
-            },
-            {
-                accessorFn: (row) => row?.AllTeamName,
-                cell: ({ row }) => (
-                    <div className="alignCenter">
-                        <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} Context={ContextValue} />
-                    </div>
-                ),
-                id: "AllTeamName",
-                placeholder: "Team",
-                resetColumnFilters: false,
-                header: "",
-                size: 100,
-            },
-            {
-                accessorFn: (row) => row?.DueDate,
-                cell: ({ row }) => (
-                    <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
 
-                ),
-                filterFn: (row: any, columnName: any, filterValue: any) => {
-                    if (row?.original?.DisplayDueDate?.includes(filterValue)) {
-                        return true
-                    } else {
-                        return false
-                    }
-                },
-                id: 'DueDate',
-                resetColumnFilters: false,
-                resetSorting: false,
-                placeholder: "DueDate",
-                header: "",
-                size: 91,
-            },
-        ],
-        [item?.ProjectData]
-    );
-
-    const callBackData = React.useCallback((checkData: any) => {
+    const callBackData = React.useCallback((checkData: any, Type: any, functionType: any) => {
         let MultiSelectedData: any = [];
-        if (checkData != undefined) {
-            checkData.map((item: any) => MultiSelectedData?.push(item?.original))
-            setAllProjectSelectedData(MultiSelectedData);
-            // SelectProjectFunction(MultiSelectedData);
+        if (checkData?.length > 0 && functionType == "Save") {
+            checkData.map((item: any) => MultiSelectedData?.push(item))
+            SelectProjectFunction(MultiSelectedData);
+            setProjectManagementPopup(false);
         } else {
-            setAllProjectSelectedData([]);
-            MultiSelectedData = [];
+            setProjectManagementPopup(false);
         }
     }, []);
 
@@ -2117,6 +2024,11 @@ const TeamSmartFilter = (item: any) => {
     };
 
     const handleUpdateFaborites = (editData: any) => {
+        if (editData?.startDate) {
+            editData.startDate = new Date(editData.startDate)
+        } if (editData?.endDate) {
+            editData.endDate = new Date(editData.endDate)
+        }
         setUpdatedEditData(editData)
         setSelectedFilterPanelIsOpenUpdate(true);
     }
@@ -2133,6 +2045,62 @@ const TeamSmartFilter = (item: any) => {
                 });
         }
     };
+
+
+    ///////////////////////////////+++++++++++++++++++++ team User Selection + ///////////////////////////////////////////////////
+    const handleUserClick = (user: any) => {
+        let found = false;
+        for (let i = 0; i < selectedUsers.length; i++) { if (selectedUsers[i].Id === user.Id) { found = true; break; } }
+        if (!found) {
+            setSelectedUsers([...selectedUsers, user]);
+        } else {
+            const updatedUsers = selectedUsers.filter((selectedUser: any) => selectedUser.Id !== user.Id);
+            setSelectedUsers(updatedUsers);
+        }
+    };
+    const handleGroupClick = (group: any) => {
+        const groupUsers: any = group.values;
+        let allSelected = true;
+        for (let i = 0; i < groupUsers.length; i++) {
+            let userFound = false;
+            for (let j = 0; j < selectedUsers.length; j++) {
+                if (selectedUsers[j].Id === groupUsers[i].Id) {
+                    userFound = true;
+                    break;
+                }
+            } if (!userFound) { allSelected = false; break; }
+        }
+        if (allSelected) {
+            const updatedUsers = selectedUsers.filter((user: any) => !groupUsers.some((groupUser: any) => groupUser.Id === user.Id));
+            setSelectedUsers(updatedUsers);
+        } else {
+            const updatedUsers = [...selectedUsers, ...groupUsers.filter((user: any) => !selectedUsers.some((selectedUser: any) => selectedUser.Id === user.Id))];
+            setSelectedUsers(updatedUsers);
+        }
+    };
+
+    const handleTeamMemberClick = async (user: any, groupIndex: number) => {
+        const isChecked = !user.checked;
+        const eventId = "FilterTeamMembers";
+
+        let updatedTaskUsersData = [...TaskUsersData];
+        updatedTaskUsersData[groupIndex].values = updatedTaskUsersData[groupIndex]?.values?.map((item: any) => {
+            if (item.Id === user.Id) {
+                return {
+                    ...item,
+                    checked: isChecked
+                };
+            }
+            return item;
+        });
+        const checkedIds = updatedTaskUsersData[groupIndex]?.values?.filter((item: any) => item.checked).map((item: any) => item.Id);
+        await onCheck(checkedIds, groupIndex, eventId);
+        setTaskUsersData(updatedTaskUsersData);
+    }
+
+
+
+    ///////////////////////////////+++++++++++++++++++++ team User Selection end + ///////////////////////////////////////////////////
     return (
         <>
             {/* {isSmartFevShowHide === true && <div className='row text-end' >
@@ -2626,7 +2594,7 @@ const TeamSmartFilter = (item: any) => {
                                             <input className='form-check-input' type="checkbox" value="isTodaysTask" checked={isTodaysTask} onChange={() => setIsTodaysTask(!isTodaysTask)} /> Working Today
                                         </label>
                                     </Col>
-                                    <div className="col-sm-12 pad0">
+                                    {/* <div className="col-sm-12 pad0">
                                         <div className="togglecontent mt-1">
                                             <table width="100%" className="indicator_search">
                                                 <tr className=''>
@@ -2677,6 +2645,65 @@ const TeamSmartFilter = (item: any) => {
                                                                                         leaf: null,
                                                                                     }}
                                                                                 />
+                                                                            </div>
+                                                                        </fieldset>
+                                                                    </div>
+                                                                )
+                                                            })
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div> */}
+
+                                    <div className="col-sm-12 pad0">
+                                        <div className="togglecontent mt-1">
+                                            <table width="100%" className="indicator_search">
+                                                <tr className=''>
+                                                    <td valign="top" className='parentFilterSec w-100'>
+                                                        {TaskUsersData != null && TaskUsersData.length > 0 &&
+                                                            TaskUsersData?.map((Group: any, index: any) => {
+                                                                return (
+                                                                    <div className='filterContentSec'>
+                                                                        <fieldset className='smartFilterStyle'>
+                                                                            <legend className='SmartFilterHead'>
+                                                                                {/* <div className="fw-semibold fw-medium mx-1 text-dark" onClick={() => handleGroupClick(Group)} style={{ cursor: "pointer" }}>{Group.Title}</div> */}
+                                                                                <span className="mparent d-flex pb-1" style={{ borderBottom: "1.5px solid #BDBDBD", color: portfolioColor }}>
+                                                                                    <input className={"form-check-input cursor-pointer"}
+                                                                                        style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
+                                                                                        type="checkbox"
+                                                                                        checked={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
+                                                                                        onChange={(e) => handleSelectAll(index, e.target.checked, "FilterTeamMembers")}
+                                                                                        ref={(input) => {
+                                                                                            if (input) {
+                                                                                                const isIndeterminate = Group?.checked?.length > 0 && Group?.checked?.length !== Group?.values?.length;
+                                                                                                input.indeterminate = isIndeterminate;
+                                                                                                if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+                                                                                    <div className="fw-semibold fw-medium mx-1 text-dark">{Group.Title}</div>
+                                                                                </span>
+                                                                            </legend>
+                                                                            <div className="custom-checkbox-tree">
+                                                                                <div style={{ display: "flex", flexWrap: "wrap" }}>
+                                                                                    {Group?.values?.map((user: any) => {
+                                                                                        const isSelected = Group?.checked?.some((selectedUser: any) => selectedUser === user.Id);
+                                                                                        return (
+                                                                                            <>
+                                                                                                {
+                                                                                                    user?.Item_x0020_Cover != undefined && user?.Item_x0020_Cover?.Url != undefined && user?.AssingedToUser != undefined ? <div key={user.Id} style={{ marginRight: "4px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "3px solid var(--SiteBlue)" : "3px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)}>
+                                                                                                        <img src={user?.Item_x0020_Cover?.Url} title={user.Title} alt={user.Title} style={{ width: "24px", height: "24px", borderRadius: "50%" }} />
+                                                                                                    </div> :
+                                                                                                        <div key={user.Id} style={{ marginRight: "4px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "3px solid var(--SiteBlue)" : "3px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)} >
+                                                                                                            <span title={user.Title} className='suffix_Usericon showSuffixIcon'>{user.Suffix}</span>
+                                                                                                        </div>
+                                                                                                }
+                                                                                            </>
+                                                                                        );
+                                                                                    })}
+                                                                                </div>
                                                                             </div>
                                                                         </fieldset>
                                                                     </div>
@@ -2903,23 +2930,13 @@ const TeamSmartFilter = (item: any) => {
                 </>}
             </section>
             {/* ********************* this is Project Management panel ****************** */}
-            {item?.ProjectData != undefined && item?.ProjectData?.length > 0 ?
-                <Panel
-                    onRenderHeader={onRenderCustomProjectManagementHeader}
-                    isOpen={ProjectManagementPopup}
-                    onDismiss={closeProjectManagementPopup}
-                    isBlocking={true}
-                    type={PanelType.custom}
-                    customWidth="1100px"
-                    onRenderFooter={customFooterForProjectManagement}
-                >
-                    <div className="SelectProjectTable">
-                        <div className="modal-body wrapper p-0 mt-2">
-                            <GlobalCommanTable SmartTimeIconShow={true} columns={columns} data={item?.ProjectData} callBackData={callBackData} multiSelect={true} />
-                        </div>
-
-                    </div>
-                </Panel>
+            {item?.ProjectData != undefined && item?.ProjectData?.length > 0 && ProjectManagementPopup ?
+                <ServiceComponentPortfolioPopup
+                    Dynamic={item?.ContextValue}
+                    Call={(DataItem: any, Type: any, functionType: any) => { callBackData(DataItem, Type, functionType) }}
+                    showProject={ProjectManagementPopup}
+                    selectionType='Multi'
+                />
                 : null
             }
             <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>

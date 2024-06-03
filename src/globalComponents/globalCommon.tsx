@@ -43,94 +43,174 @@ export const findTaskCategoryParent = (taskCategories: any, result: any) => {
     }
     return result;
 }
+
+
+// export const SendTeamMessage = async (mention_To: any, txtComment: any, Context: any, AllListId: any) => {
+//     let currentUser: any = {}
+//     try {
+//         let AllUsers: any = await loadAllTaskUsers(AllListId)
+//         let pageContent = await pageContext()
+//         let web = new Web(pageContent?.WebFullUrl);
+//         //let currentUser = await web.currentUser?.get()
+//         currentUser.Email = Context.pageContext._legacyPageContext.userPrincipalName
+//         // if (currentUser) {
+//         //     if (currentUser.Email?.length > 0) {
+//         //     } else {
+//         //         currentUser.Email = currentUser.UserPrincipalName;
+//         //     }
+//         // }
+//         // const client: MSGraphClientV3 = await Context.msGraphClientFactory.getClient();
+//         await Context.msGraphClientFactory.getClient().then((client: MSGraphClientV3) => {
+//             client.api(`/users`).version("v1.0").get(async (err: any, res: any) => {
+//                 if (err)
+//                     console.error("MSGraphAPI Error")
+//                 let TeamUser: any[] = [];
+//                 let participants: any = []
+//                 TeamUser = res?.value;
+//                 let CurrentUserChatInfo = TeamUser.filter((items: any) => {
+//                     if (items.userPrincipalName != undefined && currentUser.Email != undefined && items.userPrincipalName?.toLowerCase() == currentUser?.Email?.toLowerCase())
+//                         return items
+//                 })
+//                 currentUser.ChatId = CurrentUserChatInfo[0]?.id;
+//                 var SelectedUser: any[] = []
+
+//                 for (let index = 0; index < mention_To?.length; index++) {
+//                     for (let TeamUserIndex = 0; TeamUserIndex < TeamUser?.length; TeamUserIndex++) {
+//                         if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == TeamUser[TeamUserIndex].userPrincipalName?.toLowerCase())
+//                             SelectedUser.push(TeamUser[TeamUserIndex])
+//                         if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
+//                             SelectedUser.push(TeamUser[TeamUserIndex])
+//                     }
+//                 }
+//                 let obj = {
+//                     "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${currentUser?.ChatId}')`
+//                 }
+//                 participants.push(obj)
+//                 if (SelectedUser != undefined && SelectedUser.length > 0) {
+//                     SelectedUser?.forEach((item: any) => {
+//                         let obj = {
+//                             "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${item?.id}')`
+//                         }
+//                         participants.push(obj)
+//                     })
+//                 }
+//                 const chat_payload: any = {
+//                     "members": participants
+//                 }
+//                 let IsSendTeamMessage = 0;
+//                 if (mention_To != undefined && AllUsers != undefined && AllUsers?.length > 0 && mention_To?.length > 0) {
+//                     mention_To?.map((TeamUser: any) => {
+//                         AllUsers?.map((User: any) => {
+//                             if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser?.toLowerCase()) {
+//                                 IsSendTeamMessage += 1;
+//                             }
+//                         })
+
+//                     })
+
+//                 }
+//                 if (IsSendTeamMessage == mention_To?.length) {
+//                     mention_To != undefined && mention_To?.length == 1 ? chat_payload.chatType = 'oneOnOne' : chat_payload.chatType = 'group'
+//                     let new_chat_resp = await client.api('/chats').version('v1.0').post(chat_payload)
+//                     const message_payload = {
+//                         "body": {
+//                             contentType: 'html',
+//                             content: `${txtComment}`,
+//                             //content: 'test',
+//                         }
+//                     }
+//                     let result = await client.api('/chats/' + new_chat_resp?.id + '/messages').post(message_payload)
+//                     return result;
+//                 }
+//                 else {
+//                     console.log("Error In Global Common SendTeamMessage Function")
+//                 }
+
+//             });
+//         });
+//     } catch (error) {
+//         return Promise.reject(error);
+//     }
+
+// }
+
+
+// Send MS Teams Notification Function Improved due it's conflict for some scenarios 
+
 export const SendTeamMessage = async (mention_To: any, txtComment: any, Context: any, AllListId: any) => {
     let currentUser: any = {}
     try {
         let AllUsers: any = await loadAllTaskUsers(AllListId)
         let pageContent = await pageContext()
         let web = new Web(pageContent?.WebFullUrl);
-        //let currentUser = await web.currentUser?.get()
         currentUser.Email = Context.pageContext._legacyPageContext.userPrincipalName
-        // if (currentUser) {
-        //     if (currentUser.Email?.length > 0) {
-        //     } else {
-        //         currentUser.Email = currentUser.UserPrincipalName;
-        //     }
-        // }
-        // const client: MSGraphClientV3 = await Context.msGraphClientFactory.getClient();
-        await Context.msGraphClientFactory.getClient().then((client: MSGraphClientV3) => {
-            client.api(`/users`).version("v1.0").get(async (err: any, res: any) => {
-                if (err)
-                    console.error("MSGraphAPI Error")
-                let TeamUser: any[] = [];
-                let participants: any = []
-                TeamUser = res?.value;
-                let CurrentUserChatInfo = TeamUser.filter((items: any) => {
-                    if (items.userPrincipalName != undefined && currentUser.Email != undefined && items.userPrincipalName?.toLowerCase() == currentUser?.Email?.toLowerCase())
-                        return items
-                })
-                currentUser.ChatId = CurrentUserChatInfo[0]?.id;
-                var SelectedUser: any[] = []
-
-                for (let index = 0; index < mention_To?.length; index++) {
-                    for (let TeamUserIndex = 0; TeamUserIndex < TeamUser?.length; TeamUserIndex++) {
-                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == TeamUser[TeamUserIndex].userPrincipalName?.toLowerCase())
-                            SelectedUser.push(TeamUser[TeamUserIndex])
-                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
-                            SelectedUser.push(TeamUser[TeamUserIndex])
-                    }
-                }
+        const client = await Context.msGraphClientFactory.getClient();
+        let res = await client.api(`/users`).version("v1.0").get();
+        let TeamUser: any[] = [];
+        let participants: any = []
+        TeamUser = res?.value;
+        let CurrentUserChatInfo = TeamUser.filter((items: any) => {
+            if (items.userPrincipalName != undefined && currentUser.Email != undefined && items.userPrincipalName?.toLowerCase() == currentUser?.Email?.toLowerCase())
+                return items
+        })
+        currentUser.ChatId = CurrentUserChatInfo[0]?.id;
+        var SelectedUser: any[] = []
+        for (let index = 0; index < mention_To?.length; index++) {
+            for (let TeamUserIndex = 0; TeamUserIndex < TeamUser?.length; TeamUserIndex++) {
+                if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == TeamUser[TeamUserIndex].userPrincipalName?.toLowerCase())
+                    SelectedUser.push(TeamUser[TeamUserIndex])
+                if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
+                    SelectedUser.push(TeamUser[TeamUserIndex])
+            }
+        }
+        let obj = {
+            "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${currentUser?.ChatId}')`
+        }
+        participants.push(obj)
+        if (SelectedUser != undefined && SelectedUser.length > 0) {
+            SelectedUser?.forEach((item: any) => {
                 let obj = {
-                    "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${currentUser?.ChatId}')`
+                    "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${item?.id}')`
                 }
                 participants.push(obj)
-                if (SelectedUser != undefined && SelectedUser.length > 0) {
-                    SelectedUser?.forEach((item: any) => {
-                        let obj = {
-                            "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${item?.id}')`
-                        }
-                        participants.push(obj)
-                    })
-                }
-                const chat_payload: any = {
-                    "members": participants
-                }
-                let IsSendTeamMessage = 0;
-                if (mention_To != undefined && AllUsers != undefined && AllUsers?.length > 0 && mention_To?.length > 0) {
-                    mention_To?.map((TeamUser: any) => {
-                        AllUsers?.map((User: any) => {
-                            if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser?.toLowerCase()) {
-                                IsSendTeamMessage += 1;
-                            }
-                        })
-
-                    })
-
-                }
-                if (IsSendTeamMessage == mention_To?.length) {
-                    mention_To != undefined && mention_To?.length == 1 ? chat_payload.chatType = 'oneOnOne' : chat_payload.chatType = 'group'
-                    let new_chat_resp = await client.api('/chats').version('v1.0').post(chat_payload)
-                    const message_payload = {
-                        "body": {
-                            contentType: 'html',
-                            content: `${txtComment}`,
-                            //content: 'test',
-                        }
+            })
+        }
+        const chat_payload: any = {
+            "members": participants
+        }
+        let IsSendTeamMessage = 0;
+        if (mention_To != undefined && AllUsers != undefined && AllUsers?.length > 0 && mention_To?.length > 0) {
+            mention_To?.map((TeamUser: any) => {
+                AllUsers?.map((User: any) => {
+                    if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser?.toLowerCase()) {
+                        IsSendTeamMessage += 1;
                     }
-                    let result = await client.api('/chats/' + new_chat_resp?.id + '/messages').post(message_payload)
-                    return result;
-                }
-                else {
-                    console.log("Error In Global Common SendTeamMessage Function")
-                }
+                })
 
-            });
-        });
+            })
+
+        }
+        if (IsSendTeamMessage == mention_To?.length) {
+            mention_To != undefined && mention_To?.length == 1 ? chat_payload.chatType = 'oneOnOne' : chat_payload.chatType = 'group'
+            let new_chat_resp = await client.api('/chats').version('v1.0').post(chat_payload)
+            const message_payload = {
+                "body": {
+                    contentType: 'html',
+                    content: `${txtComment}`,
+                    //content: 'test',
+                }
+            }
+            let result = await client.api('/chats/' + new_chat_resp?.id + '/messages').post(message_payload)
+            return result;
+        }
+        else {
+            console.log("Error In Global Common SendTeamMessage Function")
+        }
     } catch (error) {
         return Promise.reject(error);
     }
-
 }
+
 
 export const PopHoverBasedOnTaskId = (item: any) => {
     let returnObj = { ...item }
@@ -2296,6 +2376,7 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                         if (title) task.joinedData.push(`Title: ${title}`);
                         if (dueDate) task.joinedData.push(`Due Date: ${dueDate}`);
                     }
+                    task.IsWp
                     if (task?.SiteCompositionSettings != undefined) {
                         let TempSCSettingsData: any = JSON.parse(task?.SiteCompositionSettings);
                         if (TempSCSettingsData?.length > 0) {
@@ -2313,7 +2394,29 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                         task.IsSCProtectedStatus = "";
                     }
                     task.portfolioItemsSearch = site.Title;
+                    task.AssignedToIds = []
                     task.TaskID = GetTaskId(task);
+                    try {
+                        task.IsTodaysTask = false;
+                        if (task?.WorkingAction != undefined) {
+                            let workingAct = JSON.parse(task?.WorkingAction)
+                            task.WorkingActionParsed = workingAct;
+                            let workingInfo = task?.WorkingActionParsed?.find((info: any) => info?.Title == "WorkingDetails")
+                            if (workingInfo?.InformationData?.length > 0) {
+                                let currentDate = moment(new Date()).format("DD/MM/YYYY")
+                                let todaysWorkMembers = workingInfo?.InformationData?.find((userInfo: any) => userInfo?.WorkingDate == currentDate)
+                                if (todaysWorkMembers?.WorkingMember?.length > 0) {
+                                    task.IsTodaysTask = true;
+                                    task.AssignedTo = todaysWorkMembers?.WorkingMember
+                                    task.AssignedToIds = todaysWorkMembers?.WorkingMember?.map((mem:any)=>{
+                                        return mem?.Id
+                                    })
+                                }
+                            }
+                        }
+                    } catch (e) {
+
+                    }
                 })
                 AllSiteTasks = [...AllSiteTasks, ...data];
             } catch (error) {
@@ -3020,6 +3123,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
     let startDate: any = ''
     let DevCount: any = 0;
     let Trainee: any = 0;
+    let TraineeTime: any = 0;
     let DesignCount: any = 0;
     let QACount: any = 0;
     let TranineesNum: any = 0;
@@ -3039,8 +3143,11 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
 
     const currentLoginUserId = Context.pageContext?._legacyPageContext.userId;
     selectedUser?.forEach((items: any) => {
-        if (items?.UserGroup?.Title == 'Senior Developer Team' || items?.UserGroup?.Title == 'Smalsus Lead Team' || items?.UserGroup?.Title == 'Junior Developer Team' || items?.UserGroup?.Title == 'Trainees') {
+        if (items?.UserGroup?.Title == 'Portfolio Lead Team' || items?.UserGroup?.Title == 'Smalsus Lead Team' || items?.UserGroup?.Title == 'Developers Team') {
             DevCount++
+        }
+        if (items?.UserGroup?.Title == 'Trainees') {
+            Trainee++;
         }
         if ((items?.TimeCategory == 'Design' && items.Company == 'Smalsus') || items?.UserGroup?.Title == 'Design Team') {
             DesignCount++
@@ -3055,11 +3162,14 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
 
             if (item?.AuthorId == val?.AssingedToUserId) {
 
-                if (val?.UserGroup?.Title == 'Senior Developer Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff')
+                if (val?.UserGroup?.Title == 'Portfolio Lead Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff')
                     item.Department = 'Developer';
                 item.userName = val?.Title
-                if (val?.UserGroup?.Title == 'Junior Developer Team')
-                    item.Department = 'Junior Developer';
+                if (val?.UserGroup?.Title == 'Trainees')
+                    item.Department = 'Trainees';
+                item.userName = val?.Title
+                if (val?.UserGroup?.Title == 'Developers Team')
+                    item.Department = 'Developer';
                 item.userName = val?.Title
 
                 if (val?.UserGroup?.Title == 'Design Team')
@@ -3076,8 +3186,11 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
     })
     if (AllTimeEntry != undefined) {
         AllTimeEntry?.forEach((time: any) => {
-            if (time?.Department == 'Developer' || time?.Department == 'Junior Developer') {
+            if (time?.Department == 'Developer') {
                 DevloperTime = DevloperTime + parseFloat(time.Effort)
+            }
+            if (time?.Department == 'Trainees') {
+                TraineeTime = TraineeTime + parseFloat(time.Effort)
             }
 
             if (time?.Department == 'Design') {
@@ -3360,3 +3473,29 @@ const GetleaveUser = async (TaskUser: any, Context: any) => {
     console.log(finalData)
     return finalData
 }
+export const getWorkingActionJSON = (teamConfigData: any) => {
+    let storeData: any = [];
+    let storeInWorkingAction: any = { "Title": "WorkingDetails", "InformationData": [] }
+    if (teamConfigData?.dateInfo?.length > 0) {
+        if (teamConfigData?.oldWorkingDaysInfo != undefined || teamConfigData?.oldWorkingDaysInfo != null && teamConfigData?.oldWorkingDaysInfo?.length > 0) {
+            teamConfigData?.oldWorkingDaysInfo.map((oldJson: any) => {
+                storeData?.push(oldJson)
+            })
+        }
+        teamConfigData?.dateInfo?.map((Info: any) => {
+            let dataAccordingDays: any = {}
+            if (Info?.userInformation?.length > 0) {
+                dataAccordingDays.WorkingDate = Info?.originalDate
+                dataAccordingDays.WorkingMember = [];
+                Info?.userInformation?.map((userInfo: any) => {
+
+
+                    dataAccordingDays.WorkingMember.push({ Id: userInfo?.AssingedToUserId, Title: userInfo.Title })
+                })
+                storeData?.push(dataAccordingDays)
+            }
+        })
+        storeInWorkingAction.InformationData = [...storeData]
+    }
+    return storeInWorkingAction
+};

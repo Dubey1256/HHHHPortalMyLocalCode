@@ -318,96 +318,106 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     // Table for User code
 
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
-        () => [{
-            accessorFn: '',
-            canSort: false,
-            placeholder: '',
-            header: '',
-            id: 'row.original',
-            size: 10,
+    () => [
+      {
+        accessorFn: "",
+        canSort: false,
+        placeholder: "",
+        header: "",
+        id: "row.original",
+        size: 10,
+      },
+      {
+        accessorKey: "Title",
+        header: "",
+        placeholder: "Search Name",
+        id: "Title",
+        cell: ({ row }: any) => (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <img
+              className="me-1 workmember"
+              src={
+                row.original.Item_x0020_Cover != null
+                  ? row.original?.Item_x0020_Cover?.Url
+                  : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+              }
+              alt="User"
+              // style={{ marginRight: '10px', width: '32px', height: '32px' }}
+            />
+            <span>{`${row.original.Title} (${row.original.Suffix})`}</span>
+          </div>
+        ),
+        sortDescFirst: false,
+      },
+      {
+        accessorFn: (row) => row?.UserGroupTitle,
+        header: "",
+        id: "UserGroupTitle",
+        placeholder: "Search Group",
+      },
+      {
+        accessorFn: (row) => row?.TimeCategory,
+        header: "",
+        id: "TimeCategory",
+        placeholder: "Search Category",
+        size: 80,
+      },
+      {
+        accessorFn: (row) => row?.SortOrder,
+        header: "",
+        id: "SortOrder",
+        placeholder: "SortOrder",
+        size: 42,  
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          return row?.original?.SortOrder == filterValue;
         },
-        {
-            accessorKey: 'Title',
-            header: "",
-            placeholder: "Search Name",
-            id: "Title",
-            cell: ({ row }: any) => (
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <img
-                        className='me-1 workmember'
-                        src={row.original.Item_x0020_Cover != null ? row.original?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
-                        alt="User"
-                    // style={{ marginRight: '10px', width: '32px', height: '32px' }}
-                    />
-                    
-                    <span>{`${row.original.Title} ${row.original.Suffix != null ? `(${row.original.Suffix})` :''}`}</span>
-                </div>
-            ),
-            sortDescFirst: false
-        },
-        {
-            accessorKey: "UserGroup.Title",
-            header: "",
-            id: "Group",
-            placeholder: "Search Group"
-        },
-        {
-            accessorKey: "TimeCategory",
-            header: "",
-            id: "Category",
-            placeholder: "Search Category",
-            size: 80,
-        },
-        {
-            accessorKey: "SortOrder",
-            header: "",
-            id: "SortOrder",
-            placeholder: "SortOrder",
-            filterFn: (row: any, columnId: any, filterValue: any) => {
-                return row?.original?.SortOrder == filterValue
-            },
-            size: 42,
-        },
-        {
-            accessorKey: "RoleTitle",
-            header: "",
-            id: "RoleTitle",
-            placeholder: "Roles"
-        },
-        {
-            accessorKey: "Company",
-            header: "",
-            id: "Company",
-            placeholder: "Company",
-            size: 70,
-        },
-        {
-            accessorFn: (row) => row?.ApproverTitle,
-            header: "",
-            id: 'ApproverTitle ',
-            placeholder: "Approver"
-        },
-        {
-            accessorKey: "Team",
-            header: "",
-            id: 'Team',
-            placeholder: "Team",
-            size: 75,
-        },
-        {
-            id: "TaskId",
-            accessorKey: "TaskId",
-            header: null,
-            size: 50,
-            cell: (info) => (<div className='pull-right alignCenter'>
-                <span onClick={() => handleUpdateMemberClick(info.row.original)} className='svg__iconbox svg__icon--edit' title='Edit'></span>
-            </div>),
-            enableColumnFilter: false,
-            enableSorting: false,
-        }
-        ],
-        [data]
-    )
+      },
+      {
+        accessorFn: (row) => row?.RoleTitle,
+        header: "",
+        id: "RoleTitle",
+        placeholder: "Roles",
+      },
+      {
+        accessorFn: (row) => row?.Company,
+        header: "",
+        id: "Company",
+        placeholder: "Company",
+        size: 70,
+      },
+      {
+        accessorFn: (row) => row?.ApproverTitle,
+        header: "",
+        id: "ApproverTitle",
+        placeholder: "Approver",
+      },
+      {
+        accessorFn: (row) => row?.Team,
+        header: "",
+        id: "Team",
+        placeholder: "Team",
+        size: 75,
+      },
+      {
+        id: "TaskId",
+        accessorKey: "TaskId",
+        header: null,
+        size: 50,
+        cell: (info) => (
+          <div className="pull-right alignCenter">
+            <span
+              onClick={() => handleUpdateMemberClick(info.row.original)}
+              className="svg__iconbox svg__icon--edit"
+              title="Edit"
+            ></span>
+          </div>
+        ),
+        enableColumnFilter: false,
+        enableSorting: false,
+      },
+    ],
+    [data]
+  );
 
     // Table for Group code
 
@@ -775,7 +785,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 </div>
 
                 <footer className='modal-footer mt-2'>
-                    <button type='button' className='btn me-2 btn-primary' onClick={() => addTeamMember()}>Save</button>
+                    <button type='button' disabled={addTitle==''?true:false} className='btn me-2 btn-primary' onClick={() => addTeamMember()}>Save</button>
                     <button type='button' className='btn btn-default' onClick={cancelAdd}>Cancel</button>
                 </footer>
 

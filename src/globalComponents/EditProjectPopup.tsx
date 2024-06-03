@@ -31,7 +31,7 @@ import { AllOut } from "@material-ui/icons";
 import VersionHistoryPopup from "./VersionHistroy/VersionHistory";
 // import PortfolioTagging from "./PortfolioTagging"; // replace
 import ServiceComponentPortfolioPopup from "./EditTaskPopup/ServiceComponentPortfolioPopup";
-
+let AutoCompleteItemsArray: any = [];
 // % complete save on the project popup
 let smartmetaDetails: any = []
 interface EditableFieldProps {
@@ -179,6 +179,8 @@ function EditProjectPopup(item: any) {
   const [CMSItemRank, setCMSItemRank] = React.useState([]);
   const [isOpenPicker, setIsOpenPicker] = React.useState(false);
   const [IsComponent, setIsComponent] = React.useState(false);
+  const [categorySearchKey, setCategorySearchKey] = React.useState("");
+  const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
   const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
   const [CMSToolComponent, setCMSToolComponent] = React.useState("");
   const [TaskCat, setTaskCat] = React.useState("");
@@ -689,6 +691,7 @@ function EditProjectPopup(item: any) {
     let web = new Web(AllListId?.siteUrl);
     smartmetaDetails = [];
     let categoryhh: any = [];
+    var TaskTypes: any = [];
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(AllListId?.SmartMetadataListID)
@@ -715,6 +718,9 @@ function EditProjectPopup(item: any) {
         ) {
           categoryhh.push(val);
         }
+        if (val.TaxType == "Categories") {
+          getChilds(val, TaskTypes);
+        }
       });
       CheckCategory = categoryhh.filter((val: any, id: any, array: any) => {
         return array.indexOf(val) == id;
@@ -734,6 +740,13 @@ function EditProjectPopup(item: any) {
         }
       });
     }
+    let uniqueArray: any = [];
+    AutoCompleteItemsArray.map((currentObject: any) => {
+      if (!uniqueArray.find((obj: any) => obj.Id === currentObject.Id)) {
+        uniqueArray.push(currentObject);
+      }
+    });
+    AutoCompleteItemsArray = uniqueArray;
     setsiteDetails(siteDetail);
     getMasterTaskListTasks();
   };
@@ -988,6 +1001,7 @@ function EditProjectPopup(item: any) {
     setComponent((EditData) => [...EditData]);
   };
 
+
   const SaveData = async () => {
     var UploadImage: any = [];
 
@@ -997,11 +1011,6 @@ function EditProjectPopup(item: any) {
     var Items = EditData;
 
     CheckCategory?.forEach((itemm: any, index: any) => {
-      CategoriesData.map((catId, index) => {
-        if (itemm.Id == catId.Id) {
-          CategoriesData.splice(index, 1);
-        }
-      });
       if (itemm.isChecked == true || itemm.isselected == true) {
         array2.push(itemm);
       }
@@ -1016,14 +1025,6 @@ function EditProjectPopup(item: any) {
       //  NewArray = array2
     }
 
-    if (NewArray != undefined && NewArray.length > 0) {
-      CheckCategory = [];
-      NewArray.map((NeitemA: any) => {
-        CategoriesData.push(NeitemA);
-      });
-    } else {
-      CheckCategory = [];
-    }
     var CategoryID: any = [];
     var categoriesItem = "";
     CategoriesData?.map((category: any) => {
@@ -1201,6 +1202,10 @@ function EditProjectPopup(item: any) {
         setModalIsOpenToFalse();
       });
   };
+  const smartCategoryPopup = React.useCallback(() => {
+    setIsComponentPicker(false);
+  }, []);
+
   const EditComponentPicker = (item: any, title: any) => {
     setIsComponentPicker(true);
     setTaskCat(item);
@@ -1291,15 +1296,25 @@ function EditProjectPopup(item: any) {
 
   };
   const deleteCategories = (id: any) => {
-    CategoriesData.map((catId, index) => {
+    CategoriesData.map((catId: any, index: any) => {
       if (id == catId.Id) {
         CategoriesData.splice(index, 1);
       }
     });
-    setCategoriesData((CategoriesData) => [...CategoriesData]);
+    setCategoriesData((CategoriesData: any) => [...CategoriesData]);
   };
 
-
+  const selectCategoryFromSuggestions = (item: any) => {
+    let selectCats = CategoriesData;
+    if (!selectCats?.some((cat: any) => cat?.Id == item.Id)) {
+      selectCats?.push(item)
+    }else{
+      selectCats = selectCats?.filter((cat: any) => cat?.Id != item.Id)
+    }
+    setCategoriesData(selectCats)
+    setSearchedCategoryData([]);
+    setCategorySearchKey('')
+  }
   const onRenderCustomHeader = () => {
     return (
       <>
@@ -1356,22 +1371,7 @@ function EditProjectPopup(item: any) {
   };
   var NewArray: any = [];
   var array2: any = [];
-  const checkCat = (type: any, e: any) => {
-    const { checked } = e.target;
-    if (checked == true) {
-      type.isselected = true;
-      array2.push(type);
-    } else {
-      type.isselected = false;
-      CheckCategory?.forEach((itemm: any, index: any) => {
-        if (itemm.Id == type.Id) {
-          itemm.isChecked = false;
-        }
-      });
 
-    }
-
-  };
 
 
 
@@ -1394,6 +1394,45 @@ function EditProjectPopup(item: any) {
         TaggedPortfolios = TempArray;
         setProjectTaggedPortfolios(TempArray);
       }
+    }
+  };
+  const getChilds = (item: any, items: any) => {
+    try {
+
+
+      let parent = JSON.parse(JSON.stringify(item));
+      parent.Newlabel = `${parent?.Title}`;
+      AutoCompleteItemsArray.push(parent);
+      parent.childs = [];
+      items?.map((childItem: any) => {
+        if (
+          childItem?.Parent?.Id !== undefined &&
+          parseInt(childItem?.Parent?.Id) === parent.ID
+        ) {
+          let child = JSON.parse(JSON.stringify(childItem));
+          parent.childs.push(child);
+          child.Newlabel = `${parent?.Newlabel} > ${child?.Title}`;
+          AutoCompleteItemsArray.push(child);
+          getChilds(child, items);
+        }
+      });
+    } catch (e) { console.log(e) }
+  };
+  const autoSuggestionsForCategory = async (e: any) => {
+    let searchedKey: any = e.target.value;
+    setCategorySearchKey(e.target.value);
+    let tempArray: any = [];
+    if (searchedKey?.length > 0) {
+      AutoCompleteItemsArray?.map((itemData: any) => {
+        if (
+          itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())
+        ) {
+          tempArray.push(itemData);
+        }
+      });
+      setSearchedCategoryData(tempArray);
+    } else {
+      setSearchedCategoryData([]);
     }
   };
   return (
@@ -1653,136 +1692,7 @@ function EditProjectPopup(item: any) {
                             </div>
                           </div>
                           <div className="mx-0 row mt-2 ">
-                            {/* <div className="col-sm-6 ps-0 time-status">
-                            <div className="input-group mb-2">
-                              <label className="form-label  full-width">
-                                Status
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                value={EditData.AdminStatus}
-                                onChange={(e) => ChangeStatus(e, EditData)}
-                              />
-                            </div>
-                            <ul className="p-0 mt-1 mb-0">
 
-                              <li className="form-check">
-                                <label className="SpfxCheckRadio">
-                                  <input
-                                    className="radio"
-                                    name="NotStarted"
-                                    type="radio"
-                                    value="Not Started"
-                                    checked={
-                                      EditData.AdminStatus === "Not Started"
-                                        ? true
-                                        : false
-                                    }
-                                    onChange={(e) =>
-                                      setStatus(EditData, "Not Started")
-                                    }
-                                  ></input>
-                                  Not Started{" "}
-                                </label>
-
-                              </li>
-                              <li className="form-check">
-                                <label className="SpfxCheckRadio">
-                                  <input
-                                    className="radio"
-                                    name="NotStarted"
-                                    type="radio"
-                                    value="In Preparation"
-                                    onChange={(e) =>
-                                      setStatus(EditData, "In Preparation")
-                                    }
-                                    checked={
-                                      EditData.AdminStatus === "In Preparation"
-                                        ? true
-                                        : false
-                                    }
-                                  ></input>
-                                  In Preparation
-                                </label>
-                              </li>
-                              <li className="form-check">
-                                <label className="SpfxCheckRadio">
-                                  <input
-                                    className="radio"
-                                    name="NotStarted"
-                                    type="radio"
-                                    value="In Development"
-                                    onChange={(e) =>
-                                      setStatus(EditData, "In Development")
-                                    }
-                                    checked={
-                                      EditData.AdminStatus === "In Development"
-                                        ? true
-                                        : false
-                                    }
-                                  ></input>
-                                  In Development{" "}
-                                </label>
-                              </li>
-                              <li className="form-check">
-                                <label className="SpfxCheckRadio">
-                                  <input
-                                    className="radio"
-                                    name="NotStarted"
-                                    type="radio"
-                                    value="Active"
-                                    onChange={(e) => setStatus(EditData, "Active")}
-                                    checked={
-                                      EditData.AdminStatus === "Active"
-                                        ? true
-                                        : false
-                                    }
-                                  ></input>
-                                  Active</label>
-                              </li>
-                              <li className="form-check">
-                                <label className="SpfxCheckRadio">
-                                  <input
-                                    className="radio"
-                                    name="NotStarted"
-                                    type="radio"
-                                    value="Archived"
-                                    onChange={(e) =>
-                                      setStatus(EditData, "Archived")
-                                    }
-                                    checked={
-                                      EditData.AdminStatus === "Archived"
-                                        ? true
-                                        : false
-                                    }
-                                  ></input>
-
-                                  Archived{" "}
-                                </label>
-                              </li>
-                              <li className="form-check">
-                                <label className="SpfxCheckRadio">
-                                  <input
-                                    className="radio"
-                                    name="NotStarted"
-                                    type="radio"
-                                    value="Completed"
-                                    onChange={(e) =>
-                                      setStatus(EditData, "Completed")
-                                    }
-                                    checked={
-                                      EditData.AdminStatus === "Completed"
-                                        ? true
-                                        : false
-                                    }
-                                  ></input>
-
-                                  Completed{" "}
-                                </label>
-                                </li>
-                            </ul>
-                          </div> */}
                             <div className="col-sm-6 p-0">
                               <div className="input-group position-relative mb-2">
                                 <label className="form-label  full-width">
@@ -1790,12 +1700,10 @@ function EditProjectPopup(item: any) {
                                 </label>
                                 <input
                                   type="text"
-                                  className="form-control"
-                                  defaultValue={
-                                    EditData.Facebook != null
-                                      ? EditData.Facebook.Description
-                                      : ""
-                                  }
+                                  className="ui-autocomplete-input form-control"
+                                  id="txtCategories"
+                                  onChange={(e) => autoSuggestionsForCategory(e)}
+                                  value={categorySearchKey}
                                 />
 
                                 <span className="input-group-text">
@@ -1815,65 +1723,87 @@ function EditProjectPopup(item: any) {
                                     />
                                   </svg>
                                 </span>
-                              </div>
-
-                              <div className="col">
-                                <div className="col">
-                                  {CheckCategory.map((type: any) => {
-                                    return (
-                                      <>
-                                        <div className="form-check">
-                                          <input
-                                            className="form-check-input"
-                                            defaultChecked={type.isChecked}
-                                            type="checkbox"
-                                            onClick={(e: any) =>
-                                              checkCat(type, e)
-                                            }
-                                          />
-                                          <label className="form-check-label">
-                                            {type.Title}
-                                          </label>
-                                        </div>
-                                      </>
-                                    );
-                                  })}
-
-                                  {CategoriesData != undefined ? (
-                                    <div>
-                                      {CategoriesData?.map(
-                                        (type: any, index: number) => {
+                                <div className="col-sm-12 p-0">
+                                  {SearchedCategoryData?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup p-0 position-static">
+                                      <ul className="list-group">
+                                        {SearchedCategoryData.map((item: any) => {
                                           return (
-                                            <>
-                                              {type.Title != "Phone" &&
-                                                type.Title !=
-                                                "Email Notification" &&
-                                                type.Title != "Approval" &&
-                                                type.Title != "Immediate" && (
-                                                  <div className="block d-flex justify-content-between my-1 p-1">
-                                                    <a
-                                                      style={{
-                                                        color: "#fff !important",
-                                                      }}
-                                                      target="_blank"
-                                                      data-interception="off"
-                                                    >
-                                                      {type.Title}
-                                                    </a>
-                                                    <span className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                      onClick={() =>
-                                                        deleteCategories(type.Id)
-                                                      }> </span>
-
-                                                  </div>
-                                                )}
-                                            </>
+                                            <li
+                                              className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                              key={item.id}
+                                              onClick={
+                                                () =>
+                                                  selectCategoryFromSuggestions(item)
+                                                // setSelectedCategoryData([item], "For-Auto-Search")
+                                              }
+                                            >
+                                              <a>{item.Newlabel}</a>
+                                            </li>
                                           );
-                                        }
-                                      )}
+                                        })}
+                                      </ul>
                                     </div>
                                   ) : null}
                                 </div>
+                              </div>
+
+                              <div className="col">
+                                {CheckCategory.map((type: any) => {
+                                  return (
+                                    <>
+                                      <div className="form-check">
+                                        <input
+                                          className="form-check-input"
+                                          defaultChecked={CategoriesData?.some((cat: any) => cat?.Id == type?.Id)}
+                                          type="checkbox"
+                                          checked={CategoriesData?.some((cat: any) => cat?.Id == type?.Id)}
+                                          onClick={(e: any) =>
+                                            selectCategoryFromSuggestions(type)
+                                          }
+                                        />
+                                        <label className="form-check-label">
+                                          {type.Title}
+                                        </label>
+                                      </div>
+                                    </>
+                                  );
+                                })}
+
+                                {CategoriesData != undefined ? (
+                                  <div>
+                                    {CategoriesData?.map(
+                                      (type: any, index: number) => {
+                                        return (
+                                          <>
+                                            {type.Title != "Phone" &&
+                                              type.Title !=
+                                              "Email Notification" &&
+                                              type.Title != "Approval" &&
+                                              type.Title != "Immediate" && (
+                                                <div className="block d-flex justify-content-between my-1 p-1">
+                                                  <a
+                                                    style={{
+                                                      color: "#fff !important",
+                                                    }}
+                                                    target="_blank"
+                                                    data-interception="off"
+                                                  >
+                                                    {type.Title}
+                                                  </a>
+                                                  <span className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                    onClick={() =>
+                                                      deleteCategories(type.Id)
+                                                    }> </span>
+
+                                                </div>
+                                              )}
+                                          </>
+                                        );
+                                      }
+                                    )}
+                                  </div>
+                                ) : null}
                               </div>
                             </div>
 
@@ -1962,7 +1892,7 @@ function EditProjectPopup(item: any) {
                                         return (
                                           <>
                                             <span style={{ backgroundColor: com?.PortfolioType?.Color }} className="block w-100" >
-                                              <a className='hreflink wid90' target="_blank" href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
+                                              <a data-interception="off" className='hreflink wid90' target="_blank" href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
                                               <span onClick={() => RemoveSelectedServiceComponent(com.Id, "Portfolios")} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
 
                                             </span>
@@ -2328,6 +2258,8 @@ function EditProjectPopup(item: any) {
                             siteUrls={AllListId?.siteUrl}
                             taskId={EditData.ID}
                             listId={AllListId?.MasterTaskListID}
+                            listName = "Master Tasks"
+                            RequiredListIds={AllListId}
                           />
                         ) : (
                           ""
@@ -2395,6 +2327,8 @@ function EditProjectPopup(item: any) {
               {IsComponentPicker && (
                 <Picker
                   props={TaskCat}
+                  selectedCategoryData={CategoriesData}
+                  closePopupCallBack={smartCategoryPopup}
                   AllListId={AllListId}
                   Call={Call}
                 ></Picker>

@@ -118,7 +118,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                 hasCustomExpanded: false,
                 hasExpanded: false,
                 isHeaderNotAvlable: true,
-                size: 10,
+                size: 20,
                 id: 'Id',
             },
             {
@@ -144,7 +144,8 @@ const RelevantDocuments = (props: any, ref: any) => {
                         <>
                             <a onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, row?.original?.Editor?.Id)}
                                 target="_blank" data-interception="off">
-                                <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={(row?.original?.EditorImage)} />
+                               {row?.original?.EditorImage!=undefined ?<img title={row?.original?.Editor?.Title} className="workmember ms-1" src={(row?.original?.EditorImage)} />:
+                                <span className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"title={row?.original?.Author?.Title}></span>} 
                             </a>
 
                         </>
@@ -164,7 +165,10 @@ const RelevantDocuments = (props: any, ref: any) => {
 
                         <>
                             <a onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl,row?.original?.Author?.Id)} target="_blank" data-interception="off">
-                                <img title={row?.original?.Author?.Title} className="workmember ms-1" src={(row?.original?.UserImage)} />
+                                {row?.original?.UserImage!=undefined ?<img title={row?.original?.Author?.Title} className="workmember ms-1" src={(row?.original?.UserImage)} />
+                                :   <span className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"title={row?.original?.Author?.Title}></span>
+                            }
+                             
                             </a>
 
                         </>

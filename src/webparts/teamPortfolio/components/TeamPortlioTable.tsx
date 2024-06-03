@@ -29,6 +29,7 @@ import TrafficLightComponent from "../../../globalComponents/TrafficLightVerific
 import CreateAllStructureComponent from "../../../globalComponents/CreateAllStructure";
 import { myContextValue } from "../../../globalComponents/globalCommon";
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import WorkingActionInformation from "../../../globalComponents/WorkingActionInformation";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -320,7 +321,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
                         "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                        "Created", "Modified", "IsTodaysTask", "workingThisWeek"
+                        "Created", "Modified", "IsTodaysTask", "workingThisWeek", "WorkingAction"
                     )
                     .expand(
                         "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
@@ -457,11 +458,13 @@ function TeamPortlioTable(SelectedProp: any) {
                             }
                             try {
                                 if (result?.Comments != null && result?.Comments != undefined) {
+                                    const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
                                     const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
                                     const commentsFormData = JSON?.parse(cleanedComments);
-                                    result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                                    const searchData = commentsFormData?.reduce((accumulator: any, comment: any) => {
                                         return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
                                     }, "").trim();
+                                    result.commentsSearch = cleanText(searchData);
                                 }
                             } catch (error) {
                                 console.error("An error occurred:", error);
@@ -601,7 +604,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
                         "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                        "Created", "Modified", "IsTodaysTask", "workingThisWeek"
+                        "Created", "Modified", "IsTodaysTask", "workingThisWeek", "WorkingAction"
                     )
                     .expand(
                         "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
@@ -743,12 +746,29 @@ function TeamPortlioTable(SelectedProp: any) {
 
                         try {
                             if (result?.Comments != null && result?.Comments != undefined) {
+                                const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
                                 const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
                                 const commentsFormData = JSON?.parse(cleanedComments);
-                                result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                                const searchData = commentsFormData?.reduce((accumulator: any, comment: any) => {
                                     return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
                                 }, "").trim();
+                                result.commentsSearch = cleanText(searchData);
                             }
+                        } catch (error) {
+                            console.error("An error occurred:", error);
+                        }
+                        try {
+                            if (result?.WorkingAction != null) {
+                                result.workingActionValue = [];
+                                result.workingActionValue = JSON.parse(result?.WorkingAction);
+                                result.workingActionTitle = ""; result.workingActionIcon = {};
+                                result?.workingActionValue?.forEach((elem: any) => {
+                                    if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
+                                        result.workingActionTitle = result.workingActionTitle ? result.workingActionTitle + " " + elem.Title : elem.Title;
+                                    }
+                                });
+                            }
+
                         } catch (error) {
                             console.error("An error occurred:", error);
                         }
@@ -846,7 +866,8 @@ function TeamPortlioTable(SelectedProp: any) {
             portfolioTypeData?.map((elem: any) => {
                 if (isUpdated === "") {
                     filt = "";
-                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(PortfolioType/Title eq '" + elem.Title + "')" }
+                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(PortfolioType/Title eq '" + elem.Title + "' ) or (Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint')" }
+                // else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(PortfolioType/Title eq '" + elem.Title + "')" }
             })
         }
         let web = new Web(ContextValue.siteUrl);
@@ -969,11 +990,13 @@ function TeamPortlioTable(SelectedProp: any) {
             }
             try {
                 if (result?.Comments != null && result?.Comments != undefined) {
+                    const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
                     const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
                     const commentsFormData = JSON?.parse(cleanedComments);
-                    result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                    const searchData = commentsFormData?.reduce((accumulator: any, comment: any) => {
                         return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
                     }, "").trim();
+                    result.commentsSearch = cleanText(searchData);
                 }
             } catch (error) {
                 console.error("An error occurred:", error);
@@ -1075,7 +1098,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 portfolioTypeData?.map((elem: any) => {
                     if (elem.Title === isUpdated || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) {
                         portfolioColor = elem.Color;
-                       document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
+                        document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
                         document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
                     }
                 })
@@ -1085,7 +1108,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 portfolioTypeData?.map((elem: any) => {
                     if (elem.Title === "Component") {
                         portfolioColor = elem.Color;
-                       document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
+                        document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
 
                     }
                 })
@@ -1216,11 +1239,26 @@ function TeamPortlioTable(SelectedProp: any) {
             temp.ClientCategorySearch = '';
             temp.Created = null;
             temp.Author = "";
-            temp.subRows = allLoadeDataMasterTaskAndTask?.filter((elem1: any) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && elem1?.Portfolio?.Title === undefined);
+            temp.subRows = allLoadeDataMasterTaskAndTask?.filter((elem1: any) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && (elem1?.Portfolio?.Title === undefined || elem1?.Portfolio?.Title === null));
             countAllTasksData = countAllTasksData.concat(temp.subRows);
             temp.subRows.forEach((task: any) => {
-                if (task.TaskID === undefined || task.TaskID === '')
+                if (task.TaskID === undefined || task.TaskID === '') {
                     task.TaskID = 'T' + task.Id;
+                }
+                task.subRows = [];
+                let worstreamAndTask = allLoadeDataMasterTaskAndTask?.filter((taskData: any) => taskData?.ParentTask?.Id === task?.Id && taskData?.siteType === task?.siteType)
+                if (worstreamAndTask.length > 0) {
+                    task.subRows = task?.subRows?.concat(worstreamAndTask);
+                    AfterFilterTaskCount = AfterFilterTaskCount.concat(worstreamAndTask);
+                }
+                worstreamAndTask?.forEach((wrkst: any) => {
+                    wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
+                    let allTasksData = allLoadeDataMasterTaskAndTask?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
+                    if (allTasksData.length > 0) {
+                        wrkst.subRows = wrkst?.subRows?.concat(allTasksData);
+                        AfterFilterTaskCount = AfterFilterTaskCount.concat(allTasksData);
+                    }
+                })
             })
             AllDataTaskcomponentData.push(temp);
         }
@@ -1272,6 +1310,15 @@ function TeamPortlioTable(SelectedProp: any) {
             setLoaded(true);
         }
     }, []);
+
+    React.useEffect(() => {
+        setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && portfolioColor) {
+                $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
+            }
+        }, 1500)
+    }, [isOpenActivity, isOpenWorkstream, openCompareToolPopup, OpenAddStructurePopup, ActivityPopup]);
 
     React.useEffect(() => {
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
@@ -1410,11 +1457,26 @@ function TeamPortlioTable(SelectedProp: any) {
             temp.ClientCategorySearch = '';
             temp.Created = null;
             temp.Author = "";
-            temp.subRows = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && elem1?.Portfolio?.Title === undefined);
+            temp.subRows = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && (elem1?.Portfolio?.Title === undefined || elem1?.Portfolio?.Title === null));
             AfterFilterTaskCount = AfterFilterTaskCount.concat(temp.subRows);
             temp.subRows.forEach((task: any) => {
-                if (task.TaskID === undefined || task.TaskID === '')
+                if (task.TaskID === undefined || task.TaskID === '') {
                     task.TaskID = 'T' + task.Id;
+                }
+                task.subRows = [];
+                let worstreamAndTask = smartAllFilterData?.filter((taskData: any) => taskData?.ParentTask?.Id === task?.Id && taskData?.siteType === task?.siteType)
+                if (worstreamAndTask.length > 0) {
+                    task.subRows = task?.subRows?.concat(worstreamAndTask);
+                    AfterFilterTaskCount = AfterFilterTaskCount.concat(worstreamAndTask);
+                }
+                worstreamAndTask?.forEach((wrkst: any) => {
+                    wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
+                    let allTasksData = smartAllFilterData?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
+                    if (allTasksData.length > 0) {
+                        wrkst.subRows = wrkst?.subRows?.concat(allTasksData);
+                        AfterFilterTaskCount = AfterFilterTaskCount.concat(allTasksData);
+                    }
+                })
             })
             componentData.push(temp)
         }
@@ -1603,6 +1665,10 @@ function TeamPortlioTable(SelectedProp: any) {
                         })
                     })
                 })
+                if (comp.Title === "Others") {
+                    const othersAllTask = smartAllFilterData?.filter((elem1) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && (elem1?.Portfolio?.Title === undefined || elem1?.Portfolio?.Title === null));
+                    comp.subRows = othersAllTask;
+                }
             })
             setLoaded(true);
             setData(finalDataCopyArray);
@@ -2175,7 +2241,7 @@ function TeamPortlioTable(SelectedProp: any) {
     //                 cell: ({ row, column, getValue }: any) => (
     //                     <>
     //                         {row?.original?.ProjectTitle != (null || undefined) &&
-    //                             <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+    //                             <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
     //                                 <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
     //                         }
     //                     </>
@@ -2704,6 +2770,25 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 size: 100,
                 isColumnVisible: true
+            },         
+            {
+                accessorFn: (row) => row?.workingActionTitle,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.workingActionValue?.map((elem: any) => {
+                            const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                            return relevantTitles?.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
+                                <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
+                            );
+                        })}
+                    </div>
+                ),
+                placeholder: "Working Actions",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "workingActionTitle",
+                isColumnVisible: false
             },
             {
                 accessorFn: (row) => row?.PercentComplete,
@@ -2730,7 +2815,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Progress",
                 resetColumnFilters: false,
                 header: "",
-                size: 55,
+                size: 60,
                 isColumnVisible: false,
                 fixedColumnWidth: true,
             },
@@ -2776,7 +2861,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "SmartPriority",
                 resetColumnFilters: false,
                 header: "",
-                size: 55,
+                size: 60,
                 isColumnVisible: true,
                 fixedColumnWidth: true
             },
@@ -2796,9 +2881,9 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Priority Rank",
                 resetColumnFilters: false,
                 header: "",
-                size: 55,
+                size: 60,
                 isColumnVisible: false,
-                fixedColumnWidth:true
+                fixedColumnWidth: true
             },
             {
                 accessorFn: (row) => row?.descriptionsDeliverablesSearch,
@@ -2984,7 +3069,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 size: 91,
                 isColumnVisible: true,
-                fixedColumnWidth:true
+                fixedColumnWidth: true
             },
             {
                 accessorFn: (row) => row?.Created,
@@ -3086,7 +3171,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Smart Time",
                 header: "",
                 resetColumnFilters: false,
-                size: 49,
+                size: 60,
                 isColumnVisible: true,
                 fixedColumnWidth: true
             },
@@ -3244,7 +3329,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain1 = () => {
         return (
             <>
-                <div className="subheading alignCenter">
+                <div className="subheading">
                     <>
                         {checkedList != null && checkedList != undefined && checkedList?.SiteIconTitle != undefined && checkedList?.SiteIconTitle != null ? <span className="Dyicons me-2" >{checkedList?.SiteIconTitle}</span> : ''} {`${checkedList != null && checkedList != undefined && checkedList?.Title != undefined && checkedList?.Title != null ? checkedList?.Title
                             + '- Create Child Component' : 'Create Component'}`}</>
@@ -3592,9 +3677,10 @@ function TeamPortlioTable(SelectedProp: any) {
     }
     React.useEffect(() => {
         if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
-            if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
+            if ((childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined) && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Task' && childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Task')) {
                 setActiveCompareToolButton(true);
             } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
+
                 setActiveCompareToolButton(true);
             }
         } else {
@@ -3612,75 +3698,75 @@ function TeamPortlioTable(SelectedProp: any) {
 
     return (
         <myContextValue.Provider value={{ ...myContextValue, allContextValueData: {} }}>
-        <div id="ExandTableIds" style={{}}>
-            <section className="ContentSection smartFilterSection">
-                <div className="col-sm-12 clearfix">
-                    <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
-                        {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("service") > -1 && (
-                            <div style={{ color: `${portfolioColor}` }}>{IsUpdated} Portfolio</div>
-                        )}
-                        {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("service") > -1 && (
-                            <div className="text-end fs-6">
-                                <a data-interception="off" style={{ color: `${portfolioColor}` }} target="_blank" className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Service-Portfolio-Old.aspx"}>Old Service Portfolio</a>
-                            </div>
-                        )}
-                        {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("event") > -1 && (
-                            <div style={{ color: `${portfolioColor}` }}>{IsUpdated} Portfolio</div>
-                        )}
-                        {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("event") > -1 && (
-                            <div className="text-end fs-6">
-                                <a data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Event-Portfolio-Old.aspx"}>Old Event Portfolio</a>
-                            </div>
-                        )}
-                        {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("component") > -1 && (
-                            <div style={{ color: `${portfolioColor}` }}>{IsUpdated} Portfolio</div>
-                        )}
-                        {IsUpdated === "" && IsUpdated != undefined && (
-                            <div style={{ color: `${portfolioColor}` }}>Team Portfolio</div>
-                        )}
-                        {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("component") > -1 && (
-                            <div className="text-end fs-6">
-                                {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='text-end fs-6'>
-                                    {(ContextValue?.siteUrl?.toLowerCase().indexOf('ksl') > -1 || ContextValue?.siteUrl?.toLowerCase().indexOf('gmbh') > -1) ? (
-                                        <a data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Team-Portfolio-Old.aspx"} >Old Team Portfolio</a>
-                                    ) : <a data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Component-Portfolio-Old.aspx"} >Old Component Portfolio</a>
-                                    } </div>}
-                            </div>
-                        )}
-                    </h2>
-                </div>
-                <div className="togglecontent mt-1">
-                    {filterCounters == true ? <TeamSmartFilter openTableSettingPopup={childRef?.current?.openTableSettingPopup} setSmartFabBasedColumnsSetting={childRef?.current?.setSmartFabBasedColumnsSetting} LoadAllSiteTasksAllData={LoadAllSiteTasksAllData} AllSiteTasksDataLoadAll={AllSiteTasksDataLoadAll} IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
-                </div>
-            </section>
-            <section className="Tabl1eContentSection row taskprofilepagegreen">
-                <div className="container-fluid p-0">
-                    <section className="TableSection">
-                        <div className="container p-0">
-                            <div className="Alltable mt-2 ">
-                                <div className="col-sm-12 p-0 smart">
-                                    <div>
+            <div id="ExandTableIds" style={{}}>
+                <section className="ContentSection smartFilterSection">
+                    <div className="col-sm-12 clearfix">
+                        <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
+                            {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("service") > -1 && (
+                                <div style={{ color: `${portfolioColor}` }}>{IsUpdated} Portfolio</div>
+                            )}
+                            {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("service") > -1 && (
+                                <div className="text-end fs-6">
+                                    <a data-interception="off" style={{ color: `${portfolioColor}` }} target="_blank" className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Service-Portfolio-Old.aspx"}>Old Service Portfolio</a>
+                                </div>
+                            )}
+                            {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("event") > -1 && (
+                                <div style={{ color: `${portfolioColor}` }}>{IsUpdated} Portfolio</div>
+                            )}
+                            {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("event") > -1 && (
+                                <div className="text-end fs-6">
+                                    <a data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Event-Portfolio-Old.aspx"}>Old Event Portfolio</a>
+                                </div>
+                            )}
+                            {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("component") > -1 && (
+                                <div style={{ color: `${portfolioColor}` }}>{IsUpdated} Portfolio</div>
+                            )}
+                            {IsUpdated === "" && IsUpdated != undefined && (
+                                <div style={{ color: `${portfolioColor}` }}>Team Portfolio</div>
+                            )}
+                            {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("component") > -1 && (
+                                <div className="text-end fs-6">
+                                    {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='text-end fs-6'>
+                                        {(ContextValue?.siteUrl?.toLowerCase().indexOf('ksl') > -1 || ContextValue?.siteUrl?.toLowerCase().indexOf('gmbh') > -1) ? (
+                                            <a data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Team-Portfolio-Old.aspx"} >Old Team Portfolio</a>
+                                        ) : <a data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Component-Portfolio-Old.aspx"} >Old Component Portfolio</a>
+                                        } </div>}
+                                </div>
+                            )}
+                        </h2>
+                    </div>
+                    <div className="togglecontent mt-1">
+                        {filterCounters == true ? <TeamSmartFilter openTableSettingPopup={childRef?.current?.openTableSettingPopup} setSmartFabBasedColumnsSetting={childRef?.current?.setSmartFabBasedColumnsSetting} LoadAllSiteTasksAllData={LoadAllSiteTasksAllData} AllSiteTasksDataLoadAll={AllSiteTasksDataLoadAll} IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
+                    </div>
+                </section>
+                <section className="Tabl1eContentSection row taskprofilepagegreen">
+                    <div className="container-fluid p-0">
+                        <section className="TableSection">
+                            <div className="container p-0">
+                                <div className="Alltable mt-2 ">
+                                    <div className="col-sm-12 p-0 smart">
                                         <div>
-                                            <GlobalCommanTable showRestructureButton={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup}
-                                                masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
-                                                flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
-                                                flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef}
-                                                callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers}
-                                                portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration}
-                                                showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity}
-                                                customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons}
-                                                showHeader={true} tableId="teamPortfolio" columnSettingIcon={true}
-                                            />
+                                            <div>
+                                                <GlobalCommanTable showRestructureButton={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup}
+                                                    masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
+                                                    flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
+                                                    flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef}
+                                                    callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers}
+                                                    portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration}
+                                                    showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity}
+                                                    customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons}
+                                                    showHeader={true} tableId="teamPortfolio" columnSettingIcon={true}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </section>
-                </div>
-            </section>
-            <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={callbackdataAllStructure} >
-                {/* <PortfolioStructureCreationCard
+                        </section>
+                    </div>
+                </section>
+                <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={callbackdataAllStructure} >
+                    {/* <PortfolioStructureCreationCard
                     CreatOpen={CreateOpenCall}
                     Close={AddStructureCallBackCall}
                     PortfolioType={IsUpdated}
@@ -3691,160 +3777,160 @@ function TeamPortlioTable(SelectedProp: any) {
                             : props
                     }
                 /> */}
-                <CreateAllStructureComponent
-                    Close={callbackdataAllStructure}
-                    taskUser={AllUsers}
-                    portfolioTypeData={portfolioTypeData}
-                    PropsValue={ContextValue}
-                    SelectedItem={
-                        checkedList != null && checkedList?.Id != undefined
-                            ? checkedList
-                            : props
-                    }
-                />
-
-            </Panel>
-
-            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp} />}
-
-            <Panel
-                onRenderHeader={onRenderCustomHeaderMain}
-                type={PanelType.custom}
-                customWidth="620px"
-                isOpen={ActivityPopup}
-                onDismiss={closeActivity}
-                isBlocking={false}
-            >
-                <div className="modal-body clearfix">
-                    <div
-                        className={
-                            IsUpdated == "Events Portfolio"
-                                ? "app component clearfix eventpannelorange"
-                                : IsUpdated == "Service Portfolio"
-                                    ? "app component clearfix serviepannelgreena"
-                                    : "app component clearfix"
+                    <CreateAllStructureComponent
+                        Close={callbackdataAllStructure}
+                        taskUser={AllUsers}
+                        portfolioTypeData={portfolioTypeData}
+                        PropsValue={ContextValue}
+                        SelectedItem={
+                            checkedList != null && checkedList?.Id != undefined
+                                ? checkedList
+                                : props
                         }
-                    >
-                        <div id="portfolio" className="section-event pt-0">
-                            {checkedList != undefined &&
-                                checkedList?.TaskType?.Title == "Workstream" ? (
-                                <div className="mt-4 clearfix">
-                                    <h4 className="titleBorder "> Type</h4>
-                                    <div className="col p-0 taskcatgoryPannel">
-                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Bug")} className={activeTile == "Bug" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                            <span className="tasks-label">Bug</span>
-                                        </a>
-                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Feedback")} className={activeTile == "Feedback" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                            <span className="tasks-label">Feedback</span>
-                                        </a>
-                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile == "Improvement" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                            <span className="tasks-label">Improvement</span>
-                                        </a>
-                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Design")} className={activeTile == "Design" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                            <span className="tasks-label">Design</span>
-                                        </a>
-                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                            <span className="tasks-label">Task</span>
-                                        </a>
+                    />
+
+                </Panel>
+
+                {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp} />}
+
+                <Panel
+                    onRenderHeader={onRenderCustomHeaderMain}
+                    type={PanelType.custom}
+                    customWidth="620px"
+                    isOpen={ActivityPopup}
+                    onDismiss={closeActivity}
+                    isBlocking={false}
+                >
+                    <div className="modal-body clearfix">
+                        <div
+                            className={
+                                IsUpdated == "Events Portfolio"
+                                    ? "app component clearfix eventpannelorange"
+                                    : IsUpdated == "Service Portfolio"
+                                        ? "app component clearfix serviepannelgreena"
+                                        : "app component clearfix"
+                            }
+                        >
+                            <div id="portfolio" className="section-event pt-0">
+                                {checkedList != undefined &&
+                                    checkedList?.TaskType?.Title == "Workstream" ? (
+                                    <div className="mt-4 clearfix">
+                                        <h4 className="titleBorder "> Type</h4>
+                                        <div className="col p-0 taskcatgoryPannel">
+                                            <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Bug")} className={activeTile == "Bug" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                                <span className="tasks-label">Bug</span>
+                                            </a>
+                                            <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Feedback")} className={activeTile == "Feedback" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                                <span className="tasks-label">Feedback</span>
+                                            </a>
+                                            <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile == "Improvement" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                                <span className="tasks-label">Improvement</span>
+                                            </a>
+                                            <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Design")} className={activeTile == "Design" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                                <span className="tasks-label">Design</span>
+                                            </a>
+                                            <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                                <span className="tasks-label">Task</span>
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            ) : (
-                                <div className="mt-4 clearfix">
-                                    <h4 className="titleBorder "> Type</h4>
-                                    <div className="col p-0 taskcatgoryPannel">
-                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Feedback")} className={activeTile == "Feedback" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                            <span className="tasks-label">Feedback</span>
-                                        </a>
-                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile == "Improvement" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                            <span className="tasks-label">Improvement</span>
-                                        </a>
-                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Implementation")} className={activeTile == "Implementation" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                            <span className="tasks-label">Implementation</span>
-                                        </a>
-                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Development")} className={activeTile == "Development" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                            <span className="tasks-label">Development</span>
-                                        </a>
-                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Activities")} className={activeTile == "Activities" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                            <span className="tasks-label">Activity</span>
-                                        </a>
-                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                            <span className="tasks-label">Task</span>
-                                        </a>
+                                ) : (
+                                    <div className="mt-4 clearfix">
+                                        <h4 className="titleBorder "> Type</h4>
+                                        <div className="col p-0 taskcatgoryPannel">
+                                            <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Feedback")} className={activeTile == "Feedback" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                                <span className="tasks-label">Feedback</span>
+                                            </a>
+                                            <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile == "Improvement" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                                <span className="tasks-label">Improvement</span>
+                                            </a>
+                                            <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Implementation")} className={activeTile == "Implementation" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                                <span className="tasks-label">Implementation</span>
+                                            </a>
+                                            <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Development")} className={activeTile == "Development" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                                <span className="tasks-label">Development</span>
+                                            </a>
+                                            <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Activities")} className={activeTile == "Activities" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                                <span className="tasks-label">Activity</span>
+                                            </a>
+                                            <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                                <span className="tasks-label">Task</span>
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
-                <footer className="pull-right mt-3">
-                    <button
-                        type="button"
-                        className="btn btn-primary mx-2"
-                        onClick={() => Createbutton()} disabled={activeTile===""?true:false}
+                    <footer className="pull-right mt-3">
+                        <button
+                            type="button"
+                            className="btn btn-primary mx-2"
+                            onClick={() => Createbutton()} disabled={activeTile === "" ? true : false}
+                        >
+                            Create
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-default btn-default ms-1 pull-right"
+                            onClick={closeActivity}
+                        >
+                            Cancel
+                        </button>
+                    </footer>
+                </Panel>
+                {isOpenActivity && (
+                    <CreateActivity
+                        Call={Call}
+                        AllListId={ContextValue}
+                        context={SelectedProp?.SelectedProp?.Context}
+                        TaskUsers={AllUsers}
+                        AllClientCategory={AllClientCategory}
+                        LoadAllSiteTasks={LoadAllSiteTasks}
+                        selectedItem={
+                            checkedList != null && checkedList?.Id != undefined
+                                ? checkedList
+                                : SelectedProp
+                        }
+                        portfolioTypeData={portfolioTypeData}
+                    />
+                )}
+                {isOpenWorkstream && (
+                    <CreateWS
+                        selectedItem={checkedList}
+                        Call={Call}
+                        AllListId={ContextValue}
+                        context={SelectedProp?.SelectedProp?.Context}
+                        TaskUsers={AllUsers}
+                        data={data}>
+                    </CreateWS>)}
+                {IsTask && (
+                    <EditTaskPopup
+                        Items={CMSTask}
+                        Call={Call}
+                        AllListId={SelectedProp?.SelectedProp}
+                        context={SelectedProp?.SelectedProp?.Context}
+                        pageName={"TaskFooterTable"}
+                    ></EditTaskPopup>
+                )}
+                {IsComponent && (
+                    <EditInstituton
+                        item={CMSToolComponent}
+                        Calls={Call}
+                        SelectD={SelectedProp?.SelectedProp}
+                        portfolioTypeData={portfolioTypeData}
                     >
-                        Create
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-default btn-default ms-1 pull-right"
-                        onClick={closeActivity}
-                    >
-                        Cancel
-                    </button>
-                </footer>
-            </Panel>
-            {isOpenActivity && (
-                <CreateActivity
-                    Call={Call}
-                    AllListId={ContextValue}
-                    context={SelectedProp?.SelectedProp?.Context}
-                    TaskUsers={AllUsers}
-                    AllClientCategory={AllClientCategory}
-                    LoadAllSiteTasks={LoadAllSiteTasks}
-                    selectedItem={
-                        checkedList != null && checkedList?.Id != undefined
-                            ? checkedList
-                            : SelectedProp
-                    }
-                    portfolioTypeData={portfolioTypeData}
-                />
-            )}
-            {isOpenWorkstream && (
-                <CreateWS
-                    selectedItem={checkedList}
-                    Call={Call}
-                    AllListId={ContextValue}
-                    context={SelectedProp?.SelectedProp?.Context}
-                    TaskUsers={AllUsers}
-                    data={data}>
-                </CreateWS>)}
-            {IsTask && (
-                <EditTaskPopup
-                    Items={CMSTask}
-                    Call={Call}
-                    AllListId={SelectedProp?.SelectedProp}
-                    context={SelectedProp?.SelectedProp?.Context}
-                    pageName={"TaskFooterTable"}
-                ></EditTaskPopup>
-            )}
-            {IsComponent && (
-                <EditInstituton
-                    item={CMSToolComponent}
-                    Calls={Call}
-                    SelectD={SelectedProp?.SelectedProp}
-                    portfolioTypeData={portfolioTypeData}
-                >
-                </EditInstituton>
-            )}
-            {IsTimeEntry && (
-                <TimeEntryPopup
-                    props={cmsTimeComponent}
-                    CallBackTimeEntry={TimeEntryCallBack}
-                    Context={SelectedProp?.SelectedProp?.Context}
-                ></TimeEntryPopup>
-            )}
-            {!loaded && <PageLoader />}
-        </div>
+                    </EditInstituton>
+                )}
+                {IsTimeEntry && (
+                    <TimeEntryPopup
+                        props={cmsTimeComponent}
+                        CallBackTimeEntry={TimeEntryCallBack}
+                        Context={SelectedProp?.SelectedProp?.Context}
+                    ></TimeEntryPopup>
+                )}
+                {!loaded && <PageLoader />}
+            </div>
         </myContextValue.Provider>
     );
 }

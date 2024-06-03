@@ -17,6 +17,7 @@ import { GlobalConstants } from '../../LocalCommon';
 import { Web } from 'sp-pnp-js';
 import Tooltip from '../../Tooltip';
 import { myContextValue } from '../../globalCommon';
+import ServiceComponentPortfolioPopup from '../../EditTaskPopup/ServiceComponentPortfolioPopup';
 const TeamSmartFavoritesCopy = (item: any) => {
     let MyContextdata: any = React.useContext(myContextValue);
     let ContextValue = item?.ContextValue;
@@ -265,21 +266,23 @@ const TeamSmartFavoritesCopy = (item: any) => {
             rerender()
         } else if (event == "FilterCategoriesAndStatus") {
             let filterGroups = [...filterGroupsData];
-            filterGroups[index].selectAllChecked = selectAllChecked;
-            let selectedId: any = [];
-            filterGroups[index].values.forEach((item: any) => {
+            const selectedIds: any[] = [];
+
+            const processItem = (item: any) => {
                 item.checked = selectAllChecked;
                 if (selectAllChecked) {
-                    selectedId.push(item?.Id)
+                    selectedIds.push(item?.Id);
                 }
                 item?.children?.forEach((chElement: any) => {
-                    if (selectAllChecked) {
-                        selectedId.push(chElement?.Id)
-                    }
+                    processItem(chElement);
                 });
+            };
+            filterGroups[index].selectAllChecked = selectAllChecked;
+            filterGroups[index]?.values?.forEach((item: any) => {
+                processItem(item);
             });
-            filterGroups[index].checked = selectedId;
-            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
+            filterGroups[index].checked = selectedIds;
+            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedIds);
             setFilterGroups((prev: any) => filterGroups);
             rerender()
         } else if (event == "FilterTeamMembers") {
@@ -301,25 +304,29 @@ const TeamSmartFavoritesCopy = (item: any) => {
             filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
             setTaskUsersData((prev: any) => filterGroups);
             rerender()
-        } else if (event == "ClintCatogry") {
-            let filterGroups = [...allFilterClintCatogryData];
-            filterGroups[index].selectAllChecked = selectAllChecked;
-            let selectedId: any = [];
-            filterGroups[index].values.forEach((item: any) => {
+        } 
+        else if (event == "ClintCatogry") {
+            const filterGroups = [...allFilterClintCatogryData];
+            const selectedIds: any[] = [];
+
+            const processItem = (item: any) => {
                 item.checked = selectAllChecked;
                 if (selectAllChecked) {
-                    selectedId.push(item?.Id)
+                    selectedIds.push(item?.Id);
                 }
                 item?.children?.forEach((chElement: any) => {
-                    if (selectAllChecked) {
-                        selectedId.push(chElement?.Id)
-                    }
+                    processItem(chElement);
                 });
+            };
+
+            filterGroups[index].selectAllChecked = selectAllChecked;
+            filterGroups[index]?.values?.forEach((item: any) => {
+                processItem(item);
             });
-            filterGroups[index].checked = selectedId;
-            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
-            setFilterClintCatogryData((prev: any) => filterGroups);
-            rerender()
+            filterGroups[index].checked = selectedIds;
+            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index]?.values, selectedIds);
+            setFilterClintCatogryData(filterGroups);
+            rerender();
         }
     }
     //*************************************************************Date Sections*********************************************************************/
@@ -414,6 +421,15 @@ const TeamSmartFavoritesCopy = (item: any) => {
         }
     }, [selectedFilter]);
 
+    React.useEffect(() => {
+        setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && item?.portfolioColor) {
+                $('.ms-Panel-main').css('--SiteBlue', item?.portfolioColor); // Set the desired color value here
+            }
+        }, 1000)
+    }, [PreSetPanelIsOpen,ProjectManagementPopup]);
+
     const handleDateFilterChange = (event: any) => {
         setSelectedFilter(event.target.value);
         // setPreSet(false);
@@ -482,24 +498,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
             </div>
         )
     }
-    const customFooterForProjectManagement = () => {
-        return (
-            <footer className="text-end me-4">
-                <button type="button" className="btn btn-primary">
-                    <a target="_blank" className="text-light" data-interception="off"
-                        href={`${ContextValue?.siteUrl}/SitePages/PX-Overview.aspx`}>
-                        <span className="text-light">Create New One</span>
-                    </a>
-                </button>
-                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
-                    Save
-                </button>
-                <button type="button" className="btn btn-default px-3" onClick={closeProjectManagementPopup}>
-                    Cancel
-                </button>
-            </footer>
-        )
-    }
+    
     // ************** this is for Project Management Section Functions ************
     const SelectProjectFunction = (selectedData: any) => {
         let selectedTempArray: any = [];
@@ -536,15 +535,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
         }
 
     }
-    const closeProjectManagementPopup = () => {
-        let TempArray: any = [];
-        setProjectManagementPopup(false);
-        AllProjectBackupArray?.map((ProjectData: any) => {
-            ProjectData.Checked = false;
-            TempArray.push(ProjectData);
-        })
-        SetAllProjectData(TempArray);
-    }
+    
     const SelectProjectFromAutoSuggestion = (data: any) => {
         setProjectSearchKey('');
         setSearchedProjectData([]);
@@ -561,98 +552,16 @@ const TeamSmartFavoritesCopy = (item: any) => {
         })
         setSelectedProject(tempArray)
     }
-    const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
-        () => [
-            {
-                accessorKey: "",
-                placeholder: "",
-                hasCheckbox: true,
-                hasCustomExpanded: false,
-                hasExpanded: false,
-                isHeaderNotAvlable: true,
-                size: 45,
-                id: 'Id',
-            },
-            {
-                accessorFn: (row) => row?.Title,
-                cell: ({ row }) => (
-                    <span>
-                        <a style={{ textDecoration: "none", color: "#000066" }} href={`${ContextValue?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
-                    </span>
-                ),
-                placeholder: "Title",
-                header: "",
-                resetColumnFilters: false,
-                id: "Title",
-            },
-            {
-                accessorFn: (row) => row?.PercentComplete,
-                cell: ({ row }) => (
-                    <div className="text-center">{row?.original?.PercentComplete}</div>
-                ),
-                id: "PercentComplete",
-                placeholder: "Status",
-                resetColumnFilters: false,
-                header: "",
-                size: 42,
-            },
-            {
-                accessorFn: (row) => row?.ItemRank,
-                cell: ({ row }) => (
-                    <div className="text-center">{row?.original?.ItemRank}</div>
-                ),
-                id: "ItemRank",
-                placeholder: "Item Rank",
-                resetColumnFilters: false,
-                header: "",
-                size: 42,
-            },
-            {
-                accessorFn: (row) => row?.AllTeamName,
-                cell: ({ row }) => (
-                    <div className="alignCenter">
-                        <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} Context={ContextValue} />
-                    </div>
-                ),
-                id: "AllTeamName",
-                placeholder: "Team",
-                resetColumnFilters: false,
-                header: "",
-                size: 100,
-            },
-            {
-                accessorFn: (row) => row?.DueDate,
-                cell: ({ row }) => (
-                    <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
 
-                ),
-                filterFn: (row: any, columnName: any, filterValue: any) => {
-                    if (row?.original?.DisplayDueDate?.includes(filterValue)) {
-                        return true
-                    } else {
-                        return false
-                    }
-                },
-                id: 'DueDate',
-                resetColumnFilters: false,
-                resetSorting: false,
-                placeholder: "DueDate",
-                header: "",
-                size: 91,
-            },
-        ],
-        [item?.ProjectData]
-    );
-
-    const callBackData = React.useCallback((checkData: any) => {
+    const callBackData = React.useCallback((checkData: any,Type:any, functionType:any) => {
         let MultiSelectedData: any = [];
-        if (checkData != undefined) {
-            checkData.map((item: any) => MultiSelectedData?.push(item?.original))
-            setAllProjectSelectedData(MultiSelectedData);
-            // SelectProjectFunction(MultiSelectedData);
-        } else {
-            setAllProjectSelectedData([]);
-            MultiSelectedData = [];
+        if (checkData?.length>0 && functionType=="Save") {
+            checkData.map((item: any) => MultiSelectedData?.push(item))
+            SelectProjectFunction(MultiSelectedData);
+            setProjectManagementPopup(false);  
+                    } else {
+           
+            setProjectManagementPopup(false);
         }
     }, []);
 
@@ -1380,23 +1289,14 @@ const TeamSmartFavoritesCopy = (item: any) => {
                             </section>
                         </>}
                     </section>
-                    {item?.ProjectData != undefined && item?.ProjectData?.length > 0 ?
-                        <Panel
-                            onRenderHeader={onRenderCustomProjectManagementHeader}
-                            isOpen={ProjectManagementPopup}
-                            onDismiss={closeProjectManagementPopup}
-                            isBlocking={true}
-                            type={PanelType.custom}
-                            customWidth="1100px"
-                            onRenderFooter={customFooterForProjectManagement}
-                        >
-                            <div className="SelectProjectTable">
-                                <div className="modal-body wrapper p-0 mt-2">
-                                    <GlobalCommanTable SmartTimeIconShow={true} columns={columns} data={item?.ProjectData} callBackData={callBackData} multiSelect={true} />
-                                </div>
-
-                            </div>
-                        </Panel>
+                    {item?.ProjectData != undefined && item?.ProjectData?.length > 0 && ProjectManagementPopup ?
+                    <ServiceComponentPortfolioPopup
+                    Dynamic={item?.ContextValue}
+                    Call={(DataItem: any, Type: any, functionType: any) => {callBackData(DataItem, Type, functionType) }}  
+                    showProject={ProjectManagementPopup}
+                    selectionType = 'Multi'
+                  />
+                   
                         : null
                     }
                     <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>

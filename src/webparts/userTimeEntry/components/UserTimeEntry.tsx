@@ -307,7 +307,6 @@ export default class UserTimeEntry extends React.Component<
                 "ResponsibleTeam/Title",
                 "ResponsibleTeam/Id",
                 "TaskType/Title",
-                "ClientTime",
                 "Portfolio/Id",
                 "Portfolio/Title",
                 "Modified"
@@ -553,7 +552,6 @@ export default class UserTimeEntry extends React.Component<
         "ItemRank",
         "Item_x0020_Type",
         "PortfolioStructureID",
-        "ClientTime",
         "SiteCompositionSettings",
         "PortfolioType/Title",
         "PortfolioType/Id",
@@ -1405,7 +1403,7 @@ export default class UserTimeEntry extends React.Component<
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(25, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(18, "days").format();
       var b = new Date(change);
       formattedDate = b;
     } else if (startDateOf == "Last Week") {
@@ -1435,8 +1433,7 @@ export default class UserTimeEntry extends React.Component<
       DateType == "Today" ||
       DateType == "Yesterday" ||
       DateType == "This Week" ||
-      DateType == "Last Week" ||
-      DateType == "This Month"
+      DateType == "Last Week" 
     ) {
       this.setState({ showShareTimesheet: true });
       let startDate = this.getStartingDate("Last Month").toISOString();
@@ -1869,7 +1866,6 @@ export default class UserTimeEntry extends React.Component<
             .items.select(
               "ParentTask/Title",
               "ParentTask/Id",
-              "ClientTime",
               "ItemRank",
               "Portfolio/Id",
               "Portfolio/Title",
@@ -2903,7 +2899,7 @@ export default class UserTimeEntry extends React.Component<
       },
      
       {
-        accessorFn: (info: any) => info?.NewTimeEntryDate,
+        accessorFn: (info: any) => info?.TaskDate,
         cell: (info: any) => (
           <div className="alignCenter">
             {info?.row?.original?.NewTimeEntryDate == null ? (
@@ -2942,7 +2938,7 @@ export default class UserTimeEntry extends React.Component<
             return false;
           }
         },
-        id: "NewTimeEntryDate",
+        id: "TaskDate",
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Time Entry",
@@ -3260,6 +3256,7 @@ export default class UserTimeEntry extends React.Component<
       ShowingAllData: ShowingData,
     });
   };
+  
   private SelectedAllTeam = (e: any) => {
     let currentuserId =
       this.props.Context.pageContext?._legacyPageContext.userId;
@@ -3267,10 +3264,10 @@ export default class UserTimeEntry extends React.Component<
       AllTaskUser?.forEach((val: any) => {
         let user: any = [];
         if (
-          (val?.UserGroup?.Title == "Senior Developer Team" ||
+          (val?.UserGroup?.Title == "Developers Team" ||
             val?.UserGroup?.Title == "Smalsus Lead Team" ||
             val?.UserGroup?.Title == "Junior Task Management" ||
-            val?.UserGroup?.Title == "Junior Developer Team" ||
+            val?.UserGroup?.Title == "Portfolio Lead Team" ||
             val?.UserGroup?.Title == "Design Team" ||
             val?.UserGroup?.Title == "QA Team" ||
             val?.UserGroup?.Title == "Trainees") &&
@@ -3301,6 +3298,7 @@ export default class UserTimeEntry extends React.Component<
 
     this.setState({ showShareTimesheet: true });
   };
+
   private shareTaskInEmail = () => {
     if (DateType == "Custom") {
       let start = Moment(this.state.startdate).format("DD/MM/YYYY");

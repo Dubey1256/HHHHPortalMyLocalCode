@@ -19,6 +19,7 @@ import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import SendEmailEODReport from './SendEmailEODReport';
 import SmartPriorityToolTip from '../../../globalComponents/SmartPriorityTooltip';
 import SmartPriorityHover from '../../../globalComponents/EditTaskPopup/SmartPriorityHover';
+
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -191,7 +192,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(17, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(18, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -457,7 +458,7 @@ const TaskDashboard = (props: any) => {
                             task.descriptionsSearch = '';
                         }
                         // task.PercentComplete = (task.PercentComplete * 100).toFixed(2);
-                        task.DisplayDueDate =
+                        task.Duedate =
                             task.DueDate != null
                                 ? Moment(task.DueDate).format("DD/MM/YYYY")
                                 : "";
@@ -490,7 +491,7 @@ const TaskDashboard = (props: any) => {
                                 }
                             });
                         });
-                        task.DisplayCreateDate =
+                        task.CreateDate =
                             task.Created != null
                                 ? Moment(task.Created).format("DD/MM/YYYY")
                                 : "";
@@ -887,21 +888,21 @@ const TaskDashboard = (props: any) => {
                 size: 60,
             },
             {
-                accessorFn: (row) => row?.DisplayDueDate,
+                accessorFn: (row) => row?.Duedate,
 
                 cell: ({ row }: any) =>
                     <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
-                        {row?.original?.DisplayDueDate}
+                        {row?.original?.Duedate}
                     </div>
                 , filterFn: (row: any, columnName: any, filterValue: any) => {
-                    if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+                    if (row?.original?.Duedate?.includes(filterValue)) {
                         return true
                     } else {
                         return false
                     }
                 },
 
-                id: "DisplayDueDate",
+                id: "Duedate",
                 placeholder: "Due Date",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -979,7 +980,7 @@ const TaskDashboard = (props: any) => {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row, getValue }) => (
                     <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
-                        <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
+                        <span className="ms-1">{row?.original?.CreateDate}</span>
                         {row?.original?.createdImg != undefined ?
                             <>
                                 <a href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank"
@@ -990,9 +991,9 @@ const TaskDashboard = (props: any) => {
                             : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
-                id: "DisplayCreateDate",
+                id: "CreateDate",
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.CreateDate?.includes(filterValue)) {
                         return true
                     } else {
                         return false
@@ -1058,7 +1059,7 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
-                    <div className='alignCenter'>
+                    <div>
                         <a className='hreflink'
                             href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                             data-interception="off"
@@ -1066,8 +1067,8 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.original?.Title}
                         </a>
-                        {row?.original?.descriptionsSearch !== null && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
-                        }
+                        {row?.original?.descriptionsSearch !== null &&  <span className='alignIcon'><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
+                        } 
                     </div>
                 ),
                 id: "Title",
@@ -1176,7 +1177,7 @@ const TaskDashboard = (props: any) => {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row, getValue }) => (
                     <span>
-                        <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
+                        <span className="ms-1">{row?.original?.CreateDate}</span>
                         {row?.original?.createdImg != undefined ?
                             <>
                                 <a href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank"
@@ -1187,9 +1188,9 @@ const TaskDashboard = (props: any) => {
                             : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
-                id: "DisplayCreateDate",
+                id: "CreateDate",
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.CreateDate?.includes(filterValue)) {
                         return true
                     } else {
                         return false
@@ -1511,7 +1512,7 @@ const TaskDashboard = (props: any) => {
             setWorkingTodayTasks([...todayTasks]);
 
         } else {
-            alert('This Drop Is Not Allowed')
+            alert('You do not have the necessary Permissions to move Tasks in this User Dashboard')
         }
 
     }
@@ -1578,7 +1579,7 @@ const TaskDashboard = (props: any) => {
             var subject = "Today's Working Tasks of All Team";
             taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
-                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst") {
+                if (userGroup.Title == "Developers Team" || userGroup.Title == "Portfolio Lead Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst") {
                     if (userGroup.Title == "Smalsus Lead Team") {
                         userGroup.childBackup = userGroup?.childs;
                         userGroup.childs = [];
@@ -1848,7 +1849,7 @@ const TaskDashboard = (props: any) => {
                 text =
                     '<tr>' +
                     '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.siteType + '</td>'
-                    + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
+                    + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/PX-Profile.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
                     + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:135px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Portfolio-Profile.aspx?taskId=' + item?.Portfolio?.Id + '><span style="font-size:13px">' + (item.Portfolio == undefined ? '' : item.Portfolio.Title) + '</span></a>' + '</p>' + '</td>'
 
                     + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px">' + item.Title + '</span></a>' + '</p>' + '</td>'
@@ -1943,7 +1944,7 @@ const TaskDashboard = (props: any) => {
             var subject = `Today's Working Tasks of All Team Members: ${Moment(new Date()).zone('Asia/Kolkata').format('DD/MM/YYYY')}`;
             taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
-                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst" || userGroup.Title == "Trainees") {
+                if (userGroup.Title == "Portfolio Lead Team" || userGroup.Title == "Developers Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst" || userGroup.Title == "Trainees") {
                     if (userGroup.Title == "Smalsus Lead Team") {
                         userGroup.childBackup = userGroup?.childs;
                         userGroup.childs = [];
@@ -1955,7 +1956,7 @@ const TaskDashboard = (props: any) => {
                     }
                     userGroup?.childs?.map((teamMember: any) => {
                         if (!onLeaveEmployees.some((emp: any) => emp == teamMember?.AssingedToUserId)) {
-                            if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Trainees") {
+                            if (userGroup.Title == "Portfolio Lead Team" || userGroup.Title == "Developers Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Trainees") {
                                 estimatedTimeUsersCount += 1;
                             }
                             let body: any = '';
