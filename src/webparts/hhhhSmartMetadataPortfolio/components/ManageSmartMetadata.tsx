@@ -189,6 +189,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const ShowingCategoriesTabsData = (tabData: any) => {
         TabsFilter = [];
         setCategoriesTabName(tabData);
+        childRefdata?.current?.clearAll();
         ParentMetaDataItems.filter((item: any) => {
             if (item.TaxType && item.Title === tabData.Title) {
                 if (item?.subRows.length > 0) {
