@@ -2380,6 +2380,7 @@ const CentralizedSiteComposition = (Props: any) => {
                             </div>
                             <div className="tagged-child-items-table Alltable">
                                 <GlobalCommonTable
+                                    portfolioColor={Props?.portfolioColor}
                                     setLoaded={setLoaded}
                                     AllListId={RequiredListIds}
                                     columns={columns}
