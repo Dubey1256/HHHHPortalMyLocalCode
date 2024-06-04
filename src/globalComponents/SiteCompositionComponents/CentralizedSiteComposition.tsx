@@ -2029,7 +2029,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 type={PanelType.large}
 
             >
-                <section className="mb-5 modal-body">
+                <section className="mb-5 modal-body clearfix">
                     <div className="Site-composition-and-client-category d-flex full-width">
                         <div className="site-settings-and-site-composition-distributions full-width">
                             <div className="siteColor border p-1 alignCenter">
