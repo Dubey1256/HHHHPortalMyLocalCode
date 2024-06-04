@@ -41,6 +41,7 @@ import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
 import SmartPriorityHover from "./SmartPriorityHover";
+import TaskDetailsComponent from "./DesignTaskTemplate";
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -7683,7 +7684,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="row py-3">
+                               {DesignStatus !=true ?<div className="row py-3">
                                     <div
                                         className={
                                             IsShowFullViewImage != true
@@ -7892,6 +7893,8 @@ const EditTaskPopup = (Items: any) => {
                                                     Context={Context}
                                                     FeedbackCount={FeedBackCount}
                                                 />
+
+                                                  
                                                 <Example
                                                     textItems={
                                                         EditData?.FeedBackBackup?.length > 0
@@ -7923,7 +7926,39 @@ const EditTaskPopup = (Items: any) => {
                                             </>
                                         ) : null}
                                     </div>
-                                </div>
+                                </div>:
+                                <div className="row py-3">
+                                 {EditData.Id != null &&<TaskDetailsComponent   data={
+                                                        EditData?.FeedBackBackup?.length > 0
+                                                            ? EditData?.FeedBackBackup[0]
+                                                                ?.FeedBackDescriptions
+                                                            : []
+                                                    }
+                                                    callBack={CommentSectionCallBack}
+                                                    allUsers={taskUsers}
+                                                    ApprovalStatus={ApprovalStatus}
+                                                    SmartLightStatus={SmartLightStatus}
+                                                    SmartLightPercentStatus={SmartLightPercentStatus}
+                                                    Context={Context}
+                                                    FeedbackCount={FeedBackCount}
+                                                    SubCommentSectionCallBack={SubCommentSectionCallBack}
+                                                    MakeUpdateDataJSON={MakeUpdateDataJSON}
+                                                    EditData={EditData}
+                                                    TaskListDetails={{
+                                                        SiteURL: siteUrls,
+                                                        ListId: Items.Items.listId,
+                                                        TaskId: Items.Items.Id,
+                                                        TaskDetails: EditData,
+                                                        AllListIdData: AllListIdData,
+                                                        Context: Context,
+                                                        siteType: Items.Items.siteType,
+                                                    }}
+                                                    taskCreatedCallback={UpdateTaskInfoFunction}
+                                                    DesignStatus={DesignStatus}
+                                                    currentUserBackupArray={currentUserBackupArray}
+                                                            />
+                                                }
+                                </div>}
                             </div>
                             <div
                                 className="tab-pane "
