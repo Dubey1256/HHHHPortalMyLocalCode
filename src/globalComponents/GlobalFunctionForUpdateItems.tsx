@@ -1020,19 +1020,19 @@ export const SendApprovalEmailNotificationBodyContent = (props: any) => {
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Start Date:</span></b><u></u><u></u></p>
                                         </td>
                                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4px' }}>
-                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["StartDate"] != null && props.items["StartDate"] != undefined ? Moment(props.items["StartDate"]).format("DD-MMMM-YYYY") : ""}</span><u></u><u></u></p>
+                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["StartDate"] != null && props.items["StartDate"] != undefined ? Moment(props.items["StartDate"]).format("DD/MMMM/YYYY") : ""}</span><u></u><u></u></p>
                                         </td>
                                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4px' }}>
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Completion Date:</span></b><u></u><u></u></p>
                                         </td>
                                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4px' }}>
-                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["CompletedDate"] != null && props.items["CompletedDate"] != undefined ? Moment(props.items["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["CompletedDate"] != null && props.items["CompletedDate"] != undefined ? Moment(props.items["CompletedDate"]).format("DD/MMMM/YYYY") : ""}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                                         </td>
                                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4px' }}>
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Due Date:</span></b><u></u><u></u></p>
                                         </td>
                                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4px' }}>
-                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["DueDate"] != null && props.items["DueDate"] != undefined ? Moment(props.items["DueDate"]).format("DD-MMMM-YYYY") : ''}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["DueDate"] != null && props.items["DueDate"] != undefined ? Moment(props.items["DueDate"]).format("DD/MMMM/YYYY") : ''}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                                         </td>
                                     </tr>
                                     <tr>
@@ -1052,7 +1052,7 @@ export const SendApprovalEmailNotificationBodyContent = (props: any) => {
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Created:</span></b><u></u><u></u></p>
                                         </td>
                                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4px' }}>
-                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{Moment(props.items["Created"]).format("DD-MMMM-YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{Moment(props.items["Created"]).format("DD/MMMM/YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                                         </td>
                                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4px' }}>
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Created By:</span></b><u></u><u></u></p>
@@ -1479,19 +1479,19 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Start Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD-MMMM-YYYY") : ""}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD/MMMM/YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Completion Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD/MMMM/YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Due Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD-MMMM-YYYY") : ''}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD/MMMM/YYYY") : ''}</span>
                             </div>
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
@@ -1511,7 +1511,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Created:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '11.0pt' }}>{Moment(RequiredData["Created"]).format("DD-MMMM-YYYY")}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{Moment(RequiredData["Created"]).format("DD/MMMM/YYYY")}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Created By:</span>
@@ -1750,19 +1750,19 @@ export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: an
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Start Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD-MMMM-YYYY") : ""}</span>
+                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD/MMMM/YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Completion Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span>
+                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD/MMMM/YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Due Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD-MMMM-YYYY") : ''}</span>
+                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD/MMMM/YYYY") : ''}</span>
                             </div>
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
@@ -1782,7 +1782,7 @@ export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: an
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Created:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{Moment(RequiredData["Created"]).format("DD-MMMM-YYYY")}</span>
+                                <span style={{ fontSize: '10.0pt' }}>{Moment(RequiredData["Created"]).format("DD/MMMM/YYYY")}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Created By:</span>
