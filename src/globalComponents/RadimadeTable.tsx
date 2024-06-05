@@ -53,6 +53,7 @@ let isColumnDefultSortingAsc: any = false;
  let filterTaskType:any=false;
  let AlltaskfilterData:any;
 function ReadyMadeTable(SelectedProp: any) {
+    portfolioColor=SelectedProp?.portfolioColor
     const childRef = React.useRef<any>();
     const restructuringRef = React.useRef<any>();
     if (childRef != null) {
@@ -182,6 +183,15 @@ function ReadyMadeTable(SelectedProp: any) {
 
 
     }, [AllSiteTasksData?.length > 0])
+    
+    React.useEffect(() => {
+        setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && portfolioColor) {
+                $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
+            }
+        }, 1500)
+    }, [isOpenActivity,IsComponent,ActivityPopup,IsTimeEntry,isOpenWorkstream,isOpenActivity,OpenAddStructurePopup]);
 
     React.useEffect(() => {
         findPortFolioIconsAndPortfolio();
