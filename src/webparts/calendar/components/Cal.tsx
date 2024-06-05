@@ -925,7 +925,12 @@ const Apps = (props: any) => {
     setPeoplePickerShow(false);
     setShowRecurrenceSeriesInfo(false);
     setEditRecurrenceEvent(false);
-    setType(event.Event_x002d_Type);
+  let baseType = event.Event_x002d_Type;
+    if (baseType.startsWith("Half Day ")) {
+      baseType = baseType.replace("Half Day ", "");
+    }
+    setType(baseType);
+
 
     if (event?.eventType === "Company Holiday" || event?.eventType === "National Holiday") {
       setIsDisableField(true);
