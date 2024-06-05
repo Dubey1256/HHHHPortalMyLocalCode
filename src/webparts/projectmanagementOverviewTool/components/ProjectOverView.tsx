@@ -80,6 +80,8 @@ export default function ProjectOverview(props: any) {
     const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
     const [openCompareToolPopup, setOpenCompareToolPopup] = React.useState(false);
     const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
+    const [workingEmailVisibility, setWorkingEmailVisibility] = React.useState(false);
+
     const childRef = React.useRef<any>();
     const restructuringRef = React.useRef<any>();
     React.useEffect(() => {
@@ -121,6 +123,7 @@ export default function ProjectOverview(props: any) {
             Context: props?.props?.Context,
             context: props?.props?.Context
         }
+        workingEmailPermission()
         TaskUser()
         loadTodaysLeave();
         setPageLoader(true);
@@ -897,6 +900,18 @@ export default function ProjectOverview(props: any) {
     );
 
 
+    // code by Renish 
+
+    const workingEmailPermission = async () => {
+        let IsWorkingEmailButtonVisible = await globalCommon.verifyComponentPermission("PXOverviewWorkingEmail")
+        setWorkingEmailVisibility(IsWorkingEmailButtonVisible)
+    }
+
+    const workingEmailRecipients = async () => {
+        let EmailRecipients = await globalCommon.LoadAllNotificationConfigrations("PXOverviewWorkingEmail", AllListId)
+        return EmailRecipients
+    }
+
     const sendAllWorkingTodayTasks = async () => {
         setPageLoader(true);
         AllTimeEntries = [];
@@ -904,9 +919,15 @@ export default function ProjectOverview(props: any) {
             AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
         }
 
+        let emailRecipients = await workingEmailRecipients();
+        let workingTodayEmails = emailRecipients.map((recipient: any) => {return recipient?.Email });
+        workingTodayEmails = workingTodayEmails.filter((user:any)=>user != undefined);
+
+        let to: any = workingTodayEmails;
+
 
         // let to: any = ["abhishek.tiwari@hochhuth-consulting.de", "ranu.trivedi@hochhuth-consulting.de"];
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
+        // let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let groupedData = data;
@@ -1020,7 +1041,7 @@ export default function ProjectOverview(props: any) {
                         });
 
                         if (!memberOnLeave && item?.AssignedTo?.length > 0) {
-                         
+
                             let teamUsers: any = [];
                             if (item?.AssignedTo?.length > 0) {
                                 item.AssignedTitle = item?.AssignedTo?.map((elem: any) => elem?.Title).join(" ")
@@ -1052,7 +1073,7 @@ export default function ProjectOverview(props: any) {
                             if(item.EstimatedTimeEntry>0){
                                 taskCount++;
                                 text +=
-                                `<tr>
+                                    `<tr>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;border-left: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;">${item?.siteType} </td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.TaskID} </td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"><p style="margin:0px; color:#333;"><a href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
@@ -1061,18 +1082,18 @@ export default function ProjectOverview(props: any) {
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.PercentComplete} </td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;">${item.TaskDueDatenew} </td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${(item?.AssignedTo?.length > 0 ? item?.AssignedTo?.map((AssignedUser: any) => {
-                                    return (
-                                        '<p style="margin:0px;">' + '<a style="text-decoration: none;" href =' + AllListId.siteUrl + '/SitePages/UserTimeEntry.aspx?userId=' + AssignedUser?.Id + '><span>' + AssignedUser?.Title + '</span></a>' + '</p>'
-                                    )
-                                }) : '')} </td>
+                                        return (
+                                            '<p style="margin:0px;">' + '<a style="text-decoration: none;" href =' + AllListId.siteUrl + '/SitePages/UserTimeEntry.aspx?userId=' + AssignedUser?.Id + '><span>' + AssignedUser?.Title + '</span></a>' + '</p>'
+                                        )
+                                    }) : '')} </td>
                                 <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;">${item.smartTime} </td>
     
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item?.EstimatedTimeEntryDesc} </td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.EstimatedTimeEntry} </td>
                             </tr>`
-                                ;
+                                    ;
                             }
-                          
+
                         }
                     }
 
@@ -1084,7 +1105,7 @@ export default function ProjectOverview(props: any) {
             if (taskCount > 0) {
                 let bgColor = group?.Item_x0020_Type == 'Sprint' ? '#eef4ff' : '#fafafa';
                 let textColor = '#ffffff'
-                    body +=
+                body +=
                     `<table cellpadding="0" height="30px" cellspacing="0" style="height:30px;" border="0">
                         <tr>
                             <td colspan="8" height="30px">&nbsp;</td>
@@ -1138,8 +1159,8 @@ export default function ProjectOverview(props: any) {
             })
             return body != undefined ? body : ''
         }
-        
-        
+
+
 
     }
 
@@ -1693,7 +1714,7 @@ export default function ProjectOverview(props: any) {
                     }
                     items.TeamMembersSearch = "";
                     if(items?.AssignedToIds?.length>0){
-                           
+
                     }else{
                         items.AssignedToIds = [];
                     }
@@ -1963,11 +1984,16 @@ export default function ProjectOverview(props: any) {
 
                                     </dl>
                                     <div className="m-0 text-end">
-
-                                        {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
+                                        {/* 
+                                        {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar"  ?
                                             <>
                                                 <a className="hreflink  ms-1" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
-                                            : ''}
+                                            : ''} */}
+                                        {workingEmailVisibility ?
+                                            <>
+                                                <a className="hreflink  ms-1" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
+                                            : ''
+                                        }
                                     </div>
                                 </div>
                                 <section className="TableContentSection row taskprofilepagegreen">
