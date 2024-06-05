@@ -2752,7 +2752,7 @@ const EditTaskPopup = (Items: any) => {
                             <span>${CommonMsg}</span> 
                             <p></p>
                             <span>
-                            Task Link:  
+                            Task Title:  
                             <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
                             ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
                             </a>
@@ -3011,7 +3011,9 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.projectStructerId = structureiddata;
                                     Items.Call(dataEditor, "UpdatedData");
                                 } else {
-                                    Items.Call(DataJSONUpdate, "UpdatedData");
+                                    if (usedFor !== "TimeSheetPopup") {
+                                        Items.Call(DataJSONUpdate, "UpdatedData");
+                                    }
                                 }
                             } else {
                                 if (usedFor !== "TimeSheetPopup") {

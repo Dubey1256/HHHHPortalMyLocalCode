@@ -28,7 +28,7 @@ const AddConfiguration = (props: any) => {
     const [selectedSmartFav, setselectedSmartFav] = useState<any>(undefined);
     const [SiteTypes, setSiteTypes] = useState<any>([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
-    let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": '', "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
+    let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": true, "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
     const [NewItem, setNewItem]: any = useState<any>([defaultConfig]);
     const [SmartFav, setSmartFav] = useState<any>([]);
     const [AllTaskUsers, setAllTaskUsers] = useState<any>([]);
@@ -53,7 +53,7 @@ const AddConfiguration = (props: any) => {
     let [PriorityOptions, setPriorityOptions] = useState([{ value: 1, status: "1", }, { value: 2, status: "2", }, { value: 3, status: "3", }, { value: 4, status: "4", }, { value: 5, status: "5", }, { value: 6, status: "6", }, { value: 7, status: "7", },
     { value: 8, status: "8", }, { value: 9, status: "9", }, { value: 10, status: "10", },])
 
-    let [CustomUserFilter, setCutomUserFilter] = useState([{ value: 'Approver', status: "Me As Approver", }, { value: 'TeamLeader', status: "Me As Team Lead", }]);
+    let [CustomUserFilter, setCutomUserFilter] = useState([{ value: "My TimSheet", status: "My TimSheet", }, { value: 'Approver', status: "Me As Approver", }, { value: 'TeamLeader', status: "Me As Team Lead", }]);
     const LoadSmartFav = () => {
         let SmartFavData: any = []
         if (props?.SingleWebpart != undefined && props?.SingleWebpart == true)
@@ -309,10 +309,10 @@ const AddConfiguration = (props: any) => {
         setNewItem(updatedItems);
     };
     const AddMorewebpart = () => {
-        if (NewItem?.length === 1)
-            defaultConfig.Id = NewItem?.length + 1;
-        else
-            defaultConfig.Id = NewItem?.length;
+        //if (NewItem?.length === 1)
+        //  defaultConfig.Id = NewItem?.length + 1;
+        // else
+        defaultConfig.Id = NewItem?.length + 1;
         const newArray: any = [...NewItem, defaultConfig];
         setNewItem(newArray);
     }
@@ -673,7 +673,7 @@ const AddConfiguration = (props: any) => {
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
         web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate' and Value eq '" + props?.EditItem?.Id.toString() + items?.Id + "' ").getAll().then(async (data: any) => {
             if (data?.length) {
-                alert('This webpart already exist')
+                alert('This webpart is already exist')
             }
             else {
                 delete items?.IsDefaultTile;
@@ -682,6 +682,7 @@ const AddConfiguration = (props: any) => {
                 await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: items?.WebpartTitle != undefined && items?.WebpartTitle != '' ? items?.WebpartTitle : '', Key: "WebpartTemplate", Value: props?.EditItem?.Id != undefined ? props?.EditItem?.Id.toString() + items?.Id : undefined, Configurations: items != undefined ? JSON.stringify(items) : '' })
                     .then(async (res: any) => {
                         console.log(items)
+                        alert('Webpart Added Successfully')
                     }).catch((err: any) => {
                         console.log(err);
                     })
@@ -767,7 +768,7 @@ const AddConfiguration = (props: any) => {
                                                     </label> */}
                                                 </Col>
                                                 <Col sm="4" md="4" lg="4">
-                                                    {/* {props?.EditItem != undefined && props?.EditItem != '' ? <a className="pull-right hreflink" title="Add To Webpart Gallery" onClick={(e) => AddWebpartToGallery(items, index)}>Add To Webpart Gallery</a> : ''} */}
+                                                    {props?.EditItem != undefined && props?.EditItem != '' ? <a className="pull-right hreflink" title="Add To Webpart Gallery" onClick={(e) => AddWebpartToGallery(items, index)}>Add To Webpart Gallery</a> : ''}
                                                     {/* <div> Group By View</div>
                                                     <label className="switch me-2" htmlFor={`GroupByViewCheckbox${index}`}>
                                                         <input checked={items?.GroupByView} onChange={(e: any) => {
@@ -836,14 +837,14 @@ const AddConfiguration = (props: any) => {
                                             <Row className="Metadatapannel">
                                                 {items.DataSource != 'TimeSheet' &&
                                                     <Col sm="12" md="12" lg="12">
-                                                        {items?.selectUserFilterType != undefined && items?.selectUserFilterType != '' &&
-                                                            <label className='form-label full-width SpfxCheckRadio mb-1'>
-                                                                <input type="radio" className='radio' value="custom" checked={items?.selectFilterType === 'custom'} onChange={(e) => handleFilterChange(e, index, items)} />
-                                                                Custom Filter
-                                                                <input type="radio" className='radio ms-3' value="smartFav" checked={items?.selectFilterType === 'smartFav'} onChange={(e) => handleFilterChange(e, index, items)} />
-                                                                SmartFav Filter
-                                                            </label>
-                                                        }
+                                                        {/* {items?.selectUserFilterType != undefined && items?.selectUserFilterType != '' && */}
+                                                        <label className='form-label full-width SpfxCheckRadio mb-1'>
+                                                            <input type="radio" className='radio' value="custom" checked={items?.selectFilterType === 'custom'} onChange={(e) => handleFilterChange(e, index, items)} />
+                                                            Custom Filter
+                                                            <input type="radio" className='radio ms-3' value="smartFav" checked={items?.selectFilterType === 'smartFav'} onChange={(e) => handleFilterChange(e, index, items)} />
+                                                            SmartFav Filter
+                                                        </label>
+                                                        {/* } */}
                                                     </Col>}
                                                 {(items?.DataSource == "Tasks" || items?.DataSource == "Project") && items?.selectFilterType == 'custom' &&
                                                     <span>
@@ -976,7 +977,8 @@ const AddConfiguration = (props: any) => {
                                                         onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }} /></>
                                                     }
-                                                    {items.DataSource == "TaskUsers" && items?.selectFilterType == 'custom' && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesCustomTaskUser" options={[{ key: '', text: '' }, ...(CustomUserFilter?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.Status}
+                                                    {items.DataSource == "TaskUsers" && items?.selectFilterType == 'custom' && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesCustomTaskUser" options={[{ key: '', text: '' }, ...(CustomUserFilter?.filter(item => item.value !== "My TimSheet").map(item => ({ key: item.value, text: item.status })) || [])
+                                                    ]} selectedKey={items?.Status}
                                                         onChange={(e, option) => handleCustomUserFilterChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }} /></>
                                                     }

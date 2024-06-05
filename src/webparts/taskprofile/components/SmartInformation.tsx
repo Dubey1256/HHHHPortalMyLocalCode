@@ -946,6 +946,7 @@ const SmartInformation = (props: any, ref: any) => {
   //======taskpopup call back function =====
   const CallBack = () => {
     setallSetValue({ ...allValue, EditTaskpopupstatus: false })
+    GetResult()
   }
   //================all Task load function ===========
   const GetAllTask = (smartinfoData: any) => {
@@ -1106,13 +1107,27 @@ const SmartInformation = (props: any, ref: any) => {
   }, [])
 
   //************************ Searching , Sorting and showmore SmartNote ******************************/
-
+  const IsitemExists = function (array: any, Item: any) {
+    var isExists = false;
+    array.map((item: any) => {
+      if (item.Id === Item.Id) {
+        isExists = true;
+        return false;
+      }
+    });
+    return isExists;
+  }
   const handlesearchingvalue = (event: any) => {
     const value = event.target.value;
     let filtersmartvalue: any = [];    
     setsearchvalue(event.target.value)
     if (value) {
-      filtersmartvalue = copySmartInfo.filter((val: any) => val?.Title?.indexOf(value) > -1 || val?.Title === value)
+      copySmartInfo.map((val: any) => {
+        if (val?.Title?.toLowerCase()?.indexOf(value?.toLowerCase()) > -1 || val?.Title.toLowerCase() === value?.toLowerCase()) {
+          if (!IsitemExists(filtersmartvalue , val) )
+            filtersmartvalue.push(val)
+        }        
+      })
     }
     else {
       filtersmartvalue = copySmartInfo;

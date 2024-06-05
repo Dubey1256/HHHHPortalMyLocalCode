@@ -676,7 +676,7 @@ export const MonthlyLeaveReport = (props: any) => {
   
         user.unplannedleave = calculatePlannedLeave(matchedData, ["Un-Planned", "Sick"]);
        // user.unplannedleave = [...unplannedLeave, ...sickLeave].map(item => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
-        user.unplannedleave = user.unplannedleave.map((item:any) => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
+        // user.unplannedleave = user.unplannedleave.map((item:any) => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
         user.unplannedleave = `${user.unplannedleave}${UnplannedLeaveString.length != 0 ? `[ ${UnplannedLeaveString} ]` : ''} `
         user.UnPlanedEventDates = UnPlanedEventDates
         user.leavediscriptionUnPlanned = leavediscriptionUnPlanned != undefined ? leavediscriptionUnPlanned : ''
