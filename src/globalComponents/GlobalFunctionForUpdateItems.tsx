@@ -730,7 +730,7 @@ export const SendMSTeamsNotification = async (RequiredData: any) => {
         if (usedFor === "Status") {
             SendMessage = `<p><b>Hi ${ReceiversName},</b> </p></br><p>${SendMSTeamMessage}</p> </br> 
             <p>
-            Task Link:  <a href=${siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + ItemDetails?.Id + "&Site=" + ItemDetails?.siteType}>
+            Task Title:  <a href=${siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + ItemDetails?.Id + "&Site=" + ItemDetails?.siteType}>
              ${ItemDetails?.TaskId}-${ItemDetails?.Title}
             </a>
             </br>
@@ -1426,7 +1426,7 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         </div>
         </br>
         <p>
-        <div style="margin-top: 16px;font-size:16px;">  <b style="font-weight:600;">Task Link: </b>
+        <div style="margin-top: 16px;font-size:16px;">  <b style="font-weight:600;">Task Title: </b>
         <a href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? `Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}` : `Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">
         ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
         </a>
@@ -1910,7 +1910,7 @@ export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredD
 
         const emailBodyContent = `
             <p>${messageContent}</p>
-            <p>Task Link: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
+            <p>Task Title: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
             ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></p>
             <span>${containerDiv.innerHTML}</span>
             `;
