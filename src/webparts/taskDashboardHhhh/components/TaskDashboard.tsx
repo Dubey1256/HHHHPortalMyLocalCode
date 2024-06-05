@@ -1945,10 +1945,11 @@ const TaskDashboard = (props: any) => {
     const sendAllWorkingTodayTasks = async () => {
         let text = '';
         let emailRecipients: any = await workingEmailRecipients();
-        let workingTodayEmails = emailRecipients.map((recipient: any) => recipient.Email).join(", ");
+        let workingTodayEmails = emailRecipients.map((recipient: any) => {return recipient?.Email})
+        workingTodayEmails = workingTodayEmails?.filter((user: any) => user != undefined)
         
         // let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
-        let to: any = [workingTodayEmails];
+        let to: any = workingTodayEmails;
         let finalBody: any = [];
         let userApprover = '';
         let taskCount = 0;
