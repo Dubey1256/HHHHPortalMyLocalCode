@@ -40,6 +40,7 @@ let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1,
 const TaskStatusTbl = (Tile: any) => {
   const childRef = React.useRef<any>();
   const ContextData: any = React.useContext(myContextValue);
+  const [IsShowAllUser, setIsShowAllUser] = React.useState(true);
   const [state, rerender] = React.useReducer(() => ({}), {});
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
@@ -527,13 +528,17 @@ const TaskStatusTbl = (Tile: any) => {
                 Item.WorkingAction = Item?.WorkingAction.filter((Category: any) => Category?.Title !== 'WorkingDetails')
             }
             let web = new Web(ContextData?.propsValue?.siteUrl);
-            web.lists.getById(Item.listId).items.getById(Item?.Id).update({
+            DragDropType == "Un-Assigned"
+            let PostData: any = {
               PercentComplete: Status / 100,
               Status: Item?.Status,
               WorkingAction: Item?.WorkingAction?.length > 0 ? JSON.stringify(Item?.WorkingAction) : '',
               AssignedToId: { results: config?.TileName == 'WorkingToday' ? [ContextData?.currentUserData?.AssingedToUserId] : [], },
               IsTodaysTask: false,
-            }).then((res: any) => {
+            }
+            if (DragDropType == "Un-Assigned")
+              PostData.ResponsibleTeamId = { results: [ContextData?.currentUserData?.AssingedToUserId] }
+            web.lists.getById(Item.listId).items.getById(Item?.Id).update(PostData).then((res: any) => {
               console.log('Drop successfuly');
               count++;
               DashboardConfig?.forEach((item: any) => {
@@ -657,7 +662,7 @@ const TaskStatusTbl = (Tile: any) => {
     RejectedItem.RejectedDetails.RejectedComment = e.target.value
     setisRejectItem(RejectedItem)
   }
-  const SaveApprovalRejectPopup = async (Type: any, Item: any) => {
+  const SaveApprovalRejectPopup = async (Type: any, Item: any, UpdateStatus: any) => {
     if (Type != 'ApprovedAll') {
       let RejectedItem: any;
       if (Item != undefined && Item != '')
@@ -749,7 +754,7 @@ const TaskStatusTbl = (Tile: any) => {
               Item?.AdditionalTimeEntry.forEach((TimeEntry: any) => {
                 RefSelectedItem?.forEach((SelectedItem: any) => {
                   if (SelectedItem?.original?.Id == TimeEntry.Id) {
-                    TimeEntry.Status = 'Approved';
+                    TimeEntry.Status = UpdateStatus;
                     delete TimeEntry?.TaskDates;
                     delete TimeEntry?.sortTaskDate;
                     delete TimeEntry?.PreviousComment;
@@ -772,7 +777,7 @@ const TaskStatusTbl = (Tile: any) => {
                   })
                   childRef?.current?.setRowSelection({});
                   console.log('Updated Succesfully')
-                  alert("All Time Entry Approved Successfully.")
+                  alert("All Time Entry " + UpdateStatus + " Successfully.")
                   DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
                   DashboardConfigCopy?.map((Config: any) => {
                     if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
@@ -1014,6 +1019,26 @@ const TaskStatusTbl = (Tile: any) => {
         isColumnVisible: false
       },
       {
+        accessorFn: (row: any) => row?.EstimatedTime,
+        cell: ({ row }: any) => (
+          <div className='alignCenter'>
+            <span style={{ display: "flex", alignItems: "center", maxWidth: "84px" }}>
+              <span className="hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.EstimatedTime}>
+                {row?.original?.EstimatedTime}
+              </span>
+            </span>
+            <span>{row?.original?.EstimatedTime != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"EstimatedTimeDescr"} />}</span>
+          </div>
+        ),
+        id: "TotalEstimatedTime",
+        placeholder: "Estimated Task Time",
+        header: "",
+        resetColumnFilters: false,
+        size: 80,
+        isColumnVisible: item?.DataSource == 'Tasks' ? true : false,
+        fixedColumnWidth: true
+      },
+      {
         accessorFn: (row: any) => row?.WorkingDate,
         cell: ({ row }: any) => (
           <div className='alignCenter'>
@@ -1171,6 +1196,37 @@ const TaskStatusTbl = (Tile: any) => {
           id: "Id"
         },
         {
+          accessorFn: (row: any) => row?.Site,
+          cell: ({ row, getValue }: any) => (
+            <>
+              <span>
+                <img className="circularImage rounded-circle" src={row?.original?.SiteIcon}
+                />
+              </span>
+            </>
+          ),
+          id: "Site",
+          placeholder: "Site",
+          header: "",
+          resetSorting: false,
+          resetColumnFilters: false,
+          size: 60,
+          isColumnVisible: true,
+          fixedColumnWidth: true
+        },
+        {
+          accessorKey: "TaskID",
+          placeholder: "ID",
+          id: 'TaskID',
+          size: 110,
+          isColumnVisible: true,
+          cell: ({ row, getValue }: any) => (
+            <span className="d-flex">
+              <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} row={row?.original?.TaskItem} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={item?.Tasks} AllListId={ContextData?.propsValue?.Context} />
+            </span>
+          ),
+        },
+        {
           accessorFn: (row: any) => row?.Title,
           id: "Title",
           placeholder: "AuthorName",
@@ -1254,8 +1310,15 @@ const TaskStatusTbl = (Tile: any) => {
           fixedColumnWidth: true,
           cell: ({ row, index }: any) => (
             <div className="alignCenter gap-1 pull-right approvelicon position-relative" >
-              <span title="Approve" onClick={() => SaveApprovalRejectPopup('Approved', row?.original,)} ><MdOutlineGppGood style={{ color: "#008f47", fontSize: "22px" }} /> </span>
-              <span title="Reject" data-toggle="tooltip" data-placement="bottom" id={`Reply-${row?.index}`} onClick={() => openRejectPopup(row?.original)}><MdGppBad style={{ color: "#dc3545", fontSize: "22px" }} /></span>
+              {item?.Status != "My TimSheet" ? <>
+                <span title="Approve" onClick={() => SaveApprovalRejectPopup('Approved', row?.original, undefined)} ><MdOutlineGppGood style={{ color: "#008f47", fontSize: "22px" }} /> </span>
+                <span title="Reject" data-toggle="tooltip" data-placement="bottom" id={`Reply-${row?.index}`} onClick={() => openRejectPopup(row?.original)}><MdGppBad style={{ color: "#dc3545", fontSize: "22px" }} /></span>
+              </>
+                :
+                <>
+                  <span title="Send For Approval" className="svg__iconbox svg__icon--forApproval hreflink" onClick={() => SaveApprovalRejectPopup('For Approval', row?.original, 'For Approval')}></span>
+                </>}
+
             </div>
           )
         },]
@@ -1386,7 +1449,7 @@ const TaskStatusTbl = (Tile: any) => {
                     ${body1}
                     </tbody>
                     </table>`
-        + '<p>' + 'For the complete Dashboard of ' + ContextData?.currentUserData?.Title + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx?` + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx?UserId` + '</span>' + '</a>' + '</p>'
+        + '<p>' + 'For the complete Dashboard of ' + ContextData?.currentUserData?.Title + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx` + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx` + '</span>' + '</a>' + '</p>'
       subject = `[${config?.WebpartTitle} - ${ContextData?.currentUserData?.Title}] ${CurrentformattedDate}: ${tasksCopy?.length} Tasks; ${totalTime}hrs scheduled`
 
     }
@@ -1431,7 +1494,7 @@ const TaskStatusTbl = (Tile: any) => {
         {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
         {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink me-2"
           target="_blank" data-interception="off" title="Create New Task" href={`${ContextData?.siteUrl}/SitePages/CreateTask.aspx`}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48" fill="none">
             <path d="M27.9601 22.2H26.0401V26.0399H22.2002V27.9599H26.0401V31.8H27.9601V27.9599H31.8002V26.0399H27.9601V22.2Z" fill="#057BD0" />
             <path fill-rule="evenodd" clip-rule="evenodd" d="M32.3996 9.60001H9.59961V32.4H15.5996V38.4H38.3996V15.6H15.5996V31.2968H10.7028V10.7032H31.2964V15.4839H32.3996V9.60001ZM16.7028 16.7032H37.2964V37.2968H16.7028V16.7032Z" fill="#057BD0" />
             <path d="M9.59956 9.59999V9.29999H9.29956V9.59999H9.59956ZM32.3996 9.59999H32.6996V9.29999H32.3996V9.59999ZM9.59956 32.4H9.29956V32.7H9.59956V32.4ZM15.5996 32.4H15.8996V32.1H15.5996V32.4ZM15.5996 38.4H15.2996V38.7H15.5996V38.4ZM38.3996 38.4V38.7H38.6996V38.4H38.3996ZM38.3996 15.6H38.6996V15.3H38.3996V15.6ZM15.5996 15.6V15.3H15.2996V15.6H15.5996ZM15.5996 31.2968V31.5968H15.8996V31.2968H15.5996ZM10.7028 31.2968H10.4028V31.5968H10.7028V31.2968ZM10.7028 10.7032V10.4032H10.4028V10.7032H10.7028ZM31.2964 10.7032H31.5963V10.4032H31.2964V10.7032ZM31.2964 15.4839H30.9964V15.7839H31.2964V15.4839ZM32.3996 15.4839V15.7839H32.6996V15.4839H32.3996ZM37.2963 16.7032H37.5964V16.4032H37.2963V16.7032ZM16.7028 16.7032V16.4032H16.4028V16.7032H16.7028ZM37.2963 37.2968V37.5968H37.5964V37.2968H37.2963ZM16.7028 37.2968H16.4028V37.5968H16.7028V37.2968ZM9.59956 9.89999H32.3996V9.29999H9.59956V9.89999ZM9.89956 32.4V9.59999H9.29956V32.4H9.89956ZM15.5996 32.1H9.59956V32.7H15.5996V32.1ZM15.2996 32.4V38.4H15.8996V32.4H15.2996ZM15.5996 38.7H38.3996V38.1H15.5996V38.7ZM38.6996 38.4V15.6H38.0996V38.4H38.6996ZM38.3996 15.3H15.5996V15.9H38.3996V15.3ZM15.2996 15.6V31.2968H15.8996V15.6H15.2996ZM10.7028 31.5968H15.5996V30.9968H10.7028V31.5968ZM10.4028 10.7032V31.2968H11.0028V10.7032H10.4028ZM31.2964 10.4032H10.7028V11.0032H31.2964V10.4032ZM31.5963 15.4839V10.7032H30.9964V15.4839H31.5963ZM32.3996 15.1839H31.2964V15.7839H32.3996V15.1839ZM32.0996 9.59999V15.4839H32.6996V9.59999H32.0996ZM37.2963 16.4032H16.7028V17.0032H37.2963V16.4032ZM37.5964 37.2968V16.7032H36.9963V37.2968H37.5964ZM16.7028 37.5968H37.2963V36.9968H16.7028V37.5968ZM16.4028 16.7032V37.2968H17.0028V16.7032H16.4028Z" fill="#057BD0" />
@@ -1447,8 +1510,9 @@ const TaskStatusTbl = (Tile: any) => {
     return (
       <span className="alignCenter">
         {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink me-1" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
-        {RefSelectedItem?.length > 0 ? <span className="empCol me-1 hreflink" onClick={() => SaveApprovalRejectPopup('ApprovedAll', undefined)}>Approve All</span>
-          : ''}
+        {RefSelectedItem?.length > 0 && config?.Status != "My TimSheet" ? <span className="empCol me-1 hreflink" title="Approve All" onClick={() => SaveApprovalRejectPopup('ApprovedAll', undefined, 'Approved')}>Approve All</span>
+          : RefSelectedItem?.length > 0 && config?.Status == "My TimSheet" ? <span className="empCol me-1 hreflink" title="Send All for Approval" onClick={() => SaveApprovalRejectPopup('ApprovedAll', undefined, 'For Approval')}>Send All</span> : ''}
+
         {/* <span className="me-1 hreflink" style={{ color: "#646464" }}>Approve All</span>} */}
       </span>
     )
@@ -1459,6 +1523,32 @@ const TaskStatusTbl = (Tile: any) => {
         <span className="empCol me-1 hreflink" onClick={() => ShowType == 'DateTask' ? ShowWorkingTask(config, user, undefined, false) : ShowUnAssignedTask(config, user, undefined, false)}>Hide</span>
       </span>
     )
+  }
+  const ShowHideAllUser = (Config: any, index: any, IshowAllUser: any) => {
+    DashboardConfig.forEach((configuration: any, ItemIndex: any) => {
+      if (ItemIndex == index) {
+        configuration.Tasks = IshowAllUser == true ? Config?.AllUserTask : Config?.BackupTask
+      }
+    })
+    DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+    DashboardConfigCopy?.map((Config: any) => {
+      if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+        Config?.Tasks?.map((Date: any) => {
+          if (Date?.dates != undefined && Date?.dates?.length > 0) {
+            Date?.dates?.map((Time: any) => {
+              if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
+                Time.ServerDate = Moment(Time?.ServerDate)
+                Time.ServerDate = Time.ServerDate?._d;
+                Time.ServerDate.setHours(0, 0, 0, 0)
+              }
+            })
+          }
+        });
+      }
+    });
+    setIsShowAllUser(!IshowAllUser);
+    setActiveTile((prevString: any) => Tile?.activeTile);
+    rerender();
   }
   const generateDashboard = () => {
     const rows: any = [];
@@ -1496,6 +1586,10 @@ const TaskStatusTbl = (Tile: any) => {
                       <span className="fw-bold">
                         {`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}
                       </span>
+                      <span className="fw-bold">
+                        {IsShowAllUser && <span className="empCol me-1 hreflink" onClick={() => ShowHideAllUser(config, index, true)}>Show All User</span>}
+                        {!IsShowAllUser && <span className="empCol me-1 hreflink" onClick={() => ShowHideAllUser(config, index, false)}>Hide All User</span>}
+                      </span>
                     </div>
                     {config?.selectFilterType != 'custom' && <div className="dashbord-teamBox">
                       {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => {
@@ -1529,10 +1623,10 @@ const TaskStatusTbl = (Tile: any) => {
                             <div><h6 className="fw-bold">Team</h6></div>
                             {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => (
                               <>
-                                <div className="top-assign p-1 mb-2">
+                                <div className="top-assign mb-3">
                                   {user.Item_x0020_Cover != undefined && user.AssingedToUser != undefined &&
                                     <span onClick={() => ShowWorkingTask(config, user, undefined, true)}>
-                                      <img className={user.IsShowTask == true || user?.IsActiveUser == true ? 'large_teamsimg activeimg' : 'large_teamsimg'} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
+                                      <img className={user.IsShowTask == true || user?.IsActiveUser == true ? 'large_teamsimgCustom activeimg' : 'large_teamsimgCustom'} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
                                     </span>
                                   }
                                 </div>
@@ -1552,7 +1646,10 @@ const TaskStatusTbl = (Tile: any) => {
                                           date?.ServerDate?.getTime() == time?.ServerDate?.getTime() && <>
                                             {/* activeblock */}
                                             <dt onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, time?.DisplayDate)} className={time.IsShowTask == true && time?.DisplayDate == 'Un-Assigned' ? 'px-2 shadow-sm text-center' : 'px-2 shadow-sm text-center'} onClick={() => time?.DisplayDate != 'Un-Assigned' ? ShowWorkingTask(config, user, time, true) : ShowUnAssignedTask(config, user, time, true)}>
-                                              {time?.TotalTask != undefined && time?.TotalTask != '' && <><span title="Total Task">{time?.TotalTask}</span> | <span title="Total Estimation Time">{time?.TotalEstimatedTime}</span></>}
+                                              {time?.TotalTask != undefined && time?.TotalTask != '' && <><span title="Total Task">{time?.TotalTask}</span>
+                                                {time?.DisplayDate != 'Un-Assigned' ? <> | <span title="Total Estimation Time">{time?.TotalEstimatedTime?.toFixed(2)}</span></> : ''}
+                                              </>
+                                              }
                                               {time?.TotalTask == undefined || time?.TotalTask == '' && <span>N/A</span>}
                                             </dt>
                                           </>
@@ -1606,6 +1703,7 @@ const TaskStatusTbl = (Tile: any) => {
                   <>
                     <div className="alignCenter empAllSec justify-content-between">
                       <span className="fw-bold">
+                        {config?.Status == "My TimSheet" && <>{`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}</>}
                       </span>
                       <span className="alignCenter">
                         <span className="empCol me-1 mt-2 hreflink"><br /></span>
@@ -1686,7 +1784,7 @@ const TaskStatusTbl = (Tile: any) => {
               <textarea className="form-control" style={{ height: '140px' }} onChange={(e) => updateRejectedComment(e)}  ></textarea>
             </div>
             <footer className='modal-footer mt-2'>
-              <button className='btn btn-primary me-2 mb-2' onClick={() => SaveApprovalRejectPopup('Rejected', undefined)} disabled={isRejectItem?.RejectedDetails == undefined || isRejectItem?.RejectedDetails.RejectedComment == '' || isRejectItem?.RejectedDetails.RejectedComment == undefined} >Save</button>
+              <button className='btn btn-primary me-2 mb-2' onClick={() => SaveApprovalRejectPopup('Rejected', undefined, undefined)} disabled={isRejectItem?.RejectedDetails == undefined || isRejectItem?.RejectedDetails.RejectedComment == '' || isRejectItem?.RejectedDetails.RejectedComment == undefined} >Save</button>
               <button className='btn btn-default mb-2' onClick={CancelRejectPopup}  >Cancel</button>
             </footer>
           </Panel>

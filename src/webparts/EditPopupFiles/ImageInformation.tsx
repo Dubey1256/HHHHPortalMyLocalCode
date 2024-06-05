@@ -12,7 +12,7 @@ let imageOTT = false;
 let Imageshow: number;
 let imgdefaultContent = "";
 
-let count = 20;
+let count = 18;
 const ImagetabFunction = (props: any) => {
     const [editData, setEditData] = useState(props.EditdocumentsData)
     const [selectfolder, setSelectfolder] = useState("Logos");
@@ -26,8 +26,6 @@ const ImagetabFunction = (props: any) => {
     console.log(props)
     console.log(props)
     React.useEffect(() => {
-
-
         getAllImageData()
     }, []);
 
@@ -99,7 +97,7 @@ const ImagetabFunction = (props: any) => {
             let imagesData: any[] = [];
             let myimagedata: any[] = [];
             imagesData = chooseExistingFile?.ChooseExistingImages1
-            for (let i = 0; i < 14; i++) {
+            for (let i = 0; i < 18; i++) {
                 if (imagesData[i] != undefined)
                     myimagedata?.push(imagesData[i]);
             }
@@ -111,7 +109,7 @@ const ImagetabFunction = (props: any) => {
             let imagesData: any[] = [];
             let myimagedata: any[] = [];
             imagesData = chooseExistingFile?.ChooseExistingCover
-            for (let i = 0; i < 14; i++) {
+            for (let i = 0; i < 18; i++) {
                 if (imagesData[i] != undefined)
                     myimagedata?.push(imagesData[i]);
             }
@@ -123,7 +121,7 @@ const ImagetabFunction = (props: any) => {
             let myimagedata: any[] = [];
             imagesData = chooseExistingFile?.ChooseExistinglogo
             if (imagesData.length > 14) {
-                for (let i = 0; i < 15; i++) {
+                for (let i = 0; i < 18; i++) {
                     if (imagesData[i] != undefined)
                         myimagedata?.push(imagesData[i]);
                 }
@@ -323,14 +321,15 @@ const ImagetabFunction = (props: any) => {
 
     const loadMore = async () => {
         // Load the remaining images
-        count = count + 20;
+        count = count + 18;
         if (selectfolder == "Logos") {
-            let imagesData: any = []
+            let imagesData: any = []        
             imagesData = chooseExistingFile?.ChooseExistinglogo;
             if (count != 0 && imagesData?.length > 0) {
                 let myimagedata: any[] = [];
-                for (let i = 0; i <= count; i++) {
-                    myimagedata?.push(imagesData[i]);
+                for (let i = 0; i < count; i++) {
+                    if (imagesData[i] != undefined)
+                        myimagedata?.push(imagesData[i]);
                 }
                 setLoadedImages(myimagedata)
             }
@@ -339,8 +338,9 @@ const ImagetabFunction = (props: any) => {
             imagesData = chooseExistingFile?.ChooseExistingCover;
             if (count != 0 && imagesData?.length > 0) {
                 let myimagedata: any[] = [];
-                for (let i = 0; i <= count; i++) {
-                    myimagedata?.push(imagesData[i]);
+                for (let i = 0; i < count; i++) {
+                    if (imagesData[i] != undefined)
+                        myimagedata?.push(imagesData[i]);
                 }
                 setLoadedImages(myimagedata)
             }
@@ -349,8 +349,9 @@ const ImagetabFunction = (props: any) => {
             imagesData = chooseExistingFile?.ChooseExistingImages1;
             if (count != 0 && imagesData?.length > 0) {
                 let myimagedata: any[] = [];
-                for (let i = 0; i <= count; i++) {
-                    myimagedata?.push(imagesData[i]);
+                for (let i = 0; i < count; i++) {
+                    if (imagesData[i] != undefined)
+                        myimagedata?.push(imagesData[i]);
                 }
                 setLoadedImages(myimagedata)
             }
@@ -391,7 +392,7 @@ const ImagetabFunction = (props: any) => {
                                 </Nav.Item>
 
                                 <div className='mt-1 me-1'>
-                                    {editData.Item_x002d_Image != undefined && <div><div><img className="img-fluid" src={editData?.Item_x002d_Image?.Url} /></div>
+                                    {editData?.Item_x002d_Image != undefined && <div><div><img className="img-fluid" src={editData?.Item_x002d_Image?.Url} /></div>
                                         <span><a href={editData?.Item_x002d_Image?.Url} target="_blank" data-interception="off"><span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span></a></span>
                                     </div>}
 
@@ -443,7 +444,7 @@ const ImagetabFunction = (props: any) => {
                                                     {loadedImages.map((img) => (<img src={img?.ServerRelativeUrl} onClick={() => ExistingImageUpload(img)} />))}
 
                                                 </div>
-                                                {chooseExistingFile?.ChooseExistinglogo.length > 14 && <button onClick={() => loadMore()} type='button'>Load More</button>}
+                                                {chooseExistingFile?.ChooseExistinglogo.length > 18 && <button onClick={() => loadMore()} type='button'>Load More</button>}
                                             </div>
                                         </Tab>
                                     </Tabs>
@@ -486,7 +487,7 @@ const ImagetabFunction = (props: any) => {
                                                 <div>
                                                     {loadedImages.map((img) => (<img src={img?.ServerRelativeUrl} onClick={() => ExistingImageUpload(img)} />))}
                                                 </div>
-                                                {chooseExistingFile?.ChooseExistingCover.length > 14 && <button onClick={() => loadMore()} type='button'>Load More</button>}
+                                                {chooseExistingFile?.ChooseExistingCover.length > 18 && <button onClick={() => loadMore()} type='button'>Load More</button>}
                                             </div>
                                         </Tab>
                                     </Tabs>
@@ -530,7 +531,7 @@ const ImagetabFunction = (props: any) => {
 
                                                     {loadedImages.map((img) => (<img src={img?.ServerRelativeUrl} onClick={() => ExistingImageUpload(img)} />))}
                                                 </div>
-                                                {chooseExistingFile?.ChooseExistingImages1.length > 14 && <button onClick={() => loadMore()} type='button'>Load More</button>}
+                                                {chooseExistingFile?.ChooseExistingImages1.length > 18 && <button onClick={() => loadMore()} type='button'>Load More</button>}
                                             </div>
                                         </Tab>
                                     </Tabs>

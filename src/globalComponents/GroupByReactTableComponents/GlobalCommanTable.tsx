@@ -87,6 +87,8 @@ function DebouncedInput({
         setValue(initialValue);
     }, [initialValue]);
 
+    
+
     React.useEffect(() => {
         const timeout = setTimeout(() => {
             onChange(value);
@@ -322,6 +324,15 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
         }
     }, [fixedWidth === true])
+
+    React.useEffect(() => {
+        setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && items?.portfolioColor) {
+                $('.ms-Panel-main').css('--SiteBlue', items?.portfolioColor); // Set the desired color value here
+            }
+        }, 1500)
+    }, [columnSettingPopup, coustomButtonMenuPopup, selectedFilterPanelIsOpen,bulkEditingSettingPopup]);
 
     const customGlobalSearch = (row: any, id: any, query: any) => {
         query = query.replace(/\s+/g, " ").trim().toLowerCase();
@@ -1067,6 +1078,13 @@ const GlobalCommanTable = (items: any, ref: any) => {
             items?.openCompareTool()
         }
     }
+
+    const clearAll=()=>{
+        setGlobalFilter(''); 
+        setColumnFilters([]); 
+        setRowSelection({}); 
+    }
+
     ///////////////// code with neha /////////////////////
     const callChildFunction = (items: any) => {
         if (childRef.current) {
@@ -1085,7 +1103,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     };
     React.useImperativeHandle(ref, () => ({
-        callChildFunction, trueTopIcon, setRowSelection, globalFilter, projectTopIcon, setColumnFilters, setGlobalFilter, coustomFilterColumns, table, openTableSettingPopup, setSmartFabBasedColumnsSetting
+        callChildFunction, trueTopIcon, setRowSelection, globalFilter, projectTopIcon, setColumnFilters, setGlobalFilter, coustomFilterColumns, table, openTableSettingPopup, setSmartFabBasedColumnsSetting,clearAll
     }));
 
     const restructureFunct = (items: any) => {
@@ -1461,7 +1479,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         <a className='smartTotalTime hover-text m-0' onClick={() => openCreationAllStructure("Groupby-View")}><FaListAlt /><span className='tooltip-text pop-left'>Switch to Groupby View</span></a>}</>}
                     {items?.flatView === true && items?.updatedSmartFilterFlatView === true && <a className='smartTotalTime hreflink hover-text m-0'><FaListAlt /> <span className='tooltip-text pop-left'>Deactivated To Groupby View</span></a>}
 
-                    <a className='brush hover-text m-0'><i className="fa fa-paint-brush hreflink" aria-hidden="true" onClick={() => { setGlobalFilter(''); setColumnFilters([]); setRowSelection({}); }}></i> <span className='tooltip-text pop-left'>Clear All</span></a>
+                    <a className='brush hover-text m-0'><i className="fa fa-paint-brush hreflink" aria-hidden="true" onClick={() => clearAll()}></i> <span className='tooltip-text pop-left'>Clear All</span></a>
 
                     <a className='Prints hover-text m-0' onClick={() => downloadPdf()}>
                         <i className="fa fa-print" aria-hidden="true"></i>
@@ -1675,6 +1693,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
             {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} AllListId={items?.AllListId} /> : ''}
             {selectedFilterPanelIsOpen && <SelectFilterPanel columns={columns} isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
+
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
             {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} bulkEditingCongration={bulkEditingCongration} />}
             {columnSettingPopup && <ColumnsSetting showProgres={showProgress} ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} wrapperHeight={wrapperHeight} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility}

@@ -1,5 +1,6 @@
 
 import PageLoader from '../../../globalComponents/pageLoader';
+import * as globalCommon from "../../../globalComponents/globalCommon";
 import moment from 'moment';
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useEffect, useRef, useState } from 'react'
@@ -233,7 +234,8 @@ export const Modified = (props: any) => {
       if(allSite?.TabName == 'DOCUMENTS'&& item?.Title==undefined|| allSite.TabName=="WEB PAGES"){
         item.Title=item?.FileLeafRef
       }
-
+      item.SiteIcon="https://grueneweltweit.sharepoint.com/sites/GrueneWeltweit/Site%20Collection%20Images/ICONS/logo-gruene.png"
+      item.TaskID = globalCommon.GetTaskId(item);
       item.siteType = allSite.TabName;
       item.siteUrl = baseUrl
       if (item.DueDate != undefined) {
@@ -256,7 +258,10 @@ export const Modified = (props: any) => {
       if (allSite.TabName == 'FOLDERS') {
         item.File_x0020_Type = 'folder';
       }
-
+      if (item.Portfolio != undefined) {
+        item.PortfolioTitle = item.Portfolio?.Title;
+        item.PortfolioID = item.Portfolio?.Id
+      }
       if (item.Author != undefined) {
         item.authorName = item?.Author?.Title;
         item.authorDefaultImage = 'https://grueneweltweit.sharepoint.com/sites/GrueneWeltweit/washington/public/PublishingImages/Icons/icon_user.jpg';
@@ -1346,8 +1351,8 @@ export const Modified = (props: any) => {
           accessorFn: (row) => row?.TaskID,
           cell: ({ row, getValue }) => (
             <>
-              {row.original.GmBHSiteCheck == false ? <img className='workmember me-1' src={`${row.original.SiteIcon}`}></img> : undefined}
-              <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
+               <img className='me-1 workmember' src={`${row?.original?.SiteIcon}`}></img> 
+              <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
             </>
           ),
           id: "TaskID",

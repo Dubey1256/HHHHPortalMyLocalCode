@@ -1447,7 +1447,10 @@ function reverseArray(arr: any) {
     let web = new Web(`${CurrentSiteUrl}`);
     let TimeForTask = 0;
     if(item.props?.TotalTime != null){
-      item.props.TotalTime = item.props?.TotalTime - childinew.TaskTimeInMin;
+        let web = new Web(`${siteUrl}`);
+        const datas = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item?.props.Id}`).get();
+        let Time = datas[0].TotalTime;
+      item.props.TotalTime = Time - childinew.TaskTimeInMin;
     }
     
       if(item.props?.TotalTime > 0){
@@ -1635,7 +1638,9 @@ function reverseArray(arr: any) {
     let web = new Web(`${CurrentSiteUrl}`);
    
     if(item.props?.TotalTime != null){
-      item.props.TotalTime = item.props?.TotalTime + TimeInMinutes;
+      const datas = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item.props.Id}`).get();
+      let Time = datas[0].TotalTime;
+      item.props.TotalTime = Time + TimeInMinutes;
     }
     else{
       item.props.TotalTime = TimeInMinutes;
@@ -1923,7 +1928,12 @@ function reverseArray(arr: any) {
 
   //-----------------------------------------------Create Add Timesheet--------------------------------------------------------------------------------------
   const AddTaskTime = async (child: any, Type: any) => {
-
+    if(item.props?.TotalTime != null){
+      let web = new Web(`${siteUrl}`);
+      const datas = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item.props.Id}`).get();
+      let Time = datas[0].TotalTime;
+      item.props.TotalTime = Time 
+    }
     setbuttonDisable(true);
 
     if (Type == "EditTime") {

@@ -55,7 +55,7 @@ let componentDetailsData: any = [];
 let count = 0;
 let ID: any;
 
-function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: any) {
+function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,portfolioColor }: any) {
   // var AssignedToIds: any = [];
   ResponsibleTeamIds = [];
   AssignedToIds = [];
@@ -2686,6 +2686,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
     });
   }, []);
 
+   React.useEffect(() => {
+    setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && portfolioColor) {
+            $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
+        }
+    }, 2000)
+}, [Smartdatapopup,IsComponent,SiteCompositionShow,isopenProjectpopup,IsComponentPicker]);
+
   const toggleCategorySelection = function (item: any) {
     setCategoriesData(function (prevCategoriesData) {
       var itemIndex = -1;
@@ -4950,6 +4959,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                 ComponentType={"Component"}
                 Call={Call}
                 selectionType={"Single"}
+                portfolioColor={portfolioColor}
               />
             ) : null}
 
@@ -5366,6 +5376,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
       </Panel>
       {SiteCompositionShow && EditData?.Title && (
         <CentralizedSiteComposition
+        portfolioColor={portfolioColor}
           ItemDetails={EditData}
           RequiredListIds={RequireData}
           closePopupCallBack={ClosePopupCallBack}

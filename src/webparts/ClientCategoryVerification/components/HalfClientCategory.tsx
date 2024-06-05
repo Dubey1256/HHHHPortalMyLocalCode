@@ -843,7 +843,7 @@ const HalfClientCategory = (props: any) => {
                 cell: ({ row }) => (
                     <div className='mt--3'>
                         <span>{row?.original?.siteCompositionSearch}</span>
-                        {row?.original?.ClientTime?.length > 0 ?
+                        {row?.original?.Sitestagging?.length > 0 ?
                             <span title="Edit Site Composition" onClick={() => { setSelectedItem(row?.original), setEditSiteCompositionStatus(true) }} className="alignIcon ms-1 svg__iconbox svg__icon--editBox"></span>
                             : ''}
                     </div>

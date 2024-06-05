@@ -7,9 +7,9 @@ import TaskStatusTbl from './TaskStausTable';
 import * as Moment from "moment";
 import PageLoader from '../../../globalComponents/pageLoader';
 import { map } from "jquery";
-
 var taskUsers: any;
 let GroupByUsers: any = [];
+let AllUsers: any = [];
 let AllMasterTasks: any[] = [];
 var currentUserData: any = {};
 let DashboardConfig: any = [];
@@ -208,7 +208,7 @@ const EmployeProfile = (props: any) => {
       AllMasterTasks?.map((items: any) => {
         items.descriptionsSearch = '';
         items.SiteIconTitle = items?.Item_x0020_Type == "Sprint" ? "X" : items?.Item_x0020_Type.charAt(0);
-        if (items?.FeedBack != undefined) {
+        if (items?.FeedBack != undefined && Array.isArray(items?.FeedBack)) {
           let DiscriptionSearchData: any = '';
           let feedbackdata: any = JSON.parse(items?.FeedBack)
           DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
@@ -365,6 +365,7 @@ const EmployeProfile = (props: any) => {
       taskUsers = await globalCommon.loadAllTaskUsers(props?.props);
       let mailApprover: any;
       let currentUserId: any = props?.props?.Context?.pageContext?.legacyPageContext?.userId
+      AllUsers = taskUsers?.filter((user: any) => user?.AssingedToUserId != undefined && user?.AssingedToUserId != '' && user?.UserGroup != undefined && user?.UserGroup?.Title != "Ex Staff" && user?.ItemType === 'User');
       taskUsers?.map((item: any) => {
         item.Tasks = [];
         item.IsShowTask = false;
@@ -517,11 +518,60 @@ const EmployeProfile = (props: any) => {
           config.LoadDefaultFilter = false;
           if (config?.DataSource == 'Tasks') {
             if (Array.isArray(array) && array.length > 0) {
-              array.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
-                if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id === currentUserData?.AssingedToUser?.Id)) {
-                  config.Tasks.push(task);
+              if (config['selectUserFilterType'] && !config['FilterType']) {
+                array.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
+                  if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id === currentUserData?.AssingedToUser?.Id)) {
+                    config.Tasks.push(task);
+                  }
+                });
+              }
+              if (!config['selectUserFilterType'] && !config['FilterType']) {
+                config.Tasks = array.filter((item: any) => item?.PercentComplete == config?.Status);
+              }
+              if (config['FilterType']) {
+                if (config['FilterType'] == 'Priority') {
+                  config.Tasks = array.filter((item: any) => item?.PriorityRank == config?.Status);
                 }
-              });
+                if (config['FilterType'] == 'Sites') {
+                  config.Tasks = array.filter((item: any) => item?.siteType == config?.Status);
+                }
+                if (config['FilterType'] == 'Actions') {
+                  if (Array.isArray(array) && array.length) {
+                    array.forEach((task: any) => {
+                      if (task?.WorkingAction?.length) {
+                        task?.WorkingAction?.forEach((Action: any) => {
+                          if (Action?.Title != undefined && config?.Status != undefined && Action?.Title == config?.Status) {
+                            if ((config?.UserId == undefined || config?.UserId == '') && !isTaskItemExists(config.Tasks, task))
+                              config.Tasks.push(task);
+                            if (config?.UserId != undefined && config?.UserId != '' && Action?.InformationData?.length) {
+                              Action?.InformationData?.map((UserInfo: any) => {
+                                if (UserInfo?.TaggedUsers?.AssingedToUserId != undefined && config?.UserId == UserInfo?.TaggedUsers?.AssingedToUserId && !isTaskItemExists(config.Tasks, task)) {
+                                  config.Tasks.push(task);
+                                }
+                              })
+                            }
+                          }
+                        });
+                      }
+                    });
+                  }
+                }
+                if (config['FilterType'] == 'Categories') {
+                  if (config?.Status && Array.isArray(array) && array.length) {
+                    config.Status.forEach((FilterCat: any) => {
+                      array.forEach((task: any) => {
+                        if (task?.TaskCategories?.length) {
+                          task.TaskCategories.forEach((category: any) => {
+                            if (category?.Id && FilterCat?.Id && category.Id === FilterCat.Id && !isTaskItemExists(config.Tasks, task)) {
+                              config.Tasks.push(task);
+                            }
+                          });
+                        }
+                      });
+                    });
+                  }
+                }
+              }
             }
           }
           if (config?.DataSource == 'Project') {
@@ -545,23 +595,11 @@ const EmployeProfile = (props: any) => {
         }
         else if (config?.selectFilterType == 'custom') {
           config.LoadDefaultFilter = false;
-          taskUsers?.map((item: any) => {
-            if (item[config['Status']] != undefined && Array.isArray(item[config['Status']]) && item[config['Status']]?.length > 0) {
-              item[config['Status']].forEach((teamMember: any) => {
-                if (teamMember?.Id === props?.props?.Context?.pageContext?.legacyPageContext?.userId && !isTaskUserExist(LoginUserTeamMembers, item) && item?.ItemType != 'Group')
-                  LoginUserTeamMembers.push(item)
-              })
-            }
-            else if (item[config['Status']] != undefined && typeof item[config['Status']] === 'object' && item[config['Status']] !== null) {
-              if ((item[config['Status']]?.Id == props?.props?.Context?.pageContext?.legacyPageContext?.userId || item[config['Status']]?.Id == currentUserData?.Id) && !isTaskUserExist(LoginUserTeamMembers, item) && item?.ItemType != 'Group')
-                LoginUserTeamMembers.push(item)
-            }
-          })
-          if (!isTaskUserExist(LoginUserTeamMembers, currentUserData))
-            LoginUserTeamMembers.unshift(currentUserData)
-          config.Tasks = LoginUserTeamMembers;
-          if (config?.Tasks != undefined && config?.Tasks?.length > 0) {
-            config?.Tasks.map((User: any) => {
+
+          if (!isTaskUserExist(AllUsers, currentUserData))
+            AllUsers.unshift(currentUserData)
+          if (AllUsers != undefined && AllUsers?.length > 0) {
+            AllUsers.map((User: any) => {
               User.TotalTask = 0;
               User.TotalEstimatedTime = 0;
               User.dates = JSON.parse(JSON.stringify(dates));
@@ -649,6 +687,25 @@ const EmployeProfile = (props: any) => {
               // })
             })
           }
+          AllUsers?.map((item: any) => {
+            if (item[config['Status']] != undefined && Array.isArray(item[config['Status']]) && item[config['Status']]?.length > 0) {
+              item[config['Status']].forEach((teamMember: any) => {
+                if (teamMember?.Id === props?.props?.Context?.pageContext?.legacyPageContext?.userId && !isTaskUserExist(LoginUserTeamMembers, item) && item?.ItemType != 'Group')
+                  LoginUserTeamMembers.push(item)
+              })
+            }
+            else if (item[config['Status']] != undefined && typeof item[config['Status']] === 'object' && item[config['Status']] !== null) {
+              if ((item[config['Status']]?.Id == props?.props?.Context?.pageContext?.legacyPageContext?.userId || item[config['Status']]?.Id == currentUserData?.Id) && !isTaskUserExist(LoginUserTeamMembers, item) && item?.ItemType != 'Group')
+                LoginUserTeamMembers.push(item)
+            }
+          })
+          let loggedInUser: any = AllUsers?.filter((user: any) => user?.AssingedToUserId != undefined && user?.AssingedToUserId != '' && user?.AssingedToUserId == currentUserData?.AssingedToUser?.Id)[0];
+          // let loggedInUser: any = AllUsers?.filter((user: any) => { user?.AssingedToUserId != undefined && user?.AssingedToUserId == currentUserData?.AssingedToUser?.Id })[0]
+          if (!isTaskUserExist(LoginUserTeamMembers, loggedInUser))
+            LoginUserTeamMembers.unshift(loggedInUser)
+          config.Tasks = LoginUserTeamMembers;
+          config.BackupTask = LoginUserTeamMembers;
+          config.AllUserTask = AllUsers
         }
         if (filteredConfig == undefined || filteredConfig == '')
           setIsCallContext(true);
@@ -677,6 +734,24 @@ const EmployeProfile = (props: any) => {
                       entry.CreatedServerDate = undefined
                       if (entry.AdditionalTimeEntry != undefined && entry.AdditionalTimeEntry?.length > 0) {
                         entry.AdditionalTimeEntry?.map((TimeEntry: any, index: any) => {
+                          TimeEntry.SiteIcon = '';
+                          TimeEntry.TaskID = '';
+                          if (array?.length) {
+                            array?.map((task: any) => {
+                              if (task?.siteType != undefined && task?.siteType?.toLowerCase() == "offshore tasks")
+                                task.LookupColumn = "Offshore Tasks";
+                              task.LookupColumn = task?.siteType;
+                              let ColumnName = "Task" + task?.LookupColumn.replace(" ", "");
+                              if (entry[ColumnName] != undefined && entry[ColumnName].Title != undefined) {
+                                if (entry[ColumnName].Id != undefined && entry[ColumnName].Id == task?.Id) {
+                                  TimeEntry.SiteIcon = task?.SiteIcon;
+                                  TimeEntry.TaskID = task?.TaskID;
+                                  TimeEntry.Site = task?.siteType;
+                                  TimeEntry.TaskItem = task;
+                                }
+                              }
+                            })
+                          }
                           TimeEntry.timeSheetsDescriptionSearch = '';
                           TimeEntry.UpdatedId = entry?.Id;
                           TimeEntry.timeSheetsDescriptionSearch = TimeEntry?.Description
@@ -706,10 +781,17 @@ const EmployeProfile = (props: any) => {
                               }
                             })
                           }
-                          if (TimeEntry?.sortTaskDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == TimeEntry?.sortTaskDate.getTime() && TimeEntry?.Status == 'For Approval') {
-                            TempArray.push(TimeEntry)
-                            if (!isItemExists(AllTimeEntry, entry.Id))
-                              AllTimeEntry.push(entry);
+                          if (TimeEntry?.sortTaskDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == TimeEntry?.sortTaskDate.getTime()) {
+                            if (TimeEntry?.Status == 'For Approval' && config?.Status != "My TimSheet") {
+                              TempArray.push(TimeEntry)
+                              if (!isItemExists(AllTimeEntry, entry.Id))
+                                AllTimeEntry.push(entry);
+                            }
+                            else if (TimeEntry?.Status == 'Draft' && config?.Status == "My TimSheet") {
+                              TempArray.push(TimeEntry)
+                              if (!isItemExists(AllTimeEntry, entry.Id))
+                                AllTimeEntry.push(entry);
+                            }
                           }
                         })
                       }
@@ -734,6 +816,10 @@ const EmployeProfile = (props: any) => {
                         TeamMember.push(item)
                     }
                   })
+                  if (config?.Status == "My TimSheet") {
+                    TeamMember = [];
+                    TeamMember.push(currentUserData)
+                  }
                   if (TempArray != undefined && TempArray?.length > 0 && TeamMember?.length > 0) {
                     TeamMember?.map((User: any) => {
                       TempArray?.map((TimeEntry: any) => {
@@ -841,7 +927,7 @@ const EmployeProfile = (props: any) => {
       await globalCommon?.loadAllSiteTasks(props?.props, undefined).then((data: any) => {
         data?.map((items: any) => {
           items.descriptionsSearch = '';
-          if (items?.FeedBack != undefined) {
+          if (items?.FeedBack != undefined && Array.isArray(items?.FeedBack)) {
             let DiscriptionSearchData: any = '';
             let feedbackdata: any = JSON.parse(items?.FeedBack)
             DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {

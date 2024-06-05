@@ -296,7 +296,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         if ((index == taskDetails["TaskCategories"]?.length - 1) || (taskDetails["TaskCategories"].length == 1)) {
           category = category + item?.Title
         } else {
-          category = category + item?.Title + ";"
+          category = category + item?.Title + "; "
         }
 
         let ApprovalCheck = category?.search("Approval");
@@ -379,6 +379,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     let Bottleneck: any = [];
     let Attention: any = [];
     let Phone: any = [];
+    taskDetails["IsTodaysTask"]=false;
     if (WorkingAction?.length > 0) {
       WorkingAction?.map((Action: any) => {
         if (Action?.Title == "Bottleneck") {
@@ -389,6 +390,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         }
         if (Action?.Title == "Phone") {
           Phone = Action?.InformationData;
+        }
+        if(Action?.Title == "WorkingDetails"){
+          let currentDate = moment(new Date()).format("DD/MM/YYYY")
+          Action?.InformationData?.map((isworkingToday:any)=>{
+            if(isworkingToday?.WorkingDate==currentDate && isworkingToday?.WorkingMember?.length>0){
+              taskDetails["IsTodaysTask"]=true
+            }
+          })
         }
       })
     }
@@ -406,7 +415,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       projectPriorityOnHover: '',
       taskPriorityOnHover: taskDetails?.PriorityRank != undefined ? taskDetails?.PriorityRank : undefined,
       showFormulaOnHover: taskDetails?.showFormulaOnHover != undefined ? taskDetails?.showFormulaOnHover : undefined,
-
+      WorkingAction:taskDetails["WorkingAction"],
       Approvee: taskDetails?.Approvee != undefined ? this.taskUsers.find((userData: any) => userData?.AssingedToUser?.Id == taskDetails?.Approvee?.Id) : undefined,
       TaskCategories: taskDetails["TaskCategories"],
       Project: taskDetails["Project"],
@@ -1885,6 +1894,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         ActionType: ActionType,
         ReasonStatement: InfoData.Comment,
         UpdatedDataObject: this.state.Result,
+        RequiredListIds:AllListId
       }
       GlobalFunctionForUpdateItems.MSTeamsReminderMessage(RequiredData);
       alert("The reminder has been sent to the user.");
@@ -1918,7 +1928,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef, user: this?.taskUsers, ColorCode: this.state.Result["Portfolio"]?.PortfolioType?.Color }}>
         <div className='taskprofilesection'>
           <section className='ContentSection'> {this.state.breadCrumData != undefined &&
-            <div className='row'>
+            <div className='row m-0'>
               <div className="col-sm-12 p-0 ">
 
                 <ul className="webbreadcrumbs ">
@@ -1981,8 +1991,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
               </div>
             </div>
           }
-            <section className='row p-0 '>
-              <h2 className="heading d-flex ps-0 justify-content-between align-items-center task-title">
+            <section className='row m-0'>
+              <h2 className="heading d-flex p-0 justify-content-between align-items-center task-title">
                 <span className='alignCenter'>
                   {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}
                   {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
@@ -2010,7 +2020,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
               </h2>
             </section>
             <section>
-              <div className='row'>
+              <div className='row m-0'>
                 <div className="col-9">
                   <div className="team_member row">
                     <div className='col-md-8 taskidsection'>
@@ -2392,7 +2402,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           <dt className='bg-Fa'>Portfolio Item</dt>
                           <dd className='bg-Ff full-width columnFixedTitle pe-0'>
                             {this.state?.TagConceptPaper?.length > 0 &&
-                              <a href={this.state?.TagConceptPaper[0].EncodedAbsUrl}>
+                              <a href={`${this.state?.TagConceptPaper[0].EncodedAbsUrl}?web=1`}  target='_blank' data-interception="off">
                                 <span className={`alignIcon svg__iconbox svg__icon--${this.state?.TagConceptPaper[0]?.File_x0020_Type}`} title={this.state?.TagConceptPaper[0]?.File_x0020_Type}></span>
                               </a>
                             }
@@ -2581,7 +2591,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                     }
                                     return (
                                       <>
-                                        <div className='bg-white p-2'>
+                                        <div className='bg-white p-2 rounded-1'>
                                           <div className="col mb-2">
                                             <div className='justify-content-between d-flex'>
                                               <div className="alignCenter m-0">
@@ -2996,7 +3006,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                   </section>
                 </div>
-                <div className="col-3">
+                <div className="col-3 pe-0">
                   <div>
                     {this.state.Result != undefined && AllListId != undefined && <CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context} counter={this.state.counter}></CommentCard>}
                     {this.state.Result?.Id != undefined && AllListId != undefined && <>
@@ -3013,13 +3023,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
           <section className='TableContentSection'>
             {console.log("context data ================", myContextValue)}
 
-            <div className="row">
+            <div className="row m-0">
               {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.TaskTypeTitle != "" && this.state.Result.TaskTypeTitle != undefined && this.state.Result.TaskTypeTitle != 'Task' ?
                 //  <TasksTable props={this.state.Result} AllMasterTasks={this.masterTaskData} AllSiteTasks={this.allDataOfTask} AllListId={AllListId} Context={this.props?.Context} />
                 <RadimadeTable tableId="TaskProfilegit" AllListId={AllListId} configration={"AllAwt"} SelectedSiteForTask={[this.state?.listName]} SelectedItem={this.state.Result}></RadimadeTable>
                 : ''}
             </div>
-            <div className='row'>
+            <div className='row m-0'>
 
               {this.state.Result != undefined &&
                 <div className="ItemInfo mb-20" style={{ paddingTop: '15px' }}>

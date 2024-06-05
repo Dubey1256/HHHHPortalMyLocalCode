@@ -16,17 +16,21 @@ import { myContextValue } from "../../../globalComponents/globalCommon";
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import EditorComponent from '../../../globalComponents/HtmlEditor/CopyHtmlEditor';
 import { ContentState, EditorState, Modifier } from 'draft-js';
+import { SlArrowDown, SlArrowRight, SlArrowUp } from 'react-icons/sl';
+import { event } from 'jquery';
 let AllTasktagsmartinfo: any = [];
 let hhhsmartinfoId: any = [];
 let taskUser: any = [];
 let mastertaskdetails: any = [];
 let addSmartInfoPopupAddlinkDoc2 = false;
-let count = 0;
+let count = 5;
+// let copySmartInfo: any = [];
 const SmartInformation = (props: any, ref: any) => {
   const myContextData2: any = React.useContext<any>(myContextValue)
   const [show, setShow] = useState(false);
   const [popupEdit, setpopupEdit] = useState(false);
-  const [smartInformationArrow, setsmartInformationArrow] = useState(true);
+  const [smartInformationArrow, setsmartInformationArrow] = useState(false);
+  const [copySmartInfo, setcopySmartInfo] = useState([])
   const [allValue, setallSetValue] = useState({
     Title: "", Id: 1021, URL: "", Acronym: "", Description: "", InfoType: "Information Note", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
   })
@@ -35,7 +39,8 @@ const SmartInformation = (props: any, ref: any) => {
     { text: 'MS Teams', key: 1 },
     { text: 'Call', key: 2 },
     { text: 'Email', key: 3 },
-    { text: 'Task', key: 4 }
+    { text: 'Task', key: 4 },
+    { text: 'F2F Discussion', key: 5 }
   ]
   const initialState = () => EditorState.createEmpty();
   const [editorState, setEditorState] = useState(initialState);
@@ -66,6 +71,8 @@ const SmartInformation = (props: any, ref: any) => {
   const [Today, setToday] = useState(moment().format("DD/MM/YYYY"));
   const [folderCreated, setFolderCreated] = useState(true);
   const [sourceTitle, setsourceTitle] = useState('');
+  const [searchvalue, setsearchvalue] = useState('');
+  const [colunOredrAsc, setcolunOredrAsc] = React.useState("")
   const [state, rerender] = React.useReducer(() => ({}), {});
   const handleClose = () => {
     if (addSmartInfoPopupAddlinkDoc2 == false) {
@@ -342,14 +349,14 @@ const SmartInformation = (props: any, ref: any) => {
             console.log(items)
             allSmartInformationglobaltagdocuments.push(items)
 
-            if (allSmartInformationglobal?.length == allSmartInformationglobaltagdocuments?.length) {
-              setSmartInformation((prev: any) => [...prev, ...allSmartInformationglobaltagdocuments]);
-              if (props.showHide === "projectManagement" || props.showHide == "ANCTaskProfile") {
-                if (props?.callback != undefined || null) {
-                  props?.callback()
-                }
+            if (allSmartInformationglobal.length == allSmartInformationglobaltagdocuments.length) {
+              let initialData = allSmartInformationglobaltagdocuments.slice(0, 5);
+              setSmartInformation(initialData);             
+              if (addSmartInfoPopupAddlinkDoc2 && (props.showHide === "projectManagement" || props.showHide === "ANCTaskProfile")) {
+                props?.callback?.();
+                addSmartInfoPopupAddlinkDoc2 = false;
               }
-              rerender();
+              setcopySmartInfo(allSmartInformationglobaltagdocuments);
             }
 
           }).catch((err) => {
@@ -748,10 +755,25 @@ const SmartInformation = (props: any, ref: any) => {
   //===============create folder function========================
 
   const createFolder = async (folderName: any) => {
+    const web: any = new Web(props?.AllListId?.siteUrl);    
     if (folderName != "") {
       var libraryName = "Documents";
-      var newFolderResult = await sp.web?.rootFolder?.folders.getByName(libraryName).folders.add(folderName);
+      var newFolderResult = await web?.rootFolder?.folders.getByName(libraryName).folders.add(folderName);
       console.log("Four folders created", newFolderResult);
+      // try {
+      //   const libraryName = "Documents";
+      //   const folders = web?.rootFolder?.folders;
+
+      //   if (folders) {
+      //     const libraryFolder = await folders.getByName(libraryName);
+      //     await libraryFolder.folders.add(folderName);
+      //     console.log("Folder created successfully.");
+      //   } else {
+      //     console.error("Unable to access folders.");
+      //   }
+      // } catch (error) {
+      //   console.error("Error creating folder:", error);
+      // }
     }
     uploadDocumentFinal(folderName);
   }
@@ -791,15 +813,7 @@ const SmartInformation = (props: any, ref: any) => {
   // ===========get file upload data and Id ============= .
 
   const getAll = async (folderName: any, folderPath: any) => {
-    const web: any = new Web(props?.AllListId?.siteUrl);
-    try {
-      const currentUrl = web._url;
-      const adjustedUrl = currentUrl?.replace("/SitePages", "");
-      web._url = adjustedUrl;
-    }
-    catch (e) {
-      console.log(e)
-    }
+    const web: any = new Web(props?.AllListId?.siteUrl);    
     let fileName: any = "";
     if (allValue?.fileupload != "") {
       fileName = allValue?.fileupload;
@@ -884,7 +898,7 @@ const SmartInformation = (props: any, ref: any) => {
         .then((res: any) => {
           console.log(res);
           alert("task created")
-          addSmartInfoPopupAddlinkDoc2 = false;
+          // addSmartInfoPopupAddlinkDoc2 = false;
           GetResult();
           handleClose();
           setshowAdddocument(false)
@@ -932,6 +946,7 @@ const SmartInformation = (props: any, ref: any) => {
   //======taskpopup call back function =====
   const CallBack = () => {
     setallSetValue({ ...allValue, EditTaskpopupstatus: false })
+    GetResult()
   }
   //================all Task load function ===========
   const GetAllTask = (smartinfoData: any) => {
@@ -1091,6 +1106,59 @@ const SmartInformation = (props: any, ref: any) => {
 
   }, [])
 
+  //************************ Searching , Sorting and showmore SmartNote ******************************/
+  const IsitemExists = function (array: any, Item: any) {
+    var isExists = false;
+    array.map((item: any) => {
+      if (item.Id === Item.Id) {
+        isExists = true;
+        return false;
+      }
+    });
+    return isExists;
+  }
+  const handlesearchingvalue = (event: any) => {
+    const value = event.target.value;
+    let filtersmartvalue: any = [];    
+    setsearchvalue(event.target.value)
+    if (value) {
+      copySmartInfo.map((val: any) => {
+        if (val?.Title?.toLowerCase()?.indexOf(value?.toLowerCase()) > -1 || val?.Title.toLowerCase() === value?.toLowerCase()) {
+          if (!IsitemExists(filtersmartvalue , val) )
+            filtersmartvalue.push(val)
+        }        
+      })
+    }
+    else {
+      filtersmartvalue = copySmartInfo;
+    }
+    setSmartInformation(filtersmartvalue)
+  }
+
+
+  const sortByAsc = (type: any) => {
+    let array = [...SmartInformation]; 
+    let sortarray: any = [];   
+    if (type === "asc") {
+      sortarray = array.sort((a: any, b: any) => { return a.Title.localeCompare(b.Title) });
+    } else {
+      sortarray = array.sort((a: any, b: any) => { return b.Title.localeCompare(a.Title) });
+    }
+    setcolunOredrAsc(type);
+    setSmartInformation(array);
+  };
+
+  const showMoreInfo = () => {
+    count += 5;
+    let Infodata = copySmartInfo;
+    if (count > 0 && Infodata?.length > 0) {
+      let myInfodata = [];
+      for (let i = 0; i < count && i < Infodata.length; i++) {
+        myInfodata.push(Infodata[i]);
+      }
+      setSmartInformation(myInfodata);
+    }
+  };
   //============ update documents link update both  function =============
 
 
@@ -1112,49 +1180,55 @@ const SmartInformation = (props: any, ref: any) => {
 
   const closeDoc = () => {
     addSmartInfoPopupAddlinkDoc2 = false;
-    handleClose()
     if (props.showHide === "projectManagement" || props.showHide == "ANCTaskProfile") {
       if (props?.callback != undefined || null) {
         props?.callback()
       }
     }
+    handleClose()
 
   }
-  return (
+  return (   
     <div>
 
       {(props?.showHide != "projectManagement" && SmartInformation?.length > 0) && <div className='mb-3 card commentsection'>
         <div className='card-header'>
           <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation
             <span className='alignCenter'>
-              <span onClick={() => handleShow(null, "add")} className='svg__iconbox svg__icon--Plus mini hreflink' title="Add SmartInformation"></span>
+              <span onClick={() => handleShow(null, "add")} className='svg__iconbox svg__icon--Plus mini hreflink text-bg-light' title="Add SmartInformation"></span>
               <Tooltip ComponentId='993' /></span></div>
         </div>
-
-        {SmartInformation != null && SmartInformation.length > 0 && <div className="p-2">{SmartInformation?.map((SmartInformation: any, i: any) => {
+        <div className='sortinginput'>
+          <input type='text' className='full-width' placeholder='Title' value={searchvalue} onChange={(e)=>handlesearchingvalue(e)}></input>
+          <div className='defultSortingIcons'>
+            <div className='upArrow'><SlArrowDown onClick={() => sortByAsc("asc")} /></div> <div className='downArrow'><SlArrowUp onClick={() => sortByAsc("desc")} /></div>
+          </div>
+        </div>
+        {SmartInformation != null && SmartInformation.length > 0  && <div className="subiteminfo">{SmartInformation?.map((SmartInformation: any, i: any) => {
           if ((props?.Context?.pageContext?.legacyPageContext?.userId == SmartInformation?.Author?.Id && SmartInformation?.SelectedFolder == "Only For Me") || SmartInformation.SelectedFolder == "Public") {
             return (
               <>
-                <div className='border dropdown mt-2 '>
-                  <div className='bg-ee d-flex py-1 '>
+                <div className='infoitem'>
+                  <div className='bgyellow  d-flex py-1 '>
                     <span className='full-width'>
-                      <a onClick={() => showhideComposition(SmartInformation)}>
-                        <span >{smartInformationArrow ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span >
+                      <a className='d-flex' onClick={() => showhideComposition(SmartInformation)}>
+                        <span className='px-1 alignCenter'>{smartInformationArrow ? <SlArrowDown /> : <SlArrowRight />}</span >
                         <span className="pe-3">{SmartInformation?.Title != undefined ? SmartInformation?.Title : ""}</span>
                       </a>
 
                     </span>
                     <span className='alignCenter'>
-                      <a style={{ cursor: "pointer" }}
-                        onClick={() => handleShow(SmartInformation, "edit")}>
-                        <span className='svg__iconbox svg__icon--editBox hreflink' title="Edit SmartInformation"></span></a>
                       <a style={{ cursor: "pointer" }} onClick={() => addDocument("AddDocument", SmartInformation)}>
                         <span className='svg__iconbox svg__icon--Plus mini hreflink' title="Add Document"></span>
                       </a>
+                      <a style={{ cursor: "pointer" }}
+                        onClick={() => handleShow(SmartInformation, "edit")}>
+                        <span className='svg__iconbox svg__icon--editBox hreflink' title="Edit SmartInformation"></span></a>
+                    
                     </span>
                   </div>
 
-                  <div className="border-0 border-bottom m-0 spxdropdown-menu" style={{ display: smartInformationArrow ? 'block' : 'none', fontSize: "small" }}>
+                  <div className="border-0 border-bottom m-0 bgLightyellow" style={{ display: smartInformationArrow ? 'block' : 'none', fontSize: "small" }}>
                     <div className="p-1 px-2" style={{ fontSize: "small" }} dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
                     {SmartInformation?.TagDocument != undefined && SmartInformation?.TagDocument?.length > 0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
                       return (
@@ -1204,11 +1278,12 @@ const SmartInformation = (props: any, ref: any) => {
                         </div>
                       )
                     })}
+
+                    <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : ""}</span> </div>
                   </div>
-                  <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Author?.Id)} title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url} /> : ""}</span></div>
-                  <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : ""}</span></div>
+                  {/* <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Author?.Id)} title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url} /> : ""}</span></div> */}
                 </div>
-                <div></div>
+
               </>)
           }
 
@@ -1217,7 +1292,7 @@ const SmartInformation = (props: any, ref: any) => {
         </div>}
 
 
-
+        {(copySmartInfo != undefined && copySmartInfo?.length > 5 && copySmartInfo?.length !==  SmartInformation.length ) && <div className="showmorbtn hyperlink" onClick={showMoreInfo}> Show more Options</div>}
       </div>}
       {/* ================= smartInformation add and edit panel=========== */}
 

@@ -3011,7 +3011,9 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.projectStructerId = structureiddata;
                                     Items.Call(dataEditor, "UpdatedData");
                                 } else {
-                                    Items.Call(DataJSONUpdate, "UpdatedData");
+                                    if (usedFor !== "TimeSheetPopup") {
+                                        Items.Call(DataJSONUpdate, "UpdatedData");
+                                    }
                                 }
                             } else {
                                 if (usedFor !== "TimeSheetPopup") {

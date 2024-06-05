@@ -17,6 +17,7 @@ export interface IManagedashboardconfigWebPartProps {
   AdminConfigurationListId: string;
   TaskUserListId: string;
   Context: string;
+  SmartMetadataListID:any
 }
 
 export default class ManagedashboardconfigWebPart extends BaseClientSideWebPart<IManagedashboardconfigWebPartProps> {
@@ -35,6 +36,7 @@ export default class ManagedashboardconfigWebPart extends BaseClientSideWebPart<
         userDisplayName: this.context.pageContext.user.displayName,
         Context: this.context,
         AdminConfigurationListId: this.properties.AdminConfigurationListId,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
         TaskUserListId: this.properties.TaskUserListId,
       }
     );
@@ -120,7 +122,9 @@ export default class ManagedashboardconfigWebPart extends BaseClientSideWebPart<
                 PropertyPaneTextField("TaskUserListId", {
                   label: "TaskUserListId"
                 }),
-
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: "SmartMetadataListID"
+                }),
               ]
             }
           ]

@@ -16,6 +16,7 @@ export interface IHhhhSmartPagesWebPartProps {
   description: string;
   SitesListUrl: any,
   SmartMetadataListID: any;
+  siteName: any;
 }
 
 export default class HhhhSmartPagesWebPart extends BaseClientSideWebPart<IHhhhSmartPagesWebPartProps> {
@@ -33,6 +34,7 @@ export default class HhhhSmartPagesWebPart extends BaseClientSideWebPart<IHhhhSm
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         SitesListUrl: this.context.pageContext.web.absoluteUrl,
+        siteName: this.context.pageContext.web.title,
         SmartMetadataListID: this.properties.SmartMetadataListID,
       }
     );
@@ -61,7 +63,7 @@ export default class HhhhSmartPagesWebPart extends BaseClientSideWebPart<IHhhhSm
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-           
+
             default:
               environmentMessage = strings.UnknownEnvironment;
           }

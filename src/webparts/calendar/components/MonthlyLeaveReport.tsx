@@ -14,8 +14,10 @@ import { end } from '@popperjs/core';
 import moment from 'moment';
 import { Start } from '@mui/icons-material';
 
+
+
 let allReportData: any = [];
-let Short_x0020_Description_x0020_On: any = '';
+let Short_x0020_Description_x0020_On:any = '';
 let filteredData: any = [];
 let index: any = [];
 export const MonthlyLeaveReport = (props: any) => {
@@ -390,10 +392,6 @@ export const MonthlyLeaveReport = (props: any) => {
     const today = new Date();
 
     return matchedData.reduce((total: any, item: any) => {
-      // const endDate = new Date(item.EndDate);
-      // endDate.setHours(0,0,0,0);
-      // const eventDate = new Date(item.EventDate);
-      // eventDate.setHours(0,0,0,0);
       const timezoneOffset = item.EventDate.getTimezoneOffset();
       const timezoneOffsetInHours = timezoneOffset / 60;
       const adjustedEndDate = new Date(item.EndDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
@@ -566,7 +564,7 @@ export const MonthlyLeaveReport = (props: any) => {
         user.Id = users.Id;
         const PlanedEventDates = matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Planned Leave") {
-
+         
             let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
             let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
             // if (item.fAllDayEvent == false) {
@@ -582,7 +580,7 @@ export const MonthlyLeaveReport = (props: any) => {
           }
         }).filter((date: any) => date);
         let leavediscriptionPlanned: any = []
-        matchedData.map((item: any) => {
+          matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Planned Leave" && item.Title != undefined) {
             let eventDateFormat: any = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
             leavediscriptionPlanned.push({ Short_x0020_Description_x0020_On: item.Title, eventDate: eventDateFormat })
@@ -591,10 +589,10 @@ export const MonthlyLeaveReport = (props: any) => {
         let plannedLeaveString = `${PlanedEventDates.join(', ')}`;
         // let plannedDiscription = leavediscription
         const UnPlanedEventDates = matchedData.map((item: any) => {
-          if (item.Event_x002d_Type === "Un-Planned") {
+          if (item.Event_x002d_Type === "Un-Planned" || item.Event_x002d_Type === "Sick") {
             let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
             let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
-            // if (item.fAllDayEvent == false) {
+           // if (item.fAllDayEvent == false) {
             //   endDateFirst = endDateFirst.subtract(3, 'hours')
             //   item.EndDate = endDateFirst.utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
             // }
@@ -609,16 +607,16 @@ export const MonthlyLeaveReport = (props: any) => {
         }).filter((date: any) => date);
         let leavediscriptionUnPlanned: any = []
         matchedData.map((item: any) => {
-          if (item.Event_x002d_Type === "Un-Planned" && item.Title != undefined) {
+          if ((item.Event_x002d_Type === "Un-Planned" || item.Event_x002d_Type === "Sick") && item.Title != undefined) {
             let eventDateFormat: any = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
             leavediscriptionUnPlanned.push({ Short_x0020_Description_x0020_On: item.Title, eventDate: eventDateFormat })
-          }
-        })
+        }
+      })
         let UnplannedLeaveString = `${UnPlanedEventDates.join(', ')}`;
         //let UnplannedDiscription = Short_x0020_Description_x0020_On
         const MyHalfdayData = matchedData.filter((item: any) => item?.HalfDay === true || item?.HalfDayTwo === true)
         MyHalfdayData?.map((item: any) => {
-
+          
           const endDate = new Date(item.EndDate);
           endDate.setHours(endDate.getHours() - 9);
           endDate.setMinutes(endDate.getMinutes() - 30);
@@ -629,7 +627,7 @@ export const MonthlyLeaveReport = (props: any) => {
           item.EventDate = eventDate
         })
         const HalfdayEventDates = MyHalfdayData.map((item: any) => {
-
+          
           if (item.HalfDay === true || item.HalfDayTwo === true) {
             return moment(item.EventDate).format('DD/MM/YYYY');
           }
@@ -640,43 +638,45 @@ export const MonthlyLeaveReport = (props: any) => {
           if (item?.HalfDay === true || item?.HalfDayTwo === true && item.Title != undefined) {
             let eventDateFormat: any = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
             leavediscriptionHalfday.push({ Short_x0020_Description_x0020_On: item.Title, eventDate: eventDateFormat })
-          }
-        })
+        }
+      })
         let HalfplannedLeaveString = `${HalfdayEventDates.join(', ')}`;
         const MyRHdayData = matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Restricted Holiday") {
+       
+        let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+        // let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
+        // if (item.fAllDayEvent == false) {
+        //   endDateFirst = endDateFirst.subtract(3, 'hours')
+        //   item.EndDate = endDateFirst.utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+        // }
+        let endDate = moment(item.EndDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
 
-            let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-            // let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
-            // if (item.fAllDayEvent == false) {
-            //   endDateFirst = endDateFirst.subtract(3, 'hours')
-            //   item.EndDate = endDateFirst.utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
-            // }
-            let endDate = moment(item.EndDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-
-            if (startDate !== endDate) {
-              return `${startDate}-${endDate}`;
-            } else {
-              return startDate;
-            }
-          }
+        if (startDate !== endDate) {
+          return `${startDate}-${endDate}`;
+        } else {
+          return startDate;
+        }
+      }
         }).filter((date: any) => date);
-        let leavediscriptionRh: any = []
+        let leavediscriptionRh:any=[]
         matchedData.map((item: any) => {
-          if (item.Event_x002d_Type === "Restricted Holiday" && item.Title != undefined) {
-            let eventDateFormat: any = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-            leavediscriptionRh.push({ Short_x0020_Description_x0020_On: item.Title, eventDate: eventDateFormat })
-          }
-        })
+        if (item.Event_x002d_Type === "Restricted Holiday" && item.Title != undefined) {
+          let eventDateFormat:any=moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+          leavediscriptionRh.push({Short_x0020_Description_x0020_On:item.Title,eventDate:eventDateFormat}) 
+        }
+      })
         let RhplannedLeaveString = `${MyRHdayData.join(', ')}`;
 
         user.Plannedleave = calculatePlannedLeave(matchedData, "Planned Leave");
         user.Plannedleave = `${user.Plannedleave} ${plannedLeaveString.length != 0 ? ` ${plannedLeaveString} ` : ''} `
-
+        
         user.PlanedEventDates = PlanedEventDates
         user.leavediscriptionPlanned = leavediscriptionPlanned != undefined ? leavediscriptionPlanned : ''
-
-        user.unplannedleave = calculatePlannedLeave(matchedData, "Un-Planned");
+  
+        user.unplannedleave = calculatePlannedLeave(matchedData, ["Un-Planned", "Sick"]);
+       // user.unplannedleave = [...unplannedLeave, ...sickLeave].map(item => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
+        // user.unplannedleave = user.unplannedleave.map((item:any) => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
         user.unplannedleave = `${user.unplannedleave}${UnplannedLeaveString.length != 0 ? `[ ${UnplannedLeaveString} ]` : ''} `
         user.UnPlanedEventDates = UnPlanedEventDates
         user.leavediscriptionUnPlanned = leavediscriptionUnPlanned != undefined ? leavediscriptionUnPlanned : ''
@@ -688,7 +688,7 @@ export const MonthlyLeaveReport = (props: any) => {
         user.RestrictedHoliday = calculatePlannedLeave(matchedData, "Restricted Holiday");
         user.RestrictedHoliday = `${user.RestrictedHoliday}${RhplannedLeaveString.length != 0 ? `[ ${RhplannedLeaveString} ]` : ''} `
         user.MyRHdayData = MyRHdayData
-        user.leavediscriptionRh = leavediscriptionRh != undefined ? leavediscriptionRh : ''
+        user.leavediscriptionRh = leavediscriptionRh!=undefined ? leavediscriptionRh :''
         user.TotalLeave = calculateTotalWorkingDays(matchedData);
         if (startDate && endDate) {
           allReportData.push(user)
@@ -751,7 +751,7 @@ export const MonthlyLeaveReport = (props: any) => {
                               <input style={{ display: 'none' }} className="" type="checkbox" onClick={(e) => SelectedGroup(e, users)} />
                               {users?.ItemType == "Group" && users.Title != "User Experience Team" &&
                                 <>
-
+                                 
                                   {users.Title}
                                 </>
                               }
@@ -896,21 +896,21 @@ export const MonthlyLeaveReport = (props: any) => {
                       <tr key={index}>
                         <td className='py-2 text-break'>{index + 1}</td>
                         <td className='py-2 text-break'>{entry.Title}</td>
-                        <td><> {entry?.PlanedEventDates?.map((dateEvent: any) => {
-                          return (
-                            entry?.leavediscriptionPlanned?.map((item: any) => {
-                              return (
-                                dateEvent?.includes(item?.eventDate) ?
-                                  <span> {dateEvent}
-                                    <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
-
-                                    </InfoIconsToolTip>
-                                  </span> : ''
-                              )
-                            })
+                        <td><> { entry?.PlanedEventDates?.map((dateEvent:any)=>{
+                          return(
+                        entry?.leavediscriptionPlanned?.map((item:any)=>{
+                          return(
+                          dateEvent?.includes(item?.eventDate) ? 
+                          <span> {dateEvent} 
+                          <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
+                          
+                          </InfoIconsToolTip> 
+                          </span>:''
                           )
-                        })}
-                        </>
+                        })
+                        )
+                       })}
+                       </>
 
                         </td>
                         {/* <td className='py-2 text-break'>{entry.Plannedleave}
@@ -918,58 +918,58 @@ export const MonthlyLeaveReport = (props: any) => {
                           
                           </InfoIconsToolTip>
                         </td> */}
-                        <td><> {entry?.UnPlanedEventDates?.map((dateEvent: any) => {
-                          return (
-                            entry?.leavediscriptionUnPlanned?.map((item: any) => {
-                              return (
-                                dateEvent?.includes(item?.eventDate) ?
-                                  <span> {dateEvent}
-                                    <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
-
-                                    </InfoIconsToolTip>
-                                  </span> : ''
-                              )
-                            })
+                       <td><> { entry?.UnPlanedEventDates?.map((dateEvent:any)=>{
+                          return(
+                        entry?.leavediscriptionUnPlanned?.map((item:any)=>{
+                          return(
+                          dateEvent?.includes(item?.eventDate) ? 
+                          <span> {dateEvent} 
+                          <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
+                          
+                          </InfoIconsToolTip> 
+                          </span>:''
                           )
-                        })}
-                        </>
+                        })
+                        )
+                       })}
+                       </>
 
                         </td>
                         {/* <td className='py-2 text-break'>{entry.RestrictedHoliday}
                         </td> */}
-                        <td><> {entry?.MyRHdayData?.map((dateEvent: any) => {
-                          return (
-                            entry?.leavediscriptionRh?.map((item: any) => {
-                              return (
-                                dateEvent == item?.eventDate ?
-                                  <span> {item?.eventDate}
-                                    <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
-
-                                    </InfoIconsToolTip>
-                                  </span> : ''
-                              )
-                            })
+                        <td><> { entry?.MyRHdayData?.map((dateEvent:any)=>{
+                          return(
+                        entry?.leavediscriptionRh?.map((item:any)=>{
+                          return(
+                          dateEvent==item?.eventDate ? 
+                          <span> {item?.eventDate} 
+                          <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
+                          
+                          </InfoIconsToolTip> 
+                          </span>:''
                           )
-                        })}
-                        </>
+                        })
+                        )
+                       })}
+                       </>
 
                         </td>
                         {/* <td className='py-2 text-break'>{entry.Halfdayleave}</td> */}
-                        <td><> {entry?.HalfdayEventDates?.map((dateEvent: any) => {
-                          return (
-                            entry?.leavediscriptionHalfday?.map((item: any) => {
-                              return (
-                                dateEvent == item?.eventDate ?
-                                  <span> {item?.eventDate}
-                                    <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
-
-                                    </InfoIconsToolTip>
-                                  </span> : ''
-                              )
-                            })
+                        <td><> { entry?.HalfdayEventDates?.map((dateEvent:any)=>{
+                          return(
+                        entry?.leavediscriptionHalfday?.map((item:any)=>{
+                          return(
+                          dateEvent==item?.eventDate ? 
+                          <span> {item?.eventDate} 
+                          <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
+                          
+                          </InfoIconsToolTip> 
+                          </span>:''
                           )
-                        })}
-                        </>
+                        })
+                        )
+                       })}
+                       </>
 
                         </td>
                         <td className='py-2'>{entry.TotalLeave}</td>
