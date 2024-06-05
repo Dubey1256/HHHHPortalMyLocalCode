@@ -2767,7 +2767,7 @@ const EditTaskPopup = (Items: any) => {
                             <span>${CommonMsg}</span> 
                             <p></p>
                             <span>
-                            Task Link:  
+                            Task Title:  
                             <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
                             ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
                             </a>

@@ -2248,7 +2248,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         </section>
 
         {/* table secation artical */}
-        {data?.length > 0 && <RadimadeTable tableId="PortfolioProfile" AllListId={ContextValue} configration={"CSFAWT"} SelectedItem={data[0]} ComponentFilter={data[0]?.PortfolioType?.Title} TaskFilter={"PercentComplete lt '0.90' or PercentComplete eq null "}></RadimadeTable>}
+        {data?.length > 0 && <RadimadeTable portfolioColor={portfolioColor} tableId="PortfolioProfile" AllListId={ContextValue} configration={"CSFAWT"} SelectedItem={data[0]} ComponentFilter={data[0]?.PortfolioType?.Title} TaskFilter={"PercentComplete lt '0.90' or PercentComplete eq null "}></RadimadeTable>}
         {/* {data.map((item: any) => (
           <ComponentTable
             props={item}
