@@ -19,7 +19,6 @@ import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import SendEmailEODReport from './SendEmailEODReport';
 import SmartPriorityToolTip from '../../../globalComponents/SmartPriorityTooltip';
 import SmartPriorityHover from '../../../globalComponents/EditTaskPopup/SmartPriorityHover';
-
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -77,6 +76,7 @@ const TaskDashboard = (props: any) => {
     const [thisWeekTasks, setThisWeekTasks] = React.useState([]);
     const [bottleneckTasks, setBottleneckTasks] = React.useState([]);
     const [assignedApproverTasks, setAssignedApproverTasks] = React.useState([]);
+    const [workingEmailVisibility, setWorkingEmailVisibility] = React.useState(false);
     const [value, setValue] = React.useState([]);
     const [NameTop, setNameTop] = React.useState("");
     const [groupedUsers, setGroupedUsers] = React.useState([]);
@@ -132,6 +132,7 @@ const TaskDashboard = (props: any) => {
         //    loadTodaysLeave();
         getCurrentUserDetails();
         createDisplayDate();
+        workingEmailPermission();
         try {
             $('#spPageCanvasContent').removeClass();
             $('#spPageCanvasContent').addClass('hundred')
@@ -232,6 +233,18 @@ const TaskDashboard = (props: any) => {
     }
 
     //End
+
+    // code by Anupam 
+
+    const workingEmailPermission = async () => {
+        let IsWorkingEmailButtonVisible = await globalCommon.verifyComponentPermission("TaskDashboardWorkingEmail")
+        setWorkingEmailVisibility(IsWorkingEmailButtonVisible) 
+    }
+
+    const workingEmailRecipients = async () => {
+        let EmailRecipients = await globalCommon.LoadAllNotificationConfigrations("TaskDashboardWorkingEmail", AllListId)
+        return EmailRecipients
+    }
 
 
     const loadAllTimeEntry = async () => {
@@ -1929,10 +1942,13 @@ const TaskDashboard = (props: any) => {
 
 
     }
-    const sendAllWorkingTodayTasks = () => {
+    const sendAllWorkingTodayTasks = async () => {
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
-        // let to: any = ["prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de"];
+        let emailRecipients: any = await workingEmailRecipients();
+        let workingTodayEmails = emailRecipients.map((recipient: any) => recipient.Email).join(", ");
+        
+        // let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
+        let to: any = [workingTodayEmails];
         let finalBody: any = [];
         let userApprover = '';
         let taskCount = 0;
@@ -2011,23 +2027,26 @@ const TaskDashboard = (props: any) => {
                                     }
 
 
-                                    text = `<tr>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.PercentComplete} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${EstimatedTimeEntry} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${EstimatedTimeEntryDesc} </td>
-                                    </tr>`
-                                    body1.push(text);
+                                    if (EstimatedTimeEntry > 0) {
+                                        text = `<tr>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.PercentComplete} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${EstimatedTimeEntry} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${EstimatedTimeEntryDesc} </td>
+                                        </tr>`
+                                        body1.push(text);
+                                    }
                                 })
-                                body =
-                                    '<h3><strong>'
-                                    + teamMember?.Title + ` (${teamMember?.Group != null ? teamMember?.Group : ''}) - ${UserTotalTime} hrs Scheduled`
-                                    + '</strong></h3>'
-                                    + ` <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
+                                if (body1?.length > 0) {
+                                    body =
+                                        '<h3><strong>'
+                                        + teamMember?.Title + ` (${teamMember?.Group != null ? teamMember?.Group : ''}) - ${UserTotalTime} hrs Scheduled`
+                                        + '</strong></h3>'
+                                        + ` <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
                                     <thead>
                                     <tr>
                                     <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Site</th>
@@ -2044,7 +2063,9 @@ const TaskDashboard = (props: any) => {
                                     ${body1}
                                     </tbody>
                                     </table>`
-                                body = body.replaceAll('>,<', '><').replaceAll(',', '')
+                                    body = body.replaceAll('>,<', '><').replaceAll(',', '')
+                                }
+
                             } else {
                                 body = '<h3><strong>'
                                     + teamMember?.Title + ` (${teamMember?.Group != null ? teamMember?.Group : ''})`
@@ -2171,7 +2192,7 @@ const TaskDashboard = (props: any) => {
                                     <li className="nav__item  pb-1 pt-0">
 
                                     </li>
-                                    {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Santosh Kumar" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
+                                    {workingEmailVisibility ?
                                         <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
                                             Share Everyone's Today's Task
                                         </a> : ''}
