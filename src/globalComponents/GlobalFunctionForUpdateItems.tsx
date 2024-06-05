@@ -931,7 +931,7 @@ export const SendApprovalEmailNotificationComponent = (props: any) => {
 const joinObjectValues = (arr: any) => {
     let val = '';
     arr.forEach((element: any) => {
-        val += element.Title + ';'
+        val += element.Title + '; '
     });
     let FinalUserNames: string = '';
     if (val?.length > 14) {
