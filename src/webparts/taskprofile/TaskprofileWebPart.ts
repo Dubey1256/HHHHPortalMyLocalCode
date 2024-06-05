@@ -6,6 +6,7 @@ import {
   IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
+import { FluentProvider, webLightTheme } from '@fluentui/react-components'
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
@@ -47,31 +48,34 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
   }
 
   public render(): void {
-    const element: React.ReactElement<ITaskprofileProps> = React.createElement(
-      Taskprofile,
-      {
-        description: this.properties.description,
-        isDarkTheme: this._isDarkTheme,
-        environmentMessage: this._environmentMessage,
-        hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName,
-        siteUrl: this.context.pageContext.web.absoluteUrl,
-        // loginName:this.context.pageContext.user.loginName,
-        Context: this.context,
-        MasterTaskListID: this.properties.MasterTaskListID,
-        TaskUserListID: this.properties.TaskUserListID,
-        SmartMetadataListID: this.properties.SmartMetadataListID,
-        SmartInformationListID: this.properties.SmartInformationListID,
-        PortFolioTypeID:this.properties.PortFolioTypeID,
-        DocumentsListID: this.properties.DocumentsListID,
-        TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
-        TaskTypeID:this.properties.TaskTypeID,
-        TimeEntry: this.properties.TimeEntry,
-        SiteCompostion: this.properties.SiteCompostion
-      }
-    );
-
-    ReactDom.render(element, this.domElement);
+    const htmlComponent = React.createElement(
+      FluentProvider,
+      { theme: webLightTheme },
+      React.createElement(
+        Taskprofile,
+        {
+          description: this.properties.description,
+          isDarkTheme: this._isDarkTheme,
+          environmentMessage: this._environmentMessage,
+          hasTeamsContext: !!this.context.sdks.microsoftTeams,
+          userDisplayName: this.context.pageContext.user.displayName,
+          siteUrl: this.context.pageContext.web.absoluteUrl,
+          // loginName:this.context.pageContext.user.loginName,
+          Context: this.context,
+          MasterTaskListID: this.properties.MasterTaskListID,
+          TaskUserListID: this.properties.TaskUserListID,
+          SmartMetadataListID: this.properties.SmartMetadataListID,
+          SmartInformationListID: this.properties.SmartInformationListID,
+          PortFolioTypeID:this.properties.PortFolioTypeID,
+          DocumentsListID: this.properties.DocumentsListID,
+          TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
+          TaskTypeID:this.properties.TaskTypeID,
+          TimeEntry: this.properties.TimeEntry,
+          SiteCompostion: this.properties.SiteCompostion
+        }
+      )
+    )
+    ReactDom.render(htmlComponent, this.domElement);
   }
 
   private _getEnvironmentMessage(): string {
