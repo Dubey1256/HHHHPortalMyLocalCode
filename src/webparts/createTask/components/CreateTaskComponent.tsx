@@ -387,7 +387,7 @@ function CreateTaskComponent(props: any) {
                             setSave((prev: any) => ({ ...prev, Component: setComponent }));
                             setSmartComponentData(setComponent);
                             suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == paramComponentId));
-                            suggestedProjects = suggestedProjects.sort((a: any, b: any) =>{ 
+                            suggestedProjects = suggestedProjects.sort((a: any, b: any) => {
                                 let numA_P_match = a.PortfolioStructureID.match(/P(\d+)/);
                                 let numB_P_match = b.PortfolioStructureID.match(/P(\d+)/);
                                 let numA_X_match = a.PortfolioStructureID.match(/X(\d+)/);
@@ -427,7 +427,7 @@ function CreateTaskComponent(props: any) {
                             setSave((prev: any) => ({ ...prev, Component: setComponent }));
                             setSmartComponentData(setComponent);
                             suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == paramComponentId));
-                            suggestedProjects = suggestedProjects.sort((a: any, b: any) =>{ 
+                            suggestedProjects = suggestedProjects.sort((a: any, b: any) => {
                                 let numA_P_match = a.PortfolioStructureID.match(/P(\d+)/);
                                 let numB_P_match = b.PortfolioStructureID.match(/P(\d+)/);
                                 let numA_X_match = a.PortfolioStructureID.match(/X(\d+)/);
@@ -555,6 +555,28 @@ function CreateTaskComponent(props: any) {
                     UrlPasteTitle(e);
 
                     createTask();
+                } 
+                else if (paramTaskType == 'UX') {
+                    DirectTask = true;
+                    subCategories?.map((item: any) => {
+                        if (item.Title == "User Experience - UX") {
+                            selectSubTaskCategory(item.Title, item.Id, item)
+                        }
+                    })
+                    let saveValue = save;
+                    let setTaskTitle = 'User Experience (UX) - ' + setComponent[0]?.Title
+                    saveValue.taskName = setTaskTitle;
+                    saveValue.taskUrl = paramSiteUrl;
+                    //  setTaskUrl(paramSiteUrl);
+                    setSave(saveValue);
+                    let e = {
+                        target: {
+                            value: paramSiteUrl
+                        }
+                    }
+                    UrlPasteTitle(e);
+
+                    createTask();
                 } else if (paramSiteUrl != undefined) {
 
                     let saveValue = save;
@@ -575,7 +597,7 @@ function CreateTaskComponent(props: any) {
                     }
                     UrlPasteTitle(e);
                 }
-                if (paramTaskType != 'Bug' && paramTaskType != 'Design') {
+                if (paramTaskType != 'Bug' && paramTaskType != 'Design' && paramTaskType != 'UX') {
                     await Promise.all([loadRelevantTask(paramComponentId, paramSiteUrl, PageName)])
                 }
             }
@@ -711,7 +733,7 @@ function CreateTaskComponent(props: any) {
                                 })
                                 setRelevantProjects(URLRelatedProjects)
                                 console.log("inside Set Task")
-                                
+
                                 setPageRelevantTask(PageRelevant)
                                 setTaskUrlRelevantTask(TaskUrlRelevant)
                                 setComponentRelevantTask(ComponentRelevant)
@@ -1835,7 +1857,7 @@ function CreateTaskComponent(props: any) {
             item?.Title.toLowerCase().includes(searchQuery.toLowerCase()) || item?.PortfolioStructureID.toLowerCase().includes(searchQuery.toLowerCase())
         );
         setSuggestedProjectsOfporfolio(
-          searchQuery === "" ? suggestedProjects : filteredProjects
+            searchQuery === "" ? suggestedProjects : filteredProjects
         );
     };
     return (
