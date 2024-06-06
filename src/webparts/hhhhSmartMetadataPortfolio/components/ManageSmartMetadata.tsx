@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback, useContext } from 'react';
+import * as React from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback, useContext } from 'react';
 import { Web } from 'sp-pnp-js';
 import { ColumnDef } from '@tanstack/react-table';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
@@ -668,7 +669,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                         </Panel>
                     </div>)
                 }
-                {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} TabSelected={TabSelected} ParentMetaDataItems={ParentMetaDataItems} childRefdata={childRefdata} /> : ''}
+                {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} TabSelected={TabSelected} siteName={siteName} ParentMetaDataItems={ParentMetaDataItems} childRefdata={childRefdata} /> : ''}
                 {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata AllList={selectedProps.AllList} CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} childRefdata={childRefdata} /> : ''}
             </div >
         </>
