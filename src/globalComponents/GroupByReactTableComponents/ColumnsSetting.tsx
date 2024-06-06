@@ -458,7 +458,7 @@ const ColumnsSetting = (props: any) => {
                                 <th className="f-16 border-0" style={{ width: "20%" }}>Table Header</th>
                                 <th className="f-16 border-0" style={{ width: "20%" }}></th>
                                 <th className="f-16 border-0" style={{ width: "40%" }}>Table Height</th>
-                                <th className="f-16 border-0" style={{ width: "20%" }}>Page Size</th>
+                                <th className="f-16 border-0" style={{ width: "20%" }}>Table Size</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -488,7 +488,7 @@ const ColumnsSetting = (props: any) => {
                                 </td>
                                 <td><div className="d-flex"><input style={{ width: "36%", height: "27px" }} type="number" className="ms-1" value={tablePageSize} onChange={(e) => setTablePageSize(e.target.value)} />
                                     {/* <CoustomInfoIcon Discription="These features enable you to adjust the page size, determining the amount of data you wish to display." /> */}
-                                    <Tooltip withArrow content="These features enable you to adjust the page size, determining the amount of data you wish to display." relationship="label" positioning="below">
+                                    <Tooltip withArrow content="These features enable you to adjust the Table Size, determining the amount of data you wish to display." relationship="label" positioning="below">
                                                <div className='alignCenter hover-text'>
                                                 <span className="svg__iconbox svg__icon--info"></span>
                                               </div>
