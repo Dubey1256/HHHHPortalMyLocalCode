@@ -469,8 +469,16 @@
           "manifest": "./src/webparts/taskNotificationManagement/TaskNotificationManagementWebPart.manifest.json"
         }
       ]
-    }
-   ,"last-modified-web-part": {
+    },
+   "manage-dashboard-template-web-part": {
+    "components": [
+      {
+        "entrypoint": "./lib/webparts/manageDashboardTemplate/ManageDashboardTemplateWebPart.js",
+        "manifest": "./src/webparts/manageDashboardTemplate/ManageDashboardTemplateWebPart.manifest.json"
+      }
+    ]
+  },
+   "last-modified-web-part": {
     "components": [
       {
         "entrypoint": "./lib/webparts/lastModified/LastModifiedWebPart.js",
@@ -558,6 +566,7 @@
     "HhhhProfileWebPartStrings": "lib/webparts/hhhhProfile/loc/{locale}.js",
     "HhhcontactWebPartStrings": "lib/webparts/hhhcontact/loc/{locale}.js",
     "HhhhcontactprofileWebPartStrings": "lib/webparts/hhhhcontactprofile/loc/{locale}.js",
+    "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js",
     "LastModifiedWebPartStrings": "lib/webparts/lastModified/loc/{locale}.js"
   }
 }
