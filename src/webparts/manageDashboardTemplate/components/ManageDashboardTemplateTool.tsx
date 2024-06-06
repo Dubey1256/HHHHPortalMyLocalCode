@@ -303,7 +303,7 @@ const ManageDashboardTemplateTable = (props: any) => {
 
     return (
         <>
-            <h3 className="heading">Dashboard Landing Page
+            <h3 className="heading">Manage Dashboard Template
             </h3>
             {/* <div ><a className="pull-right empCol hreflink" onClick={(e) => AddNewConfig()}> Add New Dashboard </a>
             </div> */}
