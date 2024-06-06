@@ -2786,7 +2786,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Working Actions",
                 header: "",
                 resetColumnFilters: false,
-                size: 130,
+                size: 70,
                 id: "workingActionTitle",
                 isColumnVisible: false
             },
