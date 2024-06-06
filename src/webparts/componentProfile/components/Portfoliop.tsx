@@ -562,10 +562,10 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
     } catch (error: any) {
       console.log(error);
     }
-    if (SelectedProp != undefined) {
-      SelectedProp.isShowSiteCompostion = isShowSiteCompostion;
-      SelectedProp.isShowTimeEntry = isShowTimeEntry;
-    }
+    // if (SelectedProp != undefined) {
+    //   SelectedProp.isShowSiteCompostion = isShowSiteCompostion;
+    //   SelectedProp.isShowTimeEntry = isShowTimeEntry;
+    // }
     ContextValue = SelectedProp;
 
     loadAllMasterTask();
@@ -630,6 +630,10 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
             }
 
             item.siteCompositionData = SiteCompositionTemp;
+            SelectedProp.isShowSiteCompostion = item.siteCompositionData;
+            if(SelectedProp.isShowSiteCompostion.length == 0){
+              setComposition(false)
+            }
             item.listId = ContextValue.MasterTaskListID;
             if (item.FolderID != undefined) {
               folderId = item.FolderID;
@@ -1447,6 +1451,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   {item?.Parent?.Title != undefined && (
                                     <>
                                       <a
+                                      className='text-content'
                                         target="_blank"
                                         data-interception="off"
                                         href={
@@ -1456,7 +1461,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                         }
                                         title={item?.Parent?.Title}
                                       >
-                                        {item?.limitedString}
+                                       {item?.Parent?.Title}
                                       </a>
                                       <span className="pull-right">
                                         <span className="pencil_icon">
@@ -1475,7 +1480,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                                   >
                                                     <img
                                                       src={require("../../../Assets/ICON/edit_page.svg")}
-                                                      width="20"
+                                                      width="25"
                                                       height="25"
                                                     />{" "}
                                                   </a>
@@ -1496,7 +1501,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                                     {" "}
                                                     <img
                                                       src={require("../../../Assets/ICON/edit_page.svg")}
-                                                      width="30"
+                                                      width="25"
                                                       height="25"
                                                     />{" "}
                                                   </a>
