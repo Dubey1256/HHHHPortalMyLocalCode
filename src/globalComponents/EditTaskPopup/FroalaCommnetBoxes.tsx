@@ -58,6 +58,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
      speed: 500,
      slidesToShow: 1,
      slidesToScroll: 1,
+     adaptiveHeight: true,
      prevArrow: <FaAngleLeft />,
      nextArrow: <FaAngleRight />
  };
@@ -849,7 +850,7 @@ const DesignCategoriesTask = (state: any) => {
 
                                                     {obj?.setImagesInfo?.map((imgData: any, indeximage: any) => {
                                                         return (
-                                                            <div key={indeximage}>
+                                                            <div key={indeximage} className='carouselHeight'>
                                                                 <img className="img-fluid"
                                                                     alt={imgData?.ImageName}
                                                                     src={imgData?.ImageUrl}
