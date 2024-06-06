@@ -2322,7 +2322,7 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     }
 }
 export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | null, pertiCularSites?: any | null, showOffShore?: any | undefined) => {
-    let query = "Id,Title,FeedBack,PriorityRank,WorkingAction,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+    let query = "Id,Title,FeedBack,Comments,PriorityRank,WorkingAction,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
     }
@@ -2333,7 +2333,7 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
     } else if (showOffShore == true) {
         filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites")
     } else {
-        filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.Title != "Offshore Tasks")
+        filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites")
     }
     let AllSiteTasks: any = []
     if (filteredSiteConfig?.length > 0) {
@@ -2408,7 +2408,7 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                                 if (todaysWorkMembers?.WorkingMember?.length > 0) {
                                     task.IsTodaysTask = true;
                                     task.AssignedTo = todaysWorkMembers?.WorkingMember
-                                    task.AssignedToIds = todaysWorkMembers?.WorkingMember?.map((mem:any)=>{
+                                    task.AssignedToIds = todaysWorkMembers?.WorkingMember?.map((mem: any) => {
                                         return mem?.Id
                                     })
                                 }
@@ -2426,6 +2426,57 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
         await Promise.all(fetchPromises)
         return AllSiteTasks
     }
+}
+
+export const verifyComponentPermission = async (permissionTitle: any) => {
+    let pageInfo = await pageContext()
+    let permission = false;
+    if (pageInfo?.WebFullUrl) {
+        let web = new Web(pageInfo.WebFullUrl);
+        const lists = await web.lists.getByTitle('ComponentPermissions').select('Id,Title,AllowedUsers/Id,AllowedUsers/Title').expand('AllowedUsers').get();
+        if (!lists) {
+            permission = true
+        }
+        else {
+            await web.currentUser.get().then(async (logginUser: any) => {
+                let userGroups = await web.getUserById(23).groups.get()
+                await web.lists.getByTitle('ComponentPermissions').items.filter(`Title eq '${permissionTitle}'`).get().then((result: any) => {
+                    if (result?.length > 0) {
+                        permission = result[0].AllowedUsersId?.some((user: any) => user == logginUser?.Id || userGroups?.some((group: any) => group?.Id == user))
+                    }
+                })
+            });
+        }
+    }
+    return permission;
+}
+export const LoadAllNotificationConfigrations = async (configrationTitle: any, AllListId: any) => {
+    let pageInfo = await pageContext()
+    let AllTaskUser = await loadAllTaskUsers(AllListId)
+    let copyRecipients: any
+    if (pageInfo?.WebFullUrl) {
+        let web = new Web(pageInfo.WebFullUrl);
+
+        await web.lists.getByTitle("NotificationsConfigration").items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').filter(`Title eq '${configrationTitle}'`).expand('Author,Editor,Recipients ,PortfolioType').get().then((result: any) => {
+            result?.map((data: any) => {
+                data.showUsers = ""
+                data.DisplayModifiedDate = moment(data.Modified).format("DD/MM/YYYY");
+                if (data.DisplayModifiedDate == "Invalid date" || "") {
+                    data.DisplayModifiedDate = data.DisplayModifiedDate.replaceAll("Invalid date", "");
+                }
+                data.DisplayCreatedDate = moment(data.Created).format("DD/MM/YYYY");
+                if (data.DisplayCreatedDate == "Invalid date" || "") {
+                    data.DisplayCreatedDate = data.DisplayCreatedDate.replaceAll("Invalid date", "");
+                }
+                if (data?.Recipients?.length > 0) {
+                    copyRecipients = AllTaskUser.filter((user: any) => data.Recipients.find((data2: any) => user.AssingedToUserId == data2.Id))
+                }
+            })
+
+        })
+
+    }
+    return copyRecipients;
 }
 
 export const descriptionSearchData = (result: any) => {

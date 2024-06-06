@@ -539,7 +539,7 @@ const CentralizedSiteComposition = (Props: any) => {
     }
 
     const GetIndividualSiteAllData = async () => {
-        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/PortfolioStructureID,workingThisWeek,SiteCompositionSettings,Sitestagging,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/PortfolioStructureID,workingThisWeek,SiteCompositionSettings,Sitestagging,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
         try {
             const data = await web.lists.getById(ItemDetails?.listId).items.select(query).getAll();
             data?.map((task: any) => {
@@ -2002,6 +2002,19 @@ const CentralizedSiteComposition = (Props: any) => {
     }
 
 
+    // this function is used for generating the suffix of any string data 
+
+    const generateSuffixOfString = (StringValue: String) => {
+        let StringValueSplitData: any = StringValue?.split(" ");
+        let Suffix: string = '';
+        if (StringValueSplitData.length > 1) {
+            Suffix = StringValueSplitData[0].slice(0, 1) + StringValueSplitData[1].slice(0, 1)
+        } else if(StringValueSplitData.length  == 1) {
+            Suffix = StringValueSplitData[0].slice(0, 2)
+        }
+        return Suffix.toUpperCase();
+    }
+
 
     // END of Function Code 
 
@@ -2014,9 +2027,9 @@ const CentralizedSiteComposition = (Props: any) => {
                 onDismiss={() => ClosePanelFunction("Close")}
                 onRenderFooter={CustomFooter}
                 type={PanelType.large}
-      
+
             >
-                <section className="mb-5 modal-body">
+                <section className="mb-5 modal-body clearfix">
                     <div className="Site-composition-and-client-category d-flex full-width">
                         <div className="site-settings-and-site-composition-distributions full-width">
                             <div className="siteColor border p-1 alignCenter">
@@ -2098,9 +2111,12 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                 </td>
                                                                 <td className="m-0 p-0 align-middle" style={{ width: "30%" }}>
                                                                     <div className="alignCenter">
-                                                                        <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} className="mx-2 workmember" />
-                                                                        {siteData.Title}
-                                                                        <span></span>
+                                                                        {!siteData.Item_x005F_x0020_Cover || !siteData.Item_x005F_x0020_Cover.Url ? (
+                                                                            <span className="mx-2 Dyicons me-1">{generateSuffixOfString(siteData.Title)}</span>
+                                                                        ) : (
+                                                                            <img src={siteData.Item_x005F_x0020_Cover.Url} className="mx-2 workmember" />
+                                                                        )}
+                                                                        <div>{siteData.Title}</div>
                                                                     </div>
                                                                 </td>
                                                                 <td className="p-1"
@@ -2243,10 +2259,10 @@ const CentralizedSiteComposition = (Props: any) => {
                                         <span className="svg__iconbox svg__icon--info dark"></span>
                                         <span className="tooltip-text pop-right">
                                             <p className="mb-1"><b>Client Category Identification Tool:</b> </p>
-                                                This tool efficiently consolidates client categories associated with selected items and their corresponding child Items (All Tagged CC in Selected Item CSF and AWT). The tool offers a streamlined view of client categories, filtering them based on their respective sites. The selected client categories seamlessly Inherited to the designated parent item and also inherited into selected items (CSF/AWT) from the Tagged Child Item Table.
-                                                <p className="mb-1 mt-16"><b>Validation Cases:</b> </p>
-                                                1. If the selected item have tagged CCs, that CCs will be automatically set as the default selection<br />
-                                                2. If no tagged CC is present in the selected item, only display the relevant child items CCs (all tagged CCs in the selected items CSF and AWT).
+                                            This tool efficiently consolidates client categories associated with selected items and their corresponding child Items (All Tagged CC in Selected Item CSF and AWT). The tool offers a streamlined view of client categories, filtering them based on their respective sites. The selected client categories seamlessly Inherited to the designated parent item and also inherited into selected items (CSF/AWT) from the Tagged Child Item Table.
+                                            <p className="mb-1 mt-16"><b>Validation Cases:</b> </p>
+                                            1. If the selected item have tagged CCs, that CCs will be automatically set as the default selection<br />
+                                            2. If no tagged CC is present in the selected item, only display the relevant child items CCs (all tagged CCs in the selected items CSF and AWT).
                                         </span>
                                     </span>
                                 </div>
@@ -2364,6 +2380,7 @@ const CentralizedSiteComposition = (Props: any) => {
                             </div>
                             <div className="tagged-child-items-table Alltable">
                                 <GlobalCommonTable
+                                    portfolioColor={Props?.portfolioColor}
                                     setLoaded={setLoaded}
                                     AllListId={RequiredListIds}
                                     columns={columns}

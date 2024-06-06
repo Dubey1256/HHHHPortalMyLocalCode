@@ -10,11 +10,10 @@ let portfolioColor: any = '#057BD0';
 let AutoCompleteItemsArray: any = [];
 var AllSitesData: any = [];
 let DashTemp: any = [];
-var tempCategoryData: any = "";
 let BackupTaskCategoriesData: any = [];
 let PrevSelectedSmartFav: any = '';
 let SelectedDashboard: any;
-
+let autoSuggestItem: any;
 const AddConfiguration = (props: any) => {
     props.props.siteUrl = props?.props?.Context?._pageContext?._web?.absoluteUrl
     const [progressBar, setprogressBar] = useState(true)
@@ -24,36 +23,26 @@ const AddConfiguration = (props: any) => {
         DashboardId = 1;
     const ContextData: any = useContext(myContextValue);
     const [IsComponentPicker, setIsComponentPicker] = useState<any>(false);
-    const [SelectedCategory, setSelectedCategory] = useState<any>([]);
     const [selectedSmartFav, setselectedSmartFav] = useState<any>(undefined);
     const [SiteTypes, setSiteTypes] = useState<any>([]);
-    const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
-    let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": '', "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
+    let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": true, "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
     const [NewItem, setNewItem]: any = useState<any>([defaultConfig]);
     const [SmartFav, setSmartFav] = useState<any>([]);
     const [AllTaskUsers, setAllTaskUsers] = useState<any>([]);
     const [DashboardTemplate, setDashboardTemplate] = useState<any>([]);
-    const [DataSource, setDataSource] = useState<any>([{ "key": "Tasks", "text": "Tasks" }, { "key": "Project", "text": "Project" }, { "key": "TaskUsers", "text": "TaskUsers" }, { "key": "TimeSheet", "text": "TimeSheet" },]);
+    const [DataSource, setDataSource] = useState<any>([]);
     const [DashboardTitle, setDashboardTitle] = useState<any>('');
     const [IsCheck, setIsCheck] = useState<any>(false);
     const [categorySearchKey, setCategorySearchKey] = useState<any>("");
-    const [SmatFavSearchKey, setSmatFavSearchKey] = useState<any>("");
-    const [AllCategoryData, setAllCategoryData] = useState<any>([]);
     const [SearchedCategoryData, setSearchedCategoryData] = useState<any>([]);
     const [SearchedSmartFavData, setSearchedSmartFavData] = useState<any>([]);
     const [TaskCategoriesData, setTaskCategoriesData] = useState<any>([]);
-    const [SmartFavData, setSmartFavData] = useState<any>([]);
     const [UserOptions, setUserOptions] = useState<any>([]);
     const [PopupSmartFav, setPopupSmartFav] = React.useState(false);
-    let [StatusOptions, setStatusOptions] = useState([{ value: 0, status: "0% Not Started", }, { value: 1, status: "1% For Approval", }, { value: 2, status: "2% Follow Up", }, { value: 3, status: "3% Approved", },
-    { value: 4, status: "4% Checking", }, { value: 5, status: "5% Acknowledged", }, { value: 9, status: "9% Ready To Go", }, { value: 10, status: "10% working on it", },
-    { value: 70, status: "70% Re-Open", }, { value: 75, status: "75% Deployment Pending", }, { value: 80, status: "80% In QA Review", }, { value: 90, status: "90% Task completed", },
-    { value: 100, status: "100% Closed", },]);
-    let [ActionsOptions, setActionsOptions] = useState([{ value: "Bottleneck", status: "Bottleneck", }, { value: "Phone", status: "Phone", }, { value: "Attention", status: "Attention", }, { value: "Approval", status: "Approval", },])
-    let [PriorityOptions, setPriorityOptions] = useState([{ value: 1, status: "1", }, { value: 2, status: "2", }, { value: 3, status: "3", }, { value: 4, status: "4", }, { value: 5, status: "5", }, { value: 6, status: "6", }, { value: 7, status: "7", },
-    { value: 8, status: "8", }, { value: 9, status: "9", }, { value: 10, status: "10", },])
-
-    let [CustomUserFilter, setCutomUserFilter] = useState([{ value: 'Approver', status: "Me As Approver", }, { value: 'TeamLeader', status: "Me As Team Lead", }]);
+    let [StatusOptions, setStatusOptions] = useState([]);
+    let [ActionsOptions, setActionsOptions] = useState([])
+    let [PriorityOptions, setPriorityOptions] = useState([])
+    let [CustomUserFilter, setCutomUserFilter] = useState([]);
     const LoadSmartFav = () => {
         let SmartFavData: any = []
         if (props?.SingleWebpart != undefined && props?.SingleWebpart == true)
@@ -79,10 +68,11 @@ const AddConfiguration = (props: any) => {
                 else
                     newArray = JSON.parse(JSON.stringify(props?.EditItem?.Configurations));
                 newArray?.forEach((item: any, Itemindex: any) => {
+                    item.selectedSmartFav = {}
                     if (SmartFavData != undefined && SmartFavData?.length) {
                         SmartFavData?.forEach((smartfav: any) => {
                             if (item?.selectFilterType == 'smartFav' && item?.DataSource == "Tasks" && item.smartFevId && smartfav?.UpdatedId == item.smartFevId) {
-                                setselectedSmartFav(smartfav)
+                                item.selectedSmartFav = smartfav;
                             }
                         })
                     }
@@ -114,7 +104,6 @@ const AddConfiguration = (props: any) => {
             else {
                 setNewItem([defaultConfig])
             }
-
             setSmartFav(SmartFavData)
         }).catch((err: any) => {
             console.log(err);
@@ -161,7 +150,6 @@ const AddConfiguration = (props: any) => {
             }
         });
         setUserOptions(results?.filter((User: any) => User?.AssingedToUserId != undefined && User?.AssingedToUserId != '' && User?.ItemType == 'User'))
-
         if (taskUsers != undefined && taskUsers.length > 0) {
             taskUsers?.map((User: any) => {
                 if (User.childs != undefined && User.childs.length > 0) {
@@ -184,7 +172,6 @@ const AddConfiguration = (props: any) => {
         setNewItem([]);
         props?.CloseConfigPopup(false)
     }
-
     const SaveConfigPopup = async () => {
         try {
             let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
@@ -223,6 +210,8 @@ const AddConfiguration = (props: any) => {
                     let newArray = [...NewItem];
                     newArray?.forEach((item: any, Itemindex: any) => {
                         delete item.IsDefaultTile;
+                        delete item.selectedSmartFav;
+                        delete item?.SmatFavSearchKey
                         if (item?.IsShowTile === true)
                             item.TileName = item.WebpartTitle.replaceAll(" ", "")
                         else if (item?.IsShowTile != true)
@@ -306,10 +295,10 @@ const AddConfiguration = (props: any) => {
         setNewItem(updatedItems);
     };
     const AddMorewebpart = () => {
-        if (NewItem?.length === 1)
-            defaultConfig.Id = NewItem?.length + 1;
-        else
-            defaultConfig.Id = NewItem?.length;
+        //if (NewItem?.length === 1)
+        //  defaultConfig.Id = NewItem?.length + 1;
+        // else
+        defaultConfig.Id = NewItem?.length + 1;
         const newArray: any = [...NewItem, defaultConfig];
         setNewItem(newArray);
     }
@@ -454,13 +443,13 @@ const AddConfiguration = (props: any) => {
     };
     const SmartMetaDataListInformations = async () => {
         let AllSmartDataListData: any = [];
-
-        let AllClientCategoryData: any = [];
         let AllCategoriesData: any = [];
-        let AllStatusData: any = [];
-        let AllPriorityData: any = [];
-        let AllPriorityRankData: any = [];
         let CategoriesGroupByData: any = [];
+        let PriorityRank: any = [];
+        let PercentComplete: any = [];
+        let Actions: any = [];
+        let DataSource: any = [];
+        let TimeSheetFilter: any = [];
         let tempArray: any = [];
         try {
             let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
@@ -468,11 +457,20 @@ const AddConfiguration = (props: any) => {
                 .items.select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail").expand("Author,Editor,IsSendAttentionEmail").getAll();
             AllCategoriesData = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Categories");
             AllSitesData = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Sites");
+            PriorityRank = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Priority Rank");
+            PriorityRank = PriorityRank.toReversed()
+            PercentComplete = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Percent Complete");
+            PercentComplete = PercentComplete.filter((percentComplete: any) => percentComplete?.ParentId != undefined && percentComplete?.ParentId != '');
+            PercentComplete = PercentComplete.sort((a: any, b: any) => { return a.SortOrder - b.SortOrder; });
+            Actions = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Actions");
+            Actions = Actions.sort((a: any, b: any) => { return a.SortOrder - b.SortOrder; });
+            DataSource = getSmartMetadataItemsByTaxType(AllSmartDataListData, "DataSource");
+            DataSource = DataSource.sort((a: any, b: any) => { return a.SortOrder - b.SortOrder; });
+            TimeSheetFilter = getSmartMetadataItemsByTaxType(AllSmartDataListData, "TimesheetFilter");
+            TimeSheetFilter = TimeSheetFilter.sort((a: any, b: any) => { return a.SortOrder - b.SortOrder; });
             AllSmartDataListData?.map((SmartItemData: any, index: any) => {
                 SmartItemData.newTitle = SmartItemData.Title;
             })
-            setprogressBar(false)
-            // ########## this is for All Site Data related validations ################
             AllSitesData?.map((site: any) => {
                 if (site.Title !== undefined && site.Title !== "Foundation" && site.Title !== "Master Tasks" && site.Title !== "DRR" && site.Title !== "SDC Sites" && site.Title !== "SP Online") {
                     site.BtnStatus = false;
@@ -483,6 +481,32 @@ const AddConfiguration = (props: any) => {
                 }
             });
             setSiteTypes(tempArray);
+            PriorityRank?.map((priorityrank: any) => {
+                priorityrank.value = parseInt(priorityrank?.Title)
+                priorityrank.status = priorityrank?.Title
+            });
+            setPriorityOptions(PriorityRank)
+            PercentComplete?.map((percentComplete: any) => {
+                percentComplete.value = parseFloat(percentComplete?.Title?.split('%')[0])
+                percentComplete.status = percentComplete?.Title
+            });
+            setStatusOptions(PercentComplete)
+            Actions?.map((action: any) => {
+                action.value = action?.Title
+                action.status = action?.Title
+            });
+            setActionsOptions(Actions)
+            DataSource?.map((dataSource: any) => {
+                dataSource.value = dataSource?.Title
+                dataSource.status = dataSource?.Title
+            });
+            setDataSource(DataSource)
+            TimeSheetFilter?.map((timesheetFilter: any) => {
+                timesheetFilter.value = timesheetFilter?.Title?.split('&')[1]
+                timesheetFilter.status = timesheetFilter?.Title?.split('&')[0]
+            });
+            setCutomUserFilter(TimeSheetFilter)
+
             if (AllCategoriesData?.length > 0) {
                 CategoriesGroupByData = loadSmartTaxonomyPortfolioPopup(AllCategoriesData, "Categories");
                 if (CategoriesGroupByData?.length > 0) {
@@ -516,14 +540,9 @@ const AddConfiguration = (props: any) => {
                     });
                 }
                 if (AutoCompleteItemsArray?.length > 0) {
-                    AutoCompleteItemsArray = AutoCompleteItemsArray.reduce(function (
-                        previous: any,
-                        current: any
-                    ) {
+                    AutoCompleteItemsArray = AutoCompleteItemsArray.reduce(function (previous: any, current: any) {
                         var alredyExists =
-                            previous.filter(function (item: any) {
-                                return item.Title === current.Title;
-                            }).length > 0;
+                            previous.filter(function (item: any) { return item.Title === current.Title; }).length > 0;
                         if (!alredyExists) {
                             previous.push(current);
                         }
@@ -531,18 +550,8 @@ const AddConfiguration = (props: any) => {
                     },
                         []);
                 }
-
-                setAllCategoryData(AutoCompleteItemsArray);
-                let AllSmartMetaDataGroupBy: any = {
-                    Categories: AutoCompleteItemsArray,
-                    Sites: tempArray,
-                    Status: AllStatusData,
-                    Priority: AllPriorityData,
-                    PriorityRank: AllPriorityRankData,
-                    ClientCategory: AllClientCategoryData,
-                };
-                setSmartMetaDataAllItems(AllSmartMetaDataGroupBy);
             }
+            setprogressBar(false)
         } catch (error) {
             console.log("Error : ", error.message);
         }
@@ -566,8 +575,6 @@ const AddConfiguration = (props: any) => {
         setCategorySearchKey("");
 
     };
-
-
     const removeCategoryItem = (TypeCategory: any) => {
         let tempString: any;
         let tempArray2: any = [];
@@ -586,12 +593,11 @@ const AddConfiguration = (props: any) => {
                         : itemData.Title;
             });
         }
-        tempCategoryData = tempString;
         setTaskCategoriesData(tempArray2);
     };
     const removeSmartFavItem = (selectCategoryData: any, index: any, items: any) => {
         const updatedItems = [...NewItem];
-        updatedItems[index] = { ...items, smartFevId: '', Status: '', selectUserFilterType: '' };
+        updatedItems[index] = { ...items, smartFevId: '', selectedSmartFav: {}, Status: '', selectUserFilterType: '' };
         setNewItem(updatedItems);
         setselectedSmartFav(undefined)
     };
@@ -599,19 +605,23 @@ const AddConfiguration = (props: any) => {
         SelectedDashboard = {};
         SelectedDashboard.items = items;
         SelectedDashboard.index = index;
+        setselectedSmartFav(SelectedDashboard?.items?.selectedSmartFav)
         PrevSelectedSmartFav = { ...selectedSmartFav }
         setPopupSmartFav(true)
     }
     const saveSelectSmartFav = () => {
         const updatedItems = [...NewItem];
-        updatedItems[SelectedDashboard?.index] = { ...SelectedDashboard?.items, smartFevId: selectedSmartFav?.UpdatedId, Status: '', selectUserFilterType: '' };
+        updatedItems[SelectedDashboard?.index] = { ...SelectedDashboard?.items, selectedSmartFav: selectedSmartFav, smartFevId: selectedSmartFav?.UpdatedId, Status: '', selectUserFilterType: '' };
         setNewItem(updatedItems);
         setPopupSmartFav(false)
     }
     const cancelSelectSmartFav = () => {
         setselectedSmartFav(PrevSelectedSmartFav)
-        SelectedDashboard = undefined
+        const updatedItems = [...NewItem];
+        updatedItems[SelectedDashboard?.index] = { ...SelectedDashboard?.items, selectedSmartFav: PrevSelectedSmartFav, smartFevId: PrevSelectedSmartFav?.UpdatedId, Status: '', selectUserFilterType: '' };
+        setNewItem(updatedItems);
         setPopupSmartFav(false)
+        SelectedDashboard = undefined
     }
     const customHeader = () => {
         return (
@@ -624,10 +634,14 @@ const AddConfiguration = (props: any) => {
     }
     const selectPickerData = (item: any) => {
         setselectedSmartFav(item)
+        const updatedItems = [...NewItem];
+        updatedItems[SelectedDashboard?.index] = { ...SelectedDashboard?.items, selectedSmartFav: SelectedDashboard, smartFevId: SelectedDashboard?.UpdatedId, Status: '', selectUserFilterType: '' };
+        setNewItem(updatedItems);
     }
-    const autoSuggestionsSmartFav = (e: any) => {
+    const autoSuggestionsSmartFav = (e: any, SuggestionItem: any, Id: any) => {
+        autoSuggestItem = SuggestionItem
+        SuggestionItem.SmatFavSearchKey = e.target.value;
         let searchedKey: any = e.target.value;
-        setSmatFavSearchKey(e.target.value);
         let tempArray: any = [];
         if (searchedKey?.length > 0) {
             SmartFav?.map((itemData: any) => {
@@ -637,20 +651,46 @@ const AddConfiguration = (props: any) => {
             });
             setSearchedSmartFavData(tempArray);
         } else {
+            autoSuggestItem = '';
             setSearchedSmartFavData([]);
         }
+        (document.getElementById(Id) as HTMLInputElement).value = '';
     };
-    const setSelectedSmartFavData = (selectCategoryData: any, index: any, items: any) => {
+    const setSelectedSmartFavData = (selectCategoryData: any, index: any, items: any, Id: any) => {
         const updatedItems = [...NewItem];
-        updatedItems[index] = { ...items, smartFevId: selectCategoryData?.UpdatedId, Status: '', selectUserFilterType: '' };
+        updatedItems[index] = { ...items, selectedSmartFav: selectCategoryData, SmatFavSearchKey: '', smartFevId: selectCategoryData?.UpdatedId, Status: '', selectUserFilterType: '' };
         setNewItem(updatedItems);
         setSearchedSmartFavData([]);
-        setSmatFavSearchKey("");
-        setselectedSmartFav(selectCategoryData)
-
+        items.SmatFavSearchKey = '';
+        setselectedSmartFav(selectCategoryData);
+        $("#" + Id).val('')
     };
     const deleteSelectedSmartFav = () => {
         setselectedSmartFav(undefined)
+        const updatedItems = [...NewItem];
+        updatedItems[SelectedDashboard?.index] = { ...SelectedDashboard?.items, selectedSmartFav: {}, smartFevId: '', Status: '', selectUserFilterType: '' };
+    }
+    const AddWebpartToGallery = async (items: any, index: any) => {
+        const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
+        web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate' and Value eq '" + props?.EditItem?.Id.toString() + items?.Id + "' ").getAll().then(async (data: any) => {
+            if (data?.length) {
+                alert('This webpart is already exist')
+            }
+            else {
+                delete items?.IsDefaultTile;
+                delete items?.selectedSmartFav;
+                delete items?.SmatFavSearchKey;
+                await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: items?.WebpartTitle != undefined && items?.WebpartTitle != '' ? items?.WebpartTitle : '', Key: "WebpartTemplate", Value: props?.EditItem?.Id != undefined ? props?.EditItem?.Id.toString() + items?.Id : undefined, Configurations: items != undefined ? JSON.stringify(items) : '' })
+                    .then(async (res: any) => {
+                        console.log(items)
+                        alert('Webpart Added Successfully')
+                    }).catch((err: any) => {
+                        console.log(err);
+                    })
+            }
+        }).catch((err: any) => {
+            console.log(err);
+        })
     }
     useEffect(() => {
         SmartMetaDataListInformations()
@@ -710,7 +750,7 @@ const AddConfiguration = (props: any) => {
                                                 </Col>
                                                 <Col sm="3" md="3" lg="3">
                                                     {items?.IsTemplate != true && <><label className='form-label full-width'>Data Source</label>
-                                                        <Dropdown id="DataSource" options={[{ key: '', text: '' }, ...(DataSource?.map((item: any) => ({ key: item?.key, text: item?.text })) || [])]} selectedKey={items?.DataSource}
+                                                        <Dropdown id="DataSource" options={[{ key: '', text: '' }, ...(DataSource?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.DataSource}
                                                             onChange={(e, option) => handleDataSourceChange(option?.key, index, items)}
                                                             styles={{ dropdown: { width: '100%' } }}
                                                         /></>}
@@ -725,7 +765,8 @@ const AddConfiguration = (props: any) => {
                                                         {items?.ShowWebpart === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
                                                     </label> */}
                                                 </Col>
-                                                <Col sm="3" md="3" lg="3">
+                                                <Col sm="4" md="4" lg="4">
+                                                    {props?.EditItem != undefined && props?.EditItem != '' ? <a className="pull-right hreflink" title="Add To Webpart Gallery" onClick={(e) => AddWebpartToGallery(items, index)}>Add To Webpart Gallery</a> : ''}
                                                     {/* <div> Group By View</div>
                                                     <label className="switch me-2" htmlFor={`GroupByViewCheckbox${index}`}>
                                                         <input checked={items?.GroupByView} onChange={(e: any) => {
@@ -737,7 +778,7 @@ const AddConfiguration = (props: any) => {
                                                         {items?.GroupByView === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
                                                     </label> */}
                                                 </Col>
-                                                <Col sm="2" md="2" lg="2">
+                                                <Col sm="1" md="1" lg="1">
                                                     {index != 0 && <a className="pull-right hreflink" title="Remove webpart" onClick={(e) => RemoveWebpart(items, index)}><span className="svg__iconbox svg__icon--cross "></span></a>}
                                                 </Col>
                                             </Row>
@@ -770,7 +811,7 @@ const AddConfiguration = (props: any) => {
                                             <Row className="Metadatapannel">
                                                 {/* <Col sm="4" md="4" lg="4">
                                                     <label className='form-label full-width'>Data Source</label>
-                                                    <Dropdown id="DataSource" options={[{ key: '', text: '' }, ...(DataSource?.map((item: any) => ({ key: item?.key, text: item?.text })) || [])]} selectedKey={items?.DataSource}
+                                                    <Dropdown id="DataSource" options={[{ key: '', text: '' }, ...(DataSource?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.DataSource}
                                                         onChange={(e, option) => handleDataSourceChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }}
                                                     />
@@ -794,14 +835,14 @@ const AddConfiguration = (props: any) => {
                                             <Row className="Metadatapannel">
                                                 {items.DataSource != 'TimeSheet' &&
                                                     <Col sm="12" md="12" lg="12">
-                                                        {items?.selectUserFilterType != undefined && items?.selectUserFilterType != '' &&
-                                                            <label className='form-label full-width SpfxCheckRadio mb-1'>
-                                                                <input type="radio" className='radio' value="custom" checked={items?.selectFilterType === 'custom'} onChange={(e) => handleFilterChange(e, index, items)} />
-                                                                Custom Filter
-                                                                <input type="radio" className='radio ms-3' value="smartFav" checked={items?.selectFilterType === 'smartFav'} onChange={(e) => handleFilterChange(e, index, items)} />
-                                                                SmartFav Filter
-                                                            </label>
-                                                        }
+                                                        {/* {items?.selectUserFilterType != undefined && items?.selectUserFilterType != '' && */}
+                                                        <label className='form-label full-width SpfxCheckRadio mb-1'>
+                                                            <input type="radio" className='radio' value="custom" checked={items?.selectFilterType === 'custom'} onChange={(e) => handleFilterChange(e, index, items)} />
+                                                            Custom Filter
+                                                            <input type="radio" className='radio ms-3' value="smartFav" checked={items?.selectFilterType === 'smartFav'} onChange={(e) => handleFilterChange(e, index, items)} />
+                                                            SmartFav Filter
+                                                        </label>
+                                                        {/* } */}
                                                     </Col>}
                                                 {(items?.DataSource == "Tasks" || items?.DataSource == "Project") && items?.selectFilterType == 'custom' &&
                                                     <span>
@@ -831,9 +872,9 @@ const AddConfiguration = (props: any) => {
                                                                     Select Filter
                                                                 </label>
                                                                 <>
-                                                                    <input type="text" className="form-control" id="txtSmartFav" placeholder="Search SmartFav Here"
-                                                                        value={SmatFavSearchKey} onChange={(e) => autoSuggestionsSmartFav(e)} />
-                                                                    {SearchedSmartFavData?.length > 0 ? (
+                                                                    <input key={index} type="text" className="form-control" id={`txtSmartFav${items?.Id}`} placeholder="Search SmartFav Here"
+                                                                        value={items?.SmatFavSearchKey} onChange={(e) => autoSuggestionsSmartFav(e, items, "txtSmartFav" + items?.Id)} />
+                                                                    {SearchedSmartFavData?.length > 0 && autoSuggestItem?.Id == items?.Id ? (
                                                                         <div className="SmartTableOnTaskPopup">
                                                                             <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                                 {SearchedSmartFavData.map((item: any) => {
@@ -841,7 +882,7 @@ const AddConfiguration = (props: any) => {
                                                                                         <li
                                                                                             className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                                             key={item.id}
-                                                                                            onClick={() => setSelectedSmartFavData(item, index, items)}  >
+                                                                                            onClick={() => setSelectedSmartFavData(item, index, items, "txtSmartFav" + items?.Id)}  >
                                                                                             <a>{item.Title}</a>
                                                                                         </li>
                                                                                     );
@@ -849,10 +890,9 @@ const AddConfiguration = (props: any) => {
                                                                             </ul>
                                                                         </div>
                                                                     ) : null}
-
-                                                                    {selectedSmartFav != undefined && selectedSmartFav?.Title != undefined && <div className="block w-100">
+                                                                    {items?.selectedSmartFav != undefined && items?.selectedSmartFav?.Title != undefined && <div className="block w-100">
                                                                         <a style={{ color: "#fff !important" }} className="textDotted"   >
-                                                                            {selectedSmartFav?.Title}
+                                                                            {items?.selectedSmartFav?.Title}
                                                                         </a>
                                                                         <span onClick={() => removeSmartFavItem(selectedSmartFav, index, items)} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"  ></span>
                                                                     </div>}
@@ -935,7 +975,8 @@ const AddConfiguration = (props: any) => {
                                                         onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }} /></>
                                                     }
-                                                    {items.DataSource == "TaskUsers" && items?.selectFilterType == 'custom' && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesCustomTaskUser" options={[{ key: '', text: '' }, ...(CustomUserFilter?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.Status}
+                                                    {items.DataSource == "TaskUsers" && items?.selectFilterType == 'custom' && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesCustomTaskUser" options={[{ key: '', text: '' }, ...(CustomUserFilter?.filter(item => item.value !== "My TimSheet").map(item => ({ key: item.value, text: item.status })) || [])
+                                                    ]} selectedKey={items?.Status}
                                                         onChange={(e, option) => handleCustomUserFilterChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }} /></>
                                                     }
@@ -965,7 +1006,6 @@ const AddConfiguration = (props: any) => {
                     <button className='btn btn-default ms-1' onClick={CloseConfiguationPopup}>Cancel</button>
                 </div>
             </Panel >
-
             {IsComponentPicker && (
                 <Picker
                     props={{}}
@@ -1027,7 +1067,6 @@ const AddConfiguration = (props: any) => {
                 </div>
             </Panel >
         </>
-
     );
 };
 export default AddConfiguration;

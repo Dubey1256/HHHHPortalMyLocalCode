@@ -2815,7 +2815,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Progress",
                 resetColumnFilters: false,
                 header: "",
-                size: 55,
+                size: 60,
                 isColumnVisible: false,
                 fixedColumnWidth: true,
             },
@@ -2861,7 +2861,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "SmartPriority",
                 resetColumnFilters: false,
                 header: "",
-                size: 55,
+                size: 60,
                 isColumnVisible: true,
                 fixedColumnWidth: true
             },
@@ -2881,7 +2881,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Priority Rank",
                 resetColumnFilters: false,
                 header: "",
-                size: 55,
+                size: 60,
                 isColumnVisible: false,
                 fixedColumnWidth: true
             },
@@ -3171,7 +3171,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Smart Time",
                 header: "",
                 resetColumnFilters: false,
-                size: 49,
+                size: 60,
                 isColumnVisible: true,
                 fixedColumnWidth: true
             },

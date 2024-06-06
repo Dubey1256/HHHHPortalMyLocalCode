@@ -1639,7 +1639,7 @@ function reverseArray(arr: any) {
    
     if(item.props?.TotalTime != null){
       const datas = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item.props.Id}`).get();
-      let Time = datas.TotalTime;
+      let Time = datas[0].TotalTime;
       item.props.TotalTime = Time + TimeInMinutes;
     }
     else{

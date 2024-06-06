@@ -1403,7 +1403,7 @@ export default class UserTimeEntry extends React.Component<
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(35, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(18, "days").format();
       var b = new Date(change);
       formattedDate = b;
     } else if (startDateOf == "Last Week") {
@@ -1433,8 +1433,7 @@ export default class UserTimeEntry extends React.Component<
       DateType == "Today" ||
       DateType == "Yesterday" ||
       DateType == "This Week" ||
-      DateType == "Last Week" ||
-      DateType == "This Month"
+      DateType == "Last Week" 
     ) {
       this.setState({ showShareTimesheet: true });
       let startDate = this.getStartingDate("Last Month").toISOString();

@@ -275,10 +275,12 @@ export default function FroalaCommnetBoxes(textItems: any) {
 
     const CreateSeparateTaskFunction = async (FeedbackData: any, Index: any) => {
         setIsOpenCreateTaskPanel(true);
-        setCreateTaskForThis(FeedbackData);
+        setCreateTaskForThis(UpdatedFeedBackParentArray[Index]);
         CreateTaskIndex = Index;
+        const updatedState = [...State];
+        updatedState[Index].TaskCreatedForThis = true;
+        setState(updatedState);
     }
-
 
 
     const UpdateFeedbackDetails = async (NewTaskDetails: any, Index: any) => {
@@ -453,7 +455,8 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <span className="siteColor hreflink commentSectionLabel" onClick={() => CreateSeparateTaskFunction(obj, i)}>
+                                            <span className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9 siteColor hreflink commentSectionLabel" : "siteColor hreflink commentSectionLabel"}
+                                                 onClick={() => CreateSeparateTaskFunction(obj, i)}>
                                                     Create Task
                                                 </span>
                                             </span>

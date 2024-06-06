@@ -399,6 +399,7 @@ let AllMasterTaskData: any = [];
 let keyDocRef: any;
 let relevantDocRef: any;
 let smartInfoRef: any;
+let portfolioColor: any = '';
 function Portfolio({ SelectedProp, TaskUser }: any) {
   AllTaskuser = TaskUser;
   keyDocRef = React.useRef();
@@ -467,6 +468,15 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
   React.useEffect(() => {
     getSmartMetaDataListAllItems();
   }, [count]);
+  React.useEffect(() => {
+    setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && portfolioColor) {
+            $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
+        }
+    }, 1500)
+}, [isopenProjectpopup,IsComponent,SiteCompositionShow]);
+
 
   const getSmartMetaDataListAllItems = async () => {
     let AllSmartDataListData: any = [];
@@ -736,6 +746,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
               "--SiteBlue",
               response[0]?.PortfolioType?.Color
             );
+           portfolioColor=response[0]?.PortfolioType?.Color;
           }
 
           console.log(response);
@@ -1695,6 +1706,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                         {data?.length > 0 && (
                           <>
                             <InlineEditingcolumns
+                            portfolioColor={portfolioColor}
                               AllListId={ContextValue}
                               callBack={inlineCallBack}
                               columnName="TaskCategories"
@@ -2236,7 +2248,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         </section>
 
         {/* table secation artical */}
-        {data?.length > 0 && <RadimadeTable tableId="PortfolioProfile" AllListId={ContextValue} configration={"CSFAWT"} SelectedItem={data[0]} ComponentFilter={data[0]?.PortfolioType?.Title} TaskFilter={"PercentComplete lt '0.90' or PercentComplete eq null "}></RadimadeTable>}
+        {data?.length > 0 && <RadimadeTable portfolioColor={portfolioColor} tableId="PortfolioProfile" AllListId={ContextValue} configration={"CSFAWT"} SelectedItem={data[0]} ComponentFilter={data[0]?.PortfolioType?.Title} TaskFilter={"PercentComplete lt '0.90' or PercentComplete eq null "}></RadimadeTable>}
         {/* {data.map((item: any) => (
           <ComponentTable
             props={item}
@@ -2276,6 +2288,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
             SelectD={SelectedProp}
             Calls={Call}
             portfolioTypeData={portfolioTyped}
+            portfolioColor={portfolioColor}
           ></EditInstituton>
         )}
         {isopenProjectpopup && (
@@ -2292,6 +2305,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         )}
         {SiteCompositionShow && (
           <CentralizedSiteComposition
+          portfolioColor={portfolioColor}
             ItemDetails={data[0]}
             RequiredListIds={SelectedProp}
             closePopupCallBack={ClosePopupCallBack}
