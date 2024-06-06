@@ -488,7 +488,7 @@ const ColumnsSetting = (props: any) => {
                                 </td>
                                 <td><div className="d-flex"><input style={{ width: "36%", height: "27px" }} type="number" className="ms-1" value={tablePageSize} onChange={(e) => setTablePageSize(e.target.value)} />
                                     {/* <CoustomInfoIcon Discription="These features enable you to adjust the page size, determining the amount of data you wish to display." /> */}
-                                    <Tooltip withArrow content="These features enable you to adjust the Table size, determining the amount of data you wish to display." relationship="label" positioning="below">
+                                    <Tooltip withArrow content="These features enable you to adjust the Table Size, determining the amount of data you wish to display." relationship="label" positioning="below">
                                                <div className='alignCenter hover-text'>
                                                 <span className="svg__iconbox svg__icon--info"></span>
                                               </div>
