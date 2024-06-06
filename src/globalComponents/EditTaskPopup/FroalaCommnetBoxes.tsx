@@ -16,7 +16,6 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import 'react-tabs/style/react-tabs.css';
 import Slider from "react-slick";
 import { Web } from "sp-pnp-js";
 import { BiInfoCircle } from "react-icons/bi";
@@ -140,7 +139,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
     const addMainRow = () => {
         let testTaskIndex = UpdatedFeedBackParentArray?.length + 1
         IndexCount = IndexCount + 1;
-        const object = {
+        const object:any = {
             Completed: "",
             Title: "",
             text: "",
@@ -149,20 +148,20 @@ export default function FroalaCommnetBoxes(textItems: any) {
             LowImportance: '',
             HighImportance: '',
             isShowLight: '',
-            TaskCreatedForThis: false
-        };
+            TaskCreatedForThis: false,
+            setImagesInfo: []
+           };
         setState([...State,object]);
         // State.push(object);
         UpdatedFeedBackParentArray.push(object)
         setCurrentActiveTab(0)
-   
         setTexts(!Texts);
         setBtnStatus(true);
     }
     const addMainRowInDiv = () => {
-        let testTaskIndex = State?.length + 1
+        let testTaskIndex :any= State?.length + 1
         IndexCount = IndexCount + 1;
-        const object = {
+        const object:any = {
             Completed: "",
             Title: "",
             text: "",
@@ -171,7 +170,8 @@ export default function FroalaCommnetBoxes(textItems: any) {
             LowImportance: '',
             HighImportance: '',
             isShowLight: '',
-            TaskCreatedForThis: false
+            TaskCreatedForThis: false,
+            setImagesInfo: [],
         };
     
         UpdatedFeedBackParentArray.push(object);

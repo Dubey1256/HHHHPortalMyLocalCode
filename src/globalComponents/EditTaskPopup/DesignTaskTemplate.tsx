@@ -7,7 +7,7 @@ const DesignTaskTemplate = (props: any) => {
     return (
         <>
             <div>
-                objective
+                Objective
                 <CommentBoxComponent
                     data={props?.data}
                     callBack={props?.callBack}

@@ -118,7 +118,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                 hasCustomExpanded: false,
                 hasExpanded: false,
                 isHeaderNotAvlable: true,
-                size: 10,
+                size: 20,
                 id: 'Id',
             },
             {
@@ -155,7 +155,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                 placeholder: 'Modified',
                 resetColumnFilters: false,
                 header: '',
-                size: 115,
+                size: 91,
             },
             {
                 accessorFn: (row: any) => row?.Created,
@@ -181,7 +181,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                 placeholder: 'Created',
                 resetColumnFilters: false,
                 header: '',
-                size: 115,
+                size: 91,
             },
             {
                 accessorFn: "",
