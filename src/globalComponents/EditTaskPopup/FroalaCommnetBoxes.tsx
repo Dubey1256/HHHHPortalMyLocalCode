@@ -844,7 +844,7 @@ const DesignCategoriesTask = (state: any) => {
 
                                             )
                                         }) :
-                                            <div className="carouselSlider">
+                                            <div className="carouselSlider taskImgTemplate">
                                                 <Slider {...settings}>
 
                                                     {obj?.setImagesInfo?.map((imgData: any, indeximage: any) => {
