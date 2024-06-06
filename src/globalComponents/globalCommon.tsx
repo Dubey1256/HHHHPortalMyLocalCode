@@ -2322,7 +2322,7 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     }
 }
 export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | null, pertiCularSites?: any | null, showOffShore?: any | undefined) => {
-    let query = "Id,Title,FeedBack,PriorityRank,WorkingAction,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+    let query = "Id,Title,FeedBack,Comments,PriorityRank,WorkingAction,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
     }
@@ -2333,7 +2333,7 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
     } else if (showOffShore == true) {
         filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites")
     } else {
-        filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.Title != "Offshore Tasks")
+        filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites")
     }
     let AllSiteTasks: any = []
     if (filteredSiteConfig?.length > 0) {
@@ -2408,7 +2408,7 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                                 if (todaysWorkMembers?.WorkingMember?.length > 0) {
                                     task.IsTodaysTask = true;
                                     task.AssignedTo = todaysWorkMembers?.WorkingMember
-                                    task.AssignedToIds = todaysWorkMembers?.WorkingMember?.map((mem:any)=>{
+                                    task.AssignedToIds = todaysWorkMembers?.WorkingMember?.map((mem: any) => {
                                         return mem?.Id
                                     })
                                 }
@@ -2426,6 +2426,57 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
         await Promise.all(fetchPromises)
         return AllSiteTasks
     }
+}
+
+export const verifyComponentPermission = async (permissionTitle: any) => {
+    let pageInfo = await pageContext()
+    let permission = false;
+    if (pageInfo?.WebFullUrl) {
+        let web = new Web(pageInfo.WebFullUrl);
+        const lists = await web.lists.getByTitle('ComponentPermissions').select('Id,Title,AllowedUsers/Id,AllowedUsers/Title').expand('AllowedUsers').get();
+        if (!lists) {
+            permission = true
+        }
+        else {
+            await web.currentUser.get().then(async (logginUser: any) => {
+                let userGroups = await web.getUserById(23).groups.get()
+                await web.lists.getByTitle('ComponentPermissions').items.filter(`Title eq '${permissionTitle}'`).get().then((result: any) => {
+                    if (result?.length > 0) {
+                        permission = result[0].AllowedUsersId?.some((user: any) => user == logginUser?.Id || userGroups?.some((group: any) => group?.Id == user))
+                    }
+                })
+            });
+        }
+    }
+    return permission;
+}
+export const LoadAllNotificationConfigrations = async (configrationTitle: any, AllListId: any) => {
+    let pageInfo = await pageContext()
+    let AllTaskUser = await loadAllTaskUsers(AllListId)
+    let copyRecipients: any
+    if (pageInfo?.WebFullUrl) {
+        let web = new Web(pageInfo.WebFullUrl);
+
+        await web.lists.getByTitle("NotificationsConfigration").items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').filter(`Title eq '${configrationTitle}'`).expand('Author,Editor,Recipients ,PortfolioType').get().then((result: any) => {
+            result?.map((data: any) => {
+                data.showUsers = ""
+                data.DisplayModifiedDate = moment(data.Modified).format("DD/MM/YYYY");
+                if (data.DisplayModifiedDate == "Invalid date" || "") {
+                    data.DisplayModifiedDate = data.DisplayModifiedDate.replaceAll("Invalid date", "");
+                }
+                data.DisplayCreatedDate = moment(data.Created).format("DD/MM/YYYY");
+                if (data.DisplayCreatedDate == "Invalid date" || "") {
+                    data.DisplayCreatedDate = data.DisplayCreatedDate.replaceAll("Invalid date", "");
+                }
+                if (data?.Recipients?.length > 0) {
+                    copyRecipients = AllTaskUser.filter((user: any) => data.Recipients.find((data2: any) => user.AssingedToUserId == data2.Id))
+                }
+            })
+
+        })
+
+    }
+    return copyRecipients;
 }
 
 export const descriptionSearchData = (result: any) => {
@@ -3108,22 +3159,25 @@ function getEndingDate(startDateOf: any): Date {
 
 export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, Context: any, DateType: any, selectedUser: any) => {
     let DevloperTime: any = 0.00;
+    let ManagementTime: any = 0.00;
     let QATime: any = 0.00;
     let QAMembers: any = 0;
     let DesignMembers: any = 0;
     let DesignTime: any = 0;
     let TotleTaskTime: any = 0;
     let DevelopmentMembers: any = 0;
+    let managementMembers: any = 0;
     let TotalQAMember: any = 0;
     let TotalDesignMember: any = 0;
     let TotalDevelopmentMember: any = 0;
     let QAleaveHours: any = 0;
     let DevelopmentleaveHours: any = 0;
+    let managementleaveHours: any = 0;
     let DesignMemberleaveHours: any = 0;
     let startDate: any = ''
     let DevCount: any = 0;
+    let ManagementCount: any = 0;
     let Trainee: any = 0;
-    let TraineeTime: any = 0;
     let DesignCount: any = 0;
     let QACount: any = 0;
     let TranineesNum: any = 0;
@@ -3143,11 +3197,11 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
 
     const currentLoginUserId = Context.pageContext?._legacyPageContext.userId;
     selectedUser?.forEach((items: any) => {
-        if (items?.UserGroup?.Title == 'Portfolio Lead Team' || items?.UserGroup?.Title == 'Smalsus Lead Team' || items?.UserGroup?.Title == 'Developers Team') {
+        if (items?.UserGroup?.Title == 'Developers Team' || items?.UserGroup?.Title == 'Portfolio Lead Team' || items?.UserGroup?.Title == 'Trainees') {
             DevCount++
         }
-        if (items?.UserGroup?.Title == 'Trainees') {
-            Trainee++;
+        if (items?.UserGroup?.Title == 'Junior Task Management' || items?.Title == 'Prashant Kumar') {
+            ManagementCount++
         }
         if ((items?.TimeCategory == 'Design' && items.Company == 'Smalsus') || items?.UserGroup?.Title == 'Design Team') {
             DesignCount++
@@ -3162,23 +3216,27 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
 
             if (item?.AuthorId == val?.AssingedToUserId) {
 
-                if (val?.UserGroup?.Title == 'Portfolio Lead Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff')
+                if (val?.UserGroup?.Title == 'Developers Team' || val?.UserGroup?.Title == 'Portfolio Lead Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff'){
                     item.Department = 'Developer';
-                item.userName = val?.Title
-                if (val?.UserGroup?.Title == 'Trainees')
-                    item.Department = 'Trainees';
-                item.userName = val?.Title
-                if (val?.UserGroup?.Title == 'Developers Team')
-                    item.Department = 'Developer';
-                item.userName = val?.Title
+                    item.userName = val?.Title
+                }
+                if (val?.UserGroup?.Title == 'Junior Task Management' || val?.Title == 'Prashant Kumar') {
+                    item.Department = 'Management'
+                    item.userName = val?.Title
+                }
+                   
 
-                if (val?.UserGroup?.Title == 'Design Team')
+                if (val?.UserGroup?.Title == 'Design Team'){
                     item.Department = 'Design';
-                item.userName = val?.Title
+                    item.userName = val?.Title
+                }
+                   
 
-                if (val?.UserGroup?.Title == 'QA Team')
+                if (val?.UserGroup?.Title == 'QA Team'){
                     item.Department = 'QA';
-                item.userName = val?.Title
+                    item.userName = val?.Title
+                }
+                    
 
             }
         })
@@ -3189,8 +3247,8 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
             if (time?.Department == 'Developer') {
                 DevloperTime = DevloperTime + parseFloat(time.Effort)
             }
-            if (time?.Department == 'Trainees') {
-                TraineeTime = TraineeTime + parseFloat(time.Effort)
+            if (time?.Department == 'Management') {
+                ManagementTime = ManagementTime + parseFloat(time.Effort)
             }
 
             if (time?.Department == 'Design') {
@@ -3201,7 +3259,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
             }
 
         })
-        TotleTaskTime = QATime + DevloperTime + DesignTime
+        TotleTaskTime = QATime + DevloperTime + DesignTime + ManagementTime;
     }
     LeaveUserData?.forEach((items: any) => {
         if (select >= items.Start && select <= items.EndDate) {
@@ -3209,6 +3267,10 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
             if (items?.Department == 'Development') {
                 DevelopmentMembers++
                 DevelopmentleaveHours += items.totaltime
+            }
+            if (items?.Department == 'Management') {
+                managementMembers++
+                managementleaveHours += items.totaltime
             }
 
             if (items?.Department == 'Design') {
@@ -3250,7 +3312,22 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
 
     })
 
-    AllTimeEntry?.forEach((item: any) => {
+    const sortUsersByName = (usersArray:any) => {
+        return usersArray.sort((a:any, b:any) => {
+          const nameA = a.userName ? a.userName.toLowerCase() : ''; // Handle undefined or null userName
+          const nameB = b.userName ? b.userName.toLowerCase() : ''; // Handle undefined or null userName
+          
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          return 0;
+        });
+      };
+    const sortedUsers = sortUsersByName(AllTimeEntry);
+    sortedUsers?.forEach((item: any) => {
 
 
         if (item.PriorityRank == undefined || item.PriorityRank == '') {
@@ -3278,9 +3355,16 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
         if (item.Department == undefined || item.Department == '') {
             item.Department = ''
         }
+         if (item.userName == undefined || item.userName == '') {
+            item.userName = ''
+        }
+        if (item.ProjectID == undefined || item.ProjectID == '') {
+            item.ProjectID = ''
+        }
         var text = '<tr>' +
             '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item?.TaskDate + '</td>'
             + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.siteType + '</td>'
+            + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.ProjectID + '</td>'
             + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.ComponentName + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + `<a href='https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}'>` + '<span style="font-size:11px; font-weight:600">' + item.TaskTitle + '</span>' + '</a >' + '</td>'
             + '<td align="left" style="border: 1px solid #aeabab;padding: 4px">' + item?.Description + '</td>'
@@ -3288,7 +3372,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Effort + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PercentComplete + '%' + '</td>'
             + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Status + '</td>'
-            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.userName + '</td>'
+            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' +  '<p style="margin:0px;">' + `<a href ='https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/UserTimeEntry.aspx??userId=${item.AuthorId}&Date=${item?.TaskDate}'>`+'<span style="font-size:13px">' + item?.userName + '</span></a>' + '</p>' + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Department + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.ClientCategorySearch + '</td>'
             + '</tr>'
@@ -3303,18 +3387,26 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Leave Hours' + '</strong>' + '</td>'
         + '</tr>'
         + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Management' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + ManagementCount + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + managementMembers + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + ManagementTime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + managementleaveHours + '</td>'
+        + '</tr>'
+        + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Technical Team' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevCount + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentMembers + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevloperTime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentleaveHours + '</td>'
+        + '</tr>'
+        + '<tr>'
+        + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Design' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignCount + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignMembers + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignTime.toFixed(2) + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignMemberleaveHours + '</td>'
-        + '</tr>'
-        + '<tr>'
-        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Development' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevCount + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentMembers + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevloperTime.toFixed(2) + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentleaveHours + '</td>'
         + '</tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'QA' + '</td>'
@@ -3362,11 +3454,12 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
         '<tr style="font-size: 11px;">' +
         '<th  style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Date' + '</th>'
         + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Sites' + '</th>'
+        + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'ProjectId' + '</th>'
         + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'Component' + '</th>'
         + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Task' + '</th>'
         + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'FullDescription' + '</th>'
         + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Priority' + '</th>'
-        + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Effort' + '</th>'
+        + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Time' + '</th>'
         + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Complete' + '</th>'
         + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Status' + '</th>'
         + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'TimeEntryUser' + '</th>'

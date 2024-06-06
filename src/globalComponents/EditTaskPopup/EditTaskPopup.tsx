@@ -2749,16 +2749,18 @@ const EditTaskPopup = (Items: any) => {
                             ReactDOM.render(reactElement, containerDiv);
 
                             const SendMessage = `
-                            <span>${CommonMsg}</span> 
-                            <p></p>
-                            <span>
-                            Task Link:  
-                            <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
-                            ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
-                            </a>
-                            </span>
-                            <p></p>
-                            <span>${containerDiv.innerHTML}</span>
+                           <div style="border-top: 5px solid #2f5596">
+                           <span>${CommonMsg}</span> 
+                           <p></p>
+                           <span>
+                           Task Title:  
+                           <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
+                           ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
+                           </a>
+                           </span>
+                           <p></p>
+                           <span>${containerDiv.innerHTML}</span>
+                           </div>
                             
                             `;
 
@@ -3011,7 +3013,9 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.projectStructerId = structureiddata;
                                     Items.Call(dataEditor, "UpdatedData");
                                 } else {
-                                    Items.Call(DataJSONUpdate, "UpdatedData");
+                                    if (usedFor !== "TimeSheetPopup") {
+                                        Items.Call(DataJSONUpdate, "UpdatedData");
+                                    }
                                 }
                             } else {
                                 if (usedFor !== "TimeSheetPopup") {

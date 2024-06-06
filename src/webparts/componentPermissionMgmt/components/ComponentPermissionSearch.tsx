@@ -121,10 +121,9 @@ export const ComponentPermissionSearch = (props: any) => {
     )
     return (
 
-        <div className="section container">
-            <header className="page-header text-center">
-                <h1 className="page-title">Component-Permission-Management</h1>
-            </header>
+        <div className="section">
+            <h2 className="heading">Component-Permission-Management</h2>
+          
             <div className="TableContentSection">
                 <div className='Alltable mt-2 mb-2'>
                     <div className='col-md-12 p-0 '>

@@ -69,12 +69,24 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                         if (elem?.original?.postFeatureType !== undefined) {
                             updateMasterTaskData.FeatureTypeId = elem?.original?.postFeatureType?.Id;
                         }
+                        if (elem?.original?.postPriorityRankValue !== undefined && elem?.original?.postPriorityValue !== undefined) {
+                            updateMasterTaskData.PriorityRank = elem?.original?.postPriorityRankValue;
+                            updateMasterTaskData.Priority = elem?.original?.postPriorityValue;
+                        }
+                        if (elem?.original?.postDueDateValue !== undefined) {
+                            updateMasterTaskData.DueDate = elem?.original?.postDueDateValue ? moment(elem?.original?.postDueDateValue).format("MM-DD-YYYY") : null
+                        }
+                        if (elem?.original?.postProjectValue !== undefined) {
+                            updateMasterTaskData.ProjectId = elem?.original?.postProjectValue?.Id;
+                        }
+                        if (elem?.original?.postStatusValue !== undefined) {
+                            updateMasterTaskData.PercentComplete = elem?.original?.postStatusValue
+                        }
                         const portFolioFilterMember = [...(elem?.original?.postResponsibleTeamMember || []), ...(elem?.original?.postTeamMember || [])];
                         if (portFolioFilterMember?.length > 0) {
                             updateMasterTaskData.TeamMembersId = { results: portFolioFilterMember?.map((taskInfo: any) => taskInfo.AssingedToUser?.Id) };
                         }
                         if (elem?.original?.postAssignedTo && elem.original?.postAssignedTo?.length > 0) {
-                            // updateData.AssignedToId = { results: elem.original.postAssignedTo.map((taskInfo: any) => taskInfo.AssingedToUser?.Id) };
                             updateMasterTaskData.ResponsibleTeamId = { results: elem.original.postAssignedTo.map((taskInfo: any) => taskInfo.AssingedToUser?.Id) };
                         }
                     }
@@ -193,6 +205,48 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                                 if (combinedUsers?.length > 0) {
                                     value.original.TeamLeaderUser = combinedUsers;
                                     value.original.AllTeamName = combinedUsers?.map((val: any) => val.Title).join(" , ");
+                                }
+                                if (value?.original?.postPriorityValue) {
+                                    value.original.Priority = value?.original?.postPriorityValue;
+                                }
+                                if (value?.original?.postPriorityRankValue) {
+                                    value.original.PriorityRank = value?.original?.postPriorityRankValue;
+                                }
+                                if (value?.original?.postDueDateValue) {
+                                    value.original.DueDate = value?.original?.postDueDateValue;
+                                }
+                                if (value?.original?.postStatusValue) {
+                                    value.original.PercentComplete = (value?.original?.postStatusValue * 100).toFixed(0);
+                                }
+                                if (value?.original?.postTaskCategoriesId != undefined) {
+                                    value.original.TaskCategories = value?.original?.updatedTaskCatData;
+                                    value.original.TaskTypeValue = value?.original?.TaskCategories?.map((val: any) => val.Title).join(",");
+                                }
+                                if (value.original?.postProjectValue && value?.original?.postProjectValue?.Title != "Untagged project") {
+                                    const makeProjectData = { Id: value.original?.postProjectValue?.Id, PortfolioStructureID: value.original?.postProjectValue?.PortfolioStructureID, PriorityRank: value.original?.postProjectValue?.PriorityRank, Title: value.original?.postProjectValue?.Title }
+                                    value.original.Project = makeProjectData
+                                    value.original.projectStructerId = makeProjectData.PortfolioStructureID;
+                                    value.original.ProjectTitle = makeProjectData.Title
+                                    value.original.ProjectId = makeProjectData.Id
+                                    const title = makeProjectData?.Title || '';
+                                    const formattedDueDate = moment(value?.original?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                                    value.original.joinedData = [];
+                                    if (value?.original?.projectStructerId && title || formattedDueDate) {
+                                        value.original.joinedData.push(`Project ${value.original?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                                    }
+                                } else {
+                                    value.original.Project = {}
+                                    value.original.projectStructerId = "";
+                                    value.original.ProjectTitle = ""
+                                    value.original.ProjectId = ""
+                                    value.original.joinedData = [];
+                                }
+                                value.original.DisplayDueDate = moment(value?.original?.DueDate).format("DD/MM/YYYY");
+                                if (value?.original?.DisplayDueDate == "Invalid date" || "") {
+                                    value.original.DisplayDueDate = value?.original?.DisplayDueDate.replaceAll("Invalid date", "");
+                                }
+                                if (value?.original?.DueDate != null && value?.original?.DueDate != undefined) {
+                                    value.original.serverDueDate = new Date(value?.original?.DueDate).setHours(0, 0, 0, 0)
                                 }
                                 checkBoolian = updatedDataDataFromPortfolios(allData, value?.original);
                             }
@@ -372,7 +426,19 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
     };
     const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => {
         let dataToPush = { ...dataToUpdate }
-        delete dataToPush?.postFeatureType,
+        delete dataToPush.updatedDisplayDueDate,
+            delete dataToPush.postDueDateValue,
+            delete dataToPush.postStatusValue,
+            delete dataToPush.updatedPercentComplete,
+            delete dataToPush.postPriorityRankValue,
+            delete dataToPush.postPriorityValue,
+            delete dataToPush.updatedPriorityRank,
+            delete dataToPush.updatedPortfolioStructureID,
+            delete dataToPush.postProjectValue,
+            delete dataToPush.postTaskCategoriesId,
+            delete dataToPush.updatedTaskTypeValue,
+            delete dataToPush.updatedTaskCatData,
+            delete dataToPush?.postFeatureType,
             delete dataToPush?.updatedFeatureTypeTitle,
             delete dataToPush?.postTeamMember,
             delete dataToPush?.postResponsibleTeamMember,
@@ -521,15 +587,94 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
             if (filteredValues?.FeatureType && filteredValues?.FeatureType != undefined) {
                 value.original.postFeatureType = { Id: filteredValues?.FeatureType?.Id, Title: filteredValues?.FeatureType?.Title };
                 value.original.updatedFeatureTypeTitle = filteredValues?.FeatureType?.Title;
-                if (item?.teamMember?.length > 0) {
-                    value.original.postTeamMember = []
-                    value.original.postTeamMember = value?.original?.postTeamMember?.concat(item?.teamMember)
-                } if (item?.responsibleTeamMember?.length > 0) {
-                    value.original.postResponsibleTeamMember = []
-                    value.original.postResponsibleTeamMember = value?.original?.postResponsibleTeamMember?.concat(item?.responsibleTeamMember);
-                } if (item?.workingMember?.length > 0) {
-                    value.original.postAssignedTo = []
-                    value.original.postAssignedTo = value?.original?.postAssignedTo?.concat(item?.workingMember)
+            }
+            if (item?.teamMember?.length > 0) {
+                value.original.postTeamMember = []
+                value.original.postTeamMember = value?.original?.postTeamMember?.concat(item?.teamMember)
+            } if (item?.responsibleTeamMember?.length > 0) {
+                value.original.postResponsibleTeamMember = []
+                value.original.postResponsibleTeamMember = value?.original?.postResponsibleTeamMember?.concat(item?.responsibleTeamMember);
+            } if (item?.workingMember?.length > 0) {
+                value.original.postAssignedTo = []
+                value.original.postAssignedTo = value?.original?.postAssignedTo?.concat(item?.workingMember)
+            }
+            if (filteredValues?.Project && filteredValues?.Project != undefined && filteredValues?.Project?.Title != "Untagged project") {
+                value.original.postProjectValue = filteredValues?.Project
+                value.original.updatedPortfolioStructureID = filteredValues?.Project?.PortfolioStructureID
+            } else {
+                value.original.postProjectValue = filteredValues?.Project
+                value.original.updatedPortfolioStructureID = filteredValues?.Project?.Title ? "" : ""
+            }
+            if (filteredValues?.PercentComplete && filteredValues?.PercentComplete != undefined) {
+                let TaskStatus;
+                if (filteredValues?.PercentComplete) {
+                    const match = filteredValues?.PercentComplete?.match(/(\d+)%\s*(.+)/);
+                    if (match) {
+                        TaskStatus = parseInt(match[1]) / 100;
+                        value.original.postStatusValue = TaskStatus;
+                        value.original.updatedPercentComplete = parseInt(match[1]);
+                    }
+                }
+            }
+            if (filteredValues) {
+                if (filteredValues?.priority) {
+                    let priority: any;
+                    let priorityRank = 4;
+                    if (parseInt(filteredValues?.priority) <= 0 && filteredValues?.priority != undefined && filteredValues?.priority != null) {
+                        priorityRank = 4;
+                        priority = "(2) Normal";
+                    } else {
+                        priorityRank = parseInt(filteredValues?.priority);
+                        if (priorityRank >= 8 && priorityRank <= 10) {
+                            priority = "(1) High";
+                        }
+                        if (priorityRank >= 4 && priorityRank <= 7) {
+                            priority = "(2) Normal";
+                        }
+                        if (priorityRank >= 1 && priorityRank <= 3) {
+                            priority = "(3) Low";
+                        }
+                    }
+                    if (priority && priorityRank) {
+                        value.original.updatedPriorityRank = priorityRank
+                        value.original.postPriorityRankValue = priorityRank;
+                        value.original.postPriorityValue = priority;
+                    }
+                }
+            }
+            if (filteredValues?.DueDate && filteredValues?.DueDate != undefined) {
+                let date = new Date();
+                let dueDate: string | number;
+                if (filteredValues?.DueDate === "Today") {
+                    dueDate = date.toISOString();
+                }
+                if (filteredValues?.DueDate === "Tomorrow") {
+                    dueDate = date.setDate(date.getDate() + 1);
+                    dueDate = date.toISOString();
+                }
+                if (filteredValues?.DueDate === "ThisWeek") {
+                    date.setDate(date.getDate());
+                    var getdayitem = date.getDay();
+                    var dayscount = 7 - getdayitem
+                    date.setDate(date.getDate() + dayscount);
+                    dueDate = date.toISOString();
+                }
+                if (filteredValues?.DueDate === "NextWeek") {
+                    date.setDate(date.getDate() + 7);
+                    var getdayitem = date.getDay();
+                    var dayscount = 7 - getdayitem
+                    date.setDate(date.getDate() + dayscount);
+                    dueDate = date.toISOString();
+                }
+                if (filteredValues?.DueDate === "ThisMonth") {
+                    var year = date.getFullYear();
+                    var month = date.getMonth();
+                    var lastday = new Date(year, month + 1, 0);
+                    dueDate = lastday.toISOString();
+                }
+                if (dueDate) {
+                    value.original.updatedDisplayDueDate = moment(dueDate).format("DD/MM/YYYY")
+                    value.original.postDueDateValue = dueDate;
                 }
             }
         }
