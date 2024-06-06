@@ -1446,7 +1446,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
     try {
         if (RequiredData?.Title?.length > 0) {
             return (
-                <div style={{ backgroundColor: 'transparent' }}>
+                <div style={{ backgroundColor: 'transparent', borderTop:"5px solid #2f5596"}}>
                     <div>
                         <div><b style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Task Details:</b></div>
                         <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginBottom: '8px' }}>
