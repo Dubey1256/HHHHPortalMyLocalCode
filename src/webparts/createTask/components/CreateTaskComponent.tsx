@@ -182,7 +182,7 @@ function CreateTaskComponent(props: any) {
                         portfolioType: "Component"
                     }));
                     suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == DataItem[0]?.Id));
-                    suggestedProjects = suggestedProjects.sort((a: any, b: any) =>{ 
+                    suggestedProjects = suggestedProjects.sort((a: any, b: any) => {
                         let numA_P_match = a.PortfolioStructureID.match(/P(\d+)/);
                         let numB_P_match = b.PortfolioStructureID.match(/P(\d+)/);
                         let numA_X_match = a.PortfolioStructureID.match(/X(\d+)/);
@@ -387,7 +387,7 @@ function CreateTaskComponent(props: any) {
                             setSave((prev: any) => ({ ...prev, Component: setComponent }));
                             setSmartComponentData(setComponent);
                             suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == paramComponentId));
-                            suggestedProjects = suggestedProjects.sort((a: any, b: any) =>{ 
+                            suggestedProjects = suggestedProjects.sort((a: any, b: any) => {
                                 let numA_P_match = a.PortfolioStructureID.match(/P(\d+)/);
                                 let numB_P_match = b.PortfolioStructureID.match(/P(\d+)/);
                                 let numA_X_match = a.PortfolioStructureID.match(/X(\d+)/);
@@ -427,7 +427,7 @@ function CreateTaskComponent(props: any) {
                             setSave((prev: any) => ({ ...prev, Component: setComponent }));
                             setSmartComponentData(setComponent);
                             suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == paramComponentId));
-                            suggestedProjects = suggestedProjects.sort((a: any, b: any) =>{ 
+                            suggestedProjects = suggestedProjects.sort((a: any, b: any) => {
                                 let numA_P_match = a.PortfolioStructureID.match(/P(\d+)/);
                                 let numB_P_match = b.PortfolioStructureID.match(/P(\d+)/);
                                 let numA_X_match = a.PortfolioStructureID.match(/X(\d+)/);
@@ -555,8 +555,30 @@ function CreateTaskComponent(props: any) {
                     UrlPasteTitle(e);
 
                     createTask();
+                } 
+                else if (paramTaskType == 'UX') {
+                    DirectTask = true;
+                    subCategories?.map((item: any) => {
+                        if (item.Title == "User Experience - UX") {
+                            selectSubTaskCategory(item.Title, item.Id, item)
+                        }
+                    })
+                    let saveValue = save;
+                    let setTaskTitle = 'User Experience (UX) - ' + setComponent[0]?.Title
+                    saveValue.taskName = setTaskTitle;
+                    saveValue.taskUrl = paramSiteUrl;
+                    //  setTaskUrl(paramSiteUrl);
+                    setSave(saveValue);
+                    let e = {
+                        target: {
+                            value: paramSiteUrl
+                        }
+                    }
+                    UrlPasteTitle(e);
+
+                    createTask();
                 } else if (paramSiteUrl != undefined) {
-                    
+
                     let saveValue = save;
                     let setTaskTitle = 'Feedback - ' + setComponent[0]?.Title + ' ' + moment(new Date()).format('DD-MM-YYYY');
                     saveValue.taskName = setTaskTitle;
@@ -575,10 +597,8 @@ function CreateTaskComponent(props: any) {
                     }
                     UrlPasteTitle(e);
                 }
-                if (paramTaskType != 'Bug' && paramTaskType != 'Design') {
-                    await loadRelevantTask(paramComponentId, paramSiteUrl, PageName).then((response: any) => {
-                        setRefreshPage(!refreshPage);
-                    })
+                if (paramTaskType != 'Bug' && paramTaskType != 'Design' && paramTaskType != 'UX') {
+                    await Promise.all([loadRelevantTask(paramComponentId, paramSiteUrl, PageName)])
                 }
             }
         } else if (props?.projectId != undefined && props?.projectItem != undefined) {
@@ -607,12 +627,12 @@ function CreateTaskComponent(props: any) {
         const web = new Web(AllListId?.siteUrl);
         const batch = sp.createBatch();
         let count: any = 0;
-        SitesTypes?.map((site: any) => {
+        await Promise.all(SitesTypes?.map((site: any) => {
 
             try {
                 if (site?.listId != undefined) {
                     const lists = web.lists.getById(site?.listId)
-                    lists.items.inBatch(batch).select(query)
+                    lists.items.select(query)
                         .getAll()
                         .then((data: any) => {
 
@@ -694,7 +714,7 @@ function CreateTaskComponent(props: any) {
                             })
                             count++;
                             if (count == SitesTypes.length) {
-                                URLRelatedProjects = URLRelatedProjects.sort((a: any, b: any) => { 
+                                URLRelatedProjects = URLRelatedProjects.sort((a: any, b: any) => {
                                     let numA_P_match = a.PortfolioStructureID.match(/P(\d+)/);
                                     let numB_P_match = b.PortfolioStructureID.match(/P(\d+)/);
                                     let numA_X_match = a.PortfolioStructureID.match(/X(\d+)/);
@@ -709,14 +729,16 @@ function CreateTaskComponent(props: any) {
                                     if (numA_P !== numB_P) {
                                         return numA_P - numB_P;
                                     }
-                                    return numA_X - numB_X; 
+                                    return numA_X - numB_X;
                                 })
                                 setRelevantProjects(URLRelatedProjects)
                                 console.log("inside Set Task")
+
                                 setPageRelevantTask(PageRelevant)
                                 setTaskUrlRelevantTask(TaskUrlRelevant)
                                 setComponentRelevantTask(ComponentRelevant)
                                 setSave({ ...save, recentClick: 'PortfolioId' })
+                                setRefreshPage(!refreshPage);
                             }
                         })
 
@@ -724,7 +746,7 @@ function CreateTaskComponent(props: any) {
             } catch (error) {
                 console.log(error)
             }
-        })
+        }))
     }
     const GetSmartMetadata = async () => {
         SitesTypes = [];
@@ -1821,10 +1843,10 @@ function CreateTaskComponent(props: any) {
         const searchQuery = e?.target?.value;
         setSearchedRelevantProject(searchQuery);
         const filteredProjects = relevantProjects.filter((item: any) =>
-          item?.Title.toLowerCase().includes(searchQuery.toLowerCase()) || item?.PortfolioStructureID.toLowerCase().includes(searchQuery.toLowerCase())
+            item?.Title.toLowerCase().includes(searchQuery.toLowerCase()) || item?.PortfolioStructureID.toLowerCase().includes(searchQuery.toLowerCase())
         );
         setRelevantProjects(
-          searchQuery === "" ? URLRelatedProjects : filteredProjects
+            searchQuery === "" ? URLRelatedProjects : filteredProjects
         );
     };
 
@@ -1835,7 +1857,7 @@ function CreateTaskComponent(props: any) {
             item?.Title.toLowerCase().includes(searchQuery.toLowerCase()) || item?.PortfolioStructureID.toLowerCase().includes(searchQuery.toLowerCase())
         );
         setSuggestedProjectsOfporfolio(
-          searchQuery === "" ? suggestedProjects : filteredProjects
+            searchQuery === "" ? suggestedProjects : filteredProjects
         );
     };
     return (
@@ -2149,54 +2171,54 @@ function CreateTaskComponent(props: any) {
                 {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup context={props?.SelectedProp.Context} SDCTaskDetails={burgerMenuTaskDetails}
                     sendApproverMail={sendApproverMail} AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} pageType={'createTask'} /> : ''}
             </div >
-                <span className="ms-4">
-                        <div className="card mb-3">
-                            <div className="card-body">
-                                <h6 className="f-15 title titleBorder">Suggested Projects</h6>
-                                <input
-                                  type="search"
-                                  value={searchedSuggestedProject}
-                                  onChange={(e) => searchSuggestedProjects(e)}
-                                  placeholder="Search Suggested Projects"
-                                  className='full-width px-1 py-0 mt-1'
-                                />
-                            {SuggestedProjectsOfporfolio?.length > 0 ? <ul className="SpfxCheckRadio list-group list-group-flush">
-                                    {SuggestedProjectsOfporfolio?.map((project: any) => {
-                                        return (
-                                            <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action' >
-                                                <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
-                                                <a className="hreflink" title={`${project?.PortfolioStructureID} - ${project?.Title}`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
-                                                    data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title}`}</a>
-                                            </li>
-                                        )
-                                    })}
-                                </ul>: <h6 className="f-15 title">No Suggested Projects</h6>}
-                            </div>
-                        </div>
-                        <div className="card mb-3">
-                            <div className="card-body">
-                                <h6 className="f-15 title titleBorder">Relevant Projects</h6>
-                                <input
-                                  type="search"
-                                  value={searchedRelevantProject}
-                                  onChange={(e) => searchRelevantProjects(e)}
-                                  placeholder="Search Relevant Projects"
-                                  className='full-width px-1 py-0 mt-1'
-                                />
-                                {relevantProjects?.length > 0 ?<ul className="SpfxCheckRadio  list-group list-group-flush">
-                                    {relevantProjects?.map((project: any) => {
-                                        return (
-                                            <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action'>
-                                                <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
-                                                <a className="hreflink" title={`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
-                                                    data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`}</a>
-                                            </li>
-                                        )
-                                    })}
-                                </ul> : <h6 className="f-15 title">No Relevant Projects</h6>}
-                            </div>
-                        </div>
-                </span>
+            <span className="ms-4">
+                <div className="card mb-3">
+                    <div className="card-body">
+                        <h6 className="f-15 title titleBorder">Suggested Projects</h6>
+                        <input
+                            type="search"
+                            value={searchedSuggestedProject}
+                            onChange={(e) => searchSuggestedProjects(e)}
+                            placeholder="Search Suggested Projects"
+                            className='full-width px-1 py-0 mt-1'
+                        />
+                        {SuggestedProjectsOfporfolio?.length > 0 ? <ul className="SpfxCheckRadio list-group list-group-flush">
+                            {SuggestedProjectsOfporfolio?.map((project: any) => {
+                                return (
+                                    <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action' >
+                                        <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
+                                        <a className="hreflink" title={`${project?.PortfolioStructureID} - ${project?.Title}`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
+                                            data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title}`}</a>
+                                    </li>
+                                )
+                            })}
+                        </ul> : <h6 className="f-15 title">No Suggested Projects</h6>}
+                    </div>
+                </div>
+                <div className="card mb-3">
+                    <div className="card-body">
+                        <h6 className="f-15 title titleBorder">Relevant Projects</h6>
+                        <input
+                            type="search"
+                            value={searchedRelevantProject}
+                            onChange={(e) => searchRelevantProjects(e)}
+                            placeholder="Search Relevant Projects"
+                            className='full-width px-1 py-0 mt-1'
+                        />
+                        {relevantProjects?.length > 0 ? <ul className="SpfxCheckRadio  list-group list-group-flush">
+                            {relevantProjects?.map((project: any) => {
+                                return (
+                                    <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action'>
+                                        <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
+                                        <a className="hreflink" title={`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
+                                            data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`}</a>
+                                    </li>
+                                )
+                            })}
+                        </ul> : <h6 className="f-15 title">No Relevant Projects</h6>}
+                    </div>
+                </div>
+            </span>
         </div >
         </>
     )

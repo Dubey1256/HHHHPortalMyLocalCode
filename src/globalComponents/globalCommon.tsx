@@ -2408,7 +2408,7 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                                 if (todaysWorkMembers?.WorkingMember?.length > 0) {
                                     task.IsTodaysTask = true;
                                     task.AssignedTo = todaysWorkMembers?.WorkingMember
-                                    task.AssignedToIds = todaysWorkMembers?.WorkingMember?.map((mem:any)=>{
+                                    task.AssignedToIds = todaysWorkMembers?.WorkingMember?.map((mem: any) => {
                                         return mem?.Id
                                     })
                                 }
@@ -2437,7 +2437,7 @@ export const verifyComponentPermission = async (permissionTitle: any) => {
         if (!lists) {
             permission = true
         }
-        else{
+        else {
             await web.currentUser.get().then(async (logginUser: any) => {
                 let userGroups = await web.getUserById(23).groups.get()
                 await web.lists.getByTitle('ComponentPermissions').items.filter(`Title eq '${permissionTitle}'`).get().then((result: any) => {
@@ -2446,38 +2446,38 @@ export const verifyComponentPermission = async (permissionTitle: any) => {
                     }
                 })
             });
-        }    
+        }
     }
-    return permission;  
+    return permission;
 }
 export const LoadAllNotificationConfigrations = async (configrationTitle: any, AllListId: any) => {
     let pageInfo = await pageContext()
     let AllTaskUser = await loadAllTaskUsers(AllListId)
     let copyRecipients: any
     if (pageInfo?.WebFullUrl) {
-      let web = new Web(pageInfo.WebFullUrl);
+        let web = new Web(pageInfo.WebFullUrl);
 
-      await web.lists.getByTitle("NotificationsConfigration").items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').filter(`Title eq '${configrationTitle}'`).expand('Author,Editor,Recipients ,PortfolioType').get().then((result: any) => {
-        result?.map((data: any) => {
-          data.showUsers = ""
-          data.DisplayModifiedDate = moment(data.Modified).format("DD/MM/YYYY");
-          if (data.DisplayModifiedDate == "Invalid date" || "") {
-            data.DisplayModifiedDate = data.DisplayModifiedDate.replaceAll("Invalid date", "");
-          }
-          data.DisplayCreatedDate = moment(data.Created).format("DD/MM/YYYY");
-          if (data.DisplayCreatedDate == "Invalid date" || "") {
-            data.DisplayCreatedDate = data.DisplayCreatedDate.replaceAll("Invalid date", "");
-          }
-          if (data?.Recipients?.length > 0) {
-            copyRecipients = AllTaskUser.filter((user: any) => data.Recipients.find((data2: any) => user.AssingedToUserId == data2.Id))
-          }
+        await web.lists.getByTitle("NotificationsConfigration").items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').filter(`Title eq '${configrationTitle}'`).expand('Author,Editor,Recipients ,PortfolioType').get().then((result: any) => {
+            result?.map((data: any) => {
+                data.showUsers = ""
+                data.DisplayModifiedDate = moment(data.Modified).format("DD/MM/YYYY");
+                if (data.DisplayModifiedDate == "Invalid date" || "") {
+                    data.DisplayModifiedDate = data.DisplayModifiedDate.replaceAll("Invalid date", "");
+                }
+                data.DisplayCreatedDate = moment(data.Created).format("DD/MM/YYYY");
+                if (data.DisplayCreatedDate == "Invalid date" || "") {
+                    data.DisplayCreatedDate = data.DisplayCreatedDate.replaceAll("Invalid date", "");
+                }
+                if (data?.Recipients?.length > 0) {
+                    copyRecipients = AllTaskUser.filter((user: any) => data.Recipients.find((data2: any) => user.AssingedToUserId == data2.Id))
+                }
+            })
+
         })
-
-      })
 
     }
     return copyRecipients;
-  }
+}
 
 export const descriptionSearchData = (result: any) => {
     let descriptionSearchData = '';
