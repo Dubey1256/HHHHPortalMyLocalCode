@@ -6,4 +6,5 @@ export interface IHhhhSmartPagesProps {
   userDisplayName: string;
   SitesListUrl: string;
   SmartMetadataListID: string;
+  siteName: any;
 }

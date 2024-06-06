@@ -129,27 +129,6 @@ const Header = () => {
 
   return (
     <div>
-      <section className="NameTopSec">
-        <div className='row'><div><h6 className="pull-right">
-          <span className="mt--5" title='Manage Config'>
-            {IsShowConfigBtn == false && <a className="empCol hreflink" onClick={(e) => { setIsShowConfigBtn(true); ContextData.ShowHideSettingIcon(true); }} >Manage Configuration</a>}
-            {IsShowConfigBtn == true && <a className="empCol hreflink" onClick={(e) => { setIsShowConfigBtn(false); ContextData.ShowHideSettingIcon(false); }}>Cancel</a>}
-            <span> | </span>
-            {DashboardId != undefined && DashboardId != '' ? <a data-interception="off" target="_blank" className="empCol hreflink" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx?DashBoardId=" + DashboardId} >Manage Dashboard</a>
-              : <a data-interception="off" target="_blank" className="empCol hreflink" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx"} >Manage Dashboard</a>}
-
-          </span> <span> | </span>
-          <b><a data-interception="off" target="_blank" href={`${ContextData?.propsValue?.Context?.pageContext?._web.absoluteUrl}/SitePages/Dashboard-Old.aspx`}>Old Dashboard</a></b></h6></div></div>
-        {/* <div className="d-flex shadow-sm p-3 mb-3 bg-white">
-          <div className="col fw-bold f-18 alignCenter">
-             Welcome, 
-            <span className="ms-1 empCol">
-               {userName?.Title} 
-              {DashboardTitle}
-            </span>
-          </div>
-        </div> */}
-      </section >
       {/* {UserGroup != undefined && (UserGroup[0]?.UserGroup?.Title === 'Senior Developer Team' || UserGroup[0]?.UserGroup?.Title === 'Smalsus Lead Team') ?
         <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => openAnnouncementPopup(e)}> Add Announcement </a>
         </div>
@@ -177,7 +156,7 @@ const Header = () => {
       </section>)} */}
       <section className="tabSec">
         <div className="row">
-          <div className='col-10'>
+          <div className='col-8'>
             {DashboardId === '4' ? (
               <Slider className="DashBoardslider" {...settings}>
                 {DashboardConfig.map((items: any, index: any) => (
@@ -233,13 +212,36 @@ const Header = () => {
               </>
             )}
           </div>
+          <div className="col-1 alignCenter hreflink mb-3  bg-white shadow-sm">
+            <span className="iconSec">
+              <span title="Manage Configuration" className="svg__iconbox svg__icon--setting hreflink" style={{ width: '28px', height: '28px' }}></span>
+            </span>
+            <span className="ms-2">
+              <div>
+                {IsShowConfigBtn == false && <a className="empCol hreflink" onClick={(e) => { setIsShowConfigBtn(true); ContextData.ShowHideSettingIcon(true); }} >Manage <br />Configuration</a>}
+                {IsShowConfigBtn == true && <a className="empCol hreflink" onClick={(e) => { setIsShowConfigBtn(false); ContextData.ShowHideSettingIcon(false); }}>Cancel</a>}
+              </div>
+            </span>
 
+          </div>
+          <div className="col-1 alignCenter hreflink mb-3  bg-white shadow-sm">
+            <span className="iconSec">
+              <span title="Manage Dashboard" className="svg__iconbox svg__icon--setting hreflink" style={{ width: '28px', height: '28px' }}></span>
+            </span>
+            <span className="ms-2">
+              <div>
+                {DashboardId != undefined && DashboardId != '' ? <a data-interception="off" target="_blank" className="empCol hreflink" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx?DashBoardId=" + DashboardId} >Manage Dashboard</a>
+                  : <a data-interception="off" target="_blank" className="empCol hreflink" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx"} >Manage<br /> Dashboard</a>}
+              </div>
+            </span>
+
+          </div>
           <div className={`col-1 alignCenter hreflink mb-3  ${activeTile === 'TimeSheet' ? 'empBg shadow-sm active empBg' : 'bg-white shadow-sm'}`} onClick={() => handleTileClick('TimeSheet', undefined)}   >
             <span className="iconSec">
               <span title="TimeSheet" style={{ width: '24px', height: '24px' }} className="svg__iconbox svg__icon--draftOther"></span>
             </span>
             <span className="ms-2">
-              <div>TimeSheet</div>
+              <a href="#" className="empCol hreflink">TimeSheet</a>
             </span>
           </div>
           <div className="col-1 alignCenter  hreflink bg-white mb-3 shadow-sm ">

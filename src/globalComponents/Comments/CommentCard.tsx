@@ -116,7 +116,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             .getByTitle(this.state.listName)
             .items
             .getById(this.state.itemID)
-            .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Editor/Title", "Modified", "Comments")
+            .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "Editor/Title", "Modified", "Comments")
             .expand("TeamMembers", "Author", "ResponsibleTeam", "PortfolioType", "Editor")
             .get()
         } else {
@@ -124,19 +124,20 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             .getByTitle(this.state.listName)
             .items
             .getById(this.state.itemID)
-            .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+            .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
             .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "Portfolio", "Editor", "Project", "TaskCategories")
             .get()
         }
       } else {
-        taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "ComponentLink", "PriorityRank", "DueDate", "TaskCategories/Id", "TaskCategories/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+        taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "ComponentLink", "PriorityRank", "DueDate", "TaskCategories/Id", "TaskCategories/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
           .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "Portfolio", "PortfolioType", "Editor", "Project", "TaskCategories")
           .get()
       }
     } catch (e) {
       console.log(e)
     }
-    await this.GetTaskUsers();
+    if (this?.state?.Result?.ID == undefined)
+      await this.GetTaskUsers();
     console.log("this is result function")
     //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
     Title = taskDetails["Title"];
@@ -181,7 +182,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         ModifiedBy: this.GetUserObjectArr(taskDetails["Editor"]),
         Author: this.GetUserObjectArr(taskDetails["Author"]),
         component_url: taskDetails["component_x0020_link"],
-        Comments: JSON.parse(taskDetails["Comments"]),
+        Comments: this?.state?.Result != undefined && this?.state?.Result?.Comments != undefined ? this?.state?.Result?.Comments : JSON.parse(taskDetails["Comments"]),
         FeedBack: JSON.parse(taskDetails["FeedBack"]),
         PortfolioType: taskDetails["PortfolioType"],
         TaskUrl: `${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`
@@ -189,38 +190,41 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       if (tempTask["PortfolioType"] != undefined && tempTask["PortfolioType"] == "Service") {
         color = true;
       }
-      if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
-        commentlength = tempTask?.Comments?.length;
-      }
-      if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
-        tempTask["Comments"]?.map((item: any) => {
-          if (item?.AuthorImage != undefined && item?.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
-            var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
-            // item.AuthorImage = `${this.props.Context._pageContext._site.absoluteUrl}` + imgurl;
-            item.AuthorImage = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
-          }
-          // item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
-          // })
-          // this.taskUsers.map((user: any) => {
-          //   if (user.AssingedToUser !=undefined && user.AssingedToUser.Id === item.AuthorId)
-          //     item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
-          // })
-        })
-        tempTask["Comments"].sort(function (a: any, b: any) {
-          // let keyA = a.ID,
-          //   keyB = b.ID;
-          let keyA = new Date(a.Created),
-            keyB = new Date(b.Created);
-          // Compare the 2 dates
-          if (keyA < keyB) return 1;
-          if (keyA > keyB) return -1;
-          return 0;
-        });
+      if (this?.state?.Result?.ID == undefined) {
+        if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
+          commentlength = tempTask?.Comments?.length;
+        }
+        if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
+          tempTask["Comments"]?.map((item: any) => {
+            if (item?.AuthorImage != undefined && item?.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
+              var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
+              // item.AuthorImage = `${this.props.Context._pageContext._site.absoluteUrl}` + imgurl;
+              item.AuthorImage = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
+            }
+            // item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
+            // })
+            // this.taskUsers.map((user: any) => {
+            //   if (user.AssingedToUser !=undefined && user.AssingedToUser.Id === item.AuthorId)
+            //     item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
+            // })
+          })
+          tempTask["Comments"].sort(function (a: any, b: any) {
+            // let keyA = a.ID,
+            //   keyB = b.ID;
+            let keyA = new Date(a.Created),
+              keyB = new Date(b.Created);
+            // Compare the 2 dates
+            if (keyA < keyB) return 1;
+            if (keyA > keyB) return -1;
+            return 0;
+          });
+        }
       }
       this.setState({
         Result: tempTask
       });
     } catch (e) { console.log(e) }
+
   }
   private GetUserObjectFromCollection(UsersValues: any) {
     console.log("this is GetUserObjectFromCollection function")
@@ -283,6 +287,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     this.setState({ CommenttoPost: e.target.value });
   }
   private async PostComment(txtCommentControlId: any) {
+    await this.GetResult();
     this.setState({
       postButtonHide: true
     })
@@ -732,17 +737,15 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             TeamsMessage = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${PreMsg} </blockquote>${CurrentMsg}`;
           }
           else {
-            TeamsMessage = `
-          <b>Hi ${combinedNames},</b>
+            TeamsMessage = `<span> You have been tagged in comment in the below task. </span>
+            <p></p>
+          <div style="background-color: #fff; padding:16px; margin-top:10px; display:block;">
+          <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">Comment</b>: <span>${txtComment}</span>
+          </div>
           <p></p>
-          Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
-          <p><br/></p>
-          <span>${finalTaskInfo}</span>
+          Task Link: <a href=${MsgURL}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a>
           <p></p>
-          Task Link: <a href=${MsgURL}>Click here</a>
-          <p></p>
-          <b>Thanks,<br/>Task Management Team</b>
-      `;
+          <span>${finalTaskInfo}</span> `;
           }
 
           await globalCommon.SendTeamMessage(mention_To, TeamsMessage, this.props.Context, this.props?.AllListId)
@@ -934,7 +937,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           </div>
           <div className='card-body'>
             <div className="comment-box  mb-2">
-              <div className='mb-1'>
+              <div className='mb-2'>
                 <span> <strong>To:</strong>  </span>
                 {this.topCommenters != null && this.topCommenters.length > 0 && this.topCommenters?.map((topCmnt: any, i: any) => {
                   return <span>
@@ -959,7 +962,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               </span>
             </div>
             <div>
-              <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" className='form-control' ></textarea>
+              <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" style={{padding:'5px'}} className='form-control' ></textarea>
               {this.state.postButtonHide ?
                 <button disabled onClick={() => this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
                   Post
@@ -987,17 +990,17 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               </span>
                               {cmtData.Created}</span>
                             <div className="d-flex ml-auto media-icons px-1 " >
+                            <a onClick={() => this.openEditModal(cmtData, i, false)}>
+                                <span className='svg__iconbox svg__icon--edit'></span>
+                              </a>
                               <a ><div data-toggle="tooltip" id={"Reply-" + i}
                                 onClick={() => this.openReplycommentPopup(cmtData, i)} data-placement="bottom"  >
                                 <span className="svg__iconbox svg__icon--reply"></span>
                               </div></a>
-                              {/* <a onClick={() => this.replyMailFunction(cmtData, i)}><span><ImReply /></span></a> */}
-                              <a onClick={() => this.openEditModal(cmtData, i, false)}>
-                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
-                                <span className='svg__iconbox svg__icon--edit'></span>
-                              </a>
+                           
+                             
                               <a title="Delete" onClick={() => this.clearComment(i, undefined, undefined)}>
-                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" /> */}
+                       
                                 <span className='svg__iconbox svg__icon--trash'></span>
                               </a>
                             </div>
@@ -1126,7 +1129,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <div className="col-sm-12">
                   <div className="row d-flex mb-2">
                     <div>
-                      <textarea id="txtCommentModal" onChange={(e) => this.handleInputChange(e)} className="form-control p-1 ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>
+                      <textarea id="txtCommentModal" onChange={(e) => this.handleInputChange(e)} className="form-control p-1 ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" style={{padding:'5px'}} placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>
                       <span role="status" aria-live="polite" className="ui-helper-hidden-accessible"></span>
                     </div>
                     <div className='text-end mt-1'> <span className='btn btn-primary hreflink' onClick={() => this.PostComment('txtCommentModal')} >Post</span></div>

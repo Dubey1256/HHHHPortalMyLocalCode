@@ -539,7 +539,7 @@ const CentralizedSiteComposition = (Props: any) => {
     }
 
     const GetIndividualSiteAllData = async () => {
-        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/PortfolioStructureID,workingThisWeek,SiteCompositionSettings,Sitestagging,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/PortfolioStructureID,workingThisWeek,SiteCompositionSettings,Sitestagging,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
         try {
             const data = await web.lists.getById(ItemDetails?.listId).items.select(query).getAll();
             data?.map((task: any) => {
@@ -879,9 +879,9 @@ const CentralizedSiteComposition = (Props: any) => {
                             <span className="svg__iconbox svg__icon--info dark"></span>
                             <span className="tooltip-text pop-left">
                                 <span>This button enables you to toggle between Protected and Unprotected modes for validation.</span>
-                                <p className="mb-1"><b>Validation Cases:</b> </p>
-                                <b>1. </b>When the toggle is enabled, it protected both the parent item and extends protection to the selected items (CSF/AWT) from the Tagged Child Item Table.<br />
-                                <b>2. </b>When the toggle is disabled, it unprotected the parent item only.
+                                <p className="mb-1 mt-16"><b>Validation Cases:</b> </p>
+                                1. When the toggle is enabled, it protected both the parent item and extends protection to the selected items (CSF/AWT) from the Tagged Child Item Table.<br />
+                                2. When the toggle is disabled, it unprotected the parent item only.
                             </span>
                         </span>
                     </div>
@@ -1842,7 +1842,7 @@ const CentralizedSiteComposition = (Props: any) => {
                             }
                             SiteCompositionData = [SCDummyJSON]
                         }
-                        let tempSiteSetting: any = [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
+                        let tempSiteSetting: any = [{ Proportional: false, Manual: false, Protected: false, Deluxe: false, Standard: true }]
                         siteSettingData = tempSiteSetting;
                     }
                 }
@@ -1927,7 +1927,7 @@ const CentralizedSiteComposition = (Props: any) => {
                             }
                             SiteCompositionData = [SCDummyJSON]
                         }
-                        let tempSiteSetting: any = [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
+                        let tempSiteSetting: any = [{ Proportional: false, Manual: false, Protected: false, Deluxe: false, Standard: true }]
                         siteSettingData = tempSiteSetting;
                     }
                 }
@@ -2001,8 +2001,17 @@ const CentralizedSiteComposition = (Props: any) => {
         UpdateClientCategoriesButtonFunction();
     }
 
-
-
+    // this is use for generate Default site icon
+    const getDefaultSiteIcon = (siteName:any) => {
+        const words = siteName.split(" ");
+        if (words.length >= 2) {
+            return words[0][0].toUpperCase() + words[1][0].toUpperCase();
+        } else if (words.length === 1) {
+            return words[0][0].toUpperCase() + (words[0][1] ? words[0][1].toUpperCase() : '');
+        } else {
+            return "";
+        }
+    };
     // END of Function Code 
 
     return (
@@ -2013,8 +2022,8 @@ const CentralizedSiteComposition = (Props: any) => {
                 isBlocking={false}
                 onDismiss={() => ClosePanelFunction("Close")}
                 onRenderFooter={CustomFooter}
-                type={PanelType.custom}
-                customWidth="1500px"
+                type={PanelType.large}
+
             >
                 <section className="mb-5 modal-body">
                     <div className="Site-composition-and-client-category d-flex full-width">
@@ -2098,13 +2107,17 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                 </td>
                                                                 <td className="m-0 p-0 align-middle" style={{ width: "30%" }}>
                                                                     <div className="alignCenter">
-                                                                        <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} className="mx-2 workmember" />
-                                                                        {siteData.Title}
-                                                                        <span></span>
+                                                                        
+                                                                            {!siteData.Item_x005F_x0020_Cover || !siteData.Item_x005F_x0020_Cover.Url ? (
+                                                                                <span className="mx-2 Dyicons me-1">{getDefaultSiteIcon(siteData.Title)}</span>
+                                                                            ) : (
+                                                                                <img src={siteData.Item_x005F_x0020_Cover.Url} className="mx-2 workmember" />
+                                                                            )}
+                                                                            <div>{siteData.Title}</div>
                                                                     </div>
                                                                 </td>
                                                                 <td className="p-1"
-                                                                    style={{ width: "20%" }}
+                                                                    style={{ width: "10%" }}
                                                                 >
                                                                     <div className="input-group alignCenter">
                                                                         {siteData.BtnStatus ?
@@ -2150,9 +2163,6 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                         }
                                                                     </div>
                                                                 </td>
-                                                                <td className="m-0 align-middle" style={{ width: "5%" }}>
-                                                                    <span>{siteData.BtnStatus ? "%" : ''}</span>
-                                                                </td>
                                                                 {usedFor == "AWT" ?
                                                                     <td className="m-0 align-middle" style={{ width: "10%" }}>
                                                                         {IsSCProportional && !IsSCManual && !IsSCProtected ?
@@ -2181,9 +2191,9 @@ const CentralizedSiteComposition = (Props: any) => {
                                     <div className="alignCenter justify-content-end border mt-1 pe-1 py-1 siteColor">
                                         {usedFor == "CSF" ?
                                             <div className="alignCenter">
-                                                <div className="alignCenter border px-3">
-                                                    <span>SCD</span>
-                                                    <span className="hover-text alignIcon">
+                                                <div className="alignCenter border" style={{ padding: '2.5px 20px' }}>
+                                                    <span className="fw-semibold">SCD</span>
+                                                    <span className="hover-text alignCenter">
                                                         <span className="svg__iconbox svg__icon--info dark"></span>
                                                         <span className="tooltip-text pop-right">
                                                             {"Site composition distribution percentage"}
@@ -2196,9 +2206,9 @@ const CentralizedSiteComposition = (Props: any) => {
                                             </div> :
                                             <>
                                                 <div className="alignCenter">
-                                                    <div className="alignCenter border px-3">
-                                                        <span>SCD</span>
-                                                        <span className="hover-text alignIcon">
+                                                    <div className="alignCenter border" style={{ padding: '2.5px 20px' }}>
+                                                        <span className="fw-semibold">SCD</span>
+                                                        <span className="hover-text alignCenter">
                                                             <span className="svg__iconbox svg__icon--info dark"></span>
                                                             <span className="tooltip-text pop-right">
                                                                 {"Site composition distribution percentage"}
@@ -2210,9 +2220,9 @@ const CentralizedSiteComposition = (Props: any) => {
                                                     </span>
                                                 </div>
                                                 <div className="alignCenter">
-                                                    <div className="alignCenter border px-3">
-                                                        <span>ST</span>
-                                                        <span className="hover-text alignIcon">
+                                                    <div className="alignCenter border" style={{ padding: '2.5px 20px' }}>
+                                                        <span className="fw-semibold">ST</span>
+                                                        <span className="hover-text alignCenter">
                                                             <span className="svg__iconbox svg__icon--clock dark"></span>
                                                             <span className="tooltip-text pop-right">
                                                                 {"Total time spent on this task"}
@@ -2245,11 +2255,11 @@ const CentralizedSiteComposition = (Props: any) => {
                                     <span className="hover-text alignIcon">
                                         <span className="svg__iconbox svg__icon--info dark"></span>
                                         <span className="tooltip-text pop-right">
-                                            <b>Client Category Identification Tool:</b><br />
+                                            <p className="mb-1"><b>Client Category Identification Tool:</b> </p>
                                             This tool efficiently consolidates client categories associated with selected items and their corresponding child Items (All Tagged CC in Selected Item CSF and AWT). The tool offers a streamlined view of client categories, filtering them based on their respective sites. The selected client categories seamlessly Inherited to the designated parent item and also inherited into selected items (CSF/AWT) from the Tagged Child Item Table.
-                                            <p className="mb-1"><b>Validation Cases:</b> </p>
-                                            <b>1. </b>If the selected item have tagged CCs, that CCs will be automatically set as the default selection<br />
-                                            <b>2. </b>If no tagged CC is present in the selected item, only display the relevant child items CCs (all tagged CCs in the selected items CSF and AWT).
+                                            <p className="mb-1 mt-16"><b>Validation Cases:</b> </p>
+                                            1. If the selected item have tagged CCs, that CCs will be automatically set as the default selection<br />
+                                            2. If no tagged CC is present in the selected item, only display the relevant child items CCs (all tagged CCs in the selected items CSF and AWT).
                                         </span>
                                     </span>
                                 </div>
@@ -2365,7 +2375,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                     </span>
                                 </div>
                             </div>
-                            <div className="tagged-child-items-table border">
+                            <div className="tagged-child-items-table Alltable">
                                 <GlobalCommonTable
                                     setLoaded={setLoaded}
                                     AllListId={RequiredListIds}

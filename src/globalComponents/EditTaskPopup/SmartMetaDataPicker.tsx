@@ -43,7 +43,7 @@ const Picker = (item: any) => {
         }
     }, [])
     const closePopupSmartTaxanomy = () => {
-        setPopupSmartTaxanomy(false)
+        // setPopupSmartTaxanomy(false)
         if (usedFor == "Task-Footertable") {
             item?.Call(selectedCategoryData, "Category-Task-Footertable")
             NewArray = []
@@ -64,6 +64,12 @@ const Picker = (item: any) => {
             SelectedCategoryBackupArray = [];
             setSelect([])
         }
+        if (usedFor == "DashboardLandingPage") {
+            item.CallBack(SelectedCategoryBackupArray);
+            NewArray = []
+            SelectedCategoryBackupArray = [];
+            setSelect([])
+        }
         else if (usedFor == "Task-Footertable") {
             item?.Call(select, "Category-Task-Footertable")
             NewArray = []
@@ -75,7 +81,7 @@ const Picker = (item: any) => {
             NewArray = []
             SelectedCategoryBackupArray = [];
             setSelect([])
-        }  else {
+        } else {
             item.props.categories = [];
             item.props.smartCategories = [];
             var title: any = {}
@@ -153,7 +159,7 @@ const Picker = (item: any) => {
     }
 
     const selectPickerData = (item: any) => {
-        if (usedFor == "Task-Popup" || usedFor == "Task-Footertable" || usedFor == "Task-Profile") {
+        if (usedFor == "Task-Popup" || usedFor == "DashboardLandingPage" || usedFor == "Task-Footertable" || usedFor == "Task-Profile") {
             let tempArray: any = [];
             let checkDataExistCount = 0;
             if (SelectedCategoryBackupArray != undefined && SelectedCategoryBackupArray.length > 0) {
