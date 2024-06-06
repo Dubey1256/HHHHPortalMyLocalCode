@@ -1408,7 +1408,11 @@ const TaskStatusTbl = (Tile: any) => {
     tasksCopy.sort((a: any, b: any) => {
       return b.PriorityRank - a.PriorityRank;
     });
-    let confirmation = confirm('Your' + ' ' + config?.WebpartTitle + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + ContextData?.currentUserData?.Approver[0]?.Title + ')' + '.' + '\n' + 'Do you want to continue?')
+    let confirmation: any;
+    if (ContextData?.currentUserData?.Approver != undefined && ContextData?.currentUserData?.Approver[0]?.Title != undefined)
+      confirmation = confirm('Your' + ' ' + config?.WebpartTitle + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + ContextData?.currentUserData?.Approver[0]?.Title + ')' + '.' + '\n' + 'Do you want to continue?')
+    else
+      confirmation = confirm('Your' + ' ' + config?.WebpartTitle + ' ' + 'will be automatically shared with you only because you don' + 't have any approver, so no email will be sent to the approver' + '.' + '\n' + 'Do you want to continue?')
     if (confirmation) {
       let totalTime = 0;
       var subject = ContextData?.currentUserData?.Title + ' - ' + config?.WebpartTitle;
