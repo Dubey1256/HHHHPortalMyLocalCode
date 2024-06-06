@@ -855,5 +855,4 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         );
     }
 }
-
 export default TeamConfigurationCard;

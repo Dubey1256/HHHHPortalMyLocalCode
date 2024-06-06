@@ -2408,6 +2408,7 @@ const EditTaskPopup = (Items: any) => {
                     EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"HHHHTEAM")
                     setWorkingAction(EditData?.WorkingAction)
                 } else if (DesignStatus) {
+                    
                     setWorkingMember(301);
                     EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"HHHHTEAM")
                     setWorkingAction(EditData?.WorkingAction)
