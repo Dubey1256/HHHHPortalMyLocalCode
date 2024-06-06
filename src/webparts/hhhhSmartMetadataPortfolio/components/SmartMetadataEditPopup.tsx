@@ -9,7 +9,7 @@ import VersionHistory from '../../../globalComponents/VersionHistroy/VersionHist
 import PageLoader from '../../../globalComponents/pageLoader';
 import moment from 'moment';
 import * as globalCommon from '../../../globalComponents/globalCommon'
-import ImagetabFunction from './ImageInformation';
+import ImagetabFunction from '../../EditPopupFiles/ImageInformation';
 import HtmlEditor from '../../../globalComponents/HtmlEditor/HtmlEditor';
 let modaltype: any;
 let SitesConfig: any[] = []
