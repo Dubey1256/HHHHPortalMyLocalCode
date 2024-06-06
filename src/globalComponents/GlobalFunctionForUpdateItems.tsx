@@ -1376,14 +1376,14 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
         let finalTaskInfo: any = containerDiv.innerHTML;
 
         const TeamsMessage = `
-        <div style="padding: 12px; background-color: transparent;">
+        <div style="padding: 12px; background-color: transparent; border-top: 5px solid #2f5596">
             ${(ActionType == "User Experience - UX" && ReasonStatement == "New Task Created") ? "New User Experience - UX Category Task Created. Please have a look" : ""}
             ${((ActionType == "User Experience - UX" || ActionType == "Design") && ReasonStatement == "Task Completed") ? `This ${ActionType} Category Task set to 90%. Please have a look` : ''}
             ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
                 `You have been tagged <b>${ActionType == "Phone" ? "for the discussion" : "as " + ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}` : ''}
             <p></p>
             ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
-            `<div style="background-color: #fff; padding:16px; margin-top:10px; display:block;">
+                `<div style="background-color: #fff; padding:16px; margin-top:10px; display:block;">
             <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? " Discussion Point" : ActionType + " Comment"} </b>: <span>${ReasonStatement}</span> ` : ''}
             </div>
             <div style="margin-top: 16px;">  <b style="font-weight:600;">Task Title: </b>
@@ -1417,19 +1417,21 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
     return new Promise(async (resolve, reject) => {
         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject, RequiredListIds } = RequiredData || {};
         let TeamsMessage = ` 
-        This is a gentle reminder to address the below task promptly, as you've been marked as ${ActionType}:
-        <p>
-        <br/>
-        <div style="background-color: #fff; padding:16px; display:block;">
-        <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? "Discussion Point" : ActionType + "Comment"}</b>: <span>${ReasonStatement}</span>
-        </div>
-        </br>
-        <p>
-        <div style="margin-top: 16px;font-size:16px;">  <b style="font-weight:600;">Task Title: </b>
-        <a href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? `Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}` : `Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">
-        ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
-        </a>
-        </div>
+       <div style="border-top: 5px solid #2f5596">
+       This is a gentle reminder to address the below task promptly, as you've been marked as ${ActionType}:
+       <p>
+       <br/>
+       <div style="background-color: #fff; padding:16px; display:block;">
+       <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? "Discussion Point" : ActionType + "Comment"}</b>: <span>${ReasonStatement}</span>
+       </div>
+       </br>
+       <p>
+       <div style="margin-top: 16px;font-size:16px;">  <b style="font-weight:600;">Task Title: </b>
+       <a href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? `Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}` : `Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">
+       ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
+       </a>
+       </div>
+       </div>
        `
         if (sendUserEmail?.length > 0) {
             await GlobalCommon.SendTeamMessage(
@@ -1446,7 +1448,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
     try {
         if (RequiredData?.Title?.length > 0) {
             return (
-                <div style={{ backgroundColor: 'transparent', borderTop:"5px solid #2f5596"}}>
+                <div style={{ backgroundColor: 'transparent' }}>
                     <div>
                         <div><b style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Task Details:</b></div>
                         <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginBottom: '8px' }}>
@@ -1908,10 +1910,12 @@ export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredD
         }
 
         const emailBodyContent = `
+        <div style="border-top: 5px solid #2f5596">
             <p>${messageContent}</p>
             <p>Task Title: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
             ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></p>
             <span>${containerDiv.innerHTML}</span>
+            </div>
             `;
 
         const emailProps = {
