@@ -253,7 +253,7 @@ function Tooltip(props: any) {
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Admin Help')}> <span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Admin Help</a>
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Help')}> <span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Help</a>
               {pageContent?.WebFullUrl.indexOf("hhhhteams") == -1 && <li>
-              <a className='dropdown-item hreflink' onMouseEnter={() => { handleMouseEnter() }} ><FaCommentAlt />Browser Setting</a>
+              <a className='dropdown-item hreflink' onMouseEnter={() => { handleMouseEnter() }} ><span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Browser Setting</a>
                 <div className="dropdown-submenu dropdown-menu-level-1 showBrowsers" onMouseLeave={() => $(".showBrowsers").css("display", "none")} style={{ display: "none" }}>
                   <ul className="dropdown-menu-item">
                     <li className="dropdown-submenu" onClick={() => setDefaultBrowser('googlechrome://')} ><a className='dropdown-item' ><input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'googlechrome://'} /><FaCommentAlt /> Chrome</a></li>
