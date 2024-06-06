@@ -804,7 +804,6 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
       TypeSite = item?.PortfolioType?.Title;
     }
     var inputString = item?.Parent?.Title;
-    item.limitedString = inputString?.substring(0, 13) + "...";
     item.mergedStatus = `${item?.Status} - ${(
       item?.PercentComplete * 100
     ).toFixed(0)}% `;
@@ -1444,7 +1443,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                 <dt className="bg-fxdark" title="Tagged Parent">
                                   Parent
                                 </dt>
-                                <dd className="bg-light">
+                                <dd className="bg-light columnFixedTitle full-width pe-0">
                                   {item?.Parent?.Title != undefined && (
                                     <>
                                       <a
