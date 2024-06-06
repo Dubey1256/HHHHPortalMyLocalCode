@@ -662,6 +662,38 @@ const TaskStatusTbl = (Tile: any) => {
     RejectedItem.RejectedDetails.RejectedComment = e.target.value
     setisRejectItem(RejectedItem)
   }
+  const CallBackTimeEntry = (Count: any, UpdateStatus: any) => {
+    setisRejectItem(undefined)
+    if (Count == RefSelectedItem?.length) {
+      const arrayOfIDs = RefSelectedItem?.map((item: any) => item?.original?.UpdatedId);
+      DashboardConfig?.map((Config: any) => {
+        if (Config?.DataSource == 'TimeSheet') {
+          Config.Tasks = Config.Tasks.filter((item: any) => !arrayOfIDs.includes(item.UpdatedId));
+        }
+      })
+      childRef?.current?.setRowSelection({});
+      console.log('Updated Succesfully')
+      alert("All Time Entry " + UpdateStatus + " Successfully.")
+      DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+      DashboardConfigCopy?.map((Config: any) => {
+        if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+          Config?.Tasks?.map((Date: any) => {
+            if (Date?.dates != undefined && Date?.dates?.length > 0) {
+              Date?.dates?.map((Time: any) => {
+                if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
+                  Time.ServerDate = Moment(Time?.ServerDate)
+                  Time.ServerDate = Time.ServerDate?._d;
+                  Time.ServerDate.setHours(0, 0, 0, 0)
+                }
+              })
+            }
+          });
+        }
+      });
+      setActiveTile(Tile?.activeTile)
+      rerender();
+    }
+  }
   const SaveApprovalRejectPopup = async (Type: any, Item: any, UpdateStatus: any) => {
     if (Type != 'ApprovedAll') {
       let RejectedItem: any;
@@ -683,6 +715,10 @@ const TaskStatusTbl = (Tile: any) => {
             delete TimeEntry?.sortTaskDate;
             delete TimeEntry?.PreviousComment;
             delete TimeEntry?.UpdatedId;
+            delete TimeEntry?.SiteIcon;
+            delete TimeEntry?.TaskID;
+            delete TimeEntry?.Site;
+            delete TimeEntry?.TaskItem;
           })
           //setisRejectItem(undefined)
           let web = new Web(UpdatedItem?.siteUrl);
@@ -759,6 +795,10 @@ const TaskStatusTbl = (Tile: any) => {
                     delete TimeEntry?.sortTaskDate;
                     delete TimeEntry?.PreviousComment;
                     delete TimeEntry?.UpdatedId;
+                    delete TimeEntry?.SiteIcon;
+                    delete TimeEntry?.TaskID;
+                    delete TimeEntry?.Site;
+                    delete TimeEntry?.TaskItem;
                   }
                 })
               })
@@ -766,39 +806,11 @@ const TaskStatusTbl = (Tile: any) => {
             let web = new Web(Item?.siteUrl);
             web.lists.getById(Item?.listId).items.getById(Item.Id).update({ AdditionalTimeEntry: JSON.stringify(Item?.AdditionalTimeEntry), })
               .then((res: any) => {
-                setisRejectItem(undefined)
                 Count++;
-                if (Count == RefSelectedItem?.length) {
-                  const arrayOfIDs = RefSelectedItem?.map((item: any) => item?.original?.UpdatedId);
-                  DashboardConfig?.map((Config: any) => {
-                    if (Config?.DataSource == 'TimeSheet') {
-                      Config.Tasks = Config.Tasks.filter((item: any) => !arrayOfIDs.includes(item.UpdatedId));
-                    }
-                  })
-                  childRef?.current?.setRowSelection({});
-                  console.log('Updated Succesfully')
-                  alert("All Time Entry " + UpdateStatus + " Successfully.")
-                  DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
-                  DashboardConfigCopy?.map((Config: any) => {
-                    if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
-                      Config?.Tasks?.map((Date: any) => {
-                        if (Date?.dates != undefined && Date?.dates?.length > 0) {
-                          Date?.dates?.map((Time: any) => {
-                            if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
-                              Time.ServerDate = Moment(Time?.ServerDate)
-                              Time.ServerDate = Time.ServerDate?._d;
-                              Time.ServerDate.setHours(0, 0, 0, 0)
-                            }
-                          })
-                        }
-                      });
-                    }
-                  });
-                  setActiveTile(Tile?.activeTile)
-                  rerender();
-                }
+                CallBackTimeEntry(Count, UpdateStatus);
               }).catch((err: any) => {
                 Count++;
+                CallBackTimeEntry(Count, UpdateStatus);
                 console.log(err);
               })
           }
@@ -1210,7 +1222,7 @@ const TaskStatusTbl = (Tile: any) => {
           header: "",
           resetSorting: false,
           resetColumnFilters: false,
-          size: 60,
+          size: 30,
           isColumnVisible: true,
           fixedColumnWidth: true
         },
@@ -1218,7 +1230,7 @@ const TaskStatusTbl = (Tile: any) => {
           accessorKey: "TaskID",
           placeholder: "ID",
           id: 'TaskID',
-          size: 110,
+          size: 60,
           isColumnVisible: true,
           cell: ({ row, getValue }: any) => (
             <span className="d-flex">
