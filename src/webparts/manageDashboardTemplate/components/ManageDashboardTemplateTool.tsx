@@ -16,12 +16,16 @@ let Actions: any = [];
 let PriorityRank: any = [];
 let tempArray: any = [];
 
+let confivalue: any = '';
+
 const ManageDashboardTemplateTable = (props: any) => {
     const [WebpartConfig, setWebpartConfig] = React.useState<any>([]);
+    const [smartmetadataAdd, setSmartmetadataAdd] = React.useState(false)
     const [IsOpenPopup, setIsOpenPopup] = React.useState<any>(false);
     const [EditItem, setEditItem] = React.useState<any>(undefined);
     const [PopupSmartFav, setPopupSmartFav] = React.useState(false);
     const [selectedSmartFav, setselectedSmartFav] = React.useState<any>(undefined);
+    const [searchPageTitle, setsearchPageTitle] = React.useState('')
 
     const [SearchedCategoryData, setSearchedCategoryData] = React.useState<any>([]);
     const [SearchedSmartFavData, setSearchedSmartFavData] = React.useState<any>([]);
@@ -43,6 +47,7 @@ const ManageDashboardTemplateTable = (props: any) => {
                 // if (DashboardId != undefined && DashboardId != '')
                 //     data = data?.filter((config: any) => config?.Value == DashboardId);
                 data?.forEach((config: any) => {
+                    confivalue=config.Value;
                     if (config?.Configurations != undefined && config?.Configurations != '') {
                         let configurations = globalCommon.parseJSON(config?.Configurations);
                         if (configurations != undefined && configurations.length>0) {
@@ -200,7 +205,6 @@ const ManageDashboardTemplateTable = (props: any) => {
 
     React.useEffect(() => {
         LoadAdminConfiguration();
-    
     }, []);
   
     const callBackData = React.useCallback((checkData: any) => {
@@ -299,6 +303,80 @@ const ManageDashboardTemplateTable = (props: any) => {
         // const updatedItems = [...NewItem];
         // updatedItems[SelectedDashboard?.index] = { ...SelectedDashboard?.items, selectedSmartFav: SelectedDashboard, smartFevId: SelectedDashboard?.UpdatedId, Status: '', selectUserFilterType: '' };
         // setNewItem(updatedItems);
+    };
+    const OpenCreateSmartMetadataPopup = () => {
+        setSmartmetadataAdd((prev) => !prev);
+    }
+    const ClosePagesPopup = () => {
+            setSmartmetadataAdd(false)
+    }
+    const createSelectSmartFav = async () => {
+        let confiArray = [];
+        const obj = {
+            AdditonalHeader: true,
+            DataSource: "Tasks",
+            GroupByView: "",
+            Id: 1,
+            IsEditable: false,
+            IsTemplate: true,
+            ShowWebpart: true,
+            Status: "",
+            TileName: "",
+            WebpartPosition: { Row: 1, Column: 1 },
+            WebpartTitle: searchPageTitle,
+            selectFilterType: "custom",
+            selectUserFilterType: "",
+            smartFevId: ""
+          };
+          confiArray.push(obj);
+        let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
+        await web.lists.getById(props?.props?.AdminConfigurationListID)
+            .items.add({
+                 Title: searchPageTitle,
+                 Value: confivalue,
+                 Key: 'DashboardTemplate',
+                 Configurations: JSON.stringify(confiArray),              
+            })
+            .then((res: any) => {
+                console.log(res);          
+                LoadAdminConfiguration();
+            });
+
+
+        setSmartmetadataAdd(false)
+    };
+    const searchItemdata = (value: any) => {    
+        setsearchPageTitle(value);
+    }
+    const customTableHeaderButtons = (
+        <div>
+            <button type="button" title="Add" onClick={OpenCreateSmartMetadataPopup} className="btnCol btn btn-primary">Add Template +</button>         
+        </div>
+    )
+    const onRenderCustomTopicsPopup = () => {
+        return (
+            <>
+              <div className="subheading">
+              Create Template
+                </div>           
+            </>
+        )
+    }
+    const CustomFooterTopicsPopup = () => {
+        return (
+            <>
+                <footer>
+                <div className="text-end">
+                       <button type="button" className="btn btn-primary px-3 mx-1" onClick={createSelectSmartFav} >
+                                    Save
+                                </button>
+                                <button type="button" className="btn btn-default mx-1" onClick={ClosePagesPopup} >
+                                    Cancel
+                                </button>
+                    </div>
+                </footer>
+            </>
+        )
     }
 
     return (
@@ -310,7 +388,7 @@ const ManageDashboardTemplateTable = (props: any) => {
             <div className='TableSection'>
                 <div className="Alltable">
                     {WebpartConfig?.length > 0 && (
-                        <GlobalCommanTable columnSettingIcon={true} tableId="DashboardConfigID" AllListId={AllListId} hideOpenNewTableIcon={true} hideTeamIcon={true} showHeader={true} portfolioColor={'#000066'} columns={columns} data={WebpartConfig} callBackData={callBackData} />
+                        <GlobalCommanTable columnSettingIcon={true} tableId="DashboardConfigID" AllListId={AllListId} customTableHeaderButtons={customTableHeaderButtons} customHeaderButtonAvailable={true} hideOpenNewTableIcon={true} hideTeamIcon={true} showHeader={true} portfolioColor={'#000066'} columns={columns} data={WebpartConfig} callBackData={callBackData} />
                     )}
                 </div>
                 {/* {IsOpenPopup && <AddConfiguration props={props?.props} EditItem={EditItem} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseConfigPopup} />} */}
@@ -364,6 +442,25 @@ const ManageDashboardTemplateTable = (props: any) => {
                     </footer>
                 </div>
             </Panel >
+
+            <div>
+                {smartmetadataAdd && <Panel
+                        onRenderHeader={onRenderCustomTopicsPopup}
+                        isOpen={smartmetadataAdd}
+                        onDismiss={() => ClosePagesPopup()}
+                        isBlocking={false}
+                        type={PanelType.medium}
+                        closeButtonAriaLabel="Close"
+                        onRenderFooterContent={CustomFooterTopicsPopup}
+                        isFooterAtBottom={true}>
+                                <div className="col mb-3">
+                                    <div className='input-group'>
+                                        <label className='full-width'>Title</label>
+                                        <input className="form-control" type="search" required id="txtTitle" value={searchPageTitle} onChange={(e) => searchItemdata(e.target.value)} />
+                                    </div>
+                                </div>                                                                                                    
+                    </Panel >}
+            </div>
         </>
     );
 }
