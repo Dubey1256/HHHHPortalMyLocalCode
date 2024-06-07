@@ -1733,8 +1733,8 @@ const CreateActivity = (props: any) => {
                               <a
                                 className={
                                   refreshData
-                                    ? " text-decoration-none ikkkkddd"
-                                    : " text-decoration-none lkjhgfdsa"
+                                    ? " text-decoration-none popupTile ikkkkddd"
+                                    : " text-decoration-none popupTile lkjhgfdsa"
                                 }
                               >
                                 <span className="icon-sites">
@@ -1989,9 +1989,9 @@ const CreateActivity = (props: any) => {
                 </div>
                 {instantCategories?.map((item: any) => {
                   return (
-                    <div className="form-check">
+                    <div className="categorySection">
                       <input
-                        className="form-check-input rounded-0"
+                        className="form-check-input me-1 mt-1 rounded-0"
                         type="checkbox"
                         checked={CategoriesData?.some(
                           (selectedCat: any) => selectedCat?.Id == item?.Id
@@ -1999,8 +1999,7 @@ const CreateActivity = (props: any) => {
                         onClick={() =>
                           selectSubTaskCategory(item?.Title, item?.Id, item)
                         }
-                      />
-                      <label>{item?.Title}</label>
+                      /> {item?.Title}
                     </div>
                   );
                 })}
