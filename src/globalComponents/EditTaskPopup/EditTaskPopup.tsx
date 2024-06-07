@@ -2749,16 +2749,18 @@ const EditTaskPopup = (Items: any) => {
                             ReactDOM.render(reactElement, containerDiv);
 
                             const SendMessage = `
-                            <span>${CommonMsg}</span> 
-                            <p></p>
-                            <span>
-                            Task Link:  
-                            <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
-                            ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
-                            </a>
-                            </span>
-                            <p></p>
-                            <span>${containerDiv.innerHTML}</span>
+                           <div style="border-top: 5px solid #2f5596">
+                           <span>${CommonMsg}</span> 
+                           <p></p>
+                           <span>
+                           Task Title:  
+                           <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
+                           ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
+                           </a>
+                           </span>
+                           <p></p>
+                           <span>${containerDiv.innerHTML}</span>
+                           </div>
                             
                             `;
 

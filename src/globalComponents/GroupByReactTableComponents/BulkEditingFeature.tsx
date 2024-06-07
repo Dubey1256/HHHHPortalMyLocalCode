@@ -462,26 +462,52 @@ export function DueDateTaskUpdate(taskValue: any) {
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
                 if (taskValue?.selectedData?.length > 0) {
                     taskValue?.selectedData?.forEach((value: any) => {
-                        value.original.DueDate = dueDate;
-                        value.original.DisplayDueDate = moment(value?.original?.DueDate).format("DD/MM/YYYY");
-                        if (value?.original?.DisplayDueDate == "Invalid date" || "") {
-                            value.original.DisplayDueDate = value?.original?.DisplayDueDate.replaceAll("Invalid date", "");
+                        if (value?.original?.siteType != "Master Tasks") {
+                            value.original.DueDate = dueDate;
+                            value.original.DisplayDueDate = moment(value?.original?.DueDate).format("DD/MM/YYYY");
+                            if (value?.original?.DisplayDueDate == "Invalid date" || "") {
+                                value.original.DisplayDueDate = value?.original?.DisplayDueDate.replaceAll("Invalid date", "");
+                            }
+                            if (value?.original?.DueDate != null && value?.original?.DueDate != undefined) {
+                                value.original.serverDueDate = new Date(value?.original?.DueDate).setHours(0, 0, 0, 0)
+                            }
+                            checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+                        } else {
+                            value.original.DueDate = dueDate;
+                            value.original.DisplayDueDate = moment(value?.original?.DueDate).format("DD/MM/YYYY");
+                            if (value?.original?.DisplayDueDate == "Invalid date" || "") {
+                                value.original.DisplayDueDate = value?.original?.DisplayDueDate.replaceAll("Invalid date", "");
+                            }
+                            if (value?.original?.DueDate != null && value?.original?.DueDate != undefined) {
+                                value.original.serverDueDate = new Date(value?.original?.DueDate).setHours(0, 0, 0, 0)
+                            }
+                            checkBoolian = updatedDataDataFromPortfolios(allData, value?.original);
                         }
-                        if (value?.original?.DueDate != null && value?.original?.DueDate != undefined) {
-                            value.original.serverDueDate = new Date(value?.original?.DueDate).setHours(0, 0, 0, 0)
-                        }
-                        checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+
                     });
                 } else {
-                    task.taskValue.DueDate = dueDate;
-                    task.taskValue.DisplayDueDate = moment(task.taskValue?.DueDate).format("DD/MM/YYYY");
-                    if (task?.taskValue?.DisplayDueDate == "Invalid date" || "") {
-                        task.taskValue.DisplayDueDate = task?.taskValue?.DisplayDueDate.replaceAll("Invalid date", "");
+                    if (task.taskValue?.siteType != "Master Tasks") {
+                        task.taskValue.DueDate = dueDate;
+                        task.taskValue.DisplayDueDate = moment(task.taskValue?.DueDate).format("DD/MM/YYYY");
+                        if (task?.taskValue?.DisplayDueDate == "Invalid date" || "") {
+                            task.taskValue.DisplayDueDate = task?.taskValue?.DisplayDueDate.replaceAll("Invalid date", "");
+                        }
+                        if (task?.taskValue?.DueDate != null && task?.taskValue?.DueDate != undefined) {
+                            task.taskValue.serverDueDate = new Date(task?.taskValue?.DueDate).setHours(0, 0, 0, 0)
+                        }
+                        checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
+                    } else {
+                        task.taskValue.DueDate = dueDate;
+                        task.taskValue.DisplayDueDate = moment(task.taskValue?.DueDate).format("DD/MM/YYYY");
+                        if (task?.taskValue?.DisplayDueDate == "Invalid date" || "") {
+                            task.taskValue.DisplayDueDate = task?.taskValue?.DisplayDueDate.replaceAll("Invalid date", "");
+                        }
+                        if (task?.taskValue?.DueDate != null && task?.taskValue?.DueDate != undefined) {
+                            task.taskValue.serverDueDate = new Date(task?.taskValue?.DueDate).setHours(0, 0, 0, 0)
+                        }
+                        checkBoolian = updatedDataDataFromPortfolios(allData, task?.taskValue);
                     }
-                    if (task?.taskValue?.DueDate != null && task?.taskValue?.DueDate != undefined) {
-                        task.taskValue.serverDueDate = new Date(task?.taskValue?.DueDate).setHours(0, 0, 0, 0)
-                    }
-                    checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
+
                 }
                 if (checkBoolian) {
                     taskValue.setData(allData);
@@ -568,14 +594,22 @@ export function PrecentCompleteUpdate(taskValue: any) {
                     UpdatedData: { PercentComplete: TaskStatus * 100 },
                     Context: taskValue?.ContextValue?.Context,
                 }
-                let UpdatedDataItem: any;
-                let updatePromise: any = await GlobalFunctionForUpdateItem.BulkUpdateTaskInfo(RequiredData).then((resolve: any) => {
-                    UpdatedDataItem = resolve;
-                    console.log("Res my data", resolve);
+                if (elem?.original?.siteType != "Master Tasks") {
+                    let UpdatedDataItem: any;
+                    let updatePromise: any = await GlobalFunctionForUpdateItem.BulkUpdateTaskInfo(RequiredData).then((resolve: any) => {
+                        UpdatedDataItem = resolve;
+                        console.log("Res my data", resolve);
+                        updatePromises.push(updatePromise);
+                    }).catch((error: any) => {
+                        console.error("Error in BulkUpdateTaskInfo:", error);
+                    });
+                } else if (elem?.original?.siteType === "Master Tasks") {
+                    const web = new Web(elem?.original?.siteUrl);
+                    const updatePromise = web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
+                        PercentComplete: TaskStatus,
+                    });
                     updatePromises.push(updatePromise);
-                }).catch((error: any) => {
-                    console.error("Error in BulkUpdateTaskInfo:", error);
-                });
+                }
             };
         } else {
             let RequiredData: any = {
@@ -584,14 +618,22 @@ export function PrecentCompleteUpdate(taskValue: any) {
                 UpdatedData: { PercentComplete: TaskStatus * 100 },
                 Context: taskValue?.ContextValue?.Context,
             }
-            let UpdatedDataItem: any;
-            const updatePromise: any = await GlobalFunctionForUpdateItem.BulkUpdateTaskInfo(RequiredData).then((resolve: any) => {
-                UpdatedDataItem = resolve;
-                console.log("Res my data", resolve);
+            if (task?.taskValue?.siteType != "Master Tasks") {
+                let UpdatedDataItem: any;
+                const updatePromise: any = await GlobalFunctionForUpdateItem.BulkUpdateTaskInfo(RequiredData).then((resolve: any) => {
+                    UpdatedDataItem = resolve;
+                    console.log("Res my data", resolve);
+                    updatePromises.push(updatePromise);
+                }).catch((error: any) => {
+                    console.error("Error in BulkUpdateTaskInfo:", error);
+                });
+            } else if (task?.taskValue?.siteType === "Master Tasks") {
+                const web = new Web(task?.taskValue?.siteUrl);
+                const updatePromise = web.lists.getById(task?.taskValue?.listId).items.getById(task?.taskValue?.Id).update({
+                    PercentComplete: TaskStatus,
+                });
                 updatePromises.push(updatePromise);
-            }).catch((error: any) => {
-                console.error("Error in BulkUpdateTaskInfo:", error);
-            });
+            }
         }
         try {
             const results = await Promise.all(updatePromises);
@@ -606,12 +648,23 @@ export function PrecentCompleteUpdate(taskValue: any) {
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
                 if (taskValue?.selectedData?.length > 0) {
                     taskValue?.selectedData?.forEach((value: any) => {
-                        // value.original.PercentComplete = TaskStatus;
-                        checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+                        if (value?.original?.siteType != "Master Tasks") {
+                            value.original.PercentComplete = TaskStatus * 100;
+                            checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+                        } else {
+                            value.original.PercentComplete = TaskStatus * 100;
+                            checkBoolian = updatedDataDataFromPortfolios(allData, value?.original);
+                        }
+
                     });
                 } else {
-                    // task.taskValue.PercentComplete = TaskStatus;
-                    checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
+                    if (task?.taskValue?.siteType != "Master Tasks") {
+                        task.taskValue.PercentComplete = TaskStatus * 100;
+                        checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
+                    } else {
+                        task.taskValue.PercentComplete = TaskStatus * 100;
+                        checkBoolian = updatedDataDataFromPortfolios(allData, task?.taskValue);
+                    }
                 }
                 if (checkBoolian) {
                     taskValue.setData(allData);
@@ -622,14 +675,14 @@ export function PrecentCompleteUpdate(taskValue: any) {
                     updatedAllData = taskValue?.data?.map((elem: any) => {
                         const match = taskValue?.selectedData?.find((match: any) => match?.original?.Id === elem?.Id && match?.original?.siteType === elem?.siteType);
                         if (match) {
-                            // match.original.PercentComplete = TaskStatus;
+                            match.original.PercentComplete = TaskStatus * 100;
                             return match?.original;
                         } return elem;
                     });
                 } else {
                     updatedAllData = taskValue.data.map((elem: any) => {
                         if (task?.taskValue?.Id === elem?.Id && task?.taskValue?.siteType === elem?.siteType) {
-                            // task.taskValue.PercentComplete = TaskStatus;
+                            task.taskValue.PercentComplete = TaskStatus * 100;
                             return task?.taskValue;
                         } return elem;
                     });
@@ -698,46 +751,91 @@ export function ProjectTaskUpdate(taskValue: any) {
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
                 if (taskValue?.selectedData?.length > 0) {
                     taskValue?.selectedData?.forEach((value: any) => {
-                        if (project.Title != "Untagged project") {
-                            value.original.Project = makeProjectData
-                            value.original.projectStructerId = makeProjectData.PortfolioStructureID;
-                            value.original.ProjectTitle = makeProjectData.Title
-                            value.original.ProjectId = makeProjectData.Id
-                            const title = makeProjectData?.Title || '';
-                            const formattedDueDate = moment(value?.original?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
-                            value.original.joinedData = [];
-                            if (value?.original?.projectStructerId && title || formattedDueDate) {
-                                value.original.joinedData.push(`Project ${value.original?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                        if (value.original?.siteType != "Master Tasks") {
+                            if (project.Title != "Untagged project") {
+                                value.original.Project = makeProjectData
+                                value.original.projectStructerId = makeProjectData.PortfolioStructureID;
+                                value.original.ProjectTitle = makeProjectData.Title
+                                value.original.ProjectId = makeProjectData.Id
+                                const title = makeProjectData?.Title || '';
+                                const formattedDueDate = moment(value?.original?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                                value.original.joinedData = [];
+                                if (value?.original?.projectStructerId && title || formattedDueDate) {
+                                    value.original.joinedData.push(`Project ${value.original?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                                }
+                            } else {
+                                value.original.Project = {}
+                                value.original.projectStructerId = "";
+                                value.original.ProjectTitle = ""
+                                value.original.ProjectId = null
+                                value.original.joinedData = [];
                             }
+                            checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
                         } else {
-                            value.original.Project = {}
-                            value.original.projectStructerId = "";
-                            value.original.ProjectTitle = ""
-                            value.original.ProjectId = null
-                            value.original.joinedData = [];
+                            if (project.Title != "Untagged project") {
+                                value.original.Project = makeProjectData
+                                value.original.projectStructerId = makeProjectData.PortfolioStructureID;
+                                value.original.ProjectTitle = makeProjectData.Title
+                                value.original.ProjectId = makeProjectData.Id
+                                const title = makeProjectData?.Title || '';
+                                const formattedDueDate = moment(value?.original?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                                value.original.joinedData = [];
+                                if (value?.original?.projectStructerId && title || formattedDueDate) {
+                                    value.original.joinedData.push(`Project ${value.original?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                                }
+                            } else {
+                                value.original.Project = {}
+                                value.original.projectStructerId = "";
+                                value.original.ProjectTitle = ""
+                                value.original.ProjectId = null
+                                value.original.joinedData = [];
+                            }
+                            checkBoolian = updatedDataDataFromPortfolios(allData, value?.original);
                         }
-                        checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+
                     });
                 } else {
-                    if (project.Title != "Untagged project") {
-                        task.taskValue.Project = makeProjectData
-                        task.taskValue.projectStructerId = makeProjectData.PortfolioStructureID;
-                        task.taskValue.ProjectTitle = makeProjectData.Title
-                        task.taskValue.ProjectId = makeProjectData.Id
-                        const title = makeProjectData.Title || '';
-                        const formattedDueDate = moment(task?.taskValue?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
-                        task.taskValue.joinedData = [];
-                        if (task?.taskValue?.projectStructerId && title || formattedDueDate) {
-                            task.taskValue.joinedData.push(`Project ${task?.taskValue?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                    if (task?.taskValue?.siteType != "Master Tasks") {
+                        if (project.Title != "Untagged project") {
+                            task.taskValue.Project = makeProjectData
+                            task.taskValue.projectStructerId = makeProjectData.PortfolioStructureID;
+                            task.taskValue.ProjectTitle = makeProjectData.Title
+                            task.taskValue.ProjectId = makeProjectData.Id
+                            const title = makeProjectData.Title || '';
+                            const formattedDueDate = moment(task?.taskValue?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                            task.taskValue.joinedData = [];
+                            if (task?.taskValue?.projectStructerId && title || formattedDueDate) {
+                                task.taskValue.joinedData.push(`Project ${task?.taskValue?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                            }
+                        } else {
+                            task.taskValue.Project = {}
+                            task.taskValue.projectStructerId = "";
+                            task.taskValue.ProjectTitle = ""
+                            task.taskValue.ProjectId = null
+                            task.taskValue.joinedData = [];
                         }
+                        checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
                     } else {
-                        task.taskValue.Project = {}
-                        task.taskValue.projectStructerId = "";
-                        task.taskValue.ProjectTitle = ""
-                        task.taskValue.ProjectId = null
-                        task.taskValue.joinedData = [];
+                        if (project.Title != "Untagged project") {
+                            task.taskValue.Project = makeProjectData
+                            task.taskValue.projectStructerId = makeProjectData.PortfolioStructureID;
+                            task.taskValue.ProjectTitle = makeProjectData.Title
+                            task.taskValue.ProjectId = makeProjectData.Id
+                            const title = makeProjectData.Title || '';
+                            const formattedDueDate = moment(task?.taskValue?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                            task.taskValue.joinedData = [];
+                            if (task?.taskValue?.projectStructerId && title || formattedDueDate) {
+                                task.taskValue.joinedData.push(`Project ${task?.taskValue?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                            }
+                        } else {
+                            task.taskValue.Project = {}
+                            task.taskValue.projectStructerId = "";
+                            task.taskValue.ProjectTitle = ""
+                            task.taskValue.ProjectId = null
+                            task.taskValue.joinedData = [];
+                        }
+                        checkBoolian = updatedDataDataFromPortfolios(allData, task?.taskValue);
                     }
-                    checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
                 }
                 if (checkBoolian) {
                     taskValue.setData(allData);
@@ -940,14 +1038,26 @@ const BulkEditingFeature = (props: any) => {
             if (props?.updatedSmartFilterFlatView != true && props?.clickFlatView != true) {
                 if (props?.selectedData?.length > 0) {
                     props?.selectedData?.forEach((value: any) => {
-                        value.original.Priority = priority;
-                        value.original.PriorityRank = priorityRank;
-                        checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+                        if (value.original?.siteType != "Master Tasks") {
+                            value.original.Priority = priority;
+                            value.original.PriorityRank = priorityRank;
+                            checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+                        } else {
+                            value.original.Priority = priority;
+                            value.original.PriorityRank = priorityRank;
+                            checkBoolian = updatedDataDataFromPortfolios(allData, value?.original);
+                        }
                     });
                 } else {
-                    task.task.Priority = priority;
-                    task.task.PriorityRank = priorityRank;
-                    checkBoolian = addedCreatedDataFromAWT(allData, task?.task);
+                    if (task?.task?.siteType != "Master Tasks") {
+                        task.task.Priority = priority;
+                        task.task.PriorityRank = priorityRank;
+                        checkBoolian = addedCreatedDataFromAWT(allData, task?.task);
+                    } else {
+                        task.task.Priority = priority;
+                        task.task.PriorityRank = priorityRank;
+                        checkBoolian = updatedDataDataFromPortfolios(allData, task?.task);
+                    }
                 }
                 if (checkBoolian) {
                     props.setData(allData);

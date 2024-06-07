@@ -1933,7 +1933,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
             .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "HelpInformationVerifiedJson", "FoundationPageUrl", "HelpInformationVerified", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate",
                 "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "PriorityRank",
                 "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id",
-                "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables",
+                "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables","WorkingAction",
                 "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "FeatureType/Title", "FeatureType/Id", "Portfolios/Id", "Portfolios/Title", "Editor/Id", "Modified", "Editor/Title")
             .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "FeatureType", "ResponsibleTeam", "Editor", "Portfolios").filter(filter != null ? filter : '')
             .getAll();
@@ -2004,7 +2004,21 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
                 result.FeatureTypeTitle = result?.FeatureType?.Title
             }
 
+            try {
+                if (result?.WorkingAction != null) {
+                    result.workingActionValue = [];
+                    result.workingActionValue = JSON.parse(result?.WorkingAction);
+                    result.workingActionTitle = ""; result.workingActionIcon = {};
+                    result?.workingActionValue?.forEach((elem: any) => {
+                        if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
+                            result.workingActionTitle = result.workingActionTitle ? result.workingActionTitle + " " + elem.Title : elem.Title;
+                        }
+                    });
+                }
 
+            } catch (error) {
+                console.error("An error occurred:", error);
+            }
             result.descriptionsSearch = '';
             result.commentsSearch = "";
             result.descriptionsDeliverablesSearch = '';
@@ -2416,6 +2430,21 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                         }
                     } catch (e) {
 
+                    }
+                    try {
+                        if (task?.WorkingAction != null) {
+                            task.workingActionValue = [];
+                            task.workingActionValue = JSON.parse(task?.WorkingAction);
+                            task.workingActionTitle = ""; task.workingActionIcon = {};
+                            task?.workingActionValue?.forEach((elem: any) => {
+                                if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
+                                    task.workingActionTitle = task.workingActionTitle ? task.workingActionTitle + " " + elem.Title : elem.Title;
+                                }
+                            });
+                        }
+
+                    } catch (error) {
+                        console.error("An error occurred:", error);
                     }
                 })
                 AllSiteTasks = [...AllSiteTasks, ...data];
