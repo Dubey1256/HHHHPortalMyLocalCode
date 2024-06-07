@@ -1107,7 +1107,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           onRenderHeader={this.customHeaderforEditCommentpopup}
           onDismiss={(e) => this.CloseModal(e)}
         > <div className={color ? "serviepannelgreena" : ""}>
-            <div className='modal-body'>
+            <div className='modal-body updateComment'>
               <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
             </div>
             <footer className='text-end'>

@@ -2347,7 +2347,7 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
     } else if (showOffShore == true) {
         filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites")
     } else {
-        filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.Title != "Offshore Tasks")
+        filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites")
     }
     let AllSiteTasks: any = []
     if (filteredSiteConfig?.length > 0) {
