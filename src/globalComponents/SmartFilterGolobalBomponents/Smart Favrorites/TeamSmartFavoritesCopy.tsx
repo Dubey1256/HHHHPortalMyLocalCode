@@ -421,6 +421,15 @@ const TeamSmartFavoritesCopy = (item: any) => {
         }
     }, [selectedFilter]);
 
+    React.useEffect(() => {
+        setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && item?.portfolioColor) {
+                $('.ms-Panel-main').css('--SiteBlue', item?.portfolioColor); // Set the desired color value here
+            }
+        }, 1000)
+    }, [PreSetPanelIsOpen,ProjectManagementPopup]);
+
     const handleDateFilterChange = (event: any) => {
         setSelectedFilter(event.target.value);
         // setPreSet(false);

@@ -1647,6 +1647,9 @@ const EditTaskPopup = (Items: any) => {
                     }
                     setSendCategoryName(selectedData?.Title);
                 }
+                if(selectedData?.Title=="User Experience - UX"||selectedData?.Title=="Design"){
+                    setDesignStatus(true)
+                }
             })
             BackupTaskCategoriesData = TempArrya;
         } else {
@@ -1657,6 +1660,9 @@ const EditTaskPopup = (Items: any) => {
                     setSendCategoryName(existingData.Title)
                 } else {
                     BackupTaskCategoriesData.push(existingData);
+                }
+                if(existingData?.Title=="User Experience - UX"||existingData?.Title=="Design"){
+                    setDesignStatus(true)
                 }
             });
         }
