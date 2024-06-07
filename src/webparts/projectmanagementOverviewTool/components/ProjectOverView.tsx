@@ -20,6 +20,7 @@ import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryCompone
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 import RestructuringCom from '../../../globalComponents/Restructuring/RestructuringCom';
 import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
+import WorkingActionInformation from '../../../globalComponents/WorkingActionInformation';
 var siteConfig: any = []
 let AllProjectDataWithAWT: any = [];
 var AllTaskUsers: any = [];
@@ -476,6 +477,25 @@ export default function ProjectOverview(props: any) {
                 size: 85,
             },
             {
+                accessorFn: (row) => row?.workingActionTitle,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.workingActionValue?.map((elem: any) => {
+                            const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                            return relevantTitles?.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
+                                <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
+                            );
+                        })}
+                    </div>
+                ),
+                placeholder: "Working Actions",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "workingActionTitle",
+                isColumnVisible: false
+            },
+            {
                 accessorFn: (row) => row?.DueDate,
                 cell: ({ row }) => (
                     <InlineEditingcolumns
@@ -755,6 +775,25 @@ export default function ProjectOverview(props: any) {
                 placeholder: "TeamMembers",
                 header: "",
                 size: 85,
+            },
+            {
+                accessorFn: (row) => row?.workingActionTitle,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.workingActionValue?.map((elem: any) => {
+                            const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                            return relevantTitles?.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
+                                <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
+                            );
+                        })}
+                    </div>
+                ),
+                placeholder: "Working Actions",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "workingActionTitle",
+                isColumnVisible: false
             },
             {
                 accessorKey: "descriptionsSearch",
@@ -1730,6 +1769,21 @@ export default function ProjectOverview(props: any) {
                                 }
                             });
                         });
+                    }
+                    try {
+                        if (items?.WorkingAction != null) {
+                            items.workingActionValue = [];
+                            items.workingActionValue = JSON.parse(items?.WorkingAction);
+                            items.workingActionTitle = ""; items.workingActionIcon = {};
+                            items?.workingActionValue?.forEach((elem: any) => {
+                                if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
+                                    items.workingActionTitle = items.workingActionTitle ? items.workingActionTitle + " " + elem.Title : elem.Title;
+                                }
+                            });
+                        }
+
+                    } catch (error) {
+                        console.error("An error occurred:", error);
                     }
 
                     items.TaskID = globalCommon.GetTaskId(items);
