@@ -340,6 +340,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         }
 
       });
+    }else{
+      DesignTemplates=false
     }
     var OffshoreComments: any = [];
     if (taskDetails["OffshoreComments"] != null) {
