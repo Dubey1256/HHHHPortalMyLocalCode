@@ -154,7 +154,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
             HighImportance: '',
             isShowLight: '',
             TaskCreatedForThis: false,
-            setTitle:"",
+            setTitle:`set${IndexCount}`,
             setImagesInfo: []
            };
        
@@ -178,7 +178,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
             HighImportance: '',
             isShowLight: '',
             TaskCreatedForThis: false,
-            setTitle:"",
+            setTitle:`set${IndexCount}`,
             setImagesInfo: [],
         };
     
@@ -787,11 +787,16 @@ const onRenderCustomAddMoreImageHeader = () => {
 const handleChangeTab = (event: any, newValue: any) => {
     setCurrentActiveTab(newValue)
 }
-// const ChangeSetTitle=(index:any,value:any)=>{
-//     let copyState=State
-//        copyState[index].setTitle=value
-//     setState(copyState)
-// }
+const ChangeSetTitle=(index:any,value:any)=>{
+    let copyState=[...State]
+       copyState[index].setTitle=value
+       setState((prevItems:any) =>(
+        prevItems.map((item:any, idx:any) => idx === index ?  copyState[index] : item)
+       ) 
+       
+      );
+    //   setState( copyState)
+}
 const DesignCategoriesTask = (state: any) => {
     return (
         <div>
@@ -812,9 +817,9 @@ const DesignCategoriesTask = (state: any) => {
                             return (
                                 <TabPanel key={i} value={i}>
                                     <div className="col-sm-12 row">
-                                    {/* <div className="full-width my-3">
+                                    <div className="full-width my-3">
                                         <input placeholder="Set Title"value={obj?.setTitle}onChange={(e)=>ChangeSetTitle(i,e.target.value)} />
-                                        </div> */}
+                                        </div>
                                         {
                                             obj?.setImagesInfo?.length == 0 && <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} imageIndex={i} />}
                                         {obj?.setImagesInfo?.length == 1 ?

@@ -3353,7 +3353,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                          {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((tab: any, index: any) => {
                           if(index>0){
                             return(
-                              <Tab key={index} label={`Set${index}`} value={index} />
+                             
+                              <Tab key={index}  label={tab?.setTitle!=""?tab?.setTitle:`Set${index}`} value={index} />
                             )
                           }
                          
