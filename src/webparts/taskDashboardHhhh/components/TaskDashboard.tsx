@@ -77,6 +77,7 @@ const TaskDashboard = (props: any) => {
     const [thisWeekTasks, setThisWeekTasks] = React.useState([]);
     const [bottleneckTasks, setBottleneckTasks] = React.useState([]);
     const [assignedApproverTasks, setAssignedApproverTasks] = React.useState([]);
+    const [workingEmailVisibility, setWorkingEmailVisibility] = React.useState(false);
     const [value, setValue] = React.useState([]);
     const [NameTop, setNameTop] = React.useState("");
     const [groupedUsers, setGroupedUsers] = React.useState([]);
@@ -132,6 +133,7 @@ const TaskDashboard = (props: any) => {
         //    loadTodaysLeave();
         getCurrentUserDetails();
         createDisplayDate();
+        workingEmailPermission();
         try {
             $('#spPageCanvasContent').removeClass();
             $('#spPageCanvasContent').addClass('hundred')
@@ -192,7 +194,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(17, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(18, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -232,6 +234,18 @@ const TaskDashboard = (props: any) => {
     }
 
     //End
+
+    // code by Anupam 
+
+    const workingEmailPermission = async () => {
+        let IsWorkingEmailButtonVisible = await globalCommon.verifyComponentPermission("TaskDashboardWorkingEmail")
+        setWorkingEmailVisibility(IsWorkingEmailButtonVisible) 
+    }
+
+    const workingEmailRecipients = async () => {
+        let EmailRecipients = await globalCommon.LoadAllNotificationConfigrations("TaskDashboardWorkingEmail", AllListId)
+        return EmailRecipients
+    }
 
 
     const loadAllTimeEntry = async () => {
@@ -458,7 +472,7 @@ const TaskDashboard = (props: any) => {
                             task.descriptionsSearch = '';
                         }
                         // task.PercentComplete = (task.PercentComplete * 100).toFixed(2);
-                        task.DisplayDueDate =
+                        task.Duedate =
                             task.DueDate != null
                                 ? Moment(task.DueDate).format("DD/MM/YYYY")
                                 : "";
@@ -491,7 +505,7 @@ const TaskDashboard = (props: any) => {
                                 }
                             });
                         });
-                        task.DisplayCreateDate =
+                        task.CreateDate =
                             task.Created != null
                                 ? Moment(task.Created).format("DD/MM/YYYY")
                                 : "";
@@ -917,21 +931,21 @@ const TaskDashboard = (props: any) => {
                 size: 60,
             },
             {
-                accessorFn: (row) => row?.DisplayDueDate,
+                accessorFn: (row) => row?.Duedate,
 
                 cell: ({ row }: any) =>
                     <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
-                        {row?.original?.DisplayDueDate}
+                        {row?.original?.Duedate}
                     </div>
                 , filterFn: (row: any, columnName: any, filterValue: any) => {
-                    if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+                    if (row?.original?.Duedate?.includes(filterValue)) {
                         return true
                     } else {
                         return false
                     }
                 },
 
-                id: "DisplayDueDate",
+                id: "Duedate",
                 placeholder: "Due Date",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -1009,7 +1023,7 @@ const TaskDashboard = (props: any) => {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row, getValue }) => (
                     <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
-                        <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
+                        <span className="ms-1">{row?.original?.CreateDate}</span>
                         {row?.original?.createdImg != undefined ?
                             <>
                                 <a href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank"
@@ -1020,9 +1034,9 @@ const TaskDashboard = (props: any) => {
                             : <span title={row?.original?.Author?.Title} className="alignIcon svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
-                id: "DisplayCreateDate",
+                id: "CreateDate",
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.CreateDate?.includes(filterValue)) {
                         return true
                     } else {
                         return false
@@ -1088,7 +1102,7 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
-                    <div className='alignCenter'>
+                    <div>
                         <a className='hreflink'
                             href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                             data-interception="off"
@@ -1096,8 +1110,8 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.original?.Title}
                         </a>
-                        {row?.original?.descriptionsSearch !== null && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
-                        }
+                        {row?.original?.descriptionsSearch !== null &&  <span className='alignIcon'><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
+                        } 
                     </div>
                 ),
                 id: "Title",
@@ -1206,7 +1220,7 @@ const TaskDashboard = (props: any) => {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row, getValue }) => (
                     <span>
-                        <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
+                        <span className="ms-1">{row?.original?.CreateDate}</span>
                         {row?.original?.createdImg != undefined ?
                             <>
                                 <a href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank"
@@ -1217,9 +1231,9 @@ const TaskDashboard = (props: any) => {
                             : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
-                id: "DisplayCreateDate",
+                id: "CreateDate",
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.CreateDate?.includes(filterValue)) {
                         return true
                     } else {
                         return false
@@ -1542,7 +1556,7 @@ const TaskDashboard = (props: any) => {
             setWorkingTodayTasks([...todayTasks]);
 
         } else {
-            alert('This Drop Is Not Allowed')
+            alert('You do not have the necessary Permissions to move Tasks in this User Dashboard')
         }
 
     }
@@ -1609,7 +1623,7 @@ const TaskDashboard = (props: any) => {
             var subject = "Today's Working Tasks of All Team";
             taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
-                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst") {
+                if (userGroup.Title == "Developers Team" || userGroup.Title == "Portfolio Lead Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst") {
                     if (userGroup.Title == "Smalsus Lead Team") {
                         userGroup.childBackup = userGroup?.childs;
                         userGroup.childs = [];
@@ -1959,10 +1973,14 @@ const TaskDashboard = (props: any) => {
 
 
     }
-    const sendAllWorkingTodayTasks = () => {
+    const sendAllWorkingTodayTasks = async () => {
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
-        // let to: any = ["prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de"];
+        let emailRecipients: any = await workingEmailRecipients();
+        let workingTodayEmails = emailRecipients.map((recipient: any) => {return recipient?.Email})
+        workingTodayEmails = workingTodayEmails?.filter((user: any) => user != undefined)
+        
+        // let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
+        let to: any = workingTodayEmails;
         let finalBody: any = [];
         let userApprover = '';
         let taskCount = 0;
@@ -1974,7 +1992,7 @@ const TaskDashboard = (props: any) => {
             var subject = `Today's Working Tasks of All Team Members: ${Moment(new Date()).zone('Asia/Kolkata').format('DD/MM/YYYY')}`;
             taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
-                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst" || userGroup.Title == "Trainees") {
+                if (userGroup.Title == "Portfolio Lead Team" || userGroup.Title == "Developers Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst" || userGroup.Title == "Trainees") {
                     if (userGroup.Title == "Smalsus Lead Team") {
                         userGroup.childBackup = userGroup?.childs;
                         userGroup.childs = [];
@@ -1986,7 +2004,7 @@ const TaskDashboard = (props: any) => {
                     }
                     userGroup?.childs?.map((teamMember: any) => {
                         if (!onLeaveEmployees.some((emp: any) => emp == teamMember?.AssingedToUserId)) {
-                            if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Trainees") {
+                            if (userGroup.Title == "Portfolio Lead Team" || userGroup.Title == "Developers Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Trainees") {
                                 estimatedTimeUsersCount += 1;
                             }
                             let body: any = '';
@@ -2041,23 +2059,26 @@ const TaskDashboard = (props: any) => {
                                     }
 
 
-                                    text = `<tr>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.PercentComplete} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${EstimatedTimeEntry} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${EstimatedTimeEntryDesc} </td>
-                                    </tr>`
-                                    body1.push(text);
+                                    if (EstimatedTimeEntry > 0) {
+                                        text = `<tr>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.PercentComplete} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${EstimatedTimeEntry} </td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${EstimatedTimeEntryDesc} </td>
+                                        </tr>`
+                                        body1.push(text);
+                                    }
                                 })
-                                body =
-                                    '<h3><strong>'
-                                    + teamMember?.Title + ` (${teamMember?.Group != null ? teamMember?.Group : ''}) - ${UserTotalTime} hrs Scheduled`
-                                    + '</strong></h3>'
-                                    + ` <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
+                                if (body1?.length > 0) {
+                                    body =
+                                        '<h3><strong>'
+                                        + teamMember?.Title + ` (${teamMember?.Group != null ? teamMember?.Group : ''}) - ${UserTotalTime} hrs Scheduled`
+                                        + '</strong></h3>'
+                                        + ` <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
                                     <thead>
                                     <tr>
                                     <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Site</th>
@@ -2074,7 +2095,9 @@ const TaskDashboard = (props: any) => {
                                     ${body1}
                                     </tbody>
                                     </table>`
-                                body = body.replaceAll('>,<', '><').replaceAll(',', '')
+                                    body = body.replaceAll('>,<', '><').replaceAll(',', '')
+                                }
+
                             } else {
                                 body = '<h3><strong>'
                                     + teamMember?.Title + ` (${teamMember?.Group != null ? teamMember?.Group : ''})`
@@ -2201,7 +2224,7 @@ const TaskDashboard = (props: any) => {
                                     <li className="nav__item  pb-1 pt-0">
 
                                     </li>
-                                    {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Santosh Kumar" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
+                                    {workingEmailVisibility ?
                                         <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
                                             Share Everyone's Today's Task
                                         </a> : ''}

@@ -149,6 +149,7 @@ const EditTaskPopup = (Items: any) => {
     const [PhoneStatus, setPhoneStatus] = useState(false);
     const [EmailStatus, setEmailStatus] = useState(false);
     const [DesignStatus, setDesignStatus] = useState(false);
+    const [DesignNewTemplates, setDesignNewTemplates] = useState(false);
     const [OnlyCompletedStatus, setOnlyCompletedStatus] = useState(false);
     const [ImmediateStatus, setImmediateStatus] = useState(false);
     const [onHoldPanel, setOnHoldPanel] = useState(false);
@@ -935,6 +936,7 @@ const EditTaskPopup = (Items: any) => {
                     setImmediateStatus(item.TaskCategories?.some((category: any) => category.Title === "Immediate"));
                     setOnlyCompletedStatus(item.TaskCategories?.some((category: any) => category.Title === "Only Completed"));
                     setDesignStatus(item.TaskCategories?.some((category: any) => category.Title === "Design" || category.Title === "User Experience - UX"));
+                    setDesignNewTemplates(item.TaskCategories?.some((category: any) =>category.Title === "User Experience - UX"))
                     let checkForApproval: any = item.TaskCategories?.some((category: any) => category.Title === "Approval")
                     if (checkForApproval) {
                         setApprovalStatus(true);
@@ -1647,6 +1649,9 @@ const EditTaskPopup = (Items: any) => {
                     }
                     setSendCategoryName(selectedData?.Title);
                 }
+                if(selectedData?.Title=="User Experience - UX"){
+                    setDesignNewTemplates(true)
+                }
             })
             BackupTaskCategoriesData = TempArrya;
         } else {
@@ -1657,6 +1662,9 @@ const EditTaskPopup = (Items: any) => {
                     setSendCategoryName(existingData.Title)
                 } else {
                     BackupTaskCategoriesData.push(existingData);
+                }
+                if(existingData?.Title=="User Experience - UX"){
+                    setDesignNewTemplates(true)
                 }
             });
         }
@@ -7684,7 +7692,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div>
                                 </div>
-                                {DesignStatus !=true ?<div className="row py-3">
+                                {DesignNewTemplates !=true ?<div className="row py-3">
                                     <div
                                         className={
                                             IsShowFullViewImage != true
@@ -7952,7 +7960,7 @@ const EditTaskPopup = (Items: any) => {
                                                         siteType: Items.Items.siteType,
                                                     }}
                                                     taskCreatedCallback={UpdateTaskInfoFunction}
-                                                    DesignStatus={DesignStatus}
+                                                    DesignStatus={DesignNewTemplates}
                                                     currentUserBackupArray={currentUserBackupArray}
                                                             />
                                                 }

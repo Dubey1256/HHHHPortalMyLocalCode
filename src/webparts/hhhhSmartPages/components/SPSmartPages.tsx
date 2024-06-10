@@ -22,8 +22,8 @@ export default function SPSmartPages(props: any) {
     const loadSmartpage = async () => {
         try {
             SmartID = getParameterByName('SmartID').trim();
-            let web = new Web(props?.AllList?.SPSitesListUrl);
-            AllMetaDataItems = await web.lists.getById(props?.AllList?.SmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title").filter(`ID eq ${SmartID}`).getAll();
+            let web = new Web(props?.AllList?.SitesListUrl);
+            AllMetaDataItems = await web.lists.getById(props?.AllList?.SmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title").filter(`Id eq ${SmartID}`).getAll();
             AllMetaDataItems?.map((item: any) => {
                 const tempElement = document.createElement('div');
                 const textarea = document.createElement('textarea');

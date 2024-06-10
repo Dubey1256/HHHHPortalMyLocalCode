@@ -73,9 +73,8 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 Phone: '',
                 LowImportance: '',
                 Comments: CommentArray,
-                 Subtext: CreateTaskForThisPoint?.Subtext
-            };
-
+                Subtext: CreateTaskForThisPoint?.Subtext?.length > 0 ? CreateTaskForThisPoint?.Subtext : null
+            }
             let FeedBackItem: any = {
                 Title: "FeedBackPicture" + param,
                 FeedBackDescriptions: [CreateTaskPointDataObject],

@@ -18,6 +18,7 @@ import CompareTool from "../CompareTool/CompareTool";
 import AddProject from "../../webparts/projectmanagementOverviewTool/components/AddProject";
 import EditProjectPopup from "../EditProjectPopup";
 import CreateAllStructureComponent from "../CreateAllStructure";
+import WorkingActionInformation from "../WorkingActionInformation";
 var LinkedServicesBackupArray: any = [];
 var MultiSelectedData: any = [];
 let AllMetadata: any = [];
@@ -522,6 +523,25 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             //     header: "",
             //     size: 100,
             // },
+            {
+                accessorFn: (row) => row?.workingActionTitle,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.workingActionValue?.map((elem: any) => {
+                            const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                            return relevantTitles?.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
+                                <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
+                            );
+                        })}
+                    </div>
+                ),
+                placeholder: "Working Actions",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "workingActionTitle",
+                isColumnVisible: false
+            },
             {
                 accessorKey: "PercentComplete",
                 placeholder: "Status",

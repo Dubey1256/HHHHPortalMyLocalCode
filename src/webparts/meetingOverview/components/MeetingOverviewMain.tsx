@@ -352,7 +352,7 @@ const MeetingOverviewMain = (props: any) => {
                         smartmeta = await web.lists
                             .getById(config?.listId)
                             .items
-                            .select("Id,Title,PriorityRank,ParentTask/Id,EstimatedTime,TaskID,TaskLevel,EstimatedTimeDescription,ComponentLink,workingThisWeek,EstimatedTime,OffshoreImageUrl,OffshoreComments,ClientTime,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,Events/Id,ComponentId,Categories,ServicesId,EventsId,PriorityRank,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,AssignedTo/Id,AssignedTo/Title,Portfolio/Id,Portfolio/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,component_x0020_link,TaskCategories/Title,TaskCategories/Id")
+                            .select("Id,Title,PriorityRank,ParentTask/Id,EstimatedTime,TaskID,TaskLevel,EstimatedTimeDescription,ComponentLink,workingThisWeek,EstimatedTime,OffshoreImageUrl,OffshoreComments,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,Events/Id,ComponentId,Categories,ServicesId,EventsId,PriorityRank,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,AssignedTo/Id,AssignedTo/Title,Portfolio/Id,Portfolio/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,component_x0020_link,TaskCategories/Title,TaskCategories/Id")
                             .expand('AssignedTo,Team_x0020_Members,Portfolio,ParentTask,Component,Services,Events,TaskType,Responsible_x0020_Team,TaskCategories')
                             .top(4999)
                             .get();
@@ -447,7 +447,7 @@ const MeetingOverviewMain = (props: any) => {
 
                             <div className='header-section justify-content-between row'>
                                 <div className="col-sm-8">
-                                    <h2 style={{ color: "#000066", fontWeight: "600" }}>Meeting Overview</h2>
+                                    <h2 className='heading'>Meeting Overview</h2>
                                 </div>
                                 <div className="col-sm-4 text-end">
                                     <AddMeeting CallBack={CallBack} AllListId={AllListId} />
