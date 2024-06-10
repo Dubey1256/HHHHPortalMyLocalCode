@@ -175,8 +175,14 @@ const AddConfiguration = (props: any) => {
     const SaveConfigPopup = async () => {
         try {
             let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then(async (data: any) => {
-                let result = data?.length + 1;
+            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").orderBy("orderby", false).getAll().then(async (data: any) => {
+                let result: any;
+                if (data?.length && data[0].Value != undefined && data[0].Value != '') {
+                    result = parseInt(data[0].Value);
+                }
+                else {
+                    result = data?.length + 1;
+                }
                 if (props?.SingleWebpart == true) {
                     let FilteredData = data?.filter((config: any) => config?.Value == DashboardId)[0];
                     if (props?.DashboardConfigBackUp && NewItem[0]?.Id !== undefined) {
@@ -749,34 +755,29 @@ const AddConfiguration = (props: any) => {
                                                     </div>
                                                 </Col>
                                                 <Col sm="3" md="3" lg="3">
-                                                    {items?.IsTemplate != true && <><label className='form-label full-width'>Data Source</label>
-                                                        <Dropdown id="DataSource" options={[{ key: '', text: '' }, ...(DataSource?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.DataSource}
-                                                            onChange={(e, option) => handleDataSourceChange(option?.key, index, items)}
-                                                            styles={{ dropdown: { width: '100%' } }}
-                                                        /></>}
-                                                    {/* <div> Show WebPart</div>
-                                                    <label className="switch me-2" htmlFor={`ShowWebpartCheckbox${index}`}>
-                                                        <input checked={items?.ShowWebpart} onChange={(e: any) => {
-                                                            const isChecked = e.target.checked;
-                                                            const updatedItems = [...NewItem]; updatedItems[index] = { ...items, ShowWebpart: isChecked };
-                                                            setNewItem(updatedItems);
-                                                            if (!isChecked) { alert('Webpart will not be shown when toggle is active!'); }
-                                                        }} type="checkbox" id={`ShowWebpartCheckbox${index}`} />
-                                                        {items?.ShowWebpart === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
-                                                    </label> */}
+                                                    {items?.IsTemplate != true && <><div> Show WebPart</div>
+                                                        <label className="switch me-2" htmlFor={`ShowWebpartCheckbox${index}`}>
+                                                            <input checked={items?.ShowWebpart} onChange={(e: any) => {
+                                                                const isChecked = e.target.checked;
+                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, ShowWebpart: isChecked };
+                                                                setNewItem(updatedItems);
+                                                                if (!isChecked) { alert('Webpart will not be shown when toggle is active!'); }
+                                                            }} type="checkbox" id={`ShowWebpartCheckbox${index}`} />
+                                                            {items?.ShowWebpart === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
+                                                        </label></>}
                                                 </Col>
                                                 <Col sm="4" md="4" lg="4">
-                                                    {props?.EditItem != undefined && props?.EditItem != '' ? <a className="pull-right hreflink" title="Add To Webpart Gallery" onClick={(e) => AddWebpartToGallery(items, index)}>Add To Webpart Gallery</a> : ''}
-                                                    {/* <div> Group By View</div>
-                                                    <label className="switch me-2" htmlFor={`GroupByViewCheckbox${index}`}>
-                                                        <input checked={items?.GroupByView} onChange={(e: any) => {
-                                                            const updatedItems = [...NewItem]; updatedItems[index] = { ...items, GroupByView: e.target.checked, };
-                                                            setNewItem(updatedItems);
-                                                        }}
+                                                    {/* {props?.EditItem != undefined && props?.EditItem != '' ? <a className="pull-right hreflink" title="Add To Webpart Gallery" onClick={(e) => AddWebpartToGallery(items, index)}>Add To Webpart Gallery</a> : ''} */}
+                                                    {items?.IsTemplate != true && <> <div> Group By View</div>
+                                                        <label className="switch me-2" htmlFor={`GroupByViewCheckbox${index}`}>
+                                                            <input checked={items?.GroupByView} onChange={(e: any) => {
+                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, GroupByView: e.target.checked, };
+                                                                setNewItem(updatedItems);
+                                                            }}
 
-                                                            type="checkbox" id={`GroupByViewCheckbox${index}`} />
-                                                        {items?.GroupByView === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
-                                                    </label> */}
+                                                                type="checkbox" id={`GroupByViewCheckbox${index}`} />
+                                                            {items?.GroupByView === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
+                                                        </label></>}
                                                 </Col>
                                                 <Col sm="1" md="1" lg="1">
                                                     {index != 0 && <a className="pull-right hreflink" title="Remove webpart" onClick={(e) => RemoveWebpart(items, index)}><span className="svg__iconbox svg__icon--cross "></span></a>}
@@ -809,28 +810,27 @@ const AddConfiguration = (props: any) => {
                                                 </Col>
                                             </Row>
                                             <Row className="Metadatapannel">
-                                                {/* <Col sm="4" md="4" lg="4">
-                                                    <label className='form-label full-width'>Data Source</label>
+                                                {items?.IsTemplate != true && <><Col sm="4" md="4" lg="4"><label className='form-label full-width'>Data Source</label>
                                                     <Dropdown id="DataSource" options={[{ key: '', text: '' }, ...(DataSource?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.DataSource}
                                                         onChange={(e, option) => handleDataSourceChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }}
-                                                    />
-                                                </Col> */}
-                                                {/* <Col sm="4" md="4" lg="4">
+                                                    /> </Col></>}
+                                                {items?.IsTemplate != true && <> <Col sm="4" md="4" lg="4">
                                                     <div className="form-check form-check-inline m-4">
                                                         <input type="checkbox" checked={items?.IsDefaultTile} className="form-check-input me-1" onClick={(e: any) => SelectedTile(e.target.checked, items, index)} />
                                                         <label className="form-check-label">Default Tile</label>
                                                     </div>
                                                 </Col>
-                                                <Col sm="4" md="4" lg="4">
-                                                    <div className="form-check form-check-inline m-4">
-                                                        <input type="checkbox" checked={items?.IsShowTile} className="form-check-input me-1" onChange={(e: any) => {
-                                                            const updatedItems = [...NewItem]; updatedItems[index] = { ...items, IsShowTile: e.target.checked, };
-                                                            setNewItem(updatedItems);
-                                                        }} />
-                                                        <label className="form-check-label">Show Tile</label>
-                                                    </div>
-                                                </Col> */}
+                                                    <Col sm="4" md="4" lg="4">
+                                                        <div className="form-check form-check-inline m-4">
+                                                            <input type="checkbox" checked={items?.IsShowTile} className="form-check-input me-1" onChange={(e: any) => {
+                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, IsShowTile: e.target.checked, };
+                                                                setNewItem(updatedItems);
+                                                            }} />
+                                                            <label className="form-check-label">Show Tile</label>
+                                                        </div>
+                                                    </Col>
+                                                </>}
                                             </Row>
                                             <Row className="Metadatapannel">
                                                 {items.DataSource != 'TimeSheet' &&
