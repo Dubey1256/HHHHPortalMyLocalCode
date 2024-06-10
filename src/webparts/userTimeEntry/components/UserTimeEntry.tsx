@@ -3054,7 +3054,7 @@ export default class UserTimeEntry extends React.Component<
     );
   }
   private ShowDraftTime=()=>{
-    if(this.state.AllTimeEntry?.length > 0){
+    if(this.state.AllTimeEntry?.length == 0){
       alert('Please click on Update filter')
     }
     else{
