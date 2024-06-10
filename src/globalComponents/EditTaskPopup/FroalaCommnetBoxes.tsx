@@ -798,7 +798,7 @@ const DesignCategoriesTask = (state: any) => {
            <TabContext value={currentActiveTab}>
                 <TabList onChange={handleChangeTab} aria-label="lab API tabs example">
                     {state?.map((tab: any, index: any) => (
-                        <Tab key={index} label={tab?.setTitle!=""?tab?.setTitle:`Set${index + 1}`} value={index} />
+                        <Tab key={index} label={`Set${index + 1}`} value={index} />
                     ))}
                     <div className="alignCenter">
                     {btnStatus?<span className="alignCenter"><span className="svg__iconbox svg__icon--Plus hreflink me-2" title="Add set" onClick={addMainRowInDiv}></span> Add New Set</span>:""}

@@ -41,7 +41,6 @@ import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
 import SmartPriorityHover from "./SmartPriorityHover";
-import TaskDetailsComponent from "./DesignTaskTemplate";
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -1647,9 +1646,6 @@ const EditTaskPopup = (Items: any) => {
                     }
                     setSendCategoryName(selectedData?.Title);
                 }
-                if(selectedData?.Title=="User Experience - UX"||selectedData?.Title=="Design"){
-                    setDesignStatus(true)
-                }
             })
             BackupTaskCategoriesData = TempArrya;
         } else {
@@ -1660,9 +1656,6 @@ const EditTaskPopup = (Items: any) => {
                     setSendCategoryName(existingData.Title)
                 } else {
                     BackupTaskCategoriesData.push(existingData);
-                }
-                if(existingData?.Title=="User Experience - UX"||existingData?.Title=="Design"){
-                    setDesignStatus(true)
                 }
             });
         }
@@ -2757,16 +2750,16 @@ const EditTaskPopup = (Items: any) => {
 
                             const SendMessage = `
                            <div style="border-top: 5px solid #2f5596">
-                            <span>${CommonMsg}</span> 
-                            <p></p>
-                            <span>
+                           <span>${CommonMsg}</span> 
+                           <p></p>
+                           <span>
                            Task Title:  
-                            <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
-                            ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
-                            </a>
-                            </span>
-                            <p></p>
-                            <span>${containerDiv.innerHTML}</span>
+                           <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
+                           ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
+                           </a>
+                           </span>
+                           <p></p>
+                           <span>${containerDiv.innerHTML}</span>
                            </div>
                             
                             `;
@@ -3021,7 +3014,7 @@ const EditTaskPopup = (Items: any) => {
                                     Items.Call(dataEditor, "UpdatedData");
                                 } else {
                                     if (usedFor !== "TimeSheetPopup") {
-                                    Items.Call(DataJSONUpdate, "UpdatedData");
+                                        Items.Call(DataJSONUpdate, "UpdatedData");
                                     }
                                 }
                             } else {
@@ -3315,7 +3308,7 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
-        
+
 
         let UpdateDataObject: any = {
             workingThisWeek: EditData.workingThisWeek
@@ -3485,14 +3478,14 @@ const EditTaskPopup = (Items: any) => {
                         dataAccordingDays.WorkingDate = Info?.originalDate
                         dataAccordingDays.WorkingMember = [];
                         Info?.userInformation?.map((userInfo: any) => {
-                           
+
                             dataAccordingDays.WorkingMember.push({ Id: userInfo?.AssingedToUserId, Title: userInfo.Title })
                         })
                         storeData?.push(dataAccordingDays)
                     }
                 })
                 storeInWorkingAction.InformationData = [...storeData]
-                oldWorkingAction = oldWorkingAction.filter((type: any) => type?.Title != "WorkingDetails");   
+                oldWorkingAction = oldWorkingAction.filter((type: any) => type?.Title != "WorkingDetails");
                 // let defaultTemp: any=[]
                 if (oldWorkingAction?.length == 0) {
                     oldWorkingAction = [
@@ -3508,12 +3501,12 @@ const EditTaskPopup = (Items: any) => {
                             Title: "Phone",
                             InformationData: []
                         }
-                    ] 
+                    ]
                 }
                 setWorkingAction([...oldWorkingAction, storeInWorkingAction]);
                 // setWorkingToday(true)
                 // setusersAssignedIDs(assigneduserid)
-            }           
+            }
 
             if (teamConfigData?.AssignedTo?.length > 0) {
                 let tempArray: any = [];
@@ -7550,12 +7543,12 @@ const EditTaskPopup = (Items: any) => {
                                                         return (
                                                             <>
                                                                 <input
-                                                                type="text"
-                                                                value={PhoneSearchKey}
-                                                                className="form-control"
-                                                                placeholder="Tag user for Phone"
-                                                                onChange={(e) => autoSuggestionsForApprover(e, "Phone")}
-                                                                key={ItemIndex}
+                                                                    type="text"
+                                                                    value={PhoneSearchKey}
+                                                                    className="form-control"
+                                                                    placeholder="Tag user for Phone"
+                                                                    onChange={(e) => autoSuggestionsForApprover(e, "Phone")}
+                                                                    key={ItemIndex}
                                                                 />
                                                                 <span className="input-group-text" onClick={() => openBottleneckPopup("Phone")}>
                                                                     <span title="Edit" className="svg__iconbox svg__icon--editBox"></span>
@@ -7690,7 +7683,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div>
                                 </div>
-                                {DesignStatus !=true ?<div className="row py-3">
+                                <div className="row py-3">
                                     <div
                                         className={
                                             IsShowFullViewImage != true
@@ -7930,39 +7923,7 @@ const EditTaskPopup = (Items: any) => {
                                             </>
                                         ) : null}
                                     </div>
-                                </div>:
-                                <div className="row py-3">
-                                 {EditData.Id != null &&<TaskDetailsComponent   data={
-                                                        EditData?.FeedBackBackup?.length > 0
-                                                            ? EditData?.FeedBackBackup[0]
-                                                                ?.FeedBackDescriptions
-                                                            : []
-                                                    }
-                                                    callBack={CommentSectionCallBack}
-                                                    allUsers={taskUsers}
-                                                    ApprovalStatus={ApprovalStatus}
-                                                    SmartLightStatus={SmartLightStatus}
-                                                    SmartLightPercentStatus={SmartLightPercentStatus}
-                                                    Context={Context}
-                                                    FeedbackCount={FeedBackCount}
-                                                    SubCommentSectionCallBack={SubCommentSectionCallBack}
-                                                    MakeUpdateDataJSON={MakeUpdateDataJSON}
-                                                    EditData={EditData}
-                                                    TaskListDetails={{
-                                                        SiteURL: siteUrls,
-                                                        ListId: Items.Items.listId,
-                                                        TaskId: Items.Items.Id,
-                                                        TaskDetails: EditData,
-                                                        AllListIdData: AllListIdData,
-                                                        Context: Context,
-                                                        siteType: Items.Items.siteType,
-                                                    }}
-                                                    taskCreatedCallback={UpdateTaskInfoFunction}
-                                                    DesignStatus={DesignStatus}
-                                                    currentUserBackupArray={currentUserBackupArray}
-                                                            />
-                                                }
-                                </div>}
+                                </div>
                             </div>
                             <div
                                 className="tab-pane "
