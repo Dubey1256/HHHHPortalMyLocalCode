@@ -27,7 +27,7 @@ import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import EditInstituton from "../../webparts/EditPopupFiles/EditComponent";
 import EditProjectPopup from "../EditProjectPopup";
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
-import { BsArrowsExpandVertical } from "react-icons/bs"
+import  {BsArrowsExpandVertical}  from "react-icons/bs";
 let renderData: any = [];
 let AutoCompleteItemsArray: any = [];
 let AllFeatureTypeData: any = [];
