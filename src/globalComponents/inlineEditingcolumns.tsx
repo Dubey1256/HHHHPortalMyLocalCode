@@ -1,4 +1,4 @@
-import { Panel, PanelType } from "office-ui-fabric-react";
+  import { Panel, PanelType } from "office-ui-fabric-react";
 import { Web } from "sp-pnp-js";
 import React, { useState } from "react";
 import * as Moment from "moment";
@@ -109,6 +109,14 @@ const inlineEditingcolumns = (props: any) => {
     updateTaskComments();
   }, [])
 
+  React.useEffect(() => {
+    setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && props.portfolioColor) {
+            $('.ms-Panel-main').css('--SiteBlue', props?.portfolioColor); // Set the desired color value here
+        }
+    }, 1500)
+}, [taskCategoriesPopup]);
 
   const updateItemValues = () => {
     selectedCatTitleVal = [];
