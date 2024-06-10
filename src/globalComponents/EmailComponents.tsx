@@ -20,9 +20,9 @@ const EmailComponent = (props: any) => {
       props?.items.TaskApprovers.map((ApproverData: any) => {
         props?.AllTaskUser.forEach((val: any) => {
           if (ApproverData.Id == val?.AssingedToUserId) {
-            let tempEmail = val?.Approver[0].Name;
-            Approver += val.Title + ';';
-            mention_To.push(tempEmail?.substring(18, tempEmail.length))
+            // let tempEmail = val?.Approver[0].Name;
+            // Approver += val.Title + ';';
+            // mention_To.push(tempEmail?.substring(18, tempEmail.length))
           }
         })      
       })
