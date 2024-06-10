@@ -51,6 +51,7 @@
     "html-to-image": "^1.11.11",
     "html2pdf.js": "^0.10.1",
     "immutable": "^4.1.0",
+    "jodit-react": "^4.1.2",
     "jquery": "^3.6.3",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.5.29",

@@ -440,59 +440,25 @@ const Apps = (props: any) => {
         const { recurrence } = result;
         const rule = recurrence?.rule?.[0];
         const firstDayOfWeek = rule?.firstDayOfWeek || 'su';
-        function resetTime(dateString: any) {
-          let date = new Date(dateString);
-          date.setHours(0, 0, 0, 0);
-          return date; // Return the date object
-        }
-         const myeventdate:any = resetTime(recurrenceData?.EventDate);
-        const startDate = new Date(myeventdate);
+        const startDate = new Date(recurrenceData?.EventDate);
         let repeatInstance = 0;
-        let windowEndDate: any;
-        
-        const myeventdateitem:any = resetTime(recurrenceData?.EndDate)
-        let RecurreEndDate = new Date(myeventdateitem);
-        if (rule?.repeatForever != undefined && rule?.repeatForever[0] === 'FALSE') {
-          RecurreEndDate.setFullYear(startDate.getFullYear() + 4);
-          const formattedEndDate = RecurreEndDate.toISOString();
-          windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(formattedEndDate).setHours(0, 0, 0, 0);
-        } else if (rule?.repeatInstances && rule?.repeatInstances[0] > 0) {
+
+        if (rule?.repeatInstances && rule.repeatInstances[0] > 0) {
           repeatInstance = Number(rule.repeatInstances[0]);
-          const newrepeatance = repeatInstance - 1;
-          // repeatInstance -1;
-          // let myenddateOccur= endDate.setDate(startDate.getDate() + repeatInstance);
-          let myenddateOccur = RecurreEndDate.setDate(startDate.getDate() + newrepeatance);
-          windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(myenddateOccur).setHours(0, 0, 0, 0);
         }
-        else {
-          windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(recurrenceData?.EndDate).setHours(0, 0, 0, 0);
-        }
-        // if (rule?.repeatInstances && rule?.repeatInstances[0] > 0) {
-        //   repeatInstance = Number(rule.repeatInstances[0]);
-        // }
-        let useCount = false;
+        let useCount = false
         if (recurrenceData?.RecurrenceData?.includes('daily')) {
-          useCount = true;
+          useCount = true
         }
-
         let count = 0;
-
-        // Adjusting start date for daily recurrence
-        if (useCount) {
-          startDate.setDate(startDate.getDate() - 1); // Exclude the start date for daily recurrence
-        }
-        // if (windowEndDate !== undefined) {
-        //   windowEndDate = new Date(windowEndDate).setDate(new Date(windowEndDate).getDate() - 1);
-        // }
-        const repeat = repeatInstance !== 0 ? repeatInstance - 1 : repeatInstance;
-        while (dates.length < repeat || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
-          if ((repeat !== 0 ? count > repeat : new Date(dates[dates.length - 1]).setHours(0, 0, 0, 0) > windowEndDate) && useCount) {
-            break;
+        const windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(recurrenceData?.EndDate).setHours(0, 0, 0, 0);
+        while (dates.length < repeatInstance || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
+          if ((repeatInstance != 0 ? count > repeatInstance : new Date(dates[dates.length - 1]).setHours(0, 0, 0, 0) > windowEndDate) && useCount == true) {
+            break
           }
           count++;
-          if (calculateNextDate(rule, firstDayOfWeek, new Date(dates[dates.length - 1] || startDate), dates, windowEndDate, AllEvents, recurrenceData) === 'break') {
+          if (calculateNextDate(rule, firstDayOfWeek, new Date(dates[dates.length - 1] || startDate), dates, windowEndDate, AllEvents, recurrenceData) === 'break')
             break;
-          }
         }
         if (AllEvents?.length > 0) {
           const { repeat } = rule;
@@ -538,7 +504,6 @@ const Apps = (props: any) => {
   }
   const eventDataForBinding = (eventDetails: any, currentDate: any) => {
     let event: any = {};
-    
     event = {
       ...eventDetails,
       EndDate: new Date(currentDate).toISOString(),
@@ -552,17 +517,12 @@ const Apps = (props: any) => {
 
   function handleDailyRecurrence(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any, repeatInstance: any) {
     const dayFrequency = parseInt(frequency.dayFrequency);
-    const nextDate = new Date(currentDate);
-    nextDate.setDate(nextDate.getDate() + 1);
-    currentDate.setHours(0, 0, 0, 0);
     let count = 0;
     let result = '';
     if (frequency?.weekday == 'TRUE') {
-      let AllWeekDaysOfWeek = getWeekDays(nextDate)
+      let AllWeekDaysOfWeek = getWeekDays(currentDate)
       AllWeekDaysOfWeek?.map((DayOfWeek: any) => {
-
-        const endDate = new Date(windowEndDate);
-        if (new Date(eventDetails?.EventDate).setHours(0, 0, 0, 0) <= new Date(DayOfWeek).setHours(0, 0, 0, 0) && new Date(DayOfWeek).setHours(0, 0, 0, 0) < endDate.setDate(endDate.getDate() + 1)) {
+        if (new Date(eventDetails?.EventDate).setHours(0, 0, 0, 0) <= new Date(DayOfWeek).setHours(0, 0, 0, 0) && new Date(DayOfWeek).setHours(0, 0, 0, 0) < new Date(windowEndDate).setHours(0, 0, 0, 0)) {
           const event = eventDataForBinding(eventDetails, DayOfWeek);
           AllEvents.push(event);
           dates.push(new Date(DayOfWeek));
@@ -572,10 +532,8 @@ const Apps = (props: any) => {
       })
 
     } else {
-  
       while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
         currentDate.setDate(currentDate.getDate() + dayFrequency);
-
         const event = eventDataForBinding(eventDetails, currentDate);
         AllEvents.push(event);
         dates.push(new Date(currentDate));
@@ -796,7 +754,7 @@ const Apps = (props: any) => {
 
   const getLocalDateTime = async (date: string | Date): Promise<string> => {
     try {
-      const web = new Web(props.props.siteUrl);
+      const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/GmBH");
       const localTime = await web.regionalSettings.timeZone.utcToLocalTime(
         date
       );
@@ -913,7 +871,7 @@ const Apps = (props: any) => {
   // Handle Select Slot
   const handleSelectSlot = (slotInfo: any) => {
     let yname; // Not sure what this variable is used for, you may need to initialize it with some value or remove it if not needed
-    processPeople(yname); // Unclear what this function does and what is expected here
+    people(yname); // Unclear what this function does and what is expected here
     setLocation("");
     setType("Un-Planned");
     setPeoplePickerShow(true);
@@ -976,12 +934,7 @@ const Apps = (props: any) => {
     setPeoplePickerShow(false);
     setShowRecurrenceSeriesInfo(false);
     setEditRecurrenceEvent(false);
-  let baseType = event.Event_x002d_Type;
-    if (baseType.startsWith("Half Day ")) {
-      baseType = baseType.replace("Half Day ", "");
-    }
-    setType(baseType);
-
+    setType(event.Event_x002d_Type);
 
     if (event?.eventType === "Company Holiday" || event?.eventType === "National Holiday") {
       setIsDisableField(true);
@@ -997,7 +950,6 @@ const Apps = (props: any) => {
       setIsChecked(event.alldayevent);
       setIsFirstHalfDChecked(event.HalfDay);
       setisSecondtHalfDChecked(event.HalfDayTwo);
-      setRecurrenceData(event.RecurrenceData);
 
       if (event.alldayevent || event.HalfDay || event.HalfDayTwo) {
         setDisableTime(true);
@@ -1023,7 +975,7 @@ const Apps = (props: any) => {
       setSelectedTime(`${startHour}:${startMin}`);
       setEndDate(endDate);
       setSelectedTimeEnd(`${endHour}:${endMin}`);
-      // setRecurrenceData(eventItem.RecurrenceData);
+      setRecurrenceData(eventItem.RecurrenceData);
       setShowRecurrenceSeriesInfo(true);
       setEditRecurrenceEvent(true);
 
@@ -1064,11 +1016,11 @@ const Apps = (props: any) => {
 
         setSelectedTime(moment(item.start).tz("Asia/Kolkata").format("HH:mm"));
         setSelectedTimeEnd(moment(item.end).tz("Asia/Kolkata").format("HH:mm"));
-        //if (item.alldayevent && (!item.HalfDay && !item.HalfDayTwo)) {
+        if (item.alldayevent && (!item.HalfDay && !item.HalfDayTwo)) {
           setType(item.eventType);
-        // } else if (!item.alldayevent && (item.HalfDay || item.HalfDayTwo)) {
-        //   setType('Half Day');
-        // }
+        } else if (!item.alldayevent && (item.HalfDay || item.HalfDayTwo)) {
+          setType('Half Day');
+        }
         sedType(item.Designation);
         setInputValueReason(item.desc);
         setRecurrenceData(item.RecurrenceData);
@@ -1194,7 +1146,7 @@ const Apps = (props: any) => {
         mytitle = newEvent.type + "-" + newEvent.title;
       }
       const addEventItem = {
-        Title: newEvent.Title,
+        Title: mytitle,
         Description: newEvent.Description,
         EventDate: await getUtcTime(newEvent.EventDate),
         Event_x002d_Type: newEvent.Event_x002d_Type,
@@ -1204,7 +1156,7 @@ const Apps = (props: any) => {
         fAllDayEvent: newEvent.fAllDayEvent,
         fRecurrence: newEvent.fRecurrence,
         EventType: newEvent.EventType,
-        Color: mycolors,
+        // Color: mycolors,
         UID: newEvent.UID,
         HalfDay: HalfDaye,
         HalfDayTwo: HalfDayT,
@@ -1214,8 +1166,6 @@ const Apps = (props: any) => {
       };
 
       const results = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.add(addEventItem);
-
-      getEvents();
       return results;
     } catch (error) {
       return Promise.reject(error);
@@ -1225,7 +1175,7 @@ const Apps = (props: any) => {
     try {
       const web = new Web(props.props.siteUrl);
       const mytitle = `${editedEvent.name}-${editedEvent.type}-${editedEvent.title}`;
-      const mycolors = 
+      const mycolors = (HalfDaye || HalfDayT) ? "#6d36c5" :
         (editedEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
           ((editedEvent.Event_x002d_Type === "Company Holiday") || (editedEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
 
@@ -1252,8 +1202,6 @@ const Apps = (props: any) => {
       const results = await web.lists.getById(props.props.SmalsusLeaveCalendar)
         .items.getById(eventPass.Id)
         .update(editedEventItem);
-
-      getEvents();
       return results;
     } catch (error) {
       return Promise.reject(error);
@@ -1273,18 +1221,9 @@ const Apps = (props: any) => {
       const endTime = selectedTimeEnd;
       const endDateTime = `${_endDate} ${endTime}`;
       const end = moment(endDateTime, "YYYY/MM/DD HH:mm").toLocaleString();
-      let mytitle;
-      let inputValues: any = inputValueName
-      if (inputValueName.indexOf(peopleName + "-" + type) !== -1) {
-        mytitle = inputValueName;
-      } else if (inputValues.includes(peopleName)) {
-        let inputData = inputValues.split('-')
-        mytitle = peopleName + "-" + type + "-" + inputData[inputData?.length - 1];
-      }
-      else {
-        mytitle = peopleName + "-" + type + "-" + inputValueName;
-      }
-      //let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : type === "Work From Home" ? "#e0a209" : (type === "Company Holiday" || type === "National Holiday") ? "#228B22" : "";
+
+      let mytitle = peopleName + "-" + type + "-" + inputValueName;
+      let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : type === "Work From Home" ? "#e0a209" : (type === "Company Holiday" || type === "National Holiday") ? "#228B22" : "";
 
       if (!editRecurrenceEvent) {
         const newEventData: any = {
@@ -1297,7 +1236,7 @@ const Apps = (props: any) => {
           Description: '',
           HalfDay: HalfDaye,
           HalfDayTwo: HalfDayT,
-         // Color: mycolors,
+          Color: mycolors,
           EventDate: new Date(start),
           EndDate: new Date(end),
           fAllDayEvent: allDay,
@@ -1309,9 +1248,8 @@ const Apps = (props: any) => {
       } else if (editRecurrenceEvent) {
         const editEventData: any = {
           EventType: "1",
+          EmployeeId: title_Id,
           Title: mytitle,
-          Event_x002d_Type: type,
-          Designation: dType,
           EventDate: new Date(start),
           EndDate: new Date(end),
           fRecurrence: true,
@@ -1346,33 +1284,53 @@ const Apps = (props: any) => {
     }
     return userInfoArray;
   };
-  const processPeople = async (people: any[]) => {
-    let userId: string[] = [];
-    let userTitle: string[] = [];
-    let userSuffix: string[] = [];
-  
+  const people = async (people: any) => {
+    let userId: any = [];
+    let userTitle: any = [];
+    let userSuffix: any = [];
+
     if (people?.length > 0) {
-      let userMail: string[] = [];
-      people.forEach((item: any) => {
-        if (item?.id !== undefined) {
-          userMail.push(item.id.split("|")[2]);
+      let userMail: any = []
+      people.map((item: any) => {
+        if (item?.id != undefined) {
+          userMail?.push(item?.id.split("|")[2])
         }
-      });
+      })
       let userInfo = await getUserInfo(userMail);
       userData = userInfo
-      userInfo.forEach((item: any) => {
-        if (item?.Title !== undefined) {
-          userTitle.push(item.Title);
-          userId.push(item.Id);
+      userInfo.map((item: any) => {
+        // userId = item.Id
+        if (item?.Title != undefined) {
+          userTitle.push(item.Title)
+          userId.push(item.Id)
         }
-      });
+      })
+      // userSuffix = userTitle
+      //   .split(" ")
+      //   .map((i: any) => i.charAt(0))
+      //   .join("");
       title_Id = userId;
       title_people = userTitle;
       setPeopleName(userTitle);
-      setPeopleId(userId);
+      setPeopleId(userId)
+    } else {
+      let userInfo = await getUserInfo(
+        props.props.context._pageContext._legacyPageContext.userPrincipalName
+      );
+      userInfo.map((item: any) => {
+        userId = item.Id
+        userTitle = item.Title
+      })
+      // userSuffix = userTitle
+      //   .split(" ")
+      //   .map((i: any) => i.charAt(0))
+      //   .join("");
+      title_Id = userId;
+      title_people = userTitle;
+      setPeopleName(userTitle);
+      setPeopleId(title_Id)
     }
   };
-  
 
   const ConvertLocalTOServerDateToSave = (date: any, Time: any) => {
     if (date != undefined && date != "") {
@@ -1523,7 +1481,7 @@ const Apps = (props: any) => {
               start: startDate,
               end: endDate,
               reason: inputValueReason,
-              type: HalfDaye === true ? `Half Day ${type}` : HalfDayT === true ? `Half Day ${type}` : type,
+              type: HalfDaye == true ? "Half Day" : HalfDayT == true ? "Half Day" : type,
               loc: location,
               Designation: dType,
             };
@@ -1609,35 +1567,17 @@ const Apps = (props: any) => {
       setSelectedTimeEnd(selectedTimeEnd);
       return;
     }
-    const replaceType = (input:any, type:any) => {
-      const replacements = [
-        "Half Day Un-Planned",
-        "Half Day Planned Leave",
-        "Un-Planned",
-        "Sick",
-        "Planned Leave",
-        "Restricted Holiday",
-        "Work From Home",
-        "fulldayevent",
-        "LWP"
-      ];
-      const replacementsLower = replacements.map(replacement => replacement.toLowerCase());
-      const replacementMap = new Map();
-      replacements.forEach((replacement, index) => {
-        const normalized = replacement.toLowerCase().replace(/[-\s]+/g, '');
-        replacementMap.set(normalized, replacement);
-      });
-      const normalize = (text:any) => text.toLowerCase().replace(/[-\s]+/g, '');
-      let result = input;
-      replacements.forEach(replacement => {
-        const regex = new RegExp(`\\b${normalize(replacement)}\\b`, 'gi');
-        result = result.replace(regex, type);
-      });
-      return result;
-    };
+
     const web = new Web(props.props.siteUrl);
     const newEvent = {
-      title: replaceType(inputValueName, type),
+      title: inputValueName.replace("Un-Planned", type)
+        .replace("Sick", type)
+        .replace("Planned Leave", type)
+        .replace("Restricted Holiday", type)
+        .replace("Work From Home", type)
+        .replace("Half Day", type)
+        .replace("fulldayevent", type)
+        .replace("LWP", type),
       name: peopleName,
       start: startDate,
       end: endDate,
@@ -1687,7 +1627,7 @@ const Apps = (props: any) => {
 
   const emailComp = () => {
     const currentDate = new Date();
-    let currentDayEvents: any = [];
+    const currentDayEvents: any = [];
 
     chkName.map((item: any) => {
       if (item.start.setHours(0, 0, 0, 0) <= currentDate.setHours(0, 0, 0, 0) && currentDate.setHours(0, 0, 0, 0) <= item.end.setHours(0, 0, 0, 0)) {
@@ -1695,22 +1635,6 @@ const Apps = (props: any) => {
       }
     });
 
-    if (currentDayEvents?.length > 0) {
-      currentDayEvents = currentDayEvents.reduce(function (
-        previous: any,
-        current: any
-      ) {
-        var alredyExists =
-          previous.filter(function (item: any) {
-            return item.Name === current.Name && item.end.getTime() <= currentDate.getTime();
-          }).length > 0;
-        if (!alredyExists) {
-          previous.push(current);
-        }
-        return previous;
-      },
-        []);
-    }
 
     console.log(currentDayEvents);
     setTodayEvent(currentDayEvents);
@@ -1762,7 +1686,7 @@ const Apps = (props: any) => {
       HalfDayT = false;
       HalfDaye = true;
       setisSecondtHalfDChecked(false)
-      // setType('Half Day')
+      setType('Half Day')
       setIsChecked(false);
     } else {
       maxD = new Date(8640000000000000);
@@ -1786,9 +1710,8 @@ const Apps = (props: any) => {
       HalfDaye = false;
       HalfDayT = true;
       setIsFirstHalfDChecked(false)
-
+      setType('Half Day')
       setIsChecked(false);
-      // setType('Half Day')
       //console.log("allDay", allDay);
     } else {
       maxD = new Date(8640000000000000);
@@ -1943,7 +1866,7 @@ const Apps = (props: any) => {
                 personSelectionLimit={10}
                 titleText="Select People"
                 resolveDelay={1000}
-                onChange={processPeople}
+                onChange={people}
                 showtooltip={true}
                 required={true}
                 disabled={IsDisableField}
