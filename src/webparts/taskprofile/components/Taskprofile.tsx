@@ -296,7 +296,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         if ((index == taskDetails["TaskCategories"]?.length - 1) || (taskDetails["TaskCategories"].length == 1)) {
           category = category + item?.Title
         } else {
-          category = category + item?.Title + ";"
+          category = category + item?.Title + "; "
         }
 
         let ApprovalCheck = category?.search("Approval");
@@ -2402,7 +2402,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           <dt className='bg-Fa'>Portfolio Item</dt>
                           <dd className='bg-Ff full-width columnFixedTitle pe-0'>
                             {this.state?.TagConceptPaper?.length > 0 &&
-                              <a href={this.state?.TagConceptPaper[0].EncodedAbsUrl}>
+                              <a href={`${this.state?.TagConceptPaper[0].EncodedAbsUrl}?web=1`}  target='_blank' data-interception="off">
                                 <span className={`alignIcon svg__iconbox svg__icon--${this.state?.TagConceptPaper[0]?.File_x0020_Type}`} title={this.state?.TagConceptPaper[0]?.File_x0020_Type}></span>
                               </a>
                             }
@@ -2506,7 +2506,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 </div>
                               </div>
                               <div className="spxdropdown-menu ps-2 py-1 " style={{ zIndex: 0 }}>
-                                <span>Total Estimated Time : </span><span className="mx-1">{this.state.Result?.TotalEstimatedTime > 1 ? this.state.Result?.TotalEstimatedTime + " hours" : this.state.Result?.TotalEstimatedTime + " hour"} </span>
+                                <span>Total Estimated Time: </span><span className="mx-1">{this.state.Result?.TotalEstimatedTime > 1 ? this.state.Result?.TotalEstimatedTime + " hours" : this.state.Result?.TotalEstimatedTime + " hour"} </span>
                               </div>
                             </div>
                           </dl>

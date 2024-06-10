@@ -55,7 +55,7 @@ let componentDetailsData: any = [];
 let count = 0;
 let ID: any;
 
-function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: any) {
+function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,portfolioColor }: any) {
   // var AssignedToIds: any = [];
   ResponsibleTeamIds = [];
   AssignedToIds = [];
@@ -2012,9 +2012,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                           <a
                             target="_blank"
                             data-interception="off"
-                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0]?.Parent?.Id}`}
                           >
-                            {ParentData[0].Parent.Title}
+                            {ParentData[0]?.Parent?.Title}
                           </a>
                         )}
                     </li>
@@ -2024,9 +2024,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                         <a
                           target="_blank"
                           data-interception="off"
-                          href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
+                          href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent?.Id}`}
                         >
-                          {EditData?.Parent.Title}
+                          {EditData?.Parent?.Title}
                         </a>
                       )}
                     </li>
@@ -2685,6 +2685,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
       selectedCategoryTrue(item);
     });
   }, []);
+
+   React.useEffect(() => {
+    setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && portfolioColor) {
+            $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
+        }
+    }, 2000)
+}, [Smartdatapopup,IsComponent,SiteCompositionShow,isopenProjectpopup,IsComponentPicker]);
 
   const toggleCategorySelection = function (item: any) {
     setCategoriesData(function (prevCategoriesData) {
@@ -4950,6 +4959,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                 ComponentType={"Component"}
                 Call={Call}
                 selectionType={"Single"}
+                portfolioColor={portfolioColor}
               />
             ) : null}
 
@@ -5366,6 +5376,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
       </Panel>
       {SiteCompositionShow && EditData?.Title && (
         <CentralizedSiteComposition
+        portfolioColor={portfolioColor}
           ItemDetails={EditData}
           RequiredListIds={RequireData}
           closePopupCallBack={ClosePopupCallBack}

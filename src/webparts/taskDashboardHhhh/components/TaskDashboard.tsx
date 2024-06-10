@@ -76,6 +76,7 @@ const TaskDashboard = (props: any) => {
     const [thisWeekTasks, setThisWeekTasks] = React.useState([]);
     const [bottleneckTasks, setBottleneckTasks] = React.useState([]);
     const [assignedApproverTasks, setAssignedApproverTasks] = React.useState([]);
+    const [workingEmailVisibility, setWorkingEmailVisibility] = React.useState(false);
     const [value, setValue] = React.useState([]);
     const [NameTop, setNameTop] = React.useState("");
     const [groupedUsers, setGroupedUsers] = React.useState([]);
@@ -131,6 +132,7 @@ const TaskDashboard = (props: any) => {
         //    loadTodaysLeave();
         getCurrentUserDetails();
         createDisplayDate();
+        workingEmailPermission();
         try {
             $('#spPageCanvasContent').removeClass();
             $('#spPageCanvasContent').addClass('hundred')
@@ -191,7 +193,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(38, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(18, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -231,6 +233,18 @@ const TaskDashboard = (props: any) => {
     }
 
     //End
+
+    // code by Anupam 
+
+    const workingEmailPermission = async () => {
+        let IsWorkingEmailButtonVisible = await globalCommon.verifyComponentPermission("TaskDashboardWorkingEmail")
+        setWorkingEmailVisibility(IsWorkingEmailButtonVisible) 
+    }
+
+    const workingEmailRecipients = async () => {
+        let EmailRecipients = await globalCommon.LoadAllNotificationConfigrations("TaskDashboardWorkingEmail", AllListId)
+        return EmailRecipients
+    }
 
 
     const loadAllTimeEntry = async () => {
@@ -429,6 +443,11 @@ const TaskDashboard = (props: any) => {
                         if (task?.EstimatedTimeDescription != undefined && task?.EstimatedTimeDescription != '' && task?.EstimatedTimeDescription != null) {
                             EstimatedDesc = JSON.parse(task?.EstimatedTimeDescription)
                         }
+                        let workingAct: any = []
+                        if (task?.WorkingAction != undefined && task?.WorkingAction != '' && task?.WorkingAction != null) {
+                            workingAct = JSON.parse(task?.WorkingAction)
+                            task.WorkingAction = workingAct;
+                        }
                         task.HierarchyData = [];
                         task.EstimatedTime = 0;
                         task.SmartPriority;
@@ -473,11 +492,7 @@ const TaskDashboard = (props: any) => {
                         task?.Approver?.map((approverUser: any) => {
                             task.ApproverIds.push(approverUser?.Id);
                         })
-                        if (task?.AssignedToIds?.length > 0) {
-
-                        } else {
-                            task.AssignedToIds = [];
-                        }
+                        task.AssignedToIds = [];
                         task?.AssignedTo?.map((assignedUser: any) => {
                             task.AssignedToIds.push(assignedUser.Id)
                             taskUsers?.map((user: any) => {
@@ -525,23 +540,22 @@ const TaskDashboard = (props: any) => {
                         const isImmediate = checkUserExistence('Immediate', task?.TaskCategories);
                         const isEmailNotification = checkUserExistence('Email Notification', task?.TaskCategories);
                         const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
-                        try {
-                            let workingAct: any = []
-                            if (task?.WorkingAction != undefined && task?.WorkingAction != '' && task?.WorkingAction != null) {
-                                workingAct = JSON.parse(task?.WorkingAction)
-                                task.WorkingAction = workingAct;
-                            }
-                            if (task?.WorkingAction?.length > 0) {
-                                task?.WorkingAction?.forEach((data: any) => {
-                                    if (data?.Title === "Bottleneck") {
-                                        isBottleneckTask = true;
-                                    }
-                                });
-                            }
 
-                        } catch (e) {
-
+                        if (task?.WorkingAction?.length > 0) {
+                            task?.WorkingAction?.forEach((data: any) => {
+                                if (data?.Title === "Bottleneck") {
+                                    isBottleneckTask = true;
+                                    // data?.InformationData?.forEach((userBottleneckTasks:any) => {
+                                    //      if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currenUserAssignedToUserId) {
+                                    //             // userBottleneckTasks.TaggedUsers.isBottleneck = true;
+                                    //             // AllBottleNeckTasks.push(userBottleneckTasks)
+                                    //             isBottleneckTask=true;
+                                    //         }
+                                    //   });
+                                }
+                            });
                         }
+
                         if (isCurrentUserApprover && task?.PercentComplete == '1') {
                             approverTask.push(task)
                         }
@@ -665,25 +679,19 @@ const TaskDashboard = (props: any) => {
                 const isEmailNotfication = checkUserExistence('Email Notification', task?.TaskCategories);
                 let isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
                 let isBottleneckTaskNew = false;
-                try {
+                if (task?.WorkingAction?.length > 0) {
+                    task?.WorkingAction?.forEach((data: any) => {
+                        if (data?.Title === "Bottleneck") {
 
-                    if (task?.WorkingAction?.length > 0) {
-
-                        task?.WorkingAction?.forEach((data: any) => {
-                            if (data?.Title === "Bottleneck") {
-
-                                data?.InformationData?.forEach((userBottleneckTasks: any) => {
-                                    if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currentUserId) {
-                                        // userBottleneckTasks.TaggedUsers.isBottleneck = true;
-                                        // AllBottleNeckTasks.push(userBottleneckTasks)
-                                        isBottleneckTaskNew = true;
-                                    }
-                                });
-                            }
-                        });
-                    }
-                } catch (e) {
-
+                            data?.InformationData?.forEach((userBottleneckTasks: any) => {
+                                if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currentUserId) {
+                                    // userBottleneckTasks.TaggedUsers.isBottleneck = true;
+                                    // AllBottleNeckTasks.push(userBottleneckTasks)
+                                    isBottleneckTaskNew = true;
+                                }
+                            });
+                        }
+                    });
                 }
 
                 // Testing Only Please Remove Before deployement
@@ -993,7 +1001,7 @@ const TaskDashboard = (props: any) => {
                                     <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
                                 </a>
                             </>
-                            : <span title={row?.original?.Author?.Title} className=" alignIcon svg__iconbox svg__icon--defaultUser grey "></span>}
+                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
                 id: "CreateDate",
@@ -1072,8 +1080,8 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.original?.Title}
                         </a>
-                        {row?.original?.descriptionsSearch !== null && <span className='alignIcon'><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
-                        }
+                        {row?.original?.descriptionsSearch !== null &&  <span className='alignIcon'><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
+                        } 
                     </div>
                 ),
                 id: "Title",
@@ -1190,7 +1198,7 @@ const TaskDashboard = (props: any) => {
                                     <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
                                 </a>
                             </>
-                            : <span title={row?.original?.Author?.Title} className="alignIcon svg__iconbox svg__icon--defaultUser grey "></span>}
+                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
                 id: "CreateDate",
@@ -1469,10 +1477,7 @@ const TaskDashboard = (props: any) => {
         setCurrentView("Home")
         setSelectedUser({})
         createGroupUsers();
-
     }
-
-
     // End
 
     //On Drop Handle
@@ -1776,7 +1781,6 @@ const TaskDashboard = (props: any) => {
                             }
                         })
                     }
-
                     text =
                         `<tr>
                         <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
@@ -1938,10 +1942,14 @@ const TaskDashboard = (props: any) => {
 
 
     }
-    const sendAllWorkingTodayTasks = () => {
+    const sendAllWorkingTodayTasks = async () => {
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
-        // let to: any = ["prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de"];
+        let emailRecipients: any = await workingEmailRecipients();
+        let workingTodayEmails = emailRecipients.map((recipient: any) => {return recipient?.Email})
+        workingTodayEmails = workingTodayEmails?.filter((user: any) => user != undefined)
+        
+        // let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
+        let to: any = workingTodayEmails;
         let finalBody: any = [];
         let userApprover = '';
         let taskCount = 0;
@@ -2019,6 +2027,7 @@ const TaskDashboard = (props: any) => {
                                         })
                                     }
 
+
                                     if (EstimatedTimeEntry > 0) {
                                         text = `<tr>
                                         <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
@@ -2032,7 +2041,6 @@ const TaskDashboard = (props: any) => {
                                         </tr>`
                                         body1.push(text);
                                     }
-
                                 })
                                 if (body1?.length > 0) {
                                     body =
@@ -2185,7 +2193,7 @@ const TaskDashboard = (props: any) => {
                                     <li className="nav__item  pb-1 pt-0">
 
                                     </li>
-                                    {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Santosh Kumar" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
+                                    {workingEmailVisibility ?
                                         <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
                                             Share Everyone's Today's Task
                                         </a> : ''}
