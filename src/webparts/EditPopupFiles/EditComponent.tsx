@@ -2012,9 +2012,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                           <a
                             target="_blank"
                             data-interception="off"
-                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0]?.Parent?.Id}`}
                           >
-                            {ParentData[0].Parent.Title}
+                            {ParentData[0]?.Parent?.Title}
                           </a>
                         )}
                     </li>
@@ -2024,9 +2024,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                         <a
                           target="_blank"
                           data-interception="off"
-                          href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
+                          href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent?.Id}`}
                         >
-                          {EditData?.Parent.Title}
+                          {EditData?.Parent?.Title}
                         </a>
                       )}
                     </li>

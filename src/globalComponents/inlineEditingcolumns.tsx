@@ -1,4 +1,4 @@
-import { Panel, PanelType } from "office-ui-fabric-react";
+  import { Panel, PanelType } from "office-ui-fabric-react";
 import { Web } from "sp-pnp-js";
 import React, { useState } from "react";
 import * as Moment from "moment";
@@ -109,6 +109,14 @@ const inlineEditingcolumns = (props: any) => {
     updateTaskComments();
   }, [])
 
+  React.useEffect(() => {
+    setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && props.portfolioColor) {
+            $('.ms-Panel-main').css('--SiteBlue', props?.portfolioColor); // Set the desired color value here
+        }
+    }, 1500)
+}, [taskCategoriesPopup]);
 
   const updateItemValues = () => {
     selectedCatTitleVal = [];
@@ -1244,7 +1252,8 @@ const inlineEditingcolumns = (props: any) => {
               display: "flex",
               width: "100%",
               height: "100%",
-              gap: "1px"
+              gap: "1px",
+              alignItems: "center"
             }}
             onClick={() => setTaskPriorityPopup(true)}
           >
@@ -1297,8 +1306,8 @@ const inlineEditingcolumns = (props: any) => {
               // }
               if (category?.Title == "Favorite") {
                 return (
-                  <a title="Favorite">
-                    <span className=" svg__iconbox svg__icon--Star alignIcon "></span>
+                  <a title="Favorite" className="alignCenter">
+                    <span className=" svg__iconbox svg__icon--Star"></span>
                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} />  */}
                   </a>
                 );

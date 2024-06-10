@@ -286,7 +286,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
             })
             if (item?.authorImage == undefined && item?.authorSuffix == undefined) {
               item.authorDefaultName = item.Author?.Title;
-              item.authorDefaultImage = baseUrl+'/SiteCollectionImages/ICONS/32/icon_user.jpg';
+              item.authorDefaultImage ='https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg';
                    
             }
           }
@@ -300,7 +300,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
               }
               if (item?.editorImage == undefined && item?.editorSuffix == undefined) {
                 item.editorDefaultName = item.Editor.Title;
-                item.editorDefaultImage =baseUrl+'/SiteCollectionImages/ICONS/32/icon_user.jpg';
+                item.editorDefaultImage ='https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg';
                 
               }
 
@@ -367,7 +367,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
             })
             if (item?.authorImage == undefined && item?.authorSuffix == undefined) {
               item.authorDefaultName = item.Author?.Title;
-              item.authorDefaultImage = baseUrl+'/SiteCollectionImages/ICONS/32/icon_user.jpg';
+              item.authorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg";
               
             }
           }
@@ -381,7 +381,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
               }
               if (item?.editorImage == undefined && item?.editorSuffix == undefined) {
                 item.editorDefaultName = item.Editor.Title;
-                item.editorDefaultImage =baseUrl+'/SiteCollectionImages/ICONS/32/icon_user.jpg';
+                item.editorDefaultImage ='https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg';
               }
 
             })
