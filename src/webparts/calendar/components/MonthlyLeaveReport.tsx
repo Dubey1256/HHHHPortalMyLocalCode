@@ -51,7 +51,7 @@ export const MonthlyLeaveReport = (props: any) => {
     let web = new Web(props.props.siteUrl);
     // let taskUsers = [];
     try {
-      const Data: any[] = await web.lists.getById(props.props.TaskUsertListID).items.select("Id,Title,TimeCategory,Team,CategoriesItemsJson,Suffix,SortOrder,IsApprovalMail,Item_x0020_Cover,ItemType,Created,Company,Role,Modified,IsActive,IsTaskNotifications,DraftCategory,UserGroup/Title,UserGroup/Id,AssingedToUser/Title,AssingedToUser/Name,AssingedToUser/Id,Author/Name,Author/Title,Editor/Name,Approver/Id,Approver/Title,Approver/Name,Editor/Title,Email")
+      const Data: any[] = await web.lists.getById(props.props.TaskUserListID).items.select("Id,Title,TimeCategory,Team,CategoriesItemsJson,Suffix,SortOrder,IsApprovalMail,Item_x0020_Cover,ItemType,Created,Company,Role,Modified,IsActive,IsTaskNotifications,DraftCategory,UserGroup/Title,UserGroup/Id,AssingedToUser/Title,AssingedToUser/Name,AssingedToUser/Id,Author/Name,Author/Title,Editor/Name,Approver/Id,Approver/Title,Approver/Name,Editor/Title,Email")
         .expand("Author,Editor,AssingedToUser,UserGroup,Approver").orderBy("Title", true).get();
 
       let filteredData = Data.filter((item: any) =>
@@ -676,7 +676,7 @@ export const MonthlyLeaveReport = (props: any) => {
   
         user.unplannedleave = calculatePlannedLeave(matchedData, ["Un-Planned", "Sick"]);
        // user.unplannedleave = [...unplannedLeave, ...sickLeave].map(item => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
-        user.unplannedleave = user.unplannedleave.map((item:any) => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
+        //user.unplannedleave = user.unplannedleave.map((item:any) => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
         user.unplannedleave = `${user.unplannedleave}${UnplannedLeaveString.length != 0 ? `[ ${UnplannedLeaveString} ]` : ''} `
         user.UnPlanedEventDates = UnPlanedEventDates
         user.leavediscriptionUnPlanned = leavediscriptionUnPlanned != undefined ? leavediscriptionUnPlanned : ''

@@ -4,25 +4,45 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
-import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
+import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor';
+import GlobalTooltip from '../../../globalComponents/Tooltip';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import ImageInformation from '../../EditPopupFiles/ImageInformation';
+import ReadyMadeTable from '../../../globalComponents/RadimadeTable';
 let mastertaskdetails: any = []
 let copyEditData: any = {}
 let mydataa: any = [];
+let myTaskData: any = []
 let count = 0;
 let componentDetailsDaata: any = [];
+let tempmetadata: any = [];
+var tempArray: any = [];
+var selectedTasks: any = [];
+var AllListId: any;
+
 
 const EditDocumentpanel = (props: any) => {
   const [EditdocumentsData, setEditdocumentsData]: any = React.useState();
   const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
+  const [isopenTaskpopup, setisopenTaskpopup] = React.useState(false);
+  const [TaskItem, setTaskItem] = React.useState("");
+  const [TaskSearchKey, setTaskSearchKey] = React.useState("");
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = React.useState(false);
   const [isopenprojectservicepopup, setisopenprojectservicepopup] = React.useState(false);
   const [projectdata, setProjectData] = React.useState([]);
   const [CMSToolComponentProjectpopup, setCMSToolComponentProjectpopup] = React.useState("");
   const [allProjectDaata, SetAllProjectDaata] = React.useState([]);
+  const [allPortfolioDaata, SetAllPortfolioDaata] = React.useState([]);
+  const [PortfolioData, setPortfolioData] = React.useState([]);
   const [ProjectSearchKey, setProjectSearchKey] = React.useState("");
   const [searchedProjectDaata, setSearchedProjectDaata] = React.useState([]);
+  const [searchedPortfolioDaata, setSearchedPortfolioDaata] = React.useState([]);
+  const [Metadata, setMetadata] = React.useState([]);
+  const [allTaskData, SetAllTaskData] = React.useState([]);
+  const [searchedTaskData, setSearchedTaskData] = React.useState([]);
+  const [TaggedSitesTask, setTaggedSitesTask] = React.useState<any>([]);
+  const [isOpenComponentServicePopup, setIsOpenComponentServicePopup] = React.useState(false);
+
   let ItemRank = [
     { rankTitle: 'Select Item Rank', rank: null },
     { rankTitle: '(8) Top Highlights', rank: 8 },
@@ -34,8 +54,20 @@ const EditDocumentpanel = (props: any) => {
     { rankTitle: '(1) Archive', rank: 1 },
     { rankTitle: '(0) No Show', rank: 0 }
   ]
+  let Status: any = ["Select Status", "Draft", "Final", "Archived"]
 
   React.useEffect(() => {
+    AllListId = props.AllListId
+    if (window.location.href.toLowerCase()?.indexOf('gmbh') > -1) {
+      AllListId.TaskTypeID = "d255609f-7f22-4e40-a857-a3ffd2c57101";
+      AllListId.PortFolioTypeID = "63031812-949e-46a0-a6f5-dc6be912a193";
+    }
+    else {
+      AllListId.TaskTypeID = "21b55c7b-5748-483a-905a-62ef663972dc";
+      AllListId.PortFolioTypeID = "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
+    }
+
+    AllListId.Context = props.AllListId?.context
     if (props?.editData != undefined) {
       LoadMasterTaskList().then((smartData: any) => {
         loadSelectedDocuments()
@@ -43,49 +75,132 @@ const EditDocumentpanel = (props: any) => {
         console.log(error)
       })
     }
+    getMasterTaskListTasksData()
+    LoadSmartmetadata()
   }, [props?.editData != undefined])
 
+
+  const LoadSmartmetadata = async () => {
+    let siteConfigSites: any = [];
+    let web = new Web(props?.AllListId?.siteUrl);
+    let smartmetaDetails: any = [];
+    smartmetaDetails = await web.lists
+      .getById(props?.AllListId?.SmartMetadataListID)
+      .items.select(
+        "Id",
+        "Title",
+        "IsVisible",
+        "ParentID",
+        "SmartSuggestions",
+        "TaxType",
+        "Description1",
+        "Configurations",
+        "Item_x005F_x0020_Cover",
+        "listId",
+        "siteName",
+        "siteUrl",
+        "SortOrder",
+        "SmartFilters",
+        "Selectable",
+        "Color_x0020_Tag",
+        "Parent/Id",
+        "Parent/Title"
+      )
+      .filter("TaxType eq 'Documentquery'")
+      .top(4999)
+      .expand("Parent")
+      .get();
+
+    tempmetadata = JSON.parse(smartmetaDetails[0].Configurations)
+    setMetadata(smartmetaDetails);
+  };
+
   const loadSelectedDocuments = async () => {
-    const web = new Web(props?.AllListId?.siteUrl);
+    let AllTasks: any = []
+    tempArray = []
+    let tempArraycopy = [];
+    const web = new Web(tempmetadata[0]?.siteUrl);
     try {
-      await web.lists.getById(props?.AllListId?.DocumentsListID)
+      await web.lists.getById(tempmetadata[0]?.listId)
         .items.getById(props?.editData?.Id)
-        .select('Id', 'Title', 'PriorityRank', 'Year', 'Body', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover', 'Portfolios/Id', 'Portfolios/Title', 'File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl')
-        .expand('Author,Editor,Portfolios')
+        .select(tempmetadata[0]?.query)
         .get()
         .then((Data) => {
           let Title: any = " "
           Data.docTitle = getUploadedFileName(Data?.FileLeafRef);
           Title = Data?.docTitle;
-          Data.Title = Title;       
-          // if (Data?.Title.includes(Data?.File_x0020_Type)) {
-          //   Data.Title = getUploadedFileName(Data?.Title);
-          // }
-          Data.siteType = 'sp';
+          Data.Title = (Data?.Title != undefined && Data?.Title != '' && Data?.Title != null) ? Data.Title : Title;
+          if (Data?.Title.includes(Data?.File_x0020_Type)) {
+            Data.Title = getUploadedFileName(Data?.Title);
+          }
+          Data.siteType = tempmetadata[0]?.siteType;
           // Data.docTitle = getUploadedFileName(Data?.FileLeafRef);
           Data.Item_x002d_Image = Data?.Item_x0020_Cover
           let portfolioData: any = []
           let projectData: any = []
           let projectDataforsuggestion: any = []
+          let portfoliosDataforsuggestion: any = []
 
-          if (Data.Portfolios != undefined && Data?.Portfolios?.length > 0) {
-            Data?.Portfolios?.map((portfolio: any) => {
-              mastertaskdetails.map((mastertask: any) => {
-                if (mastertask.Id == portfolio.Id && mastertask?.Item_x0020_Type != "Project" && mastertask.Item_x0020_Type != "Sprint") {
-                  portfolioData.push(mastertask);
-                }
-                if (mastertask.Id == portfolio.Id && (mastertask?.Item_x0020_Type == "Project" || mastertask.Item_x0020_Type == "Sprint")) {
-                  projectData.push(mastertask);
-                }
-                if (mastertask?.Item_x0020_Type == "Project") {
-                  projectDataforsuggestion.push(mastertask)
-                }
-              });
+          try {
+            tempmetadata[0].taskSites.map((site: any) => {
+              if (Data[site]?.length > 0) {
+                let temp: any = {
+                  Title: `${site}Id`,
+                  Task: [],
+                  TaskIds: []
+                };
+
+                tempArraycopy = Data[site].map((item: any) => {
+                  temp.Task.push(item);
+                  item.siteType = site;
+
+                  if (temp.Title.toLowerCase().indexOf(site.toLowerCase()) > -1) {
+                    temp.TaskIds.push(item.Id);
+                  }
+
+                  AllTasks.push(item);
+                  return temp;
+                });
+
+                tempArray.push(temp);
+              }
             });
-            Data.Portfolios = portfolioData;
-            Data.projectData = projectData;
+
+            setTaggedSitesTask(AllTasks);
+
+          }
+          catch (e) {
+            console.log(e)
+          }
+
+          if (mastertaskdetails != undefined && mastertaskdetails != null && mastertaskdetails?.length > 0) {
+            mastertaskdetails.map((mastertask: any) => {
+              if (mastertask?.Item_x0020_Type == "Project" || mastertask?.Item_x0020_Type == "Sprint") {
+                projectDataforsuggestion.push(mastertask)
+              }
+              if (mastertask?.Item_x0020_Type !== "Project" && mastertask?.Item_x0020_Type !== "Sprint") {
+                portfoliosDataforsuggestion.push(mastertask)
+              }
+            });
+            if (Data?.Portfolios != null && Data?.Portfolios != undefined) {
+              Data.Portfolios?.map((portfolio: any) => {
+                mastertaskdetails?.map((mastertask: any) => {
+                  if (mastertask?.Id == portfolio?.Id && mastertask?.Item_x0020_Type != "Project" && mastertask.Item_x0020_Type != "Sprint") {
+                    portfolioData.push(mastertask);
+                  }
+                  if (mastertask?.Id == portfolio?.Id && (mastertask?.Item_x0020_Type == "Project" || mastertask.Item_x0020_Type == "Sprint")) {
+                    projectData.push(mastertask);
+                  }
+                });
+              })
+            }
+
+            Data.projectData = projectData
+            Data.Portfolios = portfolioData
             setProjectData(projectData)
+            setPortfolioData(portfolioData)
             SetAllProjectDaata(projectDataforsuggestion)
+            SetAllPortfolioDaata(portfoliosDataforsuggestion)
           }
           setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
@@ -123,7 +238,7 @@ const EditDocumentpanel = (props: any) => {
                   lookupIds !== undefined && lookupIds?.length > 0
                     ? lookupIds
                     : [],
-              },
+              }
             })
             .then((res: any) => {
               getMasterTaskListTasksData();
@@ -146,20 +261,27 @@ const EditDocumentpanel = (props: any) => {
         .items.select(
           "Item_x0020_Type",
           "Title",
+          "PortfolioType/Title",
           "PortfolioStructureID",
           "Id",
           "PercentComplete",
           "Portfolios/Id",
           "Portfolios/Title"
         )
-        .expand("Portfolios")
-        .filter("(Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint') and Portfolios/Id eq " + props?.editData?.Id)
+        .expand("Portfolios", "PortfolioType")
+        .filter("(Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint' or PortfolioType/Title eq 'Component') and Portfolios/Id eq " + props?.editData?.Id)
         .top(4000)
-        .getAll();
+        .getAll()
 
       // Project Data for HHHH Project Management
+      if (componentDetailsDaata.length > 0) {
+        let PxData = componentDetailsDaata?.filter((items: any) => items.Item_x0020_Type == "Project" || items.Item_x0020_Type == "Sprint")
+        let PortfolioData = componentDetailsDaata?.filter((items: any) => items?.PortfolioType?.Title == "Component")
 
-      setProjectData(componentDetailsDaata);
+        setProjectData(PxData)
+        setPortfolioData(PortfolioData)
+      }
+
       console.log("data show on componentdetails", componentDetailsDaata);
     } catch (error) {
       console.log("error show", error);
@@ -225,8 +347,8 @@ const EditDocumentpanel = (props: any) => {
     let componetServicetagData: any = [];
     var RelevantProjectIdRemove = "";
     var RelevantProjectIds = "";
-    if (EditdocumentsData?.Portfolios?.length > 0) {
-      EditdocumentsData?.Portfolios?.map((portfolioId: any) => {
+    if (PortfolioData != undefined && PortfolioData?.length > 0) {
+      PortfolioData?.map((portfolioId: any) => {
         componetServicetagData.push(portfolioId?.Id)
       })
     }
@@ -248,29 +370,34 @@ const EditDocumentpanel = (props: any) => {
         componetServicetagData.push(com.Id);
       });
     }
+    const postData: any = {
+      Title: EditdocumentsData?.Title,
+      FileLeafRef: EditdocumentsData?.docTitle,
+      ItemRank: EditdocumentsData?.ItemRank == 'Select Item Rank' ? null : EditdocumentsData?.ItemRank,
+      Year: EditdocumentsData.Year,
+      ItemType: EditdocumentsData.ItemType,
+      Status: EditdocumentsData.Status,
+      PortfoliosId: { "results": componetServicetagData.length > 0 ? componetServicetagData : [] },
+      Body: EditdocumentsData?.Body,
+      Item_x0020_Cover: {
+        "__metadata": { type: 'SP.FieldUrlValue' },
+        'Description': EditdocumentsData?.Item_x002d_Image?.Url != "" ? EditdocumentsData?.UrItem_x002d_Imagel?.Url : "",
+        'Url': EditdocumentsData?.Item_x002d_Image?.Url ? EditdocumentsData?.Item_x002d_Image?.Url : "",
+      },
+      Url: {
+        "__metadata": { type: 'SP.FieldUrlValue' },
+        'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
+        'Url': EditdocumentsData?.Url?.Url ? EditdocumentsData?.Url?.Url : "",
+      }
+
+    }
+    tempArray?.map((item: any) => {
+      postData[item.Title] = { results: item.TaskIds }
+    })
 
     const web = new Web(props?.AllListId?.siteUrl);
     await web.lists.getById(props?.AllListId?.DocumentsListID)
-      .items.getById(EditdocumentsData.Id).update({
-        Title: EditdocumentsData?.Title,
-        FileLeafRef: EditdocumentsData?.docTitle,
-        ItemRank: EditdocumentsData?.ItemRank == 'Select Item Rank' ? null : EditdocumentsData?.ItemRank,
-        Year: EditdocumentsData.Year,
-        ItemType: EditdocumentsData.ItemType,
-        PortfoliosId: { "results": componetServicetagData.length > 0 ? componetServicetagData : [] },
-        Body: EditdocumentsData?.Body,
-        Item_x0020_Cover: {
-          "__metadata": { type: 'SP.FieldUrlValue' },
-          'Description': EditdocumentsData?.Item_x002d_Image?.Url != "" ? EditdocumentsData?.UrItem_x002d_Imagel?.Url : "",
-          'Url': EditdocumentsData?.Item_x002d_Image?.Url ? EditdocumentsData?.Item_x002d_Image?.Url : "",
-        },
-        Url: {
-          "__metadata": { type: 'SP.FieldUrlValue' },
-          'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
-          'Url': EditdocumentsData?.Url?.Url ? EditdocumentsData?.Url?.Url : "",
-        }
-
-      }).then((updatedItem: any) => {
+      .items.getById(EditdocumentsData.Id).update(postData).then((updatedItem: any) => {
         console.log(updatedItem)
         if (EditdocumentsData?.Url != undefined) {
           alert(" Link update successfully");
@@ -294,6 +421,43 @@ const EditDocumentpanel = (props: any) => {
       })
   }
 
+  // {
+  //   (EditdocumentsData?.recipients) ?
+  //     (JSON.parse(EditdocumentsData?.recipients)?.map((item: any) => {
+  //       if (item.recipType == "to") {
+  //         if (item.email.length > 1) {
+  //           ReceiverId += item.email + "; ";
+  //         }
+  //         recipientLabel = `To: ${ReceiverId}`;
+  //         return {
+  //           recipientLabel
+  //         }
+  //       }
+  //       let lastSemicolonIndex = recipientLabel.lastIndexOf(';');
+  //       if (lastSemicolonIndex !== -1) {
+  //         // Remove the last semicolon using substrings
+  //         recipientLabel = recipientLabel.substring(0, lastSemicolonIndex) + recipientLabel.substring(lastSemicolonIndex + 1);
+  //       }
+  //       if (item.recipType == "cc") {
+  //         ReceiverCC += item.email + "; ";
+  //         recipientLabelCC = `CC: ${ReceiverCC}`;
+  //         return {
+  //           recipientLabelCC
+  //         }
+  //       }
+  //       // let lastSemicolonIndexCC = recipientLabelCC.lastIndexOf(';');
+  //       // if (lastSemicolonIndexCC !== -1) {
+  //       //   // Remove the last semicolon using substrings
+  //       //   recipientLabelCC = recipientLabelCC.substring(0, lastSemicolonIndexCC) + recipientLabelCC.substring(lastSemicolonIndexCC + 1);
+  //       // }
+  //     })) :
+  //     ""
+  // }
+  // let lastSemicolonIndexCC = recipientLabelCC.lastIndexOf(';');
+  // if (lastSemicolonIndexCC !== -1) {
+  //   // Remove the last semicolon using substrings
+  //   recipientLabelCC = recipientLabelCC.substring(0, lastSemicolonIndexCC) + recipientLabelCC.substring(lastSemicolonIndexCC + 1);
+  // }
 
   const imageTabCallBack = React.useCallback((data: any) => {
     console.log(EditdocumentsData);
@@ -318,18 +482,27 @@ const EditDocumentpanel = (props: any) => {
       setisOpenImageTab(true)
     }
   }
-  const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
 
-    if (functionType == "Save") {
-      let copyPortfoliosData = copyEditData?.Portfolios?.length > 0 ? copyEditData?.Portfolios : []
-      copyPortfoliosData.push(DataItem[0])
-      setEditdocumentsData({ ...copyEditData, Portfolios: copyPortfoliosData });
-      setisopencomonentservicepopup(false);
-    }
-    else {
-      setisopencomonentservicepopup(false);
-    }
-  }, [])
+  const ComponentServicePopupCallBack = React.useCallback(
+    (DataItem: any, Type: any, functionType: any) => {
+      if (functionType === "Save") {
+        if (Type === "Multi") {
+          let copyPortfoliosData = EditdocumentsData?.Portfolios?.length > 0 ? EditdocumentsData?.Portfolios : []
+          copyPortfoliosData = DataItem
+            .filter((item: { Id: null }) => item.Id !== null)
+            .map((item: { Id: any }) => item.Id);
+          setEditdocumentsData({ ...EditdocumentsData, Portfolios: copyPortfoliosData })
+          setisopencomonentservicepopup(false)
+        }
+      } else {
+        setisopencomonentservicepopup(false);
+      }
+      console.log("EditdocumentsData:", EditdocumentsData);
+    },
+    []
+  );
+
+
 
   // -----For project
   const autoSuggestionForProject = (e: any) => {
@@ -347,7 +520,48 @@ const EditDocumentpanel = (props: any) => {
       setSearchedProjectDaata([]);
     }
   };
+  const autoSuggestionForTask = (e: any) => {
+    let searchedKey: any = e.target.value;
+    setTaskSearchKey(e.target.value);
+    let tempArray: any = [];
+    if (searchedKey?.length > 0) {
+      allTaskData?.map((itemData: any) => {
+        if (itemData.Title.toLowerCase().includes(searchedKey.toLowerCase())) {
+          tempArray.push(itemData);
+        }
+      });
+      setSearchedTaskData(tempArray);
+    } else {
+      setSearchedTaskData([]);
+    }
+  };
 
+  const autoSuggestionForPortfolio = (e: any) => {
+    let searchedData: any = e.target.value;
+    setProjectSearchKey(e.target.value);
+    let tempArray: any = [];
+    if (searchedData?.length > 0) {
+      allPortfolioDaata?.map((itemData: any) => {
+        if (itemData?.Title?.length > 0) {
+          if (itemData?.Title.toLowerCase().includes(searchedData.toLowerCase())) {
+            tempArray.push(itemData);
+          }
+        }
+      });
+      setSearchedPortfolioDaata(tempArray);
+    } else {
+      setSearchedPortfolioDaata([]);
+    }
+  };
+
+  const handleSuggestionforTask = (suggestion: any) => {
+    // allProjectDaata?.map((items: any) => {
+    //   if (items?.Id === suggestion?.Id) {
+    //     callServiceComponents([items], "Multi", "Save");
+    //   }
+    // });
+    setSearchedTaskData([]);
+  };
   const handleSuggestionforProject = (suggestion: any) => {
     allProjectDaata?.map((items: any) => {
       if (items?.Id === suggestion?.Id) {
@@ -355,6 +569,16 @@ const EditDocumentpanel = (props: any) => {
       }
     });
     setSearchedProjectDaata([]);
+  };
+
+  const handleSuggestionforPortfolio = (suggestion: any) => {
+    allPortfolioDaata?.map((items: any) => {
+      if (items?.Id === suggestion?.Id) {
+        // callComponents([items], "Multi", "Save");
+        callServiceComponents([items], "Multi", "Save")
+      }
+    });
+    setSearchedPortfolioDaata([]);
   };
 
   // ------end----
@@ -369,19 +593,42 @@ const EditDocumentpanel = (props: any) => {
     }
   }
 
-  const opencomonentservicepopup = () => {
-    copyEditData = []
-    copyEditData = EditdocumentsData
-    setisopencomonentservicepopup(true)
-  }
+  const DeleteTagPortfolios = async (titleToRemove: any) => {
 
-  const DeleteTagPortfolios = (deletePortfolioId: any) => {
-    let copyEditData = EditdocumentsData
-    setEditdocumentsData((prev: any) => {
-      return {
-        ...prev, Portfolios: prev.Portfolios?.filter((portfolio: any) => portfolio?.Id != deletePortfolioId)
-      }
-    })
+    // setEditdocumentsData((prev: any) => {
+    //   return {
+    //     ...prev, Portfolios: prev.Portfolios?.filter((portfolio: any) => portfolio?.Id != deletePortfolioId)
+    //   }
+    // })
+    try {
+      let web = new Web(props?.AllListId?.siteUrl);
+
+      // Update the multi-lookup field for each item
+      titleToRemove.length > 0 &&
+        (await web.lists
+          .getById(props?.AllListId?.MasterTaskListID)
+          .items.getById(titleToRemove[0])
+          .update({
+            PortfoliosId: {
+              results: titleToRemove !== undefined ? titleToRemove : [],
+            },
+          })
+          .then((res: any) => {
+            console.log(res);
+          })
+          .catch((error) => {
+            console.log("error", error);
+          }));
+
+      let updatedComponentDaata: any = [];
+      updatedComponentDaata = PortfolioData.filter(
+        (itemmm: any) => itemmm.Id !== titleToRemove[0]
+      );
+      console.log("remove data", updatedComponentDaata);
+      setPortfolioData(updatedComponentDaata);
+    } catch (error) {
+      console.log(error);
+    }
 
   }
 
@@ -390,14 +637,32 @@ const EditDocumentpanel = (props: any) => {
     mydataa.push(props?.editData?.Id);
     setCMSToolComponentProjectpopup(itemm);
   };
+  const openTaskPopup = (itemm: any) => {
+    setisopenTaskpopup(true);
+    myTaskData.push(props?.editData);
+    setTaskItem(itemm);
+  };
+
+  const opencomonentservicepopup = () => {
+    // setIsOpenComponentServicePopup(true);
+    // mydataa.push(props?.editData?.Id);
+    // setCMSToolComponentProjectpopup(itemm);
+    copyEditData = []
+    copyEditData = EditdocumentsData
+    setisopencomonentservicepopup(true)
+  };
 
   const callServiceComponents = React.useCallback(
     (item1: any, type: any, functionType: any) => {
       if (functionType === "Close") {
         if (type === "Multi") {
           setisopenprojectservicepopup(false);
+          setisopencomonentservicepopup(false);
+
         } else {
           setisopenprojectservicepopup(false);
+          setisopencomonentservicepopup(false);
+
         }
       } else {
         if (type === "Multi" || type === "Single") {
@@ -408,11 +673,32 @@ const EditDocumentpanel = (props: any) => {
 
           updateMultiLookup(filteredIds, mydataid, props?.AllListId);
           setisopenprojectservicepopup(false);
+          setisopencomonentservicepopup(false);
+
         }
       }
     },
     []
   );
+
+  const DeleteCrossIconDataForTask = async (titleToRemove: any, site: any) => {
+    var selectedTasks1 = TaggedSitesTask.filter(
+      (itemmm: any) => itemmm.Id !== titleToRemove
+    );
+    selectedTasks = selectedTasks1
+    tempArray.map((item: any) => {
+      item.Task = item?.Task?.filter(
+        (itemmm: any) => itemmm.Id !== titleToRemove
+      );
+      item?.TaskIds?.map((id: any, index: any) => {
+        if (id == titleToRemove)
+          item?.TaskIds?.splice(index, 1)
+      })
+
+    })
+    console.log("remove data", selectedTasks1);
+    setTaggedSitesTask(selectedTasks1);
+  };
 
   const DeleteCrossIconDataForProject = async (titleToRemove: any) => {
     try {
@@ -445,6 +731,89 @@ const EditDocumentpanel = (props: any) => {
       console.log(error);
     }
   };
+  const IsitemExists = function (array: any, Item: any) {
+    var isExists = false;
+    array.map((item: any) => {
+      if (item.Id === Item.Id && item.siteType === Item.siteType) {
+        isExists = true;
+        return false;
+      }
+    });
+    return isExists;
+  }
+  // const TaskCallback = async (value: any) => {   
+  //   selectedTasks = TaggedSitesTask
+  //   value?.map((item: any) => {
+  //     if (!IsitemExists(selectedTasks, item?.original))
+  //       selectedTasks.push(item?.original)
+  //   })
+  //   if (selectedTasks?.length > 0) {
+  //     let temp: any = {}
+  //     temp.Task = []
+  //     temp.TaskIds = []
+  //     tempArray = selectedTasks.map((item: any) => {
+  //       temp.Title = `${item?.siteType}Id`
+  //       temp.Task.push(item)
+
+  //       if (temp?.Title?.toLowerCase()?.indexOf(item.siteType.toLowerCase()) > -1) {
+  //         temp.TaskIds.push(item.Id);
+  //       }
+  //       return temp;
+  //     });     
+  //   }
+  //   setTaggedSitesTask(selectedTasks);
+  // }
+
+  const TaskCallback = async (value: any) => {
+    let selectedTasks = TaggedSitesTask;
+
+    value?.forEach((item: any) => {
+      if (!IsitemExists(selectedTasks, item?.original)) {
+        selectedTasks.push(item?.original);
+      }
+    });
+
+    if (selectedTasks?.length > 0) {
+      const groupedTasks: any = {};
+
+      selectedTasks.forEach((item: any) => {
+        const siteTypeKey = `${item.siteType}Id`;
+
+        if (!groupedTasks[siteTypeKey]) {
+          groupedTasks[siteTypeKey] = {
+            Title: siteTypeKey,
+            Task: [],
+            TaskIds: []
+          };
+        }
+
+        groupedTasks[siteTypeKey].Task.push(item);
+
+        if (groupedTasks[siteTypeKey].Title.toLowerCase().indexOf(item.siteType.toLowerCase()) > -1) {
+          groupedTasks[siteTypeKey].TaskIds.push(item.Id);
+        }
+      });
+
+      // Convert the grouped tasks object to an array if needed
+      tempArray = Object.keys(groupedTasks).map(key => groupedTasks[key]);
+    }
+
+    setTaggedSitesTask(selectedTasks);
+  }
+
+
+  const customRadimadeTable = () => {
+    return (
+      <>
+        <div className='subheading' >
+          Select Task
+        </div>
+        <GlobalTooltip ComponentId='843' />
+      </>
+    )
+  }
+
+
   /////////folara editor function start//////////
   const HtmlEditorCallBack = (items: any) => {
     console.log(items);
@@ -497,6 +866,18 @@ const EditDocumentpanel = (props: any) => {
                   <input type="text" className="form-control" value={EditdocumentsData?.Year} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Year: e.target.value })} />
 
                 </div>
+                <div className="input-group mx-4">
+                  <label className="full-width">Status</label>
+                  <select className="form-select" defaultValue={EditdocumentsData?.Status} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Status: e.target.value })}>
+                    {Status.map(function (h: any, i: any) {
+                      return (
+                        <option key={i}
+                          selected={EditdocumentsData?.Status == h}
+                          value={h} >{h}</option>
+                      )
+                    })}
+                  </select>
+                </div>
 
                 <div className="input-group">
                   <label className="full-width">Item Rank</label>
@@ -512,14 +893,83 @@ const EditDocumentpanel = (props: any) => {
                 </div>
               </div>
               <div className='row mt-3'>
-                <div className="col-sm-6">
+                <div className="col-sm-6 mb-3">
                   <div className='input-group'>
                     <label className="full-width ">Title </label>
                     <input type="text" className="form-control" value={EditdocumentsData?.Title}
                       onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value })}
                     />
                   </div>
-                  {/* -------For Project--- */}
+                </div>
+                {/* -------For Task--- */}
+                <div className="col-sm-6 mb-3">
+                  <div className="input-group">
+                    <label className="full_width">Task</label>
+                    {TaggedSitesTask != undefined && TaggedSitesTask.length == 1 ? (
+                      <div className="w-100">
+                        {TaggedSitesTask?.map((items: any, Index: any) => (
+                          <div className="full-width replaceInput alignCenter" key={Index}>
+                            <a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items.Id}&Site=${items.siteType}`} className="textDotted hreflink" data-interception="off" target="_blank">
+                              {items?.Title}
+                            </a>
+                            <span className="input-group-text" placeholder="Task" >
+                              <span className="bg-dark svg__icon--cross svg__iconbox" onClick={() => DeleteCrossIconDataForTask(items?.Id, items.siteType)}></span>
+                              <span title="Task" onClick={(e) => openTaskPopup("Task")} className="svg__iconbox svg__icon--editBox" ></span>
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (<>
+                      <input type="text" className="form-control" placeholder="Search Task Here" onChange={(e) => autoSuggestionForTask(e)} />
+                      <span className="input-group-text" placeholder="Task">
+                        <span title="Task" onClick={(e) => openTaskPopup("Task")} className="svg__iconbox svg__icon--editBox" ></span>
+                      </span>
+                    </>
+                    )}
+
+                    {searchedTaskData?.length > 0 && (
+                      <div className="SmartTableOnTaskPopup">
+                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                          {searchedTaskData.map(
+                            (suggestion: any, index: any) => (
+                              <li
+                                className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                key={index}
+                                onClick={() =>
+                                  handleSuggestionforTask(suggestion)
+                                }
+                              >
+                                {suggestion?.Title}
+                              </li>
+                            )
+                          )}
+                        </ul>
+                      </div>
+                    )}
+
+                    <div className="col-sm-12  inner-tabb">
+                      {TaggedSitesTask != undefined && TaggedSitesTask.length > 1 ? (
+                        <div className="w=100">
+                          {TaggedSitesTask?.map((items: any, Index: any) => (
+                            <div className="block d-flex justify-content-between mb-1" key={Index} >
+                              <a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items.Id}&Site=${items.siteType}`} className="wid-90 light" data-interception="off" target="_blank" >
+                                {items?.Title}
+                              </a>
+                              <a className="text-end">
+                                {" "}
+                                <span className="bg-light svg__icon--cross svg__iconbox" onClick={() => DeleteCrossIconDataForTask(items?.Id, items.siteType)} ></span>
+                              </a>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  </div>
+                </div>
+                {/* -------For Project--- */}
+                <div className="col-sm-6 mb-3">
                   <div className="input-group">
                     <label className="full_width">Project</label>
 
@@ -631,15 +1081,15 @@ const EditDocumentpanel = (props: any) => {
                       )}
                     </div>
                   </div>
-
                 </div>
-                <div className="col-sm-6">
+                {/* -------For Portfolio--- */}
+                <div className="col-sm-6 mb-3">
                   <div className="input-group">
                     <label className="form-label full-width">
                       Portfolios
                     </label>
-                    {EditdocumentsData?.Portfolios != undefined && EditdocumentsData?.Portfolios?.length == 1 ? (
-                      EditdocumentsData?.Portfolios?.map((portfolio: any, index: any) => {
+                    {PortfolioData != undefined && PortfolioData?.length == 1 ? (
+                      PortfolioData?.map((portfolio: any, index: any) => {
 
                         return (
                           <div
@@ -674,30 +1124,31 @@ const EditDocumentpanel = (props: any) => {
                           </div>
                         )
                       })
-                    ) : (
-                      <>
+                    ) :
+                      (<>
                         <input
                           type="text"
                           className="form-control"
-                          readOnly
+                          placeholder="Search Portfolio Here"
+                          onChange={(e) => autoSuggestionForPortfolio(e)}
                         />
-                        <span
-                          className="input-group-text"
-                          placeholder="Linked Component Task Popup"
-                        >
+                        <span className="input-group-text" placeholder="Portfolios">
                           <span
-                            onClick={(e) => opencomonentservicepopup()
-                            }
+                            title="Portfolio"
+                            onClick={(e) => opencomonentservicepopup()}
                             className="svg__iconbox svg__icon--editBox"
                           ></span>
                         </span>
                       </>
-                    )}
+                      )
+
+
+                    }
 
                     <div className="col-sm-12  inner-tabb">
-                      {EditdocumentsData?.Portfolios != undefined && EditdocumentsData?.Portfolios?.length > 1 ? (
+                      {PortfolioData != undefined && PortfolioData?.length > 1 ? (
                         <div className="w=100">
-                          {EditdocumentsData?.Portfolios?.map((itemss: any, Index: any) => (
+                          {PortfolioData?.map((itemss: any, Index: any) => (
                             <div
                               className="block d-flex justify-content-between mb-1"
                               key={Index}
@@ -725,38 +1176,33 @@ const EditDocumentpanel = (props: any) => {
                       ) : (
                         ""
                       )}
+
+                      {searchedPortfolioDaata?.length > 0 && (
+                        <div className="SmartTableOnTaskPopup">
+                          <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                            {searchedPortfolioDaata.map(
+                              (suggestions: any, index: any) => (
+                                <li
+                                  className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                  key={index}
+                                  onClick={() =>
+                                    handleSuggestionforPortfolio(suggestions)
+                                  }
+                                >
+                                  {suggestions?.Title}
+                                </li>
+                              )
+                            )}
+                          </ul>
+                        </div>
+                      )}
+
                     </div>
-
-                    {/* {EditdocumentsData?.Portfolios?.length == 0 && (
-                    <>
-                      <input
-                        type="text"
-                        className="form-control"
-                        readOnly
-                      />
-                      <span
-                        className="input-group-text"
-                        placeholder="Linked Component Task Popup"
-                      >
-                        <span
-                          onClick={(e) => opencomonentservicepopup()
-                          }
-                          className="svg__iconbox svg__icon--editBox"
-                        ></span>
-                      </span>
-                    </>
-                  )} */}
-
-                    {/* {EditdocumentsData?.Portfolios?.length == 0 &&
-
-                    <input type="text" className="form-control" readOnly />}
-                  <span className="input-group-text" title="Linked Component Task Popup">
-                    <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
-                  </span> */}
-                  </div></div>
+                  </div>
+                </div>
 
               </div>
-              
+
 
               {/* ------end project--- */}
 
@@ -887,16 +1333,19 @@ const EditDocumentpanel = (props: any) => {
       </Panel>
       {isopencomonentservicepopup &&
         <ServiceComponentPortfolioPopup
+          props={EditdocumentsData}
           Dynamic={props.AllListId}
           ComponentType={"Component"}
-          Call={ComponentServicePopupCallBack}
-
+          selectionType={"Multi"}
+          Call={(Call: any, type: any, functionType: any) => {
+            callServiceComponents(Call, type, functionType);
+          }}
         />
       }
 
       {isopenprojectservicepopup &&
         <ServiceComponentPortfolioPopup
-          props={projectdata}
+          props={EditdocumentsData}
           Dynamic={props.AllListId}
           ComponentType={"Component"}
           selectionType={"Multi"}
@@ -910,8 +1359,11 @@ const EditDocumentpanel = (props: any) => {
         />
       }
 
+      <Panel isOpen={isopenTaskpopup} isBlocking={false} onDismiss={() => setisopenTaskpopup(false)} type={PanelType.large} onRenderHeader={customRadimadeTable}>
+        <ReadyMadeTable AllListId={AllListId} configration={"AllAwt"} TaskFilter={"PercentComplete lt '0.90'"} usedFor={'editdocument'} callBack={TaskCallback} closepopup={() => setisopenTaskpopup(false)} />
+      </Panel>
+
     </>
   )
 }
 export default EditDocumentpanel;
-

@@ -5,7 +5,6 @@ import { Panel, PanelType } from "office-ui-fabric-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Web, sp } from "sp-pnp-js";
 import PageLoader from "./pageLoader";
-let defaultPortfolioType = "";
 let PortfoliotypeData: any = "";
 let PortfolioColor: any = "";
 let CurrentUserId: any = "";
@@ -21,6 +20,12 @@ const CreateAllStructureComponent = (props: any) => {
     React.useState(true);
   const [count, setCount] = React.useState(0);
   const [loaded, setLoaded] = React.useState(true);
+  const [defaultPortfolioType, setDefaultPortfolioType] =  React.useState(() => {
+    const query = window.location.search;
+    const urlParams = new URLSearchParams(query);
+    const portfolioType = urlParams.get("PortfolioType");
+    return portfolioType || "Component";
+  });
   const [components, setComponents] = React.useState<any>([
     {
       id: 1,
@@ -36,18 +41,18 @@ const CreateAllStructureComponent = (props: any) => {
   ]);
   const [Feature, setFeature] = React.useState([{ id: 1, value: "" }]);
 
-  query = window.location.search;
-  const urlParams = new URLSearchParams(query);
-  const portfolioType = urlParams.get("PortfolioType");
-  if (
-    portfolioType !== undefined &&
-    portfolioType != null &&
-    portfolioType != ""
-  ) {
-    defaultPortfolioType = portfolioType;
-  } else {
-    defaultPortfolioType = "Component";
-  }
+  // query = window.location.search;
+  // const urlParams = new URLSearchParams(query);
+  // const portfolioType = urlParams.get("PortfolioType");
+  // if (
+  //   portfolioType !== undefined &&
+  //   portfolioType != null &&
+  //   portfolioType != ""
+  // ) {
+  //   defaultPortfolioType = portfolioType;
+  // } else {
+  //   defaultPortfolioType = "Component";
+  // }
   React.useEffect(() => {
     if (props.SelectedItem != undefined) {
       if (props.SelectedItem.PortfolioType?.Title == "Component") {
@@ -59,7 +64,7 @@ const CreateAllStructureComponent = (props: any) => {
       }
       if (props.SelectedItem.PortfolioType?.Title == "SubComponent") {
         isDisableSub = true;
-        defaultPortfolioType = "";
+        setDefaultPortfolioType("");
         setCount(count + 1);
       }
     }
@@ -226,7 +231,18 @@ const CreateAllStructureComponent = (props: any) => {
           PortfolioStructureId[0] === undefined
             ? 1
             : PortfolioStructureId[0]?.PortfolioLevel + 1;
-        let PortfolioStr = "C" + level;
+            let PortfolioStr;
+            if(defaultPortfolioType==="Service")
+              {
+                PortfolioStr = "S" + level;
+              }
+            else if(defaultPortfolioType==="Events")
+                {
+                  PortfolioStr = "E" + level;
+                }
+            else{
+                PortfolioStr = "C" + level;
+              }
         const componentItem = {
           Item_x0020_Type: "Component",
           Title: component?.value,
@@ -606,7 +622,7 @@ const CreateAllStructureComponent = (props: any) => {
       //     }
       // });
       props.Close(hierarchyData);
-      defaultPortfolioType = "";
+      setDefaultPortfolioType("");
       setLoaded(true);
       alert("Hierarchy saved successfully!");
     } catch (error) {
@@ -647,7 +663,7 @@ const CreateAllStructureComponent = (props: any) => {
         "Item_x0020_Type",
         "PortfolioStructureID",
         "Parent/Id",
-        "PortfolioType/Id",
+        "PortfolioType/ID",
         "PortfolioType/Title"
       )
       .expand("Parent,PortfolioType")
@@ -793,7 +809,7 @@ const CreateAllStructureComponent = (props: any) => {
   const CheckPortfolioType = (item: any) => {
     PortfoliotypeData = item;
     PortfolioColor = item?.Color;
-    defaultPortfolioType = item?.Title;
+    setDefaultPortfolioType(item?.Title); 
     setCount(count + 1);
   };
   return (
@@ -971,7 +987,7 @@ const CreateAllStructureComponent = (props: any) => {
                     )}
                   </div>
                 )}
-                <div className="mt-2 ps-4">
+                <div className="mt-2">
                   {component?.SubComponent?.map(
                     (Subcomponent: any, indexSub: number) => (
                       <div key={Subcomponent.id} className="form-group">
@@ -1078,7 +1094,7 @@ const CreateAllStructureComponent = (props: any) => {
                           isDisableSub == true ||
                           props?.SelectedItem?.Item_x0020_Type ==
                           "SubComponent") && (
-                            <div className="mt-2 ps-4">
+                            <div className="mt-2">
                               {Subcomponent?.Feature?.map(
                                 (Features: any, indexFea: any) => (
                                   <div key={Features.id} className="form-group">
@@ -1164,7 +1180,7 @@ const CreateAllStructureComponent = (props: any) => {
                   )}
                 </div>
                 {
-                  <div className="mt-2 ps-4">
+                  <div className="mt-2">
                     {component?.Feature?.map((feature: any, featureIndex: number) => (
                       <div key={feature.id} className="form-group">
                         {(
@@ -1241,7 +1257,9 @@ const CreateAllStructureComponent = (props: any) => {
             ))}
           </div>
 
-          <footer className="modal-footer mt-2">
+         
+        </div>
+        <footer className="modal-footer mt-2">
             {components[0].value != "" || props.SelectedItem != undefined ? (
               <button className="btn btn-primary" onClick={handleSave}>
                 Save
@@ -1256,7 +1274,6 @@ const CreateAllStructureComponent = (props: any) => {
               </button>
             )}
           </footer>
-        </div>
       </div>
       {!loaded && <PageLoader />}
 

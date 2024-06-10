@@ -41,6 +41,7 @@ import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
 import SmartPriorityHover from "./SmartPriorityHover";
+import TaskDetailsComponent from "./DesignTaskTemplate";
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -2422,6 +2423,7 @@ const EditTaskPopup = (Items: any) => {
         StatusID: any
     ) => {
         let tempArray: any = [];
+        let updateUserArray1: any = [];
         filterArray.map((TeamItems: any) => {
             taskUsers?.map((TaskUserData: any) => {
                 if (TeamItems.Id == TaskUserData.AssingedToUserId) {
@@ -2432,16 +2434,14 @@ const EditTaskPopup = (Items: any) => {
                         ) {
                             tempArray.push(TaskUserData);
                             EditData.TaskAssignedUsers = tempArray;
-                            let updateUserArray1: any = [];
-                            updateUserArray1.push(tempArray[0].AssingedToUser);
+                            updateUserArray1.push(TaskUserData.AssingedToUser);
                             setTaskAssignedTo(updateUserArray1);
                         }
                     } else {
                         if (TaskUserData.TimeCategory == filterType) {
                             tempArray.push(TaskUserData);
                             EditData.TaskAssignedUsers = tempArray;
-                            let updateUserArray1: any = [];
-                            updateUserArray1.push(tempArray[0].AssingedToUser);
+                            updateUserArray1.push(TaskUserData.AssingedToUser);
                             setTaskAssignedTo(updateUserArray1);
                         } else {
                             if (tempArray?.length == 0) {
@@ -2750,16 +2750,18 @@ const EditTaskPopup = (Items: any) => {
                             ReactDOM.render(reactElement, containerDiv);
 
                             const SendMessage = `
+                           <div style="border-top: 5px solid #2f5596">
                             <span>${CommonMsg}</span> 
                             <p></p>
                             <span>
-                            Task Link:  
+                           Task Title:  
                             <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
                             ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
                             </a>
                             </span>
                             <p></p>
                             <span>${containerDiv.innerHTML}</span>
+                           </div>
                             
                             `;
 
@@ -3012,7 +3014,9 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.projectStructerId = structureiddata;
                                     Items.Call(dataEditor, "UpdatedData");
                                 } else {
+                                    if (usedFor !== "TimeSheetPopup") {
                                     Items.Call(DataJSONUpdate, "UpdatedData");
+                                    }
                                 }
                             } else {
                                 if (usedFor !== "TimeSheetPopup") {
@@ -3308,7 +3312,6 @@ const EditTaskPopup = (Items: any) => {
         
 
         let UpdateDataObject: any = {
-            IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : workingToday,
             workingThisWeek: EditData.workingThisWeek
                 ? EditData.workingThisWeek
                 : null,
@@ -3356,8 +3359,8 @@ const EditTaskPopup = (Items: any) => {
                     : null,
             Mileage: EditData.Mileage ? EditData.Mileage : "",
             AssignedToId: {
-                results:  AssignedToIds != undefined &&  AssignedToIds?.length > 0
-                    ?  AssignedToIds
+                results: AssignedToIds != undefined && AssignedToIds?.length > 0
+                    ? AssignedToIds
                     : [],
             },
             ResponsibleTeamId: {
@@ -3485,8 +3488,8 @@ const EditTaskPopup = (Items: any) => {
                 storeInWorkingAction.InformationData = [...storeData]
                 oldWorkingAction = oldWorkingAction.filter((type: any) => type?.Title != "WorkingDetails");   
                 // let defaultTemp: any=[]
-                if(oldWorkingAction?.length==0){
-                    oldWorkingAction= [
+                if (oldWorkingAction?.length == 0) {
+                    oldWorkingAction = [
                         {
                             Title: "Bottleneck",
                             InformationData: []
@@ -3502,7 +3505,7 @@ const EditTaskPopup = (Items: any) => {
                     ] 
                 }
                 setWorkingAction([...oldWorkingAction, storeInWorkingAction]);
-                setWorkingToday(true)
+                // setWorkingToday(true)
                 // setusersAssignedIDs(assigneduserid)
             }           
 
@@ -4696,7 +4699,7 @@ const EditTaskPopup = (Items: any) => {
         let tempArray: any = [];
         if (searchedKey?.length > 0) {
             AllProjectData?.map((itemData: any) => {
-                if (itemData.Title.toLowerCase().includes(searchedKey.toLowerCase())) {
+                if (itemData.Path.toLowerCase().includes(searchedKey.toLowerCase()) || itemData.TaskID.toLowerCase().includes(searchedKey.toLowerCase())) {
                     tempArray.push(itemData);
                 }
             });
@@ -6730,7 +6733,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <span className="svg__iconbox svg__icon--editBox"></span>
                                                         </span>
                                                         {SearchedProjectData?.length > 0 ? (
-                                                            <div className="SmartTableOnTaskPopup">
+                                                            <div className="SmartTableOnTaskPopup" style={{ width: "max-content" }}>
                                                                 <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                     {SearchedProjectData.map((item: any) => {
                                                                         return (
@@ -6741,7 +6744,20 @@ const EditTaskPopup = (Items: any) => {
                                                                                     SelectProjectFromAutoSuggestion([item])
                                                                                 }
                                                                             >
-                                                                                <a>{item?.Path}</a>
+                                                                                <a>
+                                                                                    <span>
+                                                                                        {item?.Item_x0020_Type == "Sprint" ?
+                                                                                            <div title={item?.Item_x0020_Type} style={{ backgroundColor: `${item?.PortfolioType?.Color}` }} className={"Dyicons me-1"}>
+                                                                                                X
+                                                                                            </div>
+                                                                                            :
+                                                                                            <div title={item?.Item_x0020_Type} style={{ backgroundColor: `${item?.PortfolioType?.Color}` }} className={"Dyicons me-1"}>
+                                                                                                P
+                                                                                            </div>
+                                                                                        }
+                                                                                    </span>
+                                                                                    {item?.TaskID}-{item?.Path}
+                                                                                </a>
                                                                             </li>
                                                                         );
                                                                     })}
@@ -7219,17 +7235,6 @@ const EditTaskPopup = (Items: any) => {
                                                 ) : null}
                                             </div>
                                         </div>
-                                        {/* <div className="Sitecomposition mb-3">
-                                            <a className="sitebutton bg-fxdark alignCenter justify-content-between">
-                                                <span className="alignCenter">
-                                                    <span className="svg__iconbox svg__icon--docx"></span>
-                                                    <span className="mx-2">Submit EOD Report</span>
-                                                </span>
-                                                <span className="svg__iconbox svg__icon--editBox hreflink" title="Submit EOD Report Popup"
-                                                    onClick={() => setOpenEODReportPopup(true)}>
-                                                </span>
-                                            </a>
-                                        </div> */}
                                     </div>
                                     <div className="col-md-4">
                                         {/* This is used for bottleneck  */}
@@ -7301,7 +7306,7 @@ const EditTaskPopup = (Items: any) => {
                                             {WorkingAction?.map((WAItemData, ItemIndex) => {
                                                 if (WAItemData.Title === "Bottleneck" && WAItemData?.InformationData?.length > 0) {
                                                     return (
-                                                        <div className="border p-1 mt-1" key={ItemIndex}>
+                                                        <div className="border px-1 mt-1" key={ItemIndex}>
                                                             {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: any) => (
                                                                 <div className="align-content-center alignCenter justify-content-between py-1" key={InfoIndex}>
                                                                     <div className="alignCenter">
@@ -7350,12 +7355,11 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 && (
-                                                                            <span onClick={() => openBottleneckPopup("Bottleneck")}>
-                                                                                <span
-                                                                                    title="Add Comment"
-                                                                                    className="svg__iconbox svg__icon--Plus"
-                                                                                ></span>
-                                                                            </span>
+                                                                            <span
+                                                                                onClick={() => openBottleneckPopup("Bottleneck")}
+                                                                                title="Add User Popup"
+                                                                                className="svg__iconbox svg__icon--Plus"
+                                                                            ></span>
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -7436,13 +7440,14 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                 )}
                                             </div>
+
                                             {WorkingAction?.map((WAItemData, ItemIndex) => {
                                                 if (
                                                     WAItemData.Title === "Attention" &&
                                                     WAItemData?.InformationData?.length > 0
                                                 ) {
                                                     return (
-                                                        <div className="border p-1 mt-1" key={ItemIndex}>
+                                                        <div className="border px-1 mt-1" key={ItemIndex}>
                                                             {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: any) => (
                                                                 <div
                                                                     className="align-content-center alignCenter justify-content-between py-1"
@@ -7463,7 +7468,6 @@ const EditTaskPopup = (Items: any) => {
                                                                         )}
                                                                         <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
                                                                     </div>
-
                                                                     <div className="alignCenter">
                                                                         <span
                                                                             onClick={() =>
@@ -7515,12 +7519,10 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 ? (
-                                                                            <span onClick={() => openBottleneckPopup("Attention")}>
-                                                                                <span
-                                                                                    title="Add Comment"
-                                                                                    className="svg__iconbox svg__icon--Plus"
-                                                                                ></span>
-                                                                            </span>
+                                                                            <span onClick={() => openBottleneckPopup("Attention")}
+                                                                                title="Add User Popup"
+                                                                                className="svg__iconbox svg__icon--Plus"
+                                                                            ></span>
                                                                         ) : null}
                                                                     </div>
                                                                 </div>
@@ -7531,7 +7533,7 @@ const EditTaskPopup = (Items: any) => {
                                                 return null;
                                             })}
                                         </div>
-                                        {/* //////////////////////////////hello/////////////////////////// */}
+                                        {/* //////////////////////////////This is phone section/////////////////////////// */}
                                         <div className="col mt-2 ps-0">
                                             <div className="input-group">
                                                 <label className="form-label full-width">
@@ -7540,19 +7542,19 @@ const EditTaskPopup = (Items: any) => {
                                                 {WorkingAction?.length > 0 ? <> {WorkingAction?.map((WAItemData, ItemIndex) => {
                                                     if ((WAItemData.Title === "Phone") && (WAItemData?.InformationData?.length === 0 || WAItemData?.InformationData?.length > 1)) {
                                                         return (
-                                                            <>   <input
+                                                            <>
+                                                                <input
                                                                 type="text"
                                                                 value={PhoneSearchKey}
                                                                 className="form-control"
                                                                 placeholder="Tag user for Phone"
                                                                 onChange={(e) => autoSuggestionsForApprover(e, "Phone")}
                                                                 key={ItemIndex}
-                                                            /><span className="input-group-text" onClick={() => openBottleneckPopup("Phone")}>
-
+                                                                />
+                                                                <span className="input-group-text" onClick={() => openBottleneckPopup("Phone")}>
                                                                     <span title="Edit" className="svg__iconbox svg__icon--editBox"></span>
-
-                                                                </span></>
-
+                                                                </span>
+                                                            </>
                                                         );
                                                     }
                                                     return null;
@@ -7590,7 +7592,7 @@ const EditTaskPopup = (Items: any) => {
                                             {WorkingAction?.map((WAItemData, ItemIndex) => {
                                                 if (WAItemData.Title === "Phone" && WAItemData?.InformationData?.length > 0) {
                                                     return (
-                                                        <div className="border p-1 mt-1" key={ItemIndex}>
+                                                        <div className="border px-1 mt-1" key={ItemIndex}>
                                                             {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: any) => (
                                                                 <div className="align-content-center alignCenter justify-content-between py-1" key={InfoIndex}>
                                                                     <div className="alignCenter">
@@ -7639,12 +7641,11 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 ? (
-                                                                            <span onClick={() => openBottleneckPopup("Phone")}>
-                                                                                <span
-                                                                                    title="Add Comment"
-                                                                                    className="svg__iconbox svg__icon--Plus"
-                                                                                ></span>
-                                                                            </span>
+                                                                            <span
+                                                                                onClick={() => openBottleneckPopup("Phone")}
+                                                                                title="Add User Popup"
+                                                                                className="svg__iconbox svg__icon--Plus"
+                                                                            ></span>
                                                                         ) : null}
                                                                     </div>
                                                                 </div>
@@ -7683,7 +7684,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="row py-3">
+                                {DesignStatus !=true ?<div className="row py-3">
                                     <div
                                         className={
                                             IsShowFullViewImage != true
@@ -7923,7 +7924,39 @@ const EditTaskPopup = (Items: any) => {
                                             </>
                                         ) : null}
                                     </div>
-                                </div>
+                                </div>:
+                                <div className="row py-3">
+                                 {EditData.Id != null &&<TaskDetailsComponent   data={
+                                                        EditData?.FeedBackBackup?.length > 0
+                                                            ? EditData?.FeedBackBackup[0]
+                                                                ?.FeedBackDescriptions
+                                                            : []
+                                                    }
+                                                    callBack={CommentSectionCallBack}
+                                                    allUsers={taskUsers}
+                                                    ApprovalStatus={ApprovalStatus}
+                                                    SmartLightStatus={SmartLightStatus}
+                                                    SmartLightPercentStatus={SmartLightPercentStatus}
+                                                    Context={Context}
+                                                    FeedbackCount={FeedBackCount}
+                                                    SubCommentSectionCallBack={SubCommentSectionCallBack}
+                                                    MakeUpdateDataJSON={MakeUpdateDataJSON}
+                                                    EditData={EditData}
+                                                    TaskListDetails={{
+                                                        SiteURL: siteUrls,
+                                                        ListId: Items.Items.listId,
+                                                        TaskId: Items.Items.Id,
+                                                        TaskDetails: EditData,
+                                                        AllListIdData: AllListIdData,
+                                                        Context: Context,
+                                                        siteType: Items.Items.siteType,
+                                                    }}
+                                                    taskCreatedCallback={UpdateTaskInfoFunction}
+                                                    DesignStatus={DesignStatus}
+                                                    currentUserBackupArray={currentUserBackupArray}
+                                                            />
+                                                }
+                                </div>}
                             </div>
                             <div
                                 className="tab-pane "
@@ -9322,7 +9355,20 @@ const EditTaskPopup = (Items: any) => {
                                                                                                 SelectProjectFromAutoSuggestion([item])
                                                                                             }
                                                                                         >
-                                                                                            <a>{item?.Path}</a>
+                                                                                            <a>
+                                                                                                <span>
+                                                                                                    {item?.Item_x0020_Type == "Sprint" ?
+                                                                                                        <div title={item?.Item_x0020_Type} style={{ backgroundColor: `${item?.PortfolioType?.Color}` }} className={"Dyicons me-1"}>
+                                                                                                            X
+                                                                                                        </div>
+                                                                                                        :
+                                                                                                        <div title={item?.Item_x0020_Type} style={{ backgroundColor: `${item?.PortfolioType?.Color}` }} className={"Dyicons me-1"}>
+                                                                                                            P
+                                                                                                        </div>
+                                                                                                    }
+                                                                                                </span>
+                                                                                                {item?.TaskID}-{item?.Path}
+                                                                                            </a>
                                                                                         </li>
                                                                                     );
                                                                                 })}

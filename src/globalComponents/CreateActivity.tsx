@@ -209,17 +209,21 @@ const CreateActivity = (props: any) => {
     }
     let componentDetails: any = [];
     let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
-    if (results?.AllData?.length > 0) {
+    if (results?.AllData?.length > 0 || results?.AllData?.length == 0) {
       componentDetails = results?.AllData;
       groupedComponentData = results?.GroupByData;
       groupedProjectData = results?.ProjectData;
       AllProjects = results?.FlatProjectData
     }
+    
     let Project :any= {};
     if (globalContextData?.tagProjectFromTable == true) {
       if (props?.UsedFrom == "ProjectManagement" && props?.selectedItem?.Id != undefined && props?.selectedItem?.Item_x0020_Type == "Sprint") {
         Project = AllProjects?.find((ProjectItem: any) => ProjectItem?.Id == props?.selectedItem?.Id);
-      } else {
+      }else if (props?.UsedFrom == "ProjectManagement" && props?.selectedItem?.Id != undefined && props?.selectedItem?.TaskType != undefined) {
+        Project = AllProjects?.find((ProjectItem: any) => ProjectItem?.Id == props?.selectedItem?.Project?.Id);
+      }
+      else {
         Project = AllProjects?.find((ProjectItem: any) => ProjectItem?.Id == globalContextData?.ProjectLandingPageDetails?.Id);
       }
     } else if (selectedItem?.Project?.Id != undefined) {
@@ -453,7 +457,6 @@ const CreateActivity = (props: any) => {
         }
       });
     }
-    props?.selectedItem?.NoteCall
 
 
     if (AllMetadata?.length > 0 && ClientCategoriesData?.length > 0) {
