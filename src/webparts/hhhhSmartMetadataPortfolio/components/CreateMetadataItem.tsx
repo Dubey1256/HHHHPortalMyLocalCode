@@ -247,6 +247,9 @@ export default function CreateMetadataItem(props: any) {
             </>
         );
     }
+    const CloseShowTopicsTypepopup = () => {
+        setTopicsTypePopup(false);
+    }
     const showCreatePopup = () => {
         setIsCreatePopupOpen(true)
         setShowDes(true);

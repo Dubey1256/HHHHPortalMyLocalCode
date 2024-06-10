@@ -9,7 +9,13 @@ export default class TaskNotificationManagement extends React.Component<ITaskNot
       isDarkTheme,
       environmentMessage,
       hasTeamsContext,
-      userDisplayName
+      userDisplayName,
+      TaskUserListID,
+      SmartMetadataListID,
+      Context,
+      siteUrl,
+    PortFolioTypeID,
+
     } = this.props;
 
     return (

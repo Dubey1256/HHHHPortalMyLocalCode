@@ -17,6 +17,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "./Tooltip";
 import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
+import WorkingActionInformation from "./WorkingActionInformation";
 import HighlightableCell from "./GroupByReactTableComponents/highlight";
 import ShowClintCatogory from "./ShowClintCatogory";
 import ReactPopperTooltip from "./Hierarchy-Popper-tooltip";
@@ -483,7 +484,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
                         "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                        "Created", "Modified", "IsTodaysTask", "workingThisWeek"
+                        "Created", "Modified", "IsTodaysTask", "workingThisWeek","WorkingAction"
                     )
                     .expand(
                         "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
@@ -618,6 +619,21 @@ function ReadyMadeTable(SelectedProp: any) {
                                         return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
                                     }, "").trim();
                                 }
+                            } catch (error) {
+                                console.error("An error occurred:", error);
+                            }
+                            try {
+                                if (result?.WorkingAction != null) {
+                                    result.workingActionValue = [];
+                                    result.workingActionValue = JSON.parse(result?.WorkingAction);
+                                    result.workingActionTitle = ""; result.workingActionIcon = {};
+                                    result?.workingActionValue?.forEach((elem: any) => {
+                                        if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
+                                            result.workingActionTitle = result.workingActionTitle ? result.workingActionTitle + " " + elem.Title : elem.Title;
+                                        }
+                                    });
+                                }
+    
                             } catch (error) {
                                 console.error("An error occurred:", error);
                             }
@@ -847,7 +863,7 @@ function ReadyMadeTable(SelectedProp: any) {
             .items
             .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "HelpInformationVerifiedJson", "HelpInformationVerified",
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
-                "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
+                "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete","WorkingAction",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
                 "Created", "Modified", "Deliverables", "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "Sitestagging", "FeatureType/Title", "FeatureType/Id"
             )
@@ -898,6 +914,21 @@ function ReadyMadeTable(SelectedProp: any) {
             result.FeatureTypeTitle = ''
             if (result?.FeatureType?.Id != undefined) {
                 result.FeatureTypeTitle = result?.FeatureType?.Title
+            }
+            try {
+                if (result?.WorkingAction != null) {
+                    result.workingActionValue = [];
+                    result.workingActionValue = JSON.parse(result?.WorkingAction);
+                    result.workingActionTitle = ""; result.workingActionIcon = {};
+                    result?.workingActionValue?.forEach((elem: any) => {
+                        if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
+                            result.workingActionTitle = result.workingActionTitle ? result.workingActionTitle + " " + elem.Title : elem.Title;
+                        }
+                    });
+                }
+
+            } catch (error) {
+                console.error("An error occurred:", error);
             }
             if (result?.DueDate != null && result?.DueDate != undefined) {
                 result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
@@ -1666,6 +1697,25 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: "",
                 size: 100,
                 isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.workingActionTitle,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.workingActionValue?.map((elem: any) => {
+                            const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                            return relevantTitles?.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
+                                <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
+                            );
+                        })}
+                    </div>
+                ),
+                placeholder: "Working Actions",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "workingActionTitle",
+                isColumnVisible: false
             },
             {
                 accessorFn: (row) => row?.PercentComplete,
@@ -2709,7 +2759,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
                 }
             </> :
-                <>{childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length >= 1 ? <button title='Tag Task' className="btn btn-primary" onClick={selectedTask}>Tag Task</button> : <button title='Tag Task' className="btn btn-primary" disabled>Tag Task</button>}</>
+                <>{childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length >= 1 ? <button title='Tag Task' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={selectedTask}>Tag Task</button> : <button title='Tag Task' disabled={true}>Tag Task</button>}</>
             }
 
         </>

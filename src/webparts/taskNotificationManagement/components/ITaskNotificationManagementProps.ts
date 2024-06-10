@@ -7,5 +7,6 @@ export interface ITaskNotificationManagementProps {
   Context:any;
   siteUrl:any;
   PortFolioTypeID:any;
-  SmartMetadataListID:any
+  SmartMetadataListID:any;
+  TaskUserListID:any
 }

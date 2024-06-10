@@ -66,7 +66,7 @@ const EditDocumentpanel = (props: any) => {
       AllListId.TaskTypeID = "21b55c7b-5748-483a-905a-62ef663972dc";
       AllListId.PortFolioTypeID = "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
     }
-
+    
     AllListId.Context = props.AllListId?.context
     if (props?.editData != undefined) {
       LoadMasterTaskList().then((smartData: any) => {
@@ -174,7 +174,7 @@ const EditDocumentpanel = (props: any) => {
           }
 
           if (mastertaskdetails != undefined && mastertaskdetails != null && mastertaskdetails?.length > 0) {
-            mastertaskdetails.map((mastertask: any) => {
+              mastertaskdetails.map((mastertask: any) => {
               if (mastertask?.Item_x0020_Type == "Project" || mastertask?.Item_x0020_Type == "Sprint") {
                 projectDataforsuggestion.push(mastertask)
               }
@@ -186,17 +186,17 @@ const EditDocumentpanel = (props: any) => {
               Data.Portfolios?.map((portfolio: any) => {
                 mastertaskdetails?.map((mastertask: any) => {
                   if (mastertask?.Id == portfolio?.Id && mastertask?.Item_x0020_Type != "Project" && mastertask.Item_x0020_Type != "Sprint") {
-                    portfolioData.push(mastertask);
-                  }
+                  portfolioData.push(mastertask);
+                }
                   if (mastertask?.Id == portfolio?.Id && (mastertask?.Item_x0020_Type == "Project" || mastertask.Item_x0020_Type == "Sprint")) {
-                    projectData.push(mastertask);
-                  }
+                  projectData.push(mastertask);
+                }
                 });
               })
             }
 
             Data.projectData = projectData
-            Data.Portfolios = portfolioData
+            Data.Portfolios  = portfolioData
             setProjectData(projectData)
             setPortfolioData(portfolioData)
             SetAllProjectDaata(projectDataforsuggestion)
@@ -215,7 +215,7 @@ const EditDocumentpanel = (props: any) => {
     } catch (e: any) {
       console.log(e);
     }
-  };
+  }; 
 
   async function updateMultiLookup(
     itemIds: number[],
@@ -268,19 +268,19 @@ const EditDocumentpanel = (props: any) => {
           "Portfolios/Id",
           "Portfolios/Title"
         )
-        .expand("Portfolios", "PortfolioType")
-        .filter("(Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint' or PortfolioType/Title eq 'Component') and Portfolios/Id eq " + props?.editData?.Id)
+      .expand("Portfolios","PortfolioType")
+      .filter("(Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint' or PortfolioType/Title eq 'Component') and Portfolios/Id eq " + props?.editData?.Id)
         .top(4000)
-        .getAll()
+      .getAll()
 
       // Project Data for HHHH Project Management
-      if (componentDetailsDaata.length > 0) {
-        let PxData = componentDetailsDaata?.filter((items: any) => items.Item_x0020_Type == "Project" || items.Item_x0020_Type == "Sprint")
-        let PortfolioData = componentDetailsDaata?.filter((items: any) => items?.PortfolioType?.Title == "Component")
+        if (componentDetailsDaata.length > 0) {
+          let PxData = componentDetailsDaata?.filter((items:any)=>items.Item_x0020_Type =="Project" || items.Item_x0020_Type =="Sprint")
+          let PortfolioData = componentDetailsDaata?.filter((items:any)=>items?.PortfolioType?.Title == "Component")
 
-        setProjectData(PxData)
-        setPortfolioData(PortfolioData)
-      }
+          setProjectData(PxData)
+          setPortfolioData(PortfolioData)
+    }
 
       console.log("data show on componentdetails", componentDetailsDaata);
     } catch (error) {
@@ -493,10 +493,10 @@ const EditDocumentpanel = (props: any) => {
             .map((item: { Id: any }) => item.Id);
           setEditdocumentsData({ ...EditdocumentsData, Portfolios: copyPortfoliosData })
           setisopencomonentservicepopup(false)
-        }
+    }
       } else {
-        setisopencomonentservicepopup(false);
-      }
+      setisopencomonentservicepopup(false);
+    }
       console.log("EditdocumentsData:", EditdocumentsData);
     },
     []
@@ -553,7 +553,7 @@ const EditDocumentpanel = (props: any) => {
       setSearchedPortfolioDaata([]);
     }
   };
-
+  
   const handleSuggestionforTask = (suggestion: any) => {
     // allProjectDaata?.map((items: any) => {
     //   if (items?.Id === suggestion?.Id) {
@@ -593,7 +593,7 @@ const EditDocumentpanel = (props: any) => {
     }
   }
 
-  const DeleteTagPortfolios = async (titleToRemove: any) => {
+  const DeleteTagPortfolios = async(titleToRemove: any) => {
 
     // setEditdocumentsData((prev: any) => {
     //   return {
@@ -681,20 +681,20 @@ const EditDocumentpanel = (props: any) => {
     []
   );
 
-  const DeleteCrossIconDataForTask = async (titleToRemove: any, site: any) => {
+  const DeleteCrossIconDataForTask = async (titleToRemove: any,site:any) => {
     var selectedTasks1 = TaggedSitesTask.filter(
       (itemmm: any) => itemmm.Id !== titleToRemove
     );
     selectedTasks = selectedTasks1
     tempArray.map((item: any) => {
-      item.Task = item?.Task?.filter(
-        (itemmm: any) => itemmm.Id !== titleToRemove
-      );
+        item.Task = item?.Task?.filter(
+          (itemmm: any) => itemmm.Id !== titleToRemove
+        );
       item?.TaskIds?.map((id: any, index: any) => {
         if (id == titleToRemove)
           item?.TaskIds?.splice(index, 1)
       })
-
+         
     })
     console.log("remove data", selectedTasks1);
     setTaggedSitesTask(selectedTasks1);
@@ -799,18 +799,6 @@ const EditDocumentpanel = (props: any) => {
     }
 
     setTaggedSitesTask(selectedTasks);
-  }
-
-
-  const customRadimadeTable = () => {
-    return (
-      <>
-        <div className='subheading' >
-          Select Task
-        </div>
-        <GlobalTooltip ComponentId='843' />
-      </>
-    )
   }
 
 
@@ -967,8 +955,8 @@ const EditDocumentpanel = (props: any) => {
                       )}
                     </div>
                   </div>
-                </div>
-                {/* -------For Project--- */}
+                </div>     
+                  {/* -------For Project--- */}
                 <div className="col-sm-6 mb-3">
                   <div className="input-group">
                     <label className="full_width">Project</label>
@@ -1081,7 +1069,7 @@ const EditDocumentpanel = (props: any) => {
                       )}
                     </div>
                   </div>
-                </div>
+                </div>  
                 {/* -------For Portfolio--- */}
                 <div className="col-sm-6 mb-3">
                   <div className="input-group">
@@ -1133,7 +1121,7 @@ const EditDocumentpanel = (props: any) => {
                           onChange={(e) => autoSuggestionForPortfolio(e)}
                         />
                         <span className="input-group-text" placeholder="Portfolios">
-                          <span
+                        <span
                             title="Portfolio"
                             onClick={(e) => opencomonentservicepopup()}
                             className="svg__iconbox svg__icon--editBox"
@@ -1359,7 +1347,7 @@ const EditDocumentpanel = (props: any) => {
         />
       }
 
-      <Panel isOpen={isopenTaskpopup} isBlocking={false} onDismiss={() => setisopenTaskpopup(false)} type={PanelType.large} onRenderHeader={customRadimadeTable}>
+      <Panel isOpen={isopenTaskpopup} isBlocking={false} onDismiss={() => setisopenTaskpopup(false)} type={PanelType.large} >
         <ReadyMadeTable AllListId={AllListId} configration={"AllAwt"} TaskFilter={"PercentComplete lt '0.90'"} usedFor={'editdocument'} callBack={TaskCallback} closepopup={() => setisopenTaskpopup(false)} />
       </Panel>
 

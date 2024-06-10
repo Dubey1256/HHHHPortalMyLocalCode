@@ -44,7 +44,7 @@ const EditPage = (props: any) => {
               : (taskUsers[0].ItemRank == 0 ? '(0) No Show' : null))))))),
             setData(...taskUsers);
           props.changeHeader(taskUsers[0]?.Page_x002d_Title)
-
+          props?.changeDescription(taskUsers[0]?.Page_x0020_Content)
           setUpdateId(taskUsers[0]?.ID)
 
         }).catch((err: any) => {

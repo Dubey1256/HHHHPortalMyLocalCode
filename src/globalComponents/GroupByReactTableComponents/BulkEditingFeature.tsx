@@ -5,7 +5,8 @@ import ServiceComponentPortfolioPopup from "../EditTaskPopup/ServiceComponentPor
 import SelectedTaskUpdateOnPopup from "./selectedTaskUpdateOnPopup";
 import Picker from "../EditTaskPopup/SmartMetaDataPicker";
 import * as GlobalFunctionForUpdateItem from '../GlobalFunctionForUpdateItems';
-
+import TeamConfigurationCard from "../TeamConfiguration/TeamConfiguration";
+import * as globalCommon from "../../globalComponents/globalCommon";
 
 export const addedCreatedDataFromAWT = (itemData: any, dataToPush: any) => {
     for (let val of itemData) {
@@ -49,7 +50,63 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
     }
     return false;
 };
-
+export function BulkUpdateTeamMember(taskValue: any) {
+    const DDComponentCallBack = (dt: any) => {
+        let updateJsonOfAssignTo: any = [{ "Title": "WorkingDetails", "InformationData": [] }];
+        if (dt?.TeamMemberUsers?.length > 0) {
+            taskValue?.setTeamMember(dt?.TeamMemberUsers)
+        }
+        if (dt?.ResponsibleTeam?.length > 0) {
+            taskValue?.setResponsibleTeamMember(dt?.ResponsibleTeam)
+        }
+        let findAiignUser: any = []
+        extractUniqueUserInformation(dt.dateInfo, findAiignUser, updateJsonOfAssignTo);
+        if (findAiignUser?.length > 0) {
+            taskValue?.setWorkingMember(findAiignUser);
+        }
+        if (updateJsonOfAssignTo?.length > 0) {
+            taskValue?.setWorkingMemberUserJson(updateJsonOfAssignTo)
+        }
+    };
+    function extractUniqueUserInformation(dateInfo: any, findAiignUser: any, updateJsonOfAssignTo: any) {
+        const uniqueIds = new Set();
+        dateInfo.forEach((e: any) => {
+            const workingMembers: any = [];
+            const uniqueMemberIds = new Set();
+            if (e?.userInformation) {
+                e.userInformation?.forEach((e: any) => {
+                    if (e?.AssingedToUser && !uniqueMemberIds?.has(e.AssingedToUser?.Id)) {
+                        uniqueMemberIds.add(e.AssingedToUser.Id);
+                        workingMembers.push({
+                            Id: e.AssingedToUser.Id,
+                            Title: e.AssingedToUser.Title
+                        });
+                    }
+                    if (!uniqueIds.has(e.Id)) {
+                        uniqueIds.add(e.Id);
+                        findAiignUser.push(e);
+                    }
+                });
+            }
+            const workingDateEntry: any = {
+                "WorkingDate": e.originalDate,
+                "WorkingMember": workingMembers
+            };
+            updateJsonOfAssignTo[0]?.InformationData?.push(workingDateEntry);
+        });
+    }
+    return (
+        <>
+            <div className="col-sm-12 pad0">
+                <div className="border col p-2 border-top-0" ng-show="teamUserExpanded">
+                    <div className="taskTeamBox">
+                        <TeamConfigurationCard ItemInfo={{}} AllListId={taskValue?.ContextValue} parentCallback={DDComponentCallBack} />
+                    </div>
+                </div>
+            </div>
+        </>
+    )
+}
 export function BulkUpdateFeatureType(taskValue: any) {
     const handleDrop = (destination: any, event: any) => {
         if (event === 'FeatureType' && destination != undefined) {
@@ -83,7 +140,12 @@ export function BulkUpdateFeatureType(taskValue: any) {
         try {
             const results = await Promise.all(updatePromises);
             console.log("All projects updated successfully!", results);
-            let allData = JSON.parse(JSON.stringify(taskValue?.data))
+            let allData: any = []
+            try {
+                allData = globalCommon.deepCopy(taskValue?.data);
+            } catch (error) {
+                console.log(error)
+            }
             let checkBoolian: any = null;
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
                 if (taskValue?.selectedData?.length > 0) {
@@ -214,7 +276,12 @@ export function CategoriesUpdate(taskValue: any) {
         try {
             const results = await Promise.all(updatePromises);
             console.log("All projects updated successfully!", results);
-            let allData = JSON.parse(JSON.stringify(taskValue?.data))
+            let allData: any = []
+            try {
+                allData = globalCommon.deepCopy(taskValue?.data);
+            } catch (error) {
+                console.log(error)
+            }
             let checkBoolian: any = null;
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
                 if (taskValue?.selectedData?.length > 0) {
@@ -385,31 +452,62 @@ export function DueDateTaskUpdate(taskValue: any) {
         try {
             const results = await Promise.all(updatePromises);
             console.log("All projects updated successfully!", results);
-            let allData = JSON.parse(JSON.stringify(taskValue?.data))
+            let allData: any = []
+            try {
+                allData = globalCommon.deepCopy(taskValue?.data);
+            } catch (error) {
+                console.log(error)
+            }
             let checkBoolian: any = null;
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
                 if (taskValue?.selectedData?.length > 0) {
                     taskValue?.selectedData?.forEach((value: any) => {
-                        value.original.DueDate = dueDate;
-                        value.original.DisplayDueDate = moment(value?.original?.DueDate).format("DD/MM/YYYY");
-                        if (value?.original?.DisplayDueDate == "Invalid date" || "") {
-                            value.original.DisplayDueDate = value?.original?.DisplayDueDate.replaceAll("Invalid date", "");
+                        if (value?.original?.siteType != "Master Tasks") {
+                            value.original.DueDate = dueDate;
+                            value.original.DisplayDueDate = moment(value?.original?.DueDate).format("DD/MM/YYYY");
+                            if (value?.original?.DisplayDueDate == "Invalid date" || "") {
+                                value.original.DisplayDueDate = value?.original?.DisplayDueDate.replaceAll("Invalid date", "");
+                            }
+                            if (value?.original?.DueDate != null && value?.original?.DueDate != undefined) {
+                                value.original.serverDueDate = new Date(value?.original?.DueDate).setHours(0, 0, 0, 0)
+                            }
+                            checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+                        } else {
+                            value.original.DueDate = dueDate;
+                            value.original.DisplayDueDate = moment(value?.original?.DueDate).format("DD/MM/YYYY");
+                            if (value?.original?.DisplayDueDate == "Invalid date" || "") {
+                                value.original.DisplayDueDate = value?.original?.DisplayDueDate.replaceAll("Invalid date", "");
+                            }
+                            if (value?.original?.DueDate != null && value?.original?.DueDate != undefined) {
+                                value.original.serverDueDate = new Date(value?.original?.DueDate).setHours(0, 0, 0, 0)
+                            }
+                            checkBoolian = updatedDataDataFromPortfolios(allData, value?.original);
                         }
-                        if (value?.original?.DueDate != null && value?.original?.DueDate != undefined) {
-                            value.original.serverDueDate = new Date(value?.original?.DueDate).setHours(0, 0, 0, 0)
-                        }
-                        checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+
                     });
                 } else {
-                    task.taskValue.DueDate = dueDate;
-                    task.taskValue.DisplayDueDate = moment(task.taskValue?.DueDate).format("DD/MM/YYYY");
-                    if (task?.taskValue?.DisplayDueDate == "Invalid date" || "") {
-                        task.taskValue.DisplayDueDate = task?.taskValue?.DisplayDueDate.replaceAll("Invalid date", "");
+                    if (task.taskValue?.siteType != "Master Tasks") {
+                        task.taskValue.DueDate = dueDate;
+                        task.taskValue.DisplayDueDate = moment(task.taskValue?.DueDate).format("DD/MM/YYYY");
+                        if (task?.taskValue?.DisplayDueDate == "Invalid date" || "") {
+                            task.taskValue.DisplayDueDate = task?.taskValue?.DisplayDueDate.replaceAll("Invalid date", "");
+                        }
+                        if (task?.taskValue?.DueDate != null && task?.taskValue?.DueDate != undefined) {
+                            task.taskValue.serverDueDate = new Date(task?.taskValue?.DueDate).setHours(0, 0, 0, 0)
+                        }
+                        checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
+                    } else {
+                        task.taskValue.DueDate = dueDate;
+                        task.taskValue.DisplayDueDate = moment(task.taskValue?.DueDate).format("DD/MM/YYYY");
+                        if (task?.taskValue?.DisplayDueDate == "Invalid date" || "") {
+                            task.taskValue.DisplayDueDate = task?.taskValue?.DisplayDueDate.replaceAll("Invalid date", "");
+                        }
+                        if (task?.taskValue?.DueDate != null && task?.taskValue?.DueDate != undefined) {
+                            task.taskValue.serverDueDate = new Date(task?.taskValue?.DueDate).setHours(0, 0, 0, 0)
+                        }
+                        checkBoolian = updatedDataDataFromPortfolios(allData, task?.taskValue);
                     }
-                    if (task?.taskValue?.DueDate != null && task?.taskValue?.DueDate != undefined) {
-                        task.taskValue.serverDueDate = new Date(task?.taskValue?.DueDate).setHours(0, 0, 0, 0)
-                    }
-                    checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
+
                 }
                 if (checkBoolian) {
                     taskValue.setData(allData);
@@ -496,14 +594,22 @@ export function PrecentCompleteUpdate(taskValue: any) {
                     UpdatedData: { PercentComplete: TaskStatus * 100 },
                     Context: taskValue?.ContextValue?.Context,
                 }
-                let UpdatedDataItem: any;
-                let updatePromise: any = await GlobalFunctionForUpdateItem.BulkUpdateTaskInfo(RequiredData).then((resolve: any) => {
-                    UpdatedDataItem = resolve;
-                    console.log("Res my data", resolve);
+                if (elem?.original?.siteType != "Master Tasks") {
+                    let UpdatedDataItem: any;
+                    let updatePromise: any = await GlobalFunctionForUpdateItem.BulkUpdateTaskInfo(RequiredData).then((resolve: any) => {
+                        UpdatedDataItem = resolve;
+                        console.log("Res my data", resolve);
+                        updatePromises.push(updatePromise);
+                    }).catch((error: any) => {
+                        console.error("Error in BulkUpdateTaskInfo:", error);
+                    });
+                } else if (elem?.original?.siteType === "Master Tasks") {
+                    const web = new Web(elem?.original?.siteUrl);
+                    const updatePromise = web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
+                        PercentComplete: TaskStatus,
+                    });
                     updatePromises.push(updatePromise);
-                }).catch((error: any) => {
-                    console.error("Error in BulkUpdateTaskInfo:", error);
-                });
+                }
             };
         } else {
             let RequiredData: any = {
@@ -512,29 +618,53 @@ export function PrecentCompleteUpdate(taskValue: any) {
                 UpdatedData: { PercentComplete: TaskStatus * 100 },
                 Context: taskValue?.ContextValue?.Context,
             }
-            let UpdatedDataItem: any;
-            const updatePromise: any = await GlobalFunctionForUpdateItem.BulkUpdateTaskInfo(RequiredData).then((resolve: any) => {
-                UpdatedDataItem = resolve;
-                console.log("Res my data", resolve);
+            if (task?.taskValue?.siteType != "Master Tasks") {
+                let UpdatedDataItem: any;
+                const updatePromise: any = await GlobalFunctionForUpdateItem.BulkUpdateTaskInfo(RequiredData).then((resolve: any) => {
+                    UpdatedDataItem = resolve;
+                    console.log("Res my data", resolve);
+                    updatePromises.push(updatePromise);
+                }).catch((error: any) => {
+                    console.error("Error in BulkUpdateTaskInfo:", error);
+                });
+            } else if (task?.taskValue?.siteType === "Master Tasks") {
+                const web = new Web(task?.taskValue?.siteUrl);
+                const updatePromise = web.lists.getById(task?.taskValue?.listId).items.getById(task?.taskValue?.Id).update({
+                    PercentComplete: TaskStatus,
+                });
                 updatePromises.push(updatePromise);
-            }).catch((error: any) => {
-                console.error("Error in BulkUpdateTaskInfo:", error);
-            });
+            }
         }
         try {
             const results = await Promise.all(updatePromises);
             console.log("All projects updated successfully!", results);
-            let allData = JSON.parse(JSON.stringify(taskValue?.data))
+            let allData: any = []
+            try {
+                allData = globalCommon.deepCopy(taskValue?.data);
+            } catch (error) {
+                console.log(error)
+            }
             let checkBoolian: any = null;
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
                 if (taskValue?.selectedData?.length > 0) {
                     taskValue?.selectedData?.forEach((value: any) => {
-                        // value.original.PercentComplete = TaskStatus;
-                        checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+                        if (value?.original?.siteType != "Master Tasks") {
+                            value.original.PercentComplete = TaskStatus * 100;
+                            checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+                        } else {
+                            value.original.PercentComplete = TaskStatus * 100;
+                            checkBoolian = updatedDataDataFromPortfolios(allData, value?.original);
+                        }
+
                     });
                 } else {
-                    // task.taskValue.PercentComplete = TaskStatus;
-                    checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
+                    if (task?.taskValue?.siteType != "Master Tasks") {
+                        task.taskValue.PercentComplete = TaskStatus * 100;
+                        checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
+                    } else {
+                        task.taskValue.PercentComplete = TaskStatus * 100;
+                        checkBoolian = updatedDataDataFromPortfolios(allData, task?.taskValue);
+                    }
                 }
                 if (checkBoolian) {
                     taskValue.setData(allData);
@@ -545,14 +675,14 @@ export function PrecentCompleteUpdate(taskValue: any) {
                     updatedAllData = taskValue?.data?.map((elem: any) => {
                         const match = taskValue?.selectedData?.find((match: any) => match?.original?.Id === elem?.Id && match?.original?.siteType === elem?.siteType);
                         if (match) {
-                            // match.original.PercentComplete = TaskStatus;
+                            match.original.PercentComplete = TaskStatus * 100;
                             return match?.original;
                         } return elem;
                     });
                 } else {
                     updatedAllData = taskValue.data.map((elem: any) => {
                         if (task?.taskValue?.Id === elem?.Id && task?.taskValue?.siteType === elem?.siteType) {
-                            // task.taskValue.PercentComplete = TaskStatus;
+                            task.taskValue.PercentComplete = TaskStatus * 100;
                             return task?.taskValue;
                         } return elem;
                     });
@@ -610,52 +740,102 @@ export function ProjectTaskUpdate(taskValue: any) {
         try {
             const results = await Promise.all(updatePromises);
             console.log("All projects updated successfully!", results);
-            let allData = JSON.parse(JSON.stringify(taskValue?.data))
+            let allData: any = []
+            try {
+                allData = globalCommon.deepCopy(taskValue?.data);
+            } catch (error) {
+                console.log(error)
+            }
             let checkBoolian: any = null;
             const makeProjectData = { Id: project?.Id, PortfolioStructureID: project?.PortfolioStructureID, PriorityRank: project?.PriorityRank, Title: project?.Title }
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
                 if (taskValue?.selectedData?.length > 0) {
                     taskValue?.selectedData?.forEach((value: any) => {
-                        if (project.Title != "Untagged project") {
-                            value.original.Project = makeProjectData
-                            value.original.projectStructerId = makeProjectData.PortfolioStructureID;
-                            value.original.ProjectTitle = makeProjectData.Title
-                            value.original.ProjectId = makeProjectData.Id
-                            const title = makeProjectData?.Title || '';
-                            const formattedDueDate = moment(value?.original?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
-                            value.original.joinedData = [];
-                            if (value?.original?.projectStructerId && title || formattedDueDate) {
-                                value.original.joinedData.push(`Project ${value.original?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                        if (value.original?.siteType != "Master Tasks") {
+                            if (project.Title != "Untagged project") {
+                                value.original.Project = makeProjectData
+                                value.original.projectStructerId = makeProjectData.PortfolioStructureID;
+                                value.original.ProjectTitle = makeProjectData.Title
+                                value.original.ProjectId = makeProjectData.Id
+                                const title = makeProjectData?.Title || '';
+                                const formattedDueDate = moment(value?.original?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                                value.original.joinedData = [];
+                                if (value?.original?.projectStructerId && title || formattedDueDate) {
+                                    value.original.joinedData.push(`Project ${value.original?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                                }
+                            } else {
+                                value.original.Project = {}
+                                value.original.projectStructerId = "";
+                                value.original.ProjectTitle = ""
+                                value.original.ProjectId = null
+                                value.original.joinedData = [];
                             }
+                            checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
                         } else {
-                            value.original.Project = {}
-                            value.original.projectStructerId = "";
-                            value.original.ProjectTitle = ""
-                            value.original.ProjectId = null
-                            value.original.joinedData = [];
+                            if (project.Title != "Untagged project") {
+                                value.original.Project = makeProjectData
+                                value.original.projectStructerId = makeProjectData.PortfolioStructureID;
+                                value.original.ProjectTitle = makeProjectData.Title
+                                value.original.ProjectId = makeProjectData.Id
+                                const title = makeProjectData?.Title || '';
+                                const formattedDueDate = moment(value?.original?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                                value.original.joinedData = [];
+                                if (value?.original?.projectStructerId && title || formattedDueDate) {
+                                    value.original.joinedData.push(`Project ${value.original?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                                }
+                            } else {
+                                value.original.Project = {}
+                                value.original.projectStructerId = "";
+                                value.original.ProjectTitle = ""
+                                value.original.ProjectId = null
+                                value.original.joinedData = [];
+                            }
+                            checkBoolian = updatedDataDataFromPortfolios(allData, value?.original);
                         }
-                        checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+
                     });
                 } else {
-                    if (project.Title != "Untagged project") {
-                        task.taskValue.Project = makeProjectData
-                        task.taskValue.projectStructerId = makeProjectData.PortfolioStructureID;
-                        task.taskValue.ProjectTitle = makeProjectData.Title
-                        task.taskValue.ProjectId = makeProjectData.Id
-                        const title = makeProjectData.Title || '';
-                        const formattedDueDate = moment(task?.taskValue?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
-                        task.taskValue.joinedData = [];
-                        if (task?.taskValue?.projectStructerId && title || formattedDueDate) {
-                            task.taskValue.joinedData.push(`Project ${task?.taskValue?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                    if (task?.taskValue?.siteType != "Master Tasks") {
+                        if (project.Title != "Untagged project") {
+                            task.taskValue.Project = makeProjectData
+                            task.taskValue.projectStructerId = makeProjectData.PortfolioStructureID;
+                            task.taskValue.ProjectTitle = makeProjectData.Title
+                            task.taskValue.ProjectId = makeProjectData.Id
+                            const title = makeProjectData.Title || '';
+                            const formattedDueDate = moment(task?.taskValue?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                            task.taskValue.joinedData = [];
+                            if (task?.taskValue?.projectStructerId && title || formattedDueDate) {
+                                task.taskValue.joinedData.push(`Project ${task?.taskValue?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                            }
+                        } else {
+                            task.taskValue.Project = {}
+                            task.taskValue.projectStructerId = "";
+                            task.taskValue.ProjectTitle = ""
+                            task.taskValue.ProjectId = null
+                            task.taskValue.joinedData = [];
                         }
+                        checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
                     } else {
-                        task.taskValue.Project = {}
-                        task.taskValue.projectStructerId = "";
-                        task.taskValue.ProjectTitle = ""
-                        task.taskValue.ProjectId = null
-                        task.taskValue.joinedData = [];
+                        if (project.Title != "Untagged project") {
+                            task.taskValue.Project = makeProjectData
+                            task.taskValue.projectStructerId = makeProjectData.PortfolioStructureID;
+                            task.taskValue.ProjectTitle = makeProjectData.Title
+                            task.taskValue.ProjectId = makeProjectData.Id
+                            const title = makeProjectData.Title || '';
+                            const formattedDueDate = moment(task?.taskValue?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                            task.taskValue.joinedData = [];
+                            if (task?.taskValue?.projectStructerId && title || formattedDueDate) {
+                                task.taskValue.joinedData.push(`Project ${task?.taskValue?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                            }
+                        } else {
+                            task.taskValue.Project = {}
+                            task.taskValue.projectStructerId = "";
+                            task.taskValue.ProjectTitle = ""
+                            task.taskValue.ProjectId = null
+                            task.taskValue.joinedData = [];
+                        }
+                        checkBoolian = updatedDataDataFromPortfolios(allData, task?.taskValue);
                     }
-                    checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
                 }
                 if (checkBoolian) {
                     taskValue.setData(allData);
@@ -778,7 +958,11 @@ const BulkEditingFeature = (props: any) => {
     const [precentComplete, setPrecentComplete] = React.useState([]);
     const [featureTypeItemTiles, setFeatureTypeItemTiles] = React.useState([]);
     const [AllClientCategory, setAllClientCategory] = React.useState([])
-
+    const [teamMember, setTeamMember] = React.useState([])
+    const [responsibleTeamMember, setResponsibleTeamMember] = React.useState([])
+    const [workingMember, setWorkingMember] = React.useState([])
+    const [workingMemberUserJson, setWorkingMemberUserJson] = React.useState([])
+    const [AllTeamUsers, setAllTeamUser] = React.useState([]);
     const selectSubTaskCategory = (Id: any, Title: any) => {
         let catId: any = [...activeCategory];
         const index = catId.findIndex((item: any) => item.Id === Id);
@@ -790,8 +974,6 @@ const BulkEditingFeature = (props: any) => {
         }
         setActiveCategory(catId);
     };
-
-
     const handleDrop = (destination: any, priority: any) => {
         console.log("dragedTaskdragedTask", props?.dragedTask)
         console.log("destinationdestinationdestination", destination)
@@ -818,24 +1000,94 @@ const BulkEditingFeature = (props: any) => {
     }
     //Update Task After Drop
     const UpdateBulkTaskUpdate = async (task: any, priority: any, priorityRank: any) => {
+        const updatePromises: Promise<any>[] = [];
         if (props?.selectedData?.length > 0) {
-            props?.selectedData?.map(async (elem: any) => {
+            for (const elem of props?.selectedData || []) {
                 let web = new Web(elem?.original?.siteUrl);
-                await web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
+                let updatePromise: any = await web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
                     Priority: priority,
                     PriorityRank: priorityRank,
                 }).then((res: any) => {
+                    updatePromise = res
+                    updatePromises.push(updatePromise);
                     console.log("Drop Updated!", res);
                 })
-            })
+            }
         } else {
             let web = new Web(task?.task?.siteUrl);
-            await web.lists.getById(task?.task?.listId).items.getById(task?.task?.Id).update({
+            let updatePromise: any = await web.lists.getById(task?.task?.listId).items.getById(task?.task?.Id).update({
                 Priority: priority,
                 PriorityRank: priorityRank,
             }).then((res: any) => {
+                updatePromise = res
+                updatePromises.push(updatePromise);
                 console.log("Drop Updated", res);
             })
+        }
+
+        try {
+            const results = await Promise.all(updatePromises);
+            console.log("All projects updated successfully!", results);
+            let allData: any = []
+            try {
+                allData = globalCommon.deepCopy(props?.data);
+            } catch (error) {
+                console.log(error)
+            }
+            let checkBoolian: any = null;
+            if (props?.updatedSmartFilterFlatView != true && props?.clickFlatView != true) {
+                if (props?.selectedData?.length > 0) {
+                    props?.selectedData?.forEach((value: any) => {
+                        if (value.original?.siteType != "Master Tasks") {
+                            value.original.Priority = priority;
+                            value.original.PriorityRank = priorityRank;
+                            checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+                        } else {
+                            value.original.Priority = priority;
+                            value.original.PriorityRank = priorityRank;
+                            checkBoolian = updatedDataDataFromPortfolios(allData, value?.original);
+                        }
+                    });
+                } else {
+                    if (task?.task?.siteType != "Master Tasks") {
+                        task.task.Priority = priority;
+                        task.task.PriorityRank = priorityRank;
+                        checkBoolian = addedCreatedDataFromAWT(allData, task?.task);
+                    } else {
+                        task.task.Priority = priority;
+                        task.task.PriorityRank = priorityRank;
+                        checkBoolian = updatedDataDataFromPortfolios(allData, task?.task);
+                    }
+                }
+                if (checkBoolian) {
+                    props.setData(allData);
+                }
+            } else if (props?.updatedSmartFilterFlatView === true || props?.clickFlatView === true) {
+                let updatedAllData: any = []
+                if (props?.selectedData?.length > 0) {
+                    updatedAllData = props?.data?.map((elem: any) => {
+                        const match = props?.selectedData?.find((match: any) => match?.original?.Id === elem?.Id && match?.original?.siteType === elem?.siteType);
+                        if (match) {
+                            match.original.Priority = priority;
+                            match.original.PriorityRank = priorityRank;
+                            // match.original.PercentComplete = TaskStatus;
+                            return match?.original;
+                        } return elem;
+                    });
+                } else {
+                    updatedAllData = props?.data?.map((elem: any) => {
+                        if (task?.task?.Id === elem?.Id && task?.task?.siteType === elem?.siteType) {
+                            task.task.Priority = priority;
+                            task.task.PriorityRank = priorityRank;
+                            // task.taskValue.PercentComplete = TaskStatus;
+                            return task?.task;
+                        } return elem;
+                    });
+                }
+                props.setData((prev: any) => updatedAllData);
+            }
+        } catch (error) {
+            console.error("Error updating projects:", error);
         }
     }
     //ends
@@ -852,13 +1104,14 @@ const BulkEditingFeature = (props: any) => {
         }
     }, []);
     const bulkEditingSettingPopupEvent = () => {
-        if (props?.selectedData.length > 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true && activeCategory?.length === 0)) {
+
+        if (props?.selectedData.length > 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true && activeCategory?.length === 0 && (teamMember?.length === 0 && responsibleTeamMember?.length === 0 && workingMember?.length === 0))) {
             alert("No Tiles are selected")
-        } else if (props?.selectedData.length <= 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true || activeCategory?.length > 0)) {
+        } else if (props?.selectedData.length <= 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true || activeCategory?.length > 0 || (teamMember?.length > 0 || responsibleTeamMember?.length > 0 || workingMember?.length === 0))) {
             alert("No items are selected")
-        } else if (props?.selectedData.length <= 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true && activeCategory?.length === 0)) {
+        } else if (props?.selectedData.length <= 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true && activeCategory?.length === 0 && (teamMember?.length === 0 && responsibleTeamMember?.length === 0 && workingMember?.length === 0))) {
             alert("No items are selected")
-        } else if (props?.selectedData.length > 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true || activeCategory?.length > 0)) {
+        } else if (props?.selectedData.length > 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true || activeCategory?.length > 0 || (teamMember?.length > 0 || responsibleTeamMember?.length > 0 || workingMember?.length === 0))) {
             setBulkEditingSettingPopup(true);
         }
     }
@@ -896,8 +1149,6 @@ const BulkEditingFeature = (props: any) => {
             }));
         }
     };
-
-
     const GetSmartmetadata = async () => {
         var Priority: any = []
         let PrecentComplete: any = [];
@@ -934,9 +1185,20 @@ const BulkEditingFeature = (props: any) => {
         setpriorityRank(Priority)
         setPrecentComplete(PrecentComplete)
     };
+    const getTaskUsers = async () => {
+        let web = new Web(props?.ContextValue?.siteUrl);
+        let taskUsers = [];
+        taskUsers = await web.lists
+            .getById(props?.ContextValue?.TaskUserListID)
+            .items.select("Id", "Email", "Suffix", "Title", "Item_x0020_Cover", "AssingedToUser/Title", "AssingedToUser/EMail", "AssingedToUser/Id", "AssingedToUser/Name", "UserGroup/Id", "ItemType")
+            .expand("AssingedToUser", "UserGroup")
+            .get();
+        setAllTeamUser(taskUsers);
+    };
 
     React.useEffect(() => {
         GetSmartmetadata();
+        getTaskUsers();
     }, [])
 
 
@@ -971,14 +1233,16 @@ const BulkEditingFeature = (props: any) => {
             {props?.bulkEditingCongration?.categories && <div>
                 <CategoriesUpdate activeCategory={activeCategory} selectSubTaskCategory={selectSubTaskCategory} taskValue={props?.dragedTask?.task} data={props?.data} save={save} setActiveTile={setActiveTile} isActive={isActive} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} setData={props?.setData} selectedData={props?.selectedData} ContextValue={props?.ContextValue} categoriesTiles={props?.categoriesTiles} />
             </div>}
-
             {props?.bulkEditingCongration?.FeatureType && <div>
                 <BulkUpdateFeatureType taskValue={props?.dragedTask?.task} setActiveTile={setActiveTile} save={save} isActive={isActive} featureTypeItemTiles={featureTypeItemTiles} selectedData={props?.selectedData} data={props?.data} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} setData={props?.setData} ContextValue={props?.ContextValue} />
             </div>}
-            {bulkEditingSettingPopup && <SelectedTaskUpdateOnPopup dashBoardbulkUpdateCallBack={props?.dashBoardbulkUpdateCallBack} tableId={props?.tableId} DashboardContextData={props?.DashboardContextData} activeCategory={activeCategory} precentComplete={precentComplete} featureTypeItemTiles={featureTypeItemTiles} priorityRank={priorityRank} AllTaskUser={props?.AllTaskUser} save={save} selectedData={props?.selectedData} isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} columns={props?.columns} data={props?.data} setData={props?.setData} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} ContextValue={props?.ContextValue} masterTaskData={props?.masterTaskData} />}
+            {props?.bulkEditingCongration?.teamMember && <div>
+                <BulkUpdateTeamMember setTeamMember={setTeamMember} setResponsibleTeamMember={setResponsibleTeamMember} setWorkingMemberUserJson={setWorkingMemberUserJson} setWorkingMember={setWorkingMember} ContextValue={props?.ContextValue} />
+            </div>}
+            {bulkEditingSettingPopup && <SelectedTaskUpdateOnPopup AllTeamUsers={AllTeamUsers} dashBoardbulkUpdateCallBack={props?.dashBoardbulkUpdateCallBack} tableId={props?.tableId} DashboardContextData={props?.DashboardContextData} activeCategory={activeCategory} precentComplete={precentComplete} featureTypeItemTiles={featureTypeItemTiles} priorityRank={priorityRank} AllTaskUser={props?.AllTaskUser} save={save} selectedData={props?.selectedData} isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} columns={props?.columns} data={props?.data} setData={props?.setData} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} ContextValue={props?.ContextValue} masterTaskData={props?.masterTaskData} teamMember={teamMember} responsibleTeamMember={responsibleTeamMember} workingMember={workingMember} workingMemberUserJson={workingMemberUserJson} />}
             {/* {(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project) && <div onClick={(e) => bulkEditingSettingPopupEvent()}><span className="svg__iconbox svg__icon--edit"></span></div>} */}
-
-            <div className='d-flex justify-content-end mx-2 mb-2'>{(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project || props?.bulkEditingCongration?.FeatureType || props?.bulkEditingCongration?.categories) && <button onClick={(e) => bulkEditingSettingPopupEvent()} className='btn btn-primary'>Bulk Update</button>} <button onClick={(e) => ClearBulkUpdateFeature()} className='btn btn-primary ms-2'>Clear</button></div>
+            <div className='d-flex justify-content-end mx-2 mb-2'>{(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project || props?.bulkEditingCongration?.FeatureType || props?.bulkEditingCongration?.categories || props?.bulkEditingCongration?.teamMember) &&
+                <button onClick={(e) => bulkEditingSettingPopupEvent()} className='btn btn-primary'>Bulk Update</button>} <button onClick={(e) => ClearBulkUpdateFeature()} className='btn btn-primary ms-2'>Clear</button></div>
         </>
     )
 }

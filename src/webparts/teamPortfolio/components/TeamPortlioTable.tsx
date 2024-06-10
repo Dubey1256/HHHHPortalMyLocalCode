@@ -29,6 +29,7 @@ import TrafficLightComponent from "../../../globalComponents/TrafficLightVerific
 import CreateAllStructureComponent from "../../../globalComponents/CreateAllStructure";
 import { myContextValue } from "../../../globalComponents/globalCommon";
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import WorkingActionInformation from "../../../globalComponents/WorkingActionInformation";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -320,7 +321,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
                         "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                        "Created", "Modified", "IsTodaysTask", "workingThisWeek"
+                        "Created", "Modified", "IsTodaysTask", "workingThisWeek", "WorkingAction"
                     )
                     .expand(
                         "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
@@ -457,11 +458,13 @@ function TeamPortlioTable(SelectedProp: any) {
                             }
                             try {
                                 if (result?.Comments != null && result?.Comments != undefined) {
+                                    const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
                                     const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
                                     const commentsFormData = JSON?.parse(cleanedComments);
-                                    result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                                    const searchData = commentsFormData?.reduce((accumulator: any, comment: any) => {
                                         return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
                                     }, "").trim();
+                                    result.commentsSearch = cleanText(searchData);
                                 }
                             } catch (error) {
                                 console.error("An error occurred:", error);
@@ -601,7 +604,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
                         "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                        "Created", "Modified", "IsTodaysTask", "workingThisWeek"
+                        "Created", "Modified", "IsTodaysTask", "workingThisWeek", "WorkingAction"
                     )
                     .expand(
                         "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
@@ -743,12 +746,29 @@ function TeamPortlioTable(SelectedProp: any) {
 
                         try {
                             if (result?.Comments != null && result?.Comments != undefined) {
+                                const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
                                 const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
                                 const commentsFormData = JSON?.parse(cleanedComments);
-                                result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                                const searchData = commentsFormData?.reduce((accumulator: any, comment: any) => {
                                     return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
                                 }, "").trim();
+                                result.commentsSearch = cleanText(searchData);
                             }
+                        } catch (error) {
+                            console.error("An error occurred:", error);
+                        }
+                        try {
+                            if (result?.WorkingAction != null) {
+                                result.workingActionValue = [];
+                                result.workingActionValue = JSON.parse(result?.WorkingAction);
+                                result.workingActionTitle = ""; result.workingActionIcon = {};
+                                result?.workingActionValue?.forEach((elem: any) => {
+                                    if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
+                                        result.workingActionTitle = result.workingActionTitle ? result.workingActionTitle + " " + elem.Title : elem.Title;
+                                    }
+                                });
+                            }
+
                         } catch (error) {
                             console.error("An error occurred:", error);
                         }
@@ -846,7 +866,8 @@ function TeamPortlioTable(SelectedProp: any) {
             portfolioTypeData?.map((elem: any) => {
                 if (isUpdated === "") {
                     filt = "";
-                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(PortfolioType/Title eq '" + elem.Title + "')" }
+                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(PortfolioType/Title eq '" + elem.Title + "' ) or (Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint')" }
+                // else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(PortfolioType/Title eq '" + elem.Title + "')" }
             })
         }
         let web = new Web(ContextValue.siteUrl);
@@ -969,11 +990,13 @@ function TeamPortlioTable(SelectedProp: any) {
             }
             try {
                 if (result?.Comments != null && result?.Comments != undefined) {
+                    const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
                     const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
                     const commentsFormData = JSON?.parse(cleanedComments);
-                    result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                    const searchData = commentsFormData?.reduce((accumulator: any, comment: any) => {
                         return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
                     }, "").trim();
+                    result.commentsSearch = cleanText(searchData);
                 }
             } catch (error) {
                 console.error("An error occurred:", error);
@@ -1287,6 +1310,15 @@ function TeamPortlioTable(SelectedProp: any) {
             setLoaded(true);
         }
     }, []);
+
+    React.useEffect(() => {
+        setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && portfolioColor) {
+                $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
+            }
+        }, 1500)
+    }, [isOpenActivity, isOpenWorkstream, openCompareToolPopup, OpenAddStructurePopup, ActivityPopup]);
 
     React.useEffect(() => {
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
@@ -2738,6 +2770,25 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 size: 100,
                 isColumnVisible: true
+            },         
+            {
+                accessorFn: (row) => row?.workingActionTitle,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.workingActionValue?.map((elem: any) => {
+                            const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                            return relevantTitles?.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
+                                <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
+                            );
+                        })}
+                    </div>
+                ),
+                placeholder: "Working Actions",
+                header: "",
+                resetColumnFilters: false,
+                size: 70,
+                id: "workingActionTitle",
+                isColumnVisible: false
             },
             {
                 accessorFn: (row) => row?.PercentComplete,
@@ -2764,7 +2815,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Progress",
                 resetColumnFilters: false,
                 header: "",
-                size: 55,
+                size: 60,
                 isColumnVisible: false,
                 fixedColumnWidth: true,
             },
@@ -2810,7 +2861,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "SmartPriority",
                 resetColumnFilters: false,
                 header: "",
-                size: 55,
+                size: 60,
                 isColumnVisible: true,
                 fixedColumnWidth: true
             },
@@ -2830,7 +2881,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Priority Rank",
                 resetColumnFilters: false,
                 header: "",
-                size: 55,
+                size: 60,
                 isColumnVisible: false,
                 fixedColumnWidth: true
             },
@@ -3120,7 +3171,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Smart Time",
                 header: "",
                 resetColumnFilters: false,
-                size: 49,
+                size: 60,
                 isColumnVisible: true,
                 fixedColumnWidth: true
             },
@@ -3278,7 +3329,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain1 = () => {
         return (
             <>
-                <div className="subheading alignCenter">
+                <div className="subheading">
                     <>
                         {checkedList != null && checkedList != undefined && checkedList?.SiteIconTitle != undefined && checkedList?.SiteIconTitle != null ? <span className="Dyicons me-2" >{checkedList?.SiteIconTitle}</span> : ''} {`${checkedList != null && checkedList != undefined && checkedList?.Title != undefined && checkedList?.Title != null ? checkedList?.Title
                             + '- Create Child Component' : 'Create Component'}`}</>
@@ -3626,9 +3677,10 @@ function TeamPortlioTable(SelectedProp: any) {
     }
     React.useEffect(() => {
         if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
-            if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
+            if ((childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined) && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Task' && childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Task')) {
                 setActiveCompareToolButton(true);
             } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
+
                 setActiveCompareToolButton(true);
             }
         } else {

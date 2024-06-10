@@ -1,4 +1,4 @@
-import { Panel, PanelType } from "office-ui-fabric-react";
+  import { Panel, PanelType } from "office-ui-fabric-react";
 import { Web } from "sp-pnp-js";
 import React, { useState } from "react";
 import * as Moment from "moment";
@@ -103,11 +103,20 @@ const inlineEditingcolumns = (props: any) => {
 
   React.useEffect(() => {
     updateItemValues();
-  }, [dueDate.editPopup, UpdateFeatureType ,TaskStatusPopup,remark,teamMembersPopup, UpdateEstimatedTime,TaskPriorityPopup,taskCategoriesPopup,props?.item?.TaskCategories?.results]);
-  
+  }, [dueDate.editPopup, UpdateFeatureType, TaskStatusPopup, remark, teamMembersPopup, UpdateEstimatedTime, TaskPriorityPopup, taskCategoriesPopup, props?.item?.TaskCategories?.results]);
+
   React.useEffect(() => {
     updateTaskComments();
   }, [])
+
+  React.useEffect(() => {
+    setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && props.portfolioColor) {
+            $('.ms-Panel-main').css('--SiteBlue', props?.portfolioColor); // Set the desired color value here
+        }
+    }, 1500)
+}, [taskCategoriesPopup]);
 
   const updateItemValues = () => {
     selectedCatTitleVal = [];
@@ -610,7 +619,7 @@ const inlineEditingcolumns = (props: any) => {
         web.lists
           .getById(props?.item?.listId)
           .items.select(
-            "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,Comments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
+            "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,Comments,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
           )
           .expand(
             "AssignedTo,Project,ParentTask,SmartInformation,Author,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
@@ -1024,20 +1033,20 @@ const inlineEditingcolumns = (props: any) => {
       }));
       setWorkingMember(32);
       StatusArray?.map((item: any) => {
-          if (StatusData.value == item.value) {
-              setPercentCompleteStatus(item.status);
-              setTaskStatus(item.taskStatusComment);
-          }
+        if (StatusData.value == item.value) {
+          setPercentCompleteStatus(item.status);
+          setTaskStatus(item.taskStatusComment);
+        }
       });
-  }
-  if (StatusData.value == 90) {
-    setEditData((prevState: any) => ({
-      ...prevState,
-      IsTodaysTask: false,
-      workingThisWeek: false
-    }));
+    }
+    if (StatusData.value == 90) {
+      setEditData((prevState: any) => ({
+        ...prevState,
+        IsTodaysTask: false,
+        workingThisWeek: false
+      }));
       if (EditData.siteType == "Offshore%20Tasks") {
-          setWorkingMember(36);
+        setWorkingMember(36);
       } else if (DesignStatus) {
         setWorkingMember(301);
       } else {
@@ -1048,12 +1057,12 @@ const inlineEditingcolumns = (props: any) => {
         CompletedDate: Moment(new Date()).format("MM-DD-YYYY")
       }));
       StatusArray?.map((item: any) => {
-          if (StatusData.value == item.value) {
-              setPercentCompleteStatus(item.status);
-              setTaskStatus(item.taskStatusComment);
-          }
+        if (StatusData.value == item.value) {
+          setPercentCompleteStatus(item.status);
+          setTaskStatus(item.taskStatusComment);
+        }
       });
-  }
+    }
   };
   const closeTaskStatusUpdatePopup = () => {
     setTaskStatusPopup(false);
@@ -1234,8 +1243,8 @@ const inlineEditingcolumns = (props: any) => {
             onClick={() => setTeamMembersPopup(true)}
             className="hreflink"
           >
-            {" "}
-            <span className="alignCenter">
+            &nbsp;
+            <span className="alignCenter ml-auto">
               <ShowTaskTeamMembers
                 props={props?.item}
                 TaskUsers={props?.TaskUsers}
@@ -1264,7 +1273,8 @@ const inlineEditingcolumns = (props: any) => {
               display: "flex",
               width: "100%",
               height: "100%",
-              gap: "1px"
+              gap: "1px",
+              alignItems: "center"
             }}
             onClick={() => setTaskPriorityPopup(true)}
           >
@@ -1317,8 +1327,8 @@ const inlineEditingcolumns = (props: any) => {
               // }
               if (category?.Title == "Favorite") {
                 return (
-                  <a title="Favorite">
-                    <span className=" svg__iconbox svg__icon--Star alignIcon "></span>
+                  <a title="Favorite" className="alignCenter">
+                    <span className=" svg__iconbox svg__icon--Star"></span>
                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} />  */}
                   </a>
                 );
@@ -1390,7 +1400,7 @@ const inlineEditingcolumns = (props: any) => {
               <span className="alignIcon svg__iconbox svg__icon--cross"></span>
             </a> : ''}
 
-            <a className="pancil-icons hreflink" onClick={() => setUpdateFeatureType(true)}>
+            <a className="pancil-icons ml-auto hreflink" onClick={() => setUpdateFeatureType(true)}>
               <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
             </a>
           </span>
@@ -1480,7 +1490,7 @@ const inlineEditingcolumns = (props: any) => {
           <>&nbsp;</>
           {props?.item?.DisplayDueDate != undefined ? props?.item?.DisplayDueDate : <>&nbsp;</>}
           {showEditPencil && (
-            <a className="pancil-icons">
+            <a className="pancil-icons ml-auto">
               <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
             </a>
           )}
@@ -1863,7 +1873,7 @@ const inlineEditingcolumns = (props: any) => {
          
           {props?.item?.Categories}  &nbsp;
           {showEditPencil && (
-            <a className="pancil-icons">
+            <a className="pancil-icons ml-auto">
               <span className="svg__iconbox svg__icon--editBox"></span>
             </a>
           )}

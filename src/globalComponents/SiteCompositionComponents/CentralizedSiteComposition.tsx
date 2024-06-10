@@ -2001,17 +2001,21 @@ const CentralizedSiteComposition = (Props: any) => {
         UpdateClientCategoriesButtonFunction();
     }
 
-    // this is use for generate Default site icon
-    const getDefaultSiteIcon = (siteName:any) => {
-        const words = siteName.split(" ");
-        if (words.length >= 2) {
-            return words[0][0].toUpperCase() + words[1][0].toUpperCase();
-        } else if (words.length === 1) {
-            return words[0][0].toUpperCase() + (words[0][1] ? words[0][1].toUpperCase() : '');
-        } else {
-            return "";
+
+    // this function is used for generating the suffix of any string data 
+
+    const generateSuffixOfString = (StringValue: String) => {
+        let StringValueSplitData: any = StringValue?.split(" ");
+        let Suffix: string = '';
+        if (StringValueSplitData.length > 1) {
+            Suffix = StringValueSplitData[0].slice(0, 1) + StringValueSplitData[1].slice(0, 1)
+        } else if(StringValueSplitData.length  == 1) {
+            Suffix = StringValueSplitData[0].slice(0, 2)
         }
-    };
+        return Suffix.toUpperCase();
+    }
+
+
     // END of Function Code 
 
     return (
@@ -2025,7 +2029,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 type={PanelType.large}
 
             >
-                <section className="mb-5 modal-body">
+                <section className="mb-5 modal-body clearfix">
                     <div className="Site-composition-and-client-category d-flex full-width">
                         <div className="site-settings-and-site-composition-distributions full-width">
                             <div className="siteColor border p-1 alignCenter">
@@ -2107,13 +2111,12 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                 </td>
                                                                 <td className="m-0 p-0 align-middle" style={{ width: "30%" }}>
                                                                     <div className="alignCenter">
-                                                                        
-                                                                            {!siteData.Item_x005F_x0020_Cover || !siteData.Item_x005F_x0020_Cover.Url ? (
-                                                                                <span className="mx-2 Dyicons me-1">{getDefaultSiteIcon(siteData.Title)}</span>
-                                                                            ) : (
-                                                                                <img src={siteData.Item_x005F_x0020_Cover.Url} className="mx-2 workmember" />
-                                                                            )}
-                                                                            <div>{siteData.Title}</div>
+                                                                        {!siteData.Item_x005F_x0020_Cover || !siteData.Item_x005F_x0020_Cover.Url ? (
+                                                                            <span className="mx-2 Dyicons me-1">{generateSuffixOfString(siteData.Title)}</span>
+                                                                        ) : (
+                                                                            <img src={siteData.Item_x005F_x0020_Cover.Url} className="mx-2 workmember" />
+                                                                        )}
+                                                                        <div>{siteData.Title}</div>
                                                                     </div>
                                                                 </td>
                                                                 <td className="p-1"
@@ -2377,6 +2380,7 @@ const CentralizedSiteComposition = (Props: any) => {
                             </div>
                             <div className="tagged-child-items-table Alltable">
                                 <GlobalCommonTable
+                                    portfolioColor={Props?.portfolioColor}
                                     setLoaded={setLoaded}
                                     AllListId={RequiredListIds}
                                     columns={columns}

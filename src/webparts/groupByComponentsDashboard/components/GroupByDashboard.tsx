@@ -17,6 +17,7 @@ import PageLoader from "../../../globalComponents/pageLoader";
 import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 import InlineEditingcolumns from "../../../globalComponents/inlineEditingcolumns";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
+import WorkingActionInformation from "../../../globalComponents/WorkingActionInformation";
 import TrafficLightComponent from "../../../globalComponents/TrafficLightVerification/TrafficLightComponent";
 var filt: any = "";
 var ContextValue: any = {};
@@ -405,6 +406,25 @@ const GroupByDashboard = (SelectedProp: any) => {
                 header: "",
                 size: 300,
                 isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.workingActionTitle,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.workingActionValue?.map((elem: any) => {
+                            const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                            return relevantTitles?.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
+                                <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
+                            );
+                        })}
+                    </div>
+                ),
+                placeholder: "Working Actions",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "workingActionTitle",
+                isColumnVisible: false
             },
             {
                 accessorFn: (row) => row?.FeatureTypeTitle,
