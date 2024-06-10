@@ -17,7 +17,7 @@ const ContactSearch = (props: any) => {
     const [SelectCreateContact, setSelectCreateContact] = useState(false)
     const [EditPopupflag, setEditPopupflag] = useState(false)
     const [isDisabled, setIsDisabled] = useState(true);
-    const [userEmails, setUserEmails] = useState([]);
+    const [userEmails, setUserEmails]: any = useState([]);
     let webs = new Web(baseUrl);
 
     useEffect(() => {
@@ -159,31 +159,32 @@ const ContactSearch = (props: any) => {
     const sendEmail = () => {
         let emails = '';
         var ContactsNotHavingEmail: any = [];
-        userEmails?.map((item: any) => {
-
-            if (item?.isSelect == true) {
-                userEmails?.map((child: any) => {
-                    if (child?.Email == null) {
-                        ContactsNotHavingEmail.push(child);
-
+        userEmails?.forEach((item: any, index: number) => {
+            if (item.original != undefined && item.original.isSelect === true) {
+                if (item.original.Email == null) {
+                    ContactsNotHavingEmail.push(item.original);
+                }
+                else {
+                    if (index !== userEmails.length - 1 && userEmails.length > 1) {
+                        emails += item.original.Email + ";";
+                    } else {
+                        emails += item.original.Email;
                     }
-                    if (child.Email != null) {
-                        emails += child.Email + ";";
-                    }
-                })
+                }
             }
-
-        })
+        });
         window.location.href = 'mailto:' + emails;
     }
     //********************************End Bulk Email function */
 
     // ***********callback for table***************************************
     const callBackData = (data: any) => {
-        if (data != undefined) {
+        if (data?.length > 0) {
             setIsDisabled(false);
-            data.isSelect = true;
-            setUserEmails([data]);
+            data.map((item: any) => {
+                item.original.isSelect = true
+            })
+            setUserEmails(data);
         } else {
             setUserEmails([]);
             setIsDisabled(true);
@@ -240,7 +241,7 @@ const ContactSearch = (props: any) => {
                     <div className="TableContentSection">
                         <div className='Alltable mt-2 mb-2'>
                             <div className='col-md-12 p-0 '>
-                                <GlobalCommanTable fixedWidthTable={true} columns={columns} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} data={allContactData} hideTeamIcon={true} hideOpenNewTableIcon={true} showHeader={true} callBackData={callBackData} />
+                                <GlobalCommanTable multiSelect={true} fixedWidthTable={true} columns={columns} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} data={allContactData} hideTeamIcon={true} hideOpenNewTableIcon={true} showHeader={true} callBackData={callBackData} />
                             </div>
                         </div>
                     </div>

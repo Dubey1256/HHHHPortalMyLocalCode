@@ -133,13 +133,13 @@ const TopNavigation = (dynamicData: any) => {
       .get();
     console.log(TaskTypeItems);
     TaskTypeItems?.forEach((item: any) => {
-      item.Title = item?.Title.replace(/\b\w/g, (match:any) => match.toUpperCase());
+      item.Title = item?.Title?.replace(/\b\w/g, (match:any) => match.toUpperCase());
       if (item.ownersonly == true) {
-        item.image =`${dynamicData.dynamicData.siteUrl}/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png`;
+        item.image =`${dynamicData?.dynamicData?.siteUrl}/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png`;
       }
       if (item.IsVisible == false) {
         item.image =
-        `${dynamicData.dynamicData.siteUrl}/SitecollectionImages/ICONS/24/do-not-disturb-rounded.png`;
+        `${dynamicData?.dynamicData?.siteUrl}/SitecollectionImages/ICONS/24/do-not-disturb-rounded.png`;
       }
       if (item.ParentID == 0) {
         item.Id = item.ID;
@@ -1032,12 +1032,7 @@ const TopNavigation = (dynamicData: any) => {
                   onClick={() => deleteDataFunction(popupData[0], 'single')}
                 ></span>
                     <span className="text-left" onClick={()=>setVersionHistoryPopup(false)}>
-              {popupData[0]?.Id &&  <VersionHistory
-                                        taskId={popupData[0]?.Id}
-                                        listId={ListId}
-                                        siteUrls={dynamicData.dynamicData.siteUrl}
-                                      RequiredListIds={AllListId}
-                                    />}
+                  {popupData[0]?.Id && <VersionHistory taskId={popupData[0]?.Id} listId={ListId} listName = "TopNavigation" siteUrls={dynamicData.dynamicData.siteUrl} RequiredListIds={AllListId} />}
               </span>
               </div>
          

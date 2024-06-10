@@ -230,6 +230,7 @@ export const UpdateTaskStatusFunction = async (RequiredData: any): Promise<any> 
             const AllTaskUsersData = GetTaskUsersData?.AllUsersData;
             const CurrentUserData = GetTaskUsersData?.CurrentUser;
             const ApproversData = GetTaskUsersData?.ApproversData;
+
             let UpdateDataJSON: any = { PercentComplete: Number(Status) / 100 };
             let TaskCategories: string = ItemDetails?.TaskCategories?.map((item: any) => item.Title).join(', ');
             let TaskCategoriesIds: any = ItemDetails?.TaskCategories?.map((Item: any) => Item.Id);
@@ -402,13 +403,12 @@ export const UpdateTaskStatusFunction = async (RequiredData: any): Promise<any> 
             if (Status >= 5 && Status <= 90) {
                 if (CheckImmediateCategoryTask || CheckEmailCategoryTask) {
                     try {
-                        if (ApproversData?.length > 0) {
-                            AllTaskUsersData?.map((AllUserData: any) => {
-                                if (AllUserData.AssingedToUserId === ItemDetails?.Author?.Id) {
-                                    ReceiverEmail = [AllUserData.Email];
-                                }
-                            })
-                        }
+                        AllTaskUsersData?.map((AllUserData: any) => {
+                            if (AllUserData.AssingedToUserId === ItemDetails?.Author?.Id) {
+                                ReceiverEmail = [AllUserData?.AssingedToUser?.EMail];
+                            }
+                        })
+
                         try {
                             let EmailRequiredData: any = {
                                 ItemDetails: ItemDetails,
@@ -730,7 +730,7 @@ export const SendMSTeamsNotification = async (RequiredData: any) => {
         if (usedFor === "Status") {
             SendMessage = `<p><b>Hi ${ReceiversName},</b> </p></br><p>${SendMSTeamMessage}</p> </br> 
             <p>
-            Task Link:  <a href=${siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + ItemDetails?.Id + "&Site=" + ItemDetails?.siteType}>
+            Task Title:  <a href=${siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + ItemDetails?.Id + "&Site=" + ItemDetails?.siteType}>
              ${ItemDetails?.TaskId}-${ItemDetails?.Title}
             </a>
             </br>
@@ -882,7 +882,7 @@ export const SendApprovalEmailNotificationComponent = (props: any) => {
                     TaskStatus = "Rejected"
                 }
             } else {
-                TaskStatus = `Task Status Is Updated ${ItemDetails.PercentComplete} for `
+                TaskStatus = `Task Status Is Updated`
             }
             if (ItemDetails?.FeedBack?.length > 0) {
                 let FeedItemData: any = JSON.parse(ItemDetails?.FeedBack);
@@ -897,7 +897,7 @@ export const SendApprovalEmailNotificationComponent = (props: any) => {
             const containerDiv = document.createElement('div');
             const reactElement = React.createElement(EmailMessage?.type, EmailMessage?.props);
             ReactDOM.render(reactElement, containerDiv);
-            const FinalMSG = "<style>p>br {display: none;}</style>" + containerDiv.innerHTML;
+            const FinalMSG = "" + containerDiv.innerHTML;
             const EmailProps = {
                 To: ReceiverEmail,
                 Subject: "[ " + ItemDetails?.siteType + " - " + TaskStatus + " ]" + ItemDetails?.Title,
@@ -931,7 +931,7 @@ export const SendApprovalEmailNotificationComponent = (props: any) => {
 const joinObjectValues = (arr: any) => {
     let val = '';
     arr.forEach((element: any) => {
-        val += element.Title + ';'
+        val += element.Title + '; '
     });
     let FinalUserNames: string = '';
     if (val?.length > 14) {
@@ -1020,19 +1020,19 @@ export const SendApprovalEmailNotificationBodyContent = (props: any) => {
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Start Date:</span></b><u></u><u></u></p>
                                         </td>
                                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4px' }}>
-                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["StartDate"] != null && props.items["StartDate"] != undefined ? Moment(props.items["StartDate"]).format("DD-MMMM-YYYY") : ""}</span><u></u><u></u></p>
+                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["StartDate"] != null && props.items["StartDate"] != undefined ? Moment(props.items["StartDate"]).format("DD/MMMM/YYYY") : ""}</span><u></u><u></u></p>
                                         </td>
                                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4px' }}>
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Completion Date:</span></b><u></u><u></u></p>
                                         </td>
                                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4px' }}>
-                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["CompletedDate"] != null && props.items["CompletedDate"] != undefined ? Moment(props.items["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["CompletedDate"] != null && props.items["CompletedDate"] != undefined ? Moment(props.items["CompletedDate"]).format("DD/MMMM/YYYY") : ""}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                                         </td>
                                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4px' }}>
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Due Date:</span></b><u></u><u></u></p>
                                         </td>
                                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4px' }}>
-                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["DueDate"] != null && props.items["DueDate"] != undefined ? Moment(props.items["DueDate"]).format("DD-MMMM-YYYY") : ''}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["DueDate"] != null && props.items["DueDate"] != undefined ? Moment(props.items["DueDate"]).format("DD/MMMM/YYYY") : ''}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                                         </td>
                                     </tr>
                                     <tr>
@@ -1052,7 +1052,7 @@ export const SendApprovalEmailNotificationBodyContent = (props: any) => {
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Created:</span></b><u></u><u></u></p>
                                         </td>
                                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4px' }}>
-                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{Moment(props.items["Created"]).format("DD-MMMM-YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{Moment(props.items["Created"]).format("DD/MMMM/YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                                         </td>
                                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4px' }}>
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Created By:</span></b><u></u><u></u></p>
@@ -1240,7 +1240,7 @@ export const SendApprovalEmailNotificationBodyContent = (props: any) => {
 
 export const SendEmailAndImmediateTaskNotificationBodyContent = (props: any) => {
     return (
-        <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
+        <div id='htmlMailBodyEmail'>
             <div style={{ backgroundColor: "#FAFAFA" }}>
                 <div style={{ width: "900px", backgroundColor: "#fff", padding: "0px 32px", margin: "0 auto" }}>
                     <div style={{ display: "flex", alignItems: "center", padding: "56px 0px" }}>
@@ -1261,7 +1261,7 @@ export const SendEmailAndImmediateTaskNotificationBodyContent = (props: any) => 
                             display: "flex", padding: "8px", justifyContent: "center", alignItems: 'center', gap: "8px", flexShrink: "0", color: "#FFF", borderRadius: "4px",
                             background: " #2F5596", width: "260px", height: "40px", fontFamily: "Segoe UI", fontSize: "14px", fontStyle: "normal", fontWeight: "600", lineHeight: "normal"
                         }}> <a style={{ color: "#fff", textDecorationLine: "underline" }} data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                            href={`${props.siteUrl}/SitePages/Task-Profile.aspx?taskId=` + props?.items?.Id + '&Site=' + props?.items?.siteType}
+                            href={`${props.siteUrl}/SitePages/Task-Profile.aspx?taskId=` + props?.Id + '&Site=' + props?.siteType}
                         >Track the Task Status</a>
                         </div>
                     </div>
@@ -1376,22 +1376,26 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
         let finalTaskInfo: any = containerDiv.innerHTML;
 
         const TeamsMessage = `
-        <div style="padding: 12px; background-color: transparent;">
-            You have been tagged as <b>${ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}
-            <p><br/></p>
-            <div style="background-color: #fff; padding:16px; display:block;">
-            <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType} Comment</b>: <span>${ReasonStatement}</span>
+        <div style="background-color: transparent; border-top: 5px solid #2f5596 ;">
+        <div style="margin-bottom: 16px;"></div>
+            ${(ActionType == "User Experience - UX" && ReasonStatement == "New Task Created") ? "New User Experience - UX Category Task Created. Please have a look" : ""}
+            ${((ActionType == "User Experience - UX" || ActionType == "Design") && ReasonStatement == "Task Completed") ? `This ${ActionType} Category Task set to 90%. Please have a look` : ''}
+            ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
+                `You have been tagged <b>${ActionType == "Phone" ? "for the discussion" : "as " + ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}` : ''}
+            <p></p>
+            ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
+                `<div style="background-color: #fff; padding:16px; margin-top:10px; display:block;">
+            <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? " Discussion Point" : ActionType + " Comment"} </b>: <span>${ReasonStatement}</span> ` : ''}
             </div>
-            <div style="margin-top: 16px;">  <b style="font-weight:600;">Task Link: </b>
+            <div style="margin-top: 16px;">  <b style="font-weight:600;">Task Title: </b>
             <a href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? `Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}` : `Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">
             ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
             </a>
             </div>
             <p></p>
-           <span>${finalTaskInfo}</span>
-            <p></p>
-            <b>Thanks,<br/>Task Management Team</b>
-            </div>
+            <span>${finalTaskInfo}</span>
+        </div>
+          
         `;
 
         if (sendUserEmail?.length > 0) {
@@ -1414,25 +1418,22 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
     return new Promise(async (resolve, reject) => {
         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject, RequiredListIds } = RequiredData || {};
         let TeamsMessage = ` 
-        This is a gentle reminder to address the below task promptly, as you've been marked as ${ActionType}:
+      <div style="border-top: 5px solid #2f5596">
+        <div style="margin-top:16px; font-size:16px;"> ${ActionType} reminder for task: ${UpdatedDataObject?.Title}:</div>
         <p>
         <br/>
         <div style="background-color: #fff; padding:16px; display:block;">
-        <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType} Comment</b>: <span>${ReasonStatement}</span>
+        <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">Comment</b>: <span style="font-size:18px;">${ReasonStatement}</span>
         </div>
-       
         </br>
         <p>
-        <div style="margin-top: 16px;">  <b style="font-weight:600;">Task Link: </b>
-        <a href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? `Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}` : `Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">
+        <div style="margin-top: 16px;font-size:16px;">  <b style="font-weight:600;">Task Title: </b>
+        <a style="font-size:16px;" href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? `Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}` : `Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">
         ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
         </a>
         </div>
-        <p></p>
-        <b>
-        Regards, </br>
-        Task Management Team
-        </b>`
+        </div> 
+       `
         if (sendUserEmail?.length > 0) {
             await GlobalCommon.SendTeamMessage(
                 sendUserEmail,
@@ -1453,101 +1454,101 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         <div><b style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Task Details:</b></div>
                         <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginBottom: '8px' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Task Id:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Task Id:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData?.TaskId}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{RequiredData?.TaskId}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Component:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Component:</span>
                             </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center', minHeight: '30px' }}>
                                 {RequiredData["Portfolio"] != null &&
-                                    <span style={{ fontSize: '10.0pt' }} title={RequiredData["Portfolio"]?.Title}>
+                                    <span style={{ fontSize: '11.0pt' }} title={RequiredData["Portfolio"]?.Title}>
                                         {RequiredData["Portfolio"]?.Title?.length > 17 ? RequiredData["Portfolio"]?.Title.slice(0, 14) + "..." : RequiredData["Portfolio"]?.Title}
                                     </span>
                                 }
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Priority:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Priority:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["Priority"]}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["Priority"]}</span>
                             </div>
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Start Date:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Start Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD-MMMM-YYYY") : ""}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD/MMMM/YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Completion Date:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Completion Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD/MMMM/YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Due Date:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Due Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD-MMMM-YYYY") : ''}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD/MMMM/YYYY") : ''}</span>
                             </div>
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Team Members:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Team Members:</span>
                             </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <div style={{ wordBreak: "break-all" }}>{RequiredData["TeamMembers"] != null &&
+                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center', minHeight: '30px' }}>
+                                <div style={{ wordBreak: 'break-all', }}>{RequiredData["TeamMembers"] != null &&
                                     RequiredData["TeamMembers"].length > 0 &&
-                                    <span style={{ fontSize: '10.0pt' }}>
+                                    <span style={{ fontSize: '11.0pt', whiteSpace: 'nowrap', width: '95%', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>
                                         {joinObjectValues(RequiredData["TeamMembers"])}
                                     </span>
                                 }
                                 </div>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Created:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Created:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{Moment(RequiredData["Created"]).format("DD-MMMM-YYYY")}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{Moment(RequiredData["Created"]).format("DD/MMMM/YYYY")}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Created By:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Created By:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["Author"] != null && RequiredData["Author"] != undefined && RequiredData["Author"].Title}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["Author"] != null && RequiredData["Author"] != undefined && RequiredData["Author"].Title}</span>
                             </div>
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Categories:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Categories:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }} title={RequiredData["Categories"]}>{RequiredData["Categories"]?.length > 17 ? RequiredData["Categories"]?.slice(0, 14) + "..." : RequiredData["Categories"]}</span>
+                                <span style={{ fontSize: '11.0pt' }} title={RequiredData["Categories"]}>{RequiredData["Categories"]?.length > 17 ? RequiredData["Categories"]?.slice(0, 14) + "..." : RequiredData["Categories"]}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Status:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Status:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                {RequiredData["Status"]}
+                                <span style={{ fontSize: '11.0pt' }}> {RequiredData["Status"]}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>% Complete:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>% Complete:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                {RequiredData["PercentComplete"]}
+                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["PercentComplete"]}</span>
                             </div>
                         </div>
 
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
                             <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '120px', background: '#fff', padding: '5px', display: 'flex', alignItems: 'center' } : { width: '120px', background: '#fff', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Smart Priority:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Smart Priority:</span>
                             </div>
                             <div style={{ padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                {RequiredData["SmartPriority"]}
+                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["SmartPriority"]}</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 &nbsp;
@@ -1564,10 +1565,10 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         </div>
                         <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>URL:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>URL:</span>
                             </div>
                             <div style={{ wordBreak: "break-all", padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>
+                                <span style={{ fontSize: '11.0pt' }}>
                                     {RequiredData["ComponentLink"] != null &&
                                         <a href={RequiredData["ComponentLink"].Url} target="_blank">{RequiredData["ComponentLink"].Url}</a>
                                     }</span>
@@ -1575,7 +1576,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         </div>
                     </div>
                     <div style={{ display: 'flex', marginTop: '24px' }}>
-                        <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '528px', marginRight: '8px' } : { marginRight: '8px' }}>
+                        <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '528px', marginRight: '8px' } : { width: '100%', marginRight: '8px' }}>
                             {RequiredData["FeedBack"] != null &&
                                 RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                                 RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title?.length > 8 ?
@@ -1588,17 +1589,14 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                             RequiredData["FeedBack"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
                                                 return (<>
                                                     <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff' }}>
-                                                        {/* <div style={{width:'3%'}}>
-                                                        <span style={{ fontSize: "10pt", color: "#333", marginRight:'5px' }}>
-                                                            {i + 1}.
-                                                        </span>
-                                                    </div> */}
                                                         <div style={{ width: '100%' }}>
                                                             <div style={{ display: 'flex' }}>
-                                                                <span style={{ fontSize: "10pt", color: "#333", marginRight: '5px', fontWeight: '600' }}>
+                                                                <span style={{ fontSize: "10pt", display: "flex", color: "#333", marginRight: '5px', fontWeight: '600' }}>
                                                                     {i + 1}.
                                                                 </span>
-                                                                <span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span></div>
+                                                                {/* {fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")} */}
+                                                                {removeHtmlTagsFromString(fbData['Title'])}
+                                                            </div>
 
                                                             {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
                                                                 return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px', width: '100%' }}>
@@ -1754,19 +1752,19 @@ export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: an
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Start Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD-MMMM-YYYY") : ""}</span>
+                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD/MMMM/YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Completion Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span>
+                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD/MMMM/YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Due Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD-MMMM-YYYY") : ''}</span>
+                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD/MMMM/YYYY") : ''}</span>
                             </div>
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
@@ -1786,7 +1784,7 @@ export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: an
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Created:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{Moment(RequiredData["Created"]).format("DD-MMMM-YYYY")}</span>
+                                <span style={{ fontSize: '10.0pt' }}>{Moment(RequiredData["Created"]).format("DD/MMMM/YYYY")}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Created By:</span>
@@ -1912,13 +1910,14 @@ export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredD
             messageContent = 'Task created from your end has been set to 8%. Please take necessary action';
         }
 
-        const emailBodyContent = `<p>Hi ${ReceiverName},</b></p>
-            <p>${messageContent}</p>
-            ${containerDiv.innerHTML}
-            <p>Task Link: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
+        const emailBodyContent = `
+        <div style="border-top: 5px solid #2f5596;">
+            <p style="margin-top:16px;">${messageContent}</p>
+            <p>Task Title: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
             ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></p>
-            <p><b>Thanks,</b></p>
-            <p><b>Task Management Team</b></p>`;
+            <span>${containerDiv.innerHTML}</span>
+            </div>
+            `;
 
         const emailProps = {
             To: ReceiverEmail,
@@ -1965,6 +1964,16 @@ export const PrepareDataAccordingToSortOrder = (SourceArray: any, currentArray: 
     } catch (error) {
         console.log("Error in PrepareDataAccordingToSortOrder function:", error.message)
     }
+}
+
+
+// this is used for removing HTML tags from the string value 
+
+function removeHtmlTagsFromString(StringValue: string) {
+    let cleanStr = StringValue?.replace(/<[^>]*>/g, '');
+    cleanStr = cleanStr?.replace(/&nbsp;/g, ' ');
+    cleanStr = cleanStr?.trim();
+    return cleanStr;
 }
 
 

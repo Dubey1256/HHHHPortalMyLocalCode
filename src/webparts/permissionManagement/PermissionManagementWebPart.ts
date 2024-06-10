@@ -15,6 +15,7 @@ import { IPermissionManagementProps } from './components/IPermissionManagementPr
 export interface IPermissionManagementWebPartProps {
   description: string;
   SitePagesList: "16839758-4688-49D5-A45F-CFCED9F80BA6",
+  TilesManagementListID:any,
   TaskUserListID: string
 }
 
@@ -35,6 +36,7 @@ export default class PermissionManagementWebPart extends BaseClientSideWebPart<I
         siteUrl: this.context.pageContext.web.absoluteUrl,
         SitePagesList: this.properties.SitePagesList,
         TaskUserListID: this.properties.TaskUserListID,
+        TilesManagementListID:this.properties.TilesManagementListID,
         context: this.context
       }
     );
@@ -121,6 +123,9 @@ export default class PermissionManagementWebPart extends BaseClientSideWebPart<I
                 }),
                 PropertyPaneTextField('TaskUserListID', {
                   label: 'Task User List'
+                }),
+                PropertyPaneTextField('TilesManagementListID', {
+                  label: 'Tiles Management'
                 }),
               ]
             }

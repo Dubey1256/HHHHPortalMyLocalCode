@@ -12,6 +12,7 @@ let imageIndex:any;
 export interface ITeamConfigurationProps {
     callBack: (dt: any,imageIndex:any) => void;
     imageIndex?:any;
+   
 }
 
 const froalaEditorConfig = {
@@ -61,7 +62,7 @@ const froalaEditorConfig = {
 
 export default class App extends React.Component<ITeamConfigurationProps> {
     public render(): React.ReactElement<{}> {
-        CallBackFunction = this.props.callBack;
+        CallBackFunction = this?.props?.callBack;
         imageIndex=this?.props?.imageIndex;
         return (
             <div className="Florar-Editor-Image-Upload-Container" id="uploadImageFroalaEditor">

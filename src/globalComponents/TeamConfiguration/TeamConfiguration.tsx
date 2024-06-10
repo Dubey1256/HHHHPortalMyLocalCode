@@ -81,7 +81,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
             })
         }
-
+   
         let oldJson: any = []
         try {
             oldJson = JSON.parse(JSON.stringify(workingAction));
@@ -90,7 +90,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         }
 
 
-
+    
         let count = 0;
         while (datesInfo.length < 5) {
             let dateFullInfo: any = {};
@@ -101,21 +101,21 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                     dateFullInfo.serverDate = moment(dateFullInfo?.originalDate, 'DD/MM/YYYY');
                     dateFullInfo.serverDate._d.setHours(0, 0, 0, 0)
                     dateFullInfo.displayDate = "Today"
-
+                    
                 }
                 else if (count == 2) {
                     dateFullInfo.originalDate = currentDate.format('DD/MM/YYYY')
                     dateFullInfo.serverDate = moment(dateFullInfo?.originalDate, 'DD/MM/YYYY');
                     dateFullInfo.serverDate._d.setHours(0, 0, 0, 0)
                     dateFullInfo.displayDate = "Tomorrow"
-
+                    
                 }
                 else {
                     dateFullInfo.originalDate = currentDate.format('DD/MM/YYYY')
                     dateFullInfo.serverDate = moment(dateFullInfo?.originalDate, 'DD/MM/YYYY');
                     dateFullInfo.serverDate._d.setHours(0, 0, 0, 0)
                     dateFullInfo.displayDate = currentDate.format('DD/MM/YYYY')
-
+                    
                 }
                 datesInfo.push(dateFullInfo);
                 currentDate = currentDate.add(1, 'day');
@@ -154,6 +154,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
             })
         })
+
         datesInfo?.map((datesUser: any) => {
             this?.state?.taskUsers?.map((userRemove: any) => {
                 userRemove?.childs?.map((childUser: any, index: any) => {
@@ -236,32 +237,32 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     }
     private async GetTaskDetails() {
         try {
-            if (this.props.ItemInfo.siteUrl != undefined) {
-                web = new Web(this.props.ItemInfo.siteUrl);
-            } else {
-                web = new Web(this.props.AllListId?.siteUrl);
-            }
-            let taskDetails = [];
-            if (this.props.ItemInfo.listId != undefined) {
-                taskDetails = await web.lists
-                    .getById(this.props.ItemInfo.listId)
-                    .items
-                    .getById(this.props.ItemInfo.Id)
-                    .select("ID", "Title", "WorkingAction", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
-                    .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
-                    .get()
-            } else {
-                taskDetails = await web.lists
-                    .getByTitle('Master Tasks')
-                    .items
-                    .getById(this.props.ItemInfo.Id)
-                    .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
-                    .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
-                    .get()
-            }
-            console.log('Task Details---');
-            console.log(taskDetails);
-            this.setState({ taskDetails })
+        if (this.props.ItemInfo.siteUrl != undefined) {
+            web = new Web(this.props.ItemInfo.siteUrl);
+        } else {
+            web = new Web(this.props.AllListId?.siteUrl);
+        }
+        let taskDetails = [];
+        if (this.props.ItemInfo.listId != undefined) {
+            taskDetails = await web.lists
+                .getById(this.props.ItemInfo.listId)
+                .items
+                .getById(this.props.ItemInfo.Id)
+                .select("ID", "Title", "WorkingAction", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
+                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
+                .get()
+        } else {
+            taskDetails = await web.lists
+                .getByTitle('Master Tasks')
+                .items
+                .getById(this.props.ItemInfo.Id)
+                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
+                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
+                .get()
+        }
+        console.log('Task Details---');
+        console.log(taskDetails);
+        this.setState({ taskDetails })
         } catch (error) {
             console.log(error)
         }
@@ -447,13 +448,8 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         let $data = dragItem.user;
         let self = this;
         let isRemove = false;
-        if (dragItem.userType == "UserWorkingDays") {           
-            // this?.state?.AssignedToUsers.map((assignedUsers:any,index:any)=>{
-            //     if(assignedUsers?.AssingedToUser?.Id==dragItem?.user?.AssingedToUser?.Id){
-            //         this.state.AssignedToUsers.splice(index,1)
-            //     }
-            // })
-            this?.state?.datesInfo.map((dates: any) => {              
+        if (dragItem.userType == "UserWorkingDays") {
+            this.state?.datesInfo.map((dates: any) => {
                 if (dates?.originalDate == dragItem?.user?.workingDateUser) {
                     dates?.userInformation.map((user: any, index: any) => {
                         if (user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id) {
@@ -482,14 +478,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                     return false;
                 }
             })
-            let userExistsAssignedUsers=this?.state?.AssignedToUsers?.some((user: any) => {
-                if (user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id) {
-                    return true;
-                } else {
-                    return false;
-                }
-            })
-            if (userExistsWorkingDates != true && userExistsLeads != true && userExistsTeamMembers != true && userExistsAssignedUsers!=true){
+            if (userExistsWorkingDates != true && userExistsLeads != true && userExistsTeamMembers != true) {
                 this.state.taskUsers.forEach((child: any) => {
                     if (child.ID === $data.UserGroupId) {
                         if (!self.isItemExists(child.childs, $data.Id)) {
@@ -502,18 +491,18 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         }
         else {
             let userExistsWorkingDates = this.state.datesInfo.some((item: any) =>
-                item?.userInformation.some((user: any) =>
-                    user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id
-                )
-            );
+            item?.userInformation.some((user: any) =>
+                user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id
+            )
+        );
             if (!userExistsWorkingDates) {
-                this.state.taskUsers.forEach(function (child: any) {
-                    if (child.ID == $data.UserGroupId) {
-                        if (!self.isItemExists(child.childs, $data.Id))
-                            child.childs.push($data);
-                    }
-                })
+        this.state.taskUsers.forEach(function (child: any) {
+            if (child.ID == $data.UserGroupId) {
+                if (!self.isItemExists(child.childs, $data.Id))
+                    child.childs.push($data);
             }
+                })
+            }   
         }
         this.dropSuccessHandler(true, '');
     }
@@ -576,13 +565,14 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
 
     private onDropWorkingDays(e: any, date: any, groupAlluser: any, userType: any) {
         let dataUser = { ...dragItem.user };
-        let draguserType = dragItem.userType;
+        let draguserType = dragItem.userType
         let dateLocationData = date;
         if (draguserType != userType) {
             groupAlluser?.map((group: any) => {
                 group?.childs?.map((user: any, index: any) => {
                     if (user.AssingedToUser?.Id == dataUser?.AssingedToUser?.Id) {
                         user.workingDateUser = dateLocationData.originalDate
+                        // dateLocationData?.userInformation.push(user)
                         group.childs.splice(index, 1)
                     }
                 })
@@ -593,12 +583,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                         dataUser.workingDateUser = dateLocationData?.originalDate;
                         dataDetail.userInformation.push(dataUser)
                     }
+
                 }
             })
-            if (!this.isItemExists(this.state.AssignedToUsers, dataUser.ID)) {
-                dataUser.workingDateUser = dateLocationData?.originalDate;
-                this.state.AssignedToUsers.push(dataUser)
-            }
             this.dropSuccessHandler(true, userType);
         }
         else if (draguserType == userType) {
@@ -612,6 +599,12 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             })
             this.dropSuccessHandler(true, userType);
         }
+
+
+        // this.setState({
+        //    datesInfo: datesInfo,
+        //    taskUsers:allUser
+        // })
     }
 
     private dropSuccessHandler(isRemove: any, dropLocation: any) {
@@ -624,6 +617,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         }
         if (dropLocation != "UserWorkingDays" && dragItem.userType == 'Assigned User')
             this.state.AssignedToUsers.splice(dragItem.current, 1);
+
         let TeamConfiguration = {
             dateInfo: this.state.datesInfo,
             oldWorkingDaysInfo: this.state.oldWorkingDaysInfo,
@@ -721,12 +715,12 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                             {
                                                                 return image?.Item_x0020_Cover != undefined && image?.AssingedToUser != undefined ? (
                                                                     <img
-                                                                        className="ProirityAssignedUserPhoto"
+                                                                className="ProirityAssignedUserPhoto"
                                                                         src={image?.userImage != null ? image.userImage : image?.Item_x0020_Cover?.Url}
-                                                                        // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
-                                                                        title={image.Title} draggable
-                                                                        onDragStart={(e) => this.dragStart(e, index, image, 'ResponsibleTeam')}
-                                                                        onDragOver={(e) => e.preventDefault()}
+                                                                // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
+                                                                title={image.Title} draggable
+                                                                onDragStart={(e) => this.dragStart(e, index, image, 'ResponsibleTeam')}
+                                                                onDragOver={(e) => e.preventDefault()}
                                                                     />) : (<span draggable
                                                                         onDragStart={(e) => this.dragStart(e, index, image, 'ResponsibleTeam')}
                                                                         onDragOver={(e) => e.preventDefault()}
@@ -750,11 +744,11 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                             {
                                                                 return image?.Item_x0020_Cover != undefined && image?.AssingedToUser != undefined ?
                                                                     (<img className="ProirityAssignedUserPhoto ms-1"
-                                                                        // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
-                                                                        title={image.Title}
+                                                                // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
+                                                                title={image.Title}
                                                                         src={image.userImage != null ? image?.userImage : image?.Item_x0020_Cover?.Url}
-                                                                        draggable
-                                                                        onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}
+                                                                draggable
+                                                                onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}
                                                                         onDragOver={(e) => e.preventDefault()} />) :
                                                                     (<span draggable onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}
                                                                         onDragOver={(e) => e.preventDefault()}
@@ -779,15 +773,15 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
                                                     {
                                                         return image?.Item_x0020_Cover != undefined && image?.AssingedToUser != undefined ? (<img
-                                                            draggable onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
-                                                                        onDragOver={(e) => e.preventDefault()}
-                                                            className="ProirityAssignedUserPhoto"
+                                                        className="ProirityAssignedUserPhoto"
                                                             src={image.userImage != null ? image.userImage : image?.Item_x0020_Cover?.Url}
-                                                            title={image.Title}
-                                                        />) : (
-                                                            <span 
-                                                            draggable onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
-                                                                        onDragOver={(e) => e.preventDefault()}
+                                                        // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
+                                                        title={image.Title}
+                                                        draggable
+                                                        onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
+                                                            onDragOver={(e) => e.preventDefault()} />) : (
+                                                            <span draggable onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
+                                                                onDragOver={(e) => e.preventDefault()}
                                                                 title={image.Title} className='suffix_Usericon showSuffixIcon'>{image.Suffix}</span>
                                                         )
                                                     }
@@ -808,8 +802,8 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     </div>
 
                                 </div>
-
-
+                                
+                            
                             </div>
                             {/* Coment test end */}
                             {/* Working days */}
@@ -821,24 +815,24 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                             return (
                                                 <div className="width20 top-assign pe-1" onDragOver={(e) => e.preventDefault()} onDrop={(e) => this.onDropWorkingDays(e, date, this.state.taskUsers, 'UserWorkingDays')}> <label className="BdrBtm mb-0">{date.displayDate}</label>
                                                     <div className='border p-1 w-100' style={{ minHeight: '30px' }}>
-                                                        {date?.userInformation?.length > 0 && date?.userInformation?.map((userInfo: any, index: any) =>
-                                                            <span className='me-1'>
+                                                    {date?.userInformation?.length > 0 && date?.userInformation?.map((userInfo: any, index: any) =>
+                                                        <span className='me-1'>
                                                                 {userInfo?.Item_x0020_Cover != undefined && userInfo?.AssingedToUser != undefined ?
-                                                                    <img
-                                                                        className="ProirityAssignedUserPhoto"
-                                                                        src={userInfo?.Item_x0020_Cover?.Url}
-                                                                        // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
-                                                                        title={userInfo?.Title}
-                                                                        draggable
-                                                                        onDragStart={(e) => this.dragStart(e, index, userInfo, 'UserWorkingDays')}
-                                                                        onDragOver={(e) => e.preventDefault()} />
+                                                            <img
+                                                                className="ProirityAssignedUserPhoto"
+                                                                src={userInfo?.Item_x0020_Cover?.Url}
+                                                                // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
+                                                                title={userInfo?.Title}
+                                                                draggable
+                                                                onDragStart={(e) => this.dragStart(e, index, userInfo, 'UserWorkingDays')}
+                                                                onDragOver={(e) => e.preventDefault()} />
                                                                     : <span draggable onDragStart={(e) => this.dragStart(e, index, userInfo, 'UserWorkingDays')}
                                                                         onDragOver={(e) => e.preventDefault()}
                                                                         title={userInfo.Title} className='suffix_Usericon showSuffixIcon'>{userInfo.Suffix}</span>}
-                                                            </span>
-                                                        )
+                                                        </span>
+                                                    )
 
-                                                        }</div>
+                                                    }</div>
                                                 </div>
 
                                             )

@@ -1,3 +1,4 @@
+import moment from "moment";
 import * as React from "react";
 import { usePopperTooltip } from "react-popper-tooltip";
 import "react-popper-tooltip/dist/styles.css";
@@ -39,10 +40,35 @@ function ShowTaskTeamMembers(item: any) {
       // console.log('Team error',e)
     }
       let LeadCount =0;
+      
       if(taskDetails["ResponsibleTeam"] != undefined&&taskDetails["ResponsibleTeam"].length > 0){
         taskDetails["ResponsibleTeam"]=GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]);
         LeadCount=taskDetails["ResponsibleTeam"].length;
       }
+        if( taskDetails["WorkingAction"] != null){
+          let WorkingAction:any=[];
+          let changeAssignToData:any=taskDetails?.AssignedTo;
+          if (typeof taskDetails["WorkingAction"] != "object") {
+             WorkingAction = taskDetails["WorkingAction"] != null ? JSON.parse(taskDetails["WorkingAction"]) : [];
+
+            }else{
+              WorkingAction=taskDetails["WorkingAction"] 
+            }
+          
+          if (taskDetails?.WorkingAction?.length > 0) {
+            WorkingAction?.map((Action: any) => {
+              if(Action?.Title == "WorkingDetails"){
+                let currentDate = moment(new Date()).format("DD/MM/YYYY")
+                Action?.InformationData?.map((isworkingToday:any)=>{
+                  if(isworkingToday?.WorkingDate==currentDate && isworkingToday?.WorkingMember?.length>0){
+                    changeAssignToData=isworkingToday?.WorkingMember
+                    }})
+                  }
+                })
+              }
+              taskDetails.AssignedTo=changeAssignToData
+          }
+        
       // GetUserObjectFromCollection
       // const LeadCount = taskDetails["ResponsibleTeam"] != undefined && taskDetails["ResponsibleTeam"].length > 0 ? taskDetails["ResponsibleTeam"].length : 0;
       setLeadCount(LeadCount);
@@ -112,9 +138,11 @@ function ShowTaskTeamMembers(item: any) {
   }, [item]);
 
   const GetUserObjectFromCollection = (UsersValues: any) => {
-    let userDeatails: any = [];
+   let userDeatails: any = [];
     UsersValues?.map((item: any) => {
       let workingToday=item?.workingMember!=undefined?item?.workingMember:false;
+      
+    
       item = TaskUsers?.find((User: any) => User?.AssingedToUser?.Id == item?.Id)
       if(item?.Id!=undefined){
         userDeatails.push({
