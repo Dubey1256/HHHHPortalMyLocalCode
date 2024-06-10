@@ -2871,7 +2871,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
   const changePortfolioType = async () => {
     let confirmation = confirm("Are you sure you want to change the type ?");
     if (confirmation) {
-      let web = new Web(item.siteUrl);
+      let web = new Web(RequireData.siteUrl);
       const selectedPopupItem = item.PortfolioStructureID;
       const numbersOnly = selectedPopupItem.substring(1);
       const selectedPorfolioItem = selectPortfolioType?.Title;
