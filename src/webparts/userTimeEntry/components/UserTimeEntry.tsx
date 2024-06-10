@@ -2144,6 +2144,7 @@ export default class UserTimeEntry extends React.Component<
                   addtime.DispEffort = addtime.Effort;
                   addtime.Effort = parseFloat(addtime.Effort);
                   addtime.TimeEntryDate = addtime.TaskDate;
+                  addtime.TimeStatus = addtime?.Status
                   addtime.NewTimeEntryDate = TaskDate;
                   let datesplite = addtime.TaskDate.split("/");
                   addtime.TimeEntrykDateNew = new Date(
@@ -3052,6 +3053,24 @@ export default class UserTimeEntry extends React.Component<
       () => this.createTableColumns()
     );
   }
+  private ShowDraftTime=()=>{
+    if(this.state.AllTimeEntry?.length > 0){
+      alert('Please click on Update filter')
+    }
+    else{
+      let MyData:any=[]
+      this.state.AllTimeEntry?.forEach((items:any)=>{
+        if(items.TimeStatus == 'Draft'){
+          MyData.push(items)
+        }
+        
+      })
+      this.setState({
+        AllTimeEntry:MyData
+      })
+    }
+    
+  }
   private getAllSubChildenCount(item: any) {
     let count = 1;
     if (item.children != undefined && item.children.length > 0) {
@@ -3074,9 +3093,15 @@ export default class UserTimeEntry extends React.Component<
     return count;
   }
   private customTableHeaderButtons = (
+    <>
+    <span>
+      <button type='button' className="btnCol btn btn-primary me-1" onClick={()=>this.ShowDraftTime()}>Show Draft Timesheet</button>
+      </span>
     <a className="barChart" title="Open Bar Graph" onClick={this.showGraph}>
       <BsBarChartLine />
     </a>
+   
+    </>
   );
   private onCheck(checked: any) {
     debugger;
