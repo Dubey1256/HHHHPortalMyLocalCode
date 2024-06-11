@@ -23,6 +23,9 @@ let TimeSheetLists: any = [];
 let dates: any = [];
 let AllTimeEntry: any = [];
 let CurrentMatchableDate = new Date();
+let todaysDrafTimeEntry: any = [];
+var AllTaskTimeEntries: any = [];
+let timesheetListConfiguration: any = [];
 CurrentMatchableDate.setHours(0, 0, 0, 0)
 const EmployeProfile = (props: any) => {
   const params = new URLSearchParams(window.location.search);
@@ -346,8 +349,8 @@ const EmployeProfile = (props: any) => {
   }
   const smartMetaData = async () => {
     var AllsiteData: any = []
-    var timesheetListConfig = await globalCommon?.loadSmartMetadata(props?.props, 'timesheetListConfigrations')
-    setTimesheetListConfig(timesheetListConfig)
+    timesheetListConfiguration = await globalCommon?.loadSmartMetadata(props?.props, 'timesheetListConfigrations')
+    setTimesheetListConfig(timesheetListConfiguration)
     AllsiteData = await globalCommon?.loadSmartMetadata(props?.props, 'Sites')
     AllsiteData = AllsiteData?.filter((item: any) => item.Title != "" && item.Title != "Master Tasks" && item.Title != "SDC Sites" && item.Title != "Offshore Tasks" && item.Configurations != null)
     setAllSite(AllsiteData)
@@ -915,9 +918,62 @@ const EmployeProfile = (props: any) => {
       console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage)
     }
   };
+  const checkTimeEntrySite = (timeEntry: any) => {
+    let result = ''
+    result = allData?.filter((task: any) => {
+      let site = '';
+      if (task?.siteType == 'Offshore Tasks') {
+        site = 'OffshoreTasks'
+      } else {
+        site = task?.siteType;
+      }
+      if (timeEntry[`Task${site}`] != undefined && task?.Id == timeEntry[`Task${site}`]?.Id) {
+        return task;
+      }
+    });
+    return result;
+  }
+
+  const loadAllTimeEntry = async () => {
+    AllTaskTimeEntries = [];
+    todaysDrafTimeEntry = [];
+    if (timesheetListConfiguration?.length > 0) {
+      let timesheetLists: any = [];
+      let startDate = getStartingDate('This Week').toISOString();
+      timesheetLists = JSON.parse(timesheetListConfiguration[0]?.Configurations)
+
+      if (timesheetLists?.length > 0) {
+        const fetchPromises = timesheetLists.map(async (list: any) => {
+          let web = new Web(list?.siteUrl);
+          try {
+            let todayDateToCheck = new Date().setHours(0, 0, 0, 0,)
+            const data = await web.lists
+              .getById(list?.listId)
+              .items.select(list?.query)
+              .filter(`(Modified ge '${startDate}') and (TimesheetTitle/Id ne null)`)
+              .getAll();
+
+            data?.forEach((item: any) => {
+              let entryDate = new Date(item?.Modified).setHours(0, 0, 0, 0)
+              if (entryDate == todayDateToCheck) {
+                todaysDrafTimeEntry?.push(item);
+              }
+              item.taskDetails = checkTimeEntrySite(item);
+              AllTaskTimeEntries.push(item);
+            });
+            // currentUserTimeEntry('This Week');           
+          } catch (error) {
+            console.log(error, 'HHHH Time');
+          }
+        });
+        await Promise.all(fetchPromises)
+      }
+    }
+  }
   const getAllData = async (IsLoad: any) => {
     if (IsLoad != undefined && IsLoad === true) {
       await globalCommon?.loadAllSiteTasks(props?.props, undefined).then((data: any) => {
+        loadAllTimeEntry();
         data?.map((items: any) => {
           items.descriptionsSearch = '';
           if (items?.FeedBack != undefined && Array.isArray(items?.FeedBack)) {
@@ -1353,7 +1409,7 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      <myContextValue.Provider value={{ ...myContextValue, todaysDrafTimeEntry: todaysDrafTimeEntry, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div> <Header /></div>
         {IsCallContext == true && <TaskStatusTbl />}
       </myContextValue.Provider >

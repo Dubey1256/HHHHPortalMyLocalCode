@@ -2987,7 +2987,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' && this.state.countfeedback >= 0 &&
                        
-                          <div className={"Addcomment boxshadow " + " manage_gap"}>
+                          <div className={"Addcomment boxshadow p-2" + " manage_gap"}>
                             
                           <label className='form-label full-width'>Objective</label>
                           {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
@@ -3353,7 +3353,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                          {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((tab: any, index: any) => {
                           if(index>0){
                             return(
-                              <Tab key={index} label={`Set${index}`} value={index} />
+                             
+                              <Tab key={index}  label={tab?.setTitle!=""?tab?.setTitle:`Set${index}`} value={index} />
                             )
                           }
                          
@@ -3375,7 +3376,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             }
                             return(
                               <TabPanel key={i} value={i}>
-                                  <div className="carouselSlider taskImgTemplate">
+                                  <div className={`carouselSlider ${fbData?.setImagesInfo?.length>1?'taskImgTemplate':''} `}>
                                                 <Slider {...settings}>
 
                                                     {fbData?.setImagesInfo?.map((imgData: any, indeximage: any) => {

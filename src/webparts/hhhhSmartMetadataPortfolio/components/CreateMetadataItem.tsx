@@ -213,10 +213,6 @@ export default function CreateMetadataItem(props: any) {
         }
 
     };
-    const CloseShowTopicsTypepopup = () => {
-        setTopicsTypePopup(false);
-        closeCreateSmartMetadataPopup();
-    }
     const closeCreateSmartMetadataPopup = () => {
         setSmartDescription('');
         setSmartMetaDataTitle('');
@@ -246,6 +242,9 @@ export default function CreateMetadataItem(props: any) {
                 <Tooltip ComponentId={'1630'} />
             </>
         );
+    }
+    const CloseShowTopicsTypepopup = () => {
+        setTopicsTypePopup(false);
     }
     const showCreatePopup = () => {
         setIsCreatePopupOpen(true)

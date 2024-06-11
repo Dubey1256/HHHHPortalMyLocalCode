@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/Button';
 let copyAllCategory:any=[]
 let DefaultSelectedUseremail:any=[]
 const AddTaskConfigPopup = (props: any) => {
-    const [NotificationType ,setnotificationType]:any= useState(["Teams", "Email"])
+    const [NotificationType ,setnotificationType]:any= useState(["Teams", "Email","Assigned To"])
     const [Notify,setnotify]:any=useState(["Creator","Approval","Specific"])
     const [notificationType, setNotificationType] = useState("")
     const [Category, setCategory] = useState("")
@@ -64,7 +64,7 @@ const AddTaskConfigPopup = (props: any) => {
         return (
             <div className=" full-width pb-1" > <div className="subheading">
                 <span className="siteColor">
-                    {props?.SelectedEditItem?.Id != undefined ? `Edit Task Configration - ${props?.SelectedEditItem?.Title}` : 'Add Task Configration'}
+                    {props?.SelectedEditItem?.Id != undefined ? `Edit Task Configuration - ${props?.SelectedEditItem?.Title}` : 'Add Task Configuration'}
                 </span>
             </div>
             </div>
@@ -127,6 +127,7 @@ const AddTaskConfigPopup = (props: any) => {
         else{
             allConfigData.push(configData)
         }
+        DefaultSelectedUseremail=[]
       props?.setAllTaskStatusToConfigure(allConfigData)
       props?.TaskconfigCallback()
     }
@@ -139,7 +140,9 @@ const AddTaskConfigPopup = (props: any) => {
             customWidth="800px"
             isOpen={true}
             onDismiss={() => props?.TaskconfigCallback()}
-            isBlocking={false}>
+            isBlocking={false}
+            layerProps={{ styles: { root: { zIndex: 1000000000 }}}}
+>
             <div>
                 <div className='row mb-3 alignCenter'>
                     <div className='col-3'><label className='form-label fw-semibold'>Notify Type</label></div>
@@ -218,9 +221,7 @@ const AddTaskConfigPopup = (props: any) => {
                     </div>
                 </div>}
                 <div className='row mb-3'>
-                        
-                      <label form="AvoidItself" className='alignCenter'> Ignor If Creator or Notifier Same <input type="checkbox" className='form-check-input ms-2' id="AvoidItself" name="AvoidItself" value="true" checked={avoidItself=="true"}onChange={(e)=>setAvoidItSelf(e.target.value)}/></label>
-                    
+                      <label form="AvoidItself" className='alignCenter'><input type="checkbox" className='form-check-input ms-2' id="AvoidItself" name="AvoidItself" value="true" checked={avoidItself=="true"} onChange={(e)=>setAvoidItSelf(e.target.value)}/>Ignore If Creator or Notifier Same</label>
                 </div>
             </div>
             <footer className='alignCenter mt-2'>
