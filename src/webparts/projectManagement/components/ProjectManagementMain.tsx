@@ -33,7 +33,9 @@ import RelevantDocuments from "../../taskprofile/components/RelevantDocuments";
 import RelevantEmail from '../../taskprofile/components/./ReleventEmails'
 import KeyDocuments from '../../taskprofile/components/KeyDocument';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
+import WorkingActionInformation from '../../../globalComponents/WorkingActionInformation';
 import Tooltip from "../../../globalComponents/Tooltip";
+
 //import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs";
 var QueryId: any = "";
 let smartPortfoliosData: any = [];
@@ -408,9 +410,9 @@ const ProjectManagementMain = (props: any) => {
               const suggestedKeywords = fetchedProject?.Title.toLowerCase().split(/\s+/);
               if (suggestedKeywords.length > 0) {
                 suggestedPortfolioItems = MasterListData.filter((masterItm: any) => {
-                  const titleWords = masterItm?.Title.toLowerCase();
-                  const includesAnyKeyword = suggestedKeywords.some((keyword: any) => titleWords.includes(keyword));
-                  const isNotMatchingTitles = titleWords !== fetchedProject?.Title.toLowerCase() && titleWords !== 'latest annual report';
+                  const titleWords = masterItm?.Title?.toLowerCase();
+                  const includesAnyKeyword = suggestedKeywords?.some((keyword: any) => titleWords?.includes(keyword));
+                  const isNotMatchingTitles = titleWords !== fetchedProject?.Title?.toLowerCase() && titleWords !== 'latest annual report';
                   return includesAnyKeyword && isNotMatchingTitles && masterItm?.Item_x0020_Type !== 'Project' && masterItm?.Item_x0020_Type !== 'Sprint';
                 });
               }
@@ -766,7 +768,7 @@ const ProjectManagementMain = (props: any) => {
               }
             });
           });
-        }
+      }
         items.TaskID = globalCommon.GetTaskId(items);
         AllUser?.map((user: any) => {
           if (user.AssingedToUserId == items.Author.Id) {
@@ -1639,8 +1641,26 @@ const ProjectManagementMain = (props: any) => {
         placeholder: "TeamMembers",
         header: "",
         size: 110,
-        isColumnVisible: true,
-        fixedColumnWidth: true,
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row) => row?.workingActionTitle,
+        cell: ({ row }) => (
+            <div className="alignCenter">
+                {row?.original?.workingActionValue?.map((elem: any) => {
+                    const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                    return relevantTitles?.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
+                        <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
+                    );
+                })}
+            </div>
+        ),
+        placeholder: "Working Actions",
+        header: "",
+        resetColumnFilters: false,
+        size: 130,
+        id: "workingActionTitle",
+        isColumnVisible: false
       },
       {
         accessorFn: (row) => row?.SmartInformationTitle,
