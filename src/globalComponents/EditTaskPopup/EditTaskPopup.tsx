@@ -5333,16 +5333,10 @@ const EditTaskPopup = (Items: any) => {
 
     const onRenderCustomApproverHeader = () => {
         return (
-            <div
-                className={
-                    ServicesTaskCheck
-                        ? "d-flex full-width pb-1 serviepannelgreena"
-                        : "d-flex full-width pb-1"
-                }
-            >
-                <div className="subheading siteColor"> {useFor != "" ? `Select${useFor}` : `Select Approver`}</div>
+            <>
+                <div className="subheading"> {useFor != "" ? `Select ${useFor}` : `Select Approver`}</div>
                 <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
-            </div>
+            </>
         );
     };
 
@@ -7403,11 +7397,12 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 && (
-                                                                            <span
-                                                                                onClick={() => openBottleneckPopup("Bottleneck")}
-                                                                                title="Add User Popup"
-                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                            ></span>
+                                                                            <span className="hover-text">
+                                                                                <span onClick={() => openBottleneckPopup("Bottleneck")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    Add User
+                                                                                </span>
+                                                                            </span>
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -7567,10 +7562,12 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 ? (
-                                                                            <span onClick={() => openBottleneckPopup("Attention")}
-                                                                                title="Add User Popup"
-                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                            ></span>
+                                                                             <span className="hover-text">
+                                                                             <span onClick={() => openBottleneckPopup("Attention")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                             <span className="tooltip-text pop-left">
+                                                                                 Add User
+                                                                             </span>
+                                                                         </span>
                                                                         ) : null}
                                                                     </div>
                                                                 </div>
@@ -7689,11 +7686,12 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 ? (
-                                                                            <span
-                                                                                onClick={() => openBottleneckPopup("Phone")}
-                                                                                title="Add User Popup"
-                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                            ></span>
+                                                                             <span className="hover-text">
+                                                                             <span onClick={() => openBottleneckPopup("Phone")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                             <span className="tooltip-text pop-left">
+                                                                                 Add User
+                                                                             </span>
+                                                                         </span>
                                                                         ) : null}
                                                                     </div>
                                                                 </div>
@@ -10795,7 +10793,7 @@ const EditTaskPopup = (Items: any) => {
                 onDismiss={closeApproverPopup}
                 isBlocking={ApproverPopupStatus}
                 type={PanelType.medium}
-                className="mb-2">
+               >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
                     <div className="">
                         <div className="col-sm-12 categScroll" style={{ height: "auto" }}>
@@ -10824,7 +10822,7 @@ const EditTaskPopup = (Items: any) => {
                                 </div>
                             ) : null}
                             {ApproverData?.length > 0 ? (
-                                <div className="border full-width my-1 p-1">
+                                <div className="ps-0 full-width my-1 p-1">
                                     {ApproverData?.map((val: any) => {
                                         return (
                                             <a className="hreflink block me-1">
@@ -10892,8 +10890,8 @@ const EditTaskPopup = (Items: any) => {
                             </ul>
                         </div>
                     </div>
-                    <footer className="fixed-bottom">
-                        <div className="align-items-center d-flex pull-right px-4 py-2">
+                    <footer className="modal-footer">
+                    
                             <button
                                 type="button"
                                 className="btn btn-primary px-3 mx-1"
@@ -10908,7 +10906,7 @@ const EditTaskPopup = (Items: any) => {
                             >
                                 Cancel
                             </button>
-                        </div>
+                        
                     </footer>
                 </div>
             </Panel>
