@@ -317,10 +317,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     if (taskDetails["TaskCategories"] != undefined && taskDetails["TaskCategories"].length > 0) {
 
       taskDetails["TaskCategories"]?.map((item: any, index: any) => {
-        if(item?.Title=="User Experience - UX"||item?.Title=="Design"){
+        if(item?.Title=="UX-New"){
           DesignTemplates=true
-        }else{
-          DesignTemplates=false
         }
         if ((index == taskDetails["TaskCategories"]?.length - 1) || (taskDetails["TaskCategories"].length == 1)) {
           category = category + item?.Title
@@ -1247,7 +1245,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     console.log(parentindex);
     console.log(subchileindex);
     console.log(status);
-    if ((this.state.Result["Approver"]?.AssingedToUser?.Id == this?.currentUser[0]?.Id) || (this.state.Result["Approver"]?.Approver?.length>0 && this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) {
+    if ((this.state.Result["Approver"]?.AssingedToUser?.Id == this?.currentUser[0]?.Id) || (this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) {
       let tempData: any = this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentindex];
       var approvalDataHistory = {
         ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
@@ -3353,8 +3351,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                          {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((tab: any, index: any) => {
                           if(index>0){
                             return(
-                             
-                              <Tab key={index}  label={tab?.setTitle!=""?tab?.setTitle:`Set${index}`} value={index} />
+                              <Tab key={index} label={`Set${index}`} value={index} />
                             )
                           }
                          
@@ -3740,14 +3737,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                           </div>
                                           {this.state?.subchildcomment == j && this.state?.subchildParentIndex == i ? <div className='SpfxCheckRadio' >
                                             <div className="col-sm-12 mt-2 p-0  ">
-                                              {this.state.Result["Approver"] != "" && this.state.Result["Approver"] != undefined && (this.state.Result["Approver"]?.AssingedToUser?.Id == this.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver?.length>0 && this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={this.state?.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target?.checked })} />Mark as Approval Comment</label>}
+                                              {this.state.Result["Approver"] != "" && this.state.Result["Approver"] != undefined && (this.state.Result["Approver"]?.AssingedToUser?.Id == this.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={this.state?.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target?.checked })} />Mark as Approval Comment</label>}
 
                                             </div>
 
                                             <div className="align-items-center d-flex"
 
                                             >  <textarea id="txtCommentSubtext" onChange={(e) => this.handleInputChange(e)} className="form-control full-width" ></textarea>
-                                              <button type="button" className={this.state.Result["Approver"] != undefined && this.state.Result["Approver"] != "" && (this.state.Result["Approver"]?.AssingedToUser?.Id == this.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver?.length>0 && this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.SubtextPostButtonClick(j, i)}>Post</button>
+                                              <button type="button" className={this.state.Result["Approver"] != undefined && this.state.Result["Approver"] != "" && (this.state.Result["Approver"]?.AssingedToUser?.Id == this.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.SubtextPostButtonClick(j, i)}>Post</button>
                                             </div>
                                           </div> : null}
 

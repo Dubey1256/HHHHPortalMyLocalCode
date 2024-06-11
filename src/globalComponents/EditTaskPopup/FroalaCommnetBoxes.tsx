@@ -154,7 +154,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
             HighImportance: '',
             isShowLight: '',
             TaskCreatedForThis: false,
-            setTitle:`set${IndexCount}`,
+            setTitle:`set${testTaskIndex}`,
             setImagesInfo: []
            };
        
@@ -178,7 +178,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
             HighImportance: '',
             isShowLight: '',
             TaskCreatedForThis: false,
-            setTitle:`set${IndexCount}`,
+            setTitle:`set${testTaskIndex}`,
             setImagesInfo: [],
         };
     
@@ -788,14 +788,16 @@ const handleChangeTab = (event: any, newValue: any) => {
     setCurrentActiveTab(newValue)
 }
 const ChangeSetTitle=(index:any,value:any)=>{
-    let copyState=[...State]
-       copyState[index].setTitle=value
+
+    UpdatedFeedBackParentArray = State;
+    UpdatedFeedBackParentArray[index].setTitle=value;
+    
        setState((prevItems:any) =>(
-        prevItems.map((item:any, idx:any) => idx === index ?  copyState[index] : item)
-       ) 
-       
-      );
-    //   setState( copyState)
+        prevItems.map((item:any, idx:any) => idx === index ?  UpdatedFeedBackParentArray[index] : item)
+       )  );
+       setState([...UpdatedFeedBackParentArray]);
+       callBack(UpdatedFeedBackParentArray);
+   
 }
 const DesignCategoriesTask = (state: any) => {
     return (
