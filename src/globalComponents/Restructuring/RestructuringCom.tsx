@@ -574,14 +574,11 @@ const RestructuringCom = (props: any, ref: any) => {
               }
 
               let newObj: any;
-              if (
-                items?.PortfolioTypeCheck === obj.PortfolioTypeCheck &&
-                !actionsPerformed
-              ) {
+              if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck && !actionsPerformed) {
                 if (!actionsPerformed) {
                   if (items?.Id !== obj.Id && obj?.TaskType?.Id != 2) {
-                    obj.isRestructureActive = true;
-                    if ((obj.TaskType?.Id == 1 || obj.TaskType?.Id == 3) &&obj?.siteType !== items?.siteType) {
+                      obj.isRestructureActive = true;
+                    if ((obj.TaskType?.Id == 1 || obj.TaskType?.Id == 3) && obj?.siteType !== items?.siteType) {
                       obj.isRestructureActive = false;
                     }
                     if (items?.TaskType?.Id == 3 && obj?.TaskType?.Id == 3) {
@@ -592,7 +589,7 @@ const RestructuringCom = (props: any, ref: any) => {
                     }
                   } else {
                     if (items?.Id === obj.Id) {
-                      newObj = {
+                        newObj = {
                         Title: obj?.Title,
                         TaskType: {Id:  obj.TaskType?.Id == undefined    ? ""    : obj.TaskType?.Id,},
                         Id: obj.Id,
@@ -628,22 +625,12 @@ const RestructuringCom = (props: any, ref: any) => {
                       if (items?.Id === sub.Id) {
                         newObj = {
                           Title: obj?.Title,
-                          TaskType: {
-                            Id:obj.TaskType?.Id == undefined  ? ""  : obj.TaskType?.Id,
-                          },
+                          TaskType: {Id:obj.TaskType?.Id == undefined  ? ""  : obj.TaskType?.Id,},
                           Item_x0020_Type: obj.Item_x0020_Type,
                           Id: obj.Id,
                           siteIcon:obj.SiteIconTitle === undefined  ? obj.SiteIcon  : obj.SiteIconTitle,
-                          newSubChild: {
-                            Title: sub?.Title,
-                            TaskType: {
-                              Id:sub.TaskType?.Id == undefined  ? ""  : sub.TaskType?.Id,
-                            },
-                            Item_x0020_Type: sub.Item_x0020_Type,
-                            Id: sub.Id,
-                            siteIcon:sub.SiteIconTitle === undefined  ? sub.SiteIcon  : sub.SiteIconTitle,
-                          },
-                        };
+                          newSubChild: {Title: sub?.Title,TaskType: {Id:sub.TaskType?.Id == undefined  ? ""  : sub.TaskType?.Id,},Item_x0020_Type: sub.Item_x0020_Type,Id: sub.Id,siteIcon:sub.SiteIconTitle === undefined  ? sub.SiteIcon  : sub.SiteIconTitle,
+                          },};
                         newarrays?.push(obj);
                         setRestructuredItemarray(newarrays);
                         setCheckSubChilds(sub);
@@ -705,55 +692,27 @@ const RestructuringCom = (props: any, ref: any) => {
 
                         if (feature?.subRows != undefined &&feature?.subRows?.length > 0 &&!actionsPerformed &&items?.TaskType?.Id != 1) {
                           feature?.subRows?.map((activity: any) => {
-                            if (
-                              items?.Id !== activity.Id &&
-                              activity?.TaskType?.Id != 2
-                            ) {
+                            if (items?.Id !== activity.Id &&activity?.TaskType?.Id != 2) {
                               activity.isRestructureActive = true;
                               if ((activity.TaskType?.Id == 1 ||  activity.TaskType?.Id == 3) &&activity?.siteType !== items?.siteType) {
                                 activity.isRestructureActive = false;
                               }
-                              if (items?.TaskType?.Id == 3 &&activity?.TaskType?.Id == 3
-                              ) {activity.isRestructureActive = false;
+                              if (items?.TaskType?.Id == 3 &&activity?.TaskType?.Id == 3) {
+                                activity.isRestructureActive = false;
                               }
                             } else {
                               if (items?.Id === activity.Id) {
-                                newObj = {Title: obj?.Title,TaskType: {  Id:    obj.TaskType?.Id == undefined      ? ""      : obj.TaskType?.Id,
-                                  },
+                                  newObj = {Title: obj?.Title,TaskType: {  Id:    obj.TaskType?.Id == undefined      ? ""      : obj.TaskType?.Id,},
                                   Item_x0020_Type: obj.Item_x0020_Type,
                                   Id: obj.Id,
-                                  siteIcon:
-                                    obj.SiteIconTitle === undefined
-                                      ? obj.SiteIcon
-                                      : obj.SiteIconTitle,
-                                  newSubChild: {
-                                    Title: sub?.Title,
-                                    TaskType: {
-                                      Id:
-                                        sub.TaskType?.Id == undefined
-                                          ? ""
-                                          : sub.TaskType?.Id,
-                                    },
-                                    Item_x0020_Type: sub.Item_x0020_Type,
-                                    Id: sub.Id,
-                                    siteIcon:
-                                      sub.SiteIconTitle === undefined
-                                        ? sub.SiteIcon
-                                        : sub.SiteIconTitle,
-                                    newFeatChild: {
-                                      Title: feature?.Title,
-                                      TaskType: {
-                                        Id:
-                                          feature.TaskType?.Id == undefined
-                                            ? ""
-                                            : feature.TaskType?.Id,
-                                      },
-                                      Item_x0020_Type: feature.Item_x0020_Type,
-                                      Id: feature.Id,
-                                      siteIcon:
-                                        feature.SiteIconTitle === undefined
-                                          ? feature.SiteIcon
-                                          : feature.SiteIconTitle,
+                                  siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon : obj.SiteIconTitle,
+                                  newSubChild: {Title: sub?.Title,TaskType: {Id:sub.TaskType?.Id == undefined? "" : sub.TaskType?.Id,},
+                                  Item_x0020_Type: sub.Item_x0020_Type,
+                                  Id: sub.Id,siteIcon:sub.SiteIconTitle === undefined? sub.SiteIcon: sub.SiteIconTitle,
+                                  newFeatChild: {Title: feature?.Title,TaskType: {Id:feature.TaskType?.Id == undefined? "": feature.TaskType?.Id,},
+                                  Item_x0020_Type: feature.Item_x0020_Type,
+                                  Id: feature.Id,
+                                  siteIcon:feature.SiteIconTitle === undefined? feature.SiteIcon: feature.SiteIconTitle,
                                     },
                                   },
                                 };
@@ -763,9 +722,7 @@ const RestructuringCom = (props: any, ref: any) => {
                                 }
                                 setRestructuredItemarray(newarrays);
                                 setCheckSubChilds(feature);
-                                newChildarray?.push(
-                                  newObj.newSubChild.newFeatChild
-                                );
+                                newChildarray?.push(newObj.newSubChild.newFeatChild);
                                 setRestructureChecked(newChildarray);
                                 ArrayTest?.push(newObj);
                                 actionsPerformed = true;
@@ -773,33 +730,14 @@ const RestructuringCom = (props: any, ref: any) => {
                               } 
                             }
 
-                            if (
-                              activity?.subRows != undefined &&
-                              activity?.subRows?.length > 0 &&
-                              !actionsPerformed &&
-                              items?.TaskType?.Id != 1
-                            ) {
+                            if (activity?.subRows != undefined && activity?.subRows?.length > 0 && !actionsPerformed && items?.TaskType?.Id != 1) {
                               activity?.subRows?.map((wrkstrm: any) => {
-                                if (
-                                  items?.Id !== wrkstrm.Id &&
-                                  wrkstrm?.TaskType?.Id != 2
-                                ) {
+                                if (items?.Id !== wrkstrm.Id &&wrkstrm?.TaskType?.Id != 2) {
                                   wrkstrm.isRestructureActive = true;
-                                  wrkstrm.Restructuring =
-                                    wrkstrm?.PortfolioTypeCheck == "Component"
-                                      ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                                      : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
-                                  if (
-                                    (wrkstrm.TaskType?.Id == 1 ||
-                                      wrkstrm.TaskType?.Id == 3) &&
-                                    wrkstrm?.siteType !== items?.siteType
-                                  ) {
+                                  if ((wrkstrm.TaskType?.Id == 1 ||  wrkstrm.TaskType?.Id == 3) &&wrkstrm?.siteType !== items?.siteType) {
                                     wrkstrm.isRestructureActive = false;
                                   }
-                                  if (
-                                    items?.TaskType?.Id == 3 &&
-                                    wrkstrm?.TaskType?.Id == 3
-                                  ) {
+                                  if (items?.TaskType?.Id == 3 &&wrkstrm?.TaskType?.Id == 3) {
                                     wrkstrm.isRestructureActive = false;
                                   }
                                 } else {
@@ -814,12 +752,7 @@ const RestructuringCom = (props: any, ref: any) => {
                                         siteIcon: sub.SiteIconTitle === undefined   ? sub.SiteIcon   : sub.SiteIconTitle,
                                         newFeatChild: {
                                           Title: feature?.Title,
-                                          TaskType: {
-                                            Id:
-                                              feature.TaskType?.Id == undefined
-                                                ? ""
-                                                : feature.TaskType?.Id,
-                                          },
+                                          TaskType: { Id:feature.TaskType?.Id == undefined ? "" : feature.TaskType?.Id,},
                                           Item_x0020_Type:
                                             feature.Item_x0020_Type,
                                           Id: feature.Id,
@@ -836,9 +769,7 @@ const RestructuringCom = (props: any, ref: any) => {
                                     }
                                     setRestructuredItemarray(newarrays);
                                     setCheckSubChilds(feature);
-                                    newChildarray?.push(
-                                      newObj.newSubChild.newFeatChild
-                                    );
+                                    newChildarray?.push(newObj.newSubChild.newFeatChild);
                                     setRestructureChecked(newChildarray);
                                     ArrayTest?.push(newObj);
                                     actionsPerformed = true;
@@ -866,23 +797,7 @@ const RestructuringCom = (props: any, ref: any) => {
                                             Item_x0020_Type:sub.Item_x0020_Type,
                                             Id: sub.Id,
                                             siteIcon:sub.SiteIconTitle === undefined  ? sub.SiteIcon  : sub.SiteIconTitle,
-                                            newFeatChild: {
-                                              Title: feature?.Title,
-                                              TaskType: {
-                                                Id:
-                                                  feature.TaskType?.Id ==
-                                                  undefined
-                                                    ? ""
-                                                    : feature.TaskType?.Id,
-                                              },
-                                              Item_x0020_Type:
-                                                feature.Item_x0020_Type,
-                                              Id: feature.Id,
-                                              siteIcon:
-                                                feature.SiteIconTitle ===
-                                                undefined
-                                                  ? feature.SiteIcon
-                                                  : feature.SiteIconTitle,
+                                            newFeatChild: {Title: feature?.Title,TaskType: {Id:  feature.TaskType?.Id ==  undefined    ? ""    : feature.TaskType?.Id,},Item_x0020_Type:  feature.Item_x0020_Type,Id: feature.Id,siteIcon:feature.SiteIconTitle ===undefined  ? feature.SiteIcon  : feature.SiteIconTitle,
                                             },
                                           },
                                         };
@@ -892,9 +807,7 @@ const RestructuringCom = (props: any, ref: any) => {
                                         }
                                         setRestructuredItemarray(newarrays);
                                         setCheckSubChilds(feature);
-                                        newChildarray?.push(
-                                          newObj.newSubChild.newFeatChild
-                                        );
+                                        newChildarray?.push(newObj.newSubChild.newFeatChild);
                                         setRestructureChecked(newChildarray);
                                         ArrayTest?.push(newObj);
                                         actionsPerformed = true;
@@ -922,9 +835,7 @@ const RestructuringCom = (props: any, ref: any) => {
             }else if(restructureItem?.[0].TaskType?.Id === 3 && !restructureItem.some((obj : any) => Array.isArray(obj.subRows) && obj.subRows.length > 0)){
               topCompo = true;
             }
-            
-            
-          }
+            }
         }
       }else if (restructureItem[0]?.Item_x0020_Type === "Sprint") {
         let newarrays: any = [];
@@ -5516,7 +5427,15 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                     props?.queryItems?.Item_x0020_Type == 'Component' &&  (newItemBackUp == undefined || newItemBackUp == null) && restructureItem[0]?.TaskType?.Id == 2 ?
                     'After restructuring selected item becomes Activity inside' : (
                       props?.queryItems?.Item_x0020_Type == 'Component' &&  (newItemBackUp == undefined || newItemBackUp == null) && restructureItem[0]?.TaskType?.Id == 3 ?
-                      'After restructuring selected item becomes Activity inside' : 'Selected items will restructure inside '
+                      'After restructuring selected item becomes Activity inside' : (
+                        props?.queryItems !== undefined && props?.queryItems !== null && props?.queryItems?.TaskType?.Id == 1 &&
+                        (newItemBackUp == undefined || newItemBackUp == null) && restructureItem[0]?.TaskType?.Id == 3 ? 'After restructuring selected item becomes Task inside' :
+                        (
+                          props?.queryItems !== undefined && props?.queryItems !== null && props?.queryItems?.TaskType?.Id == 1 &&
+                        (newItemBackUp == undefined || newItemBackUp == null) && restructureItem[0]?.TaskType?.Id == 2 ? 'After restructuring selected item becomes Workstream inside' :
+                                 'Selected items will restructure inside '
+                        )
+                      )  
                     )
                       )))
                 }
