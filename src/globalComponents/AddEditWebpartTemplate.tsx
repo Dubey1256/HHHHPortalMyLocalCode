@@ -678,7 +678,7 @@ const AddEditWebpartTemplate = (props: any) => {
                                 {DashboardTemplate != undefined && DashboardTemplate?.length > 0 && DashboardTemplate.map((items: any, index: any) => {
                                     return (
                                         <>
-                                            <input type="radio" value={items?.WebpartTitle} checked={items?.WebpartTitle == selectedTemplate} className={index != 0 ? "radio" : "radio ms-3"} onClick={(e: any) => SelectedTemplate(true, items, index)} />
+                                            <input type="radio" value={items?.WebpartTitle} checked={items?.WebpartTitle == selectedTemplate} className={index == 0 ? "radio" : "radio ms-3"} onClick={(e: any) => SelectedTemplate(true, items, index)} />
                                             {items?.WebpartTitle}
 
                                         </>
