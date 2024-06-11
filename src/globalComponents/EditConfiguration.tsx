@@ -7,6 +7,7 @@ import { myContextValue } from "./globalCommon";
 import Picker from "./EditTaskPopup/SmartMetaDataPicker";
 import PageLoader from '../globalComponents/pageLoader';
 import AddConfiguration from "./AddConfiguration";
+// import WebPartDisplay from "./DisplayDashBoardWebpart";
 let portfolioColor: any = '#057BD0';
 let AutoCompleteItemsArray: any = [];
 var AllSitesData: any = [];
@@ -115,6 +116,8 @@ const EditConfiguration = (props: any) => {
             // Remove the dragged item from its original position
             updatedItems[index].ArrayValue.splice(dragItem.Current, 1);
 
+            if(updatedItems[dragItem.Current].length ===0)
+            updatedItems[dragItem.Current].ArrayValue.push(draggedItemContent)
             // Insert the dragged item at the new position
             //  updatedItems[index].ArrayValue.splice(targetIndex, 0, draggedItemContent);
             updatedItems[dragOverItem?.CurrentIndex].ArrayValue.splice(targetIndex, 0, draggedItemContent);
@@ -123,11 +126,16 @@ const EditConfiguration = (props: any) => {
                 if (dragOverItem.CurrentIndex === index)
                     item?.ArrayValue?.forEach((subChild: any, indexChild: any) => {
                         if (subChild?.WebpartPosition != undefined) {
-                            subChild.WebpartPosition.Row = dragOverItem.CurrentIndex;
-                            subChild.WebpartPosition.Column = indexChild + 1;
+                            subChild.WebpartPosition.Row = indexChild + 1;
+                            subChild.WebpartPosition.Column = (dragOverItem.CurrentIndex + 1);
                         }
                     })
             })
+            updatedItems?.forEach((item: any, Itemindex: any) => {
+                if (item?.ArrayValue?.length === 0)
+                    updatedItems.splice(Itemindex, 1);
+            })
+
             dragItem.Current = null;
             dragOverItem.Current = null;
 
@@ -160,8 +168,8 @@ const EditConfiguration = (props: any) => {
                 if (dragOverItem.CurrentIndex === index)
                     item?.ArrayValue?.forEach((subChild: any, indexChild: any) => {
                         if (subChild?.WebpartPosition != undefined) {
-                            subChild.WebpartPosition.Row = dragOverItem.CurrentIndex;
-                            subChild.WebpartPosition.Column = indexChild + 1;
+                            subChild.WebpartPosition.Row = indexChild + 1;
+                            subChild.WebpartPosition.Column = (dragOverItem.CurrentIndex + 1);
                         }
 
                     })
@@ -178,8 +186,7 @@ const EditConfiguration = (props: any) => {
     const LoadSmartFav = () => {
 
         let SmartFavData: any = []
-        if (props?.SingleWebpart != undefined && props?.SingleWebpart == true)
-            setIsCheck(true);
+
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
         web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'Smartfavorites'").getAll().then((data: any) => {
             data.forEach((config: any) => {
@@ -328,84 +335,25 @@ const EditConfiguration = (props: any) => {
     const SaveConfigPopup = async () => {
         try {
             let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then(async (data: any) => {
-                let result = data?.length + 1;
-                if (props?.SingleWebpart == true) {
-                    let FilteredData = data?.filter((config: any) => config?.Value == DashboardId)[0];
-                    if (props?.DashboardConfigBackUp && NewItem[0]?.Id !== undefined) {
-                        props.DashboardConfigBackUp.forEach((item: any) => {
-                            if (item?.Id !== undefined && item.Id === NewItem[0].Id) {
-                                Object.keys(NewItem[0]).forEach((key) => {
-                                    if (key in item) {
-                                        item[key] = NewItem[0][key];
-                                        if (item?.FilterType == 'Categories') {
-                                            let extractedData = TaskCategoriesData.map((item: any) => {
-                                                return { ID: item.Id, Id: item.Id, Title: item.Title };
-                                            });
-                                            item.Status = extractedData != undefined && extractedData?.length > 0 ? extractedData : []
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                    }
-                    await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(FilteredData.Id).update({ Title: FilteredData?.Title, Configurations: JSON.stringify(props?.DashboardConfigBackUp) })
-                        .then(async (res: any) => {
-                            setNewItem([]);
-                            props?.CloseConfigPopup(true)
-                            if (ContextData != undefined && ContextData?.callbackFunction != undefined)
-                                ContextData?.callbackFunction(false);
-                        }).catch((err: any) => {
-                            console.log(err);
-                        })
-                }
-                else {
-                    let newArray = [...NewItem];
-                    newArray?.forEach((item: any, Itemindex: any) => {
-                        delete item.IsDefaultTile;
-                        delete item.selectedSmartFav;
-                        delete item?.SmatFavSearchKey
-                        if (item?.IsShowTile === true)
-                            item.TileName = item.WebpartTitle.replaceAll(" ", "")
-                        else if (item?.IsShowTile != true)
-                            item.TileName = '';
-                        delete item.IsShowTile;
-                        if (item?.FilterType == 'Categories') {
-                            let extractedData = TaskCategoriesData.map((item: any) => {
-                                return { ID: item.Id, Id: item.Id, Title: item.Title };
-                            });
-                            item.Status = extractedData != undefined && extractedData?.length > 0 ? extractedData : []
-                        }
-                    })
-                    setNewItem(newArray);
-                    if (props?.EditItem != undefined && props?.EditItem != '') {
-                        await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(props?.EditItem?.Id).update({ Title: DashboardTitle, Configurations: JSON.stringify(NewItem) })
-                            .then(async (res: any) => {
-                                setNewItem([]);
-                                props?.CloseConfigPopup(true)
-                                if (props?.SingleWebpart == true) {
-                                    if (ContextData != undefined && ContextData?.callbackFunction != undefined)
-                                        ContextData?.callbackFunction(false);
-                                }
-
-                            }).catch((err: any) => {
-                                console.log(err);
-                            })
-                    }
-                    else {
-                        await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: DashboardTitle, Key: "DashBoardConfigurationId", Value: result != undefined ? result.toString() : undefined, Configurations: JSON.stringify(NewItem) })
-                            .then(async (res: any) => {
-                                setNewItem([]);
-                                props?.CloseConfigPopup(true)
-                            }).catch((err: any) => {
-                                console.log(err);
-                            })
-                    }
-                }
-
-            }).catch((err: any) => {
-                console.log(err);
+            let arrayItems: any = [];
+            NewItem?.forEach((config: any) => {
+                arrayItems = arrayItems.concat(config.ArrayValue);
             })
+            arrayItems?.forEach((filter: any) => {
+                filter.selectedSmartFav = {};
+            })
+            await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(props?.EditItem?.Id).update({ Title: DashboardTitle, Configurations: JSON.stringify(arrayItems) })
+                .then(async (res: any) => {
+                    setNewItem([]);
+                    props?.CloseConfigPopup(true)
+                    if (props?.SingleWebpart == true) {
+                        if (ContextData != undefined && ContextData?.callbackFunction != undefined)
+                            ContextData?.callbackFunction(false);
+                    }
+
+                }).catch((err: any) => {
+                    console.log(err);
+                })
 
         } catch (error) {
             console.log(error);
@@ -787,19 +735,31 @@ const EditConfiguration = (props: any) => {
     }
     const AddColumn = () => {
         const copyListItems = [...NewItem];
-        let ColumnsValue: any = {};
-        ColumnsValue.ColumnTitle = 'Column' + (copyListItems.length + 1);
-        ColumnsValue.ColumnValue = copyListItems.length + 1;
-        ColumnsValue.ArrayValue = [];
-        copyListItems.push(ColumnsValue);
-        copyListItems?.forEach((obj: any) => {
-            obj.ClassValues = "col-sm-" + 12 / copyListItems.length;
-        })
-        setNewItem(copyListItems);
+        if (copyListItems?.length < 3) {
+            let ColumnsValue: any = {};
+            ColumnsValue.ColumnTitle = 'Column' + (copyListItems.length + 1);
+            ColumnsValue.ColumnValue = copyListItems.length + 1;
+            ColumnsValue.ArrayValue = [];
+            copyListItems.push(ColumnsValue);
+            copyListItems?.forEach((obj: any) => {
+                obj.ClassValues = "col-sm-" + 12 / copyListItems.length;
+            })
+            setNewItem(copyListItems);
+        }
     }
-    // const getCurrentData = async (allSite: any, count: number) => {
-    //     setType((prevCheckboxes: any) => ({...prevCheckboxes, allSite}));
-    // }
+    const deleteExistingTemplate = async (itemValue: any, arrayIndex: number) => {
+        const updatedItems = [...NewItem];
+        // Remove the dragged item from its original position
+        updatedItems?.forEach((item: any, index: any) => {
+            if (index === arrayIndex)
+                item?.ArrayValue?.forEach((subChild: any, indexChild: any) => {
+                    if (itemValue.Id === subChild?.Id) {
+                        item?.ArrayValue?.splice(indexChild, 1);
+                    }
+                })
+        })
+        setNewItem(updatedItems);
+    }
     return (
         <>
             <Panel onRenderHeader={CustomHeaderConfiguration}
@@ -833,7 +793,7 @@ const EditConfiguration = (props: any) => {
 
                                                                     {" "}
                                                                     <span title="Edit" className="light ml-12 svg__icon--editBox svg__iconbox" onClick={(e) => OpenConfigPopup(subitem)} ></span>
-
+                                                                    <span title="Edit" className="light ml-12  svg__icon--cross svg__iconbox" onClick={(e) => deleteExistingTemplate(subitem ,index)} ></span>
                                                                 </div>
                                                             </>
                                                         )
@@ -846,7 +806,7 @@ const EditConfiguration = (props: any) => {
                             <div className="col-sm-2 text-end">
                                 <div className='form-label full-width mb-1 alignCenter' onClick={(e) => AddColumn()}><a className="alignCenter hreflink ml-auto siteColor"><span className="svg__iconbox svg__icon--Plus mini"></span> Add Column</a></div>
                                 <div className='form-label full-width alignCenter' onClick={(e) => AddWebpartPopup()}><a className="alignCenter hreflink ml-auto siteColor"> <span className="svg__iconbox svg__icon--Plus mini"></span> Add WebPart</a></div>
-                                {IsWebPartPopup && <div className='form-label full-width alignCenter' >
+                                {IsWebPartPopup && <div className='form-label full-width' >
 
                                     {IsWebPartPopup && ExistingWeparts?.length > 0 && ExistingWeparts?.map((item: any, index: any) => {
                                         return (
