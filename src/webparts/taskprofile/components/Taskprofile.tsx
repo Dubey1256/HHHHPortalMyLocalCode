@@ -317,10 +317,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     if (taskDetails["TaskCategories"] != undefined && taskDetails["TaskCategories"].length > 0) {
 
       taskDetails["TaskCategories"]?.map((item: any, index: any) => {
-        if(item?.Title=="User Experience - UX"||item?.Title=="Design"){
+        if(item?.Title=="UX-New"){
           DesignTemplates=true
-        }else{
-          DesignTemplates=false
         }
         if ((index == taskDetails["TaskCategories"]?.length - 1) || (taskDetails["TaskCategories"].length == 1)) {
           category = category + item?.Title
@@ -3353,8 +3351,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                          {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((tab: any, index: any) => {
                           if(index>0){
                             return(
-                             
-                              <Tab key={index}  label={tab?.setTitle!=""?tab?.setTitle:`Set${index}`} value={index} />
+                              <Tab key={index} label={`Set${index}`} value={index} />
                             )
                           }
                          

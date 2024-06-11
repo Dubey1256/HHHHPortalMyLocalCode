@@ -224,7 +224,6 @@ const CreateActivity = (props: any) => {
       groupedProjectData = results?.ProjectData;
       AllProjects = results?.FlatProjectData
     }
-    
     let Project :any= {};
     if (globalContextData?.tagProjectFromTable == true) {
       if (props?.UsedFrom == "ProjectManagement" && props?.selectedItem?.Id != undefined && props?.selectedItem?.Item_x0020_Type == "Sprint") {
@@ -465,6 +464,7 @@ const CreateActivity = (props: any) => {
         }
       });
     }
+    props?.selectedItem?.NoteCall
 
 
     if (AllMetadata?.length > 0 && ClientCategoriesData?.length > 0) {

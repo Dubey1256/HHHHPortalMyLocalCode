@@ -1400,8 +1400,7 @@ function ReadyMadeTable(SelectedProp: any) {
         if (items != undefined && SelectedProp?.configration !== "AllAwt") {
             items.subRows = items?.subRows?.concat(findActivity)
             items.subRows = items?.subRows?.concat(findTasks)
-        }
-        else {
+        } else {
             var temp: any = {};
             temp.Title = "Others";
             temp.TaskID = "";
@@ -1420,7 +1419,7 @@ function ReadyMadeTable(SelectedProp: any) {
             temp.Author = "";
             temp.subRows = findTasks
             findActivity.push(temp)
-                
+          
             setData(findActivity);
             executeOnce()
             setLoaded(true);
@@ -2759,7 +2758,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
                 }
             </> :
-                <>{childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length >= 1 ? <button title='Tag Task' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={selectedTask}>Tag Task</button> : <button title='Tag Task' disabled={true}>Tag Task</button>}</>
+                <>{childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length >= 1 ? <button title='Tag Task' className="btn btn-primary" onClick={selectedTask}>Tag Task</button> : <button  className="btn btn-primary"  title='Tag Task' disabled={true}>Tag Task</button>}</>
             }
 
         </>
