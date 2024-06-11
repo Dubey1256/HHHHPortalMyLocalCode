@@ -2352,6 +2352,8 @@ const EditTaskPopup = (Items: any) => {
                     EditData.TeamMembers?.length > 0
                 ) {
                     setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"QA")
+                    setWorkingAction(EditData?.WorkingAction)
                 } else {
                     setWorkingMember(143);
                 }
@@ -2364,8 +2366,12 @@ const EditTaskPopup = (Items: any) => {
                         EditData.TeamMembers?.length > 0) && (EditData.TeamMembers?.length != EditData?.AssignedTo?.length)
                 ) {
                     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"Development")
+                    setWorkingAction(EditData?.WorkingAction)
                 } else if (EditData.ResponsibleTeam?.length > 0) {
                     setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"Development")
+                    setWorkingAction(EditData?.WorkingAction)
                 }
                 else {
                     setWorkingMember(0);
@@ -2406,16 +2412,24 @@ const EditTaskPopup = (Items: any) => {
                         setTaskStatus(item.taskStatusComment);
                     }
                 });
+                EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"HHHHTEAM")
+                setWorkingAction(EditData?.WorkingAction)
             }
             if (StatusData.value == 90) {
                 EditData.IsTodaysTask = false;
                 EditData.workingThisWeek = false;
                 if (EditData.siteType == "Offshore%20Tasks") {
                     setWorkingMember(36);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"HHHHTEAM")
+                    setWorkingAction(EditData?.WorkingAction)
                 } else if (DesignStatus) {
                     setWorkingMember(301);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"HHHHTEAM")
+                    setWorkingAction(EditData?.WorkingAction)
                 } else {
                     setWorkingMember(42);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"HHHHTEAM")
+                    setWorkingAction(EditData?.WorkingAction)
                 }
                 EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY");
                 StatusOptions?.map((item: any) => {
@@ -2431,6 +2445,43 @@ const EditTaskPopup = (Items: any) => {
 
     //  ###################### This is Common Function for Chnage The Team Members According to Change Status ######################
 
+    const removeWorkingMembers=(workingActionValue:any,FilterType:any)=>{
+        workingActionValue.map((workingActions:any)=>{
+            if(workingActions?.Title=="WorkingDetails"){
+                workingActions?.InformationData?.map((info:any)=>{
+                    info?.WorkingMember.map((userInfo:any,index:any)=>{
+                        taskUsers?.map((TaskUserData:any)=>{       
+                                if(FilterType == "QA"){
+                                    if ( TaskUserData.TimeCategory == "Development" || TaskUserData.TimeCategory == "Design" ) {
+                                        if (userInfo?.Id == TaskUserData?.AssingedToUserId) {
+                                            info?.WorkingMember.splice(index,1)
+                                        }
+                                        
+                                       
+                                    }
+                                        
+                                }else if(FilterType == "Development"){
+                                    if (TaskUserData.TimeCategory == "QA") {
+                                        if (userInfo?.Id == TaskUserData?.AssingedToUserId) {
+                                            info?.WorkingMember.splice(index,1)
+                                        }
+                                       
+                                    }             
+                                }
+                                else if(FilterType=="HHHHTEAM"){
+                                    info?.WorkingMember.splice(index,1)
+                                }
+                            
+                            
+
+                        })
+                    })
+                }) 
+            }
+        })
+        return  workingActionValue
+    }
+
     const setWorkingMemberFromTeam = (
         filterArray: any,
         filterType: any,
@@ -2440,19 +2491,17 @@ const EditTaskPopup = (Items: any) => {
         let updateUserArray1: any = [];
         filterArray.map((TeamItems: any) => {
             taskUsers?.map((TaskUserData: any) => {
-                if (TeamItems.Id == TaskUserData.AssingedToUserId) {
+                if ( (TaskUserData?.Company !="HHHH")&& (TeamItems.Id == TaskUserData.AssingedToUserId)) {
                     if (filterType == "Development") {
-                        if (
-                            TaskUserData.TimeCategory == "Development" ||
-                            TaskUserData.TimeCategory == "Design"
-                        ) {
+                        if (TaskUserData.TimeCategory == "Development" || TaskUserData.TimeCategory == "Design" ) {
                             tempArray.push(TaskUserData);
                             EditData.TaskAssignedUsers = tempArray;
                             updateUserArray1.push(TaskUserData.AssingedToUser);
                             setTaskAssignedTo(updateUserArray1);
                         }
-                    } else {
-                        if (TaskUserData.TimeCategory == filterType) {
+                    } 
+                    else {
+                        if (   TaskUserData.TimeCategory == filterType) {
                             tempArray.push(TaskUserData);
                             EditData.TaskAssignedUsers = tempArray;
                             updateUserArray1.push(TaskUserData.AssingedToUser);
@@ -5299,16 +5348,10 @@ const EditTaskPopup = (Items: any) => {
 
     const onRenderCustomApproverHeader = () => {
         return (
-            <div
-                className={
-                    ServicesTaskCheck
-                        ? "d-flex full-width pb-1 serviepannelgreena"
-                        : "d-flex full-width pb-1"
-                }
-            >
-                <div className="subheading siteColor"> {useFor != "" ? `Select${useFor}` : `Select Approver`}</div>
+            <>
+                <div className="subheading"> {useFor != "" ? `Select ${useFor}` : `Select Approver`}</div>
                 <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
-            </div>
+            </>
         );
     };
 
@@ -7369,11 +7412,12 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 && (
-                                                                            <span
-                                                                                onClick={() => openBottleneckPopup("Bottleneck")}
-                                                                                title="Add User Popup"
-                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                            ></span>
+                                                                            <span className="hover-text">
+                                                                                <span onClick={() => openBottleneckPopup("Bottleneck")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    Add User
+                                                                                </span>
+                                                                            </span>
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -7533,10 +7577,12 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 ? (
-                                                                            <span onClick={() => openBottleneckPopup("Attention")}
-                                                                                title="Add User Popup"
-                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                            ></span>
+                                                                             <span className="hover-text">
+                                                                             <span onClick={() => openBottleneckPopup("Attention")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                             <span className="tooltip-text pop-left">
+                                                                                 Add User
+                                                                             </span>
+                                                                         </span>
                                                                         ) : null}
                                                                     </div>
                                                                 </div>
@@ -7655,11 +7701,12 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 ? (
-                                                                            <span
-                                                                                onClick={() => openBottleneckPopup("Phone")}
-                                                                                title="Add User Popup"
-                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                            ></span>
+                                                                             <span className="hover-text">
+                                                                             <span onClick={() => openBottleneckPopup("Phone")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                             <span className="tooltip-text pop-left">
+                                                                                 Add User
+                                                                             </span>
+                                                                         </span>
                                                                         ) : null}
                                                                     </div>
                                                                 </div>
@@ -10761,7 +10808,7 @@ const EditTaskPopup = (Items: any) => {
                 onDismiss={closeApproverPopup}
                 isBlocking={ApproverPopupStatus}
                 type={PanelType.medium}
-                className="mb-2">
+               >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
                     <div className="">
                         <div className="col-sm-12 categScroll" style={{ height: "auto" }}>
@@ -10790,7 +10837,7 @@ const EditTaskPopup = (Items: any) => {
                                 </div>
                             ) : null}
                             {ApproverData?.length > 0 ? (
-                                <div className="border full-width my-1 p-1">
+                                <div className="ps-0 full-width my-1 p-1">
                                     {ApproverData?.map((val: any) => {
                                         return (
                                             <a className="hreflink block me-1">
@@ -10858,8 +10905,8 @@ const EditTaskPopup = (Items: any) => {
                             </ul>
                         </div>
                     </div>
-                    <footer className="fixed-bottom">
-                        <div className="align-items-center d-flex pull-right px-4 py-2">
+                    <footer className="modal-footer">
+                    
                             <button
                                 type="button"
                                 className="btn btn-primary px-3 mx-1"
@@ -10874,7 +10921,7 @@ const EditTaskPopup = (Items: any) => {
                             >
                                 Cancel
                             </button>
-                        </div>
+                        
                     </footer>
                 </div>
             </Panel>
