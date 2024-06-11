@@ -936,7 +936,7 @@ const EditTaskPopup = (Items: any) => {
                     setImmediateStatus(item.TaskCategories?.some((category: any) => category.Title === "Immediate"));
                     setOnlyCompletedStatus(item.TaskCategories?.some((category: any) => category.Title === "Only Completed"));
                     setDesignStatus(item.TaskCategories?.some((category: any) => category.Title === "Design" || category.Title === "User Experience - UX"));
-                    setDesignNewTemplates(item.TaskCategories?.some((category: any) =>category.Title === "User Experience - UX"))
+                    setDesignNewTemplates(item.TaskCategories?.some((category: any) =>category.Title === "UX-New"))
                     let checkForApproval: any = item.TaskCategories?.some((category: any) => category.Title === "Approval")
                     if (checkForApproval) {
                         setApprovalStatus(true);
@@ -1618,6 +1618,9 @@ const EditTaskPopup = (Items: any) => {
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let uniqueIds: any = {};
+        if(selectCategoryData?.length==0){
+            setDesignNewTemplates(false)
+        }
         let checkForOnHoldAndBottleneck: any = BackupTaskCategoriesData?.some((category: any) => category.Title === "On-Hold" && category.Title === "Bottleneck");
         let checkForDesign: any = BackupTaskCategoriesData?.some((category: any) => category.Title === "Design");
         if (usedFor == "For-Panel") {
@@ -1649,7 +1652,7 @@ const EditTaskPopup = (Items: any) => {
                     }
                     setSendCategoryName(selectedData?.Title);
                 }
-                if(selectedData?.Title=="User Experience - UX"){
+                if(selectedData?.Title=="UX-New"){
                     setDesignNewTemplates(true)
                 }
             })
@@ -1663,7 +1666,7 @@ const EditTaskPopup = (Items: any) => {
                 } else {
                     BackupTaskCategoriesData.push(existingData);
                 }
-                if(existingData?.Title=="User Experience - UX"){
+                if(existingData?.Title=="UX-New"){
                     setDesignNewTemplates(true)
                 }
             });
