@@ -93,8 +93,7 @@ let categoryTitle: any = "";
 let onHoldCategory: any = [];
 let globalSelectedProject: any = { PriorityRank: 1 };
 let oldWorkingAction: any = []
-let linkedportfoliopop:any;
-let portfoliopop:any;
+
 const EditTaskPopup = (Items: any) => {
     const Context = Items?.context;
     const AllListIdData = Items?.AllListId;
@@ -1380,11 +1379,9 @@ const EditTaskPopup = (Items: any) => {
     //  ******************************* this is Service And Component Portfolio Popup Related All function and CallBack *******************
     const OpenTeamPortfolioPopupFunction = (item: any, usedFor: any) => {
         if (usedFor == "Portfolio") {
-            portfoliopop=true,
             setOpenTeamPortfolioPopup(true);
         }
         if (usedFor == "Linked-Portfolios") {
-            linkedportfoliopop=true,
             setopenLinkedPortfolioPopup(true);
         }
     };
@@ -1487,22 +1484,10 @@ const EditTaskPopup = (Items: any) => {
 
                 EditDataBackup = updatedItem;
                 setEditData(updatedItem);
-            }else if (Type == "untagged") {
-                if (portfoliopop) {
-                    setTaggedPortfolioData(DataItem);
-                    setOpenTeamPortfolioPopup(false);
-                    portfoliopop=false
-                }
-                // Check if the linked portfolio popup is open
-                else if (linkedportfoliopop) {
-                    setLinkedPortfolioData(DataItem);
-                    LinkedPortfolioDataBackup = DataItem;
-                    setopenLinkedPortfolioPopup(false);
-                    linkedportfoliopop = false
-                }else{
-                    setOpenTeamPortfolioPopup(false);
-                    setopenLinkedPortfolioPopup(false);
-                }
+            } else if (Type == "untagged") {
+                setLinkedPortfolioData(DataItem);
+                LinkedPortfolioDataBackup = DataItem;
+                setOpenTeamPortfolioPopup(false);
             } else {
                 if (DataItem != undefined && DataItem.length > 0) {
                     if (DataItem[0]?.Item_x0020_Type !== "Project" || DataItem[0]?.Item_x0020_Type !== "Sprint") {
@@ -2352,6 +2337,8 @@ const EditTaskPopup = (Items: any) => {
                     EditData.TeamMembers?.length > 0
                 ) {
                     setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"QA")
+                    setWorkingAction(EditData?.WorkingAction)
                 } else {
                     setWorkingMember(143);
                 }
@@ -2364,8 +2351,12 @@ const EditTaskPopup = (Items: any) => {
                         EditData.TeamMembers?.length > 0) && (EditData.TeamMembers?.length != EditData?.AssignedTo?.length)
                 ) {
                     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"Development")
+                    setWorkingAction(EditData?.WorkingAction)
                 } else if (EditData.ResponsibleTeam?.length > 0) {
                     setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"Development")
+                    setWorkingAction(EditData?.WorkingAction)
                 }
                 else {
                     setWorkingMember(0);
@@ -2406,16 +2397,24 @@ const EditTaskPopup = (Items: any) => {
                         setTaskStatus(item.taskStatusComment);
                     }
                 });
+                EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"HHHHTEAM")
+                setWorkingAction(EditData?.WorkingAction)
             }
             if (StatusData.value == 90) {
                 EditData.IsTodaysTask = false;
                 EditData.workingThisWeek = false;
                 if (EditData.siteType == "Offshore%20Tasks") {
                     setWorkingMember(36);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"HHHHTEAM")
+                    setWorkingAction(EditData?.WorkingAction)
                 } else if (DesignStatus) {
                     setWorkingMember(301);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"HHHHTEAM")
+                    setWorkingAction(EditData?.WorkingAction)
                 } else {
                     setWorkingMember(42);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"HHHHTEAM")
+                    setWorkingAction(EditData?.WorkingAction)
                 }
                 EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY");
                 StatusOptions?.map((item: any) => {
@@ -2431,6 +2430,43 @@ const EditTaskPopup = (Items: any) => {
 
     //  ###################### This is Common Function for Chnage The Team Members According to Change Status ######################
 
+    const removeWorkingMembers=(workingActionValue:any,FilterType:any)=>{
+        workingActionValue.map((workingActions:any)=>{
+            if(workingActions?.Title=="WorkingDetails"){
+                workingActions?.InformationData?.map((info:any)=>{
+                    info?.WorkingMember.map((userInfo:any,index:any)=>{
+                        taskUsers?.map((TaskUserData:any)=>{       
+                                if(FilterType == "QA"){
+                                    if ( TaskUserData.TimeCategory == "Development" || TaskUserData.TimeCategory == "Design" ) {
+                                        if (userInfo?.Id == TaskUserData?.AssingedToUserId) {
+                                            info?.WorkingMember.splice(index,1)
+                                        }
+                                        
+                                       
+                                    }
+                                        
+                                }else if(FilterType == "Development"){
+                                    if (TaskUserData.TimeCategory == "QA") {
+                                        if (userInfo?.Id == TaskUserData?.AssingedToUserId) {
+                                            info?.WorkingMember.splice(index,1)
+                                        }
+                                       
+                                    }             
+                                }
+                                else if(FilterType=="HHHHTEAM"){
+                                    info?.WorkingMember.splice(index,1)
+                                }
+                            
+                            
+
+                        })
+                    })
+                }) 
+            }
+        })
+        return  workingActionValue
+    }
+
     const setWorkingMemberFromTeam = (
         filterArray: any,
         filterType: any,
@@ -2440,19 +2476,17 @@ const EditTaskPopup = (Items: any) => {
         let updateUserArray1: any = [];
         filterArray.map((TeamItems: any) => {
             taskUsers?.map((TaskUserData: any) => {
-                if (TeamItems.Id == TaskUserData.AssingedToUserId) {
+                if ( (TaskUserData?.Company !="HHHH")&& (TeamItems.Id == TaskUserData.AssingedToUserId)) {
                     if (filterType == "Development") {
-                        if (
-                            TaskUserData.TimeCategory == "Development" ||
-                            TaskUserData.TimeCategory == "Design"
-                        ) {
+                        if (TaskUserData.TimeCategory == "Development" || TaskUserData.TimeCategory == "Design" ) {
                             tempArray.push(TaskUserData);
                             EditData.TaskAssignedUsers = tempArray;
                             updateUserArray1.push(TaskUserData.AssingedToUser);
                             setTaskAssignedTo(updateUserArray1);
                         }
-                    } else {
-                        if (TaskUserData.TimeCategory == filterType) {
+                    } 
+                    else {
+                        if (   TaskUserData.TimeCategory == filterType) {
                             tempArray.push(TaskUserData);
                             EditData.TaskAssignedUsers = tempArray;
                             updateUserArray1.push(TaskUserData.AssingedToUser);
