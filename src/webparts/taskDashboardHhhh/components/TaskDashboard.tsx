@@ -26,7 +26,6 @@ var AllTaskTimeEntries: any = [];
 var AllTasks: any = [];
 var timesheetListConfig: any = [];
 var currentUserId: any = '';
-let currenUserAssignedToUserId:any='';
 let todaysDrafTimeEntry: any = [];
 var RemarksData: any = []
 var currentUser: any = [];
@@ -72,6 +71,9 @@ const TaskDashboard = (props: any) => {
     const [UserImmediateTasks, setUserImmediateTasks] = React.useState([]);
     const [AllEmailTasks, setAllEmailTasks] = React.useState([]);
     const [AllBottleNeck, setAllBottleNeck] = React.useState([]);
+    const [AllFollowUp, setAllFollowUp] = React.useState([]);
+    const [AllFollowUpTask,setAllFollowUpTask] = React.useState([]);
+
     const [AllPriorityTasks, setAllPriorityTasks] = React.useState([]);
     const [workingTodayTasks, setWorkingTodayTasks] = React.useState([]);
     const [thisWeekTasks, setThisWeekTasks] = React.useState([]);
@@ -239,7 +241,7 @@ const TaskDashboard = (props: any) => {
 
     const workingEmailPermission = async () => {
         let IsWorkingEmailButtonVisible = await globalCommon.verifyComponentPermission("TaskDashboardWorkingEmail")
-        setWorkingEmailVisibility(IsWorkingEmailButtonVisible) 
+        setWorkingEmailVisibility(IsWorkingEmailButtonVisible)
     }
 
     const workingEmailRecipients = async () => {
@@ -426,6 +428,7 @@ const TaskDashboard = (props: any) => {
         let AllImmediates: any = [];
         let AllEmails: any = [];
         let AllBottleNeckTasks: any = [];
+        let AllFollowUpTasks: any = [];
         let AllPriority: any = [];
         let query =
             "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
@@ -538,6 +541,7 @@ const TaskDashboard = (props: any) => {
                             });
                         });
                         let isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
+                        let isFollowUpTask = checkUserExistence('Follow-up', task?.TaskCategories);
                         const isImmediate = checkUserExistence('Immediate', task?.TaskCategories);
                         const isEmailNotification = checkUserExistence('Email Notification', task?.TaskCategories);
                         const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
@@ -562,6 +566,9 @@ const TaskDashboard = (props: any) => {
                         }
                         if (isBottleneckTask) {
                             AllBottleNeckTasks.push(task)
+                        }
+                        if (isFollowUpTask) {
+                            AllFollowUpTasks.push(task)
                         }
                         if (isImmediate && task?.PercentComplete < 80) {
                             AllImmediates.push(task)
@@ -591,6 +598,7 @@ const TaskDashboard = (props: any) => {
                 setAllSitesTask(sortOnCreated(AllSiteTasks));
                 setCMSTasks(sortOnCreated(CMSTask));
                 setAllBottleNeck(sortOnCreated(AllBottleNeckTasks));
+                setAllFollowUp(sortOnCreated(AllFollowUpTasks))
                 const params = new URLSearchParams(window.location.search);
                 let query = params.get("UserId");
                 let userFound = false;
@@ -670,43 +678,16 @@ const TaskDashboard = (props: any) => {
         let workingTodayTask: any = [];
         let workingThisWeekTask: any = [];
         let bottleneckTask: any = [];
+        let followupTasks: any = [];
         let Immediates: any = [];
         let EmailsTasks: any = [];
         let approverTask: any = [];
-        // if (AllTasks?.length > 0 && currentUserId != undefined && currentUserId != '') {
-            
-        //     // AllTasks?.map((task: any) => {
-        //     //     let isBottleneckTask=false;
-        //     //     if (task?.WorkingAction?.length > 0) {
-        //     //         task?.WorkingAction?.forEach((data:any) => {
-        //     //           if (data?.Title === "Bottleneck") {
-                       
-        //     //                data?.InformationData?.forEach((userBottleneckTasks:any) => {
-        //     //                     if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currentUserId) {
-        //     //                            // userBottleneckTasks.TaggedUsers.isBottleneck = true;
-        //     //                            // AllBottleNeckTasks.push(userBottleneckTasks)
-        //     //                            isBottleneckTask=true;
-        //     //                        }
-        //     //                  });
-        //     //             }
-        //     //         });
-        //     //    }
-        //     //    let alreadyPushed = false;
-        //     //    if (isBottleneckTask ) {
-        //     //     bottleneckTask.push(task)
-        //     //     alreadyPushed = true;
-        //     // }
-        //     // });
-           
-        // }
         if (AllTasks?.length > 0 && currentUserId != undefined && currentUserId != '') {
-           
             AllTasks?.map((task: any) => {
-                
-              
                 const isCurrentUserAssigned = task?.AssignedToIds?.includes(currentUserId);
                 const isImmediate = checkUserExistence('Immediate', task?.TaskCategories);
                 const isEmailNotfication = checkUserExistence('Email Notification', task?.TaskCategories);
+                let isFollowUpTask = checkUserExistence('Follow-up', task?.TaskCategories);
                 let isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
                 let isBottleneckTaskNew = false;
                 if (task?.WorkingAction?.length > 0) {
@@ -746,6 +727,9 @@ const TaskDashboard = (props: any) => {
                     AllAssignedTask.push(task)
                     alreadyPushed = true;
                 }
+                if (isFollowUpTask && (isCurrentUserAssigned)) {
+                    followupTasks.push(task)
+                }
                 if (isImmediate && (isCurrentUserAssigned)) {
                     Immediates.push(task)
                 }
@@ -770,6 +754,7 @@ const TaskDashboard = (props: any) => {
         setWorkingTodayTasks(sortOnCreated(workingTodayTask))
         setThisWeekTasks(sortOnCreated(workingThisWeekTask))
         setBottleneckTasks(sortOnCreated(bottleneckTask))
+        setAllFollowUpTask(sortOnCreated(followupTasks))
     }
     const filterCurrentUserWorkingTodayTask = (UserId: any) => {
         let workingTodayTask: any = [];
@@ -1031,7 +1016,7 @@ const TaskDashboard = (props: any) => {
                                     <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
                                 </a>
                             </>
-                            : <span title={row?.original?.Author?.Title} className="alignIcon svg__iconbox svg__icon--defaultUser grey "></span>}
+                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
                 id: "CreateDate",
@@ -1110,8 +1095,8 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.original?.Title}
                         </a>
-                        {row?.original?.descriptionsSearch !== null &&  <span className='alignIcon'><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
-                        } 
+                        {row?.original?.descriptionsSearch !== null && <span className='alignIcon'><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
+                        }
                     </div>
                 ),
                 id: "Title",
@@ -1399,7 +1384,6 @@ const TaskDashboard = (props: any) => {
                 item.isAdmin = false;
                 if (currentUserId == item?.AssingedToUser?.Id) {
                     currentUser = item;
-                    currenUserAssignedToUserId=item.AssignedToUserId;
                     setCurrentUserData(item);
                 }
                 item.expanded = false;
@@ -1976,9 +1960,9 @@ const TaskDashboard = (props: any) => {
     const sendAllWorkingTodayTasks = async () => {
         let text = '';
         let emailRecipients: any = await workingEmailRecipients();
-        let workingTodayEmails = emailRecipients.map((recipient: any) => {return recipient?.Email})
+        let workingTodayEmails = emailRecipients.map((recipient: any) => { return recipient?.Email })
         workingTodayEmails = workingTodayEmails?.filter((user: any) => user != undefined)
-        
+
         // let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
         let to: any = workingTodayEmails;
         let finalBody: any = [];
@@ -2181,6 +2165,11 @@ const TaskDashboard = (props: any) => {
             setNameTop("All Bottleneck Tasks")
             setValue(AllBottleNeck)
         }
+        else if (Tabs == "AllFollowUp") {
+            setCurrentView(Tabs)
+            setNameTop("All Follow Up Tasks")
+            setValue(AllFollowUp)
+        }
         else if (Tabs == "AllSitesTask") {
             setCurrentView(Tabs)
             setNameTop("All Site's Tasks")
@@ -2282,6 +2271,9 @@ const TaskDashboard = (props: any) => {
                                     </li>
                                     <li id="DefaultViewSelectId" className={currentView == 'AllBottleNeck' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { AllSitesDats('AllBottleNeck') }}>
                                         Bottleneck Tasks
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'AllFollowUp' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { AllSitesDats('AllFollowUp') }}>
+                                        Follow Up Tasks
                                     </li>
                                     <li id="DefaultViewSelectId" className={currentView == 'AllSitesTask' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { AllSitesDats('AllSitesTask') }}>
                                         All Tasks
@@ -2403,6 +2395,20 @@ const TaskDashboard = (props: any) => {
                                             </div>}
                                     </div>
                                 </details>
+                                <details>
+                                    <summary>  Follow Up Tasks {'(' + AllFollowUpTask.length + ')'} </summary>
+                                    <div className='AccordionContent'>
+                                        {AllFollowUpTask?.length > 0 ?
+                                            <div className='Alltable border-0 dashboardTable '>
+                                                <>
+                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={AllFollowUpTask} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
+                                                </>
+                                            </div>
+                                            : <div className='text-center full-width'>
+                                                <span>No Follow Up Tasks Available</span>
+                                            </div>}
+                                    </div>
+                                </details>
                                 <details onDrop={(e: any) => handleDrop('AllTasks')}
                                     onDragOver={(e: any) => e.preventDefault()}>
                                     <summary>
@@ -2485,7 +2491,7 @@ const TaskDashboard = (props: any) => {
 
                         {/* <label className='f-16 fw-semibold'>{`Shareweb Tasks - ${CMSTasks?.length}`}</label>
                         <label className='f-16 fw-semibold'>{`Shareweb Tasks - ${CMSTasks?.length}`}</label> */}
-                        {currentView == 'AllImmediateTasks' || currentView == 'AllEmailTasks' || currentView == 'AllPriorityTasks' || currentView == 'assignedApproverTasks' || currentView == 'AllBottleNeck' || currentView == 'AllSitesTask' || currentView == 'CMSTasks' ? <article className="row">
+                        {currentView == 'AllImmediateTasks' || currentView == 'AllEmailTasks' || currentView == 'AllPriorityTasks' || currentView == 'assignedApproverTasks' || currentView == 'AllBottleNeck' || currentView == 'AllFollowUp'||currentView == 'AllSitesTask' || currentView == 'CMSTasks' ? <article className="row">
                             <div>
                                 <div>
                                     <label className='f-16 fw-semibold'>{` ${NameTop} - ${value?.length}`}</label>
@@ -2494,7 +2500,7 @@ const TaskDashboard = (props: any) => {
                                 <div className='AccordionContent'>
                                     {(value && value?.length > 0) ?
 
-                                        <div className='Alltable border-0 dashboardTable float-none'>
+                                        <div className='Alltable dashboardTable float-none'>
                                             <>
                                                 <GlobalCommanTable AllListId={AllListId} showPagination={true} columns={columnsName} data={value} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                                             </>
