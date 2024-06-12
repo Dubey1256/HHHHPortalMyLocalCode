@@ -1380,6 +1380,7 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
         <div style="margin-bottom: 16px;"></div>
             ${(ActionType == "User Experience - UX" && ReasonStatement == "New Task Created") ? "New User Experience - UX Category Task Created. Please have a look" : ""}
             ${((ActionType == "User Experience - UX" || ActionType == "Design") && ReasonStatement == "Task Completed") ? `This ${ActionType} Category Task set to 90%. Please have a look` : ''}
+            ${ActionType == "Immediate" ? `Your task has been set to ${ReasonStatement}%, team will process it further.` : ''}
             ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
                 `You have been tagged <b>${ActionType == "Phone" ? "for the discussion" : "as " + ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}` : ''}
             <p></p>
@@ -1419,7 +1420,7 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject, RequiredListIds } = RequiredData || {};
         let TeamsMessage = ` 
       <div style="border-top: 5px solid #2f5596">
-        <div style="margin-top:16px; font-size:16px;"> ${ActionType} reminder for task: ${UpdatedDataObject?.Title}:</div>
+        <div style="margin-top:16px; font-size:16px;"> ${ActionType} reminder for task:${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}</div>
         <p>
         <br/>
         <div style="background-color: #fff; padding:16px; display:block;">
