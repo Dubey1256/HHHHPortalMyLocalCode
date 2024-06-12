@@ -1419,7 +1419,7 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject, RequiredListIds } = RequiredData || {};
         let TeamsMessage = ` 
       <div style="border-top: 5px solid #2f5596">
-        <div style="margin-top:16px; font-size:16px;"> ${ActionType} reminder for task: ${UpdatedDataObject?.Title}:</div>
+        <div style="margin-top:16px; font-size:16px;"> ${ActionType} reminder for task: ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}</div>
         <p>
         <br/>
         <div style="background-color: #fff; padding:16px; display:block;">

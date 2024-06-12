@@ -3210,13 +3210,6 @@ export default class UserTimeEntry extends React.Component<
         ),
       },
       {
-        accessorKey: "ProjectID",
-        id: "ProjectID",
-        placeholder: "ProjectID",
-        header: "",
-        size: 60,
-      },
-      {
         accessorKey: "TaskTitle",
         id: "TaskTitle",
         header: "",
