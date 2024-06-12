@@ -4,7 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import Tooltip from "../Tooltip";
 const BulkEditingConfrigation = (item: any) => {
-    const [checkboxValues, setCheckboxValues] = React.useState(Object?.keys(item?.bulkEditingCongration)?.length > 0 ? item?.bulkEditingCongration : { priority: false, status: false, dueDate: false, itemRank: false, categories: false, clientCategories: false, Project: false, FeatureType: false });
+    const [checkboxValues, setCheckboxValues] = React.useState(Object?.keys(item?.bulkEditingCongration)?.length > 0 ? item?.bulkEditingCongration : { priority: false, status: false, dueDate: false, itemRank: false, categories: false, clientCategories: false, Project: false, FeatureType: false, teamMember: false });
 
     const handleCheckboxChange = (checkboxName: any) => {
         setCheckboxValues((prevValues: any) => ({
@@ -69,6 +69,11 @@ const BulkEditingConfrigation = (item: any) => {
                                     <input type="checkbox" className="cursor-pointer form-check-input rounded-0 me-1" checked={checkboxValues.FeatureType} onChange={() => handleCheckboxChange('FeatureType')} />
                                     Feature Type
                                 </label>
+                                <br />
+                                <label>
+                                    <input type="checkbox" className="cursor-pointer form-check-input rounded-0 me-1" checked={checkboxValues.teamMember} onChange={() => handleCheckboxChange('teamMember')} />
+                                    Team Member
+                                </label>
                                 {/* <label>
                                     <input type="checkbox" className="cursor-pointer form-check-input rounded-0" checked={checkboxValues.itemRank} onChange={() => handleCheckboxChange('itemRank')} />
                                     Item Rank
@@ -91,7 +96,7 @@ const BulkEditingConfrigation = (item: any) => {
 
                 <footer>
                     <button type="button" className="btn btn-default pull-right" onClick={() => handleClosePopup()}>Clear</button>
-                    <button type="button" className="btn btn-primary mx-1 pull-right" onClick={handleChangeDateAndDataCallBack}>Save</button>
+                    <button type="button" className="btn btn-primary mx-1 pull-right" onClick={handleChangeDateAndDataCallBack}>Apply</button>
                 </footer>
             </Panel>
         </>

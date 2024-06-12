@@ -55,7 +55,7 @@ let componentDetailsData: any = [];
 let count = 0;
 let ID: any;
 
-function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: any) {
+function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,portfolioColor }: any) {
   // var AssignedToIds: any = [];
   ResponsibleTeamIds = [];
   AssignedToIds = [];
@@ -1566,8 +1566,13 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
             linkedComponentData?.length >= 0
           ) {
             linkedComponentData?.map(( smart: any,index: any)=>{
+              if(smart?.Id === undefined){
+                RelevantPortfolioIds = smart;
+                PortfolioIds;
+              }else{
               RelevantPortfolioIds = smart.Id;
               PortfolioIds.push(smart.Id);
+              }
             });
           }
         });
@@ -1974,6 +1979,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
           <div className="ps-4">
             {" "}
             <ul className=" m-0 p-0 spfxbreadcrumb">
+            <li>
+                  <a
+                    target="_blank"
+                    data-interception="off"
+                    href={`${RequireData.siteUrl}/SitePages/Team-Portfolio.aspx`}
+                  >
+                    Team-Portfolio
+                  </a>
+              </li>
               <li>
                 {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
                 {EditData?.Portfolio_x0020_Type != undefined && (
@@ -1998,9 +2012,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                           <a
                             target="_blank"
                             data-interception="off"
-                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0]?.Parent?.Id}`}
                           >
-                            {ParentData[0].Parent.Title}
+                            {ParentData[0]?.Parent?.Title}
                           </a>
                         )}
                     </li>
@@ -2010,9 +2024,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                         <a
                           target="_blank"
                           data-interception="off"
-                          href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
+                          href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent?.Id}`}
                         >
-                          {EditData?.Parent.Title}
+                          {EditData?.Parent?.Title}
                         </a>
                       )}
                     </li>
@@ -2218,29 +2232,34 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
     var TaxonomyItems: any = [];
     let web=new Web(RequireData?.siteUrl)
     try{
-      AllTaskusers=await web.lists.getById(RequireData?.SmartMetadataListID).items.select(`Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq ${SmartTaxonomy}`).getAll()
-    }  
+      AllTaskusers=await web.lists.getById(RequireData?.SmartMetadataListID).items.select(
+        "Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle"
+      )
+      .top(4999)
+      .expand("Author,Editor,Parent")
+      .get();
+     }  
       catch (error) {
           console.error(error)
         }
         AllTaskusers?.map((index: any, item: any)=> {
           if (
-            item.Title.toLowerCase() == "pse" &&
+            item?.Title?.toLowerCase() == "pse" &&
             item.TaxType == "Client Category"
           ) {
             item.newTitle = "EPS";
           } else if (
-            item.Title.toLowerCase() == "e+i" &&
+            item?.Title?.toLowerCase() == "e+i" &&
             item.TaxType == "Client Category"
           ) {
             item.newTitle = "EI";
           } else if (
-            item.Title.toLowerCase() == "education" &&
+            item?.Title?.toLowerCase() == "education" &&
             item.TaxType == "Client Category"
           ) {
             item.newTitle = "Education";
           } else if (
-            item.Title.toLowerCase() == "migration" &&
+            item?.Title?.toLowerCase() == "migration" &&
             item.TaxType == "Client Category"
           ) {
             item.newTitle = "Migration";
@@ -2401,25 +2420,30 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
 
     var TaxonomyItems: any = [];
     try{
-      AllTaskusers=await web.lists.getById(RequireData?.SmartMetadataListID).items.select(`Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq${SmartTaxonomy}`).getAll()
-    }
+      AllTaskusers=await web.lists.getById(RequireData?.SmartMetadataListID).items.select(
+        "Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle"
+      )
+      .top(4999)
+      .expand("Author,Editor,Parent")
+      .get();
+      }
     catch (error) {
       console.error(error)
     }
            
         AllTaskusers?.map(( item: any,index: any)=>{
           if (
-            item.Title.toLowerCase() == "pse" &&
+            item?.Title?.toLowerCase() == "pse" &&
             item.TaxType == "Client Category"
           ) {
             item.newTitle = "EPS";
           } else if (
-            item.Title.toLowerCase() == "e+i" &&
+            item?.Title?.toLowerCase() == "e+i" &&
             item.TaxType == "Client Category"
           ) {
             item.newTitle = "EI";
           } else if (
-            item.Title.toLowerCase() == "education" &&
+            item?.Title?.toLowerCase() == "education" &&
             item.TaxType == "Client Category"
           ) {
             item.newTitle = "Education";
@@ -2662,6 +2686,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
     });
   }, []);
 
+   React.useEffect(() => {
+    setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && portfolioColor) {
+            $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
+        }
+    }, 2000)
+}, [Smartdatapopup,IsComponent,SiteCompositionShow,isopenProjectpopup,IsComponentPicker]);
+
   const toggleCategorySelection = function (item: any) {
     setCategoriesData(function (prevCategoriesData) {
       var itemIndex = -1;
@@ -2847,7 +2880,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
   const changePortfolioType = async () => {
     let confirmation = confirm("Are you sure you want to change the type ?");
     if (confirmation) {
-      let web = new Web(item.siteUrl);
+      let web = new Web(RequireData.siteUrl);
       const selectedPopupItem = item.PortfolioStructureID;
       const numbersOnly = selectedPopupItem.substring(1);
       const selectedPorfolioItem = selectPortfolioType?.Title;
@@ -3112,7 +3145,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                             >
                               <option>
                                 {EditData?.ItemRankTitle == undefined
-                                  ? "select Item Rank"
+                                  ? "Select Item Rank"
                                   : EditData?.ItemRankTitle}
                               </option>
                               {CMSItemRank &&
@@ -3385,7 +3418,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                       </div>
                       <div className="mx-0 row mt-2 ">
                         <div className="col-sm-4 ps-0 ">
-                          <div className="input-group">
+                          <div className="input-group Synonymsinpt">
                             <label className="form-label  full-width">
                               Synonyms{" "}
                             </label>
@@ -3662,13 +3695,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                       </div>
                       <div className="row mt-2">
                         <div className="col-sm-12">
-                          <div className="col-sm-12 padding-0 input-group">
-                            <label className="full_width">Categories</label>
+                          <div className="input-group mb-2">
+                            <label className="full_width form-label">Categories</label>
                             {(CategoriesData?.length == 0 ||
-                              CategoriesData[0] == undefined ||
-                              CategoriesData?.length > 1) && (
+                              CategoriesData?.length !== 1) && (
                                 <>
-                                  <input
+                                <input
                                     type="text"
                                     className="ui-autocomplete-input form-control"
                                     id="txtCategories"
@@ -3684,9 +3716,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                                       className="svg__iconbox svg__icon--editBox"
                                     ></span>
                                   </span>
-                                </>
-                              )}
-                            {CategoriesData &&
+                                  </>)}
+
+                                   {CategoriesData &&
                               CategoriesData?.length == 1 &&
                               CategoriesData != undefined ? (
                               <div className="full-width">
@@ -3762,7 +3794,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                             );
 
                             return (
-                              <div key={index} className="form-check mt-2">
+                              <div key={index} className="form-check  ">
                                 <input
                                   className="form-check-input rounded-0"
                                   type="checkbox"
@@ -3843,7 +3875,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                                     key={Index}
                                   >
                                     <a
-                                      href={`${SelectD.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId?=${items.Id}`}
+                                      href={`${SelectD.siteUrl}/SitePages/PX-Profile.aspx?ProjectId?=${items.Id}`}
                                       className="textDotted hreflink"
                                       data-interception="off"
                                       target="_blank"
@@ -3904,7 +3936,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                                       key={Index}
                                     >
                                       <a
-                                        href={`${SelectD.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId?=${items.Id}`}
+                                        href={`${SelectD.siteUrl}/SitePages/PX-Profile.aspx?ProjectId?=${items.Id}`}
                                         className="wid-90 light"
                                         data-interception="off"
                                         target="_blank"
@@ -4927,6 +4959,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                 ComponentType={"Component"}
                 Call={Call}
                 selectionType={"Single"}
+                portfolioColor={portfolioColor}
               />
             ) : null}
 
@@ -5343,6 +5376,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
       </Panel>
       {SiteCompositionShow && EditData?.Title && (
         <CentralizedSiteComposition
+        portfolioColor={portfolioColor}
           ItemDetails={EditData}
           RequiredListIds={RequireData}
           closePopupCallBack={ClosePopupCallBack}

@@ -317,10 +317,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     if (taskDetails["TaskCategories"] != undefined && taskDetails["TaskCategories"].length > 0) {
 
       taskDetails["TaskCategories"]?.map((item: any, index: any) => {
-        if(item?.Title=="User Experience - UX"||item?.Title=="Design"){
+        if(item?.Title=="UX-New"){
           DesignTemplates=true
-        }else{
-          DesignTemplates=false
         }
         if ((index == taskDetails["TaskCategories"]?.length - 1) || (taskDetails["TaskCategories"].length == 1)) {
           category = category + item?.Title
@@ -2987,7 +2985,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' && this.state.countfeedback >= 0 &&
                        
-                          <div className={"Addcomment boxshadow " + " manage_gap"}>
+                          <div className={"Addcomment boxshadow p-2" + " manage_gap"}>
                             
                           <label className='form-label full-width'>Objective</label>
                           {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
@@ -3375,7 +3373,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             }
                             return(
                               <TabPanel key={i} value={i}>
-                                  <div className="carouselSlider taskImgTemplate">
+                                  <div className={`carouselSlider ${fbData?.setImagesInfo?.length>1?'taskImgTemplate':''} `}>
                                                 <Slider {...settings}>
 
                                                     {fbData?.setImagesInfo?.map((imgData: any, indeximage: any) => {

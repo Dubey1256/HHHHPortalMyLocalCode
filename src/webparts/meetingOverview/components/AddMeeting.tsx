@@ -94,7 +94,7 @@ const AddProject = (props: any) => {
 
         return (
             <>
-                <button type="button" className='btn btn-primary mb-2' onClick={() => OpenCreateTaskPopup()}>Create Meeting</button>
+                <button type="button" className='btnCol btn btn-primary mb-2' onClick={() => OpenCreateTaskPopup()}>Create Meeting</button>
 
                 <Panel
                     onRenderHeader={onRenderCustomHeader}

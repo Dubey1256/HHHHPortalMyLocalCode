@@ -149,6 +149,7 @@ const EditTaskPopup = (Items: any) => {
     const [PhoneStatus, setPhoneStatus] = useState(false);
     const [EmailStatus, setEmailStatus] = useState(false);
     const [DesignStatus, setDesignStatus] = useState(false);
+    const [DesignNewTemplates, setDesignNewTemplates] = useState(false);
     const [OnlyCompletedStatus, setOnlyCompletedStatus] = useState(false);
     const [ImmediateStatus, setImmediateStatus] = useState(false);
     const [onHoldPanel, setOnHoldPanel] = useState(false);
@@ -935,6 +936,7 @@ const EditTaskPopup = (Items: any) => {
                     setImmediateStatus(item.TaskCategories?.some((category: any) => category.Title === "Immediate"));
                     setOnlyCompletedStatus(item.TaskCategories?.some((category: any) => category.Title === "Only Completed"));
                     setDesignStatus(item.TaskCategories?.some((category: any) => category.Title === "Design" || category.Title === "User Experience - UX"));
+                    setDesignNewTemplates(item.TaskCategories?.some((category: any) =>category.Title === "UX-New"))
                     let checkForApproval: any = item.TaskCategories?.some((category: any) => category.Title === "Approval")
                     if (checkForApproval) {
                         setApprovalStatus(true);
@@ -1616,6 +1618,9 @@ const EditTaskPopup = (Items: any) => {
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let uniqueIds: any = {};
+        if(selectCategoryData?.length==0){
+            setDesignNewTemplates(false)
+        }
         let checkForOnHoldAndBottleneck: any = BackupTaskCategoriesData?.some((category: any) => category.Title === "On-Hold" && category.Title === "Bottleneck");
         let checkForDesign: any = BackupTaskCategoriesData?.some((category: any) => category.Title === "Design");
         if (usedFor == "For-Panel") {
@@ -1647,6 +1652,9 @@ const EditTaskPopup = (Items: any) => {
                     }
                     setSendCategoryName(selectedData?.Title);
                 }
+                if(selectedData?.Title=="UX-New"){
+                    setDesignNewTemplates(true)
+                }
             })
             BackupTaskCategoriesData = TempArrya;
         } else {
@@ -1657,6 +1665,9 @@ const EditTaskPopup = (Items: any) => {
                     setSendCategoryName(existingData.Title)
                 } else {
                     BackupTaskCategoriesData.push(existingData);
+                }
+                if(existingData?.Title=="UX-New"){
+                    setDesignNewTemplates(true)
                 }
             });
         }
@@ -2338,6 +2349,8 @@ const EditTaskPopup = (Items: any) => {
                     EditData.TeamMembers?.length > 0
                 ) {
                     setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"QA")
+                    setWorkingAction(EditData?.WorkingAction)
                 } else {
                     setWorkingMember(143);
                 }
@@ -2350,8 +2363,12 @@ const EditTaskPopup = (Items: any) => {
                         EditData.TeamMembers?.length > 0) && (EditData.TeamMembers?.length != EditData?.AssignedTo?.length)
                 ) {
                     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"Development")
+                    setWorkingAction(EditData?.WorkingAction)
                 } else if (EditData.ResponsibleTeam?.length > 0) {
                     setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"Development")
+                    setWorkingAction(EditData?.WorkingAction)
                 }
                 else {
                     setWorkingMember(0);
@@ -2392,16 +2409,24 @@ const EditTaskPopup = (Items: any) => {
                         setTaskStatus(item.taskStatusComment);
                     }
                 });
+                EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"HHHHTEAM")
+                setWorkingAction(EditData?.WorkingAction)
             }
             if (StatusData.value == 90) {
                 EditData.IsTodaysTask = false;
                 EditData.workingThisWeek = false;
                 if (EditData.siteType == "Offshore%20Tasks") {
                     setWorkingMember(36);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"HHHHTEAM")
+                    setWorkingAction(EditData?.WorkingAction)
                 } else if (DesignStatus) {
                     setWorkingMember(301);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"HHHHTEAM")
+                    setWorkingAction(EditData?.WorkingAction)
                 } else {
                     setWorkingMember(42);
+                    EditData.WorkingAction=removeWorkingMembers(JSON.parse(EditData?.WorkingAction),"HHHHTEAM")
+                    setWorkingAction(EditData?.WorkingAction)
                 }
                 EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY");
                 StatusOptions?.map((item: any) => {
@@ -2417,6 +2442,43 @@ const EditTaskPopup = (Items: any) => {
 
     //  ###################### This is Common Function for Chnage The Team Members According to Change Status ######################
 
+    const removeWorkingMembers=(workingActionValue:any,FilterType:any)=>{
+        workingActionValue.map((workingActions:any)=>{
+            if(workingActions?.Title=="WorkingDetails"){
+                workingActions?.InformationData?.map((info:any)=>{
+                    info?.WorkingMember.map((userInfo:any,index:any)=>{
+                        taskUsers?.map((TaskUserData:any)=>{       
+                                if(FilterType == "QA"){
+                                    if ( TaskUserData.TimeCategory == "Development" || TaskUserData.TimeCategory == "Design" ) {
+                                        if (userInfo?.Id == TaskUserData?.AssingedToUserId) {
+                                            info?.WorkingMember.splice(index,1)
+                                        }
+                                        
+                                       
+                                    }
+                                        
+                                }else if(FilterType == "Development"){
+                                    if (TaskUserData.TimeCategory == "QA") {
+                                        if (userInfo?.Id == TaskUserData?.AssingedToUserId) {
+                                            info?.WorkingMember.splice(index,1)
+                                        }
+                                       
+                                    }             
+                                }
+                                else if(FilterType=="HHHHTEAM"){
+                                    info?.WorkingMember.splice(index,1)
+                                }
+                            
+                            
+
+                        })
+                    })
+                }) 
+            }
+        })
+        return  workingActionValue
+    }
+
     const setWorkingMemberFromTeam = (
         filterArray: any,
         filterType: any,
@@ -2426,19 +2488,17 @@ const EditTaskPopup = (Items: any) => {
         let updateUserArray1: any = [];
         filterArray.map((TeamItems: any) => {
             taskUsers?.map((TaskUserData: any) => {
-                if (TeamItems.Id == TaskUserData.AssingedToUserId) {
+                if ( (TaskUserData?.Company !="HHHH")&& (TeamItems.Id == TaskUserData.AssingedToUserId)) {
                     if (filterType == "Development") {
-                        if (
-                            TaskUserData.TimeCategory == "Development" ||
-                            TaskUserData.TimeCategory == "Design"
-                        ) {
+                        if (TaskUserData.TimeCategory == "Development" || TaskUserData.TimeCategory == "Design" ) {
                             tempArray.push(TaskUserData);
                             EditData.TaskAssignedUsers = tempArray;
                             updateUserArray1.push(TaskUserData.AssingedToUser);
                             setTaskAssignedTo(updateUserArray1);
                         }
-                    } else {
-                        if (TaskUserData.TimeCategory == filterType) {
+                    } 
+                    else {
+                        if (   TaskUserData.TimeCategory == filterType) {
                             tempArray.push(TaskUserData);
                             EditData.TaskAssignedUsers = tempArray;
                             updateUserArray1.push(TaskUserData.AssingedToUser);
@@ -7684,7 +7744,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div>
                                 </div>
-                                {DesignStatus !=true ?<div className="row py-3">
+                                {DesignNewTemplates !=true ?<div className="row py-3">
                                     <div
                                         className={
                                             IsShowFullViewImage != true
@@ -7952,7 +8012,7 @@ const EditTaskPopup = (Items: any) => {
                                                         siteType: Items.Items.siteType,
                                                     }}
                                                     taskCreatedCallback={UpdateTaskInfoFunction}
-                                                    DesignStatus={DesignStatus}
+                                                    DesignStatus={DesignNewTemplates}
                                                     currentUserBackupArray={currentUserBackupArray}
                                                             />
                                                 }

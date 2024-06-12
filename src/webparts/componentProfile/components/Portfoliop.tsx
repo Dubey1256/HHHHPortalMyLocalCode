@@ -399,6 +399,7 @@ let AllMasterTaskData: any = [];
 let keyDocRef: any;
 let relevantDocRef: any;
 let smartInfoRef: any;
+let portfolioColor: any = '';
 function Portfolio({ SelectedProp, TaskUser }: any) {
   AllTaskuser = TaskUser;
   keyDocRef = React.useRef();
@@ -467,6 +468,15 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
   React.useEffect(() => {
     getSmartMetaDataListAllItems();
   }, [count]);
+  React.useEffect(() => {
+    setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && portfolioColor) {
+            $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
+        }
+    }, 1500)
+}, [isopenProjectpopup,IsComponent,SiteCompositionShow]);
+
 
   const getSmartMetaDataListAllItems = async () => {
     let AllSmartDataListData: any = [];
@@ -552,10 +562,10 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
     } catch (error: any) {
       console.log(error);
     }
-    if (SelectedProp != undefined) {
-      SelectedProp.isShowSiteCompostion = isShowSiteCompostion;
-      SelectedProp.isShowTimeEntry = isShowTimeEntry;
-    }
+    // if (SelectedProp != undefined) {
+    //   SelectedProp.isShowSiteCompostion = isShowSiteCompostion;
+    //   SelectedProp.isShowTimeEntry = isShowTimeEntry;
+    // }
     ContextValue = SelectedProp;
 
     loadAllMasterTask();
@@ -620,6 +630,10 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
             }
 
             item.siteCompositionData = SiteCompositionTemp;
+            SelectedProp.isShowSiteCompostion = item.siteCompositionData;
+            if(SelectedProp.isShowSiteCompostion.length == 0){
+              setComposition(false)
+            }
             item.listId = ContextValue.MasterTaskListID;
             if (item.FolderID != undefined) {
               folderId = item.FolderID;
@@ -736,6 +750,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
               "--SiteBlue",
               response[0]?.PortfolioType?.Color
             );
+           portfolioColor=response[0]?.PortfolioType?.Color;
           }
 
           console.log(response);
@@ -793,7 +808,6 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
       TypeSite = item?.PortfolioType?.Title;
     }
     var inputString = item?.Parent?.Title;
-    item.limitedString = inputString?.substring(0, 13) + "...";
     item.mergedStatus = `${item?.Status} - ${(
       item?.PercentComplete * 100
     ).toFixed(0)}% `;
@@ -1433,10 +1447,11 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                 <dt className="bg-fxdark" title="Tagged Parent">
                                   Parent
                                 </dt>
-                                <dd className="bg-light">
+                                <dd className="bg-light columnFixedTitle full-width pe-0">
                                   {item?.Parent?.Title != undefined && (
                                     <>
                                       <a
+                                      className='text-content'
                                         target="_blank"
                                         data-interception="off"
                                         href={
@@ -1446,7 +1461,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                         }
                                         title={item?.Parent?.Title}
                                       >
-                                        {item?.limitedString}
+                                       {item?.Parent?.Title}
                                       </a>
                                       <span className="pull-right">
                                         <span className="pencil_icon">
@@ -1465,7 +1480,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                                   >
                                                     <img
                                                       src={require("../../../Assets/ICON/edit_page.svg")}
-                                                      width="20"
+                                                      width="25"
                                                       height="25"
                                                     />{" "}
                                                   </a>
@@ -1486,7 +1501,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                                     {" "}
                                                     <img
                                                       src={require("../../../Assets/ICON/edit_page.svg")}
-                                                      width="30"
+                                                      width="25"
                                                       height="25"
                                                     />{" "}
                                                   </a>
@@ -1695,6 +1710,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                         {data?.length > 0 && (
                           <>
                             <InlineEditingcolumns
+                            portfolioColor={portfolioColor}
                               AllListId={ContextValue}
                               callBack={inlineCallBack}
                               columnName="TaskCategories"
@@ -2236,7 +2252,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         </section>
 
         {/* table secation artical */}
-        {data?.length > 0 && <RadimadeTable tableId="PortfolioProfile" AllListId={ContextValue} configration={"CSFAWT"} SelectedItem={data[0]} ComponentFilter={data[0]?.PortfolioType?.Title} TaskFilter={"PercentComplete lt '0.90' or PercentComplete eq null "}></RadimadeTable>}
+        {data?.length > 0 && <RadimadeTable portfolioColor={portfolioColor} tableId="PortfolioProfile" AllListId={ContextValue} configration={"CSFAWT"} SelectedItem={data[0]} ComponentFilter={data[0]?.PortfolioType?.Title} TaskFilter={"PercentComplete lt '0.90' or PercentComplete eq null "}></RadimadeTable>}
         {/* {data.map((item: any) => (
           <ComponentTable
             props={item}
@@ -2276,6 +2292,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
             SelectD={SelectedProp}
             Calls={Call}
             portfolioTypeData={portfolioTyped}
+            portfolioColor={portfolioColor}
           ></EditInstituton>
         )}
         {isopenProjectpopup && (
@@ -2292,6 +2309,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         )}
         {SiteCompositionShow && (
           <CentralizedSiteComposition
+          portfolioColor={portfolioColor}
             ItemDetails={data[0]}
             RequiredListIds={SelectedProp}
             closePopupCallBack={ClosePopupCallBack}
