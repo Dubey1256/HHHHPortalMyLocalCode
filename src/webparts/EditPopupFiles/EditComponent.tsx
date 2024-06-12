@@ -2861,19 +2861,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
 
   React.useEffect(() => {
     setTimeout(() => {
-      const panelMain: any = document.querySelector(".ms-Panel-main");
-      if (panelMain && PortfolioTypeColor?.length > 0) {
-        panelMain.style.setProperty("--SiteBlue", PortfolioTypeColor); // Set the desired color value here
-      }
-    }, 2000);
-  }, [
-    IsComponentPicker,
-    imagetab,
-    IsComponent,
-    IsService,
-    isOpenPopup,
-    editPopup,
-  ]);
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && PortfolioTypeColor?.length > 0) {
+          panelMain.style.setProperty("--SiteBlue", PortfolioTypeColor); // Set the desired color value here
+        }
+    }, 2000)
+}, [Smartdatapopup,IsComponent,SiteCompositionShow,isopenProjectpopup,IsComponentPicker,changeType]);
 
   // Change Type functionality
 
