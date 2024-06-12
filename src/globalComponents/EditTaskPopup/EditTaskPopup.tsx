@@ -2861,7 +2861,7 @@ const EditTaskPopup = (Items: any) => {
                                     sendUserEmail: [InfoItem?.Email],
                                     Context: Items.context,
                                     ActionType: "Immediate",
-                                    ReasonStatement: '',
+                                    ReasonStatement: checkStatusUpdate,
                                     UpdatedDataObject: UpdatedDataObject,
                                     RequiredListIds: AllListIdData
                                 }
