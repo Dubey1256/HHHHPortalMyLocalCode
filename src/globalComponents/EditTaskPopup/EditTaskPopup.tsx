@@ -94,7 +94,8 @@ let categoryTitle: any = "";
 let onHoldCategory: any = [];
 let globalSelectedProject: any = { PriorityRank: 1 };
 let oldWorkingAction: any = []
-
+let linkedportfoliopop:any;
+let portfoliopop:any;
 const EditTaskPopup = (Items: any) => {
     const Context = Items?.context;
     const AllListIdData = Items?.AllListId;
@@ -1382,9 +1383,11 @@ const EditTaskPopup = (Items: any) => {
     //  ******************************* this is Service And Component Portfolio Popup Related All function and CallBack *******************
     const OpenTeamPortfolioPopupFunction = (item: any, usedFor: any) => {
         if (usedFor == "Portfolio") {
+            portfoliopop=true,
             setOpenTeamPortfolioPopup(true);
         }
         if (usedFor == "Linked-Portfolios") {
+            linkedportfoliopop=true,
             setopenLinkedPortfolioPopup(true);
         }
     };
@@ -1488,10 +1491,22 @@ const EditTaskPopup = (Items: any) => {
                 EditDataBackup = updatedItem;
                 setEditData(updatedItem);
             } else if (Type == "untagged") {
-                setLinkedPortfolioData(DataItem);
-                LinkedPortfolioDataBackup = DataItem;
-                setOpenTeamPortfolioPopup(false);
-            } else {
+                if (portfoliopop) {
+                    setTaggedPortfolioData(DataItem);
+                    setOpenTeamPortfolioPopup(false);
+                    portfoliopop=false
+                }
+                // Check if the linked portfolio popup is open
+                else if (linkedportfoliopop) {
+                    setLinkedPortfolioData(DataItem);
+                    LinkedPortfolioDataBackup = DataItem;
+                    setopenLinkedPortfolioPopup(false);
+                    linkedportfoliopop = false
+                }else{
+                    setOpenTeamPortfolioPopup(false);
+                    setopenLinkedPortfolioPopup(false);
+                }
+            }else {
                 if (DataItem != undefined && DataItem.length > 0) {
                     if (DataItem[0]?.Item_x0020_Type !== "Project" || DataItem[0]?.Item_x0020_Type !== "Sprint") {
                         if (DataItem[0].ClientCategory?.length > 0) {
@@ -2861,7 +2876,7 @@ const EditTaskPopup = (Items: any) => {
                                     sendUserEmail: [InfoItem?.Email],
                                     Context: Items.context,
                                     ActionType: "Immediate",
-                                    ReasonStatement: '',
+                                    ReasonStatement: checkStatusUpdate,
                                     UpdatedDataObject: UpdatedDataObject,
                                     RequiredListIds: AllListIdData
                                 }
