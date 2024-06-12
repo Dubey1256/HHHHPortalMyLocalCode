@@ -62,7 +62,7 @@ const AddTaskConfigPopup = (props: any) => {
     const onRenderCustomHeader = (
     ) => {
         return (
-            <div className=" full-width pb-1" > <div className="subheading">
+            <div className=" full-width pb-1 AddTaskConfigPopup " > <div className="subheading">
                 <span className="siteColor">
                     {props?.SelectedEditItem?.Id != undefined ? `Edit Task Configuration - ${props?.SelectedEditItem?.Title}` : 'Add Task Configuration'}
                 </span>
