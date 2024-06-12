@@ -5,6 +5,7 @@ import Tooltip from "./Tooltip";
 import { myContextValue } from "./globalCommon";
 import PageLoader from '../globalComponents/pageLoader';
 import AddConfiguration from "./AddConfiguration";
+import _ from "lodash";
 
 let DashTemp: any = [];
 let ExistingWepartsBackup: any = [];
@@ -232,9 +233,10 @@ const EditConfiguration = (props: any) => {
     const LoadExistingWebparts = () => {
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
         web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").getAll().then((data: any) => {
-            ExistingWepartsBackup = data;
-            setExistingWeparts(data);
+          //  ExistingWepartsBackup = data;
 
+            setExistingWeparts(data);
+            ExistingWepartsBackup = _.cloneDeep(data);
         }).catch((err: any) => {
             console.log(err);
         })
@@ -360,7 +362,7 @@ const EditConfiguration = (props: any) => {
             if (index === arrayIndex)
                 item?.ArrayValue?.forEach((subChild: any, indexChild: any) => {
                     if (itemValue.Id === subChild?.Id) {
-                        let findItem = ExistingWepartsBackup?.filter((filt: any) => { filt.Id === subChild.Id })
+                        const findItem  = ExistingWepartsBackup?.filter((filt: any) =>  filt.Id === subChild.Id )
                         if (findItem?.length > 0) {
                             let arrayItems: any = [];
                             const ExistingItems = [...ExistingWeparts];
@@ -413,9 +415,9 @@ const EditConfiguration = (props: any) => {
         // Remove the dragged item from its original position
         updatedItems?.forEach((item: any) => {
             item?.ArrayValue?.forEach((subChild: any) => {
-                if (selectedtab.Id === subChild?.Id) {
-                    subChild.DataSource = selectedtab.DataSource;
-                    subChild.smartFevId = selectedtab.UpdatedId;
+                if (type?.Id === subChild?.Id) {
+                    subChild.DataSource = type?.DataSource;
+                    subChild.smartFevId =type.smartFevId ===undefined ?"" :type.smartFevId;
                 }
             })
         })
