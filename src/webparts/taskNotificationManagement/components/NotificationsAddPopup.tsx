@@ -5,23 +5,8 @@ import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/People
 import * as Moment from 'moment';
 import Button from 'react-bootstrap/Button';
 import * as globalCommon from "../../../globalComponents/globalCommon";
-
-
-import {
-    makeStyles,
-    shorthands,
-
-    Caption1,
-    Text,
-    tokens,
-    Subtitle1,
-} from "@fluentui/react-components";
-import { MoreHorizontal20Regular } from "@fluentui/react-icons";
 import { Card, CardHeader, CardPreview } from "@fluentui/react-components";
-import moment from 'moment';
-import { SpaTwoTone } from '@material-ui/icons';
 import AddTaskConfigPopup from './AddTaskConfigPopup';
-import EditTaskConfigPopup from './EditTaskConfigPopup';
 import Tooltip from '../../../globalComponents/Tooltip';
 let users: any = []
 let PortFolioType: any = [];
@@ -42,19 +27,19 @@ export const NotificationsAddPopup = (props: any) => {
     React.useEffect(() => {
         if (props?.SelectedEditItem?.ConfigType != undefined) {
             setselectedConfigType(props?.SelectedEditItem?.ConfigType)
-           if(props?.SelectedEditItem?.ConfigType=="Report"){
-            setConfigTitle(props?.SelectedEditItem?.Title)
-            setEmailSubjectReport(props?.SelectedEditItem?.Subject)
-        setSelectedPersonsAndGroups(props?.SelectedEditItem?.Recipients)
-        let DefaultSelectedUseremail:any=[]
-        if(props?.SelectedEditItem?.Recipients?.length>0){
-            props?.SelectedEditItem?.Recipients?.map((data:any)=>{
-                DefaultSelectedUseremail.push(data?.Email)
-            })
-            setDefaultSelectedUser(DefaultSelectedUseremail)
-        }
-       
-           }
+            if (props?.SelectedEditItem?.ConfigType == "Report") {
+                setConfigTitle(props?.SelectedEditItem?.Title)
+                setEmailSubjectReport(props?.SelectedEditItem?.Subject)
+                setSelectedPersonsAndGroups(props?.SelectedEditItem?.Recipients)
+                let DefaultSelectedUseremail: any = []
+                if (props?.SelectedEditItem?.Recipients?.length > 0) {
+                    props?.SelectedEditItem?.Recipients?.map((data: any) => {
+                        DefaultSelectedUseremail.push(data?.Email)
+                    })
+                    setDefaultSelectedUser(DefaultSelectedUseremail)
+                }
+
+            }
         }
         Promise.all([loadusersAndGroups(), getPortFolioType()])
 
@@ -66,15 +51,15 @@ export const NotificationsAddPopup = (props: any) => {
     }
     const onRenderCustomHeader = () => {
         return (
-          <>
-            <div className='subheading'>
-            {props?.SelectedEditItem?.Id != undefined ? `Edit Configuration - ${props?.SelectedEditItem?.Title}` : 'Add Configuration'}
-            </div>
-            <Tooltip ComponentId={'6755'} />
-          </>
+            <>
+                <div className='subheading'>
+                    {props?.SelectedEditItem?.Id != undefined ? `Edit Configuration - ${props?.SelectedEditItem?.Title}` : 'Add Configuration'}
+                </div>
+                <Tooltip ComponentId={'6755'} />
+            </>
         );
-      };
-  
+    };
+
     const closePopup = (type?: any | undefined) => {
         props.callBack(type);
 
@@ -91,56 +76,56 @@ export const NotificationsAddPopup = (props: any) => {
                 console.log(error)
             });
         }
-     
+
     }
     const addFunction = async () => {
         let pageInfo = await globalCommon.pageContext()
         let postData: any;
         let updateData: any;
         let peopleAndGroupId: any = [];
-        let applyPost=true;
+        let applyPost = true;
         selectedPersonsAndGroups?.map((user: any) => {
-            let foundPerson = users?.find((person: any) => (person?.LoginName == user?.id)||(person?.Title==user?.Title));
+            let foundPerson = users?.find((person: any) => (person?.LoginName == user?.id) || (person?.Title == user?.Title));
             if (foundPerson?.Id != undefined) {
                 peopleAndGroupId?.push(foundPerson?.Id)
             }
         })
-        if(props?.SelectedEditItem?.Id == undefined){
-            if (selectedConfigType == "Report" ) {
+        if (props?.SelectedEditItem?.Id == undefined) {
+            if (selectedConfigType == "Report") {
                 if (pageInfo?.WebFullUrl) {
-               if(peopleAndGroupId.length>0 && ConfigTitle!='' && ConfigTitle!=null){
+                    if (peopleAndGroupId.length > 0 && ConfigTitle != '' && ConfigTitle != null) {
                         postData = {
                             Title: ConfigTitle,
                             RecipientsId: { 'results': peopleAndGroupId },
                             Subject: EmailSubjectReport,
                             ConfigType: selectedConfigType
                         }
-                    }else{
-                        applyPost=false;
+                    } else {
+                        applyPost = false;
                         alert("Please fill the Report Recipient and Report Title")
                     }
-                   
+
                 }
-            } 
+            }
             else {
-                if(peopleAndGroupId.length>0 && SelectedPortfolio?.Title!='' && SelectedPortfolio?.Title !=null  ){
+                if (SelectedPortfolio?.Title != '' && SelectedPortfolio?.Title != null) {
                     postData = {
-                        Title: "TaskNotificationConfig" +""+ SelectedPortfolio?.Title,
+                        Title: "TaskNotificationConfig" + "" + SelectedPortfolio?.Title,
                         ConfigType: selectedConfigType,
                         PortfolioTypeId: SelectedPortfolio?.Id,
                         ConfigrationJSON: allTaskStatusToConfigure?.length > 0 ? JSON?.stringify(allTaskStatusToConfigure) : []
                     }
                 }
-                else{
-                    applyPost=false;
+                else {
+                    applyPost = false;
                     alert("Please Select Portfolio Type")
-                } 
-            }  
-            
-    
-            
+                }
+            }
+
+
+
             if (applyPost) {
-    
+
                 let web = new Web(pageInfo.WebFullUrl);
                 await web.lists.getByTitle('NotificationsConfigration').items.add(postData).then((data: any) => {
                     closePopup('add')
@@ -150,34 +135,34 @@ export const NotificationsAddPopup = (props: any) => {
                 })
             }
         }
-      
+
 
         if (props?.SelectedEditItem?.Id != undefined) {
             if (selectedConfigType == "Report") {
-                if(peopleAndGroupId.length>0 && ConfigTitle!='' && ConfigTitle!=null){
+                if (peopleAndGroupId.length > 0 && ConfigTitle != '' && ConfigTitle != null) {
                     updateData = {
                         Title: ConfigTitle,
                         RecipientsId: { 'results': peopleAndGroupId },
                         Subject: EmailSubjectReport,
-                       
+
                     }
-                }else{
-                    applyPost=false;
+                } else {
+                    applyPost = false;
                     alert("Please fill the Report Recipient and Report Title")
                 }
-               
+
             } else {
                 updateData = { ConfigrationJSON: allTaskStatusToConfigure?.length > 0 ? JSON?.stringify(allTaskStatusToConfigure) : [] }
             }
             if (applyPost) {
-            let web = new Web(pageInfo.WebFullUrl);
-            await web.lists.getByTitle('NotificationsConfigration').items.getById(props?.SelectedEditItem?.Id).update(updateData).then((data: any) => {
-                closePopup('update')
-            }).catch((error: any) => {
-                console.error('Error While adding ', error);
-                alert(error?.data?.responseBody["odata.error"].message?.value)
-            })
-        }
+                let web = new Web(pageInfo.WebFullUrl);
+                await web.lists.getByTitle('NotificationsConfigration').items.getById(props?.SelectedEditItem?.Id).update(updateData).then((data: any) => {
+                    closePopup('update')
+                }).catch((error: any) => {
+                    console.error('Error While adding ', error);
+                    alert(error?.data?.responseBody["odata.error"].message?.value)
+                })
+            }
         }
 
     }
@@ -230,20 +215,20 @@ export const NotificationsAddPopup = (props: any) => {
         const web = new Web(props?.AllListId?.siteUrl);
         var text: any = "Are you sure want to Delete ?";
         if (confirm(text) == true) {
-          await web.lists.getByTitle("NotificationsConfigration")
-            .items.getById(DeletItemId).recycle()
-            .then((res: any) => {
-              console.log(res);
-    
-              closePopup('update')
-    
-            })
-            .catch((err) => {
-              console.log(err.message);
-            });
+            await web.lists.getByTitle("NotificationsConfigration")
+                .items.getById(DeletItemId).recycle()
+                .then((res: any) => {
+                    console.log(res);
+
+                    closePopup('update')
+
+                })
+                .catch((err) => {
+                    console.log(err.message);
+                });
         }
-    
-      };
+
+    };
     return (
         <>
             <Panel
@@ -271,7 +256,7 @@ export const NotificationsAddPopup = (props: any) => {
                                         className="radio" />Task Notifications
                                 </span>
 
-                            </> :""
+                            </> : ""
                             // <>
 
                             //     {selectedConfigType == "TaskNotifications" && <span className='SpfxCheckRadio'>
@@ -296,19 +281,19 @@ export const NotificationsAddPopup = (props: any) => {
                     </span>
                     {selectedConfigType == 'Report' ?
                         <div>
-                            
+
                             <div className="mb-2 input-group">
-                               
-                            <label className='form-label full-width'>Report Title</label>
-                                    <input type='text' className='from-control w-75' placeholder='Enter Report Title' value={ConfigTitle} disabled={props?.SelectedEditItem?.Id!=undefined?true:false} onChange={(e) => { setConfigTitle(e.target.value) }} />
-                                    
+
+                                <label className='form-label full-width'>Report Title</label>
+                                <input type='text' className='from-control w-75' placeholder='Enter Report Title' value={ConfigTitle} disabled={props?.SelectedEditItem?.Id != undefined ? true : false} onChange={(e) => { setConfigTitle(e.target.value) }} />
+
 
                             </div>
                             <div className="mb-2 input-group">
-                            <label className='form-label full-width'>Report subject</label>
-                                    <input type='text' className='from-control w-75' placeholder='Enter Report subject' value={EmailSubjectReport} onChange={(e) => { setEmailSubjectReport(e.target.value) }} />
+                                <label className='form-label full-width'>Report subject</label>
+                                <input type='text' className='from-control w-75' placeholder='Enter Report subject' value={EmailSubjectReport} onChange={(e) => { setEmailSubjectReport(e.target.value) }} />
 
-                               
+
                             </div>
                             <div className='peoplePickerPermission mb-2 w-75' style={{ zIndex: '999999999999' }}>
                                 <PeoplePicker
@@ -367,39 +352,39 @@ export const NotificationsAddPopup = (props: any) => {
                                         return (
                                             <>
                                                 {config?.percentComplete == percentageComplete &&
-                                                 <section>
-                                                    <Card>
+                                                    <section>
+                                                        <Card>
 
-                                                        <div className='alignCenter'>
-                                                            {config?.NotificationType == "Email" ? <span className='svg__iconbox svg__icon--mail hreflink'></span> :
-                                                                <span className='svg__iconbox svg__icon--team hreflink'></span>}
-                                                            <span className='ms-2'>{config?.Notifier[0]?.text}</span>
-                                                            <span className='svg__iconbox svg__icon--edit hreflink ml-auto' onClick={() => EditTaskNotificationPopup(config, index)}></span>
-                                                        </div>
-                                                        <div className='alignCenter'>
-                                                            <label className='form-label'>Task Status:</label>
-                                                            <span className='ms-2'>
-                                                                {`${config?.percentComplete} %`}
-                                                            </span>
-                                                        </div>
+                                                            <div className='alignCenter'>
+                                                                {config?.NotificationType == "Email" ? <span className='svg__iconbox svg__icon--mail hreflink'></span> :
+                                                                    <span className='svg__iconbox svg__icon--team hreflink'></span>}
+                                                                <span className='ms-2'>{config?.Notifier[0]?.text}</span>
+                                                                <span className='svg__iconbox svg__icon--edit hreflink ml-auto' onClick={() => EditTaskNotificationPopup(config, index)}></span>
+                                                            </div>
+                                                            <div className='alignCenter'>
+                                                                <label className='form-label'>Task Status:</label>
+                                                                <span className='ms-2'>
+                                                                    {`${config?.percentComplete} %`}
+                                                                </span>
+                                                            </div>
 
-                                                        <div>
-                                                            <label className='form-label'>Avoid ItSelf:</label>
-                                                            <span className='SpfxCheckRadio ms-2'>
-                                                                <input type="checkbox" className='form-check-input' checked={config?.avoidItself == "true"} />
-                                                            </span>
-                                                        </div>
-                                                        <div>
-                                                            <label className='form-label'>Category:</label>
-                                                            <span className='ms-2'>{config?.Category} </span>
-                                                        </div>
-                                                        <div>
-                                                            <label className='form-label'>Exception Category:</label>
-                                                            <span className='ms-2'>{config?.ExceptionCategory[0]} </span>
-                                                        </div>
-                                                    </Card>
-                                                </section> 
-                                                
+                                                            <div>
+                                                                <label className='form-label'>Avoid ItSelf:</label>
+                                                                <span className='SpfxCheckRadio ms-2'>
+                                                                    <input type="checkbox" className='form-check-input' checked={config?.avoidItself == "true"} />
+                                                                </span>
+                                                            </div>
+                                                            <div>
+                                                                <label className='form-label'>Category:</label>
+                                                                <span className='ms-2'>{config?.Category} </span>
+                                                            </div>
+                                                            <div>
+                                                                <label className='form-label'>Exception Category:</label>
+                                                                <span className='ms-2'>{config?.ExceptionCategory[0]} </span>
+                                                            </div>
+                                                        </Card>
+                                                    </section>
+
                                                 }
                                             </>
                                         )
@@ -424,37 +409,34 @@ export const NotificationsAddPopup = (props: any) => {
                     }
                 </div>
                 <footer className='text-end mt-2'>
-          <div className='col-sm-12 row m-0'>
+                    <div className='col-sm-12 row m-0'>
 
 
-            <div className="col-sm-6 ps-0 text-lg-start">
-              {props?.SelectedEditItem?.Id!=undefined &&<div>
-                {console.log("footerdiv")}
-                <div><span className='pe-2'>Created</span><span className='pe-2'>{props?.SelectedEditItem?.Created !== null ? props?.SelectedEditItem?.Created:""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Author?.Title}</a></span></div>
-                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{props?.SelectedEditItem?.Modified !== null ? props?.SelectedEditItem?.Modified: ""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Editor?.Title}</a></span></div>
-                <div 
-                onClick={() => deleteDocumentsData(props?.SelectedEditItem?.Id)}
-                     className="hreflink"><span style={{ marginLeft: '-4px' }} className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item</div>
-              </div>}
-            </div>
+                        <div className="col-sm-6 ps-0 text-lg-start">
+                            {props?.SelectedEditItem?.Id != undefined && <div>
+                                {console.log("footerdiv")}
+                                <div><span className='pe-2'>Created</span><span className='pe-2'>{props?.SelectedEditItem?.Created !== null ? props?.SelectedEditItem?.Created : ""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Author?.Title}</a></span></div>
+                                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{props?.SelectedEditItem?.Modified !== null ? props?.SelectedEditItem?.Modified : ""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Editor?.Title}</a></span></div>
+                                <div
+                                    onClick={() => deleteDocumentsData(props?.SelectedEditItem?.Id)}
+                                    className="hreflink"><span style={{ marginLeft: '-4px' }} className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item</div>
+                            </div>}
+                        </div>
 
-            <div className='col-sm-6 mt-2 p-0'>
-            {props?.SelectedEditItem?.Id!=undefined &&  <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/Lists/NotificationsConfigration/EditForm.aspx?ID=${props?.SelectedEditItem?.Id != null ? props?.SelectedEditItem?.Id : null}`}>Open out-of-the-box form</a></span>}
+                        <div className='col-sm-6 mt-2 p-0'>
+                            {props?.SelectedEditItem?.Id != undefined && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/Lists/NotificationsConfigration/EditForm.aspx?ID=${props?.SelectedEditItem?.Id != null ? props?.SelectedEditItem?.Id : null}`}>Open out-of-the-box form</a></span>}
 
-              <Button type="button" variant="primary" className='me-1' onClick={() => addFunction()}>{props?.SelectedEditItem?.Id!=undefined?"Save":"Create"}</Button>
-               <Button type="button" className="btn btn-default" variant="secondary" onClick={() => closePopup()}>Cancel</Button>
-            </div>
-          </div>
-        </footer>
-                <footer className='alignCenter'>
-                    <div className="col text-end">
-                       
+                            <Button type="button" variant="primary" className='me-1' onClick={() => addFunction()}>{props?.SelectedEditItem?.Id != undefined ? "Save" : "Create"}</Button>
+                            <Button type="button" className="btn btn-default" variant="secondary" onClick={() => closePopup()}>Cancel</Button>
+                        </div>
                     </div>
                 </footer>
 
+               
             </Panel>
             {openAddConfigPopup && <AddTaskConfigPopup TaskconfigCallback={TaskconfigCallback} percentageComplete={percentageComplete} AllListId={props?.AllListId} setAllTaskStatusToConfigure={setAllTaskStatusToConfigure} allTaskStatusToConfigure={allTaskStatusToConfigure} ></AddTaskConfigPopup>}
             {openEditConfigPopup && <AddTaskConfigPopup TaskconfigCallback={TaskconfigCallback} editTaskconfigData={editTaskconfigData} percentageComplete={percentageComplete} AllListId={props?.AllListId} setAllTaskStatusToConfigure={setAllTaskStatusToConfigure} allTaskStatusToConfigure={allTaskStatusToConfigure} />}
+
         </>
     )
 }
