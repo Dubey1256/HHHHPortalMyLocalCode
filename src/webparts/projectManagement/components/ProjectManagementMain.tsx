@@ -769,20 +769,7 @@ const ProjectManagementMain = (props: any) => {
             });
           });
         }
-        try {
-          if (items?.WorkingAction != null) {
-              items.workingActionValue = [];
-              items.workingActionValue = JSON.parse(items?.WorkingAction);
-              items.workingActionTitle = ""; items.workingActionIcon = {};
-              items?.workingActionValue?.forEach((elem: any) => {
-                  if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
-                      items.workingActionTitle = items.workingActionTitle ? items.workingActionTitle + " " + elem.Title : elem.Title;
-                  }
-              });
-          }
-      } catch (error) {
-          console.error("An error occurred:", error);
-      }
+      
         items.TaskID = globalCommon.GetTaskId(items);
         AllUser?.map((user: any) => {
           if (user.AssingedToUserId == items.Author.Id) {
