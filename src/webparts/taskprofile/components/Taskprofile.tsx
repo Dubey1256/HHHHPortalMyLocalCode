@@ -2436,7 +2436,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           <dt className='bg-Fa'>Portfolio Item</dt>
                           <dd className='bg-Ff full-width columnFixedTitle pe-0'>
                             {this.state?.TagConceptPaper?.length > 0 &&
-                              <a href={this.state?.TagConceptPaper[0].EncodedAbsUrl}>
+                              <a href={`${this.state?.TagConceptPaper[0].EncodedAbsUrl}?web=1`}>
                                 <span className={`alignIcon svg__iconbox svg__icon--${this.state?.TagConceptPaper[0]?.File_x0020_Type}`} title={this.state?.TagConceptPaper[0]?.File_x0020_Type}></span>
                               </a>
                             }
