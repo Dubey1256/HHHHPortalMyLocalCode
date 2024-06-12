@@ -1212,7 +1212,8 @@ const SmartInformation = (props: any, ref: any) => {
                     </span>
                     <span className='alignCenter'>
                       <a style={{ cursor: "pointer" }} onClick={() => addDocument("AddDocument", SmartInformation)}>
-                        <span className='svg__iconbox svg__icon--Plus mini hreflink' title="Add Document"></span>
+                      <span className="svg__iconbox svg__icon--attach  hreflink" title="Add Document"></span>
+                      
                       </a>
                       <a style={{ cursor: "pointer" }}
                         onClick={() => handleShow(SmartInformation, "edit")}>
