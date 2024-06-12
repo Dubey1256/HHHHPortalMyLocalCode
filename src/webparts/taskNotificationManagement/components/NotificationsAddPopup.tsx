@@ -5,23 +5,8 @@ import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/People
 import * as Moment from 'moment';
 import Button from 'react-bootstrap/Button';
 import * as globalCommon from "../../../globalComponents/globalCommon";
-
-
-import {
-    makeStyles,
-    shorthands,
-
-    Caption1,
-    Text,
-    tokens,
-    Subtitle1,
-} from "@fluentui/react-components";
-import { MoreHorizontal20Regular } from "@fluentui/react-icons";
 import { Card, CardHeader, CardPreview } from "@fluentui/react-components";
-import moment from 'moment';
-import { SpaTwoTone } from '@material-ui/icons';
 import AddTaskConfigPopup from './AddTaskConfigPopup';
-import EditTaskConfigPopup from './EditTaskConfigPopup';
 import Tooltip from '../../../globalComponents/Tooltip';
 let users: any = []
 let PortFolioType: any = [];
@@ -123,7 +108,7 @@ export const NotificationsAddPopup = (props: any) => {
                 }
             } 
             else {
-                if(peopleAndGroupId.length>0 && SelectedPortfolio?.Title!='' && SelectedPortfolio?.Title !=null  ){
+                if(SelectedPortfolio?.Title!='' && SelectedPortfolio?.Title !=null  ){
                     postData = {
                         Title: "TaskNotificationConfig" +""+ SelectedPortfolio?.Title,
                         ConfigType: selectedConfigType,
@@ -310,7 +295,7 @@ export const NotificationsAddPopup = (props: any) => {
 
                                
                             </div>
-                            <div className='peoplePickerPermission mb-2 w-75' style={{ zIndex: '999999999999' }}>
+                            <div className='peoplePickerPermission mb-2 w-75'>
                                 <PeoplePicker
                                     context={props?.AllListId?.Context}
                                     principalTypes={[PrincipalType.User, PrincipalType.SharePointGroup, PrincipalType.SecurityGroup, PrincipalType.DistributionList]}

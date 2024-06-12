@@ -10,7 +10,6 @@
         }
       ]
     },
-   
     "smart-connect-web-part": {
       "components": [
         {
@@ -115,7 +114,6 @@
         }
       ]
     },
-   
     "my-pending-tasks-web-part": {
       "components": [
         {
@@ -148,7 +146,6 @@
         }
       ]
     },
-    
     "update-top-navigation-web-part": {
       "components": [
         {
@@ -269,7 +266,6 @@
         }
       ]
     },
-   
     "site-structure-web-part": {
       "components": [
         {
@@ -398,7 +394,6 @@
         }
       ]
     },
-
     "smart-dynamic-table-web-part": {
       "components": [
         {
@@ -415,7 +410,6 @@
         }
       ]
     },
-    
     "hhhh-smart-pages-web-part": {
       "components": [
         {
@@ -455,94 +449,103 @@
           "manifest": "./src/webparts/hhhhcontactprofile/HhhhcontactprofileWebPart.manifest.json"
         }
       ]
-    },"task-notification-management-web-part": {
+    },
+    "task-notification-management-web-part": {
       "components": [
         {
           "entrypoint": "./lib/webparts/taskNotificationManagement/TaskNotificationManagementWebPart.js",
           "manifest": "./src/webparts/taskNotificationManagement/TaskNotificationManagementWebPart.manifest.json"
         }
       ]
+    },
+    "last-modified-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/lastModified/LastModifiedWebPart.js",
+          "manifest": "./src/webparts/lastModified/LastModifiedWebPart.manifest.json"
+        }
+      ]
+    },
+    "livingdocsapi-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/livingdocsapi/LivingdocsapiWebPart.js",
+          "manifest": "./src/webparts/livingdocsapi/LivingdocsapiWebPart.manifest.json"
+        }
+      ]
+    },
+    "living-docs-sync-tool-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/livingDocsSyncTool/LivingDocsSyncToolWebPart.js",
+          "manifest": "./src/webparts/livingDocsSyncTool/LivingDocsSyncToolWebPart.manifest.json"
+        }
+      ]
+    },
+    "component-permission-mgmt-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/componentPermissionMgmt/ComponentPermissionMgmtWebPart.js",
+          "manifest": "./src/webparts/componentPermissionMgmt/ComponentPermissionMgmtWebPart.manifest.json"
+        }
+      ]
+    },
+    "event-home-sp-fx-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/eventHomeSpFx/EventHomeSpFxWebPart.js",
+          "manifest": "./src/webparts/eventHomeSpFx/EventHomeSpFxWebPart.manifest.json"
+        }
+      ]
+    },
+    "content-editing-news-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/contentEditingNews/ContentEditingNewsWebPart.js",
+          "manifest": "./src/webparts/contentEditingNews/ContentEditingNewsWebPart.manifest.json"
+        }
+      ]
+    },
+    "content-editing-events-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/contentEditingEvents/ContentEditingEventsWebPart.js",
+          "manifest": "./src/webparts/contentEditingEvents/ContentEditingEventsWebPart.manifest.json"
+        }
+      ]
+    },
+    "event-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/eventManagement/EventManagementWebPart.js",
+          "manifest": "./src/webparts/eventManagement/EventManagementWebPart.manifest.json"
+        }
+      ]
+    },
+    "event-detail-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/eventDetail/EventDetailWebPart.js",
+          "manifest": "./src/webparts/eventDetail/EventDetailWebPart.manifest.json"
+        }
+      ]
+    },
+    "content-editing-documents-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/contentEditingDocuments/ContentEditingDocumentsWebPart.js",
+          "manifest": "./src/webparts/contentEditingDocuments/ContentEditingDocumentsWebPart.manifest.json"
+        }
+      ]
+    },
+    "manage-webpart-template-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/manageWebpartTemplate/ManageWebpartTemplateWebPart.js",
+          "manifest": "./src/webparts/manageWebpartTemplate/ManageWebpartTemplateWebPart.manifest.json"
+        }
+      ]
     }
-   ,"last-modified-web-part": {
-    "components": [
-      {
-        "entrypoint": "./lib/webparts/lastModified/LastModifiedWebPart.js",
-        "manifest": "./src/webparts/lastModified/LastModifiedWebPart.manifest.json"
-      }
-    ]
-  },
-  "livingdocsapi-web-part": {
-    "components": [
-      {
-        "entrypoint": "./lib/webparts/livingdocsapi/LivingdocsapiWebPart.js",
-        "manifest": "./src/webparts/livingdocsapi/LivingdocsapiWebPart.manifest.json"
-      }
-    ]
-  },
-  "living-docs-sync-tool-web-part": {
-    "components": [
-      {
-        "entrypoint": "./lib/webparts/livingDocsSyncTool/LivingDocsSyncToolWebPart.js",
-        "manifest": "./src/webparts/livingDocsSyncTool/LivingDocsSyncToolWebPart.manifest.json"
-      }
-    ]
-  },
-  "component-permission-mgmt-web-part": {
-    "components": [
-      {
-        "entrypoint": "./lib/webparts/componentPermissionMgmt/ComponentPermissionMgmtWebPart.js",
-        "manifest": "./src/webparts/componentPermissionMgmt/ComponentPermissionMgmtWebPart.manifest.json"
-      }
-    ]
-  },
-  "event-home-sp-fx-web-part": {
-    "components": [
-      {
-        "entrypoint": "./lib/webparts/eventHomeSpFx/EventHomeSpFxWebPart.js",
-        "manifest": "./src/webparts/eventHomeSpFx/EventHomeSpFxWebPart.manifest.json"
-      }
-    ]
-  },
-  "content-editing-news-web-part": {
-    "components": [
-      {
-        "entrypoint": "./lib/webparts/contentEditingNews/ContentEditingNewsWebPart.js",
-        "manifest": "./src/webparts/contentEditingNews/ContentEditingNewsWebPart.manifest.json"
-      }
-    ]
-  },
-  "content-editing-events-web-part": {
-    "components": [
-      {
-        "entrypoint": "./lib/webparts/contentEditingEvents/ContentEditingEventsWebPart.js",
-        "manifest": "./src/webparts/contentEditingEvents/ContentEditingEventsWebPart.manifest.json"
-      }
-    ]
-  },
-  "event-management-web-part": {
-    "components": [
-      {
-        "entrypoint": "./lib/webparts/eventManagement/EventManagementWebPart.js",
-        "manifest": "./src/webparts/eventManagement/EventManagementWebPart.manifest.json"
-      }
-    ]
-  },
-  "event-detail-web-part": {
-    "components": [
-      {
-        "entrypoint": "./lib/webparts/eventDetail/EventDetailWebPart.js",
-        "manifest": "./src/webparts/eventDetail/EventDetailWebPart.manifest.json"
-      }
-    ]
-  },
-  "content-editing-documents-web-part": {
-    "components": [
-      {
-        "entrypoint": "./lib/webparts/contentEditingDocuments/ContentEditingDocumentsWebPart.js",
-        "manifest": "./src/webparts/contentEditingDocuments/ContentEditingDocumentsWebPart.manifest.json"
-      }
-    ]
-  }
   },
   "externals": {
     "bootstrap-css": {
@@ -631,7 +634,8 @@
     "LastModifiedWebPartStrings": "lib/webparts/lastModified/loc/{locale}.js",
     "LivingdocsapiWebPartStrings": "lib/webparts/livingdocsapi/loc/{locale}.js",
     "ContentEditingEventsWebPartStrings": "lib/webparts/contentEditingEvents/loc/{locale}.js",
-    "ContentEditingNewsWebPartStrings": "lib/webparts/contentEditingNews/loc/{locale}.js",   
-    "ContentEditingDocumentsWebPartStrings": "lib/webparts/contentEditingDocuments/loc/{locale}.js"
+    "ContentEditingNewsWebPartStrings": "lib/webparts/contentEditingNews/loc/{locale}.js",
+    "ContentEditingDocumentsWebPartStrings": "lib/webparts/contentEditingDocuments/loc/{locale}.js",
+    "ManageWebpartTemplateWebPartStrings": "lib/webparts/manageWebpartTemplate/loc/{locale}.js"
   }
 }

@@ -154,7 +154,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
             HighImportance: '',
             isShowLight: '',
             TaskCreatedForThis: false,
-            setTitle:"",
+            setTitle:`set${testTaskIndex}`,
             setImagesInfo: []
            };
        
@@ -178,7 +178,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
             HighImportance: '',
             isShowLight: '',
             TaskCreatedForThis: false,
-            setTitle:"",
+            setTitle:`set${testTaskIndex}`,
             setImagesInfo: [],
         };
     
@@ -787,18 +787,25 @@ const onRenderCustomAddMoreImageHeader = () => {
 const handleChangeTab = (event: any, newValue: any) => {
     setCurrentActiveTab(newValue)
 }
-// const ChangeSetTitle=(index:any,value:any)=>{
-//     let copyState=State
-//        copyState[index].setTitle=value
-//     setState(copyState)
-// }
+const ChangeSetTitle=(index:any,value:any)=>{
+
+    UpdatedFeedBackParentArray = State;
+    UpdatedFeedBackParentArray[index].setTitle=value;
+    
+       setState((prevItems:any) =>(
+        prevItems.map((item:any, idx:any) => idx === index ?  UpdatedFeedBackParentArray[index] : item)
+       )  );
+       setState([...UpdatedFeedBackParentArray]);
+       callBack(UpdatedFeedBackParentArray);
+   
+}
 const DesignCategoriesTask = (state: any) => {
     return (
         <div>
            <TabContext value={currentActiveTab}>
                 <TabList onChange={handleChangeTab} aria-label="lab API tabs example">
                     {state?.map((tab: any, index: any) => (
-                        <Tab key={index} label={`Set${index + 1}`} value={index} />
+                        <Tab key={index} label={tab?.setTitle!=""?tab?.setTitle:`Set${index + 1}`} value={index} />
                     ))}
                     <div className="alignCenter">
                     {btnStatus?<span className="alignCenter"><span className="svg__iconbox svg__icon--Plus hreflink me-2" title="Add set" onClick={addMainRowInDiv}></span> Add New Set</span>:""}
@@ -812,9 +819,9 @@ const DesignCategoriesTask = (state: any) => {
                             return (
                                 <TabPanel key={i} value={i}>
                                     <div className="col-sm-12 row">
-                                    {/* <div className="full-width my-3">
+                                    <div className="full-width my-3">
                                         <input placeholder="Set Title"value={obj?.setTitle}onChange={(e)=>ChangeSetTitle(i,e.target.value)} />
-                                        </div> */}
+                                        </div>
                                         {
                                             obj?.setImagesInfo?.length == 0 && <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} imageIndex={i} />}
                                         {obj?.setImagesInfo?.length == 1 ?

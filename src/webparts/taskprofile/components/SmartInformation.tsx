@@ -29,7 +29,7 @@ const SmartInformation = (props: any, ref: any) => {
   const myContextData2: any = React.useContext<any>(myContextValue)
   const [show, setShow] = useState(false);
   const [popupEdit, setpopupEdit] = useState(false);
-  const [smartInformationArrow, setsmartInformationArrow] = useState(false);
+  const [smartInformationArrow, setsmartInformationArrow]:any = useState();
   const [copySmartInfo, setcopySmartInfo] = useState([])
   const [allValue, setallSetValue] = useState({
     Title: "", Id: 1021, URL: "", Acronym: "", Description: "", InfoType: "Information Note", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
@@ -648,16 +648,9 @@ const SmartInformation = (props: any, ref: any) => {
 
   //===========show hide smartInformation===========
 
-  const showhideComposition = (showhideComposition: any) => {
-    if (smartInformationArrow) {
-
-      setsmartInformationArrow(false)
-
-    } else {
-      setsmartInformationArrow(true)
-    }
-
-  }
+  const showhideComposition = (showhideComposition: any,index:any) => {
+  setsmartInformationArrow(index)
+   }
 
   //========delete function smartinfomation items ==================
 
@@ -1211,15 +1204,16 @@ const SmartInformation = (props: any, ref: any) => {
                 <div className='infoitem'>
                   <div className='bgyellow  d-flex py-1 '>
                     <span className='full-width'>
-                      <a className='d-flex' onClick={() => showhideComposition(SmartInformation)}>
-                        <span className='px-1 alignCenter'>{smartInformationArrow ? <SlArrowDown /> : <SlArrowRight />}</span >
+                      <a className='d-flex' onClick={() => showhideComposition(SmartInformation,i)}>
+                        <span className='px-1 alignCenter'>{smartInformationArrow == i? <SlArrowDown /> : <SlArrowRight />}</span >
                         <span className="pe-3">{SmartInformation?.Title != undefined ? SmartInformation?.Title : ""}</span>
                       </a>
 
                     </span>
                     <span className='alignCenter'>
                       <a style={{ cursor: "pointer" }} onClick={() => addDocument("AddDocument", SmartInformation)}>
-                        <span className='svg__iconbox svg__icon--Plus mini hreflink' title="Add Document"></span>
+                      <span className="svg__iconbox svg__icon--attach  hreflink" title="Add Document"></span>
+                      
                       </a>
                       <a style={{ cursor: "pointer" }}
                         onClick={() => handleShow(SmartInformation, "edit")}>
@@ -1228,7 +1222,7 @@ const SmartInformation = (props: any, ref: any) => {
                     </span>
                   </div>
 
-                  <div className="border-0 border-bottom m-0 bgLightyellow" style={{ display: smartInformationArrow ? 'block' : 'none', fontSize: "small" }}>
+                  <div className="border-0 border-bottom m-0 bgLightyellow" style={{ display: smartInformationArrow ==i? 'block' : 'none', fontSize: "small" }}>
                     <div className="p-1 px-2" style={{ fontSize: "small" }} dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
                     {SmartInformation?.TagDocument != undefined && SmartInformation?.TagDocument?.length > 0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
                       return (
@@ -1279,8 +1273,14 @@ const SmartInformation = (props: any, ref: any) => {
                       )
                     })}
 
-                    <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : ""}</span> </div>
-                  </div>
+
+
+    <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By</span>
+    <span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span>
+    <span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ?
+    <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> 
+    : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span> }</span> </div>
+                      </div>
                   {/* <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Author?.Id)} title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url} /> : ""}</span></div> */}
                 </div>
 
