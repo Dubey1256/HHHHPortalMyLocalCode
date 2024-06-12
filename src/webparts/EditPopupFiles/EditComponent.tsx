@@ -172,7 +172,16 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
   const [autoSearchFeatureType, setAutoSearchFeatureType] = React.useState([]);
   const [percentComplete, setPercentComplete]: any = React.useState();
   const [searchFeatureType, setSearchFeatureType] = React.useState([]);
-
+  const chnagePortfolioType=()=>{
+    setChangeType(true)
+    let targetDiv: any = document?.querySelector(".ms-Panel-main");
+    setTimeout(() => {
+      if (targetDiv && PortfolioTypeColor?.length > 0) {
+        // Change the --SiteBlue variable for elements under the targetDiv
+        targetDiv?.style?.setProperty("--SiteBlue", PortfolioTypeColor); // Change the color to your desired value
+      }
+    }, 1000);
+  }
   const handleCheckboxChange = () => {
     setShortDescriptionVerifieds((prevChecked: any) => !prevChecked);
   };
@@ -2861,19 +2870,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
 
   React.useEffect(() => {
     setTimeout(() => {
-      const panelMain: any = document.querySelector(".ms-Panel-main");
-      if (panelMain && PortfolioTypeColor?.length > 0) {
-        panelMain.style.setProperty("--SiteBlue", PortfolioTypeColor); // Set the desired color value here
-      }
-    }, 2000);
-  }, [
-    IsComponentPicker,
-    imagetab,
-    IsComponent,
-    IsService,
-    isOpenPopup,
-    editPopup,
-  ]);
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && PortfolioTypeColor?.length > 0) {
+          panelMain.style.setProperty("--SiteBlue", PortfolioTypeColor); // Set the desired color value here
+        }
+    }, 2000)
+}, [Smartdatapopup,IsComponent,SiteCompositionShow,isopenProjectpopup,IsComponentPicker,changeType]);
 
   // Change Type functionality
 
@@ -3087,7 +3089,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                     className="mt--2 hreflink"
                     role="button"
                     onClick={() => {
-                      setChangeType(true);
+                      chnagePortfolioType()
                     }}
                   >
                     Change Type
