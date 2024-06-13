@@ -196,7 +196,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(18, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(23, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -2448,9 +2448,9 @@ const TaskDashboard = (props: any) => {
                                                 <dt className='SpfxCheckRadio'>
                                                     <input className='radio' type="radio" value="This Month" name="date" checked={selectedTimeReport == 'This Month'} onClick={() => currentUserTimeEntry('This Month')} /> This Month
                                                 </dt>
-                                                <dt className='SpfxCheckRadio'>
+                                                {/* <dt className='SpfxCheckRadio'>
                                                     <input className='radio' type="radio" value="Last Month" name="date" checked={selectedTimeReport == 'Last Month'} onClick={() => currentUserTimeEntry('Last Month')} /> Last Month
-                                                </dt>
+                                                </dt> */}
                                             </dl>
                                         </div>
                                         <div>
