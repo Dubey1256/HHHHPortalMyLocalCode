@@ -175,10 +175,10 @@ const AddConfiguration = (props: any) => {
     const SaveConfigPopup = async () => {
         try {
             let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").orderBy("orderby", true).getAll().then(async (data: any) => {
+            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").orderBy("Created", false).getAll().then(async (data: any) => {
                 let result: any;
-                if (data?.length && data[0].Value != undefined && data[0].Value != '') {
-                    result = parseInt(data[0].Value) + 1;
+                if (data?.length && data[data.length - 1].Value != undefined && data[data.length - 1].Value != '') {
+                    result = parseInt(data[data.length - 1].Value) + 1;
                 }
                 else {
                     result = data?.length + 1;
