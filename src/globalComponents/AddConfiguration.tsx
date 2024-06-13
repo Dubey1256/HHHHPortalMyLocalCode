@@ -612,7 +612,7 @@ const AddConfiguration = (props: any) => {
         SelectedDashboard.items = items;
         SelectedDashboard.index = index;
         setselectedSmartFav(SelectedDashboard?.items?.selectedSmartFav)
-        PrevSelectedSmartFav = { ...selectedSmartFav }
+        PrevSelectedSmartFav = { ...SelectedDashboard?.items?.selectedSmartFav }
         setPopupSmartFav(true)
     }
     const saveSelectSmartFav = () => {
