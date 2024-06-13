@@ -646,6 +646,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       ChildLevel: false,
     }, () => { console.log(this.state.mentionValue) })
   }
+  private isDecimal =(value: any)=> {
+     return /^\d*\.?\d+$/.test(value); 
+  }
   private async GetEmailObjects(txtComment: any, MentionedValue: any) {
     if (MentionedValue != '') {
       //Get All To's
@@ -700,7 +703,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           //   MsgURL = `${this.props.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${this.state.itemID}`
           //   MsgTitle = `${this.state?.Result?.Title}`
           // }
-          this.state.Result["CommentsArray"] = this.state?.Result?.Comments
+          this.state.Result["CommentsArray"] = this.state?.Result?.Comments;
+          if (this.isDecimal(this.state?.Result?.PercentComplete))
+              this.state.Result.PercentComplete = this.state?.Result?.PercentComplete * 100;
           const TaskInformation = await GlobalFunctionForUpdateItems.GenerateMSTeamsNotification(this.state?.Result)
           const containerDiv = document.createElement('div');
           const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
