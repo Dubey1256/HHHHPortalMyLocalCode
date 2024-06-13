@@ -440,7 +440,7 @@ const EditConfiguration = (props: any) => {
                         <label className='form-label full-width fw-semibold'>Drag and drop tiles between columns in any vertical order.</label></div>
                     <div className="Metadatapannel border p-2 mb-2">
                         <div className="row">
-                            <div className="col-sm-10 pe-0">
+                            <div className="col-sm-9 pe-0">
                                 <div className="row">
                                     {NewItem != undefined && NewItem?.length > 0 && NewItem.map((item: any, index: any) => {
                                         return (
@@ -484,11 +484,12 @@ const EditConfiguration = (props: any) => {
                                             </>
                                         )
                                     })}</div></div>
-                            <div className="col-sm-2 text-end">
+                            <div className="col-sm-3 text-end">
                                 <div className='form-label full-width mb-1 alignCenter' onClick={(e) => AddColumn()}><a className="alignCenter hreflink ml-auto siteColor"><span className="svg__iconbox svg__icon--Plus mini"></span> Add Column</a></div>
                                 <div className='form-label full-width alignCenter' onClick={(e) => AddWebpartPopup()}><a className="alignCenter hreflink ml-auto siteColor"> <span className="svg__iconbox svg__icon--Plus mini"></span> Add WebPart</a></div>
-                                {IsWebPartPopup && <div className='form-label full-width' >
-
+                                {IsWebPartPopup && <div className='my-2 card addconnect boxshadow' >
+                                <div className="alignCenter border-bottom f-15 fw-semibold m-2 siteColor">Existing Webparts</div>
+                                <div className="card-body">
                                     {IsWebPartPopup && ExistingWeparts?.length > 0 && ExistingWeparts?.map((item: any, index: any) => {
                                         return (
                                             <>
@@ -501,7 +502,7 @@ const EditConfiguration = (props: any) => {
                                                 </div>
                                             </>
                                         )
-                                    })}
+                                    })}</div>
                                 </div>}
 
                             </div>
