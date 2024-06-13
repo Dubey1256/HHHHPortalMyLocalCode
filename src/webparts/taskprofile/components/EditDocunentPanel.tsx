@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import Tooltip from '../../../globalComponents/Tooltip';
+import Tooltip from '../../../globalComponents/Tooltip'; 
+import GlobalTooltip from '../../../globalComponents/Tooltip'; 
 import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
 import "@pnp/sp/webs";
@@ -807,6 +808,16 @@ const EditDocumentpanel = (props: any) => {
     setTaggedSitesTask(selectedTasks);
   }
 
+  const customRadimadeTable = () => {
+    return (
+      <>
+        <div className='subheading' >
+          Select Task
+        </div>
+        <GlobalTooltip ComponentId='843' />
+      </>
+    )
+  }
 
   /////////folara editor function start//////////
   const HtmlEditorCallBack = (items: any) => {
@@ -1353,7 +1364,7 @@ const EditDocumentpanel = (props: any) => {
         />
       }
 
-      <Panel isOpen={isopenTaskpopup} isBlocking={false} onDismiss={() => setisopenTaskpopup(false)} type={PanelType.large} >
+      <Panel isOpen={isopenTaskpopup} isBlocking={false} onDismiss={() => setisopenTaskpopup(false)} type={PanelType.large} onRenderHeader={customRadimadeTable} >
         <ReadyMadeTable AllListId={AllListId} configration={"AllAwt"} TaskFilter={"PercentComplete lt '0.90'"} usedFor={'editdocument'} callBack={TaskCallback} closepopup={() => setisopenTaskpopup(false)} />
       </Panel>
 
