@@ -119,14 +119,17 @@ const EditConfiguration = (props: any) => {
             const updatedItems = [...NewItem];
 
             // Extract the item being dragged
-            const draggedItemContent = ExistingWeparts[dragItem.Current];
+            let draggedItemContent:any = ExistingWeparts[dragItem.Current];
             draggedItemContent.WebpartTitle = draggedItemContent.Title;
             let obj: any = {};
             obj.Column = dragOverItem.Current;
             obj.Row = dragOverItem.CurrentIndex;
             draggedItemContent.WebpartPosition = obj;
             // Remove the dragged item from its original position
-
+            if (draggedItemContent?.Configurations != undefined) {
+              let  draggedItemContent123:any= JSON.parse(draggedItemContent?.Configurations);
+              draggedItemContent =_.cloneDeep(draggedItemContent123);
+            }
             ExistingWeparts.splice(index, 1);
             setExistingWeparts(ExistingWeparts);
 
@@ -233,7 +236,7 @@ const EditConfiguration = (props: any) => {
     const LoadExistingWebparts = () => {
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
         web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").getAll().then((data: any) => {
-          //  ExistingWepartsBackup = data;
+            //  ExistingWepartsBackup = data;
 
             setExistingWeparts(data);
             ExistingWepartsBackup = _.cloneDeep(data);
@@ -259,8 +262,12 @@ const EditConfiguration = (props: any) => {
             arrayItems?.forEach((filter: any) => {
                 if (type?.Id === filter?.Id) {
                     filter.DataSource = type.DataSource;
-                    filter.smartFevId = type.smartFevId ===undefined ?"" :type.smartFevId;
+                    filter.smartFevId = type.smartFevId === undefined ? "" : type.smartFevId;
                 }
+                // if(filter?.Configurations !=undefined) {
+                //    let item = JSON.parse(filter?.Configurations);
+                //    filter
+                // }
                 filter.selectedSmartFav = {};
             })
             await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(props?.EditItem?.Id).update({ Title: DashboardTitle, Configurations: JSON.stringify(arrayItems) })
@@ -362,7 +369,7 @@ const EditConfiguration = (props: any) => {
             if (index === arrayIndex)
                 item?.ArrayValue?.forEach((subChild: any, indexChild: any) => {
                     if (itemValue.Id === subChild?.Id) {
-                        const findItem  = ExistingWepartsBackup?.filter((filt: any) =>  filt.Id === subChild.Id )
+                        const findItem = ExistingWepartsBackup?.filter((filt: any) => filt.Id === subChild.Id)
                         if (findItem?.length > 0) {
                             let arrayItems: any = [];
                             const ExistingItems = [...ExistingWeparts];
@@ -417,7 +424,7 @@ const EditConfiguration = (props: any) => {
             item?.ArrayValue?.forEach((subChild: any) => {
                 if (type?.Id === subChild?.Id) {
                     subChild.DataSource = type?.DataSource;
-                    subChild.smartFevId =type.smartFevId ===undefined ?"" :type.smartFevId;
+                    subChild.smartFevId = type.smartFevId === undefined ? "" : type.smartFevId;
                 }
             })
         })
@@ -488,21 +495,21 @@ const EditConfiguration = (props: any) => {
                                 <div className='form-label full-width mb-1 alignCenter' onClick={(e) => AddColumn()}><a className="alignCenter hreflink ml-auto siteColor"><span className="svg__iconbox svg__icon--Plus mini"></span> Add Column</a></div>
                                 <div className='form-label full-width alignCenter' onClick={(e) => AddWebpartPopup()}><a className="alignCenter hreflink ml-auto siteColor"> <span className="svg__iconbox svg__icon--Plus mini"></span> Add WebPart</a></div>
                                 {IsWebPartPopup && <div className='my-2 card addconnect boxshadow' >
-                                <div className="alignCenter border-bottom f-15 fw-semibold m-2 siteColor">Existing Webparts</div>
-                                <div className="card-body">
-                                    {IsWebPartPopup && ExistingWeparts?.length > 0 && ExistingWeparts?.map((item: any, index: any) => {
-                                        return (
-                                            <>
-                                                <div className="alignCenter bg-siteColor justify-content-center mb-2 w-100" style={{ height: '50px' }} onDragStart={(e) => dragStart(e, index, index)}
-                                                    onDragEnter={(e) => dragEnd(e, index, index)}
-                                                    onDragEnd={(e) => drop(item, index, index, "DifferentArray")}
-                                                    key={index}
-                                                    draggable
-                                                >{item.Title}
-                                                </div>
-                                            </>
-                                        )
-                                    })}</div>
+                                    <div className="alignCenter border-bottom f-15 fw-semibold m-2 siteColor">Existing Webparts</div>
+                                    <div className="card-body">
+                                        {IsWebPartPopup && ExistingWeparts?.length > 0 && ExistingWeparts?.map((item: any, index: any) => {
+                                            return (
+                                                <>
+                                                    <div className="alignCenter bg-siteColor justify-content-center mb-2 w-100" style={{ height: '50px' }} onDragStart={(e) => dragStart(e, index, index)}
+                                                        onDragEnter={(e) => dragEnd(e, index, index)}
+                                                        onDragEnd={(e) => drop(item, index, index, "DifferentArray")}
+                                                        key={index}
+                                                        draggable
+                                                    >{item.Title}
+                                                    </div>
+                                                </>
+                                            )
+                                        })}</div>
                                 </div>}
 
                             </div>
@@ -511,7 +518,7 @@ const EditConfiguration = (props: any) => {
                     </div>
                     <div className="Metadatapannel lastmodify mb-2">
                         <>
-                            <div className="border nav nav-tabs" id="nav-tab" role="tablist" style={{display:"inline-flex"}}>
+                            <div className="border nav nav-tabs" id="nav-tab" role="tablist" style={{ display: "inline-flex" }}>
                                 {
                                     Items?.length && Items.map((siteValue: any) =>
                                         <>
