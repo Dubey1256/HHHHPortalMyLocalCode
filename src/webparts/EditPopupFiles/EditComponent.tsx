@@ -1033,6 +1033,13 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
   };
 
   const onRenderCustomHeaderQuestion = () => {
+    let targetDiv: any = document?.querySelector(".ms-Panel-main");
+    setTimeout(() => {
+      if (targetDiv && PortfolioTypeColor?.length > 0) {
+        // Change the --SiteBlue variable for elements under the targetDiv
+        targetDiv?.style?.setProperty("--SiteBlue", PortfolioTypeColor); // Change the color to your desired value
+      }
+    }, 1000);
     return (
       <>
         <div className="subheading">Add Question</div>
@@ -1041,6 +1048,13 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
     );
   };
   const onRenderCustomHeaderHelp = () => {
+    let targetDiv: any = document?.querySelector(".ms-Panel-main");
+    setTimeout(() => {
+      if (targetDiv && PortfolioTypeColor?.length > 0) {
+        // Change the --SiteBlue variable for elements under the targetDiv
+        targetDiv?.style?.setProperty("--SiteBlue", PortfolioTypeColor); // Change the color to your desired value
+      }
+    }, 1000);
     return (
       <>
         <div className="subheading">Add Help</div>
@@ -1049,6 +1063,13 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
     );
   };
   const onRenderHeaderQuestionEdit = () => {
+    let targetDiv: any = document?.querySelector(".ms-Panel-main");
+    setTimeout(() => {
+      if (targetDiv && PortfolioTypeColor?.length > 0) {
+        // Change the --SiteBlue variable for elements under the targetDiv
+        targetDiv?.style?.setProperty("--SiteBlue", PortfolioTypeColor); // Change the color to your desired value
+      }
+    }, 1000);
     return (
       <>
         <div className="subheading">Edit Question</div>
@@ -1057,6 +1078,13 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
     );
   };
   const onRenderHeaderHelpEdit = () => {
+    let targetDiv: any = document?.querySelector(".ms-Panel-main");
+    setTimeout(() => {
+      if (targetDiv && PortfolioTypeColor?.length > 0) {
+        // Change the --SiteBlue variable for elements under the targetDiv
+        targetDiv?.style?.setProperty("--SiteBlue", PortfolioTypeColor); // Change the color to your desired value
+      }
+    }, 1000);
     return (
       <>
         <div className="subheading">Edit Help</div>
