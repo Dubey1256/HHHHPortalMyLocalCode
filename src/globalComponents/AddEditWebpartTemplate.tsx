@@ -310,8 +310,11 @@ const AddEditWebpartTemplate = (props: any) => {
     }
     const SelectedTemplate = (check: any, items: any, index: any) => {
         setIsCheck(check)
-        if (items?.WebpartTitle != undefined)
+        if (items?.WebpartTitle != undefined) {
+            setDashboardTitle(items?.WebpartTitle)
             setselectedTemplate(items?.WebpartTitle)
+        }
+
         let newArray = [...NewItem];
         let Template = [...DashboardTemplate];
         let IsExecuteElse = true

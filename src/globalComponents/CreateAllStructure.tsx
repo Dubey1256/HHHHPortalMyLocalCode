@@ -52,8 +52,6 @@ const CreateAllStructureComponent = (props: any) => {
       {
         id: 1,
         value: "",
-        isCheckedSub: true,
-        isCheckedCompFea: true,
         Feature: [],
         SubComponent: [{ id: 1, value: "", Feature: [{ id: 1, value: "" }] }],
       },
@@ -142,7 +140,8 @@ const CreateAllStructureComponent = (props: any) => {
           Type === "ComponentFeature" &&
           props?.SelectedItem?.PortfolioType?.Title == "Component" &&
           updatedComponents[componentIndex].Feature.length === 0 &&
-          updatedComponents[componentIndex].SubComponent.length < 2
+          updatedComponents[componentIndex].SubComponent.length < 2 &&
+          updatedComponents[componentIndex].SubComponent[0].value==""
         ) {
           updatedComponents[componentIndex]?.SubComponent.pop();
           updatedComponents[componentIndex].Feature.push(newFeature);
@@ -942,8 +941,7 @@ const CreateAllStructureComponent = (props: any) => {
                                 }
                               />
                               {component.SubComponent.length == 1 &&
-                                (component.isCheckedCompFea === true ||
-                                  props?.SelectedItem === undefined) && (
+                                ( props?.SelectedItem === undefined) && (
                                   <span
                                     onClick={() =>
                                       handleDelete(
@@ -968,11 +966,11 @@ const CreateAllStructureComponent = (props: any) => {
                                     "Feature"
                                   )
                                 }
+
                                 title="Add"
                                 className="svg__iconbox mx-1 svg__icon--Plus mini hreflink mt-1"
                               ></span>
-                              {indexSub ===
-                                component.SubComponent.length - 1 && (
+                              {!(props?.SelectedItem?.Item_x0020_Type === "Component" && component.SubComponent.length === 1 && props?.SelectedItem === undefined) && (
                                 <div className="input-group-append alignCenter">
                                   {component.SubComponent.length > 1 && (
                                     <span
@@ -1001,15 +999,10 @@ const CreateAllStructureComponent = (props: any) => {
                           props?.SelectedItem?.Item_x0020_Type ==
                             "SubComponent") && (
                           <div className="mt-2 ps-4">
-                            {Subcomponent?.Feature?.map(
-                              (Features: any, indexFea: any) => (
+                            {Subcomponent?.Feature?.map((Features: any, indexFea: any) => (
                                 <div key={Features.id} className="form-group">
                                   <span>{indexFea + 1} - </span>
-                                  <label
-                                    htmlFor={`exampleFormControlInput${Features.id}`}
-                                  >
-                                    Feature
-                                  </label>
+                                  <label htmlFor={`exampleFormControlInput${Features.id}`}>Feature</label>
                                   <div className="input-group">
                                     <input
                                       type="text"
@@ -1027,9 +1020,9 @@ const CreateAllStructureComponent = (props: any) => {
                                         )
                                       }
                                     />
-                                    {Subcomponent?.Feature.length == 1 &&
-                                      props?.SelectedItem?.Item_x0020_Type !==
-                                        "SubComponent" && (
+                            
+                                    {!(props?.SelectedItem?.Item_x0020_Type === "SubComponent" && Subcomponent.Feature.length === 1) && (
+                                      <>
                                         <span
                                           onClick={() =>
                                             handleDelete(
@@ -1042,42 +1035,13 @@ const CreateAllStructureComponent = (props: any) => {
                                           title="Delete"
                                           className="svg__iconbox svg__icon--trash hreflink"
                                         ></span>
-                                      )}
-                                    {indexFea ===
-                                      Subcomponent.Feature.length - 1 && (
-                                      <div className="input-group-append alignCenter">
-                                        {/* <span
-                                              onClick={() =>
-                                                handleAddSubComponent(
-                                                  index,
-                                                  indexSub,
-                                                  indexFea,
-                                                  "Feature"
-                                                )
-                                              }
-                                              title="Add"
-                                              className="svg__iconbox mx-1 svg__icon--Plus hreflink"
-                                            ></span> */}
-                                        {Subcomponent.Feature.length > 1 && (
-                                          <span
-                                            onClick={() =>
-                                              handleDelete(
-                                                index,
-                                                indexSub,
-                                                indexFea,
-                                                "feature"
-                                              )
-                                            }
-                                            title="Delete"
-                                            className="svg__iconbox svg__icon--trash hreflink"
-                                          ></span>
-                                        )}
-                                      </div>
+                                        
+                                       
+                                      </>
                                     )}
                                   </div>
                                 </div>
-                              )
-                            )}
+                              ))}
                           </div>
                         )}
                       </div>
@@ -1118,10 +1082,7 @@ const CreateAllStructureComponent = (props: any) => {
                                     )
                                   }
                                 />
-                                {((props?.SelectedItem?.Item_x0020_Type ===
-                                  "Component" &&
-                                  component.Feature.length === 1 &&
-                                  component?.SubComponent.length > 0)) && (
+                                {!(props?.SelectedItem?.Item_x0020_Type === "Component" && component.Feature.length === 1 && props?.SelectedItem === undefined)  && (
                                   <span
                                     onClick={() =>
                                       handleDelete(
@@ -1135,10 +1096,8 @@ const CreateAllStructureComponent = (props: any) => {
                                     className="svg__iconbox svg__icon--trash hreflink"
                                   ></span>
                                 )}
-                                {component?.Feature?.length == 1 &&
-                                  props?.SelectedItem?.Item_x0020_Type ===
-                                    undefined &&
-                                  component?.SubComponent.length > 0 && (
+                                {component.SubComponent.length == 1 &&
+                                ( props?.SelectedItem === undefined) && (
                                     <span
                                       onClick={() =>
                                         handleDelete(
@@ -1152,25 +1111,7 @@ const CreateAllStructureComponent = (props: any) => {
                                       className="svg__iconbox svg__icon--trash hreflink"
                                     ></span>
                                   )}
-                                {featureIndex ===
-                                  component.Feature.length - 1 && (
-                                  <div className="input-group-append alignCenter">
-                                    {component.Feature.length > 1 && (
-                                      <span
-                                        onClick={() =>
-                                          handleDelete(
-                                            index,
-                                            0,
-                                            featureIndex,
-                                            "ComponentFeature"
-                                          )
-                                        }
-                                        title="Delete"
-                                        className="svg__iconbox svg__icon--trash hreflink"
-                                      ></span>
-                                    )}
-                                  </div>
-                                )}
+                              
                               </div>
                             </div>
                           )}
