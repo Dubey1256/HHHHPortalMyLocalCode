@@ -971,7 +971,7 @@ const TaskStatusTbl = (Tile: any) => {
         accessorFn: (row: any) => row?.TaskTypeValue,
         cell: ({ row, column, getValue }: any) => (
           <div draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)} >
-            <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"></span></span>
+            <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content">{row?.original?.TaskTypeValue}</span></span>
           </div>
         ),
         placeholder: "Task Type",
@@ -1408,14 +1408,22 @@ const TaskStatusTbl = (Tile: any) => {
     tasksCopy.sort((a: any, b: any) => {
       return b.PriorityRank - a.PriorityRank;
     });
-    let confirmation = confirm('Your' + ' ' + config?.WebpartTitle + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + ContextData?.currentUserData?.Approver[0]?.Title + ')' + '.' + '\n' + 'Do you want to continue?')
+    let confirmation: any;
+    if (ContextData?.currentUserData?.Approver != undefined && ContextData?.currentUserData?.Approver[0]?.Title != undefined)
+      confirmation = confirm('Your' + ' ' + config?.WebpartTitle + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + ContextData?.currentUserData?.Approver[0]?.Title + ')' + '.' + '\n' + 'Do you want to continue?')
+    else
+      confirmation = confirm('Your' + ' ' + config?.WebpartTitle + ' ' + 'will be automatically shared with you only because you don' + 't have any approver, so no email will be sent to the approver' + '.' + '\n' + 'Do you want to continue?')
     if (confirmation) {
       let totalTime = 0;
       var subject = ContextData?.currentUserData?.Title + ' - ' + config?.WebpartTitle;
       let Currentdate = new Date(); // Use your JavaScript Date object here
       let CurrentformattedDate = Moment(Currentdate).format('YYYY-MM-DD');
+      let UserTotalTime = 0
+      tasksCopy = tasksCopy?.sort((a: any, b: any) => {
+        return b?.SmartPriority - a?.SmartPriority;
+      });
       tasksCopy?.map((item: any) => {
-        totalTime += item?.EstimatedTime
+        // totalTime += item?.EstimatedTime
         let teamUsers: any = [];
         item?.TeamMembers?.map((item1: any) => {
           teamUsers.push(item1?.Title)
@@ -1427,24 +1435,56 @@ const TaskStatusTbl = (Tile: any) => {
           item.TaskDueDatenew = '';
         if (item.Categories == undefined || item.Categories == '')
           item.Categories = '';
-        text =
-          `<tr>
+
+        item.EstimatedTimeEntry = 0;
+        item.EstimatedTimeEntryDesc = '';
+        if (ContextData?.todaysDrafTimeEntry?.length > 0) {
+          ContextData?.todaysDrafTimeEntry?.map((value: any) => {
+            let entryDetails: any = [];
+            try {
+              entryDetails = JSON.parse(value.AdditionalTimeEntry)
+
+            } catch (e) {
+
+            }
+            if (entryDetails?.length > 0 && value[`Task${item?.siteType}`] != undefined && value[`Task${item?.siteType}`].Id == item?.Id) {
+              entryDetails?.map((timeEntry: any) => {
+                let parts = timeEntry?.TaskDate?.split('/');
+                let timeEntryDate: any = new Date(parts[2], parts[1] - 1, parts[0]);
+                if (timeEntryDate?.setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0) && timeEntry?.AuthorId == ContextData?.currentUserData?.AssingedToUserId) {
+                  item.EstimatedTimeEntryDesc += ' ' + timeEntry?.Description
+                  item.EstimatedTimeEntry += parseFloat(timeEntry?.TaskTime)
+                  totalTime += Number(timeEntry?.TaskTime)
+                  UserTotalTime += Number(timeEntry?.TaskTime)
+                }
+              })
+
+
+            }
+          })
+        }
+
+        if (item?.EstimatedTimeEntry > 0) {
+          text =
+            `<tr>
                   <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
                   <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
                   <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
                   <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
                   <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.PercentComplete} </td>
                   <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.EstimatedTime} </td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${item.EstimatedTimeDescr} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.EstimatedTimeEntry} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${item.EstimatedTimeEntryDesc} </td>
                   </tr>`
-        body1.push(text);
+          body1.push(text);
+        }
       });
-      body =
-        '<h2>'
-        + ContextData?.currentUserData?.Title + ' - ' + config?.WebpartTitle
-        + '</h2>'
-        + ` <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
+      if (body1?.length > 0) {
+        body =
+          '<h2>'
+          + ContextData?.currentUserData?.Title + ' - ' + config?.WebpartTitle
+          + '</h2>'
+          + ` <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
                     <thead>
                     <tr>
                     <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Site</th>
@@ -1453,19 +1493,20 @@ const TaskStatusTbl = (Tile: any) => {
                     <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Category</th>
                     <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">% </th>
                     <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Smart Priority</th>
-                    <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px" >Est Time</th>
-                    <th height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px; border-right:0px" >Est Desc.</th>
+                    <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px" >Time</th>
+                    <th height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px; border-right:0px" >Timesheet Description (Draft)</th>
                     </tr>
                     </thead>
                     <tbody>
                     ${body1}
                     </tbody>
                     </table>`
-        + '<p>' + 'For the complete Dashboard of ' + ContextData?.currentUserData?.Title + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx` + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx` + '</span>' + '</a>' + '</p>'
-      subject = `[${config?.WebpartTitle} - ${ContextData?.currentUserData?.Title}] ${CurrentformattedDate}: ${tasksCopy?.length} Tasks; ${totalTime}hrs scheduled`
+          + '<p>' + 'For the complete Dashboard of ' + ContextData?.currentUserData?.Title + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx` + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx` + '</span>' + '</a>' + '</p>'
+        subject = `[${config?.WebpartTitle} - ${ContextData?.currentUserData?.Title}] ${CurrentformattedDate}: ${tasksCopy?.length} Tasks; ${totalTime}hrs scheduled`
 
+      }
+      body = body.replaceAll('>,<', '><').replaceAll(',', '')
     }
-    body = body.replaceAll('>,<', '><').replaceAll(',', '')
     if (body1.length > 0 && body1 != undefined) {
       if (ContextData?.currentUserData?.Email != undefined) {
         to.push(ContextData?.currentUserData?.Email)
@@ -1679,7 +1720,7 @@ const TaskStatusTbl = (Tile: any) => {
                             {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => (
                               user.IsShowTask == true && (
                                 <>
-                                  <h3 className="f-15">{user?.Title} Working Tasks</h3>
+                                  <h3 className="f-15">{user?.Title} Working Today Tasks</h3>
                                   <div key={index} className="Alltable mb-2" onDragStart={(e) => handleDragStart(e, user, '')} draggable={false}>
                                     <GlobalCommanTable bulkEditIcon={true} updatedSmartFilterFlatView={true} customHeaderButtonAvailable={true} customTableHeaderButtons={customWorkingTableHeaderButtons(config, user, undefined, 'DateTask')} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={user?.Tasks}
                                       callBackData={callBackData} pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />

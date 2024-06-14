@@ -1252,7 +1252,8 @@ const inlineEditingcolumns = (props: any) => {
               display: "flex",
               width: "100%",
               height: "100%",
-              gap: "1px"
+              gap: "1px",
+              alignItems: "center"
             }}
             onClick={() => setTaskPriorityPopup(true)}
           >
@@ -1305,8 +1306,8 @@ const inlineEditingcolumns = (props: any) => {
               // }
               if (category?.Title == "Favorite") {
                 return (
-                  <a title="Favorite">
-                    <span className=" svg__iconbox svg__icon--Star alignIcon "></span>
+                  <a title="Favorite" className="alignCenter">
+                    <span className=" svg__iconbox svg__icon--Star"></span>
                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} />  */}
                   </a>
                 );

@@ -7,26 +7,38 @@ import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/People
 import Button from 'react-bootstrap/Button';
 
 let copyAllCategory:any=[]
-let DefaultSelectedUseremail:any=[]
+let copyAllSiteData:any=[];
 const AddTaskConfigPopup = (props: any) => {
-    const [NotificationType ,setnotificationType]:any= useState(["Teams", "Email","Assigned To"])
+ const [DefaultSelectedUseremail, setDefaultSelectedUseremail] = React.useState([]);
+    const [NotificationType ,setnotificationType]:any= useState(["All","Teams", "Email","Assigned To"])
     const [Notify,setnotify]:any=useState(["Creator","Approval","Specific"])
     const [notificationType, setNotificationType] = useState("")
     const [Category, setCategory] = useState("")
     const[avoidItself,setAvoidItSelf]:any=useState()
-    const [exception, setException] = React.useState<string[]>([]);
+    const [exceptionCategory, setExceptionCategory] = React.useState<string[]>([]);
+    const [exceptionSite, setExceptionSite] = React.useState<string[]>([]);
     const [notify, setNotify] = useState("")
     const [selectedPersonsAndGroups, setSelectedPersonsAndGroups] = React.useState([]);
     const [AllCategory, setAllCategory] = useState([])
+    const [AllSite, setAllSite] = useState([])
+    const[selectedSite,setSelectedSite]=useState("")
     useEffect(() => {
         if (props?.editTaskconfigData != undefined) {
             setNotificationType(props?.editTaskconfigData?.NotificationType);
             setNotify(props?.editTaskconfigData?.Notify)
             setCategory(props?.editTaskconfigData?.Category);
             setAvoidItSelf(props?.editTaskconfigData?.avoidItself)
-            setException(props?.editTaskconfigData?.ExceptionCategory)
+            setExceptionCategory(props?.editTaskconfigData?.ExceptionCategory)
             setSelectedPersonsAndGroups(props?.editTaskconfigData?.Notifier)
-            DefaultSelectedUseremail.push(props?.editTaskconfigData?.Notifier[0]?.secondaryText)
+            setSelectedSite(props?.editTaskconfigData?.selectedSite),
+            setExceptionSite(props?.editTaskconfigData?.ExceptionSite)
+                let selectesUser:any=[];
+                if(props?.editTaskconfigData?.Notifier?.length>0){
+                    props?.editTaskconfigData?.Notifier?.map((data:any)=>{
+                        selectesUser.push(data?.secondaryText)  
+                    })
+                }
+                setDefaultSelectedUseremail(selectesUser)
             // setException(
             //     props?.editTaskconfigData?.ExceptionCategory?.length>0 ? [...exception, item.key as string] : exception.filter(key => key !== item.key),
             //   );
@@ -47,7 +59,12 @@ const AddTaskConfigPopup = (props: any) => {
             ).expand("Author,Editor,Parent")
             .getAll().then((CategoryData: any) => {
                 if(CategoryData?.length>0){
-                   let  AllCategory = CategoryData?.filter((data:any)=>data.TaxType=="Categories")
+                  let allSiteData=  CategoryData?.filter((data:any)=>data?.TaxType=="Sites")
+                  copyAllSiteData=JSON.parse(JSON.stringify(allSiteData));
+                   allSiteData?.unshift({Title:"All"});
+                     setAllSite(allSiteData);
+                  let  AllCategory = CategoryData?.filter((data:any)=>data.TaxType=="Categories")
+                  copyAllCategory=JSON.parse(JSON.stringify(AllCategory));
                     copyAllCategory=AllCategory
                     AllCategory.unshift({Title:"All"});
                     setAllCategory(AllCategory)
@@ -62,7 +79,7 @@ const AddTaskConfigPopup = (props: any) => {
     const onRenderCustomHeader = (
     ) => {
         return (
-            <div className=" full-width pb-1" > <div className="subheading">
+            <div className=" full-width pb-1 AddTaskConfigPopup " > <div className="subheading">
                 <span className="siteColor">
                     {props?.SelectedEditItem?.Id != undefined ? `Edit Task Configuration - ${props?.SelectedEditItem?.Title}` : 'Add Task Configuration'}
                 </span>
@@ -84,11 +101,21 @@ const AddTaskConfigPopup = (props: any) => {
         if(selectedType=="Notify"){
             setNotify(key)
         }
+        if(selectedType==="SelectedSite"){
+            setSelectedSite(key)
+        }
     }
     const onChange = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
         if (item) {
-            setException(
-            item.selected ? [...exception, item.key as string] : exception.filter(key => key !== item.key),
+            setExceptionCategory(
+            item.selected ? [...exceptionCategory, item.key as string] : exceptionCategory.filter(key => key !== item?.key),
+          );
+        }
+      };
+      const onChangeExceptionSite = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
+        if (item) {
+            setExceptionSite(
+            item.selected ? [...exceptionSite, item.key as string] : exceptionSite.filter(key => key !== item?.key),
           );
         }
       };
@@ -107,7 +134,9 @@ const AddTaskConfigPopup = (props: any) => {
             percentComplete:props?.percentageComplete,
             NotificationType:notificationType,
             Category:Category,
-            ExceptionCategory:Category=="All"?exception:"",
+            selectedSite:selectedSite,
+            ExceptionSite:selectedSite=="All"?exceptionSite:"",
+            ExceptionCategory:Category=="All"?exceptionCategory:"",
             Notifier:notify=="Specific"?selectedPersonsAndGroups:[],
             Notify:notify,
             avoidItself:avoidItself
@@ -127,7 +156,7 @@ const AddTaskConfigPopup = (props: any) => {
         else{
             allConfigData.push(configData)
         }
-        DefaultSelectedUseremail=[]
+       
       props?.setAllTaskStatusToConfigure(allConfigData)
       props?.TaskconfigCallback()
     }
@@ -141,7 +170,7 @@ const AddTaskConfigPopup = (props: any) => {
             isOpen={true}
             onDismiss={() => props?.TaskconfigCallback()}
             isBlocking={false}
-            layerProps={{ styles: { root: { zIndex: 1000000000 }}}}
+          
 >
             <div>
                 <div className='row mb-3 alignCenter'>
@@ -172,17 +201,49 @@ const AddTaskConfigPopup = (props: any) => {
                         />
                     </div>
                 </div>
+              
                 {Category == "All" && <div className='row alignCenter mb-3'>
-                    <div className='col-3'><label className='form-label fw-semibold'>Exception</label></div>
+                    <div className='col-3'><label className='form-label fw-semibold'>Exception Category</label></div>
                     <div className='col-9 '>
                         <Dropdown
                             placeholder="Select options"
                           
-                            selectedKeys={exception}
+                            selectedKeys={exceptionCategory}
                             // eslint-disable-next-line react/jsx-no-bind
                             onChange={onChange}
                             multiSelect
                             options={copyAllCategory?.map((copyAllCategory: any) => ({ key: copyAllCategory?.Title, text:copyAllCategory?.Title }))}
+                           
+                            styles={{ dropdown: { width: '100%' } }}
+                        />
+                        
+                    </div>
+                </div>}
+                <div className='row mb-3 alignCenter'>
+                    <div className='col-3'><label className='form-label fw-semibold'>Select Site</label></div>
+                    <div className='col-9'>
+
+                        <Dropdown className='full-width'
+                            id="ItemRankUpload"
+                            options={AllSite?.map((allSite: any) => ({ key: allSite?.Title, text: allSite?.Title }))}
+                            selectedKey={selectedSite}
+                            onChange=
+                            {(e, option) => handleChange(option?.key, 'SelectedSite')}
+                            styles={{ dropdown: { width: '100%' } }}
+                        />
+                    </div>
+                </div>
+                {selectedSite == "All" && <div className='row alignCenter mb-3'>
+                    <div className='col-3'><label className='form-label fw-semibold'>Exception Site</label></div>
+                    <div className='col-9 '>
+                        <Dropdown
+                            placeholder="Select options"
+                          
+                            selectedKeys={exceptionSite}
+                            // eslint-disable-next-line react/jsx-no-bind
+                            onChange={onChangeExceptionSite}
+                            multiSelect
+                            options={copyAllSiteData?.map((copyAllSiteData: any) => ({ key: copyAllSiteData?.Title, text:copyAllSiteData?.Title }))}
                            
                             styles={{ dropdown: { width: '100%' } }}
                         />
@@ -205,7 +266,7 @@ const AddTaskConfigPopup = (props: any) => {
                 </div>
               {notify=="Specific" &&  <div className='row alignCenter mb-3'>
                     <div className='col-3'><label className='form-label fw-semibold'>Recipients</label></div>
-                    <div className='col-9'>
+                    <div className='col-9' style={{ zIndex: '9999999999999' }}>
 
                                   <PeoplePicker
                                     context={props?.AllListId?.Context}

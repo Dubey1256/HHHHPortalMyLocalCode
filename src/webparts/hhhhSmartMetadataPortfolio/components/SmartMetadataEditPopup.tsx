@@ -10,6 +10,7 @@ import PageLoader from '../../../globalComponents/pageLoader';
 import moment from 'moment';
 import * as globalCommon from '../../../globalComponents/globalCommon'
 import ImagetabFunction from '../../EditPopupFiles/ImageInformation';
+import HtmlEditor from '../../../globalComponents/HtmlEditor/HtmlEditor';
 let modaltype: any;
 let SitesConfig: any[] = []
 let allSitesTask: any[] = []
@@ -19,11 +20,10 @@ var childItems: any = [];
 var ChangedTopCategories: any = [];
 let CurrentSiteUrl: any;
 export default function SmartMetadataEditPopup(props: any) {
-    const [activeTab, setActiveTab] = useState('BasicInfo');
+    const [activeTab, setActiveTab] = useState('');
     const [AllSitesTask, setAllSitesTask]: any = useState([]);
     const [dropdownArray, setDropdownArray]: any = useState([]);
     const [loaded, setloaded]: any = useState(false);
-    // const [dropdownArraySmartfilter, setDropdownArraySmartfilter]: any = useState([]);
     const [, setVersionHistoryPopup] = React.useState(false);
     const [openChangeParentPopup, setOpenChangeParentPopup] = useState(false);
     const [selectedOptionTop, setSelectedOptionTop] = useState('');
@@ -40,12 +40,19 @@ export default function SmartMetadataEditPopup(props: any) {
         AlternativeTitle: '',
         SortOrder: '',
         Status: '',
-        // SmartFilters: '',
         ItemRank: '',
         Description1: '',
         ParentID: "",
         TaxType: "",
         siteName: "",
+        PageContent: "",
+        ShortDescription: "",
+        HelpDescription: "",
+        Visibility: "Draft",
+        SubTitle: '',
+        PageTitle: '',
+        ProfileType: '',
+        href: '',
     });
     let CategoryTitle: any;
     let SecondLevel: any;
@@ -58,7 +65,12 @@ export default function SmartMetadataEditPopup(props: any) {
     let folderUrl: any
     let SelectItemImagetype: any = 'ItemImage';
     useEffect(() => {
-    }, []);
+        if (props?.siteName === 'GmbH') {
+            setActiveTab('WebPageInfo')
+        } else {
+            setActiveTab('BasicInfo')
+        }
+    }, [props?.siteName]);
     const CloseEditSmartMetaPopup = () => {
         props.CloseEditSmartMetaPopup();
     }
@@ -135,7 +147,6 @@ export default function SmartMetadataEditPopup(props: any) {
             setloaded(false)
             setAllSitesTask(TaggedTasks);
         }
-
     }
     const openParent = (Value: any) => {
         setOpenChangeParentPopup(true)
@@ -275,6 +286,33 @@ export default function SmartMetadataEditPopup(props: any) {
             modaltype = 'Update';
             if (item.Item_x005F_x0020_Cover != undefined && item.Item_x005F_x0020_Cover.Url != undefined)
                 selectedImageUrl = item.Item_x005F_x0020_Cover.Url;
+            item.PageTitle = item.Title
+            if (item.TaxType === 'Topics')
+                item.ProfileType = 'Topic'
+            if (item.TaxType === 'Countries')
+                item.ProfileType = 'Countries'
+            if (item.TaxType === 'Activities' && item.ProfileType !== 'Event')
+                item.ProfileType = 'Activities'
+            if (item.TaxType === 'Smart Pages')
+                item.ProfileType = 'Smart Pages'
+            if (item.TaxType === 'Smart Pages') {
+                item.href = `${props?.AllList?.SPSitesListUrl}/SitePages/Pages.aspx?SmartID=${item.Id}&Item=${item.Title}`
+            }
+            if (item.TaxType === 'Countries') {
+                item.href = `${props?.AllList?.SPSitesListUrl}/SitePages/Pages.aspx?SmartID=${item.Id}&Item=${item.Title}`
+            }
+            if (item.TaxType === 'Topics') {
+                item.href = `${props?.AllList?.SPSitesListUrl}/SitePages/Profiles.aspx?SmartID=${item.Id}&Item=${item.Title}`
+            }
+            if (item.ProfileType === 'Event') {
+                item.href = `${props?.AllList?.SPSitesListUrl}/SitePages/Profiles.aspx?SmartID=${item.Id}&Item=${item.Title}`
+            }
+            if (item.PageContent !== '' && item.PageContent !== undefined && item.PageContent !== null) {
+                item.PageContent = item?.PageContent?.replaceAll("&#58;", ":");
+            }
+            if (props?.smartDescription !== '' && props?.smartDescription !== undefined && props?.smartDescription !== null) {
+                item['Description'] = props?.smartDescription;
+            }
             setSmartTaxonomyItem(item)
         }
         else {
@@ -362,32 +400,36 @@ export default function SmartMetadataEditPopup(props: any) {
             }
             const item = {
                 Title: SmartTaxonomyItem.Title,
-                AlternativeTitle: SmartTaxonomyItem.AlternativeTitle,
-                LongTitle: SmartTaxonomyItem.LongTitle,
+                AlternativeTitle: SmartTaxonomyItem.AlternativeTitle !== null ? SmartTaxonomyItem.AlternativeTitle : SmartTaxonomyItem.Title,
+                LongTitle: SmartTaxonomyItem.LongTitle !== null ? SmartTaxonomyItem.LongTitle : '',
                 ParentID: SmartTaxonomyItem.ParentID,
                 ParentId: SmartTaxonomyItem.ParentID,
                 SortOrder: SmartTaxonomyItem.SortOrder,
-                Description1: SmartTaxonomyItem.Description1,
+                PageContent: SmartTaxonomyItem.PageContent !== null ? SmartTaxonomyItem.PageContent : '',
+                Description: SmartTaxonomyItem.Description !== null ? SmartTaxonomyItem.Description : '',
                 TaxType: SmartTaxonomyItem.TaxType,
-                IsVisible: SmartTaxonomyItem.IsVisible,
-                SmartSuggestions: SmartTaxonomyItem.SmartSuggestions,
-                Selectable: SmartTaxonomyItem.Selectable,
                 ItemRank: SmartTaxonomyItem.ItemRank !== "" ? SmartTaxonomyItem.ItemRank : null,
-                Status: SmartTaxonomyItem.Status,
-                //SmartFilters: SmartTaxonomyItem.SmartFilters,
-                siteName: SmartTaxonomyItem.siteName,
-
-                Item_x005F_x0020_Cover: {
-                    Description: selectedImageUrl,
-                    Url: selectedImageUrl,
+                Status: SmartTaxonomyItem.Status != null ? SmartTaxonomyItem.Status : '',
+                // siteName: SmartTaxonomyItem.siteName,
+                SubTitle: SmartTaxonomyItem.SubTitle,
+                PageTitle: SmartTaxonomyItem.PageTitle,
+                ProfileType: SmartTaxonomyItem.ProfileType,
+                ShortDescription: SmartTaxonomyItem.ShortDescription !== null ? SmartTaxonomyItem.ShortDescription : '',
+                HelpDescription: SmartTaxonomyItem.Description !== null ? SmartTaxonomyItem.Description : '',
+                //SmartCountriesId: { "results": smart_Countries },
+                //SmartActivitiesId: { "results": smart_Activity },
+                //SmartTopicsId: { "results": smart_Topics },
+                href: {
+                    "__metadata": { type: "SP.FieldUrlValue" },
+                    Description: SmartTaxonomyItem?.href?.Description,
+                    Url: SmartTaxonomyItem?.href?.Url,
+                },
+                ItemCover: {
+                    "__metadata": { type: "SP.FieldUrlValue" },
+                    Description: SmartTaxonomyItem?.Item_x002d_Image != undefined ? SmartTaxonomyItem?.Item_x002d_Image?.Url : null,
+                    Url: SmartTaxonomyItem?.Item_x002d_Image != undefined ? SmartTaxonomyItem?.Item_x002d_Image?.Url : null
                 },
             };
-            if (SelectItemImagetype == "ItemImage") {
-                item.Item_x005F_x0020_Cover = {
-                    Description: selectedImageUrl,
-                    Url: selectedImageUrl,
-                };
-            }
             if (modaltype == "Add") {
                 const web = new Web(props?.AllList?.SPSitesListUrl);
                 await web.lists.getById(props.AllList.SmartMetadataListID).items.add(item);
@@ -434,6 +476,18 @@ export default function SmartMetadataEditPopup(props: any) {
         }
         console.log(elem)
     }, []);
+    const HtmlEditorCallBack = (items: any, usedFor: any) => {
+        console.log(items);
+        if (usedFor === "PageContent") {
+            var PageContent = ""
+            if (items == '<p></p>\n') {
+                PageContent = ""
+            } else {
+                PageContent = items
+            }
+            setSmartTaxonomyItem({ ...SmartTaxonomyItem, PageContent: PageContent })
+        }
+    }
     const onRenderCustomHeaderMetadata = () => {
         return (
             <>
@@ -557,18 +611,34 @@ export default function SmartMetadataEditPopup(props: any) {
                     type={PanelType.large}
                     closeButtonAriaLabel="Close">
                     <ul className="nav nav-tabs" id="myTab" role="tablist">
-                        <li className="nav-item" role="presentation">
-                            <button onClick={() => handleTabChange('BasicInfo')} className="nav-link active" id="BasicInfo-tab" data-bs-toggle="tab" data-bs-target="#BasicInfo" type="button" role="tab" aria-controls="BasicInfo" aria-selected="true">BASIC INFORMATION</button>
-                        </li>
-                        <li className="nav-item" role="presentation">
-                            <button onClick={() => handleTabChange('ImageInfo')} className="nav-link" id="ImageInfo-tab" data-bs-toggle="tab" data-bs-target="#ImageInfo" type="button" role="tab" aria-controls="ImageInfo" aria-selected="false">IMAGE INFORMATION</button>
-                        </li>
-                        <li className="nav-item" role="presentation">
-                            <button onClick={() => handleTabChange('TaskInfo')} className="nav-link" id="TaskInfo-tab" data-bs-toggle="tab" data-bs-target="#TaskInfo" type="button" role="tab" aria-controls="TaskInfo" aria-selected="false">TASKS</button>
-                        </li>
+                        {props?.siteName !== 'GmbH' &&
+                            <li className="nav-item" role="presentation">
+                                <button onClick={() => handleTabChange('BasicInfo')} className="nav-link active" id="BasicInfo-tab" data-bs-toggle="tab" data-bs-target="#BasicInfo" type="button" role="tab" aria-controls="BasicInfo" aria-selected="true">BASIC INFORMATION</button>
+                            </li>
+                        }
+                        {props?.siteName === 'GmbH' &&
+                            <li className="nav-item" role="presentation">
+                                <button onClick={() => handleTabChange('WebPageInfo')} className="nav-link active" id="WebPageInfo-tab" data-bs-toggle="tab" data-bs-target="#WebPageInfo" type="button" role="tab" aria-controls="WebPageInfo" aria-selected="true">WEBPAGE INFORMATION</button>
+                            </li>
+                        }
+                        {props?.siteName === 'GmbH' &&
+                            <li className="nav-item" role="presentation">
+                                <button onClick={() => handleTabChange('MetadataInfo')} className="nav-link" id="MetadataInfo-tab" data-bs-toggle="tab" data-bs-target="#MetadataInfo" type="button" role="tab" aria-controls="MetadataInfo" aria-selected="false">METADATA INFORMATION</button>
+                            </li>
+                        }
+                        {
+                            <li className="nav-item" role="presentation">
+                                <button onClick={() => handleTabChange('ImageInfo')} className="nav-link" id="ImageInfo-tab" data-bs-toggle="tab" data-bs-target="#ImageInfo" type="button" role="tab" aria-controls="ImageInfo" aria-selected="false">IMAGE INFORMATION</button>
+                            </li>
+                        }
+                        {props?.siteName !== 'GmbH' &&
+                            <li className="nav-item" role="presentation">
+                                <button onClick={() => handleTabChange('TaskInfo')} className="nav-link" id="TaskInfo-tab" data-bs-toggle="tab" data-bs-target="#TaskInfo" type="button" role="tab" aria-controls="TaskInfo" aria-selected="false">TASKS</button>
+                            </li>
+                        }
                     </ul>
                     <div className="tab-content" id="myTabContent">
-                        <div className={activeTab == 'BasicInfo' ? 'tab-pane fade show active' : 'tab-pane fade show active tab-pane fade'} id="BasicInfo" role="tabpanel" aria-labelledby="BasicInfo-tab">   {activeTab == 'BasicInfo' && (
+                        <div className={activeTab === 'BasicInfo' ? 'tab-pane fade show active' : 'tab-pane fade show active tab-pane fade'} id="BasicInfo" role="tabpanel" aria-labelledby="BasicInfo-tab">   {activeTab === 'BasicInfo' && (
                             <div className="modal-body">
                                 <form name="NewForm" noValidate role="form">
                                     <div className="" style={{ background: '#f5f5f5 !important' }}>
@@ -598,10 +668,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                                             <input className="form-control" type="text" value={SmartTaxonomyItem.LongTitle} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, LongTitle: e.target.value })} />
                                                         </div>
                                                     </div>
-
-
                                                 </div>
-
                                                 <div className="row mt-2">
                                                     <div className="col">
                                                         <div className=' input-group'>
@@ -627,18 +694,6 @@ export default function SmartMetadataEditPopup(props: any) {
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    {/* <div className="col">
-                                                        <div className=' input-group'>
-                                                            <label className='full-width'>SmartFilters</label>
-                                                            <select className="form-control no-padding" value={SmartTaxonomyItem.SmartFilters} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, SmartFilters: e.target.value })}>
-                                                                {dropdownArraySmartfilter.map((item: any, index: any) => (
-                                                                    <option key={index} value={item}>
-                                                                        {item}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                        </div>
-                                                    </div> */}
                                                     <div className="col">
                                                         <div className=' input-group'>
                                                             <label className='full-width'>Item Rank</label>
@@ -697,8 +752,8 @@ export default function SmartMetadataEditPopup(props: any) {
                                                     className="full_width"
                                                     rows={4}
                                                     id="txtComments"
-                                                    value={SmartTaxonomyItem.Description1}
-                                                    onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, Description1: e.target.value })}
+                                                    value={SmartTaxonomyItem.Description}
+                                                    onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, Description: e.target.value })}
                                                 ></textarea>
 
                                             </div>
@@ -708,8 +763,176 @@ export default function SmartMetadataEditPopup(props: any) {
                             </div>
                         )}
                         </div>
-                        <div className={activeTab == 'ImageInfo' ? 'tab-pane fade show active' : 'tab-pane fade show active tab-pane fade'} id="ImageInfo" role="tabpanel" aria-labelledby="ImageInfo">   {activeTab == 'ImageInfo' && (
-                            <div className="modal-body" style={{ overflowY: 'auto' }}>
+                        <div className={activeTab === 'WebPageInfo' ? 'tab-pane fade show active' : 'tab-pane fade show active tab-pane fade'} id="WebPageInfo" role="tabpanel" aria-labelledby="WebPageInfo-tab">   {activeTab === 'WebPageInfo' && (
+                            <div className="modal-body">
+                                <form name="NewForm" noValidate role="form">
+                                    <div className="" style={{ background: '#f5f5f5 !important' }}>
+                                        <div className='row'>
+                                            <div className='col-md-12'>
+                                                <div className="row">
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className='full-width'>Page Title<b className="span-error">*</b></label>
+                                                            <input className="form-control" type="text" required id="txtTitle" value={SmartTaxonomyItem?.Title} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, Title: e.target.value })} />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col">
+                                                        <div className=' input-group'>
+                                                            <label className='full-width'>ProfileType</label>
+                                                            {SmartTaxonomyItem?.ProfileType}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="row mt-2">
+                                                    <div className="col">
+                                                        <div className=' input-group'>
+                                                            <label className="full_width">Link</label>
+                                                            {SmartTaxonomyItem?.href}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row mt-2">
+                                            <div className="col-md-10">
+                                                <div className='mt-3'>
+                                                    <HtmlEditor editorValue={SmartTaxonomyItem?.PageContent !== null || undefined ? SmartTaxonomyItem?.PageContent : ""}
+                                                        HtmlEditorStateChange={(Data: any) => HtmlEditorCallBack(Data, "PageContent")} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        )}
+                        </div>
+                        <div className={activeTab === 'MetadataInfo' ? 'tab-pane fade show active' : 'tab-pane fade show active tab-pane fade'} id="MetadataInfo" role="tabpanel" aria-labelledby="MetadataInfo-tab">   {activeTab === 'MetadataInfo' && (
+                            <div className="modal-body">
+                                <form name="NewForm" noValidate role="form">
+                                    <div className="" style={{ background: '#f5f5f5 !important' }}>
+                                        <div id="parentdiv" className="row" style={{ marginBottom: '4px' }}>
+                                            <div className="col-xs-9">
+                                                <ul className=" m-0 p-0 spfxbreadcrumb">
+                                                    {metadatPopupBreadcrum.map((item: any) => {
+                                                        return (<li>
+                                                            <a className='breadcrumbs__element'>{item.Title}</a>
+                                                        </li>)
+                                                    })}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div className='row'>
+                                            <div className='col-md-8'>
+                                                <div className="row">
+                                                    <div className="col">
+                                                        <div className=' input-group'>
+                                                            <label className='full-width'>Title<b className="span-error">*</b></label>
+                                                            <input className="form-control" type="text" required id="txtTitle" value={SmartTaxonomyItem.Title} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, Title: e.target.value })} />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col">
+                                                        <div className=' input-group'>
+                                                            <label className='full-width'>Long Title</label>
+                                                            <input className="form-control" type="text" value={SmartTaxonomyItem.LongTitle} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, LongTitle: e.target.value })} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="row mt-2">
+                                                    <div className="col">
+                                                        <div className=' input-group'>
+                                                            <label className="full_width">Alternative Title</label>
+                                                            <input className="form-control" type="text" value={SmartTaxonomyItem.AlternativeTitle} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, AlternativeTitle: e.target.value })} />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col">
+                                                        <div className=' input-group'>
+                                                            <label className="full_width">Sort Order<b className="span-error"></b></label>
+                                                            <input className="form-control" type="text" value={SmartTaxonomyItem.SortOrder} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, SortOrder: e.target.value })} />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col">
+                                                        <div className=' input-group'>
+                                                            <label className='full-width'>Status</label>
+                                                            <select className="form-control no-padding" value={SmartTaxonomyItem.Status} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, Status: e.target.value })}>
+                                                                {dropdownArray.map((item: any, index: any) => (
+                                                                    <option key={index} value={item}>
+                                                                        {item}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col">
+                                                        <div className=' input-group'>
+                                                            <label className='full-width'>Item Rank</label>
+                                                            <select className="form-control" id="ItemRankType" value={SmartTaxonomyItem.ItemRank} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, ItemRank: e.target.value })}>
+                                                                <option value="">Select Item Rank</option>
+                                                                <option value="8">(8) Top Highlights</option>
+                                                                <option value="7">(7) Featured Item</option>
+                                                                <option value="6">(6) Key Item</option>
+                                                                <option value="5">(5) Relevant Item</option>
+                                                                <option value="4">(4) Background Item</option>
+                                                                <option value="1">(1) Archive</option>
+                                                                <option value="0">(0) No Show</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-2 mt-md-3">
+
+                                                <input className='form-check-input' type="checkbox" checked={SmartTaxonomyItem.IsVisible} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, IsVisible: e.target.checked })} />
+                                                <label className='ms-1'>IsVisible</label><br />
+                                                <input className='form-check-input' type="checkbox" checked={SmartTaxonomyItem.Selectable} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, Selectable: e.target.checked })} />
+                                                <label className='ms-1'>Selectable</label><br />
+                                                <input className='form-check-input' type="checkbox" checked={SmartTaxonomyItem.SmartSuggestions} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, SmartSuggestions: e.target.checked })} />
+                                                <label className='ms-1'>Smart Suggestions</label>
+
+                                            </div>
+                                            <div className="col-md-2  text-end ">
+                                                {/* <a style={{ float: 'right' }} href="javascript:void(0);" onClick={() => openparent(SecondLevel)}> */}
+                                                <a href="javascript:void(0);">
+                                                    Change Parent
+                                                    <span onClick={() => openParent(SmartTaxonomyItem)} className="alignIcon  svg__iconbox svg__icon--edit"></span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        {TaxType == 'Topics' || TaxType == 'Countries' ? (
+                                            <div className="form-group" style={{ marginTop: '-7px' }}>
+                                                <div className="col-sm-12">
+                                                    <label className="col-sm-4 no-padding">TargetDocumentFolder<b className="span-error">*</b></label>
+                                                    <a style={{ float: 'left' }} href="javascript:void(0)" title="Click for Associated Folder">
+                                                        Select folder
+                                                    </a>
+                                                    <div className="col-sm-6 no-padding">{folderUrl}</div>
+                                                    <input id="newFolder" style={{ display: 'none' }} ng-required="false" ng-model="folderTitle" className="form-control" type="text" placeholder="Or type new folder name to create sub folder" />
+                                                    <a ng-if="folderUrl != undefined" href="javascript:void(0)" title="Click for Associated Folder">
+                                                        Change
+                                                    </a>
+                                                </div>
+                                                <div className="clearfix"></div>
+                                            </div>
+                                        ) : null}
+                                        <div className="row mt-2">
+                                            <div className="form-group col-md-10">
+                                                <label className="full_width">Help Description<b className="span-error">*</b></label>
+                                                <textarea
+                                                    className="full_width"
+                                                    rows={4}
+                                                    id="txtComments"
+                                                    value={SmartTaxonomyItem.Description}
+                                                    onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, Description: e.target.value })}
+                                                ></textarea>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        )}
+                        </div>
+                        <div className={activeTab === 'ImageInfo' ? 'tab-pane fade show active' : 'tab-pane fade show active tab-pane fade'} id="ImageInfo" role="tabpanel" aria-labelledby="ImageInfo-tab">   {activeTab === 'ImageInfo' && (
+                            <div className="modal-body">
                                 <ImagetabFunction EditdocumentsData={props?.modalInstance}
                                     setData={setSmartTaxonomyItem}
                                     Context={props?.AllList?.Context}
@@ -718,8 +941,8 @@ export default function SmartMetadataEditPopup(props: any) {
                             </div>
                         )}
                         </div>
-                        <div className={activeTab == 'TaskInfo' ? 'tab-pane fade show active' : 'tab-pane fade show active tab-pane fade'} id="TaskInfo" role="tabpanel" aria-labelledby="BasicInfo-tab">   {activeTab == 'TaskInfo' && (
-                            <div className="modal-body" style={{ overflowY: 'auto' }}>
+                        <div className={activeTab === 'TaskInfo' ? 'tab-pane fade show active' : 'tab-pane fade show active tab-pane fade'} id="TaskInfo" role="tabpanel" aria-labelledby="TaskInfo-tab">   {activeTab === 'TaskInfo' && (
+                            <div className="modal-body">
                                 {
                                     AllSitesTask &&
                                     <GlobalCommanTable columns={columns} data={AllSitesTask} showHeader={true} callBackData={callBackData} />
