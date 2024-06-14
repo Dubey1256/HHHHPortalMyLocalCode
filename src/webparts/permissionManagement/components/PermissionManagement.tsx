@@ -11,7 +11,8 @@ export default class PermissionManagement extends React.Component<IPermissionMan
       environmentMessage,
       hasTeamsContext,
       userDisplayName,
-      context
+      context,
+      TilesManagementListID
     } = this.props;
 
     return (

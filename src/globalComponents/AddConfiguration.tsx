@@ -10,7 +10,6 @@ let portfolioColor: any = '#057BD0';
 let AutoCompleteItemsArray: any = [];
 var AllSitesData: any = [];
 let DashTemp: any = [];
-var tempCategoryData: any = "";
 let BackupTaskCategoriesData: any = [];
 let PrevSelectedSmartFav: any = '';
 let SelectedDashboard: any;
@@ -24,36 +23,26 @@ const AddConfiguration = (props: any) => {
         DashboardId = 1;
     const ContextData: any = useContext(myContextValue);
     const [IsComponentPicker, setIsComponentPicker] = useState<any>(false);
-    const [SelectedCategory, setSelectedCategory] = useState<any>([]);
     const [selectedSmartFav, setselectedSmartFav] = useState<any>(undefined);
     const [SiteTypes, setSiteTypes] = useState<any>([]);
-    const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
     let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": true, "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
     const [NewItem, setNewItem]: any = useState<any>([defaultConfig]);
     const [SmartFav, setSmartFav] = useState<any>([]);
     const [AllTaskUsers, setAllTaskUsers] = useState<any>([]);
     const [DashboardTemplate, setDashboardTemplate] = useState<any>([]);
-    const [DataSource, setDataSource] = useState<any>([{ "key": "Tasks", "text": "Tasks" }, { "key": "Project", "text": "Project" }, { "key": "TaskUsers", "text": "TaskUsers" }, { "key": "TimeSheet", "text": "TimeSheet" },]);
+    const [DataSource, setDataSource] = useState<any>([]);
     const [DashboardTitle, setDashboardTitle] = useState<any>('');
     const [IsCheck, setIsCheck] = useState<any>(false);
     const [categorySearchKey, setCategorySearchKey] = useState<any>("");
-    const [SmatFavSearchKey, setSmatFavSearchKey] = useState<any>("");
-    const [AllCategoryData, setAllCategoryData] = useState<any>([]);
     const [SearchedCategoryData, setSearchedCategoryData] = useState<any>([]);
     const [SearchedSmartFavData, setSearchedSmartFavData] = useState<any>([]);
     const [TaskCategoriesData, setTaskCategoriesData] = useState<any>([]);
-    const [SmartFavData, setSmartFavData] = useState<any>([]);
     const [UserOptions, setUserOptions] = useState<any>([]);
     const [PopupSmartFav, setPopupSmartFav] = React.useState(false);
-    let [StatusOptions, setStatusOptions] = useState([{ value: 0, status: "0% Not Started", }, { value: 1, status: "1% For Approval", }, { value: 2, status: "2% Follow Up", }, { value: 3, status: "3% Approved", },
-    { value: 4, status: "4% Checking", }, { value: 5, status: "5% Acknowledged", }, { value: 9, status: "9% Ready To Go", }, { value: 10, status: "10% working on it", },
-    { value: 70, status: "70% Re-Open", }, { value: 75, status: "75% Deployment Pending", }, { value: 80, status: "80% In QA Review", }, { value: 90, status: "90% Task completed", },
-    { value: 100, status: "100% Closed", },]);
-    let [ActionsOptions, setActionsOptions] = useState([{ value: "Bottleneck", status: "Bottleneck", }, { value: "Phone", status: "Phone", }, { value: "Attention", status: "Attention", }, { value: "Approval", status: "Approval", },])
-    let [PriorityOptions, setPriorityOptions] = useState([{ value: 1, status: "1", }, { value: 2, status: "2", }, { value: 3, status: "3", }, { value: 4, status: "4", }, { value: 5, status: "5", }, { value: 6, status: "6", }, { value: 7, status: "7", },
-    { value: 8, status: "8", }, { value: 9, status: "9", }, { value: 10, status: "10", },])
-
-    let [CustomUserFilter, setCutomUserFilter] = useState([{ value: "My TimSheet", status: "My TimSheet", }, { value: 'Approver', status: "Me As Approver", }, { value: 'TeamLeader', status: "Me As Team Lead", }]);
+    let [StatusOptions, setStatusOptions] = useState([]);
+    let [ActionsOptions, setActionsOptions] = useState([])
+    let [PriorityOptions, setPriorityOptions] = useState([])
+    let [CustomUserFilter, setCutomUserFilter] = useState([]);
     const LoadSmartFav = () => {
         let SmartFavData: any = []
         if (props?.SingleWebpart != undefined && props?.SingleWebpart == true)
@@ -115,7 +104,6 @@ const AddConfiguration = (props: any) => {
             else {
                 setNewItem([defaultConfig])
             }
-
             setSmartFav(SmartFavData)
         }).catch((err: any) => {
             console.log(err);
@@ -162,7 +150,6 @@ const AddConfiguration = (props: any) => {
             }
         });
         setUserOptions(results?.filter((User: any) => User?.AssingedToUserId != undefined && User?.AssingedToUserId != '' && User?.ItemType == 'User'))
-
         if (taskUsers != undefined && taskUsers.length > 0) {
             taskUsers?.map((User: any) => {
                 if (User.childs != undefined && User.childs.length > 0) {
@@ -185,12 +172,17 @@ const AddConfiguration = (props: any) => {
         setNewItem([]);
         props?.CloseConfigPopup(false)
     }
-
     const SaveConfigPopup = async () => {
         try {
             let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then(async (data: any) => {
-                let result = data?.length + 1;
+            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").orderBy("Created", false).getAll().then(async (data: any) => {
+                let result: any;
+                if (data?.length && data[data.length - 1].Value != undefined && data[data.length - 1].Value != '') {
+                    result = parseInt(data[data.length - 1].Value) + 1;
+                }
+                else {
+                    result = data?.length + 1;
+                }
                 if (props?.SingleWebpart == true) {
                     let FilteredData = data?.filter((config: any) => config?.Value == DashboardId)[0];
                     if (props?.DashboardConfigBackUp && NewItem[0]?.Id !== undefined) {
@@ -457,13 +449,13 @@ const AddConfiguration = (props: any) => {
     };
     const SmartMetaDataListInformations = async () => {
         let AllSmartDataListData: any = [];
-
-        let AllClientCategoryData: any = [];
         let AllCategoriesData: any = [];
-        let AllStatusData: any = [];
-        let AllPriorityData: any = [];
-        let AllPriorityRankData: any = [];
         let CategoriesGroupByData: any = [];
+        let PriorityRank: any = [];
+        let PercentComplete: any = [];
+        let Actions: any = [];
+        let DataSource: any = [];
+        let TimeSheetFilter: any = [];
         let tempArray: any = [];
         try {
             let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
@@ -471,11 +463,20 @@ const AddConfiguration = (props: any) => {
                 .items.select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail").expand("Author,Editor,IsSendAttentionEmail").getAll();
             AllCategoriesData = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Categories");
             AllSitesData = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Sites");
+            PriorityRank = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Priority Rank");
+            PriorityRank = PriorityRank.toReversed()
+            PercentComplete = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Percent Complete");
+            PercentComplete = PercentComplete.filter((percentComplete: any) => percentComplete?.ParentId != undefined && percentComplete?.ParentId != '');
+            PercentComplete = PercentComplete.sort((a: any, b: any) => { return a.SortOrder - b.SortOrder; });
+            Actions = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Actions");
+            Actions = Actions.sort((a: any, b: any) => { return a.SortOrder - b.SortOrder; });
+            DataSource = getSmartMetadataItemsByTaxType(AllSmartDataListData, "DataSource");
+            DataSource = DataSource.sort((a: any, b: any) => { return a.SortOrder - b.SortOrder; });
+            TimeSheetFilter = getSmartMetadataItemsByTaxType(AllSmartDataListData, "TimesheetFilter");
+            TimeSheetFilter = TimeSheetFilter.sort((a: any, b: any) => { return a.SortOrder - b.SortOrder; });
             AllSmartDataListData?.map((SmartItemData: any, index: any) => {
                 SmartItemData.newTitle = SmartItemData.Title;
             })
-            setprogressBar(false)
-            // ########## this is for All Site Data related validations ################
             AllSitesData?.map((site: any) => {
                 if (site.Title !== undefined && site.Title !== "Foundation" && site.Title !== "Master Tasks" && site.Title !== "DRR" && site.Title !== "SDC Sites" && site.Title !== "SP Online") {
                     site.BtnStatus = false;
@@ -486,6 +487,32 @@ const AddConfiguration = (props: any) => {
                 }
             });
             setSiteTypes(tempArray);
+            PriorityRank?.map((priorityrank: any) => {
+                priorityrank.value = parseInt(priorityrank?.Title)
+                priorityrank.status = priorityrank?.Title
+            });
+            setPriorityOptions(PriorityRank)
+            PercentComplete?.map((percentComplete: any) => {
+                percentComplete.value = parseFloat(percentComplete?.Title?.split('%')[0])
+                percentComplete.status = percentComplete?.Title
+            });
+            setStatusOptions(PercentComplete)
+            Actions?.map((action: any) => {
+                action.value = action?.Title
+                action.status = action?.Title
+            });
+            setActionsOptions(Actions)
+            DataSource?.map((dataSource: any) => {
+                dataSource.value = dataSource?.Title
+                dataSource.status = dataSource?.Title
+            });
+            setDataSource(DataSource)
+            TimeSheetFilter?.map((timesheetFilter: any) => {
+                timesheetFilter.value = timesheetFilter?.Title?.split('&')[1]
+                timesheetFilter.status = timesheetFilter?.Title?.split('&')[0]
+            });
+            setCutomUserFilter(TimeSheetFilter)
+
             if (AllCategoriesData?.length > 0) {
                 CategoriesGroupByData = loadSmartTaxonomyPortfolioPopup(AllCategoriesData, "Categories");
                 if (CategoriesGroupByData?.length > 0) {
@@ -519,14 +546,9 @@ const AddConfiguration = (props: any) => {
                     });
                 }
                 if (AutoCompleteItemsArray?.length > 0) {
-                    AutoCompleteItemsArray = AutoCompleteItemsArray.reduce(function (
-                        previous: any,
-                        current: any
-                    ) {
+                    AutoCompleteItemsArray = AutoCompleteItemsArray.reduce(function (previous: any, current: any) {
                         var alredyExists =
-                            previous.filter(function (item: any) {
-                                return item.Title === current.Title;
-                            }).length > 0;
+                            previous.filter(function (item: any) { return item.Title === current.Title; }).length > 0;
                         if (!alredyExists) {
                             previous.push(current);
                         }
@@ -534,18 +556,8 @@ const AddConfiguration = (props: any) => {
                     },
                         []);
                 }
-
-                setAllCategoryData(AutoCompleteItemsArray);
-                let AllSmartMetaDataGroupBy: any = {
-                    Categories: AutoCompleteItemsArray,
-                    Sites: tempArray,
-                    Status: AllStatusData,
-                    Priority: AllPriorityData,
-                    PriorityRank: AllPriorityRankData,
-                    ClientCategory: AllClientCategoryData,
-                };
-                setSmartMetaDataAllItems(AllSmartMetaDataGroupBy);
             }
+            setprogressBar(false)
         } catch (error) {
             console.log("Error : ", error.message);
         }
@@ -569,8 +581,6 @@ const AddConfiguration = (props: any) => {
         setCategorySearchKey("");
 
     };
-
-
     const removeCategoryItem = (TypeCategory: any) => {
         let tempString: any;
         let tempArray2: any = [];
@@ -589,7 +599,6 @@ const AddConfiguration = (props: any) => {
                         : itemData.Title;
             });
         }
-        tempCategoryData = tempString;
         setTaskCategoriesData(tempArray2);
     };
     const removeSmartFavItem = (selectCategoryData: any, index: any, items: any) => {
@@ -603,7 +612,7 @@ const AddConfiguration = (props: any) => {
         SelectedDashboard.items = items;
         SelectedDashboard.index = index;
         setselectedSmartFav(SelectedDashboard?.items?.selectedSmartFav)
-        PrevSelectedSmartFav = { ...selectedSmartFav }
+        PrevSelectedSmartFav = { ...SelectedDashboard?.items?.selectedSmartFav }
         setPopupSmartFav(true)
     }
     const saveSelectSmartFav = () => {
@@ -639,7 +648,6 @@ const AddConfiguration = (props: any) => {
         autoSuggestItem = SuggestionItem
         SuggestionItem.SmatFavSearchKey = e.target.value;
         let searchedKey: any = e.target.value;
-        setSmatFavSearchKey(e.target.value);
         let tempArray: any = [];
         if (searchedKey?.length > 0) {
             SmartFav?.map((itemData: any) => {
@@ -660,7 +668,6 @@ const AddConfiguration = (props: any) => {
         setNewItem(updatedItems);
         setSearchedSmartFavData([]);
         items.SmatFavSearchKey = '';
-        setSmatFavSearchKey("");
         setselectedSmartFav(selectCategoryData);
         $("#" + Id).val('')
     };
@@ -690,9 +697,6 @@ const AddConfiguration = (props: any) => {
         }).catch((err: any) => {
             console.log(err);
         })
-
-
-
     }
     useEffect(() => {
         SmartMetaDataListInformations()
@@ -751,34 +755,29 @@ const AddConfiguration = (props: any) => {
                                                     </div>
                                                 </Col>
                                                 <Col sm="3" md="3" lg="3">
-                                                    {items?.IsTemplate != true && <><label className='form-label full-width'>Data Source</label>
-                                                        <Dropdown id="DataSource" options={[{ key: '', text: '' }, ...(DataSource?.map((item: any) => ({ key: item?.key, text: item?.text })) || [])]} selectedKey={items?.DataSource}
-                                                            onChange={(e, option) => handleDataSourceChange(option?.key, index, items)}
-                                                            styles={{ dropdown: { width: '100%' } }}
-                                                        /></>}
-                                                    {/* <div> Show WebPart</div>
-                                                    <label className="switch me-2" htmlFor={`ShowWebpartCheckbox${index}`}>
-                                                        <input checked={items?.ShowWebpart} onChange={(e: any) => {
-                                                            const isChecked = e.target.checked;
-                                                            const updatedItems = [...NewItem]; updatedItems[index] = { ...items, ShowWebpart: isChecked };
-                                                            setNewItem(updatedItems);
-                                                            if (!isChecked) { alert('Webpart will not be shown when toggle is active!'); }
-                                                        }} type="checkbox" id={`ShowWebpartCheckbox${index}`} />
-                                                        {items?.ShowWebpart === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
-                                                    </label> */}
+                                                    {items?.IsTemplate != true && <><div> Show WebPart</div>
+                                                        <label className="switch me-2" htmlFor={`ShowWebpartCheckbox${index}`}>
+                                                            <input checked={items?.ShowWebpart} onChange={(e: any) => {
+                                                                const isChecked = e.target.checked;
+                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, ShowWebpart: isChecked };
+                                                                setNewItem(updatedItems);
+                                                                if (!isChecked) { alert('Webpart will not be shown when toggle is active!'); }
+                                                            }} type="checkbox" id={`ShowWebpartCheckbox${index}`} />
+                                                            {items?.ShowWebpart === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
+                                                        </label></>}
                                                 </Col>
                                                 <Col sm="4" md="4" lg="4">
-                                                    {props?.EditItem != undefined && props?.EditItem != '' ? <a className="pull-right hreflink" title="Add To Webpart Gallery" onClick={(e) => AddWebpartToGallery(items, index)}>Add To Webpart Gallery</a> : ''}
-                                                    {/* <div> Group By View</div>
-                                                    <label className="switch me-2" htmlFor={`GroupByViewCheckbox${index}`}>
-                                                        <input checked={items?.GroupByView} onChange={(e: any) => {
-                                                            const updatedItems = [...NewItem]; updatedItems[index] = { ...items, GroupByView: e.target.checked, };
-                                                            setNewItem(updatedItems);
-                                                        }}
+                                                    {/* {props?.EditItem != undefined && props?.EditItem != '' ? <a className="pull-right hreflink" title="Add To Webpart Gallery" onClick={(e) => AddWebpartToGallery(items, index)}>Add To Webpart Gallery</a> : ''} */}
+                                                    {items?.IsTemplate != true && <> <div> Group By View</div>
+                                                        <label className="switch me-2" htmlFor={`GroupByViewCheckbox${index}`}>
+                                                            <input checked={items?.GroupByView} onChange={(e: any) => {
+                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, GroupByView: e.target.checked, };
+                                                                setNewItem(updatedItems);
+                                                            }}
 
-                                                            type="checkbox" id={`GroupByViewCheckbox${index}`} />
-                                                        {items?.GroupByView === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
-                                                    </label> */}
+                                                                type="checkbox" id={`GroupByViewCheckbox${index}`} />
+                                                            {items?.GroupByView === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
+                                                        </label></>}
                                                 </Col>
                                                 <Col sm="1" md="1" lg="1">
                                                     {index != 0 && <a className="pull-right hreflink" title="Remove webpart" onClick={(e) => RemoveWebpart(items, index)}><span className="svg__iconbox svg__icon--cross "></span></a>}
@@ -811,28 +810,27 @@ const AddConfiguration = (props: any) => {
                                                 </Col>
                                             </Row>
                                             <Row className="Metadatapannel">
-                                                {/* <Col sm="4" md="4" lg="4">
-                                                    <label className='form-label full-width'>Data Source</label>
-                                                    <Dropdown id="DataSource" options={[{ key: '', text: '' }, ...(DataSource?.map((item: any) => ({ key: item?.key, text: item?.text })) || [])]} selectedKey={items?.DataSource}
+                                                {items?.IsTemplate != true && <><Col sm="4" md="4" lg="4"><label className='form-label full-width'>Data Source</label>
+                                                    <Dropdown id="DataSource" options={[{ key: '', text: '' }, ...(DataSource?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.DataSource}
                                                         onChange={(e, option) => handleDataSourceChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }}
-                                                    />
-                                                </Col> */}
-                                                {/* <Col sm="4" md="4" lg="4">
+                                                    /> </Col></>}
+                                                {items?.IsTemplate != true && <> <Col sm="4" md="4" lg="4">
                                                     <div className="form-check form-check-inline m-4">
                                                         <input type="checkbox" checked={items?.IsDefaultTile} className="form-check-input me-1" onClick={(e: any) => SelectedTile(e.target.checked, items, index)} />
                                                         <label className="form-check-label">Default Tile</label>
                                                     </div>
                                                 </Col>
-                                                <Col sm="4" md="4" lg="4">
-                                                    <div className="form-check form-check-inline m-4">
-                                                        <input type="checkbox" checked={items?.IsShowTile} className="form-check-input me-1" onChange={(e: any) => {
-                                                            const updatedItems = [...NewItem]; updatedItems[index] = { ...items, IsShowTile: e.target.checked, };
-                                                            setNewItem(updatedItems);
-                                                        }} />
-                                                        <label className="form-check-label">Show Tile</label>
-                                                    </div>
-                                                </Col> */}
+                                                    <Col sm="4" md="4" lg="4">
+                                                        <div className="form-check form-check-inline m-4">
+                                                            <input type="checkbox" checked={items?.IsShowTile} className="form-check-input me-1" onChange={(e: any) => {
+                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, IsShowTile: e.target.checked, };
+                                                                setNewItem(updatedItems);
+                                                            }} />
+                                                            <label className="form-check-label">Show Tile</label>
+                                                        </div>
+                                                    </Col>
+                                                </>}
                                             </Row>
                                             <Row className="Metadatapannel">
                                                 {items.DataSource != 'TimeSheet' &&
@@ -1008,7 +1006,6 @@ const AddConfiguration = (props: any) => {
                     <button className='btn btn-default ms-1' onClick={CloseConfiguationPopup}>Cancel</button>
                 </div>
             </Panel >
-
             {IsComponentPicker && (
                 <Picker
                     props={{}}
@@ -1070,7 +1067,6 @@ const AddConfiguration = (props: any) => {
                 </div>
             </Panel >
         </>
-
     );
 };
 export default AddConfiguration;

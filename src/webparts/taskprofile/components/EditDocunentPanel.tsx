@@ -4,7 +4,8 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
-import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
+import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor';
+import GlobalTooltip from '../../../globalComponents/Tooltip';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import ImageInformation from '../../EditPopupFiles/ImageInformation';
 import ReadyMadeTable from '../../../globalComponents/RadimadeTable';

@@ -10,7 +10,6 @@
         }
       ]
     },
-   
     "smart-connect-web-part": {
       "components": [
         {
@@ -115,7 +114,6 @@
         }
       ]
     },
-   
     "my-pending-tasks-web-part": {
       "components": [
         {
@@ -148,7 +146,6 @@
         }
       ]
     },
-    
     "update-top-navigation-web-part": {
       "components": [
         {
@@ -269,7 +266,6 @@
         }
       ]
     },
-   
     "site-structure-web-part": {
       "components": [
         {
@@ -422,7 +418,6 @@
         }
       ]
     },
-    
     "hhhh-smart-pages-web-part": {
       "components": [
         {
@@ -462,22 +457,111 @@
           "manifest": "./src/webparts/hhhhcontactprofile/HhhhcontactprofileWebPart.manifest.json"
         }
       ]
-    },"task-notification-management-web-part": {
+    },
+    "task-notification-management-web-part": {
       "components": [
         {
           "entrypoint": "./lib/webparts/taskNotificationManagement/TaskNotificationManagementWebPart.js",
           "manifest": "./src/webparts/taskNotificationManagement/TaskNotificationManagementWebPart.manifest.json"
         }
       ]
+    },
+    "manage-dashboard-template-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/manageDashboardTemplate/ManageDashboardTemplateWebPart.js",
+          "manifest": "./src/webparts/manageDashboardTemplate/ManageDashboardTemplateWebPart.manifest.json"
+        }
+      ]
+    },
+    "last-modified-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/lastModified/LastModifiedWebPart.js",
+          "manifest": "./src/webparts/lastModified/LastModifiedWebPart.manifest.json"
+        }
+      ]
+    },
+    "livingdocsapi-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/livingdocsapi/LivingdocsapiWebPart.js",
+          "manifest": "./src/webparts/livingdocsapi/LivingdocsapiWebPart.manifest.json"
+        }
+      ]
+    },
+    "living-docs-sync-tool-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/livingDocsSyncTool/LivingDocsSyncToolWebPart.js",
+          "manifest": "./src/webparts/livingDocsSyncTool/LivingDocsSyncToolWebPart.manifest.json"
+        }
+      ]
+    },
+    "component-permission-mgmt-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/componentPermissionMgmt/ComponentPermissionMgmtWebPart.js",
+          "manifest": "./src/webparts/componentPermissionMgmt/ComponentPermissionMgmtWebPart.manifest.json"
+        }
+      ]
+    },
+    "event-home-sp-fx-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/eventHomeSpFx/EventHomeSpFxWebPart.js",
+          "manifest": "./src/webparts/eventHomeSpFx/EventHomeSpFxWebPart.manifest.json"
+        }
+      ]
+    },
+    "content-editing-news-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/contentEditingNews/ContentEditingNewsWebPart.js",
+          "manifest": "./src/webparts/contentEditingNews/ContentEditingNewsWebPart.manifest.json"
+        }
+      ]
+    },
+    "content-editing-events-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/contentEditingEvents/ContentEditingEventsWebPart.js",
+          "manifest": "./src/webparts/contentEditingEvents/ContentEditingEventsWebPart.manifest.json"
+        }
+      ]
+    },
+    "event-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/eventManagement/EventManagementWebPart.js",
+          "manifest": "./src/webparts/eventManagement/EventManagementWebPart.manifest.json"
+        }
+      ]
+    },
+    "event-detail-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/eventDetail/EventDetailWebPart.js",
+          "manifest": "./src/webparts/eventDetail/EventDetailWebPart.manifest.json"
+        }
+      ]
+    },
+    "content-editing-documents-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/contentEditingDocuments/ContentEditingDocumentsWebPart.js",
+          "manifest": "./src/webparts/contentEditingDocuments/ContentEditingDocumentsWebPart.manifest.json"
+        }
+      ]
+    },
+    "manage-webpart-template-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/manageWebpartTemplate/ManageWebpartTemplateWebPart.js",
+          "manifest": "./src/webparts/manageWebpartTemplate/ManageWebpartTemplateWebPart.manifest.json"
+        }
+      ]
     }
-   ,"last-modified-web-part": {
-    "components": [
-      {
-        "entrypoint": "./lib/webparts/lastModified/LastModifiedWebPart.js",
-        "manifest": "./src/webparts/lastModified/LastModifiedWebPart.manifest.json"
-      }
-    ]
-  }
   },
   "externals": {
     "bootstrap-css": {
@@ -498,6 +582,9 @@
     }
   },
   "localizedResources": {
+    "EventManagementWebPartStrings": "lib/webparts/eventManagement/loc/{locale}.js",
+    "EventDetailWebPartStrings": "lib/webparts/eventDetail/loc/{locale}.js",
+    "LivingDocsSyncToolWebPartStrings": "lib/webparts/livingDocsSyncTool/loc/{locale}.js",
     "TaskNotificationManagementWebPartStrings": "lib/webparts/taskNotificationManagement/loc/{locale}.js",
     "RootTeamPortfolioTableWebPartStrings": "lib/webparts/rootTeamPortfolioTable/loc/{locale}.js",
     "HelloSpfxWebPartStrings": "lib/webparts/helloSpfx/loc/{locale}.js",
@@ -507,6 +594,7 @@
     "AlertManagementWebPartStrings": "lib/webparts/alertManagement/loc/{locale}.js",
     "SmartConnectWebPartStrings": "lib/webparts/smartConnect/loc/{locale}.js",
     "ComponentProfileWebPartStrings": "lib/webparts/componentProfile/loc/{locale}.js",
+    "ComponentPermissionMgmtWebPartStrings": "lib/webparts/componentPermissionMgmt/loc/{locale}.js",
     "RecruitmentLandingPageWebPartStrings": "lib/webparts/recruitmentLandingPage/loc/{locale}.js",
     "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
@@ -534,6 +622,7 @@
     "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js",
     "LoadMastertaskWebPartStrings": "lib/webparts/loadMastertask/loc/{locale}.js",
     "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
+    "EventHomeSpFxWebPartStrings": "lib/webparts/eventHomeSpFx/loc/{locale}.js",
     "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js",
     "TestWebPartWebPartStrings": "lib/webparts/ClientCategoryVerification/loc/{locale}.js",
     "RootDashboardWebPartStrings": "lib/webparts/rootDashboard/loc/{locale}.js",
@@ -558,6 +647,12 @@
     "HhhhProfileWebPartStrings": "lib/webparts/hhhhProfile/loc/{locale}.js",
     "HhhcontactWebPartStrings": "lib/webparts/hhhcontact/loc/{locale}.js",
     "HhhhcontactprofileWebPartStrings": "lib/webparts/hhhhcontactprofile/loc/{locale}.js",
-    "LastModifiedWebPartStrings": "lib/webparts/lastModified/loc/{locale}.js"
+    "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js",
+    "LastModifiedWebPartStrings": "lib/webparts/lastModified/loc/{locale}.js",
+    "LivingdocsapiWebPartStrings": "lib/webparts/livingdocsapi/loc/{locale}.js",
+    "ContentEditingEventsWebPartStrings": "lib/webparts/contentEditingEvents/loc/{locale}.js",
+    "ContentEditingNewsWebPartStrings": "lib/webparts/contentEditingNews/loc/{locale}.js",
+    "ContentEditingDocumentsWebPartStrings": "lib/webparts/contentEditingDocuments/loc/{locale}.js",
+    "ManageWebpartTemplateWebPartStrings": "lib/webparts/manageWebpartTemplate/loc/{locale}.js"
   }
 }

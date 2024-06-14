@@ -6,5 +6,6 @@ export interface ISMarttaskProps {
   userDisplayName: string;
   SmartMetadataListID:string;
   MasterTaskListID:string;
+  TaskUserListID:string
   context:any;
 }

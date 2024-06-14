@@ -41,6 +41,7 @@ import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
 import SmartPriorityHover from "./SmartPriorityHover";
+import TaskDetailsComponent from "./DesignTaskTemplate";
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -93,7 +94,8 @@ let categoryTitle: any = "";
 let onHoldCategory: any = [];
 let globalSelectedProject: any = { PriorityRank: 1 };
 let oldWorkingAction: any = []
-
+let linkedportfoliopop:any;
+let portfoliopop:any;
 const EditTaskPopup = (Items: any) => {
     const Context = Items?.context;
     const AllListIdData = Items?.AllListId;
@@ -148,6 +150,7 @@ const EditTaskPopup = (Items: any) => {
     const [PhoneStatus, setPhoneStatus] = useState(false);
     const [EmailStatus, setEmailStatus] = useState(false);
     const [DesignStatus, setDesignStatus] = useState(false);
+    const [DesignNewTemplates, setDesignNewTemplates] = useState(false);
     const [OnlyCompletedStatus, setOnlyCompletedStatus] = useState(false);
     const [ImmediateStatus, setImmediateStatus] = useState(false);
     const [onHoldPanel, setOnHoldPanel] = useState(false);
@@ -934,6 +937,7 @@ const EditTaskPopup = (Items: any) => {
                     setImmediateStatus(item.TaskCategories?.some((category: any) => category.Title === "Immediate"));
                     setOnlyCompletedStatus(item.TaskCategories?.some((category: any) => category.Title === "Only Completed"));
                     setDesignStatus(item.TaskCategories?.some((category: any) => category.Title === "Design" || category.Title === "User Experience - UX"));
+                    setDesignNewTemplates(item.TaskCategories?.some((category: any) => category.Title === "UX-New"))
                     let checkForApproval: any = item.TaskCategories?.some((category: any) => category.Title === "Approval")
                     if (checkForApproval) {
                         setApprovalStatus(true);
@@ -1379,9 +1383,11 @@ const EditTaskPopup = (Items: any) => {
     //  ******************************* this is Service And Component Portfolio Popup Related All function and CallBack *******************
     const OpenTeamPortfolioPopupFunction = (item: any, usedFor: any) => {
         if (usedFor == "Portfolio") {
+            portfoliopop=true,
             setOpenTeamPortfolioPopup(true);
         }
         if (usedFor == "Linked-Portfolios") {
+            linkedportfoliopop=true,
             setopenLinkedPortfolioPopup(true);
         }
     };
@@ -1485,10 +1491,22 @@ const EditTaskPopup = (Items: any) => {
                 EditDataBackup = updatedItem;
                 setEditData(updatedItem);
             } else if (Type == "untagged") {
-                setLinkedPortfolioData(DataItem);
-                LinkedPortfolioDataBackup = DataItem;
-                setOpenTeamPortfolioPopup(false);
-            } else {
+                if (portfoliopop) {
+                    setTaggedPortfolioData(DataItem);
+                    setOpenTeamPortfolioPopup(false);
+                    portfoliopop=false
+                }
+                // Check if the linked portfolio popup is open
+                else if (linkedportfoliopop) {
+                    setLinkedPortfolioData(DataItem);
+                    LinkedPortfolioDataBackup = DataItem;
+                    setopenLinkedPortfolioPopup(false);
+                    linkedportfoliopop = false
+                }else{
+                    setOpenTeamPortfolioPopup(false);
+                    setopenLinkedPortfolioPopup(false);
+                }
+            }else {
                 if (DataItem != undefined && DataItem.length > 0) {
                     if (DataItem[0]?.Item_x0020_Type !== "Project" || DataItem[0]?.Item_x0020_Type !== "Sprint") {
                         if (DataItem[0].ClientCategory?.length > 0) {
@@ -1615,6 +1633,9 @@ const EditTaskPopup = (Items: any) => {
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let uniqueIds: any = {};
+        if (selectCategoryData?.length == 0) {
+            setDesignNewTemplates(false)
+        }
         let checkForOnHoldAndBottleneck: any = BackupTaskCategoriesData?.some((category: any) => category.Title === "On-Hold" && category.Title === "Bottleneck");
         let checkForDesign: any = BackupTaskCategoriesData?.some((category: any) => category.Title === "Design");
         if (usedFor == "For-Panel") {
@@ -1646,6 +1667,9 @@ const EditTaskPopup = (Items: any) => {
                     }
                     setSendCategoryName(selectedData?.Title);
                 }
+                if (selectedData?.Title == "UX-New") {
+                    setDesignNewTemplates(true)
+                }
             })
             BackupTaskCategoriesData = TempArrya;
         } else {
@@ -1656,6 +1680,9 @@ const EditTaskPopup = (Items: any) => {
                     setSendCategoryName(existingData.Title)
                 } else {
                     BackupTaskCategoriesData.push(existingData);
+                }
+                if (existingData?.Title == "UX-New") {
+                    setDesignNewTemplates(true)
                 }
             });
         }
@@ -2284,137 +2311,194 @@ const EditTaskPopup = (Items: any) => {
     ) => {
         if (usedFor == "Estimated-Time") {
             setEstimatedDescriptionCategory(StatusData);
+            setSmartMedaDataUsedPanel("");
         } else {
-            setUpdateTaskInfo({
-                ...UpdateTaskInfo,
-                PercentCompleteStatus: StatusData.value,
-            });
-            setPercentCompleteStatus(StatusData.status);
-            setTaskStatus(StatusData.taskStatusComment);
-            setPercentCompleteCheck(false);
-            setIsTaskStatusUpdated(true);
-            if (StatusData.value == 1) {
-                let tempArray: any = [];
-                if (
-                    TaskApproverBackupArray != undefined &&
-                    TaskApproverBackupArray.length > 0
-                ) {
-                    TaskApproverBackupArray.map((dataItem: any) => {
-                        tempArray.push(dataItem);
-                    });
-                } else if (
-                    TaskCreatorApproverBackupArray != undefined &&
-                    TaskCreatorApproverBackupArray.length > 0
-                ) {
-                    TaskCreatorApproverBackupArray.map((dataItem: any) => {
-                        tempArray.push(dataItem);
-                    });
-                }
-                const finalData = tempArray.filter((val: any, id: any, array: any) => {
-                    return array?.indexOf(val) == id;
+            if (!sendEmailStatus && (StatusData.value == 2 || StatusData.value == 3)) {
+                alert("Please approve or reject first to update the status.");
+            } else {
+                setSmartMedaDataUsedPanel("");
+                setUpdateTaskInfo({
+                    ...UpdateTaskInfo,
+                    PercentCompleteStatus: StatusData.value,
                 });
-                setTaskAssignedTo(finalData);
-                setTaskTeamMembers(finalData);
-                setApproverData(finalData);
-                var e: any = "false";
-                EditData.TaskApprovers = finalData;
-                EditData.CurrentUserData = currentUserData;
-                CategoryChange(e, "Approval");
-            }
-            if (StatusData.value == 2) {
-                setInputFieldDisable(true);
-            }
-            if (StatusData.value != 2) {
-                setInputFieldDisable(false);
-            }
-
-            if (StatusData.value == 80) {
-                // let tempArray: any = [];
-                EditData.IsTodaysTask = false;
-                EditData.workingThisWeek = false;
-                if (
-                    EditData.TeamMembers != undefined &&
-                    EditData.TeamMembers?.length > 0
-                ) {
-                    setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
-                } else {
-                    setWorkingMember(143);
-                }
-                EditData.IsTodaysTask = false;
-                EditData.CompletedDate = undefined;
-            }
-            if (StatusData.value == 70) {
-                if (
-                    (EditData.TeamMembers != undefined &&
-                        EditData.TeamMembers?.length > 0) && (EditData.TeamMembers?.length != EditData?.AssignedTo?.length)
-                ) {
-                    setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
-                } else if (EditData.ResponsibleTeam?.length > 0) {
-                    setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
-                }
-                else {
-                    setWorkingMember(0);
-                }
-            }
-
-            if (StatusData.value == 5) {
-                EditData.CompletedDate = undefined;
-                EditData.IsTodaysTask = false;
-                setTeamLeaderChanged(true);
-            }
-            if (StatusData.value == 8) {
-                let CheckForTaskCategories: any = EditDataBackup.TaskCategories?.some((category: any) => category.Title === "Development" || category.Title === "Improvement")
-                if (CheckForTaskCategories) {
-                    let AuthorId: any = EditDataBackup?.Author?.Id;
-                    setWorkingMember(AuthorId);
-                    setSendMsgToAuthor(true);
-                }
-            }
-            if (StatusData.value == 10) {
-                EditData.CompletedDate = undefined;
-                if (EditData.StartDate == undefined) {
-                    EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY");
-                }
-                EditData.IsTodaysTask = true;
-            }
-            if (
-                StatusData.value == 93 ||
-                StatusData.value == 96 ||
-                StatusData.value == 99
-            ) {
-                EditData.IsTodaysTask = false;
-                EditData.workingThisWeek = false;
-                setWorkingMember(32);
-                StatusOptions?.map((item: any) => {
-                    if (StatusData.value == item.value) {
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
+                setPercentCompleteStatus(StatusData.status);
+                setTaskStatus(StatusData.taskStatusComment);
+                setPercentCompleteCheck(false);
+                setIsTaskStatusUpdated(true);
+                if (StatusData.value == 1) {
+                    let tempArray: any = [];
+                    if (
+                        TaskApproverBackupArray != undefined &&
+                        TaskApproverBackupArray.length > 0
+                    ) {
+                        TaskApproverBackupArray.map((dataItem: any) => {
+                            tempArray.push(dataItem);
+                        });
+                    } else if (
+                        TaskCreatorApproverBackupArray != undefined &&
+                        TaskCreatorApproverBackupArray.length > 0
+                    ) {
+                        TaskCreatorApproverBackupArray.map((dataItem: any) => {
+                            tempArray.push(dataItem);
+                        });
                     }
-                });
-            }
-            if (StatusData.value == 90) {
-                EditData.IsTodaysTask = false;
-                EditData.workingThisWeek = false;
-                if (EditData.siteType == "Offshore%20Tasks") {
-                    setWorkingMember(36);
-                } else if (DesignStatus) {
-                    setWorkingMember(301);
-                } else {
-                    setWorkingMember(42);
+                    const finalData = tempArray.filter((val: any, id: any, array: any) => {
+                        return array?.indexOf(val) == id;
+                    });
+                    setTaskAssignedTo(finalData);
+                    setTaskTeamMembers(finalData);
+                    setApproverData(finalData);
+                    var e: any = "false";
+                    EditData.TaskApprovers = finalData;
+                    EditData.CurrentUserData = currentUserData;
+                    CategoryChange(e, "Approval");
                 }
-                EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY");
-                StatusOptions?.map((item: any) => {
-                    if (StatusData.value == item.value) {
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
+                if (StatusData.value == 2) {
+                    setInputFieldDisable(true);
+                }
+                if (StatusData.value != 2) {
+                    setInputFieldDisable(false);
+                }
+
+                if (StatusData.value == 80) {
+                    // let tempArray: any = [];
+                    EditData.IsTodaysTask = false;
+                    EditData.workingThisWeek = false;
+                    if (
+                        EditData.TeamMembers != undefined &&
+                        EditData.TeamMembers?.length > 0
+                    ) {
+                        setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
+                        EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "QA")
+                        setWorkingAction(EditData?.WorkingAction)
+                    } else {
+                        setWorkingMember(143);
                     }
-                });
+                    EditData.IsTodaysTask = false;
+                    EditData.CompletedDate = undefined;
+                }
+                if (StatusData.value == 70) {
+                    if (
+                        (EditData.TeamMembers != undefined &&
+                            EditData.TeamMembers?.length > 0) && (EditData.TeamMembers?.length != EditData?.AssignedTo?.length)
+                    ) {
+                        setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
+                        EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "Development")
+                        setWorkingAction(EditData?.WorkingAction)
+                    } else if (EditData.ResponsibleTeam?.length > 0) {
+                        setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
+                        EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "Development")
+                        setWorkingAction(EditData?.WorkingAction)
+                    }
+                    else {
+                        setWorkingMember(0);
+                    }
+                }
+
+                if (StatusData.value == 5) {
+                    EditData.CompletedDate = undefined;
+                    EditData.IsTodaysTask = false;
+                    setTeamLeaderChanged(true);
+                }
+                if (StatusData.value == 8) {
+                    let CheckForTaskCategories: any = EditDataBackup.TaskCategories?.some((category: any) => category.Title === "Development" || category.Title === "Improvement")
+                    if (CheckForTaskCategories) {
+                        let AuthorId: any = EditDataBackup?.Author?.Id;
+                        setWorkingMember(AuthorId);
+                        setSendMsgToAuthor(true);
+                    }
+                }
+                if (StatusData.value == 10) {
+                    EditData.CompletedDate = undefined;
+                    if (EditData.StartDate == undefined) {
+                        EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY");
+                    }
+                    EditData.IsTodaysTask = true;
+                }
+                if (
+                    StatusData.value == 93 ||
+                    StatusData.value == 96 ||
+                    StatusData.value == 99
+                ) {
+                    EditData.IsTodaysTask = false;
+                    EditData.workingThisWeek = false;
+                    setWorkingMember(32);
+                    StatusOptions?.map((item: any) => {
+                        if (StatusData.value == item.value) {
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    });
+                    EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "HHHHTEAM")
+                    setWorkingAction(EditData?.WorkingAction)
+                }
+                if (StatusData.value == 90) {
+                    EditData.IsTodaysTask = false;
+                    EditData.workingThisWeek = false;
+                    if (EditData.siteType == "Offshore%20Tasks") {
+                        setWorkingMember(36);
+                        EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "HHHHTEAM")
+                        setWorkingAction(EditData?.WorkingAction)
+                    } else if (DesignStatus) {
+                        setWorkingMember(301);
+                        EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "HHHHTEAM")
+                        setWorkingAction(EditData?.WorkingAction)
+                    } else {
+                        setWorkingMember(42);
+                        EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "HHHHTEAM")
+                        setWorkingAction(EditData?.WorkingAction)
+                    }
+                    EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY");
+                    StatusOptions?.map((item: any) => {
+                        if (StatusData.value == item.value) {
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    });
+                }
             }
         }
-        setSmartMedaDataUsedPanel("");
+
     };
 
     //  ###################### This is Common Function for Chnage The Team Members According to Change Status ######################
+
+    const removeWorkingMembers = (workingActionValue: any, FilterType: any) => {
+        workingActionValue.map((workingActions: any) => {
+            if (workingActions?.Title == "WorkingDetails") {
+                workingActions?.InformationData?.map((info: any) => {
+                    info?.WorkingMember.map((userInfo: any, index: any) => {
+                        taskUsers?.map((TaskUserData: any) => {
+                            if (FilterType == "QA") {
+                                if (TaskUserData.TimeCategory == "Development" || TaskUserData.TimeCategory == "Design") {
+                                    if (userInfo?.Id == TaskUserData?.AssingedToUserId) {
+                                        info?.WorkingMember.splice(index, 1)
+                                    }
+
+
+                                }
+
+                            } else if (FilterType == "Development") {
+                                if (TaskUserData.TimeCategory == "QA") {
+                                    if (userInfo?.Id == TaskUserData?.AssingedToUserId) {
+                                        info?.WorkingMember.splice(index, 1)
+                                    }
+
+                                }
+                            }
+                            else if (FilterType == "HHHHTEAM") {
+                                info?.WorkingMember.splice(index, 1)
+                            }
+
+
+
+                        })
+                    })
+                })
+            }
+        })
+        return workingActionValue
+    }
 
     const setWorkingMemberFromTeam = (
         filterArray: any,
@@ -2425,18 +2509,16 @@ const EditTaskPopup = (Items: any) => {
         let updateUserArray1: any = [];
         filterArray.map((TeamItems: any) => {
             taskUsers?.map((TaskUserData: any) => {
-                if (TeamItems.Id == TaskUserData.AssingedToUserId) {
+                if ((TaskUserData?.Company != "HHHH") && (TeamItems.Id == TaskUserData.AssingedToUserId)) {
                     if (filterType == "Development") {
-                        if (
-                            TaskUserData.TimeCategory == "Development" ||
-                            TaskUserData.TimeCategory == "Design"
-                        ) {
+                        if (TaskUserData.TimeCategory == "Development" || TaskUserData.TimeCategory == "Design") {
                             tempArray.push(TaskUserData);
                             EditData.TaskAssignedUsers = tempArray;
                             updateUserArray1.push(TaskUserData.AssingedToUser);
                             setTaskAssignedTo(updateUserArray1);
                         }
-                    } else {
+                    }
+                    else {
                         if (TaskUserData.TimeCategory == filterType) {
                             tempArray.push(TaskUserData);
                             EditData.TaskAssignedUsers = tempArray;
@@ -2749,16 +2831,18 @@ const EditTaskPopup = (Items: any) => {
                             ReactDOM.render(reactElement, containerDiv);
 
                             const SendMessage = `
+                           <div style="border-top: 5px solid #2f5596">
                             <span>${CommonMsg}</span> 
                             <p></p>
                             <span>
-                            Task Link:  
+                           Task Title:  
                             <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
                             ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
                             </a>
                             </span>
                             <p></p>
                             <span>${containerDiv.innerHTML}</span>
+                           </div>
                             
                             `;
 
@@ -2792,7 +2876,7 @@ const EditTaskPopup = (Items: any) => {
                                     sendUserEmail: [InfoItem?.Email],
                                     Context: Items.context,
                                     ActionType: "Immediate",
-                                    ReasonStatement: '',
+                                    ReasonStatement: checkStatusUpdate,
                                     UpdatedDataObject: UpdatedDataObject,
                                     RequiredListIds: AllListIdData
                                 }
@@ -7681,7 +7765,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="row py-3">
+                                {DesignNewTemplates != true ? <div className="row py-3">
                                     <div
                                         className={
                                             IsShowFullViewImage != true
@@ -7921,7 +8005,39 @@ const EditTaskPopup = (Items: any) => {
                                             </>
                                         ) : null}
                                     </div>
-                                </div>
+                                </div> :
+                                    <div className="row py-3">
+                                        {EditData.Id != null && <TaskDetailsComponent data={
+                                            EditData?.FeedBackBackup?.length > 0
+                                                ? EditData?.FeedBackBackup[0]
+                                                    ?.FeedBackDescriptions
+                                                : []
+                                        }
+                                            callBack={CommentSectionCallBack}
+                                            allUsers={taskUsers}
+                                            ApprovalStatus={ApprovalStatus}
+                                            SmartLightStatus={SmartLightStatus}
+                                            SmartLightPercentStatus={SmartLightPercentStatus}
+                                            Context={Context}
+                                            FeedbackCount={FeedBackCount}
+                                            SubCommentSectionCallBack={SubCommentSectionCallBack}
+                                            MakeUpdateDataJSON={MakeUpdateDataJSON}
+                                            EditData={EditData}
+                                            TaskListDetails={{
+                                                SiteURL: siteUrls,
+                                                ListId: Items.Items.listId,
+                                                TaskId: Items.Items.Id,
+                                                TaskDetails: EditData,
+                                                AllListIdData: AllListIdData,
+                                                Context: Context,
+                                                siteType: Items.Items.siteType,
+                                            }}
+                                            taskCreatedCallback={UpdateTaskInfoFunction}
+                                            DesignStatus={DesignNewTemplates}
+                                            currentUserBackupArray={currentUserBackupArray}
+                                        />
+                                        }
+                                    </div>}
                             </div>
                             <div
                                 className="tab-pane "

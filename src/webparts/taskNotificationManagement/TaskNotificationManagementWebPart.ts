@@ -18,6 +18,7 @@ export interface ITaskNotificationManagementWebPartProps {
   siteUrl:any;
   PortFolioTypeID:any;
   SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
+  TaskUserListID:"b318ba84-e21d-4876-8851-88b94b9dc300";
 }
 
 export default class TaskNotificationManagementWebPart extends BaseClientSideWebPart<ITaskNotificationManagementWebPartProps> {
@@ -38,6 +39,7 @@ export default class TaskNotificationManagementWebPart extends BaseClientSideWeb
         siteUrl: this.context.pageContext.web.absoluteUrl,
         PortFolioTypeID: this.properties.PortFolioTypeID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
+        TaskUserListID: this.properties.TaskUserListID,
       }
     );
 
@@ -123,7 +125,11 @@ export default class TaskNotificationManagementWebPart extends BaseClientSideWeb
                 }),
                 PropertyPaneTextField('SmartMetadataListID', {
                   label: "SmartMetadataListID"
+                }),
+                PropertyPaneTextField('TaskUserListID', {
+                  label: "TaskUserListID"
                 })
+              
               ]
             }
           ]

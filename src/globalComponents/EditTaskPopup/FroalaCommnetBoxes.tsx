@@ -20,6 +20,8 @@ import Slider from "react-slick";
 import { Web } from "sp-pnp-js";
 import { BiInfoCircle } from "react-icons/bi";
 import FlorarImageUploadComponent from "../FlorarComponents/FlorarImageUploadComponent";
+import { Height } from "@material-ui/icons";
+import { withWidth } from "@material-ui/core";
 
 //   End====
 let globalCount = 1;
@@ -36,6 +38,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
     const TaskDetails: any = textItems.TaskListDetails;
     const ItemDetails: any = TaskDetails?.TaskDetails;
     const [State, setState] = useState<any>([]);
+
     const [Texts, setTexts] = useState<any>(false);
     const [btnStatus, setBtnStatus] = useState<any>(false);
     const [postBtnStatus, setPostBtnStatus] = useState<any>(false);
@@ -58,6 +61,8 @@ export default function FroalaCommnetBoxes(textItems: any) {
      speed: 500,
      slidesToShow: 1,
      slidesToScroll: 1,
+     adaptiveHeight: true,
+
      prevArrow: <FaAngleLeft />,
      nextArrow: <FaAngleRight />
  };
@@ -149,11 +154,13 @@ export default function FroalaCommnetBoxes(textItems: any) {
             HighImportance: '',
             isShowLight: '',
             TaskCreatedForThis: false,
+            setTitle:`set${testTaskIndex}`,
             setImagesInfo: []
            };
-        setState([...State,object]);
+       
         // State.push(object);
         UpdatedFeedBackParentArray.push(object)
+        setState(UpdatedFeedBackParentArray);
         setCurrentActiveTab(0)
         setTexts(!Texts);
         setBtnStatus(true);
@@ -171,6 +178,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
             HighImportance: '',
             isShowLight: '',
             TaskCreatedForThis: false,
+            setTitle:`set${testTaskIndex}`,
             setImagesInfo: [],
         };
     
@@ -779,14 +787,25 @@ const onRenderCustomAddMoreImageHeader = () => {
 const handleChangeTab = (event: any, newValue: any) => {
     setCurrentActiveTab(newValue)
 }
+const ChangeSetTitle=(index:any,value:any)=>{
 
+    UpdatedFeedBackParentArray = State;
+    UpdatedFeedBackParentArray[index].setTitle=value;
+    
+       setState((prevItems:any) =>(
+        prevItems.map((item:any, idx:any) => idx === index ?  UpdatedFeedBackParentArray[index] : item)
+       )  );
+       setState([...UpdatedFeedBackParentArray]);
+       callBack(UpdatedFeedBackParentArray);
+   
+}
 const DesignCategoriesTask = (state: any) => {
     return (
         <div>
            <TabContext value={currentActiveTab}>
                 <TabList onChange={handleChangeTab} aria-label="lab API tabs example">
                     {state?.map((tab: any, index: any) => (
-                        <Tab key={index} label={`Set${index + 1}`} value={index} />
+                        <Tab key={index} label={tab?.setTitle!=""?tab?.setTitle:`Set${index + 1}`} value={index} />
                     ))}
                     <div className="alignCenter">
                     {btnStatus?<span className="alignCenter"><span className="svg__iconbox svg__icon--Plus hreflink me-2" title="Add set" onClick={addMainRowInDiv}></span> Add New Set</span>:""}
@@ -800,9 +819,13 @@ const DesignCategoriesTask = (state: any) => {
                             return (
                                 <TabPanel key={i} value={i}>
                                     <div className="col-sm-12 row">
+                                    <div className="full-width my-3">
+                                        <input placeholder="Set Title"value={obj?.setTitle}onChange={(e)=>ChangeSetTitle(i,e.target.value)} />
+                                        </div>
                                         {
                                             obj?.setImagesInfo?.length == 0 && <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} imageIndex={i} />}
-                                        {obj?.setImagesInfo?.length == 1 ? obj?.setImagesInfo?.map((imgData: any) => {
+                                        {obj?.setImagesInfo?.length == 1 ?
+                                         obj?.setImagesInfo?.map((imgData: any) => {
 
                                             return (
 
@@ -844,12 +867,12 @@ const DesignCategoriesTask = (state: any) => {
 
                                             )
                                         }) :
-                                            <div className="carouselSlider">
+                                            <div className="carouselSlider taskImgTemplate">
                                                 <Slider {...settings}>
 
                                                     {obj?.setImagesInfo?.map((imgData: any, indeximage: any) => {
                                                         return (
-                                                            <div key={indeximage}>
+                                                            <div key={indeximage} className="carouselHeight">
                                                                 <img className="img-fluid"
                                                                     alt={imgData?.ImageName}
                                                                     src={imgData?.ImageUrl}
@@ -879,7 +902,7 @@ const DesignCategoriesTask = (state: any) => {
                                                                             {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
                                                                         </span>
                                                                         <span>|</span>
-                                                                        <a className='images' title="Expand Image" target="_blank" data-interception="off" href={imgData?.ImageUrl}><span className='mx-2'><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"></path></svg></span></a>
+                                                                        <a className='images' title="Expand Image" target="_blank" data-interception="off" href={imgData?.imageDataUrl}><span className='mx-2'><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"></path></svg></span></a>
                                                                     </div>
 
                                                                 </div>
@@ -1077,8 +1100,8 @@ const DesignCategoriesTask = (state: any) => {
    // ======End ====
     return (
         <div className="col mt-2">
-             {State?.length? null : <button className="btn btn-primary" onClick={addMainRow}>{textItems?.DesignStatus ? "Add New Set" : "Add New Box"}</button>} 
-            {State?.length && textItems?.DesignStatus==false?createRows(State) : ""}
+             {State?.length?null:<button className="btn btn-primary" onClick={()=>addMainRow()}>{textItems?.DesignStatus ? "Add New Set" : "Add New Box"}</button>} 
+            {State?.length && textItems?.DesignStatus==undefined ?createRows(State) : ""}
             {State?.length && textItems?.DesignStatus?DesignCategoriesTask(State): ""}
              {/* ********************* this is Approval History panel ****************** */}
              {ApprovalPointHistoryStatus ?
@@ -1120,7 +1143,7 @@ const DesignCategoriesTask = (state: any) => {
                             className="btn btn-primary px-3 mx-1"
                             onClick={() => UpdateMoreImage()}
                         >
-                            Update
+                            Save
                         </button>
                         <button
                             type="button"

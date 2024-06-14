@@ -26,8 +26,9 @@ let masterTaskData: any;
 let ActualSites: any = []
 export const Modified = (props: any) => {
   let columns: any = [];
-  let portfolioColor: any = '#000066';
+  let portfolioColor: any = '#2F5596';
   var baseUrl: any = props?.props.context?._pageContext?.web?.absoluteUrl;
+const [checkBoxVisble,SetCheckboxVisble]=useState(false)
   const [gmbhSite, setGmbhSite] = useState(false);
   const [sites, setSites] = useState<any>([])
   const [allSiteData, setallSiteData] = useState<any>([])
@@ -68,7 +69,10 @@ export const Modified = (props: any) => {
     let web = new Web(baseUrl);
     Users = await web.lists.getById(props?.props?.TaskUserListID).items.select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver").get();
     setAllUsers(Users)
-    if (baseUrl.toLowerCase().includes("gmbh")) {
+    if(baseUrl.toLowerCase().includes("sp")){
+      SetCheckboxVisble(true)
+    }
+    else if (baseUrl.toLowerCase().includes("gmbh")) {
       setGmbhSite(true)
       allSite = {
         GMBHSite: true,
@@ -221,6 +225,9 @@ export const Modified = (props: any) => {
       if (allSite.TabName == 'DOCUMENTS' || allSite.TabName == 'FOLDERS' || allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES' || allSite.TabName == 'TEAM-PORTFOLIO' || allSite.TabName == "WEB PAGES") {
         data?.map((item: any) => {
           item.siteType = allSite.TabName
+          if(allSite.TabName == 'DOCUMENTS'&& item?.Title==undefined || allSite.TabName=="WEB PAGES"){
+            item.Title=item?.FileLeafRef
+          }
           if (allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES' || allSite.TabName == 'TEAM-PORTFOLIO') {
             item.siteType = "Master Tasks";
             item.MasterType=allSite.TabName
@@ -232,7 +239,7 @@ export const Modified = (props: any) => {
           if (allSite.TabName == 'SERVICES') {
             item.fontColorTask = '#228b22'
           } else {
-            item.fontColorTask = '#000066'
+            item.fontColorTask = '#2F5596'
           }
 
           if (item.ItemType != undefined) {
@@ -277,9 +284,10 @@ export const Modified = (props: any) => {
 
               }
             })
-            if (item?.authorImage == undefined && item.authorSuffix == undefined) {
+            if (item?.authorImage == undefined && item?.authorSuffix == undefined) {
               item.authorDefaultName = item.Author?.Title;
-              item.authorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+              item.authorDefaultImage ='https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg';
+                   
             }
           }
           if (item.Editor != undefined) {
@@ -290,9 +298,10 @@ export const Modified = (props: any) => {
                 item.editorName = Users?.AssingedToUser?.Title;
                 item.editorId = Users?.AssingedToUser?.Id;
               }
-              if (item?.editorImage == undefined && item.editorSuffix == undefined) {
+              if (item?.editorImage == undefined && item?.editorSuffix == undefined) {
                 item.editorDefaultName = item.Editor.Title;
-                item.editorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+                item.editorDefaultImage ='https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg';
+                
               }
 
             })
@@ -356,9 +365,10 @@ export const Modified = (props: any) => {
 
               }
             })
-            if (item?.authorImage == undefined && item.authorSuffix == undefined) {
+            if (item?.authorImage == undefined && item?.authorSuffix == undefined) {
               item.authorDefaultName = item.Author?.Title;
-              item.authorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+              item.authorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg";
+              
             }
           }
           if (item.Editor != undefined) {
@@ -369,9 +379,9 @@ export const Modified = (props: any) => {
                 item.editorName = Users?.AssingedToUser?.Title;
                 item.editorId = Users?.AssingedToUser?.Id;
               }
-              if (item?.editorImage == undefined && item.editorSuffix == undefined) {
+              if (item?.editorImage == undefined && item?.editorSuffix == undefined) {
                 item.editorDefaultName = item.Editor.Title;
-                item.editorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+                item.editorDefaultImage ='https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg';
               }
 
             })
@@ -421,6 +431,7 @@ export const Modified = (props: any) => {
         if (allSite.TabName == 'SMART PAGES') {
           data = data.filter((item: any) => { return (item.TaxType == "Smart Pages") })
         }
+        
       }
       if (allSite.AllTask == true) {
         allDataFinal.push([...data])
@@ -688,7 +699,7 @@ export const Modified = (props: any) => {
             })
           }
           else if (item.siteType == type) {
-            masterTaskData.map((masterTaskValue: any) => {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
                   storeServices.push(item)
@@ -796,25 +807,33 @@ export const Modified = (props: any) => {
   const closeEditComponent = (item: any) => {
     setEditComponentPopUps(false)
     // Portfolio_x0020_Type
-    if (item?.PortfolioType?.Title == "Component") {
+    // if (item?.PortfolioType?.Title != "Component") {
+    //   sites.map((siteValue: any) => {
+    //     if (siteValue.TabName == 'COMPONENTS') {
+    //       siteValue.noRepeat = false;
+    //       siteValue.editFunction = true;
+    //       getCurrentData(siteValue)
+    //     }
+    //   })
+    // }
+    // else if (item?.PortfolioType?.Title == "Service") {
+    //   sites.map((siteValue: any) => {
+    //     if (siteValue.TabName == 'SERVICES') {
+    //       siteValue.noRepeat = false;
+    //       siteValue.editFunction = true;
+    //       getCurrentData(siteValue)
+    //     }
+    //   })
+    // }
+    if (item?.PortfolioType?.Title !=undefined) {
       sites.map((siteValue: any) => {
-        if (siteValue.TabName == 'COMPONENTS') {
+        if (siteValue.TabName == type) {
           siteValue.noRepeat = false;
           siteValue.editFunction = true;
           getCurrentData(siteValue)
         }
       })
     }
-    else if (item?.PortfolioType?.Title == "Service") {
-      sites.map((siteValue: any) => {
-        if (siteValue.TabName == 'SERVICES') {
-          siteValue.noRepeat = false;
-          siteValue.editFunction = true;
-          getCurrentData(siteValue)
-        }
-      })
-    }
-
   };
   const callbackeditpopup = (item: any) => {
     if (item != undefined) {
@@ -864,12 +883,10 @@ export const Modified = (props: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
-          size: 55,
           id: 'Id',
         },
         {
-          accessorKey: "Title", placeholder: "Title", header: "",
+          accessorKey: "Title", placeholder: "Title", header: "", id: 'Title',
           cell: ({ row }) =>
             <div className="alignCenter">
               {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
@@ -883,7 +900,7 @@ export const Modified = (props: any) => {
               <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
                   <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.editorSuffix}</span>
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="suffix_Usericon ms-1 bg-fxdark mt--2" >{row.original.editorSuffix}</span>
                     : <img title={row.original.editorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
@@ -910,7 +927,7 @@ export const Modified = (props: any) => {
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
                   <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="suffix_Usericon ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
                     : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
@@ -961,8 +978,6 @@ export const Modified = (props: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
-          size: 55,
           id: 'Id',
         },
         {
@@ -980,7 +995,7 @@ export const Modified = (props: any) => {
               <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
                   <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.editorSuffix}</span>
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="suffix_Usericon ms-1 bg-fxdark mt--2" >{row.original.editorSuffix}</span>
                     : <img title={row.original.editorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
@@ -1007,7 +1022,7 @@ export const Modified = (props: any) => {
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
                   <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="suffix_Usericon ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
                     : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
@@ -1058,8 +1073,6 @@ export const Modified = (props: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
-          size: 5,
           id: 'Id',
         },
         {
@@ -1127,29 +1140,7 @@ export const Modified = (props: any) => {
           placeholder: "Created",
           header: "",
           size: 125,
-        }, {
-          cell: (info: any) => (
-            <>
-              <a className="alignCenter" onClick={() => EditDataTimeEntryData(info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
-                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
-              </a></>
-          ),
-          id: 'AllEntry',
-          accessorKey: "",
-          canSort: false,
-          resetSorting: false,
-          resetColumnFilters: false,
-          placeholder: "",
-          size: 25
-        }, {
-          id: 'updateSmartPages',
-          cell: ({ row }) =>
-
-            <>
-              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>,
-
-        }
+        }, 
         , {
           id: 'delteSmartPages',
           cell: ({ row }) =>
@@ -1167,8 +1158,6 @@ export const Modified = (props: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
-          size: 5,
           id: 'Id',
         },
 
@@ -1230,29 +1219,7 @@ export const Modified = (props: any) => {
           placeholder: "Created",
           header: "",
           size: 125,
-        }, {
-          cell: (info: any) => (
-            <>
-              <a className="alignCenter" onClick={() => EditDataTimeEntryData(info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
-                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
-              </a></>
-          ),
-          id: 'AllEntry',
-          accessorKey: "",
-          canSort: false,
-          resetSorting: false,
-          resetColumnFilters: false,
-          placeholder: "",
-          size: 25
-        }, {
-          id: 'updateSmartMetaData', size: 25,
-          cell: ({ row }) =>
-
-            <>
-              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>,
-
-        }
+        }, 
         , {
           id: 'delteSmartMetaData', size: 25,
           cell: ({ row }) =>
@@ -1270,8 +1237,7 @@ export const Modified = (props: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
-          size: 55,
+      
           id: 'Id',
         },
         {
@@ -1374,8 +1340,7 @@ export const Modified = (props: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
-          size: 55,
+      
           id: 'Id',
         },
         {
@@ -1457,15 +1422,7 @@ export const Modified = (props: any) => {
           header: "",
           size: 125,
         },
-        {
-
-          id: 'updateEvents',
-          cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>
-
-        },
+        
         {
           id: 'deleteEvents',
           cell: ({ row }) =>
@@ -1482,8 +1439,6 @@ export const Modified = (props: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
-          size: 55,
           id: 'Id',
         },
         {
@@ -1556,15 +1511,7 @@ export const Modified = (props: any) => {
           header: "",
           size: 125,
         },
-        {
-
-          id: 'updateNews',
-          cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>
-
-        },
+        
         {
           id: 'deleteNews',
           cell: ({ row }) =>
@@ -1577,7 +1524,6 @@ export const Modified = (props: any) => {
   }
   else if (type == 'COMPONENTS' || type == 'SERVICES' || type == 'TEAM-PORTFOLIO') {
     columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
-
       [
         {
           accessorKey: "",
@@ -1591,13 +1537,13 @@ export const Modified = (props: any) => {
             <>
                <span className='Dyicons mx-1 '>{row?.original?.ItemType?.toUpperCase()?.charAt(0)}
                                 </span>
-              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>{row.original.PortfolioStructureID}</span>
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596 ' }}>{row.original.PortfolioStructureID}</span>
             </>
         },
         {
           accessorKey: "Title", placeholder: "Component Name", header: "", id: "Title",
           cell: ({ row }) =>
-            <div>  <a data-interception="off" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
+            <div>  <a data-interception="off" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596' }} target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
               {row.original.Title}
             </a></div>
 
@@ -1606,7 +1552,7 @@ export const Modified = (props: any) => {
           accessorKey: 'DueDate',
           cell: ({ row }) =>
             <>
-              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596 ' }}>
                 {row.original.dueDateNew}
               </span>
             </>
@@ -1635,13 +1581,13 @@ export const Modified = (props: any) => {
           accessorKey: 'Modified'
           , cell: ({ row }) =>
             <>
-              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596' }}>
                 {row.original.modifiedNew}
               </span>
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
                   <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="suffix_Usericon ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
                     : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>
@@ -1665,13 +1611,13 @@ export const Modified = (props: any) => {
           accessorKey: "Created",
           cell: ({ row }) =>
             <>
-              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596' }}>
                 {row.original.createdNew}
               </span>
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
                   <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 mt--2 bg-fxdark" >{row.original.authorSuffix}</span>
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="suffix_Usericon ms-1 mt--2 bg-fxdark" >{row.original.authorSuffix}</span>
                     : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>
@@ -1735,7 +1681,7 @@ export const Modified = (props: any) => {
           cell: ({ row }) => (
             <div className="alignCenter">
               <span className={row.original.Title!= undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
-                <>{row.original.Title != undefined ?<a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
+                <>{row.original.Title != undefined ?<a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596 ' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
               {row.original.Title}
               </a> : ''}</>
                 <span className="tooltip-text pop-right">
@@ -1754,7 +1700,7 @@ export const Modified = (props: any) => {
         {
           accessorKey: 'PortfolioTitle', placeholder: 'Component', header: '', id: 'PortfolioTitle',
           cell: ({ row }) =>
-            <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.PortfolioID}`}>
+            <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596 ' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.PortfolioID}`}>
               {row.original.PortfolioTitle}
             </a>
 
@@ -1802,7 +1748,7 @@ export const Modified = (props: any) => {
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
                   <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember mt--2 ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="suffix_Usericon mt--2 ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
                     : <img title={row.original.editorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
@@ -1830,7 +1776,7 @@ export const Modified = (props: any) => {
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
                   <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="suffix_Usericon ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
                     : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
@@ -1884,8 +1830,9 @@ export const Modified = (props: any) => {
   return (
     <>
       <div className="p-0  d-flex justify-content-between align-items-center " style={{ verticalAlign: "top" }}>
-        <h2 className="heading ">
+        <h2 className="heading task-title">
           <span>Last Modified Views</span></h2>
+          {checkBoxVisble&&
         <div className="d-flex float-end">
           <div className="me-1" >
             <input className="form-check-input me-2"
@@ -1908,6 +1855,7 @@ export const Modified = (props: any) => {
               SERVICES </label>
           </div>
         </div>
+        }
       </div>
 
 

@@ -8,6 +8,15 @@ export default function SiteDataBackupTool(selectedProps: any) {
     const [ListData, setListData] = useState<Item[]>([]);
     const [successMessage, setSuccessMessage] = useState(false);
     const [selectedFile, setselectedFile]: any = useState([]);
+    let Domain=selectedProps?.SPBackupConfigListUrl?.toLowerCase();
+    let labelSiteName='';
+    if(Domain?.indexOf("sp") > -1){
+        labelSiteName='SP Site';
+    }
+    if(Domain?.indexOf("gmbh") > -1){
+        labelSiteName='GMBH Site';
+    }
+    let DomainUrl=Domain?.split('/sites/')[0];
     var listData: any[] = [];
     interface Item {
         SiteUrl: string;
@@ -38,7 +47,17 @@ export default function SiteDataBackupTool(selectedProps: any) {
         if (selectedFile !== undefined) {
             var libraryName = "Documents";
             var folderName = "DataBackup";
-            const library = `/sites/HHHH/SP/${libraryName}/${folderName}`;
+            let library =''
+            if(Domain?.indexOf("sp") > -1)
+                {
+                     library = `/sites/HHHH/SP/${libraryName}/${folderName}`;
+                }
+          
+            if(Domain?.indexOf("gmbh") > -1)
+                {
+                    library = `/sites/HHHH/Gmbh/${libraryName}/${folderName}`;
+                }
+             
             const fileName = selectedFile?.name;
             try {
                 const fileContent: any = await readFileAsArrayBuffer(selectedFile);
@@ -140,8 +159,8 @@ export default function SiteDataBackupTool(selectedProps: any) {
     const QueryBasedOnLookup: any = [];
     const GetBackupConfig = async () => {
         try {
-            let web = new Web(selectedProps.AllList.SPBackupConfigListUrl);
-            const LoadBackups = await web.lists.getById(selectedProps.AllList.SPBackupConfigListID).items.getAll();
+            let web = new Web(selectedProps?.SPBackupConfigListUrl);
+            const LoadBackups = await web.lists.getById(selectedProps?.SPBackupConfigListID).items.getAll();
             if (LoadBackups !== undefined) {
                 LoadBackups.forEach((element: any) => {
                     if (element.Backup === true && element.Columns !== '') {
@@ -159,8 +178,9 @@ export default function SiteDataBackupTool(selectedProps: any) {
     const LoadQueryBasedOnLookup = async () => {
         var count = 0;
         await Promise.all(QueryBasedOnLookup.map(async (item: Item) => {
+           
             try {
-                let web = new Web('https://hhhhteams.sharepoint.com' + item.SiteUrl);
+                let web = new Web(DomainUrl + item.SiteUrl);
                 const items = await web.lists.getById(item.List_x0020_Id).items.select(item.Query).getAll();
                 console.log(items);
                 const index = isItemExists(listData, 'Site', item.Site_x0020_Name);
@@ -184,7 +204,7 @@ export default function SiteDataBackupTool(selectedProps: any) {
     }, []);
     return (
         <div className='px-3 border'>
-            <label className='form-label full-width fw-bold'>SP Site</label>
+            <label className='form-label full-width fw-bold'>{labelSiteName}</label>                                 
             <div>
                 {ListData.map((item: any) => {
                     return (<>

@@ -72,22 +72,19 @@ const EditContactPopup = (props: any) => {
             const select = "WorkCity,WorkFax ,WorkAddress,Id,WorkCountry,Email,FullName,WorkFax,ItemCover,SmartActivities/Id,SmartActivities/Title,SmartCategories/Id,SmartCategories/Title,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,ol_Department,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title";
             const query = `Id eq ${itemId}`;
             const data = await webs.lists.getById(props?.allListId?.TeamContactSearchlistIds).items.select(select).expand('Author', 'Editor', 'SmartActivities', 'SmartCategories').filter(query).get();
-            data.map((Item: any) => {
-                if (Item?.Created != null && Item?.Created != undefined) {
-                    Item.Created = moment(Item?.Created, "DD-MM-YYYY").format("DD/MM/YYYY");
-                }
-                if (Item?.Modified != null && Item?.Modified != undefined) {
-                    Item.Modified = moment(Item?.Modified, "DD-MM-YYYY").format("DD/MM/YYYY");
-                }
-                if (Item.ItemCover != null && Item.ItemCover != undefined) {
-                    Item.Item_x002d_Image = Item?.ItemCover
-
-                }
-            })
             const contact = data[0];
             if (contact.SmartCategories) {
                 setSmartCategoriesData(contact.SmartCategories)
             }
+            if (contact?.Created != null && contact?.Created != undefined) {
+                contact.Created = moment(contact.Created).format("DD/MM/YYYY");
+            }
+            if (contact?.Modified != null && contact?.Modified != undefined) {
+                contact.Modified = moment(contact.Modified).format("DD/MM/YYYY");
+             }
+            if (contact?.ItemCover != null && contact?.ItemCover != undefined) {
+                contact.Item_x002d_Image = contact?.ItemCover
+             }
             setContactDetails(contact);
 
         } catch (error) {
@@ -216,7 +213,7 @@ const EditContactPopup = (props: any) => {
                 WorkCountry: contactDetails?.WorkCountry,
                 FirstName: contactDetails?.FirstName,
                 Title: contactDetails?.Title,
-                FullName: contactDetails?.FirstName + ' ' + contactDetails?.Title,
+                FullName: contactDetails?.FirstName && contactDetails?.Title ? contactDetails?.FirstName + ' ' + contactDetails?.Title: contactDetails?.FirstName ? contactDetails?.FirstName: contactDetails?.Title ? contactDetails?.Title : "" ,
                 Suffix: contactDetails?.Suffix,
                 WebPage: contactDetails?.WebPage,
                 IM: contactDetails?.IM,
@@ -360,7 +357,7 @@ const EditContactPopup = (props: any) => {
         return (
             <>
                 <div className='subheading'>
-                    Edit Contact - {contactDetails.FirstName + ' ' + contactDetails.Title}
+                    Edit Contact - {(contactDetails.FirstName != null ? contactDetails.FirstName: " ") + ' ' + (contactDetails.Title != null ? contactDetails.Title: " ")}
                 </div>
                 <Tooltip ComponentId='3433' />
             </>
@@ -417,36 +414,36 @@ const EditContactPopup = (props: any) => {
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="FirstName" className='full-width form-label'>First Name</label>
-                                                                    <input type="text" id="FirstName" className="form-control" defaultValue={contactDetails.FirstName} onChange={(e) => setContactDetails({ ...contactDetails, FirstName: e.target.value })} />
+                                                                    <input type="text" id="FirstName" className="form-control" defaultValue={contactDetails.FirstName} onInput={(e: any) => setContactDetails({ ...contactDetails, FirstName: e.target.value ? e.target.value: "" })} />
                                                                 </div></div>
                                                             <div className="col-sm-4">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="Title" className='full-width form-label'>Last Name</label>
-                                                                    <input type="text" id="Title" className="form-control" defaultValue={contactDetails.Title} onChange={(e) => setContactDetails({ ...contactDetails, Title: e.target.value })} />
+                                                                    <input type="text" id="Title" className="form-control" defaultValue={contactDetails.Title} onInput={(e: any) => setContactDetails({ ...contactDetails, Title: e.target.value ? e.target.value: "" })} />
                                                                 </div></div>
                                                             <div className="col-sm-4 pe-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkCity" className='full-width form-label'>WorkCity</label>
-                                                                    <input type="text" id="WorkCity" className="form-control" defaultValue={contactDetails.WorkCity} onChange={(e) => setContactDetails({ ...contactDetails, WorkCity: e.target.value })} />
+                                                                    <input type="text" id="WorkCity" className="form-control" defaultValue={contactDetails.WorkCity} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkCity: e.target.value ? e.target.value: "" })} />
                                                                 </div></div>
                                                         </div>
                                                         <div className="row form-group mt-2">
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="Email" className='full-width form-label'>Email</label>
-                                                                    <input type="text" id="Email" className="form-control" defaultValue={contactDetails.Email} onChange={(e) => setContactDetails({ ...contactDetails, Email: e.target.value })} />
+                                                                    <input type="text" id="Email" className="form-control" defaultValue={contactDetails.Email} onInput={(e: any) => setContactDetails({ ...contactDetails, Email: e.target.value ? e.target.value: "" })} />
                                                                 </div>
                                                             </div>
                                                             <div className="col-sm-4">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WebPage" className='full-width form-label'>WebPage</label>
-                                                                    <input className="form-control" type="text" defaultValue={contactDetails?.WebPage ? contactDetails?.WebPage.Url : ""} onChange={(e) => setContactDetails({ ...contactDetails, WebPage: { ...contactDetails.WebPage, Url: e.target.value } })} />
+                                                                    <input className="form-control" type="text" defaultValue={contactDetails?.WebPage ? contactDetails?.WebPage.Url : ""} onInput={(e: any) => setContactDetails({ ...contactDetails, WebPage: { ...contactDetails.WebPage, Url: e.target.value ? e.target.value: "" } })} />
                                                                 </div>
                                                             </div>
                                                             <div className="col-sm-4 pe-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="IM" className='full-width form-label'>Skype</label>
-                                                                    <input type="text" id="IM" className="form-control" defaultValue={contactDetails.IM} onChange={(e) => setContactDetails({ ...contactDetails, IM: e.target.value })} />
+                                                                    <input type="text" id="IM" className="form-control" defaultValue={contactDetails.IM} onInput={(e: any) => setContactDetails({ ...contactDetails, IM: e.target.value ? e.target.value : ""})} />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -454,63 +451,63 @@ const EditContactPopup = (props: any) => {
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="Company" className='full-width form-label'>Institution</label>
-                                                                    <input type="text" id="Company" className="form-control" defaultValue={contactDetails.Company} onChange={(e) => setContactDetails({ ...contactDetails, Company: e.target.value })} />
+                                                                    <input type="text" id="Company" className="form-control" defaultValue={contactDetails.Company} onInput={(e: any) => setContactDetails({ ...contactDetails, Company: e.target.value ? e.target.value : ""})} />
                                                                 </div></div>
                                                             <div className="col-sm-4">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="JobTitle" className='full-width form-label'>Job Title</label>
-                                                                    <input type="text" id="JobTitle" className="form-control" defaultValue={contactDetails.JobTitle} onChange={(e) => setContactDetails({ ...contactDetails, JobTitle: e.target.value })} />
+                                                                    <input type="text" id="JobTitle" className="form-control" defaultValue={contactDetails.JobTitle} onInput={(e: any) => setContactDetails({ ...contactDetails, JobTitle: e.target.value ? e.target.value : "" })} />
                                                                 </div></div>
                                                             <div className="col-sm-4 pe-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="ol_Department" className='full-width form-label'>Division</label>
-                                                                    <input type="text" id="ol_Department" className="form-control" defaultValue={contactDetails.ol_Department} onChange={(e) => setContactDetails({ ...contactDetails, ol_Department: e.target.value })} />
+                                                                    <input type="text" id="ol_Department" className="form-control" defaultValue={contactDetails.ol_Department} onInput={(e: any) => setContactDetails({ ...contactDetails, ol_Department: e.target.value ? e.target.value : "" })} />
                                                                 </div></div>
                                                         </div>
                                                         <div className="row form-group mt-2">
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkPhone" className='full-width form-label'>Business Phone</label>
-                                                                    <input type="text" id="WorkPhone" className="form-control" defaultValue={contactDetails.WorkPhone} onChange={(e) => setContactDetails({ ...contactDetails, WorkPhone: e.target.value })} />
+                                                                    <input type="text" id="WorkPhone" className="form-control" defaultValue={contactDetails.WorkPhone} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkPhone: e.target.value ? e.target.value: ""})} />
                                                                 </div></div>
                                                             <div className="col-sm-4">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="CellPhone" className='full-width form-label'>Mobile Number</label>
-                                                                    <input type="text" id="CellPhone" className="form-control" defaultValue={contactDetails.CellPhone} onChange={(e) => setContactDetails({ ...contactDetails, CellPhone: e.target.value })} />
+                                                                    <input type="text" id="CellPhone" className="form-control" defaultValue={contactDetails.CellPhone} onInput={(e: any) => setContactDetails({ ...contactDetails, CellPhone: e.target.value ? e.target.value: "" })} />
                                                                 </div></div>
                                                             <div className="col-sm-4 pe-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="HomePhone" className='full-width form-label'>Home Phone</label>
-                                                                    <input type="text" id="HomePhone" className="form-control" defaultValue={contactDetails.HomePhone} onChange={(e) => setContactDetails({ ...contactDetails, HomePhone: e.target.value })} />
+                                                                    <input type="text" id="HomePhone" className="form-control" defaultValue={contactDetails.HomePhone} onInput={(e: any) => setContactDetails({ ...contactDetails, HomePhone: e.target.value ? e.target.value: "" })} />
                                                                 </div></div>
                                                         </div>
                                                         <div className="row form-group mt-2">
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkZip" className='full-width form-label'>ZIP Code</label>
-                                                                    <input type="text" id="WorkZip" className="form-control" defaultValue={contactDetails.WorkZip} onChange={(e) => setContactDetails({ ...contactDetails, WorkZip: e.target.value })} />
+                                                                    <input type="text" id="WorkZip" className="form-control" defaultValue={contactDetails.WorkZip} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkZip: e.target.value ? e.target.value: "" })} />
                                                                 </div></div>
                                                             <div className="col-sm-4">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="Office" className='full-width form-label'>Office</label>
-                                                                    <input type="text" id="Office" className="form-control" defaultValue={contactDetails.Office} onChange={(e) => setContactDetails({ ...contactDetails, Office: e.target.value })} />
+                                                                    <input type="text" id="Office" className="form-control" defaultValue={contactDetails.Office} onInput={(e: any) => setContactDetails({ ...contactDetails, Office: e.target.value ? e.target.value: "" })} />
                                                                 </div></div>
                                                             <div className="col-sm-4 pe-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkCountry" className='full-width form-label'>Country</label>
-                                                                    <input type="text" id="WorkCountry" className="form-control" defaultValue={contactDetails.WorkCountry} onChange={(e) => setContactDetails({ ...contactDetails, WorkCountry: e.target.value })} />
+                                                                    <input type="text" id="WorkCountry" className="form-control" defaultValue={contactDetails.WorkCountry} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkCountry: e.target.value ? e.target.value: "" })} />
                                                                 </div></div>
                                                         </div>
                                                         <div className="row form-group mt-2">
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkFax" className='full-width form-label'>Fax</label>
-                                                                    <input type="text" id="WorkFax" className="form-control" defaultValue={contactDetails.WorkFax} onChange={(e) => setContactDetails({ ...contactDetails, WorkFax: e.target.value })} />
+                                                                    <input type="text" id="WorkFax" className="form-control" defaultValue={contactDetails.WorkFax} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkFax: e.target.value ? e.target.value: ""})} />
                                                                 </div></div>
                                                             <div className="col-sm-4">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkAddress" className='full-width form-label'>Address</label>
-                                                                    <input type="text" id="WorkAddress" className="form-control" defaultValue={contactDetails.WorkAddress} onChange={(e) => setContactDetails({ ...contactDetails, WorkAddress: e.target.value })} />
+                                                                    <input type="text" id="WorkAddress" className="form-control" defaultValue={contactDetails.WorkAddress} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkAddress: e.target.value ? e.target.value: ""})} />
                                                                 </div></div>
                                                         </div>
                                                     </div>
@@ -526,7 +523,7 @@ const EditContactPopup = (props: any) => {
                                                                     <label className='full-width form-label'>Comments</label>
                                                                     <textarea className='w-100'
                                                                         defaultValue={contactDetails.Comments}
-                                                                        onChange={(e) => setContactDetails({ ...contactDetails, Comments: e.target.value })}
+                                                                        onInput={(e: any) => setContactDetails({ ...contactDetails, Comments: e.target.value ? e.target.value: ""})}
                                                                         rows={4}
                                                                         cols={50}
                                                                         placeholder="Enter text here..."

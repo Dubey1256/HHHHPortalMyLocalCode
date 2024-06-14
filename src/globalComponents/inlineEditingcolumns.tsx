@@ -1,4 +1,4 @@
-import { Panel, PanelType } from "office-ui-fabric-react";
+  import { Panel, PanelType } from "office-ui-fabric-react";
 import { Web } from "sp-pnp-js";
 import React, { useState } from "react";
 import * as Moment from "moment";
@@ -21,7 +21,7 @@ var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var ApproverIds: any = [];
 let selectedFeateureItem: any;
-let selectedCatTitleVal: any = []
+let selectedCatTitleVal: any = [];
 let AutoCompleteItemsArray: any = [];
 var changeTime: any = 0;
 let siteUrl: any = "";
@@ -29,8 +29,8 @@ let smartMetadataListId: any = "";
 let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
-let StatusValue: any
-let onHoldCategory: any = []
+let StatusValue: any;
+let onHoldCategory: any = [];
 let TempArrya: any = [];
 const inlineEditingcolumns = (props: any) => {
   const [EditData, setEditData] = React.useState(props?.item)
@@ -103,11 +103,20 @@ const inlineEditingcolumns = (props: any) => {
 
   React.useEffect(() => {
     updateItemValues();
-  }, [dueDate.editPopup, UpdateFeatureType ,TaskStatusPopup,remark,teamMembersPopup, UpdateEstimatedTime,TaskPriorityPopup,taskCategoriesPopup,props?.item?.TaskCategories?.results]);
-  
+  }, [dueDate.editPopup, UpdateFeatureType, TaskStatusPopup, remark, teamMembersPopup, UpdateEstimatedTime, TaskPriorityPopup, taskCategoriesPopup, props?.item?.TaskCategories?.results]);
+
   React.useEffect(() => {
     updateTaskComments();
   }, [])
+
+  React.useEffect(() => {
+    setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && props.portfolioColor) {
+            $('.ms-Panel-main').css('--SiteBlue', props?.portfolioColor); // Set the desired color value here
+        }
+    }, 1500)
+}, [taskCategoriesPopup]);
 
   const updateItemValues = () => {
     selectedCatTitleVal = [];
@@ -119,13 +128,14 @@ const inlineEditingcolumns = (props: any) => {
     } catch (e) {
       console.error("Priority and impTaskCategoryType")
     }
-    try{
-      let a :any = localStorage.getItem('taskCategoryType')
+    try {
+      let a: any = localStorage.getItem('taskCategoryType')
       a = JSON.parse(a)
       a = a.filter((item: any) => item.Title != 'Bottleneck')
       localStorage.setItem('taskCategoryType', JSON.stringify(a))
+      
     }
-    catch(e){
+    catch (e) {
       console.error("JSON cannot be parsed")
     }
     try {
@@ -153,20 +163,32 @@ const inlineEditingcolumns = (props: any) => {
             cat.ActiveTile = true;
           });
           setDesignStatus(props?.item?.TaskCategories?.some((category: any) => category.Title === "Design"));
+          setCategoriesData(props?.item?.TaskCategories);
         }
-        setCategoriesData(props?.item?.TaskCategories);
+      }
+      else if (props?.item?.TaskCategories?.length == 0){
+        if (TempArrya != null && TempArrya != undefined){
+          setCategoriesData(TempArrya)
+        }
+        else {
+          setCategoriesData([])
+        }   
       } else if (props?.item?.TaskCategories?.results?.length > 0) {
         if (props?.item?.TaskCategories?.results?.length > 0) {
           props?.item?.TaskCategories?.results?.map((cat: any) => {
             cat.ActiveTile = true;
           });
+          setCategoriesData(props?.item?.TaskCategories?.results);
         }
-        setCategoriesData(props?.item?.TaskCategories?.results);
+      }
+      else if (props?.item?.TaskCategories?.results?.length == 0) {
+        setCategoriesData([])
       } else if ((props?.item?.TaskCategories?.length == 0 || props?.item?.TaskCategories?.results?.length == 0) && props?.item?.Categories?.length > 0) {
         selectedCatTitleVal = [];
         selectedCatTitleVal = props?.item?.Categories?.split(";")
-
       }
+
+
       loadTaskUsers();
       if (props?.item?.DueDate != undefined) {
         setEditDate(props?.item?.DueDate);
@@ -246,10 +268,6 @@ const inlineEditingcolumns = (props: any) => {
       CMSTaskCategories = JSON.parse(
         localStorage.getItem("taskCategoryType")
       );
-
-      CMSTaskCategories = CMSTaskCategories.filter((item: any)=> item.Title != "Bottleneck")
-      let stringifiedCategories = JSON.stringify(CMSTaskCategories)
-      localStorage.setItem("taskCategoryType", stringifiedCategories);
       Priority = JSON.parse(localStorage.getItem("Priority"));
       let site = JSON.parse(localStorage.getItem("siteUrl"));
       let DataLoaded = JSON.parse(localStorage.getItem("inlineMetaDataLoaded"));
@@ -260,7 +278,7 @@ const inlineEditingcolumns = (props: any) => {
           site == null ||
           instantCat == null ||
           site != siteUrl) &&
-        !DataLoaded
+        (!DataLoaded||site != siteUrl)
       ) {
         impTaskCategories = [];
         CMSTaskCategories = [];
@@ -355,9 +373,9 @@ const inlineEditingcolumns = (props: any) => {
       if (instantCat == null) {
         instantCat = [];
       }
-      if (selectedCatTitleVal?.length == 0) {
-        cateFromTitle = CategoriesData;
-      }
+      // if (selectedCatTitleVal?.length == 0) {
+      //   cateFromTitle = CategoriesData;
+      // }
 
       CMSTaskCategories?.map((cat: any) => {
         selectedCatTitleVal?.map((catTitle: any) => {
@@ -382,6 +400,15 @@ const inlineEditingcolumns = (props: any) => {
           instantCat.push(cat);
         }
       });
+      if (instantCat != null && instantCat != undefined) {
+        instantCat?.forEach((instCat: any) => {
+          props?.item?.TaskCategories?.forEach((cat: any) => {
+            if (instCat.Id === cat.Id) {
+              instCat.ActiveTile = true
+            }
+          })
+        })
+      }
       let uniqueArray: any = [];
       AutoCompleteItemsArray.map((currentObject: any) => {
         if (!uniqueArray.find((obj: any) => obj.Id === currentObject.Id)) {
@@ -571,7 +598,7 @@ const inlineEditingcolumns = (props: any) => {
         postData.CompletedDate = EditData?.CompletedDate
         postData.Status = taskStatus
         break;
-        
+
       case 'DueDate':
         postData.DueDate = newDueDate;
         break;
@@ -592,7 +619,7 @@ const inlineEditingcolumns = (props: any) => {
         web.lists
           .getById(props?.item?.listId)
           .items.select(
-            "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,Comments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
+            "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,Comments,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
           )
           .expand(
             "AssignedTo,Project,ParentTask,SmartInformation,Author,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
@@ -631,8 +658,8 @@ const inlineEditingcolumns = (props: any) => {
             closeTaskDueDate();
             props?.callBack(task);
           });
-        setCategoriesData(CategoriesData);
-        setSelectedCatId(selectedCategoriesId);
+        setCategoriesData([]);
+        setSelectedCatId([]);
         setTaskCategoriesPopup(false);
         setTaskStatusPopup(false);
         setTaskPriorityPopup(false);
@@ -713,8 +740,9 @@ const inlineEditingcolumns = (props: any) => {
     }
     onHoldCategory = [];
   }, []);
- const DDComponentCallBack = React.useCallback((dt: any) => {
+  const DDComponentCallBack = React.useCallback((dt: any) => {
     setTeamConfig(dt);
+
 
     if (dt?.AssignedTo?.length > 0) {
       let tempAssigned: any = [];
@@ -728,6 +756,7 @@ const inlineEditingcolumns = (props: any) => {
       setTaskAssignedTo(tempAssigned);
     }
     else{
+      AssignedToIds = []
       setTaskAssignedTo([])
     }
     if (dt?.TeamMemberUsers?.length > 0) {
@@ -742,6 +771,7 @@ const inlineEditingcolumns = (props: any) => {
       setTaskTeamMembers(tempTeam);
     }
     else{
+      TeamMemberIds = []
       setTaskTeamMembers([])
     }
     if (dt?.ResponsibleTeam?.length > 0) {
@@ -756,6 +786,7 @@ const inlineEditingcolumns = (props: any) => {
       setTaskResponsibleTeam(tempResponsible);
     }
     else{
+      ResponsibleTeamIds = []
       setTaskResponsibleTeam([])
     }
   },[]);
@@ -875,10 +906,10 @@ const inlineEditingcolumns = (props: any) => {
     setUpdateTaskInfo({
       ...UpdateTaskInfo,
       PercentCompleteStatus: StatusData.value,
-  });
-  setPercentCompleteCheck(false);
-  StatusValue = StatusData.value
-  if (StatusData.value == 1) {
+    });
+    setPercentCompleteCheck(false);
+    StatusValue = StatusData.value
+    if (StatusData.value == 1) {
       let tempArray: any = [];
       if (
         TaskApproverBackupArray != undefined &&
@@ -911,6 +942,19 @@ const inlineEditingcolumns = (props: any) => {
       setInputFieldDisable(false);
     }
 
+    if (StatusData.value == 75) {
+      setEditData((prevState: any) => ({
+        ...prevState,
+        IsTodaysTask: false,
+      }));
+      StatusArray?.map((item: any) => {
+        if (StatusData.value == item.value) {
+          setPercentCompleteStatus(item.status);
+          setTaskStatus(item.taskStatusComment);
+        }
+      })
+    }
+
     if (StatusData.value == 80) {
       setEditData((prevState: any) => ({
         ...prevState,
@@ -928,12 +972,12 @@ const inlineEditingcolumns = (props: any) => {
       }
       StatusArray?.map((item: any) => {
         if (StatusData.value == item.value) {
-            setPercentCompleteStatus(item.status);
-            setTaskStatus(item.taskStatusComment);
+          setPercentCompleteStatus(item.status);
+          setTaskStatus(item.taskStatusComment);
         }
-    });
-  }
-  if (StatusData.value == 70) {
+      });
+    }
+    if (StatusData.value == 70) {
       if (
         EditData.TeamMembers != undefined &&
         EditData.TeamMembers?.length > 0
@@ -944,22 +988,22 @@ const inlineEditingcolumns = (props: any) => {
       }
       StatusArray?.map((item: any) => {
         if (StatusData.value == item.value) {
-            setPercentCompleteStatus(item.status);
-            setTaskStatus(item.taskStatusComment);
+          setPercentCompleteStatus(item.status);
+          setTaskStatus(item.taskStatusComment);
         }
-    });
-  }
+      });
+    }
 
     if (StatusData.value == 5) {
       EditData.CompletedDate = undefined;
       EditData.IsTodaysTask = false;
       StatusArray?.map((item: any) => {
         if (StatusData.value == item.value) {
-            setPercentCompleteStatus(item.status);
-            setTaskStatus(item.taskStatusComment);
+          setPercentCompleteStatus(item.status);
+          setTaskStatus(item.taskStatusComment);
         }
-    });
-  }
+      });
+    }
 
     if (StatusData.value == 10) {
       EditData.CompletedDate = undefined;
@@ -972,12 +1016,12 @@ const inlineEditingcolumns = (props: any) => {
       }));
       StatusArray?.map((item: any) => {
         if (StatusData.value == item.value) {
-            setPercentCompleteStatus(item.status);
-            setTaskStatus(item.taskStatusComment);
+          setPercentCompleteStatus(item.status);
+          setTaskStatus(item.taskStatusComment);
         }
-    });
-  }
-  if (
+      });
+    }
+    if (
       StatusData.value == 93 ||
       StatusData.value == 96 ||
       StatusData.value == 99
@@ -989,20 +1033,20 @@ const inlineEditingcolumns = (props: any) => {
       }));
       setWorkingMember(32);
       StatusArray?.map((item: any) => {
-          if (StatusData.value == item.value) {
-              setPercentCompleteStatus(item.status);
-              setTaskStatus(item.taskStatusComment);
-          }
+        if (StatusData.value == item.value) {
+          setPercentCompleteStatus(item.status);
+          setTaskStatus(item.taskStatusComment);
+        }
       });
-  }
-  if (StatusData.value == 90) {
-    setEditData((prevState: any) => ({
-      ...prevState,
-      IsTodaysTask: false,
-      workingThisWeek: false
-    }));
+    }
+    if (StatusData.value == 90) {
+      setEditData((prevState: any) => ({
+        ...prevState,
+        IsTodaysTask: false,
+        workingThisWeek: false
+      }));
       if (EditData.siteType == "Offshore%20Tasks") {
-          setWorkingMember(36);
+        setWorkingMember(36);
       } else if (DesignStatus) {
         setWorkingMember(301);
       } else {
@@ -1013,12 +1057,12 @@ const inlineEditingcolumns = (props: any) => {
         CompletedDate: Moment(new Date()).format("MM-DD-YYYY")
       }));
       StatusArray?.map((item: any) => {
-          if (StatusData.value == item.value) {
-              setPercentCompleteStatus(item.status);
-              setTaskStatus(item.taskStatusComment);
-          }
+        if (StatusData.value == item.value) {
+          setPercentCompleteStatus(item.status);
+          setTaskStatus(item.taskStatusComment);
+        }
       });
-  }
+    }
   };
   const closeTaskStatusUpdatePopup = () => {
     setTaskStatusPopup(false);
@@ -1195,12 +1239,12 @@ const inlineEditingcolumns = (props: any) => {
       {props?.columnName == "Team" ? (
         <>
           <span
-            style={{ display: "block", width: "100%", height: "100%" }}
+            style={{ display: "flex", width: "100%", height: "100%" }}
             onClick={() => setTeamMembersPopup(true)}
             className="hreflink"
           >
-            {" "}
-            <span className="alignCenter">
+            &nbsp;
+            <span className="alignCenter ml-auto">
               <ShowTaskTeamMembers
                 props={props?.item}
                 TaskUsers={props?.TaskUsers}
@@ -1226,10 +1270,11 @@ const inlineEditingcolumns = (props: any) => {
                 : "hreflink"
             }
             style={{
-              display: "block",
+              display: "flex",
               width: "100%",
               height: "100%",
-              gap: "1px"
+              gap: "1px",
+              alignItems: "center"
             }}
             onClick={() => setTaskPriorityPopup(true)}
           >
@@ -1282,8 +1327,8 @@ const inlineEditingcolumns = (props: any) => {
               // }
               if (category?.Title == "Favorite") {
                 return (
-                  <a title="Favorite">
-                    <span className=" svg__iconbox svg__icon--Star alignIcon "></span>
+                  <a title="Favorite" className="alignCenter">
+                    <span className=" svg__iconbox svg__icon--Star"></span>
                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} />  */}
                   </a>
                 );
@@ -1291,7 +1336,7 @@ const inlineEditingcolumns = (props: any) => {
             })}
             &nbsp;
             {showEditPencil && (
-              <a className="pancil-icons">
+              <a className="pancil-icons ml-auto">
                 <span className="svg__iconbox svg__icon--editBox alignIcon "></span>
               </a>
             )}
@@ -1355,7 +1400,7 @@ const inlineEditingcolumns = (props: any) => {
               <span className="alignIcon svg__iconbox svg__icon--cross"></span>
             </a> : ''}
 
-            <a className="pancil-icons hreflink" onClick={() => setUpdateFeatureType(true)}>
+            <a className="pancil-icons ml-auto hreflink" onClick={() => setUpdateFeatureType(true)}>
               <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
             </a>
           </span>
@@ -1367,7 +1412,7 @@ const inlineEditingcolumns = (props: any) => {
       {props?.columnName == "PercentComplete" ? (
         <>
           <span
-            style={{ display: "block", width: "100%", height: "100%" }}
+            style={{ display: "flex", width: "100%", height: "100%" }}
             className={
               ServicesTaskCheck
                 ? "serviepannelgreena align-content-center d-flex gap-1 alignCenter"
@@ -1434,7 +1479,7 @@ const inlineEditingcolumns = (props: any) => {
               ? "serviepannelgreena hreflink"
               : "hreflink"
           }
-          style={{ display: "block", width: "100%", height: "100%" }}
+          style={{ display: "flex", width: "100%", height: "100%" }}
           onClick={() => {
             setDueDate({ ...dueDate, editPopup: true });
             setEditDate(
@@ -1442,15 +1487,16 @@ const inlineEditingcolumns = (props: any) => {
             );
           }}
         >
+          <>&nbsp;</>
           {props?.item?.DisplayDueDate != undefined ? props?.item?.DisplayDueDate : <>&nbsp;</>}
           {showEditPencil && (
-            <a className="pancil-icons">
+            <a className="pancil-icons ml-auto">
               <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
             </a>
           )}
         </span>
       ) : (
-        ""
+       ''
       )}
 
       {/* Panel to edit due-date */}
@@ -1822,12 +1868,12 @@ const inlineEditingcolumns = (props: any) => {
           className="hreflink text-content"
           title={props?.item?.Categories}
           onClick={() => setTaskCategoriesPopup(true)}
-          style={{ display: "block", width: "100%", height: "100%" }}
+          style={{ display: "flex", width: "100%", height: "100%" }}
         >
-          {" "}
-          {props?.item?.Categories}{" "}  &nbsp;
+         
+          {props?.item?.Categories}  &nbsp;
           {showEditPencil && (
-            <a className="pancil-icons">
+            <a className="pancil-icons ml-auto">
               <span className="svg__iconbox svg__icon--editBox"></span>
             </a>
           )}
@@ -1847,45 +1893,147 @@ const inlineEditingcolumns = (props: any) => {
           <div className="col-sm-12">
             <div className="col-sm-12 padding-0 input-group">
               <label className="full_width">Categories</label>
-              <input
-                type="text"
-                className="ui-autocomplete-input form-control"
-                id="txtCategories"
-                value={categorySearchKey}
-                onChange={(e) => autoSuggestionsForCategory(e)}
-              />
-              <span className="input-group-text">
-                <span
-                  onClick={() => EditComponentPicker(props?.item)}
-                  title="Edit Categories"
-                  className="hreflink svg__iconbox svg__icon--editBox"
-                ></span>
-              </span>
-              <div className="col-sm-12 p-0">
-                {SearchedCategoryData?.length > 0 ? (
-                  <div className="SmartTableOnTaskPopup p-0 position-static">
-                    <ul className="list-group">
-                      {SearchedCategoryData.map((item: any) => {
-                        return (
-                          <li
-                            className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
-                            key={item.id}
-                            onClick={
-                              () =>
-                                selectSubTaskCategory(item?.Title, item?.Id, item)
-                              // setSelectedCategoryData([item], "For-Auto-Search")
-                            }
+              {CategoriesData?.length > 1 ? (
+                <>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="txtCategories"
+                    placeholder="Search Category Here"
+                    value={categorySearchKey}
+                    onChange={(e) => autoSuggestionsForCategory(e)}
+                  />
+                  <span className="input-group-text">
+                    <span
+                      onClick={() => EditComponentPicker(props?.item)}
+                      title="Edit Categories"
+                      className="hreflink svg__iconbox svg__icon--editBox"
+                      ></span>
+                    </span>
+                  {SearchedCategoryData?.length > 0 ? (
+                    <div className="SmartTableOnTaskPopup">
+                      <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                        {SearchedCategoryData.map((item: any) => {
+                          return (
+                            <li
+                              className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                              key={item.id}
+                              onClick={() =>
+                                selectSubTaskCategory(
+                                  item?.Title,
+                                  item?.Id,
+                                  item
+                                )
+                              }
+                            >
+                              <a>{item.Newlabel}</a>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  ) : null}
+                  {CategoriesData?.map((type: any, index: number) => {
+                    if (
+                      type.Title != "Phone" &&
+                      type.Title != "Email Notification" &&
+                      type.Title != "Immediate" &&
+                      type.Title != "Approval" &&
+                      type.Title != "Email" &&
+                      type.Title != "Only Completed"
+                    ) {
+                      return (
+                        <div className="block w-100">
+                          <a
+                            style={{ color: "#fff !important" }}
+                            className="textDotted"
                           >
-                            <a>{item.Newlabel}</a>
-                          </li>
+                            {type.Title}
+                          </a>
+                          <span
+                            onClick={() => selectSubTaskCategory(type?.Title, type?.Id, type)}
+                            className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                          ></span>
+                        </div>
+                      );
+                    }
+                  })}
+                </>
+              ) : (
+                <>
+                  {CategoriesData?.length == 1 ? (
+                    <div className="full-width">
+                      {CategoriesData?.map((CategoryItem: any) => {
+                        return (
+                          <>
+                          <div className="full-width replaceInput alignCenter">
+                            <a
+                              title={CategoryItem.Title}
+                              target="_blank"
+                              data-interception="off"
+                              className="textDotted"
+                            >
+                              {CategoryItem.Title}
+                            </a>
+                          </div>
+                        <span className="input-group-text">
+                          <span
+                          onClick={() => EditComponentPicker(props?.item)}
+                          title="Edit Categories"
+                          className="hreflink svg__iconbox svg__icon--editBox"
+                          >
+                          </span>
+                        </span>
+                        </>
                         );
                       })}
-                    </ul>
-                  </div>
-                ) : null}
-              </div>
+                    </div>
+                  ) : (
+                    <>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="txtCategories"
+                        placeholder="Search Category Here"
+                        value={categorySearchKey}
+                        onChange={(e) => autoSuggestionsForCategory(e)}
+                      />
+                      <span className="input-group-text">
+                        <span
+                        onClick={() => EditComponentPicker(props?.item)}
+                        title="Edit Categories"
+                        className="hreflink svg__iconbox svg__icon--editBox"
+                        ></span>
+                      </span>
+                      {SearchedCategoryData?.length > 0 ? (
+                        <div className="SmartTableOnTaskPopup">
+                          <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                            {SearchedCategoryData.map((item: any) => {
+                              return (
+                                <li
+                                  className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                  key={item.id}
+                                  onClick={() =>
+                                    selectSubTaskCategory(
+                                      item?.Title,
+                                      item?.Id,
+                                      item
+                                    )
+                                  }
+                                >
+                                  <a>{item.Newlabel}</a>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      ) : null}
+                    </>
+                  )}
+                </>
+              )}
             </div>
-
+          </div>
 
             {instantCategories?.map((item: any) => {
               return (
@@ -1905,37 +2053,6 @@ const inlineEditingcolumns = (props: any) => {
               );
             })}
           </div>
-          {CategoriesData != undefined ? (
-            <div>
-              {CategoriesData?.map((type: any, index: number) => {
-                return (
-                  <>
-                    {!instantCategories?.some(
-                      (selectedCat: any) => selectedCat?.Title == type?.Title
-                    ) && (
-                        <div className="block alignCenter">
-                          <a
-                            className="wid90"
-                            style={{ color: "#fff !important" }}
-                            target="_blank"
-                            data-interception="off"
-                          >
-                            {type.Title}
-                          </a>
-                          <span
-                            className="bg-light ml-auto svg__iconbox svg__icon--cross"
-                            onClick={() =>
-                              selectSubTaskCategory(type?.Title, type?.Id, type)
-                            }
-                          ></span>
-                          {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
-                        </div>
-                      )}
-                  </>
-                );
-              })}
-            </div>
-          ) : null}
           <footer className="float-end">
             <button
               type="button"
@@ -1945,7 +2062,6 @@ const inlineEditingcolumns = (props: any) => {
               Save
             </button>
           </footer>
-        </div>
       </Panel>
       {IsComponentPicker && (
         <Picker

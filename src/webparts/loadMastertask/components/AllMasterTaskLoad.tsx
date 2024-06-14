@@ -64,7 +64,13 @@ const AllMasterTaskLoad = (props: any) => {
       .expand("Parent", "Portfolios", "PortfolioType")
       .getAll();
 
+    componentDetails.map((itemss: any) => {
+      itemss.ParentTitle = itemss?.Parent?.Title
+      itemss.ParentItemType = itemss?.Parent?.ItemType
+    })
+
     const undefinedAllData = componentDetails.filter((item: any) => ((item.PortfolioStructureID === null) || (item.PortfolioStructureID && item.PortfolioStructureID.includes("undefined")) || item.PortfolioStructureID.includes("f")))
+
 
     const duplicateData = componentDetails.filter((ele: any, ind: any, arr: any) => arr.filter((elem: any) => (elem.PortfolioStructureID === ele.PortfolioStructureID) && (elem.PortfolioStructureID !== null && ele.PortfolioStructureID !== null)).length > 1);
     let commonData = undefinedAllData.concat(duplicateData)
@@ -74,7 +80,7 @@ const AllMasterTaskLoad = (props: any) => {
       (item?.PortfolioStructureID !== null && item?.PortfolioStructureID !== undefined) &&
       (!item?.PortfolioStructureID.includes(item?.Parent?.PortfolioStructureID)))
 
-    const wrongIdServiceData = componentDetails.filter((itemm: any) => itemm.Portfolio_x0020_Type === "Service" && ((itemm?.Parent !== null && itemm.Parent !== undefined) && (itemm?.PortfolioStructureID !== null && itemm?.PortfolioStructureID !== undefined)
+    const wrongIdServiceData = componentDetails.filter((itemm: any) => (itemm.Portfolio_x0020_Type === "Service" ) && ((itemm?.Parent !== null && itemm.Parent !== undefined) && (itemm?.PortfolioStructureID !== null && itemm?.PortfolioStructureID !== undefined)
       && (!itemm?.PortfolioStructureID.includes(itemm?.Parent?.PortfolioStructureID))
     ))
 
@@ -183,7 +189,20 @@ const AllMasterTaskLoad = (props: any) => {
                 data-interception="off"
                 target="_blank"
               >
-                {row?.original?.Title}
+                 {
+                  row?.original?.Portfolio_x0020_Type === "Service"
+                    ? (
+                      (row?.original?.Title != null)
+                        ? (
+                          <span style={{ color: row?.original?.PortfolioType?.Color }}>
+                            {row?.original?.Title}
+                          </span>
+                        )
+                        : ""
+                    )
+                    : row?.original?.Title
+                }
+
               </a>
             </span>
           </>
@@ -195,7 +214,7 @@ const AllMasterTaskLoad = (props: any) => {
         header: "",
       },
       {
-        accessorFn: (row) => row?.Parent?.Title,
+        accessorFn: (row) => row?.ParentTitle,
         placeholder: "Parent Title",
         header: "",
         id: "ParentTitle",
@@ -214,7 +233,20 @@ const AllMasterTaskLoad = (props: any) => {
                   data-interception="off"
                   target="_blank"
                 >
-                  {row?.original?.Parent?.Title}
+                  {
+                    row?.original?.Portfolio_x0020_Type === "Service"
+                      ? (
+                        (row?.original?.Parent?.Title)
+                          ? (
+                            <span style={{ color: row?.original?.PortfolioType?.Color }}>
+                              {row?.original?.Parent?.Title}
+                            </span>
+                          )
+                          : null
+                      )
+                      : row?.original?.Parent?.Title
+                  }
+
                 </a>
               }
             </span>
@@ -222,7 +254,7 @@ const AllMasterTaskLoad = (props: any) => {
         ),
       },
       {
-        accessorFn: (row) => row?.Parent?.ItemType,
+        accessorFn: (row) => row?.ParentItemType,
         placeholder: "Parent ItemType",
         header: "",
         id: "ParentItemType",
@@ -303,7 +335,7 @@ const AllMasterTaskLoad = (props: any) => {
     <div>
       <div className="col-sm-12 clearfix mb-2">
         <h2 className="d-flex justify-content-between align-items-center siteColor serviceColor_Active">
-          <div style={{ color: 'rgb(0, 0, 102)' }}>Corrupted Portfolio Items</div>
+          <div>Corrupted Portfolio Items</div>
         </h2>
       </div>
 
@@ -312,7 +344,7 @@ const AllMasterTaskLoad = (props: any) => {
           <div className='smart'>
             <div className='wrapper'>
               {allData ? <div><GlobalCommanTable
-                columns={column} data={allData} callBackData={callBackData} AllListId={ContextValue} exportToExcel={true} showHeader={true} showingAllPortFolioCount={true} fixedWidth={true} pageName={"ProjectOverviewGrouped"} portfolioTypeData={portfolioTypeDataItem} />
+                columns={column} data={allData} showHeader={true} callBackData={callBackData} AllListId={ContextValue} exportToExcel={true} hideTeamIcon={true} showingAllPortFolioCount={true} fixedWidth={true} pageName={"ProjectOverviewGrouped"} portfolioTypeData={portfolioTypeDataItem} />
                 {IsComponent && (
                   <EditInstituton
                     item={CMSToolComponent}
@@ -333,6 +365,3 @@ const AllMasterTaskLoad = (props: any) => {
 
 }
 export default AllMasterTaskLoad;
-
-
-

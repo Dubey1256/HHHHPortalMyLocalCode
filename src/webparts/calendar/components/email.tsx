@@ -14,13 +14,12 @@ interface NameIdData {
   [key: number]: {
     NameId: any;
     TotalLeaved: any;
-    LastEndDate:any
   };
 }
 let message: any;
 let count: any = 1;
 let counts = 0;
-let membersWorkfromHome = []
+let membersWorkfromHome:any = []
 let Juniordevavailabel = 0;
 let smalsusleadavailabel = 0;
 let hhhhteamavailabel = 0;
@@ -28,6 +27,8 @@ let seniordevavailabel = 0;
 let qateamavailabel = 0;
 let designteamavailabel = 0;
 let Allteamoforganization = 0;
+let leaveallteammemebrstoday = 0;
+let availableteammeberstoday = 0;
 const EmailComponenet = (props: any) => {
   const [AllTaskuser, setAllTaskuser] = React.useState([]);
   const [leaveData, setleaveData] = React.useState([]);
@@ -49,9 +50,9 @@ const EmailComponenet = (props: any) => {
 
   React.useEffect(() => {
     loadleave()
-    if (Object.keys(nameidTotals).length !== 0) {
+    if (Object.keys(nameidTotals).length !== 0 && AllTaskuser?.length != 0) {
       SendEmail()
-    } else if (props?.data?.length === 0) {
+    } else if (props?.data?.length === 0 && AllTaskuser?.length != 0) {
       SendEmail()
     }
 
@@ -63,19 +64,16 @@ const EmailComponenet = (props: any) => {
 
   const SendEmail = () => {
     let sp = spfi().using(spSPFx(props.Context));
-    let totalteammemberonleave = AllTaskuser?.length - Object?.keys(nameidTotals)?.length;
-    props?.data.filter((items: any) => {
-      if (items?.eventType == 'Work From Home') {
-        membersWorkfromHome.push(items)
-      }
-    })
+
+    let sendEmailUsers = props?.EmailReciptents?.map((user: any) => { return user?.Email })
+    sendEmailUsers = sendEmailUsers?.filter((user: any) => user != undefined)
+
     let SendEmailMessage =
       sp.utility
         .sendEmail({
           Body: BindHtmlBody(),
-          Subject: "HHHH - Team Attendance " + formattedDate + " " + (CompleteTeam - (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length)) + " available - " + (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length) + " on leave",
-          To: ["deepak@hochhuth-consulting.de","stefan.hochhuth@hochhuth-consulting.de","robert.ungethuem@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de"],
-          //",
+          Subject: "HHHH - Team Attendance -" + formattedDate + ": " + availableteammeberstoday + " available; " + leaveallteammemebrstoday + " on leave",
+          To: sendEmailUsers?.length > 0 ? sendEmailUsers : ["anubhav.shukla@hochhuth-consulting.de"],
           // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
           AdditionalHeaders: {
             "content-type": "text/html",
@@ -96,7 +94,7 @@ const EmailComponenet = (props: any) => {
   const getTaskUser = async () => {
     let web = new Web(props.Listdata.siteUrl);
     await web.lists
-      .getById(props.Listdata.TaskUsertListID)
+      .getById(props.Listdata.TaskUserListID)
       .items.orderBy("Created", true)
       .filter("UserGroupId ne 295")
       .get()
@@ -118,7 +116,7 @@ const EmailComponenet = (props: any) => {
   let arr: any = [];
   // Count all the leave of the user
   let year = new Date().getFullYear();
-  let yeardata = leaveData?.filter((item: any) => item?.EventDate?.substring(0, 4) === `${year}`)
+  let yeardata = leaveData.filter((item: any) => item?.EventDate?.substring(0, 4) === `${year}`)
 
   const calculateTotalWorkingDays = (matchedData: any) => {
     const today = new Date();
@@ -168,33 +166,8 @@ const EmailComponenet = (props: any) => {
     }, 0);
   };
 
-  // const getLastEndDate = (leaveObjects:any) => {
-  //   const sortedLeaves = leaveObjects.sort((a: { EndDate: string }, b: { EndDate: string }) => new Date(a.EndDate).getTime() - new Date(b.EndDate).getTime());
-  //   const lastLeave = sortedLeaves[sortedLeaves.length - 1];
-  //   const lastEndDate = new Date(lastLeave.EndDate);
-  //   // lastEndDate.setDate(lastEndDate.getDate() + 1);
-  // //   console.log(lastEndDate)
-  //   return lastEndDate;
-  // };
-  function getLastEndDate(leaveArray:any) {
-    const endDates = leaveArray.map((leave:any) => leave.EndDate);
-    const sortedEndDates = endDates.sort((a:any, b:any) => new Date(a).getTime() - new Date(b).getTime());
-    let sortEnds:any
-    let lastEndDate = sortedEndDates[sortedEndDates.length -1];
-    
-    for (let i = 1; i < sortedEndDates.length; i++) {
-        const currentDate = new Date(sortedEndDates[i]);
-        const prevDate = new Date(sortedEndDates[i - 1]);
-        
-        if (currentDate.getTime() !== prevDate.getTime() + 24 * 60 * 60 * 1000) {
-            return sortEnds = sortedEndDates[sortedEndDates.length - 1];
-        }
-        
-        lastEndDate = sortEnds;
-    }
-    
-    return lastEndDate; // Return the last date if no gap found
-}
+
+
 
 
 
@@ -205,6 +178,10 @@ const EmailComponenet = (props: any) => {
 
     return (startDay === 0 || startDay === 6) && (endDay === 0 || endDay === 6);
   };
+
+
+
+
   React.useEffect(() => {
     // Assuming 'yeardata' is available from somewhere (prop, state, or elsewhere)
     // const yeardata = ...;
@@ -219,25 +196,25 @@ const EmailComponenet = (props: any) => {
       if (matchedData.length !== 0) {
 
         const totalDays = calculateTotalWorkingDays(matchedData);
-        const lastEndDate = getLastEndDate(matchedData);
         nameidData[username.NameId] = {
           NameId: username.NameId,
           TotalLeaved: totalDays,
-          LastEndDate: lastEndDate,
         };
       }
     });
     count++;
-  
     setNameidTotals(nameidData);
   }, [props?.data]);
 
 
-  console.log(nameidTotals)
+
+
+
   // arr.map((item:any)=>{})
 
   // For prepare the property
-  const data = props?.data;
+  let data = props?.data?.filter((item:any)=> item?.eventType !== "Work From Home");
+  
   {
     data?.map((item: any, index: any) => {
       let condate = new Date(item.end);
@@ -263,9 +240,7 @@ const EmailComponenet = (props: any) => {
           const data = nameidTotals[parseInt(key)];
           if (data.NameId === item.NameId) {
             item.TotalLeave = data.TotalLeaved;
-           // item.lastEndDate = data.LastEndDate;
-            let lastEndDate = new Date(data.LastEndDate);
-            item.enddate = moment(lastEndDate, 'ddd MMM DD YYYY HH:mm:ss [GMT]ZZ').format('DD/MM/YYYY');
+
           }
         })
       }
@@ -285,7 +260,7 @@ const EmailComponenet = (props: any) => {
 
 
 
-  Allteamoforganization = juniortotal.length + smalleadtotal.length + seniodevtotal.length + qaleavetotal.length + designttotal.length + 2;
+
 
 
 
@@ -293,7 +268,7 @@ const EmailComponenet = (props: any) => {
   const Mobiletotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId === 388 && Junior?.Team === "Mobile"));
   const Managementtotal = AllTaskuser.filter((smallead: any) => (smallead?.UserGroupId === 216 && smallead?.Team === "Management"));
   // const hhhteamtotal =  AllTaskuser.filter((hhhteam:any)=>(hhhteam?.UserGroupId===7 && hhhteam?.AssingedToUserId != 9));
-  const Sharewebtotal = AllTaskuser.filter((seniodev: any) => (seniodev?.Group == "Shareweb" && seniodev?.Team === "Shareweb"));
+  const TotalEmployees = AllTaskuser.filter((seniodev: any) => (seniodev?.Group == "Shareweb" && seniodev?.Team === "Shareweb"));
   const qatotal = AllTaskuser.filter((qaleave: any) => (qaleave?.Group == "QA" && qaleave?.Team === "QA"));
   const designtotal = AllTaskuser.filter((designt: any) => (designt?.Group == "Design" && designt?.Team === "Design"));
   const HRtotal = AllTaskuser.filter((designt: any) => (designt?.Group == "HR" && designt?.Team === "HR"));
@@ -302,7 +277,7 @@ const EmailComponenet = (props: any) => {
   const SPFxTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && (Junior?.Team === "SPFx" || Junior?.Team === "SPFX")))
   const ManagementTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "Management"))
   const MobileTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "Mobile"))
-  const SharewebTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "Shareweb"))
+  const Totalsmalsustrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "Shareweb"))
   const DesignTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "Design"))
   const QATrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "QA"))
   const HRTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "HR"))
@@ -312,7 +287,7 @@ const EmailComponenet = (props: any) => {
   const MobiletotalLeave = Mobiletotal.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
   const ManagementtotalLeave = Managementtotal.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
   // const hhhteamtotal =  AllTaskuser.filter((hhhteam:any)=>(hhhteam?.UserGroupId===7 && hhhteam?.AssingedToUserId != 9));
-  const SharewebtotalLeave = Sharewebtotal.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
+  const TotalEmployeesLeave = TotalEmployees.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
   const qatotalLeave = qatotal.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
   const designtotalLeave = designtotal.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
   const HRtotalLeave = HRtotal.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
@@ -321,7 +296,7 @@ const EmailComponenet = (props: any) => {
   const SPFxTraineeLeave = SPFxTrainee.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
   const ManagementTraineeLeave = ManagementTrainee.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
   const MobileTraineeLeave = MobileTrainee.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
-  const SharewebTraineeLeave = SharewebTrainee.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
+  const TotalsmalsustraineeLeave = Totalsmalsustrainee.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
   const DesignTraineeLeave = DesignTrainee.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
   const QATraineeLeave = QATrainee.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
   const HRTraineeLeave = HRTrainee.filter((Junior: any) => { return data.some((item: any) => item.NameId === Junior?.AssingedToUserId); });
@@ -344,21 +319,26 @@ const EmailComponenet = (props: any) => {
   designteamavailabel = designttotal.length - designteamleave.length;
   // // <div style="margin-bottom: 40px;font-size: 32px;font-weight: 600;line-height: 40px;color: #2F5596;font-family: Segoe UI;">
 
-  //     ${Object?.keys(nameidTotals)?.length === 0 ? `The ${formattedDate} is a great Day! All ${Allteamoforganization} are in Office today!` : `${formattedDate}: ${(Object?.keys(nameidTotals)?.length - WorkfromHomeEmp?.length)} are on leave, ${Allteamoforganization - (Object?.keys(nameidTotals)?.length - WorkfromHomeEmp?.length)} are working`}
+  // {Object?.keys(nameidTotals)?.length === 0 ? `The ${formattedDate} is a great Day! All ${Allteamoforganization} are in Office today!` : `${formattedDate}: ${(Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length)} are on leave, ${Allteamoforganization - (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length)} are working`}
   // </div>
-
-  const AllStaff = SPfxtotal?.length + Mobiletotal?.length + Managementtotal?.length + Sharewebtotal?.length + qatotal?.length + designtotal?.length + HRtotal?.length + JTMTotal?.length;
-  const AllStaffLeave = SPfxtotalLeave?.length + MobiletotalLeave?.length + ManagementtotalLeave?.length + SharewebtotalLeave?.length + qatotalLeave?.length + designtotalLeave?.length + HRtotalLeave?.length + JTMTotalLeave?.length;
-  const AllTrainees = SPFxTrainee?.length + ManagementTrainee?.length + MobileTrainee?.length + SharewebTrainee?.length + DesignTrainee?.length + QATrainee?.length + HRTrainee?.length + JTMTrainee?.length;
-  const AllTraineesLeave = SPFxTraineeLeave?.length + ManagementTraineeLeave?.length + MobileTraineeLeave?.length + SharewebTraineeLeave?.length + DesignTraineeLeave?.length + QATraineeLeave?.length + JTMTraineeLeave?.length + HRTraineeLeave?.length;
+  
+  const AllStaff = SPfxtotal?.length + Mobiletotal?.length + Managementtotal?.length + TotalEmployees?.length + qatotal?.length + designtotal?.length + HRtotal?.length + JTMTotal?.length;
+  const AllStaffLeave = SPfxtotalLeave?.length + MobiletotalLeave?.length + ManagementtotalLeave?.length + TotalEmployeesLeave?.length + qatotalLeave?.length + designtotalLeave?.length + HRtotalLeave?.length + JTMTotalLeave?.length;
+  const AllTrainees = SPFxTrainee?.length + ManagementTrainee?.length + MobileTrainee?.length + Totalsmalsustrainee?.length + DesignTrainee?.length + QATrainee?.length + HRTrainee?.length + JTMTrainee?.length;
+  const AllTraineesLeave = SPFxTraineeLeave?.length + ManagementTraineeLeave?.length + MobileTraineeLeave?.length + TotalsmalsustraineeLeave?.length + DesignTraineeLeave?.length + QATraineeLeave?.length + JTMTraineeLeave?.length + HRTraineeLeave?.length;
   const CompleteTeam = AllStaff + AllTrainees;
+  availableteammeberstoday = CompleteTeam - data?.length;
+  if (Object.keys(nameidTotals).length !== 0) {
+    // props?.data.filter((items: any) => {
+    //   if (items?.eventType == 'Work From Home') {
+    //     membersWorkfromHome.push(items)
+    //   }
+
+    // })
+    availableteammeberstoday = CompleteTeam - data?.length;
+    leaveallteammemebrstoday = data?.length;
+  }
   const returnEmailHtml = (): any => {
-    let WorkfromHomeEmp: any = []
-    props?.data.filter((items: any) => {
-      if (items?.eventType == 'Work From Home') {
-        WorkfromHomeEmp.push(items)
-      }
-    })
     let structure = `    
     <div id="htmlMailBodyemail" style=" display:none;">
     <table width="100%" bgcolor="#FAFAFA" style="background-color:#FAFAFA;margin:-18px -10px;" align="center">
@@ -369,7 +349,7 @@ const EmailComponenet = (props: any) => {
             <div style="padding-top: 56px;" width="100%">
               <table style="height: 50px;border-collapse: collapse;" border="0" align="left">
                 <tr>
-                  <td width="35px" height="35px"><img width="100%" height="100%" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png" style="width: 35px;height: 35px;border-radius: 50%;" alt="Site Icon"></td>
+                  <td width="48px" height="48px"><img width="100%" height="100%" src="https://hochhuth-consulting.de/images/icon_small_hhhh.png" style="width: 48px;height: 48px;border-radius: 50%;" alt="Site Icon"></td>
                   <td style="margin-left:4px;"><div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;">Attendance Report</div></td>
                 </tr>
               </table>
@@ -389,8 +369,8 @@ const EmailComponenet = (props: any) => {
     <table style="height: 88px;border-collapse: collapse;">
     <tbody><tr>
         <td width="70px" height="48px" style="background: #2F5596;color: #ffffff;width:70px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">Team (${CompleteTeam})</td>
-        <td width="100px" height="48px" style="background: #008314;color: #ffffff;width:100px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">Available (${CompleteTeam - (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length)})</td>
-        <td width="100px" height="48px" style="background: #AC1D1D;color: #ffffff;width:100px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">On Leave (${(Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length)})</td>
+        <td width="100px" height="48px" style="background: #008314;color: #ffffff;width:100px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">Available (${availableteammeberstoday})</td>
+        <td width="100px" height="48px" style="background: #AC1D1D;color: #ffffff;width:100px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">On Leave (${leaveallteammemebrstoday})</td>
         </tr>
         <tr>
         <td width="70px" height="48px" style="background: #2F5596;color: #ffffff;width:70px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">Staff</td>
@@ -412,7 +392,7 @@ const EmailComponenet = (props: any) => {
             <td width="190px" height="48px" style="background: #2F5596;color: #ffffff;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">Team </td>
             <td width="190px" height="48px" style="background: #2F5596;color: #ffffff;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">Management (${Managementtotal?.length + ManagementTrainee?.length})</td>
             <td width="185px" height="48px" style="background: #2F5596;color: #ffffff;width:185px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">SPFX (${SPfxtotal?.length + SPFxTrainee?.length})</td>
-            <td width="185px" height="48px" style="background: #2F5596;color: #ffffff;width:185px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">Shareweb (${Sharewebtotal?.length + SharewebTrainee?.length})</td>
+            <td width="185px" height="48px" style="background: #2F5596;color: #ffffff;width:185px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">Shareweb (${TotalEmployees?.length + Totalsmalsustrainee?.length})</td>
             <td width="185px" height="48px" style="background: #2F5596;color: #ffffff;width:185px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">Mobile (${Mobiletotal?.length + MobileTrainee?.length})</td>
             <td width="185px" height="48px" style="background: #2F5596;color: #ffffff;width:185px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">Design (${designtotal?.length + DesignTrainee?.length})</td>
             <td width="185px" height="48px" style="background: #2F5596;color: #ffffff;width:185px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">QA (${qatotal?.length + QATrainee?.length})</td>
@@ -425,8 +405,8 @@ const EmailComponenet = (props: any) => {
               <td width="190px" height="48px" style="background: #FAFAFA;color: #AC1D1D;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" >${ManagementtotalLeave?.length}</td>
                <td width="190px" height="48px" style="background: #ffff;color: #008314;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">${SPfxtotal?.length - SPfxtotalLeave?.length}</td>
               <td width="190px" height="48px" style="background: #FAFAFA;color: #AC1D1D;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" >${SPfxtotalLeave?.length}</td>
-               <td width="190px" height="48px" style="background: #ffff;color: #008314;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">${Sharewebtotal?.length - SharewebtotalLeave?.length}</td>
-              <td width="190px" height="48px" style="background: #FAFAFA;color: #AC1D1D;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" >${SharewebtotalLeave?.length}</td>
+               <td width="190px" height="48px" style="background: #ffff;color: #008314;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">${TotalEmployees?.length - TotalEmployeesLeave?.length}</td>
+              <td width="190px" height="48px" style="background: #FAFAFA;color: #AC1D1D;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" >${TotalEmployeesLeave?.length}</td>
               <td width="190px" height="48px" style="background: #ffff;color: #008314;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">${Mobiletotal?.length - MobiletotalLeave?.length}</td>
               <td width="190px" height="48px" style="background: #FAFAFA;color: #AC1D1D;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" >${MobiletotalLeave?.length}</td>
               <td width="190px" height="48px" style="background: #ffff;color: #008314;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">${designtotal?.length - designtotalLeave?.length}</td>
@@ -444,8 +424,8 @@ const EmailComponenet = (props: any) => {
                  <td width="190px" height="48px" style="background: #FAFAFA;color: #AC1D1D;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" >${ManagementTraineeLeave?.length}</td>
                   <td width="190px" height="48px" style="background: #ffff;color: #008314;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">${SPFxTrainee?.length - SPFxTraineeLeave?.length}</td>
               <td width="190px" height="48px" style="background: #FAFAFA;color: #AC1D1D;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" >${SPFxTraineeLeave?.length}</td>
-               <td width="190px" height="48px" style="background: #ffff;color: #008314;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">${SharewebTrainee?.length - SharewebTraineeLeave?.length}</td>
-              <td width="190px" height="48px" style="background: #FAFAFA;color: #AC1D1D;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" >${SharewebTraineeLeave?.length}</td>
+               <td width="190px" height="48px" style="background: #ffff;color: #008314;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">${Totalsmalsustrainee?.length - TotalsmalsustraineeLeave?.length}</td>
+              <td width="190px" height="48px" style="background: #FAFAFA;color: #AC1D1D;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" >${TotalsmalsustraineeLeave?.length}</td>
                <td width="190px" height="48px" style="background: #ffff;color: #008314;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">${MobileTrainee?.length - MobileTraineeLeave?.length}</td>
               <td width="190px" height="48px" style="background: #FAFAFA;color: #AC1D1D;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" >${MobileTraineeLeave?.length}</td>
                <td width="190px" height="48px" style="background: #ffff;color: #008314;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">${DesignTrainee?.length - DesignTraineeLeave?.length}</td>
@@ -509,19 +489,34 @@ const EmailComponenet = (props: any) => {
                 </tr>
               </table>
             </div>
+            <div style="color:#2f5596; font-size:18px; font-weight:600; margin-bottom:20px;">The ${formattedDate} is a great Day! All ${availableteammeberstoday} are in Office today!</div>
     <div width="264" height="264px" style="width: 264px;height: 264px;flex-shrink: 0;border-radius: 264px;background: #EEF4FF;margin-bottom: 40px;padding: 20px;display: flex; align-items: center;justify-content: space-around; margin: 0 auto;">
     <div width="200px" height="200px" style="width: 200px;height: 200px;flex-shrink: 0;">
-    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/CalendarImages/image%2048.png">
+    <img src="https://smalsus.com/hhhh/images/party.png">
     </div>
 </div>
-<div style="margin-bottom: 88px;">
+<div width="100%">
+              <table style="height: 48px;border-collapse: collapse;" border="0" width="100%" height="40px">
+                <tr>
+                  <td width="100%" height="40px">&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+<div>
     <div width="260px" height="40px" style="display: flex;justify-content: center;align-items: center;gap: 8px;flex-shrink: 0;color: #FFF;border-radius: 4px;
     background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">See Full Leave Report Online</div>
      
     </div>
+    <div width="100%">
+    <table style="height: 88px;border-collapse: collapse;" border="0" width="100%" height="88px">
+      <tr>
+        <td width="100%" height="88px">&nbsp;</td>
+      </tr>
+    </table>
+  </div>
 <div style="display: flex;align-items: center;padding-bottom: 56px;">
-    <img width="35px" height="35px" src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 35px;" alt="Site Icon">
-    <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;">Hochhuth Consulting GmbH</div>
+    <img width="56px" height="48px" src="https://hochhuth-consulting.de/images/logo_small2.png" style="width: 56px;height: 48px;" alt="Site Icon">
+    <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left:4px;">Hochhuth Consulting GmbH</div>
 </div>`
 
     let allEmpPresent = false;
@@ -560,7 +555,7 @@ const EmailComponenet = (props: any) => {
             <div width="100%">
                 <table style="height: 50px;border-collapse: collapse;" border="0" align="left">
                   <tr>
-                    <td width="35px" height="35px"><img src="https://www.hochhuth-consulting.de/images/logo.png" width="100%" height="100%" style="width: 35px;height: 35px;" alt="Site Icon"></td>
+                    <td width="56px" height="48px"><img src="https://hochhuth-consulting.de/images/logo_small2.png" style="width: 56px;height: 48px;" alt="Site Icon"></td>
                     <td style="margin-left:4px;"><div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div></td>
                   </tr>
                 </table>
