@@ -1580,22 +1580,6 @@ const ProjectManagementMain = (props: any) => {
         size: 80
       },
       {
-        accessorKey: "descriptionsSearch",
-        placeholder: "descriptionsSearch",
-        header: "",
-        resetColumnFilters: false,
-        size: 100,
-        id: "descriptionsSearch",
-      },
-      {
-        accessorKey: "commentsSearch",
-        placeholder: "commentsSearch",
-        header: "",
-        resetColumnFilters: false,
-        size: 100,
-        id: "commentsSearch",
-      },
-      {
         accessorFn: (row) => row?.PercentComplete,
         cell: ({ row }) => (
           <span>
