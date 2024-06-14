@@ -69,7 +69,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private AllUsers: any = [];
     private getDatesInfo() {
         let datesInfo: any = [];
-        let currentDate:any = moment();
+        let currentDate = moment();
         let workingActionTest: any = [];
         let startdate: any;
         try {
@@ -133,7 +133,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         let CustomUserDate: any = []
         if (workingAction !== undefined) {
             customDateStore = workingAction.filter((pickupCustomDate: any) => {
-                let useDate:any = moment(pickupCustomDate.WorkingDate, 'DD/MM/YYYY')
+                let useDate = moment(pickupCustomDate.WorkingDate, 'DD/MM/YYYY')
                 let workingActionDate = new Date(useDate);
                 return workingActionDate > pickupLastDate;
             });
@@ -204,6 +204,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private pickupCustomDate = (date: any) => {
         let previousMonth=new Date(this.state.pickerDate)
         let pickUpMonth=new Date(date);
+
   if(date!=""&& previousMonth.getMonth()== pickUpMonth.getMonth()){
     let pickupDateValue = moment(date);
         pickupDateValue._d.setHours(0, 0, 0, 0)
