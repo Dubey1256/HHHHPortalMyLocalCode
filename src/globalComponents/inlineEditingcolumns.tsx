@@ -1,4 +1,4 @@
-  import { Panel, PanelType } from "office-ui-fabric-react";
+import { Panel, PanelType } from "office-ui-fabric-react";
 import { Web } from "sp-pnp-js";
 import React, { useState } from "react";
 import * as Moment from "moment";
@@ -157,37 +157,43 @@ const inlineEditingcolumns = (props: any) => {
       } else {
         siteUrl = props?.AllListId?.siteUrl;
       }
-      if (props?.item?.TaskCategories?.length > 0) {
+      if (TempArrya.length == 0) {
         if (props?.item?.TaskCategories?.length > 0) {
-          props?.item?.TaskCategories?.map((cat: any) => {
-            cat.ActiveTile = true;
-          });
-          setDesignStatus(props?.item?.TaskCategories?.some((category: any) => category.Title === "Design"));
-          setCategoriesData(props?.item?.TaskCategories);
+          if (props?.item?.TaskCategories?.length > 0) {
+            props?.item?.TaskCategories?.map((cat: any) => {
+              cat.ActiveTile = true;
+            });
+            setDesignStatus(
+              props?.item?.TaskCategories?.some(
+                (category: any) => category.Title === "Design"
+              )
+            );
+            setCategoriesData(props?.item?.TaskCategories);
+          }
+        } else if (props?.item?.TaskCategories?.length == 0) {
+            setCategoriesData([]);
+        } else if (props?.item?.TaskCategories?.results?.length > 0) {
+          if (props?.item?.TaskCategories?.results?.length > 0) {
+            props?.item?.TaskCategories?.results?.map((cat: any) => {
+              cat.ActiveTile = true;
+            });
+            setCategoriesData(props?.item?.TaskCategories?.results);
+          }
+        } else if (props?.item?.TaskCategories?.results?.length == 0) {
+          setCategoriesData([]);
         }
       }
-      else if (props?.item?.TaskCategories?.length == 0){
-        if (TempArrya != null && TempArrya != undefined){
-          setCategoriesData(TempArrya)
-        }
-        else {
-          setCategoriesData([])
-        }   
-      } else if (props?.item?.TaskCategories?.results?.length > 0) {
-        if (props?.item?.TaskCategories?.results?.length > 0) {
-          props?.item?.TaskCategories?.results?.map((cat: any) => {
-            cat.ActiveTile = true;
-          });
-          setCategoriesData(props?.item?.TaskCategories?.results);
-        }
+      else {
+        setCategoriesData(TempArrya)
       }
-      else if (props?.item?.TaskCategories?.results?.length == 0) {
-        setCategoriesData([])
-      } else if ((props?.item?.TaskCategories?.length == 0 || props?.item?.TaskCategories?.results?.length == 0) && props?.item?.Categories?.length > 0) {
+      if (
+        (props?.item?.TaskCategories?.length == 0 ||
+          props?.item?.TaskCategories?.results?.length == 0) &&
+        props?.item?.Categories?.length > 0
+      ) {
         selectedCatTitleVal = [];
         selectedCatTitleVal = props?.item?.Categories?.split(";")
       }
-
 
       loadTaskUsers();
       if (props?.item?.DueDate != undefined) {
