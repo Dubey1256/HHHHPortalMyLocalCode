@@ -1502,8 +1502,8 @@ const SmartInformation = (props: any, ref: any) => {
 
         <div >
 
-          <div className='bg-ee d-flex justify-content-center py-4 text-center'>
-            <a className={SelectedTilesTitle == "UploadDocument" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('UploadDocument')}>
+          <div className='selectifodocbox'>
+            <a className={SelectedTilesTitle == "UploadDocument" ? "docbox BoxShadow" : "docbox"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('UploadDocument')}>
               <p className='full-width floar-end'>
                 Document
               </p>
@@ -1512,7 +1512,7 @@ const SmartInformation = (props: any, ref: any) => {
 
 
             </a>
-            <a className={SelectedTilesTitle == "UploadEmail" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('UploadEmail')}>
+            <a className={SelectedTilesTitle == "UploadEmail" ? "docbox  BoxShadow" : "docbox"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('UploadEmail')}>
               <p className='full-width floar-end'>
                 Email
               </p>
@@ -1520,7 +1520,7 @@ const SmartInformation = (props: any, ref: any) => {
 
 
             </a>
-            <a className={SelectedTilesTitle == "CreateLink" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('CreateLink')}>
+            <a className={SelectedTilesTitle == "CreateLink" ? "docbox  BoxShadow" : "docbox"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('CreateLink')}>
               <p className='full-width floar-end'>
                 Link
               </p>
@@ -1528,7 +1528,7 @@ const SmartInformation = (props: any, ref: any) => {
 
 
             </a>
-            {props?.listName != 'Master Tasks' && <a className={SelectedTilesTitle == "Task" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('Task')}>
+            {props?.listName != 'Master Tasks' && <a className={SelectedTilesTitle == "Task" ? "docbox BoxShadow" : "docbox"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('Task')}>
               <p className='full-width floar-end'>
                 Task
               </p>
