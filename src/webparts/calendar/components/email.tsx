@@ -30,6 +30,8 @@ let Allteamoforganization = 0;
 let leaveallteammemebrstoday = 0;
 let availableteammeberstoday = 0;
 const EmailComponenet = (props: any) => {
+  let data = props?.data?.filter((item:any)=> item?.eventType !== "Work From Home");
+  
   const [AllTaskuser, setAllTaskuser] = React.useState([]);
   const [leaveData, setleaveData] = React.useState([]);
   const [nameidTotals, setNameidTotals] = useState<NameIdData>({});
@@ -52,7 +54,7 @@ const EmailComponenet = (props: any) => {
     loadleave()
     if (Object.keys(nameidTotals).length !== 0 && AllTaskuser?.length != 0) {
       SendEmail()
-    } else if (props?.data?.length === 0 && AllTaskuser?.length != 0) {
+    } else if (data?.length === 0 && AllTaskuser?.length != 0) {
       SendEmail()
     }
 
@@ -186,7 +188,7 @@ const EmailComponenet = (props: any) => {
     // Assuming 'yeardata' is available from somewhere (prop, state, or elsewhere)
     // const yeardata = ...;
 
-    const userId = props?.data?.filter((item: any) => item?.NameId != null);
+    const userId = data?.filter((item: any) => item?.NameId != null);
 
     const nameidData: any = {};
 
@@ -213,7 +215,6 @@ const EmailComponenet = (props: any) => {
   // arr.map((item:any)=>{})
 
   // For prepare the property
-  let data = props?.data?.filter((item:any)=> item?.eventType !== "Work From Home");
   
   {
     data?.map((item: any, index: any) => {
