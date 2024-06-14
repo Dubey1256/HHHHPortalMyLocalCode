@@ -4,7 +4,6 @@ import { Web } from "sp-pnp-js";
 import Tooltip from '../Tooltip';
 import { SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown } from "react-icons/sl";
 import moment from 'moment';
-import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 export interface ITeamConfigurationProps {
@@ -151,7 +150,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             })
         }
         datesInfo = datesInfo.concat(CustomUserDate)
-        startdate = new Date(currentDate)
+        startdate = moment(currentDate).format('YYYY-MM-DD');
         if (oldJson != undefined || oldJson != null) {
             oldJson = oldJson.filter((oldDate: any) => {
                 return !datesInfo.some((newDate: any) => oldDate.WorkingDate == newDate.originalDate);
@@ -200,8 +199,14 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         })
     }
 
+
+
     private pickupCustomDate = (date: any) => {
-        let pickupDateValue = moment(date);
+        let previousMonth=new Date(this.state.pickerDate)
+        let pickUpMonth=new Date(date);
+
+  if(date!=""&& previousMonth.getMonth()== pickUpMonth.getMonth()){
+    let pickupDateValue = moment(date);
         pickupDateValue._d.setHours(0, 0, 0, 0)
         let dateValue: any = {}
         let workingDaysValue = this.state.datesInfo
@@ -223,6 +228,19 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             pickerDate: date,
             datesInfo: workingDaysValue
         });
+  } 
+  else if(date!=""&& previousMonth.getMonth()!= pickUpMonth.getMonth()){
+    this.setState({
+        pickerDate: date, 
+    })
+  }
+  else{
+    this.setState({
+        pickerDate: null,
+      
+    });
+  }
+        
     };
 
     private async loadTaskUsers() {
@@ -490,28 +508,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         return users;
     }
 
-    private ExampleCustomInput = React.forwardRef(({ value, onClick }: any, ref: any) => (
-        <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
-            <input
-                type="text"
-                id="datepicker"
-                className="form-control date-picker ps-2"
-                placeholder="DD/MM/YYYY"
-                defaultValue={value}
-            />
-            <span
-                style={{
-                    position: "absolute",
-                    top: "58%",
-                    right: "8px",
-                    transform: "translateY(-50%)",
-                    cursor: "pointer"
-                }}
-            >
-                <span className="svg__iconbox svg__icon--calendar dark"></span>
-            </span>
-        </div>
-    ));
+    
 
     private dragStart = (e: any, position: any, user: any, team: any) => {
         dragItem.current = position;
@@ -922,16 +919,13 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         }
                                         )
                                     }
+
                                     <div className="width20 top-assign pe-1">
-                                    <label className="BdrBtm mb-0">Select Date</label>
-                                        <div className="input-group">
-                                            <DatePicker
-                                                className="form-control date-picker"
-                                                minDate={this.state.startDate}
-                                                dateFormat="dd/MM/yyyy"
-                                                customInput={<this.ExampleCustomInput />}
-                                                selected={this.state.pickerDate}
-                                                onChange={this.pickupCustomDate} />
+                                        <label className="BdrBtm mb-0">Select Date</label>
+                                        <div className="input-group" >   
+                                            <input type="date" id="start"  className="full-width"  name="trip-start" value={this.state.pickerDate} min={this.state.startDate}
+                                             onChange={(e) => this.pickupCustomDate(e.target.value)}     
+                                            />
                                         </div>
                                     </div>
 

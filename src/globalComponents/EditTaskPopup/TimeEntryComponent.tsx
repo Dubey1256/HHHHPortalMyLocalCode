@@ -3113,6 +3113,8 @@ function reverseArray(arr: any) {
                   <div className="AllTime timentrytb">
                     {data && (
                       <GlobalCommanTable
+                      hideTeamIcon={true}
+                      hideOpenNewTableIcon={true}
                         columns={column}
                         data={data}
                         callBackData={callBackData}
