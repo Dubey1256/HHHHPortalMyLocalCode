@@ -75,7 +75,7 @@ const DashboardConfiguration = (props: any) => {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 300,
+                size: 340,
                 isColumnVisible: true,
             },
             {
@@ -92,31 +92,18 @@ const DashboardConfiguration = (props: any) => {
                 placeholder: "Dashboard_Id",
                 resetColumnFilters: false,
                 header: "",
-                size: 40,
-                isColumnVisible: true,
-            },
-            {
-                cell: ({ row }) => (
-                    <>
-                        <div className='text-end'>
-                            <a data-bs-toggle="tooltip" data-bs-placement="auto" title={'Edit ' + `${row.original.Title}`}  >
-                                {" "}
-                                <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditDashboard(row?.original)} ></span>
-                            </a>
-                        </div>
-                    </>
-                ),
-                id: "row?.original.Id",
-                canSort: false,
-                placeholder: "",
-                header: "",
                 size: 30,
                 isColumnVisible: true,
             },
             {
                 cell: ({ row }) => (
                     <>
-                        <div className='text-end'>
+                        <div className='d-flex pull-right text-end'>
+                            <a className='me-1' data-bs-toggle="tooltip" data-bs-placement="auto" title={'Edit ' + `${row.original.Title}`}  >
+                                {" "}
+                                <span className="svg__iconbox svg__icon--editBox" onClick={(e) => EditDashboard(row?.original)} ></span>
+                            </a>
+
                             <a data-bs-toggle="tooltip" data-bs-placement="auto" title={'Edit ' + `${row.original.Title}`}  >
                                 {" "}
                                 <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditConfig(row?.original)} ></span>
@@ -128,9 +115,27 @@ const DashboardConfiguration = (props: any) => {
                 canSort: false,
                 placeholder: "",
                 header: "",
-                size: 30,
+                size: 25,
                 isColumnVisible: true,
             },
+            // {
+            //     cell: ({ row }) => (
+            //         <>
+            //             <div className='text-end'>
+            //                 <a data-bs-toggle="tooltip" data-bs-placement="auto" title={'Edit ' + `${row.original.Title}`}  >
+            //                     {" "}
+            //                     <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditConfig(row?.original)} ></span>
+            //                 </a>
+            //             </div>
+            //         </>
+            //     ),
+            //     id: "row?.original.Id",
+            //     canSort: false,
+            //     placeholder: "",
+            //     header: "",
+            //     size: 25,
+            //     isColumnVisible: true,
+            // },
         ],
         [WebpartConfig]
     );
