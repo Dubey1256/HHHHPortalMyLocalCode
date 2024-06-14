@@ -4408,7 +4408,13 @@ const EditTaskPopup = (Items: any) => {
             })
         }
         let UpdatedJSON = {
-            Comments: EditData.Comments,
+            EstimatedTimeDescription:FunctionsType == 'Copy-Task'?null:EditData.EstimatedTimeDescription,
+            Comments: FunctionsType == 'Copy-Task'?null:EditData.Comments,
+            DueDate:FunctionsType == 'Copy-Task'?null:Moment(EditData.DueDate).format("MM-DD-YYYY"),
+            StartDate:FunctionsType == 'Copy-Task'?null:Moment(EditData.StartDate).format("MM-DD-YYYY"),
+            Status:FunctionsType == 'Copy-Task'?null:EditData.Status,
+            PercentComplete: FunctionsType == 'Move-Task'?(EditData.PercentComplete / 100):0,
+            TotalTime : FunctionsType == 'Copy-Task'? 0 :EditData?.TotalTime,
             SmartInformationId: {
                 results:
                     TempSmartInformationIds != undefined &&
@@ -4440,9 +4446,6 @@ const EditTaskPopup = (Items: any) => {
 
                         if (FunctionsType == "Copy-Task") {
                             setLoaded(true)
-                            if (timesheetData != undefined && timesheetData.length > 0) {
-                                await moveTimeSheet(SelectedSite, res.data, 'copy');
-                            }
                             newGeneratedId = res.data.Id;
                             console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
                             let url = `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${newGeneratedId}&Site=${SelectedSite}`;
