@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import CheckboxTree from 'react-checkbox-tree';
 import "react-datepicker/dist/react-datepicker.css";
 import Tooltip from '../../../globalComponents/Tooltip';
+import PreSetDatePikerPannel from '../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePiker';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 // @ts-ignore
 import * as html2pdf from 'html2pdf.js';
@@ -17,12 +18,14 @@ import { Start } from '@mui/icons-material';
 
 
 let allReportData: any = [];
-let Short_x0020_Description_x0020_On:any = '';
+let Short_x0020_Description_x0020_On: any = '';
 let filteredData: any = [];
 let index: any = [];
 export const MonthlyLeaveReport = (props: any) => {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectendDate, setselectendDate] = useState('');
+  const [PreSetPanelIsOpen, setPreSetPanelIsOpen] = React.useState(false);
+  const [types, settypes] = React.useState("");
   const [AllTaskuser, setAllTaskuser] = useState([]);
   const [leaveData, setLeaveData] = useState([]);
   const [opendate, setopendate] = useState(true);
@@ -35,6 +38,7 @@ export const MonthlyLeaveReport = (props: any) => {
   const [ImageSelectedUsers, setImageSelectedUsers] = useState([])
   const [startDate, setstartDate] = useState(new Date())
   const [endDate, setendDate] = useState(new Date())
+  const [selectedType, setselectedType] = useState(false)
   const [selectgroupName, setSelectGroupName] = useState("")
   useEffect(() => {
     if (selectedDate || selectendDate) {
@@ -45,7 +49,7 @@ export const MonthlyLeaveReport = (props: any) => {
     if (selectedMonth || selectedYear || selectedUserId) {
       setdisabl(true)
     }
-  }, [selectedMonth, selectedYear, selectedUserId])
+  }, [selectedMonth, selectedYear, selectedUserId ])
 
   const getTaskUser = async () => {
     let web = new Web(props.props.siteUrl);
@@ -77,10 +81,10 @@ export const MonthlyLeaveReport = (props: any) => {
 
 
   const loadleave = async () => {
-    const web = new Web(props.props.siteUrl);
+    const web = new Web(props?.props?.siteUrl);
     try {
       const results: any = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.select(
-        "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,Created,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type"
+        "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,EventDescription,ID,EndDate,EventDate,Location,Title,fAllDayEvent,Created,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type"
       ).expand("Author,Editor,Employee").getAll();
       setLeaveData(results);
     } catch (err) {
@@ -286,19 +290,22 @@ export const MonthlyLeaveReport = (props: any) => {
     setendDate(dt)
   }
 
-  const selectDate = (type: string) => {
+const selectDate = (types: string) => {
     let startdt = new Date(), enddt = new Date(), tempdt = new Date();
     let diff: number, lastday: number;
-    switch (type) {
+    switch (types) {
       case 'Custom':
+        settypes('Custom')
         break;
 
       case 'today':
+        settypes('today')
         break;
 
       case 'yesterday':
         startdt.setDate(startdt.getDate() - 1);
         enddt.setDate(enddt.getDate() - 1);
+        settypes('yesterday')
         break;
 
       case 'ThisWeek':
@@ -306,7 +313,8 @@ export const MonthlyLeaveReport = (props: any) => {
         startdt = new Date(startdt.setDate(diff));
 
         lastday = enddt.getDate() - (enddt.getDay() - 1) + 6;
-        enddt = new Date(enddt.setDate(lastday));;
+        enddt = new Date(enddt.setDate(lastday));
+        settypes('ThisWeek')
         break;
 
       case 'LastWeek':
@@ -318,41 +326,69 @@ export const MonthlyLeaveReport = (props: any) => {
 
         lastday = tempdt.getDate() - (tempdt.getDay() - 1) + 6;
         enddt = new Date(tempdt.setDate(lastday));
+        settypes('LastWeek')
         break;
 
       case 'EntrieMonth':
         startdt = new Date(startdt.getFullYear(), startdt.getMonth(), 1);
         enddt = new Date(enddt.getFullYear(), enddt.getMonth() + 1, 0);
+        settypes('EntrieMonth')
         break;
 
       case 'LastMonth':
         startdt = new Date(startdt.getFullYear(), startdt.getMonth() - 1);
         enddt = new Date(enddt.getFullYear(), enddt.getMonth(), 0);
+        settypes('LastMonth')
         break;
 
       case 'Last3Month':
         startdt = new Date(startdt.getFullYear(), startdt.getMonth() - 3);
         enddt = new Date(enddt.getFullYear(), enddt.getMonth(), 0);
+        settypes('Last3Month')
         break;
 
       case 'EntrieYear':
         startdt = new Date(new Date().getFullYear(), 0, 1);
         enddt = new Date(new Date().getFullYear(), 11, 31);
+        settypes('EntrieYear')
         break;
 
       case 'LastYear':
         startdt = new Date(new Date().getFullYear() - 1, 0, 1);
         enddt = new Date(new Date().getFullYear() - 1, 11, 31);
+        settypes('LastYear')
         break;
 
       case 'AllTime':
         startdt = new Date('2017/01/01');
         enddt = new Date();
+        settypes('AllTime')
         break;
+    case 'Pre-set':
+      let storedDataStartDate: string | null = localStorage.getItem('startDate');
+      let storedDataEndDate: string | null = localStorage.getItem('endDate');
+      try {
+        if (storedDataStartDate && storedDataEndDate) {
+          const parsedStartDate = new Date(JSON.parse(storedDataStartDate));
+          const parsedEndDate = new Date(JSON.parse(storedDataEndDate));
 
-      case 'Presettime':
-      case 'Presettime1':
+          if (!isNaN(parsedStartDate.getTime()) && !isNaN(parsedEndDate.getTime())) {
+            startdt = parsedStartDate;
+            enddt = parsedEndDate;
+            settypes('Pre-set')
         break;
+          }
+        }
+        
+      } catch (error) {
+        console.error("Failed to parse dates from localStorage", error);
+      }
+      // If parsing fails, fall through to the default case
+      startdt = null;
+      enddt = null;
+      //settypes('Pre-set')
+      break;
+      default:
     }
 
     startdt.setHours(0, 0, 0, 0);
@@ -500,6 +536,23 @@ export const MonthlyLeaveReport = (props: any) => {
       return total;
     }, 0);
   };
+  const PreSetPikerCallBack = React.useCallback((preSetStartDate: any, preSetEndDate) => {
+    if (preSetStartDate != undefined) {
+        setStartDate(preSetStartDate);
+    }
+    if (preSetEndDate != undefined) {
+        setEndDate(preSetEndDate);
+    }
+    // setselectedType(true)
+    settypes("Pre-set");
+    setPreSetPanelIsOpen(false)
+}, []);
+  const preSetIconClick = () => {
+    // setPreSet(true);
+    setPreSetPanelIsOpen(true);
+   
+    
+}
   const isWeekend = (startDate: Date, endDate: Date) => {
     const startDay = startDate.getDay();
     const endDay = endDate.getDay();
@@ -659,11 +712,11 @@ export const MonthlyLeaveReport = (props: any) => {
         }
       }
         }).filter((date: any) => date);
-        let leavediscriptionRh:any=[]
+        let leavediscriptionRh: any = []
         matchedData.map((item: any) => {
         if (item.Event_x002d_Type === "Restricted Holiday" && item.Title != undefined) {
-          let eventDateFormat:any=moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-          leavediscriptionRh.push({Short_x0020_Description_x0020_On:item.Title,eventDate:eventDateFormat}) 
+            let eventDateFormat: any = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+            leavediscriptionRh.push({ Short_x0020_Description_x0020_On: item.Title, eventDate: eventDateFormat })
         }
       })
         let RhplannedLeaveString = `${MyRHdayData.join(', ')}`;
@@ -676,7 +729,7 @@ export const MonthlyLeaveReport = (props: any) => {
   
         user.unplannedleave = calculatePlannedLeave(matchedData, ["Un-Planned", "Sick"]);
        // user.unplannedleave = [...unplannedLeave, ...sickLeave].map(item => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
-        // user.unplannedleave = user.unplannedleave.map((item:any) => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
+        //user.unplannedleave = user.unplannedleave.map((item:any) => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
         user.unplannedleave = `${user.unplannedleave}${UnplannedLeaveString.length != 0 ? `[ ${UnplannedLeaveString} ]` : ''} `
         user.UnPlanedEventDates = UnPlanedEventDates
         user.leavediscriptionUnPlanned = leavediscriptionUnPlanned != undefined ? leavediscriptionUnPlanned : ''
@@ -688,7 +741,7 @@ export const MonthlyLeaveReport = (props: any) => {
         user.RestrictedHoliday = calculatePlannedLeave(matchedData, "Restricted Holiday");
         user.RestrictedHoliday = `${user.RestrictedHoliday}${RhplannedLeaveString.length != 0 ? `[ ${RhplannedLeaveString} ]` : ''} `
         user.MyRHdayData = MyRHdayData
-        user.leavediscriptionRh = leavediscriptionRh!=undefined ? leavediscriptionRh :''
+        user.leavediscriptionRh = leavediscriptionRh != undefined ? leavediscriptionRh : ''
         user.TotalLeave = calculateTotalWorkingDays(matchedData);
         if (startDate && endDate) {
           allReportData.push(user)
@@ -800,49 +853,51 @@ export const MonthlyLeaveReport = (props: any) => {
                           <label>Custom</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" id="rdToday" value="Today" onClick={() => selectDate('today')} ng-model="unSelectToday" className="radio" />
+                          <input type="radio" name="dateSelection" id="rdToday" value="Today" onClick={() => selectDate('today')} checked={types === "today"} className="radio" />
                           <label>Today</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" id="rdYesterday" value="Yesterday" onClick={() => selectDate('yesterday')} ng-model="unSelectYesterday" className="radio" />
+                          <input type="radio" name="dateSelection" id="rdYesterday" value="Yesterday" onClick={() => selectDate('yesterday')} checked={types === "yesterday"} className="radio" />
                           <label> Yesterday </label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" onClick={() => selectDate('ThisWeek')} ng-model="unThisWeek" className="radio" />
+                          <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" onClick={() => selectDate('ThisWeek')} checked={types === "ThisWeek"} className="radio" />
                           <label> This Week</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" id="rdLastWeek" value="LastWeek" onClick={() => selectDate('LastWeek')} ng-model="unLastWeek" className="radio" />
+                          <input type="radio" name="dateSelection" id="rdLastWeek" value="LastWeek" onClick={() => selectDate('LastWeek')} checked={types === "LastWeek"} className="radio" />
                           <label> Last Week</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" onClick={() => selectDate('EntrieMonth')} ng-model="unEntrieMonth" className="radio" />
+                          <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" onClick={() => selectDate('EntrieMonth')} checked={types === "EntrieMonth"} className="radio" />
                           <label>This Month</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" onClick={() => selectDate('LastMonth')} ng-model="unLastMonth" className="radio" />
+                          <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" onClick={() => selectDate('LastMonth')} checked={types === "LastMonth"} className="radio" />
                           <label>Last Month</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => selectDate('Last3Month')} ng-model="unLast3Month" className="radio" />
+                          <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => selectDate('Last3Month')}  checked={types === "Last3Month"} className="radio" />
                           <label>Last 3 Months</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" value="rdEntrieYear" onClick={() => selectDate('EntrieYear')} ng-model="unEntrieYear" className="radio" />
+                          <input type="radio" name="dateSelection" value="rdEntrieYear" onClick={() => selectDate('EntrieYear')} checked={types === "EntrieYear"} className="radio" />
                           <label>This Year</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" value="rdLastYear" onClick={() => selectDate('LastYear')} ng-model="unLastYear" className="radio" />
+                          <input type="radio" name="dateSelection" value="rdLastYear" onClick={() => selectDate('LastYear')} checked={types === "LastYear"} className="radio" />
                           <label>Last Year</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" value="rdAllTime" onClick={() => selectDate('AllTime')} ng-model="unAllTime" className="radio" />
+                          <input type="radio" name="dateSelection" value="rdAllTime" onClick={() => selectDate('AllTime')} checked={types === "AllTime"} className="radio" />
                           <label>All Time</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" value="Presettime" onClick={() => selectDate('Presettime')} ng-model="unAllTime" className="radio" />
-                          <label>Pre-set</label>
-                          <img className="hreflink " title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
+                          <input type="radio" name="dateSelection" value="Presettime" onClick={() => selectDate('Pre-set')}  className="radio" 
+                          checked={types === "Pre-set"} />
+                          {/* <label>Pre-set</label>
+                          <img className="hreflink " title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /> */}
+                          <label className='ms-1'>Pre-set <span onClick={() => preSetIconClick()} className="svg__iconbox svg__icon--editBox alignIcon hreflink"></span></label>
                         </span>
 
                       </div>
@@ -869,6 +924,7 @@ export const MonthlyLeaveReport = (props: any) => {
             </Button>
 
           </div>
+
           {(allReportData?.length > 0 && leaveset) &&
             <div id="contentToConvert">
               <div className='alignCenter'>
@@ -896,16 +952,16 @@ export const MonthlyLeaveReport = (props: any) => {
                       <tr key={index}>
                         <td className='py-2 text-break'>{index + 1}</td>
                         <td className='py-2 text-break'>{entry.Title}</td>
-                        <td><> { entry?.PlanedEventDates?.map((dateEvent:any)=>{
-                          return(
-                        entry?.leavediscriptionPlanned?.map((item:any)=>{
-                          return(
+                        <td><> {entry?.PlanedEventDates?.map((dateEvent: any) => {
+                          return (
+                            entry?.leavediscriptionPlanned?.map((item: any) => {
+                              return (
                           dateEvent?.includes(item?.eventDate) ? 
                           <span> {dateEvent} 
                           <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
                           
                           </InfoIconsToolTip> 
-                          </span>:''
+                                  </span> : ''
                           )
                         })
                         )
@@ -918,16 +974,16 @@ export const MonthlyLeaveReport = (props: any) => {
                           
                           </InfoIconsToolTip>
                         </td> */}
-                       <td><> { entry?.UnPlanedEventDates?.map((dateEvent:any)=>{
-                          return(
-                        entry?.leavediscriptionUnPlanned?.map((item:any)=>{
-                          return(
+                        <td><> {entry?.UnPlanedEventDates?.map((dateEvent: any) => {
+                          return (
+                            entry?.leavediscriptionUnPlanned?.map((item: any) => {
+                              return (
                           dateEvent?.includes(item?.eventDate) ? 
                           <span> {dateEvent} 
                           <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
                           
                           </InfoIconsToolTip> 
-                          </span>:''
+                                  </span> : ''
                           )
                         })
                         )
@@ -937,16 +993,16 @@ export const MonthlyLeaveReport = (props: any) => {
                         </td>
                         {/* <td className='py-2 text-break'>{entry.RestrictedHoliday}
                         </td> */}
-                        <td><> { entry?.MyRHdayData?.map((dateEvent:any)=>{
-                          return(
-                        entry?.leavediscriptionRh?.map((item:any)=>{
-                          return(
-                          dateEvent==item?.eventDate ? 
+                        <td><> {entry?.MyRHdayData?.map((dateEvent: any) => {
+                          return (
+                            entry?.leavediscriptionRh?.map((item: any) => {
+                              return (
+                                dateEvent == item?.eventDate ?
                           <span> {item?.eventDate} 
                           <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
                           
                           </InfoIconsToolTip> 
-                          </span>:''
+                                  </span> : ''
                           )
                         })
                         )
@@ -955,16 +1011,16 @@ export const MonthlyLeaveReport = (props: any) => {
 
                         </td>
                         {/* <td className='py-2 text-break'>{entry.Halfdayleave}</td> */}
-                        <td><> { entry?.HalfdayEventDates?.map((dateEvent:any)=>{
-                          return(
-                        entry?.leavediscriptionHalfday?.map((item:any)=>{
-                          return(
-                          dateEvent==item?.eventDate ? 
+                        <td><> {entry?.HalfdayEventDates?.map((dateEvent: any) => {
+                          return (
+                            entry?.leavediscriptionHalfday?.map((item: any) => {
+                              return (
+                                dateEvent == item?.eventDate ?
                           <span> {item?.eventDate} 
                           <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
                           
                           </InfoIconsToolTip> 
-                          </span>:''
+                                  </span> : ''
                           )
                         })
                         )
@@ -984,7 +1040,7 @@ export const MonthlyLeaveReport = (props: any) => {
 
         </Modal.Body>
       </Modal>
-
+ <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} selectedType={selectedType} />}</>
 
     </div>
   );

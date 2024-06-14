@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, forwardRef } from "react";
 import { Web } from "sp-pnp-js";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import Tooltip from "../Tooltip";
+import _ from 'lodash';
 import ReactPopperTooltipSingleLevel from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 
 const RestructuringCom = (props: any, ref: any) => {
@@ -12,7 +13,7 @@ const RestructuringCom = (props: any, ref: any) => {
   const [allData, setAllData]: any = React.useState([]);
   const [restructureItem, setRestructureItem]: any = React.useState([]);
   const [NewArrayBackup, setNewArrayBackup]: any = React.useState([]);
-  const [NewArrayAll, setNewArrayAll]: any = React.useState([]);
+  const [checkButtonClick, setCheckButtonClick]: any = React.useState(false);
   const [ResturuningOpen, setResturuningOpen]: any = React.useState(false);
   const [newItemBackUp, setNewItemBackUp]: any = React.useState(null);
   const [checkSubChilds, setCheckSubChilds]: any = React.useState([]);
@@ -81,7 +82,7 @@ const RestructuringCom = (props: any, ref: any) => {
   }, [props?.restructureItem]);
 
   useEffect(() => {
-    if (props?.restructureItem?.length === 0) {
+    if (props?.restructureItem?.length === 0 && checkButtonClick) {
       let array = allData;
       const recursivelySetRestructureActive = (arr: any) => {
         arr?.forEach((obj: any) => {
@@ -100,6 +101,7 @@ const RestructuringCom = (props: any, ref: any) => {
   }, [props?.restructureItem]);
 
   const buttonRestructureCheck = () => {
+    setCheckButtonClick(true);
     let checkItem_x0020_Type: any = restructureItem[0]?.Item_x0020_Type == "Task"   ? restructureItem[0]?.TaskType?.Id   : restructureItem[0]?.Item_x0020_Type;
     let checkSiteType: any = restructureItem[0]?.siteType;
     let PortfolioType: any = restructureItem[0]?.PortfolioTypeCheck;
@@ -1198,6 +1200,15 @@ const RestructuringCom = (props: any, ref: any) => {
 
 
  const prjtMngmntRestructuring=async ()=>{
+  const deepCloneArray = _.cloneDeep(allData);
+  let array = deepCloneArray;
+  let newChildarray: any = [];
+  let ArrayTest: any = [];
+  let newarrays: any = [];
+  let newObj: any;
+  let topCompo = true;
+  let hasTask:any = null;
+  let hasSprint:any = null;
   
   let childData:any = [];
    // Define getChilds function with async keyword
@@ -1234,14 +1245,7 @@ const RestructuringCom = (props: any, ref: any) => {
     }
   }
 
-  let array = allData;
-  let newChildarray: any = [];
-  let ArrayTest: any = [];
-  let newarrays: any = [];
-  let newObj: any;
-  let topCompo = true;
-  let hasTask:any = null;
-  let hasSprint:any = null;
+ 
 
 
   
@@ -1401,17 +1405,17 @@ const RestructuringCom = (props: any, ref: any) => {
         alert('You are not allowed to restructure this item !')
       }
 
-      for (const item of restructureItem) {
-        if (item.TaskType?.Id == 1 || item.TaskType?.Id == 2 || item.TaskType?.Id == 3) {
-          // Iterate over subRows and remove items that match childData
-          for (let i = item.subRows.length - 1; i >= 0; i--) {
-            const subRow = item.subRows[i];
-            if (childData.some((data : any) => data.Id === subRow.Id)) {
-              item.subRows.splice(i, 1); // Remove matching item
-            }
-          }
-        }
-      }
+      // for (const item of restructureItem) {
+      //   if (item.TaskType?.Id == 1 || item.TaskType?.Id == 2 || item.TaskType?.Id == 3) {
+      //     // Iterate over subRows and remove items that match childData
+      //     for (let i = item.subRows.length - 1; i >= 0; i--) {
+      //       const subRow = item.subRows[i];
+      //       if (childData.some((data : any) => data.Id === subRow.Id)) {
+      //         item.subRows.splice(i, 1); // Remove matching item
+      //       }
+      //     }
+      //   }
+      // }
 
 
       const updateNestedArray = (array : any, restructureItem : any) => {
@@ -3627,19 +3631,9 @@ const RestructuringCom = (props: any, ref: any) => {
               (items.TaskType = {
                 Id: TaskTypeId,
                 Level: TaskTypeId == 1 ? 1 : TaskTypeId == 2 ? 3 : 2,
-                Title:
-                  TaskTypeId == 1
-                    ? "Activity"
-                    : TaskTypeId == 2
-                    ? "Task"
-                    : "Workstream",
+                Title:TaskTypeId == 1  ? "Activity"  : TaskTypeId == 2  ? "Task"  : "Workstream",
               }),
-              (items.TaskID =
-                TaskTypeId == 2
-                  ? newItemBackUp?.PortfolioStructureID == undefined
-                    ? newItemBackUp?.TaskID + "-" + TaskId
-                    : newItemBackUp?.PortfolioStructureID + "-" + TaskId
-                  : TaskId);
+              (items.TaskID = TaskTypeId == 2  ? newItemBackUp?.PortfolioStructureID == undefined    ? newItemBackUp?.TaskID + "-" + TaskId    : newItemBackUp?.PortfolioStructureID + "-" + TaskId  : TaskId);
           });
 
           let onceRender: any = true;
@@ -4259,12 +4253,20 @@ const RestructuringCom = (props: any, ref: any) => {
             items.Portfolio = Portfolio,
             items.TaskLevel = PortfolioLevel,
             items.TaskType = {Id: TaskType,Level: TaskType == 1 ? 1 : TaskType == 2 ? 3 : 2,Title: TaskType == 1  ? "Activity"  : TaskType == 2  ? "Task"  : "Workstream",},
-            items.TaskID = TaskID;
+            items.TaskID = TaskType == 2 ? 'T' + items?.Id : TaskID;
           });
 
           let onceRender: any = true;
-          array?.map((obj: any, index: any) => {
+          for (let index = array.length - 1; index >= 0; index--) {
+            const obj = array[index];
             obj.isRestructureActive = false;
+           
+            if(checkUpdate != 3 && latestCheckedList[0]?.TaskType?.Id == 2  && (newItemBackUp == undefined ||   newItemBackUp == null || newItemBackUp?.length == 0) && (props?.queryItems?.Item_x0020_Type == 'Component' || props?.queryItems?.Item_x0020_Type == 'SubComponent' || props?.queryItems?.Item_x0020_Type == 'Feature')){
+              if(obj?.Title == 'Others'){
+                obj.subRows?.push(...latestCheckedList);
+                checkUpdate = checkUpdate + 1;
+              }
+            }
             if (( newItemBackUp == undefined || newItemBackUp == null) && onceRender && checkUpdate != 3) {
               if(latestCheckedList[0]?.TaskType?.Id !== 2 && (newItemBackUp == undefined ||   newItemBackUp == null || newItemBackUp?.length == 0) && (props?.queryItems?.Item_x0020_Type == 'Component' || props?.queryItems?.Item_x0020_Type == 'SubComponent' || props?.queryItems?.Item_x0020_Type == 'Feature')){
                 array?.push(...latestCheckedList);
@@ -4272,12 +4274,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 onceRender = false;
               }
              }
-            if(checkUpdate != 3 && latestCheckedList[0]?.TaskType?.Id == 2  && (newItemBackUp == undefined ||   newItemBackUp == null || newItemBackUp?.length == 0) && (props?.queryItems?.Item_x0020_Type == 'Component' || props?.queryItems?.Item_x0020_Type == 'SubComponent' || props?.queryItems?.Item_x0020_Type == 'Feature')){
-              if(obj?.Title == 'Others'){
-                obj.subRows?.push(...latestCheckedList);
-                checkUpdate = checkUpdate + 1;
-              }
-            }
+           
             if ( newItemBackUp !== undefined && newItemBackUp !== null && newItemBackUp?.length !== 0 && obj.Id === newItemBackUp?.Id && obj?.Title != 'Others' &&  obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               obj.subRows?.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
@@ -4384,7 +4381,8 @@ const RestructuringCom = (props: any, ref: any) => {
                 }
               });
             }
-          });
+
+          };
 
           const sortedArray = array.sort((a: any, b: any) => {
             if (a.Title === "Others") return 1;
@@ -6638,8 +6636,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
              
             </div>
             <div>
-            {restructureItem != undefined && (restructureItem[0]?.TaskType?.Id == 3  || restructureItem[0]?.TaskType?.Id == 2 ||  restructureItem[0]?.TaskType?.Id == 1 ) && (restructureItem[0]?.subRows?.length == 0 || getSelectedChild?.length == 0) && 
+            {restructureItem != undefined && (restructureItem[0]?.TaskType?.Id == 3  || restructureItem[0]?.TaskType?.Id == 2 ||  restructureItem[0]?.TaskType?.Id == 1 ) && (restructureItem[0]?.subRows?.length == 0 && getSelectedChild?.length == 0) && 
             newItemBackUp?.TaskType?.Id == 1 && (
+              
               <div className="mt-2">
                   <label className="form-label me-2">{"Select Task Type :"}</label>
                   <label className="SpfxCheckRadio">
@@ -6724,7 +6723,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                   Save
                 </button>
                 <button
-                style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
+                style={{color:restructureItem[0]?.PortfolioType?.Color}}
                   className="btn me-2 btn-default ms-1"
                   onClick={closePanel}
                 >
