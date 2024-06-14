@@ -18,6 +18,9 @@ import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import { FaChevronDown, FaChevronRight, FaMinusSquare, FaPlusSquare, FaSquare, FaCheckSquare } from 'react-icons/fa';
 import { Col, Container, Row } from "react-bootstrap";
 import { SPHttpClient } from "@microsoft/sp-http";
+import { Avatar } from "@fluentui/react-components";
+
+
 let EmailNotification: any
 
 const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, AllListid, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
@@ -334,16 +337,18 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         id: "Title",
         cell: ({ row }: any) => (
           <div style={{ display: "flex", alignItems: "center" }}>
-            <img
-              className="me-1 workmember"
-              src={
-                row.original.Item_x0020_Cover != null
-                  ? row.original?.Item_x0020_Cover?.Url
-                  : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-              }
-              alt="User"
-              // style={{ marginRight: '10px', width: '32px', height: '32px' }}
-            />
+                       
+                            <Avatar
+                                className="UserImage"
+                                title={row.original?.AssingedToUser?.Title}
+                                name={row.original?.AssingedToUser?.Title}
+                                image={ row?.original?.Item_x0020_Cover!=undefined?{src: row?.original?.Item_x0020_Cover?.Url,
+                                      }:undefined}
+                                initials={row?.original?.Item_x0020_Cover==undefined ?row.original?.Suffix:undefined}
+                                
+                            />
+                       
+
             <span>{`${row.original.Title} (${row.original.Suffix})`}</span>
           </div>
         ),
