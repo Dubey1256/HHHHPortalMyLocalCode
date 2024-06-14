@@ -1193,7 +1193,7 @@ function reverseArray(arr: any) {
     getStructurefTimesheetCategories();
     setEditItem(items.Title);
 
-    if (items.siteType == "Offshore Tasks" || items.siteType == "SharewebQA") {
+    if (items.siteType == "Offshore Tasks" || items.siteType == "SharewebQA" || items.siteType == "Offshore%20Tasks") {
       var siteType = "OffshoreTasks";
       var filteres = "Task" + siteType + "/Id eq " + items.Id;
       var linkedSite = "Task" + siteType;
@@ -1447,10 +1447,13 @@ function reverseArray(arr: any) {
     let web = new Web(`${CurrentSiteUrl}`);
     let TimeForTask = 0;
     if(item.props?.TotalTime != null){
-      item.props.TotalTime = item.props?.TotalTime - childinew.TaskTimeInMin;
+        let web = new Web(`${siteUrl}`);
+        const datas = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item?.props.Id}`).get();
+        let Time = datas[0].TotalTime;
+      item.props.TotalTime = Time - childinew.TaskTimeInMin;
     }
     
-      if(item.props.TotalTime > 0){
+      if(item.props?.TotalTime > 0){
         await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
           TotalTime: item.props?.TotalTime
       }).then((res: any) => {
@@ -1635,7 +1638,9 @@ function reverseArray(arr: any) {
     let web = new Web(`${CurrentSiteUrl}`);
    
     if(item.props?.TotalTime != null){
-      item.props.TotalTime = item.props?.TotalTime + TimeInMinutes;
+      const datas = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item.props.Id}`).get();
+      let Time = datas[0].TotalTime;
+      item.props.TotalTime = Time + TimeInMinutes;
     }
     else{
       item.props.TotalTime = TimeInMinutes;
@@ -1767,7 +1772,7 @@ function reverseArray(arr: any) {
 
     
     var UpdatedData: any = {};
-    if (item.props.siteType == "Offshore Tasks") {
+    if (item.props.siteType == "Offshore Tasks" || item.props?.siteType == "Offshore%20Tasks" || item.props?.siteType == 'SharewebQA') {
       var siteType = "OffshoreTasks";
       smartTermId = "Task" + siteType + "Id";
     } else {
@@ -1923,7 +1928,12 @@ function reverseArray(arr: any) {
 
   //-----------------------------------------------Create Add Timesheet--------------------------------------------------------------------------------------
   const AddTaskTime = async (child: any, Type: any) => {
-
+    if(item.props?.TotalTime != null){
+      let web = new Web(`${siteUrl}`);
+      const datas = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item.props.Id}`).get();
+      let Time = datas[0].TotalTime;
+      item.props.TotalTime = Time 
+    }
     setbuttonDisable(true);
 
     if (Type == "EditTime") {
@@ -2222,7 +2232,7 @@ function reverseArray(arr: any) {
               : "";
         }
       });
-      if (item.props.siteType == "Offshore Tasks") {
+      if (item.props.siteType == "Offshore Tasks" || item.props?.siteType == "Offshore%20Tasks" || item.props?.siteType == 'SharewebQA') {
         var siteType = "OffshoreTasks";
         var filteres = "Task" + siteType + "/Id eq " + item.props.Id;
         var linkedSite = "Task" + siteType;
@@ -2353,7 +2363,7 @@ function reverseArray(arr: any) {
     var update: any = {};
     var UpdatedData: any = [];
     let web = new Web(`${CurrentSiteUrl}`);
-    if (item.props.siteType == "Offshore Tasks") {
+    if (item.props.siteType == "Offshore Tasks" || item.props?.siteType == "Offshore%20Tasks" || item.props?.siteType == 'SharewebQA') {
       var siteType = "OffshoreTasks";
       smartTermId = "Task" + siteType + "Id";
     } else {
@@ -2451,7 +2461,7 @@ function reverseArray(arr: any) {
     }
     var DateFormate = new Date(Eyd);
 
-    if (item.props.siteType == "Offshore Tasks") {
+    if (item.props.siteType == "Offshore Tasks" || item.props?.siteType == "Offshore%20Tasks" || item.props?.siteType == 'SharewebQA') {
       var siteType = "OffshoreTasks";
       smartTermId = "Task" + siteType + "Id";
     } else {
@@ -3113,6 +3123,8 @@ function reverseArray(arr: any) {
                   <div className="AllTime timentrytb">
                     {data && (
                       <GlobalCommanTable
+                      hideTeamIcon={true}
+                      hideOpenNewTableIcon={true}
                         columns={column}
                         data={data}
                         callBackData={callBackData}

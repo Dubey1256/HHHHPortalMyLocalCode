@@ -72,7 +72,8 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 SeeAbove: '',
                 Phone: '',
                 LowImportance: '',
-                Comments: CommentArray
+                Comments: CommentArray,
+                Subtext: CreateTaskForThisPoint?.Subtext?.length > 0 ? CreateTaskForThisPoint?.Subtext : null
             }
             let FeedBackItem: any = {
                 Title: "FeedBackPicture" + param,
@@ -296,7 +297,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 let UpdateJSONData: any = {
                     Title: CreateTaskInfo.Title,
                     DueDate: CreateTaskInfo.DueDate ? Moment(CreateTaskInfo.DueDate).format("MM-DD-YYYY") : null,
-                    // TeamMembersId: CreateTaskInfo?.TeamMembersId,
+                    TeamMembersId: CreateTaskInfo?.TeamMembersId,
                     ResponsibleTeamId: CreateTaskInfo?.ResponsibleTeamId,
                     FeedBack: JSON.stringify(CreateTaskInfo?.FeedBackJSON),
                     ComponentLink: {
@@ -475,7 +476,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                     </span>
 
                 </div>
-                <Tooltip ComponentId="" isServiceTask={false} />
+                <Tooltip ComponentId="11495" isServiceTask={false} />
             </>
 
         )

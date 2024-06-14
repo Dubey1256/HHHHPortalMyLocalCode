@@ -27,6 +27,7 @@ import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import EditInstituton from "../../webparts/EditPopupFiles/EditComponent";
 import EditProjectPopup from "../EditProjectPopup";
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
+import  {BsArrowsExpandVertical}  from "react-icons/bs";
 let renderData: any = [];
 let AutoCompleteItemsArray: any = [];
 let AllFeatureTypeData: any = [];
@@ -145,7 +146,7 @@ const CompareTool = (props: any) => {
             }
             // get tagged component of selected Component
             else {
-                select = "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo, TechnicalExplanations, SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,PriorityRank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title, Portfolios/Id,Portfolios/ItemType, ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=Parent,Portfolios,TaskCategories,ClientCategory,Author,Editor"
+                select = "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo, TechnicalExplanations, SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,PriorityRank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title, Portfolios/Id,Portfolios/ItemType,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=Parent,Portfolios,TaskCategories,ClientCategory,Author,Editor"
                 await globalCommon.getData(props?.contextValue?.siteUrl, items?.listId === undefined ? props?.contextValue?.MasterTaskListID : items?.listId, select + "&$filter=" + `(Parent/Id eq ${items?.Id})`)
                     .then(async (datas: any) => {
                         count++;
@@ -302,8 +303,8 @@ const CompareTool = (props: any) => {
 
         var site = Item.siteType.replace(' ', '');
         var listID = "";//"464FB776-E4B3-404C-8261-7D3C50FF343F";
-        // if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
-        //     listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+         if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
+             listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
         timesheetListConfigrations?.forEach((time: any) => {
             if (time?.taskSites?.length > 0) {
                 time?.taskSites?.forEach((obj: any) => {
@@ -603,7 +604,7 @@ const CompareTool = (props: any) => {
         let select: any = '';
         selectedData?.map(async (items: any) => {
             if (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature" || items?.Item_x0020_Type === "Project" || items?.Item_x0020_Type === "Sprint") {
-                select = "ID,Id,Title,Mileage,PortfolioLevel,Synonyms,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo,TechnicalExplanations,SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,PriorityRank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title,Portfolios/Id,ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title,FeatureType/Id,FeatureType/Title,AssignedTo/Title,AssignedTo/Id,TeamMembers/Title,TeamMembers/Id,ResponsibleTeam/Title,ResponsibleTeam/Id,PortfolioType/Title,PortfolioType/Id&$expand=Parent,PortfolioType,Portfolios,TaskCategories,AssignedTo,ClientCategory,TeamMembers,ResponsibleTeam,FeatureType,Author,Editor"
+                select = "ID,Id,Title,Mileage,PortfolioLevel,Synonyms,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo,TechnicalExplanations,SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,PriorityRank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title,Portfolios/Id,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title,FeatureType/Id,FeatureType/Title,AssignedTo/Title,AssignedTo/Id,TeamMembers/Title,TeamMembers/Id,ResponsibleTeam/Title,ResponsibleTeam/Id,PortfolioType/Title,PortfolioType/Id&$expand=Parent,PortfolioType,Portfolios,TaskCategories,AssignedTo,ClientCategory,TeamMembers,ResponsibleTeam,FeatureType,Author,Editor"
             } else
                 select = "ID,Id,Mileage,BasicImageInfo,ParentTask/Title,ClientActivity,ParentTask/Id,ItemRank,TaskLevel,OffshoreComments,CompletedDate,ComponentLink,AdminStatus,TeamMembers/Id,ClientCategory/Id,ClientCategory/Title,TaskID,ResponsibleTeam/Id,ResponsibleTeam/Title,ParentTask/TaskID,TaskType/Level,PriorityRank,TeamMembers/Title,FeedBack,Title,Id,ID,DueDate,Comments,Categories,Status,Sitestagging,Body,PercentComplete,StartDate,ClientCategory,Priority,TaskType/Id,TaskType/Title,Portfolio/Id,Portfolio/ItemType,Portfolio/PortfolioStructureID,Portfolio/Title,TaskCategories/Id,TaskCategories/Title,TeamMembers/Name,Project/Id,Project/PortfolioStructureID,Project/Title,Project/PriorityRank,AssignedTo/Id,AssignedTo/Title,AssignedToId,Author/Id,Author/Title,Editor/Id,Editor/Title,Created,Modified,IsTodaysTask,workingThisWeek,Attachments,AttachmentFiles&$expand=ParentTask, Portfolio,TaskType,ClientCategory,TeamMembers,ResponsibleTeam,AssignedTo,Editor,Author,TaskCategories,Project,AttachmentFiles";
 
@@ -794,7 +795,7 @@ const CompareTool = (props: any) => {
             else filter = `Portfolios/Id eq ${data[0]?.Id}`
             let web = new Web(props?.contextValue?.siteUrl);
             let items = await web.lists
-                .getById(props?.contextValue?.DocumenstlistID ===undefined ? props?.contextValue?.DocumentsListID :props?.contextValue?.DocumenstlistID).items
+                .getById(props?.contextValue?.DocumentListID ===undefined ? props?.contextValue?.DocumentsListID :props?.contextValue?.DocumentListID).items
                 .select(dynamicColumns)
                 .expand(expendedColumns)
                 .filter(filter)
@@ -817,7 +818,7 @@ const CompareTool = (props: any) => {
         return (
             <>
                 <div className="subheading">
-                    Compare {data?.length > 0 && data[0]?.TaskType?.Id != undefined ? 'Tasks' : (data[0]?.Item_x0020_Type === "Project" ? "Px" : 'Components')}
+                    Compare {data?.length > 0 && data[0]?.TaskType?.Id != undefined ? 'Tasks' : ((data[0]?.Item_x0020_Type === "Project" || data[0]?.Item_x0020_Type === "Sprint" )? "Px" : 'Components')}
 
                 </div>
                 {data?.length > 0 && data[0]?.TaskType?.Id != undefined ? <Tooltip ComponentId={1723} /> : <Tooltip ComponentId={611} />}
@@ -1624,7 +1625,7 @@ const CompareTool = (props: any) => {
                         // Update item by Id
                         globalCommon.updateItemById(
                             props?.contextValue?.siteUrl,
-                            props?.contextValue?.DocumenstlistID ?? 'D0F88B8F-D96D-4E12-B612-2706BA40FB08',
+                            props?.contextValue?.DocumentListID ?? 'D0F88B8F-D96D-4E12-B612-2706BA40FB08',
                             postData,
                             element.Id
                         )
@@ -1654,7 +1655,7 @@ const CompareTool = (props: any) => {
                         let postData = {
                             PortfoliosId: { "results": PortfolioIds },
                         }
-                        globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.DocumenstlistID === undefined ? 'D0F88B8F-D96D-4E12-B612-2706BA40FB08' : props?.contextValue?.DocumenstlistID, postData, element.Id)
+                        globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.DocumentListID === undefined ? 'D0F88B8F-D96D-4E12-B612-2706BA40FB08' : props?.contextValue?.DocumentListID, postData, element.Id)
                             .then((returnresult) => {
                                 console.log(returnresult);
                                 // result.smartTime = String(returnresult)
@@ -2263,7 +2264,7 @@ const CompareTool = (props: any) => {
         setcomponentItem(item);
     };
     const CallcomponentItem = (res: any, UpdatedData: any) => {
-        setcomponentItem(undefined);
+        setTaskItem(undefined);
     }
     const Call = (res: any, UpdatedData: any) => {
         setTaskItem(undefined);
@@ -2475,7 +2476,8 @@ const CompareTool = (props: any) => {
                                     ></span>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                    <span><img className="imgWid29" src={`${props?.contextValue?.siteUrl}/SiteCollectionImages/ICONS/Shareweb/SwitchItem_icon.png`} title="Switch Items" onClick={() => switchItems()} /></span>
+                                    <span title="Switch Items" className="alignCenter comparePopupMainIcon" onClick={() => switchItems()}> <BsArrowsExpandVertical /></span> 
+                                    {/* <span><img className="imgWid29" src={`${props?.contextValue?.siteUrl}/SiteCollectionImages/ICONS/Shareweb/SwitchItem_icon.png`} title="Switch Items" onClick={() => switchItems()} /></span> */}
                                 </Col>
                                 <Col sm="5" md="5" lg="5" className="alignCenter siteColor contentSec">
                                     <span className="Dyicons me-1">{data[1]?.Item_x0020_Type.charAt(0)}</span> <Label>
@@ -2512,7 +2514,8 @@ const CompareTool = (props: any) => {
                                     ></span>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                    <span><img className="imgWid29" src={`${props?.contextValue?.siteUrl}/SiteCollectionImages/ICONS/Shareweb/SwitchItem_icon.png`} title="Switch Items" onClick={() => switchItems()} /></span>
+                                <span title="Switch Items" className="alignCenter comparePopupMainIcon"   onClick={() => switchItems()}> <BsArrowsExpandVertical /></span> 
+                                    {/* <span><img className="imgWid29" src={`${props?.contextValue?.siteUrl}/SiteCollectionImages/ICONS/Shareweb/SwitchItem_icon.png`} title="Switch Items" onClick={() => switchItems()} /></span> */}
                                 </Col>
                                 <Col sm="5" md="5" lg="5" className="alignCenter siteColor contentSec">
                                     <span>
@@ -2536,7 +2539,7 @@ const CompareTool = (props: any) => {
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
-                                    <label className="fw-semibold form-label me-2 mt-1">Component Title</label>
+                                    <label className="fw-semibold form-label me-2 mt-1">{(data[0]?.Item_x0020_Type === "Project" || data[0]?.Item_x0020_Type=== "Sprint") ? "Px" : 'Components'} Title</label>
                                     <input type="text" defaultValue={data[0]?.Title} onChange={(e) => changeData(0, 'Title', e.target.value)} className="form-control" />
                                 </div>
                             </Col>
@@ -2548,7 +2551,7 @@ const CompareTool = (props: any) => {
                             </Col>
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
-                                    <label className="fw-semibold form-label me-2 mt-1">Component Title</label>
+                                    <label className="fw-semibold form-label me-2 mt-1">{(data[1]?.Item_x0020_Type === "Project" || data[1]?.Item_x0020_Type=== "Sprint") ? "Px" : 'Components'} Title</label>
                                     <input type="text" defaultValue={data[1]?.Title} onChange={(e) => changeData(1, 'Title', e.target.value)} className="form-control" />
                                 </div>
                             </Col>
@@ -2766,7 +2769,7 @@ const CompareTool = (props: any) => {
                                             data[0]?.taggedTasks?.length > 0 && data[0]?.taggedTasks?.map((items: any, inexd: number) => {
                                                 return <div className="SpfxCheckRadio alignCenter" key={items.Id}>
                                                     {items?.subRows && items?.subRows?.length > 0 ? (
-                                                        <div className="alignCenter">
+                                                        <div className="alignCenter w-100">
                                                             <span style={{ flex: "0 0 60px" }} onClick={() => toggleExpand(items, data[0], 'taggedTasks')}>  {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
                                                             <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span>  <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
                                                             {inexd == 0 && <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />}
@@ -2776,7 +2779,7 @@ const CompareTool = (props: any) => {
                                                             </a></span>
                                                             {items.isExpanded &&
                                                                 <TreeNodeTasks items={items} taggedItems={data[0]} handleRadioChange={'taggedTasks'} />}
-                                                        </div>) : <div className="alignCenter">
+                                                        </div>) : <div className="alignCenter  w-100">
 
                                                         <img className="workmember me-1" src={items.SiteIcon}></img>
                                                         <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
@@ -2807,7 +2810,7 @@ const CompareTool = (props: any) => {
                                             data[1]?.taggedTasks?.length > 0 && data[1]?.taggedTasks?.map((items: any, inexdnew: number) => {
                                                 return <div className="SpfxCheckRadio alignCenter" key={items.Id}>
                                                     {items?.subRows && items?.subRows?.length > 0 ? (
-                                                        <div className="alignCenter">
+                                                        <div className="alignCenter  w-100">
                                                             <span style={{ flex: "0 0 60px" }} onClick={() => toggleExpand(items, data[1], 'taggedTasks')}>   {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
                                                             <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span>  <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
                                                             {inexdnew == 0 && <input type="checkbox" checked={items?.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />}
@@ -2817,7 +2820,7 @@ const CompareTool = (props: any) => {
                                                             </a></span>
                                                             {items.isExpanded &&
                                                                 <TreeNodeTasks items={items} taggedItems={data[0]} handleRadioChange={'taggedTasks'} />}
-                                                        </div>) : <div className="alignCenter">
+                                                        </div>) : <div className="alignCenter  w-100">
 
                                                         <img className="workmember me-1" src={items.SiteIcon}></img>
                                                         <div style={{ flex: "0 0 60px" }}>{items?.TaskID}</div>

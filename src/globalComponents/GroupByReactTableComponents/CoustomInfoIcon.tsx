@@ -14,7 +14,10 @@ export default function CoustomInfoIcon(props: any) {
 
     return (
         <>
-            <span ref={setTriggerRef} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()} className="svg__iconbox svg__icon--info dark"></span>
+            <>
+           {props?.iconType === "CommentsIcon" ? <span ref={setTriggerRef} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()} className="svg__iconbox svg__icon--comment dark"></span>:
+           <span ref={setTriggerRef} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()} className="svg__iconbox svg__icon--info dark"></span>}
+            </>
             {action === "hover" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
                     <span>{props.Discription}</span>

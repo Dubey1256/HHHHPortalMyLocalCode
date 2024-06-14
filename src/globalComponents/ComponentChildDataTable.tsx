@@ -321,7 +321,6 @@ function ComponentChildDataTable(SelectedProp: any) {
             "Title",
             "Id",
             "ID",
-            "ClientTime",
             "DueDate",
             "Comments",
             "Categories",

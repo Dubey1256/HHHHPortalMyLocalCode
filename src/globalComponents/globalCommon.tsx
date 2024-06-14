@@ -43,94 +43,174 @@ export const findTaskCategoryParent = (taskCategories: any, result: any) => {
     }
     return result;
 }
+
+
+// export const SendTeamMessage = async (mention_To: any, txtComment: any, Context: any, AllListId: any) => {
+//     let currentUser: any = {}
+//     try {
+//         let AllUsers: any = await loadAllTaskUsers(AllListId)
+//         let pageContent = await pageContext()
+//         let web = new Web(pageContent?.WebFullUrl);
+//         //let currentUser = await web.currentUser?.get()
+//         currentUser.Email = Context.pageContext._legacyPageContext.userPrincipalName
+//         // if (currentUser) {
+//         //     if (currentUser.Email?.length > 0) {
+//         //     } else {
+//         //         currentUser.Email = currentUser.UserPrincipalName;
+//         //     }
+//         // }
+//         // const client: MSGraphClientV3 = await Context.msGraphClientFactory.getClient();
+//         await Context.msGraphClientFactory.getClient().then((client: MSGraphClientV3) => {
+//             client.api(`/users`).version("v1.0").get(async (err: any, res: any) => {
+//                 if (err)
+//                     console.error("MSGraphAPI Error")
+//                 let TeamUser: any[] = [];
+//                 let participants: any = []
+//                 TeamUser = res?.value;
+//                 let CurrentUserChatInfo = TeamUser.filter((items: any) => {
+//                     if (items.userPrincipalName != undefined && currentUser.Email != undefined && items.userPrincipalName?.toLowerCase() == currentUser?.Email?.toLowerCase())
+//                         return items
+//                 })
+//                 currentUser.ChatId = CurrentUserChatInfo[0]?.id;
+//                 var SelectedUser: any[] = []
+
+//                 for (let index = 0; index < mention_To?.length; index++) {
+//                     for (let TeamUserIndex = 0; TeamUserIndex < TeamUser?.length; TeamUserIndex++) {
+//                         if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == TeamUser[TeamUserIndex].userPrincipalName?.toLowerCase())
+//                             SelectedUser.push(TeamUser[TeamUserIndex])
+//                         if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
+//                             SelectedUser.push(TeamUser[TeamUserIndex])
+//                     }
+//                 }
+//                 let obj = {
+//                     "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${currentUser?.ChatId}')`
+//                 }
+//                 participants.push(obj)
+//                 if (SelectedUser != undefined && SelectedUser.length > 0) {
+//                     SelectedUser?.forEach((item: any) => {
+//                         let obj = {
+//                             "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${item?.id}')`
+//                         }
+//                         participants.push(obj)
+//                     })
+//                 }
+//                 const chat_payload: any = {
+//                     "members": participants
+//                 }
+//                 let IsSendTeamMessage = 0;
+//                 if (mention_To != undefined && AllUsers != undefined && AllUsers?.length > 0 && mention_To?.length > 0) {
+//                     mention_To?.map((TeamUser: any) => {
+//                         AllUsers?.map((User: any) => {
+//                             if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser?.toLowerCase()) {
+//                                 IsSendTeamMessage += 1;
+//                             }
+//                         })
+
+//                     })
+
+//                 }
+//                 if (IsSendTeamMessage == mention_To?.length) {
+//                     mention_To != undefined && mention_To?.length == 1 ? chat_payload.chatType = 'oneOnOne' : chat_payload.chatType = 'group'
+//                     let new_chat_resp = await client.api('/chats').version('v1.0').post(chat_payload)
+//                     const message_payload = {
+//                         "body": {
+//                             contentType: 'html',
+//                             content: `${txtComment}`,
+//                             //content: 'test',
+//                         }
+//                     }
+//                     let result = await client.api('/chats/' + new_chat_resp?.id + '/messages').post(message_payload)
+//                     return result;
+//                 }
+//                 else {
+//                     console.log("Error In Global Common SendTeamMessage Function")
+//                 }
+
+//             });
+//         });
+//     } catch (error) {
+//         return Promise.reject(error);
+//     }
+
+// }
+
+
+// Send MS Teams Notification Function Improved due it's conflict for some scenarios 
+
 export const SendTeamMessage = async (mention_To: any, txtComment: any, Context: any, AllListId: any) => {
     let currentUser: any = {}
     try {
         let AllUsers: any = await loadAllTaskUsers(AllListId)
         let pageContent = await pageContext()
         let web = new Web(pageContent?.WebFullUrl);
-        //let currentUser = await web.currentUser?.get()
         currentUser.Email = Context.pageContext._legacyPageContext.userPrincipalName
-        // if (currentUser) {
-        //     if (currentUser.Email?.length > 0) {
-        //     } else {
-        //         currentUser.Email = currentUser.UserPrincipalName;
-        //     }
-        // }
-        // const client: MSGraphClientV3 = await Context.msGraphClientFactory.getClient();
-        await Context.msGraphClientFactory.getClient().then((client: MSGraphClientV3) => {
-            client.api(`/users`).version("v1.0").get(async (err: any, res: any) => {
-                if (err)
-                    console.error("MSGraphAPI Error")
-                let TeamUser: any[] = [];
-                let participants: any = []
-                TeamUser = res?.value;
-                let CurrentUserChatInfo = TeamUser.filter((items: any) => {
-                    if (items.userPrincipalName != undefined && currentUser.Email != undefined && items.userPrincipalName?.toLowerCase() == currentUser?.Email?.toLowerCase())
-                        return items
-                })
-                currentUser.ChatId = CurrentUserChatInfo[0]?.id;
-                var SelectedUser: any[] = []
-
-                for (let index = 0; index < mention_To?.length; index++) {
-                    for (let TeamUserIndex = 0; TeamUserIndex < TeamUser?.length; TeamUserIndex++) {
-                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == TeamUser[TeamUserIndex].userPrincipalName?.toLowerCase())
-                            SelectedUser.push(TeamUser[TeamUserIndex])
-                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
-                            SelectedUser.push(TeamUser[TeamUserIndex])
-                    }
-                }
+        const client = await Context.msGraphClientFactory.getClient();
+        let res = await client.api(`/users`).version("v1.0").get();
+        let TeamUser: any[] = [];
+        let participants: any = []
+        TeamUser = res?.value;
+        let CurrentUserChatInfo = TeamUser.filter((items: any) => {
+            if (items.userPrincipalName != undefined && currentUser.Email != undefined && items.userPrincipalName?.toLowerCase() == currentUser?.Email?.toLowerCase())
+                return items
+        })
+        currentUser.ChatId = CurrentUserChatInfo[0]?.id;
+        var SelectedUser: any[] = []
+        for (let index = 0; index < mention_To?.length; index++) {
+            for (let TeamUserIndex = 0; TeamUserIndex < TeamUser?.length; TeamUserIndex++) {
+                if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == TeamUser[TeamUserIndex].userPrincipalName?.toLowerCase())
+                    SelectedUser.push(TeamUser[TeamUserIndex])
+                if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
+                    SelectedUser.push(TeamUser[TeamUserIndex])
+            }
+        }
+        let obj = {
+            "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${currentUser?.ChatId}')`
+        }
+        participants.push(obj)
+        if (SelectedUser != undefined && SelectedUser.length > 0) {
+            SelectedUser?.forEach((item: any) => {
                 let obj = {
-                    "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${currentUser?.ChatId}')`
+                    "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${item?.id}')`
                 }
                 participants.push(obj)
-                if (SelectedUser != undefined && SelectedUser.length > 0) {
-                    SelectedUser?.forEach((item: any) => {
-                        let obj = {
-                            "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${item?.id}')`
-                        }
-                        participants.push(obj)
-                    })
-                }
-                const chat_payload: any = {
-                    "members": participants
-                }
-                let IsSendTeamMessage = 0;
-                if (mention_To != undefined && AllUsers != undefined && AllUsers?.length > 0 && mention_To?.length > 0) {
-                    mention_To?.map((TeamUser: any) => {
-                        AllUsers?.map((User: any) => {
-                            if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser?.toLowerCase()) {
-                                IsSendTeamMessage += 1;
-                            }
-                        })
-
-                    })
-
-                }
-                if (IsSendTeamMessage == mention_To?.length) {
-                    mention_To != undefined && mention_To?.length == 1 ? chat_payload.chatType = 'oneOnOne' : chat_payload.chatType = 'group'
-                    let new_chat_resp = await client.api('/chats').version('v1.0').post(chat_payload)
-                    const message_payload = {
-                        "body": {
-                            contentType: 'html',
-                            content: `${txtComment}`,
-                            //content: 'test',
-                        }
+            })
+        }
+        const chat_payload: any = {
+            "members": participants
+        }
+        let IsSendTeamMessage = 0;
+        if (mention_To != undefined && AllUsers != undefined && AllUsers?.length > 0 && mention_To?.length > 0) {
+            mention_To?.map((TeamUser: any) => {
+                AllUsers?.map((User: any) => {
+                    if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser?.toLowerCase()) {
+                        IsSendTeamMessage += 1;
                     }
-                    let result = await client.api('/chats/' + new_chat_resp?.id + '/messages').post(message_payload)
-                    return result;
-                }
-                else {
-                    console.log("Error In Global Common SendTeamMessage Function")
-                }
+                })
 
-            });
-        });
+            })
+
+        }
+        if (IsSendTeamMessage == mention_To?.length) {
+            mention_To != undefined && mention_To?.length == 1 ? chat_payload.chatType = 'oneOnOne' : chat_payload.chatType = 'group'
+            let new_chat_resp = await client.api('/chats').version('v1.0').post(chat_payload)
+            const message_payload = {
+                "body": {
+                    contentType: 'html',
+                    content: `${txtComment}`,
+                    //content: 'test',
+                }
+            }
+            let result = await client.api('/chats/' + new_chat_resp?.id + '/messages').post(message_payload)
+            return result;
+        }
+        else {
+            console.log("Error In Global Common SendTeamMessage Function")
+        }
     } catch (error) {
         return Promise.reject(error);
     }
-
 }
+
 
 export const PopHoverBasedOnTaskId = (item: any) => {
     let returnObj = { ...item }
@@ -1853,7 +1933,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
             .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "HelpInformationVerifiedJson", "FoundationPageUrl", "HelpInformationVerified", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate",
                 "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "PriorityRank",
                 "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id",
-                "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables",
+                "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables","WorkingAction",
                 "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "FeatureType/Title", "FeatureType/Id", "Portfolios/Id", "Portfolios/Title", "Editor/Id", "Modified", "Editor/Title")
             .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "FeatureType", "ResponsibleTeam", "Editor", "Portfolios").filter(filter != null ? filter : '')
             .getAll();
@@ -1924,7 +2004,21 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
                 result.FeatureTypeTitle = result?.FeatureType?.Title
             }
 
+            try {
+                if (result?.WorkingAction != null) {
+                    result.workingActionValue = [];
+                    result.workingActionValue = JSON.parse(result?.WorkingAction);
+                    result.workingActionTitle = ""; result.workingActionIcon = {};
+                    result?.workingActionValue?.forEach((elem: any) => {
+                        if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
+                            result.workingActionTitle = result.workingActionTitle ? result.workingActionTitle + " " + elem.Title : elem.Title;
+                        }
+                    });
+                }
 
+            } catch (error) {
+                console.error("An error occurred:", error);
+            }
             result.descriptionsSearch = '';
             result.commentsSearch = "";
             result.descriptionsDeliverablesSearch = '';
@@ -2242,7 +2336,7 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     }
 }
 export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | null, pertiCularSites?: any | null, showOffShore?: any | undefined) => {
-    let query = "Id,Title,FeedBack,PriorityRank,WorkingAction,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+    let query = "Id,Title,FeedBack,Comments,PriorityRank,WorkingAction,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
     }
@@ -2253,7 +2347,7 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
     } else if (showOffShore == true) {
         filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites")
     } else {
-        filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.Title != "Offshore Tasks")
+        filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites")
     }
     let AllSiteTasks: any = []
     if (filteredSiteConfig?.length > 0) {
@@ -2296,6 +2390,7 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                         if (title) task.joinedData.push(`Title: ${title}`);
                         if (dueDate) task.joinedData.push(`Due Date: ${dueDate}`);
                     }
+                    task.IsWp
                     if (task?.SiteCompositionSettings != undefined) {
                         let TempSCSettingsData: any = JSON.parse(task?.SiteCompositionSettings);
                         if (TempSCSettingsData?.length > 0) {
@@ -2313,7 +2408,44 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                         task.IsSCProtectedStatus = "";
                     }
                     task.portfolioItemsSearch = site.Title;
+                    task.AssignedToIds = []
                     task.TaskID = GetTaskId(task);
+                    try {
+                        task.IsTodaysTask = false;
+                        if (task?.WorkingAction != undefined) {
+                            let workingAct = JSON.parse(task?.WorkingAction)
+                            task.WorkingActionParsed = workingAct;
+                            let workingInfo = task?.WorkingActionParsed?.find((info: any) => info?.Title == "WorkingDetails")
+                            if (workingInfo?.InformationData?.length > 0) {
+                                let currentDate = moment(new Date()).format("DD/MM/YYYY")
+                                let todaysWorkMembers = workingInfo?.InformationData?.find((userInfo: any) => userInfo?.WorkingDate == currentDate)
+                                if (todaysWorkMembers?.WorkingMember?.length > 0) {
+                                    task.IsTodaysTask = true;
+                                    task.AssignedTo = todaysWorkMembers?.WorkingMember
+                                    task.AssignedToIds = todaysWorkMembers?.WorkingMember?.map((mem:any)=>{
+                                        return mem?.Id
+                                    })
+                                }
+                            }
+                        }
+                    } catch (e) {
+
+                    }
+                    try {
+                        if (task?.WorkingAction != null) {
+                            task.workingActionValue = [];
+                            task.workingActionValue = JSON.parse(task?.WorkingAction);
+                            task.workingActionTitle = ""; task.workingActionIcon = {};
+                            task?.workingActionValue?.forEach((elem: any) => {
+                                if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
+                                    task.workingActionTitle = task.workingActionTitle ? task.workingActionTitle + " " + elem.Title : elem.Title;
+                                }
+                            });
+                        }
+
+                    } catch (error) {
+                        console.error("An error occurred:", error);
+                    }
                 })
                 AllSiteTasks = [...AllSiteTasks, ...data];
             } catch (error) {
@@ -2324,6 +2456,57 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
         return AllSiteTasks
     }
 }
+
+export const verifyComponentPermission = async (permissionTitle: any) => {
+    let pageInfo = await pageContext()
+    let permission = false;
+    if (pageInfo?.WebFullUrl) {
+        let web = new Web(pageInfo.WebFullUrl);
+        const lists = await web.lists.getByTitle('ComponentPermissions').select('Id,Title,AllowedUsers/Id,AllowedUsers/Title').expand('AllowedUsers').get();
+        if (!lists) {
+            permission = true
+        }
+        else{
+            await web.currentUser.get().then(async (logginUser: any) => {
+                let userGroups = await web.getUserById(23).groups.get()
+                await web.lists.getByTitle('ComponentPermissions').items.filter(`Title eq '${permissionTitle}'`).get().then((result: any) => {
+                    if (result?.length > 0) {
+                        permission = result[0].AllowedUsersId?.some((user: any) => user == logginUser?.Id || userGroups?.some((group: any) => group?.Id == user))
+                    }
+                })
+            });
+        }    
+    }
+    return permission;  
+}
+export const LoadAllNotificationConfigrations = async (configrationTitle: any, AllListId: any) => {
+    let pageInfo = await pageContext()
+    let AllTaskUser = await loadAllTaskUsers(AllListId)
+    let copyRecipients: any
+    if (pageInfo?.WebFullUrl) {
+      let web = new Web(pageInfo.WebFullUrl);
+
+      await web.lists.getByTitle("NotificationsConfigration").items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').filter(`Title eq '${configrationTitle}'`).expand('Author,Editor,Recipients ,PortfolioType').get().then((result: any) => {
+        result?.map((data: any) => {
+          data.showUsers = ""
+          data.DisplayModifiedDate = moment(data.Modified).format("DD/MM/YYYY");
+          if (data.DisplayModifiedDate == "Invalid date" || "") {
+            data.DisplayModifiedDate = data.DisplayModifiedDate.replaceAll("Invalid date", "");
+          }
+          data.DisplayCreatedDate = moment(data.Created).format("DD/MM/YYYY");
+          if (data.DisplayCreatedDate == "Invalid date" || "") {
+            data.DisplayCreatedDate = data.DisplayCreatedDate.replaceAll("Invalid date", "");
+          }
+          if (data?.Recipients?.length > 0) {
+            copyRecipients = AllTaskUser.filter((user: any) => data.Recipients.find((data2: any) => user.AssingedToUserId == data2.Id))
+          }
+        })
+
+      })
+
+    }
+    return copyRecipients;
+  }
 
 export const descriptionSearchData = (result: any) => {
     let descriptionSearchData = '';
@@ -3020,6 +3203,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
     let startDate: any = ''
     let DevCount: any = 0;
     let Trainee: any = 0;
+    let TraineeTime: any = 0;
     let DesignCount: any = 0;
     let QACount: any = 0;
     let TranineesNum: any = 0;
@@ -3039,8 +3223,11 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
 
     const currentLoginUserId = Context.pageContext?._legacyPageContext.userId;
     selectedUser?.forEach((items: any) => {
-        if (items?.UserGroup?.Title == 'Senior Developer Team' || items?.UserGroup?.Title == 'Smalsus Lead Team' || items?.UserGroup?.Title == 'Junior Developer Team' || items?.UserGroup?.Title == 'Trainees') {
+        if (items?.UserGroup?.Title == 'Portfolio Lead Team' || items?.UserGroup?.Title == 'Smalsus Lead Team' || items?.UserGroup?.Title == 'Developers Team') {
             DevCount++
+        }
+        if (items?.UserGroup?.Title == 'Trainees') {
+            Trainee++;
         }
         if ((items?.TimeCategory == 'Design' && items.Company == 'Smalsus') || items?.UserGroup?.Title == 'Design Team') {
             DesignCount++
@@ -3055,11 +3242,14 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
 
             if (item?.AuthorId == val?.AssingedToUserId) {
 
-                if (val?.UserGroup?.Title == 'Senior Developer Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff')
+                if (val?.UserGroup?.Title == 'Portfolio Lead Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff')
                     item.Department = 'Developer';
                 item.userName = val?.Title
-                if (val?.UserGroup?.Title == 'Junior Developer Team')
-                    item.Department = 'Junior Developer';
+                if (val?.UserGroup?.Title == 'Trainees')
+                    item.Department = 'Trainees';
+                item.userName = val?.Title
+                if (val?.UserGroup?.Title == 'Developers Team')
+                    item.Department = 'Developer';
                 item.userName = val?.Title
 
                 if (val?.UserGroup?.Title == 'Design Team')
@@ -3076,8 +3266,11 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
     })
     if (AllTimeEntry != undefined) {
         AllTimeEntry?.forEach((time: any) => {
-            if (time?.Department == 'Developer' || time?.Department == 'Junior Developer') {
+            if (time?.Department == 'Developer') {
                 DevloperTime = DevloperTime + parseFloat(time.Effort)
+            }
+            if (time?.Department == 'Trainees') {
+                TraineeTime = TraineeTime + parseFloat(time.Effort)
             }
 
             if (time?.Department == 'Design') {
@@ -3360,3 +3553,29 @@ const GetleaveUser = async (TaskUser: any, Context: any) => {
     console.log(finalData)
     return finalData
 }
+export const getWorkingActionJSON = (teamConfigData: any) => {
+    let storeData: any = [];
+    let storeInWorkingAction: any = { "Title": "WorkingDetails", "InformationData": [] }
+    if (teamConfigData?.dateInfo?.length > 0) {
+        if (teamConfigData?.oldWorkingDaysInfo != undefined || teamConfigData?.oldWorkingDaysInfo != null && teamConfigData?.oldWorkingDaysInfo?.length > 0) {
+            teamConfigData?.oldWorkingDaysInfo.map((oldJson: any) => {
+                storeData?.push(oldJson)
+            })
+        }
+        teamConfigData?.dateInfo?.map((Info: any) => {
+            let dataAccordingDays: any = {}
+            if (Info?.userInformation?.length > 0) {
+                dataAccordingDays.WorkingDate = Info?.originalDate
+                dataAccordingDays.WorkingMember = [];
+                Info?.userInformation?.map((userInfo: any) => {
+
+
+                    dataAccordingDays.WorkingMember.push({ Id: userInfo?.AssingedToUserId, Title: userInfo.Title })
+                })
+                storeData?.push(dataAccordingDays)
+            }
+        })
+        storeInWorkingAction.InformationData = [...storeData]
+    }
+    return storeInWorkingAction
+};

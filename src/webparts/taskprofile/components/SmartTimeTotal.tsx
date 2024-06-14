@@ -228,7 +228,7 @@ let allTaskUsers:any;
                 if (TotalTimeData > 0) {
                     FinalTotalTime = (TotalTimeData / 60);
                 }
-                TotalTime = FinalTotalTime;
+               TotalTime = FinalTotalTime.toFixed(2);
                 
                
             })
@@ -258,7 +258,7 @@ let allTaskUsers:any;
             {console.log(AllAvailableTitle)}
             {console.log(additionalTime)}
             {/* {smartTimeTotal.toFixed(1)} */}
-            {TotalTime} h
+             {smartTimeTotal}
             <span className='openhoverpopup hoverimg'>
             <span className="svg__iconbox svg__icon--clock dark" onClick={OpenTimeEntry}></span>
                <div className='hoverpopup overlay'>

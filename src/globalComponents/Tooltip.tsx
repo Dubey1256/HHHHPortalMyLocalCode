@@ -105,6 +105,17 @@ function Tooltip(props: any) {
       }
 
     }
+    if (itemType === 'HHHH UX') {
+      if (PageUrl != undefined && PageUrl != null) {
+        if (props?.ComponentId!= undefined && pageContent?.WebFullUrl.indexOf("hhhhteams") > -1) {
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=${props?.ComponentId}` + "&TaskType=UX" + "&Siteurl=" + Href);
+        }
+        else if(props?.ComponentId && pageContent?.WebFullUrl.indexOf("hhhhteams") == -1){
+          window.open((IsSameSite ? "" : currentbrowser) + `https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=${props?.ComponentId}` + "&TaskType=UX" + "&Siteurl=" + Href);
+        }
+      }
+
+    }
     if (itemType === 'HHHH Quick') {
       if (PageUrl != undefined && PageUrl != null) {
         if (props?.ComponentId != undefined && pageContent?.WebFullUrl.indexOf("hhhhteams") > -1) {
@@ -218,7 +229,7 @@ function Tooltip(props: any) {
       <>
         <Popup
           trigger={
-            <button type='button' className='burgerMenu d-flex ml-12'><span className="svg__iconbox svg__icon--burgerMenu"></span></button>
+            <button type='button' className='burgerMenu d-flex ms-1'><span className="svg__iconbox svg__icon--burgerMenu"></span></button>
           }
           position="left top"
           on="hover"
@@ -232,16 +243,17 @@ function Tooltip(props: any) {
           {/* {isShown && ( */}
           <div className={isServiceTask ? 'dropdown-menu show dropdown-menu-end toolmenubox serviepannelgreena' : 'dropdown-menu show dropdown-menu-end toolmenubox'}>
               
-              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Feedback SP')}><span className="svg__iconbox  svg__icon--Comments"></span>HHHH Feedback SP</a>
-              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Bug')}><span className="svg__iconbox  svg__icon--Comments"></span>HHHH Bug</a>
-              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Design')}><span className="svg__iconbox  svg__icon--Comments"></span>HHHH Design</a>
-              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Quick')} ><span className="svg__iconbox  svg__icon--Comments"></span>HHHH Quick</a>
-              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Component Page')} ><span className="svg__iconbox  svg__icon--Comments"></span>HHHH Component Page</a>
-              <a className='dropdown-item hreflink' onClick={(e) => feedbackInitial('Call Notes')}> <span className="svg__iconbox  svg__icon--Comments"></span> Call Notes</a>
-              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Admin Help')}> <span className="svg__iconbox  svg__icon--help-fill"></span>Admin Help</a>
-              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Help')}> <span className="svg__iconbox  svg__icon--help-fill"></span>Help</a>
+              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Feedback SP')}><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH Feedback SP</a>
+              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Bug')}><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH Bug</a>
+              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Design')}><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH Design</a>
+              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH UX')}><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHHH User Experience - UX</a>
+              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Quick')} ><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH Quick</a>
+              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Component Page')} ><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH Component Page</a>
+              <a className='dropdown-item hreflink' onClick={(e) => feedbackInitial('Call Notes')}> <span className="svg__iconbox  svg__icon--Comments mr-4"></span>Call Notes</a>
+              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Admin Help')}> <span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Admin Help</a>
+              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Help')}> <span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Help</a>
               {pageContent?.WebFullUrl.indexOf("hhhhteams") == -1 && <li>
-              <a className='dropdown-item hreflink' onMouseEnter={() => { handleMouseEnter() }} ><FaCommentAlt />Browser Setting</a>
+              <a className='dropdown-item hreflink' onMouseEnter={() => { handleMouseEnter() }} ><span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Browser Setting</a>
                 <div className="dropdown-submenu dropdown-menu-level-1 showBrowsers" onMouseLeave={() => $(".showBrowsers").css("display", "none")} style={{ display: "none" }}>
                   <ul className="dropdown-menu-item">
                     <li className="dropdown-submenu" onClick={() => setDefaultBrowser('googlechrome://')} ><a className='dropdown-item' ><input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'googlechrome://'} /><FaCommentAlt /> Chrome</a></li>

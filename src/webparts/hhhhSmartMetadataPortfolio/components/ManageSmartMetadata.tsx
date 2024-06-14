@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback, useContext } from 'react';
+import * as React from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback, useContext } from 'react';
 import { Web } from 'sp-pnp-js';
 import { ColumnDef } from '@tanstack/react-table';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
@@ -15,6 +16,7 @@ let compareSeletected: any = [];
 let childRefdata: any;
 let ParentMetaDataItems: any = [];
 let TabsData: any = [];
+let CurrentSelectedMetadataItem: any = [];
 let SelectedMetadataItem: any = [];
 let CopySmartmetadata: any = []
 let UrlTabName: any = ""
@@ -44,6 +46,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         childRefdata = { ...childRef };
 
     }
+    const siteName = selectedProps.AllList.siteName;
     const params = new URLSearchParams(window.location.search);
     UrlTabName = params.get('TabName');
     console.log(params.get('TabName'));
@@ -110,7 +113,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     if (UrlTabName !== null) {
                         ShowingTabsData(UrlTabName)
                     } else {
-                        ShowingTabsData("Categories");
+                        if (siteName === 'SP' || siteName === 'ILF')
+                            ShowingTabsData("Categories");
+                        if (siteName === 'GmbH')
+                            ShowingTabsData("Topics");
                     }
                 })
             }
@@ -140,23 +146,31 @@ export default function ManageSmartMetadata(selectedProps: any) {
         TabsFilter = [];
         TabSelected = Tab;
         setCategoriesTabName({});
+        childRefdata?.current?.clearAll();
         if (ParentMetaDataItems.length > 0)
             ParentMetaDataItems = [];
         SmartmetadataItems?.filter((comp: any) => {
             if (comp.TaxType === 'Smart Pages') {
-                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Pages.aspx?SmartId=${comp.Id}&Item=${comp.Title}`
+                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Pages.aspx?SmartID=${comp.Id}&Item=${comp.Title}`
             }
             if (comp.TaxType === 'Topics') {
-                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Profiles.aspx?SmartId=${comp.Id}&Item=${comp.Title}`
+                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Profiles.aspx?SmartID=${comp.Id}&Item=${comp.Title}`
             }
             if (comp?.TaxType === Tab && comp?.ParentID === 0) {
                 comp['flag'] = true;
                 ParentMetaDataItems.push(comp)
             }
+            comp.smartFilterSearch='';
+            if(comp?.SmartFilters!=null &&comp?.SmartFilters?.length>0){
+               comp.smartFilterSearch= comp?.SmartFilters?.map((elem: any) => elem).join(" ")
+              
+            }
         });
         ParentMetaDataItems.filter((item: any) => {
             GroupByItems(item, SmartmetadataItems);
         })
+
+
         ParentMetaDataItems.filter((item: any) => {
             if (item.TaxType && item.TaxType === Tab) {
                 TabsFilter.push(item);
@@ -165,15 +179,18 @@ export default function ManageSmartMetadata(selectedProps: any) {
         });
         if (TabSelected === 'Categories') {
             ShowingCategoriesTabsData(TabsFilter[0])
-        } else {
+        }
+        else {
             CopySmartmetadata = TabsFilter;
             setSmartmetadata(TabsFilter);
             childRefdata?.current?.setRowSelection({});
+            
         }
     };
     const ShowingCategoriesTabsData = (tabData: any) => {
         TabsFilter = [];
         setCategoriesTabName(tabData);
+        childRefdata?.current?.clearAll();
         ParentMetaDataItems.filter((item: any) => {
             if (item.TaxType && item.Title === tabData.Title) {
                 if (item?.subRows.length > 0) {
@@ -186,7 +203,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         });
         CopySmartmetadata = TabsFilter;
         setSmartmetadata(TabsFilter);
-        childRefdata?.current?.setRowSelection({});
+        //childRefdata?.current?.setRowSelection({});
     }
     const EditSmartMetadataPopup = (item: any) => {
         setSelectedSmartMetadataItem(item);
@@ -235,18 +252,18 @@ export default function ManageSmartMetadata(selectedProps: any) {
             ),
         },
         {
-            accessorKey: 'SmartFilters',
+            accessorFn: (row) => row?.smartFilterSearch,
             placeholder: 'SmartFilters',
-            id: 'SmartFilters',
+            id: 'smartFilterSearch',
             header: '',
             size: 400,
             cell: ({ row }) => (
                 <>
                     <div className='alignCenter'>
-                        {row?.original?.SmartFilters != undefined &&
-                            row?.original?.SmartFilters != null &&
-                            row?.original?.SmartFilters != '' ? (
-                            <a>{row?.original?.SmartFilters}</a>
+                        {
+                         row?.original?.smartFilterSearch!=undefined &&row?.original?.smartFilterSearch != null &&
+                            row?.original?.smartFilterSearch != '' ? (
+                            <a>{row?.original?.smartFilterSearch}</a>
                         ) : null}
                     </div>
                 </>
@@ -364,22 +381,24 @@ export default function ManageSmartMetadata(selectedProps: any) {
     //-------------------------------------------------- RESTRUCTURING FUNCTION start---------------------------------------------------------------
 
     const callBackSmartMetaData = useCallback((Array: any, unSelectTrue: any, Taxtype: any, checkData: any) => {
-        if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length > 0) {
-            childRef?.current?.table?.getSelectedRowModel()?.flatRows.filter((item: any) => {
+        if (childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length > 0) {
+            CurrentSelectedMetadataItem = childRef?.current?.table?.getSelectedRowModel()?.flatRows;
+        } else
+            CurrentSelectedMetadataItem = [];
+        if (CurrentSelectedMetadataItem.length > 0) {
+            CurrentSelectedMetadataItem?.filter((item: any) => {
                 if (item.original !== undefined) {
-                    if (!isItemExists(SelectedMetadataItem, item.original.Id))
-                        SelectedMetadataItem.push(item.original);
+                    if (!isItemExists(SelectedMetadataItem, item?.original?.Id))
+                        SelectedMetadataItem.push(item?.original);
                 }
             })
-            if (SelectedMetadataItem.length === 1) {
+            if (CurrentSelectedMetadataItem?.length === 1) {
                 setSmartmetadataRestructureButton(true)
                 setSmartmetadataCompareButton(false);
-            } else if (SelectedMetadataItem.length === 2) {
+            } else if (CurrentSelectedMetadataItem?.length === 2) {
                 setSmartmetadataRestructureButton(false)
                 setSmartmetadataCompareButton(true);
             } else {
-                if (SelectedMetadataItem.length > 0)
-                    SelectedMetadataItem = [];
                 setSmartmetadataCompareButton(false);
                 setSmartmetadataRestructureButton(false);
             }
@@ -387,7 +406,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         } else {
             SelectedMetadataItem = [];
             setRestructureIcon(false)
-            if (CopySmartmetadata !== undefined && CopySmartmetadata.length !== 0) {
+            if (CopySmartmetadata.length > 0) {
                 let array = CopySmartmetadata;
                 array?.map((obj: any) => {
                     obj.isRestructureActive = false;
@@ -421,7 +440,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     setSmartmetadata(array);
                 setSmartmetadataCompareButton(false);
                 setSmartmetadataRestructureButton(false);
-
+                setSmartmetadataRestructure(false)
             }
         }
         if (unSelectTrue === true) {
@@ -429,8 +448,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         }
         if (Taxtype) {
             setSmartmetadataAdd(false)
-            setSmartmetadataCompare(false)
-            setSmartmetadataRestructure(false)
+
             SmartmetadataItems = [];
             Array = {};
             setRestructureIcon(false)
@@ -445,7 +463,12 @@ export default function ManageSmartMetadata(selectedProps: any) {
     };
     const OpenTopRestructureIcon = () => {
         if (MyContextValue) {
-            MyContextValue?.OpenModal(categoriesTabName, true);
+            if (siteName === 'GmbH') {
+                const FilterItemParentID = 0;
+                MyContextValue?.OpenModal(FilterItemParentID, true);
+            }
+            else
+                MyContextValue?.OpenModal(categoriesTabName, true);
         }
     }
     const SmartrestructureFunct = (restr: any) => {
@@ -532,15 +555,22 @@ export default function ManageSmartMetadata(selectedProps: any) {
             <div className='TableContentSection'>
                 <section className='col-sm-12 clearfix'>
                     <div className='d-flex justify-content-between align-items-center siteColor  serviceColor_Active mb-2'>
-                        <h3 className="heading">ManageSmartMetaData
-                        </h3>
-                        <span><a data-interception="off" target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata-old.aspx">Old ManageSmartMetadata</a></span>
+                        {siteName !== 'GmbH' ?
+                            <h3 className="heading">ManageSmartMetaData</h3>
+                            :
+                            <h3 className="heading">Manage Smart MetaData</h3>
+                        }
+                        <span>
+                            <a data-interception="off" target="_blank" href={`${selectedProps?.AllList?.SPSitesListUrl}/SitePages/managesmartmetadata-old.aspx`} >
+                                Old ManageSmartMetadata
+                            </a>
+                        </span>
                     </div>
                     <div>
                         <span>
                             {
                                 SmartmetadataAdd === true ?
-                                    <CreateMetadataItem AddButton={SmartmetadataAdd} childRefdata={childRefdata} AllList={selectedProps.AllList} addItemCallBack={callBackSmartMetaData} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} closeCreateSmartMetadataPopup={closeCreateSmartMetadataPopup} SelectedItem={SelectedMetadataItem} setName={setName} ParentItem={Smartmetadata} TabSelected={TabSelected} categoriesTabName={categoriesTabName}></CreateMetadataItem>
+                                    <CreateMetadataItem AddButton={SmartmetadataAdd} childRefdata={childRefdata} AllList={selectedProps.AllList} addItemCallBack={callBackSmartMetaData} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} closeCreateSmartMetadataPopup={closeCreateSmartMetadataPopup} SelectedItem={SelectedMetadataItem} setName={setName} ParentItem={Smartmetadata} siteName={siteName} TabSelected={TabSelected} categoriesTabName={categoriesTabName}></CreateMetadataItem>
                                     : ''
                             }
                         </span>
@@ -555,13 +585,14 @@ export default function ManageSmartMetadata(selectedProps: any) {
                             {
                                 SmartmetadataRestructure === true ?
                                     <RestructureSmartMetaData
+                                        siteName={siteName}
                                         closeRestructurepopup={closeCompareAndRestructuepopup}
                                         RestructureButton={SmartmetadataRestructure} childRefdata={childRefdata} AllList={selectedProps.AllList} ref={childRef} AllMetaData={Smartmetadata} restructureItemCallBack={callBackSmartMetaData} restructureItem={SelectedMetadataItem} SmartrestructureFunct={SmartrestructureFunct} TabSelected={TabSelected} />
                                     : ''
                             }
                         </span>
                     </div>
-                </section>
+                </section >
                 <ul className="nav nav-tabs" role="tablist">
                     {Tabs?.map((item: any, index: any) => (
                         <button className={`nav-link ${item.Title === TabSelected ? "active" : ""}`}
@@ -602,35 +633,37 @@ export default function ManageSmartMetadata(selectedProps: any) {
                         </div>
                     </div>
                 </div>
-                {isVisible && (<div>
-                    <Panel
-                        isOpen={true}
-                        onDismiss={CloseGenerateJSONpopup}
-                        type={PanelType.custom}
-                        isBlocking={false}
-                        onRenderHeader={onRenderCustomHeaderDocuments}
-                        customWidth="750px"
-                    >
-                        <div className="modal-body">
-                            <div className="col-sm-12 tab-content bdrbox">
-                                <div className="divPanelBody mt-10 mb-10  col-sm-12 padL-0 PadR0" id="#CopyJSON">
-                                    {AllCombinedJSON}
+                {
+                    isVisible && (<div>
+                        <Panel
+                            isOpen={true}
+                            onDismiss={CloseGenerateJSONpopup}
+                            type={PanelType.custom}
+                            isBlocking={false}
+                            onRenderHeader={onRenderCustomHeaderDocuments}
+                            customWidth="750px"
+                        >
+                            <div className="modal-body">
+                                <div className="col-sm-12 tab-content bdrbox">
+                                    <div className="divPanelBody mt-10 mb-10  col-sm-12 padL-0 PadR0" id="#CopyJSON">
+                                        {AllCombinedJSON}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className='applyLeavePopup'>
-                            <div className="modal-footer border-0 px-0">
-                                <button className='btnCol btn btn-primary mx-2 mt-0' onClick={CopyJSON}>
-                                    <span>{isCopied ? 'Copied!' : 'CopyJSON'}</span>
-                                </button>
-                                <button className='btn btn-default m-0' onClick={() => CloseGenerateJSONpopup()}> Cancel</button>
+                            <div className='applyLeavePopup'>
+                                <div className="modal-footer border-0 px-0">
+                                    <button className='btnCol btn btn-primary mx-2 mt-0' onClick={CopyJSON}>
+                                        <span>{isCopied ? 'Copied!' : 'CopyJSON'}</span>
+                                    </button>
+                                    <button className='btn btn-default m-0' onClick={() => CloseGenerateJSONpopup()}> Cancel</button>
+                                </div>
                             </div>
-                        </div>
-                    </Panel>
-                </div>)}
+                        </Panel>
+                    </div>)
+                }
                 {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} TabSelected={TabSelected} ParentMetaDataItems={ParentMetaDataItems} childRefdata={childRefdata} /> : ''}
                 {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata AllList={selectedProps.AllList} CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} childRefdata={childRefdata} /> : ''}
-            </div>
+            </div >
         </>
     );
 }

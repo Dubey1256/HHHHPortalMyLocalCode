@@ -2,7 +2,8 @@ import * as React from 'react'
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Web } from "sp-pnp-js";
-import Tooltip from '../Tooltip';
+import GlobalTooltip from '../Tooltip';
+import { Tooltip } from "@fluentui/react-components";
 import * as moment from 'moment';
 import { isEmpty } from 'lodash';
 import InfoIconsToolTip from '../InfoIconsToolTip/InfoIconsToolTip';
@@ -15,6 +16,7 @@ var taskUsers: any = [];
 var AllTaskUser: any = [];
 var currentUserBackupArray: any = [];
 var AllClientCategoriesData: any = [];
+let datesInfo: any = [];
 
 export default function VersionHistory(props: any) {
     const siteTypeUrl = props.siteUrls;
@@ -25,6 +27,9 @@ export default function VersionHistory(props: any) {
         if (window?.location?.search?.split("&Site=")[1]?.indexOf("&OR") > -1) {
             sitetype = window?.location?.search?.split("&Site=")[1]?.split("&OR")[0];
         } 
+        else {
+            sitetype = props?.listName
+        }
     }
     catch (e) {
         console.log(e);
@@ -52,6 +57,38 @@ export default function VersionHistory(props: any) {
         }, 100);
     };
     React.useEffect(() => {
+        try {
+            let count = 0;
+            let currentDate = moment();
+            while (datesInfo.length < 5) {
+                let dateFullInfo = { displayDate: '', originalDate: '' };
+                if (currentDate.day() !== 0 && currentDate.day() !== 6) {
+                    count++;
+                    if (count == 1) {
+                        dateFullInfo.displayDate = "Today"
+                        dateFullInfo.originalDate = currentDate.format('DD/MM/YYYY')
+                    }
+                    else if (count == 2) {
+                        dateFullInfo.displayDate = "Tomorrow"
+                        dateFullInfo.originalDate = currentDate.format('DD/MM/YYYY')
+                    }
+                    else {
+                        dateFullInfo.displayDate = currentDate.format('DD/MM/YYYY')
+                        dateFullInfo.originalDate = currentDate.format('DD/MM/YYYY')
+                    }
+                    datesInfo.push(dateFullInfo);
+                    currentDate = currentDate.add(1, 'day');
+                }
+                else {
+                    currentDate = currentDate.add(1, 'day');
+                    count++;
+                }
+
+            }
+        }
+        catch (e) {
+            console.log(e)
+        }
         GetItemsVersionHistory();
         loadTaskUsers();
         LoadAllClientCategories();
@@ -75,7 +112,7 @@ export default function VersionHistory(props: any) {
 
                 const employeesWithoutLastName = result.map(employee => {
                     employee.childs = []
-                    const { VersionId, IsCurrentVersion, MetaInfo, Parent_x005f_x003a_x005f_ID, ClientTime,FeatureType_x005f_x003a_x005f_Title, SmartInformation_x005f_x003a_x005f_ID,PreviouslyAssignedTo,Portfolio_x005f_x003a_x005f_ID, Project_x005f_x003a_x005f_ID, VersionLabel, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, ...rest } = employee;
+                    const { VersionId, IsCurrentVersion, MetaInfo, Parent_x005f_x003a_x005f_ID, FeatureType_x005f_x003a_x005f_Title, SmartInformation_x005f_x003a_x005f_ID,PreviouslyAssignedTo,Portfolio_x005f_x003a_x005f_ID, Project_x005f_x003a_x005f_ID, VersionLabel, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, ...rest } = employee;
                     return rest;
                 });
                 console.log(employeesWithoutLastName)
@@ -129,6 +166,25 @@ export default function VersionHistory(props: any) {
 
                         }                        
                     }
+                    try {
+                        if (val.WorkingDetails !== undefined && val.WorkingDetails !== null && val.WorkingDetails !== '[]') {
+                            val?.WorkingDetails?.map((childitem: any) => {
+                                childitem?.WorkingMember?.map((childuser: any) => {
+                                    taskUsers.map((user: any) => {
+                                        if (childuser?.Id === user?.AssingedToUserId) {
+                                            childuser.ItemImage = user?.Item_x0020_Cover?.Url;
+                                            childuser.UserId = user?.AssingedToUserId;
+                                        }
+                                        else {
+                                            childuser.UserId = childuser?.Id;
+                                        }
+                                    })
+                                })                                
+                            })
+                            
+                        }  
+                    }
+                    catch(e){console.log(e)}
                     if (val.Comments !== undefined && val.Comments !== null && val.Comments !== '[]') {
                         try{
                             val.CommentsDescription = JSON.parse(val?.Comments)
@@ -145,7 +201,7 @@ export default function VersionHistory(props: any) {
 
                 employeesWithoutLastName?.forEach((val: any) => {
                     val.childs?.forEach((ele: any) => {
-                        const { VersionId, IsCurrentVersion, MetaInfo, Parent_x005f_x003a_x005f_ID,ClientTime,FeatureType_x005f_x003a_x005f_Title,SmartInformation_x005f_x003a_x005f_ID ,PreviouslyAssignedTo, Portfolio_x005f_x003a_x005f_ID, VersionLabel, Project_x005f_x003a_x005f_ID, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, Editor, ...rest } = ele;
+                        const { VersionId, IsCurrentVersion, MetaInfo, Parent_x005f_x003a_x005f_ID,FeatureType_x005f_x003a_x005f_Title,SmartInformation_x005f_x003a_x005f_ID ,PreviouslyAssignedTo, Portfolio_x005f_x003a_x005f_ID, VersionLabel, Project_x005f_x003a_x005f_ID, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, Editor, ...rest } = ele;
                         return rest;
                     })
                 })
@@ -157,6 +213,9 @@ export default function VersionHistory(props: any) {
                                     if(childitem?.Editor?.LookupId === user?.AssingedToUserId){
                                         childitem.ItemImage = user?.Item_x0020_Cover?.Url;
                                         childitem.UserId = user?.AssingedToUserId;
+                                    }
+                                    else {
+                                        childitem.UserId = childitem?.Editor?.LookupId;
                                     }
                                 })
                             })
@@ -213,7 +272,7 @@ export default function VersionHistory(props: any) {
 
     // this ise used for getting all users details form backend side also used for getting the current used details
 
-    const loadTaskUsers = async () => {
+    const loadTaskUsers = async() => {
         var AllTaskUsers: any = [];
         let currentUserId = Context?.pageContext._legacyPageContext.userId;
         try {
@@ -332,7 +391,13 @@ export default function VersionHistory(props: any) {
                             break;  
                         case 'Item_x005f_x005F_x005f_x0020_x005f_Cover':
                             newKey = 'ItemCover';
-                            break;                       
+                            break; 
+                        case 'Portfolio_x005f_x003a_x005f_PortfolioStructu':
+                            newKey = 'PortfolioStructure';
+                            break;  
+                        case 'Portfolio_x005f_x003a_x005f_TaskDueDate':
+                            newKey = 'PortfolioTaskDueDate';
+                            break;  
                         default:
                             newKey = key; // If no transformation needed, keep the same key
                             break;
@@ -382,7 +447,7 @@ export default function VersionHistory(props: any) {
                                 console.log(e);
                             }
                             
-                        }    
+                        }                          
                         else if(key === 'Deliverables'){
                             newKey = 'Deliverables';             
                             try {
@@ -394,6 +459,21 @@ export default function VersionHistory(props: any) {
                             }
                             
                         } 
+                        else if (key === 'WorkingAction') {
+                            newKey = 'WorkingAction';
+                            try {
+                                const WorkingActionValue = JSON.parse(currentObj?.WorkingAction);
+                                WorkingActionValue?.map((item: any) => {                                   
+                                    newKey = item?.Title;
+                                    differingPairs[newKey] = item?.InformationData;                               
+                                })
+                                
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }
+
+                        }       
                         else if (key === 'CategoriesItemsJson' && currentObj.CategoriesItemsJson != undefined && currentObj.CategoriesItemsJson != '[]') {
                             const newKey = 'CategoriesItems';
                             let Deliverablesvalue = '';
@@ -490,6 +570,12 @@ export default function VersionHistory(props: any) {
                         case "Item_x005f_x005F_x005f_x0020_x005f_Cover":
                             newKey = "ItemCover";
                             break;
+                        case 'Portfolio_x005f_x003a_x005f_PortfolioStructu':
+                            newKey = 'PortfolioStructure';
+                            break;
+                        case 'Portfolio_x005f_x003a_x005f_TaskDueDate':
+                            newKey = 'PortfolioTaskDueDate';
+                            break;  
                         default:
                             newKey = key; // If no transformation needed, keep the same key
                             break;
@@ -547,6 +633,21 @@ export default function VersionHistory(props: any) {
                                 }
                                 
                             }
+                            else if (key === 'WorkingAction') {
+                                newKey = 'WorkingAction';
+                                try {
+                                    const WorkingActionValue = JSON.parse(currentObj?.WorkingAction);
+                                    WorkingActionValue?.map((item: any) => {
+                                        newKey = item?.Title;
+                                        differingPairs[newKey] = item?.InformationData;
+                                    })
+
+                                }
+                                catch (e) {
+                                    console.log(e);
+                                }
+
+                            }    
                             else if(key === 'Deliverables'){
                                 newKey = 'Deliverables';                            
                                 try {
@@ -641,7 +742,7 @@ export default function VersionHistory(props: any) {
                 <div className='subheading mb-0'>
                     Version History
                 </div>  
-                <Tooltip ComponentId='1950' />
+                <GlobalTooltip ComponentId='1950' />
             </>
         );
     };
@@ -654,10 +755,52 @@ export default function VersionHistory(props: any) {
             </>
         );
     };
-    const renderArray = (arr: any[],key:any) => {
-        return arr.map((item, index) => (
-            <div key={index}>{typeof item === 'object' ? item.LookupValue : item} </div>
-        ));
+    const renderArray = (arr: any[], key: any) => {
+        if (key === 'Bottleneck' || key === 'Attention' || key === 'Phone') {
+            return arr.map((item, index) => (
+                <>
+                    <span className="round pe-1">
+                        <img className="align-self-start me-1" src={item?.TaggedUsers?.userImage} title={item?.TaggedUsers?.Title} />
+                        {item?.TaggedUsers?.Title}
+                    </span>                    
+                    {item.Comment != undefined && item.Comment?.length > 1 && <span className="m-0 img-info hover-text"> <span className="svg__iconbox svg__icon--comment"></span>
+                        <span className="tooltip-text pop-left">
+                            {item.Comment}
+                        </span>
+                    </span>}
+                </>
+                
+            ));
+        }
+        else if (key === 'WorkingDetails') {
+            return (                                
+                <div className="team w-75">
+                    {datesInfo != null && datesInfo.length > 0 && datesInfo.map((date: any) => {
+                        return (
+                            <div className="width20 top-assign pe-1"><label className="BdrBtm mb-0">{date.displayDate}</label>
+                                <div className='border p-1 w-100' style={{ minHeight: '30px' }}>
+                                    {arr?.map((item, index) => (
+                                        <>
+                                            {item?.WorkingDate == date.originalDate && item?.WorkingMember?.length > 0 && item?.WorkingMember?.map((userInfo: any, index: any) =>
+                                                <span className='me-1'>
+                                                    <img className="ProirityAssignedUserPhoto" src={userInfo?.ItemImage} title={userInfo?.Title} />
+                                                </span>
+                                            )}
+                                        </>
+                                    ))}
+                                   
+                                </div>
+                            </div>
+                        )
+                    })}                                                     
+                </div>               
+            )
+        }
+        else {
+            return arr.map((item, index) => (
+                <div key={index}>{typeof item === 'object' ? item.LookupValue : item} </div>
+            ));
+        }       
     };
     const renderSiteComposition = (itm: any) => {
         var SitesTaggingArray: any = [];
@@ -841,6 +984,7 @@ export default function VersionHistory(props: any) {
             <Panel
                 onRenderHeader={onRenderCustomHeader}
                 isOpen={show}
+                className='versionHistoryPopup'
                 onDismiss={handleClose}
                 isBlocking={false}
                 type={PanelType.custom}
@@ -945,10 +1089,16 @@ export default function VersionHistory(props: any) {
                                                                                                                                                 <span className='mx-2'>{EstimatedTimeData?.EstimatedTime ? (EstimatedTimeData?.EstimatedTime > 1 ? EstimatedTimeData?.EstimatedTime + " hours" : EstimatedTimeData?.EstimatedTime + " hour") : "0 hour"}</span>
                                                                                                                                                 <img className="ProirityAssignedUserPhoto m-0 mx-2" title={EstimatedTimeData?.UserName} src={EstimatedTimeData?.UserImage != undefined && EstimatedTimeData?.UserImage?.length > 0 ? EstimatedTimeData?.UserImage : ''} />
                                                                                                                                             </div>
-                                                                                                                                            {EstimatedTimeData?.EstimatedTimeDescription?.length > 0 && <div className='alignCenter hover-text'>
+                                                                                                                                            {/* {EstimatedTimeData?.EstimatedTimeDescription?.length > 0 && <div className='alignCenter hover-text'>
                                                                                                                                                 <span className="svg__iconbox svg__icon--info"></span>
+
                                                                                                                                                 <span className='tooltip-text pop-right'>{EstimatedTimeData?.EstimatedTimeDescription} </span>
-                                                                                                                                            </div>}
+                                                                                                                                            </div>} */}
+                                                                                                                                            <Tooltip withArrow content={EstimatedTimeData?.EstimatedTimeDescription} relationship="label" positioning="below">
+                                                                                                                                                {EstimatedTimeData?.EstimatedTimeDescription?.length > 0 && <div className='alignCenter hover-text'>
+                                                                                                                                                    <span className="svg__iconbox svg__icon--info"></span>
+                                                                                                                                                </div>}
+                                                                                                                                            </Tooltip>
                                                                                                                                         </div>
                                                                                                                                     )
                                                                                                                                 })}
@@ -967,14 +1117,10 @@ export default function VersionHistory(props: any) {
 
                                                                                                                 <div>
                                                                                                                     <span className='comment-date'>
-                                                                                                                        <span className='round  pe-1'> <img className='align-self-start me-1' title={item?.CommentsDescription[0]?.AuthorName}
-                                                                                                                            src={item?.CommentsDescription[0]?.AuthorImage != undefined && item?.CommentsDescription[0]?.AuthorImage != '' ?
-                                                                                                                                item?.CommentsDescription[0].AuthorImage :
-                                                                                                                                "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
-                                                                                                                        />
-                                                                                                                            {item?.CommentsDescription[0]?.Created}
-
-                                                                                                                        </span>
+                                                                                                                       {item?.CommentsDescription[0]?.AuthorImage != undefined && item?.CommentsDescription[0]?.AuthorImage != '' ? <span className='round  pe-1'><img className='align-self-start me-1' title={item?.CommentsDescription[0]?.AuthorName}
+                                                                                                                            src={item?.CommentsDescription[0].AuthorImage}/>                                                                                                                           
+                                                                                                                        </span> : <span className='svg__iconbox svg__icon--defaultUser grey pe-1'> </span>}
+                                                                                                                        {item?.CommentsDescription[0]?.Created}
                                                                                                                     </span>
                                                                                                                 </div>
 
@@ -1043,14 +1189,10 @@ export default function VersionHistory(props: any) {
                                         <div>
                                             <div className='d-flex justify-content-between align-items-center'>
                                                 <span className='comment-date'>
-                                                    <span className='round  pe-1'> <img className='align-self-start me-1' title={cmtData?.AuthorName}
-                                                        src={cmtData?.AuthorImage != undefined && cmtData?.AuthorImage != '' ?
-                                                            cmtData.AuthorImage :
-                                                            "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
-                                                    />
-                                                        {cmtData?.Created}
-
-                                                    </span>
+                                                    {cmtData?.AuthorImage != undefined && cmtData?.AuthorImage != '' ? <span className='round  pe-1'><img className='align-self-start me-1' title={cmtData?.AuthorName}
+                                                        src={cmtData.AuthorImage} />
+                                                    </span> : <span className='svg__iconbox svg__icon--defaultUser grey pe-1'> </span>}
+                                                    {cmtData?.Created}                                                   
                                                 </span>
                                             </div>
 
