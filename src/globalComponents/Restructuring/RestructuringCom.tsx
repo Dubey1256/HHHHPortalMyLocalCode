@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, forwardRef } from "react";
 import { Web } from "sp-pnp-js";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import Tooltip from "../Tooltip";
+import _ from 'lodash';
 import ReactPopperTooltipSingleLevel from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 
 const RestructuringCom = (props: any, ref: any) => {
@@ -12,7 +13,7 @@ const RestructuringCom = (props: any, ref: any) => {
   const [allData, setAllData]: any = React.useState([]);
   const [restructureItem, setRestructureItem]: any = React.useState([]);
   const [NewArrayBackup, setNewArrayBackup]: any = React.useState([]);
-  const [NewArrayAll, setNewArrayAll]: any = React.useState([]);
+  const [checkButtonClick, setCheckButtonClick]: any = React.useState(false);
   const [ResturuningOpen, setResturuningOpen]: any = React.useState(false);
   const [newItemBackUp, setNewItemBackUp]: any = React.useState(null);
   const [checkSubChilds, setCheckSubChilds]: any = React.useState([]);
@@ -81,7 +82,7 @@ const RestructuringCom = (props: any, ref: any) => {
   }, [props?.restructureItem]);
 
   useEffect(() => {
-    if (props?.restructureItem?.length === 0) {
+    if (props?.restructureItem?.length === 0 && checkButtonClick) {
       let array = allData;
       const recursivelySetRestructureActive = (arr: any) => {
         arr?.forEach((obj: any) => {
@@ -100,10 +101,8 @@ const RestructuringCom = (props: any, ref: any) => {
   }, [props?.restructureItem]);
 
   const buttonRestructureCheck = () => {
-    let checkItem_x0020_Type: any =
-      restructureItem[0]?.Item_x0020_Type == "Task"
-        ? restructureItem[0]?.TaskType?.Id
-        : restructureItem[0]?.Item_x0020_Type;
+    setCheckButtonClick(true);
+    let checkItem_x0020_Type: any = restructureItem[0]?.Item_x0020_Type == "Task"   ? restructureItem[0]?.TaskType?.Id   : restructureItem[0]?.Item_x0020_Type;
     let checkSiteType: any = restructureItem[0]?.siteType;
     let PortfolioType: any = restructureItem[0]?.PortfolioTypeCheck;
     let checkPortfolioType: boolean = true;
@@ -427,25 +426,14 @@ const RestructuringCom = (props: any, ref: any) => {
               let actionsPerformed = false;
               restructureItem?.map((items: any) => {
                 let newObj: any;
-                if (
-                  items?.PortfolioTypeCheck === obj.PortfolioTypeCheck &&
-                  !actionsPerformed
-                ) {
+                if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck && !actionsPerformed ) {
                   if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task") {
                     obj.isRestructureActive = true;
                   } else {
-                    newObj = {
-                      Title: obj?.Title,
-                      TaskType: {
-                        Id:
-                          obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,
-                      },
+                    newObj = {Title: obj?.Title, TaskType: { Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,},
                       Id: obj.Id,
                       Item_x0020_Type: obj.Item_x0020_Type,
-                      siteIcon:
-                        obj.SiteIconTitle === undefined
-                          ? obj.SiteIcon
-                          : obj.SiteIconTitle,
+                      siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
                     };
                     newChildarray?.push(newObj);
                     newarrays?.push(obj);
@@ -468,18 +456,10 @@ const RestructuringCom = (props: any, ref: any) => {
                         if (items?.Id === sub.Id) {
                           newObj = {
                             Title: obj?.Title,
-                            TaskType: {
-                              Id:
-                                obj.TaskType?.Id == undefined
-                                  ? ""
-                                  : obj.TaskType?.Id,
-                            },
+                            TaskType: { Id: obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id, },
                             Item_x0020_Type: obj.Item_x0020_Type,
                             Id: obj.Id,
-                            siteIcon:
-                              obj.SiteIconTitle === undefined
-                                ? obj.SiteIcon
-                                : obj.SiteIconTitle,
+                            siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
                             newSubChild: {
                               Title: sub?.Title,
                               TaskType: {
@@ -490,11 +470,7 @@ const RestructuringCom = (props: any, ref: any) => {
                               },
                               Item_x0020_Type: sub.Item_x0020_Type,
                               Id: sub.Id,
-                              siteIcon:
-                                sub.SiteIconTitle === undefined
-                                  ? sub.SiteIcon
-                                  : sub.SiteIconTitle,
-                            },
+                              siteIcon:sub.SiteIconTitle === undefined  ? sub.SiteIcon  : sub.SiteIconTitle,},
                           };
                           newarrays?.push(obj);
                           setRestructuredItemarray(newarrays);
@@ -600,14 +576,11 @@ const RestructuringCom = (props: any, ref: any) => {
               }
 
               let newObj: any;
-              if (
-                items?.PortfolioTypeCheck === obj.PortfolioTypeCheck &&
-                !actionsPerformed
-              ) {
+              if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck && !actionsPerformed) {
                 if (!actionsPerformed) {
                   if (items?.Id !== obj.Id && obj?.TaskType?.Id != 2) {
-                    obj.isRestructureActive = true;
-                    if ((obj.TaskType?.Id == 1 || obj.TaskType?.Id == 3) &&obj?.siteType !== items?.siteType) {
+                      obj.isRestructureActive = true;
+                    if ((obj.TaskType?.Id == 1 || obj.TaskType?.Id == 3) && obj?.siteType !== items?.siteType) {
                       obj.isRestructureActive = false;
                     }
                     if (items?.TaskType?.Id == 3 && obj?.TaskType?.Id == 3) {
@@ -618,7 +591,7 @@ const RestructuringCom = (props: any, ref: any) => {
                     }
                   } else {
                     if (items?.Id === obj.Id) {
-                      newObj = {
+                        newObj = {
                         Title: obj?.Title,
                         TaskType: {Id:  obj.TaskType?.Id == undefined    ? ""    : obj.TaskType?.Id,},
                         Id: obj.Id,
@@ -654,22 +627,12 @@ const RestructuringCom = (props: any, ref: any) => {
                       if (items?.Id === sub.Id) {
                         newObj = {
                           Title: obj?.Title,
-                          TaskType: {
-                            Id:obj.TaskType?.Id == undefined  ? ""  : obj.TaskType?.Id,
-                          },
+                          TaskType: {Id:obj.TaskType?.Id == undefined  ? ""  : obj.TaskType?.Id,},
                           Item_x0020_Type: obj.Item_x0020_Type,
                           Id: obj.Id,
                           siteIcon:obj.SiteIconTitle === undefined  ? obj.SiteIcon  : obj.SiteIconTitle,
-                          newSubChild: {
-                            Title: sub?.Title,
-                            TaskType: {
-                              Id:sub.TaskType?.Id == undefined  ? ""  : sub.TaskType?.Id,
-                            },
-                            Item_x0020_Type: sub.Item_x0020_Type,
-                            Id: sub.Id,
-                            siteIcon:sub.SiteIconTitle === undefined  ? sub.SiteIcon  : sub.SiteIconTitle,
-                          },
-                        };
+                          newSubChild: {Title: sub?.Title,TaskType: {Id:sub.TaskType?.Id == undefined  ? ""  : sub.TaskType?.Id,},Item_x0020_Type: sub.Item_x0020_Type,Id: sub.Id,siteIcon:sub.SiteIconTitle === undefined  ? sub.SiteIcon  : sub.SiteIconTitle,
+                          },};
                         newarrays?.push(obj);
                         setRestructuredItemarray(newarrays);
                         setCheckSubChilds(sub);
@@ -731,55 +694,27 @@ const RestructuringCom = (props: any, ref: any) => {
 
                         if (feature?.subRows != undefined &&feature?.subRows?.length > 0 &&!actionsPerformed &&items?.TaskType?.Id != 1) {
                           feature?.subRows?.map((activity: any) => {
-                            if (
-                              items?.Id !== activity.Id &&
-                              activity?.TaskType?.Id != 2
-                            ) {
+                            if (items?.Id !== activity.Id &&activity?.TaskType?.Id != 2) {
                               activity.isRestructureActive = true;
                               if ((activity.TaskType?.Id == 1 ||  activity.TaskType?.Id == 3) &&activity?.siteType !== items?.siteType) {
                                 activity.isRestructureActive = false;
                               }
-                              if (items?.TaskType?.Id == 3 &&activity?.TaskType?.Id == 3
-                              ) {activity.isRestructureActive = false;
+                              if (items?.TaskType?.Id == 3 &&activity?.TaskType?.Id == 3) {
+                                activity.isRestructureActive = false;
                               }
                             } else {
                               if (items?.Id === activity.Id) {
-                                newObj = {Title: obj?.Title,TaskType: {  Id:    obj.TaskType?.Id == undefined      ? ""      : obj.TaskType?.Id,
-                                  },
+                                  newObj = {Title: obj?.Title,TaskType: {  Id:    obj.TaskType?.Id == undefined      ? ""      : obj.TaskType?.Id,},
                                   Item_x0020_Type: obj.Item_x0020_Type,
                                   Id: obj.Id,
-                                  siteIcon:
-                                    obj.SiteIconTitle === undefined
-                                      ? obj.SiteIcon
-                                      : obj.SiteIconTitle,
-                                  newSubChild: {
-                                    Title: sub?.Title,
-                                    TaskType: {
-                                      Id:
-                                        sub.TaskType?.Id == undefined
-                                          ? ""
-                                          : sub.TaskType?.Id,
-                                    },
-                                    Item_x0020_Type: sub.Item_x0020_Type,
-                                    Id: sub.Id,
-                                    siteIcon:
-                                      sub.SiteIconTitle === undefined
-                                        ? sub.SiteIcon
-                                        : sub.SiteIconTitle,
-                                    newFeatChild: {
-                                      Title: feature?.Title,
-                                      TaskType: {
-                                        Id:
-                                          feature.TaskType?.Id == undefined
-                                            ? ""
-                                            : feature.TaskType?.Id,
-                                      },
-                                      Item_x0020_Type: feature.Item_x0020_Type,
-                                      Id: feature.Id,
-                                      siteIcon:
-                                        feature.SiteIconTitle === undefined
-                                          ? feature.SiteIcon
-                                          : feature.SiteIconTitle,
+                                  siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon : obj.SiteIconTitle,
+                                  newSubChild: {Title: sub?.Title,TaskType: {Id:sub.TaskType?.Id == undefined? "" : sub.TaskType?.Id,},
+                                  Item_x0020_Type: sub.Item_x0020_Type,
+                                  Id: sub.Id,siteIcon:sub.SiteIconTitle === undefined? sub.SiteIcon: sub.SiteIconTitle,
+                                  newFeatChild: {Title: feature?.Title,TaskType: {Id:feature.TaskType?.Id == undefined? "": feature.TaskType?.Id,},
+                                  Item_x0020_Type: feature.Item_x0020_Type,
+                                  Id: feature.Id,
+                                  siteIcon:feature.SiteIconTitle === undefined? feature.SiteIcon: feature.SiteIconTitle,
                                     },
                                   },
                                 };
@@ -789,9 +724,7 @@ const RestructuringCom = (props: any, ref: any) => {
                                 }
                                 setRestructuredItemarray(newarrays);
                                 setCheckSubChilds(feature);
-                                newChildarray?.push(
-                                  newObj.newSubChild.newFeatChild
-                                );
+                                newChildarray?.push(newObj.newSubChild.newFeatChild);
                                 setRestructureChecked(newChildarray);
                                 ArrayTest?.push(newObj);
                                 actionsPerformed = true;
@@ -799,33 +732,14 @@ const RestructuringCom = (props: any, ref: any) => {
                               } 
                             }
 
-                            if (
-                              activity?.subRows != undefined &&
-                              activity?.subRows?.length > 0 &&
-                              !actionsPerformed &&
-                              items?.TaskType?.Id != 1
-                            ) {
+                            if (activity?.subRows != undefined && activity?.subRows?.length > 0 && !actionsPerformed && items?.TaskType?.Id != 1) {
                               activity?.subRows?.map((wrkstrm: any) => {
-                                if (
-                                  items?.Id !== wrkstrm.Id &&
-                                  wrkstrm?.TaskType?.Id != 2
-                                ) {
+                                if (items?.Id !== wrkstrm.Id &&wrkstrm?.TaskType?.Id != 2) {
                                   wrkstrm.isRestructureActive = true;
-                                  wrkstrm.Restructuring =
-                                    wrkstrm?.PortfolioTypeCheck == "Component"
-                                      ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                                      : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
-                                  if (
-                                    (wrkstrm.TaskType?.Id == 1 ||
-                                      wrkstrm.TaskType?.Id == 3) &&
-                                    wrkstrm?.siteType !== items?.siteType
-                                  ) {
+                                  if ((wrkstrm.TaskType?.Id == 1 ||  wrkstrm.TaskType?.Id == 3) &&wrkstrm?.siteType !== items?.siteType) {
                                     wrkstrm.isRestructureActive = false;
                                   }
-                                  if (
-                                    items?.TaskType?.Id == 3 &&
-                                    wrkstrm?.TaskType?.Id == 3
-                                  ) {
+                                  if (items?.TaskType?.Id == 3 &&wrkstrm?.TaskType?.Id == 3) {
                                     wrkstrm.isRestructureActive = false;
                                   }
                                 } else {
@@ -840,12 +754,7 @@ const RestructuringCom = (props: any, ref: any) => {
                                         siteIcon: sub.SiteIconTitle === undefined   ? sub.SiteIcon   : sub.SiteIconTitle,
                                         newFeatChild: {
                                           Title: feature?.Title,
-                                          TaskType: {
-                                            Id:
-                                              feature.TaskType?.Id == undefined
-                                                ? ""
-                                                : feature.TaskType?.Id,
-                                          },
+                                          TaskType: { Id:feature.TaskType?.Id == undefined ? "" : feature.TaskType?.Id,},
                                           Item_x0020_Type:
                                             feature.Item_x0020_Type,
                                           Id: feature.Id,
@@ -862,9 +771,7 @@ const RestructuringCom = (props: any, ref: any) => {
                                     }
                                     setRestructuredItemarray(newarrays);
                                     setCheckSubChilds(feature);
-                                    newChildarray?.push(
-                                      newObj.newSubChild.newFeatChild
-                                    );
+                                    newChildarray?.push(newObj.newSubChild.newFeatChild);
                                     setRestructureChecked(newChildarray);
                                     ArrayTest?.push(newObj);
                                     actionsPerformed = true;
@@ -892,23 +799,7 @@ const RestructuringCom = (props: any, ref: any) => {
                                             Item_x0020_Type:sub.Item_x0020_Type,
                                             Id: sub.Id,
                                             siteIcon:sub.SiteIconTitle === undefined  ? sub.SiteIcon  : sub.SiteIconTitle,
-                                            newFeatChild: {
-                                              Title: feature?.Title,
-                                              TaskType: {
-                                                Id:
-                                                  feature.TaskType?.Id ==
-                                                  undefined
-                                                    ? ""
-                                                    : feature.TaskType?.Id,
-                                              },
-                                              Item_x0020_Type:
-                                                feature.Item_x0020_Type,
-                                              Id: feature.Id,
-                                              siteIcon:
-                                                feature.SiteIconTitle ===
-                                                undefined
-                                                  ? feature.SiteIcon
-                                                  : feature.SiteIconTitle,
+                                            newFeatChild: {Title: feature?.Title,TaskType: {Id:  feature.TaskType?.Id ==  undefined    ? ""    : feature.TaskType?.Id,},Item_x0020_Type:  feature.Item_x0020_Type,Id: feature.Id,siteIcon:feature.SiteIconTitle ===undefined  ? feature.SiteIcon  : feature.SiteIconTitle,
                                             },
                                           },
                                         };
@@ -918,9 +809,7 @@ const RestructuringCom = (props: any, ref: any) => {
                                         }
                                         setRestructuredItemarray(newarrays);
                                         setCheckSubChilds(feature);
-                                        newChildarray?.push(
-                                          newObj.newSubChild.newFeatChild
-                                        );
+                                        newChildarray?.push(newObj.newSubChild.newFeatChild);
                                         setRestructureChecked(newChildarray);
                                         ArrayTest?.push(newObj);
                                         actionsPerformed = true;
@@ -948,9 +837,7 @@ const RestructuringCom = (props: any, ref: any) => {
             }else if(restructureItem?.[0].TaskType?.Id === 3 && !restructureItem.some((obj : any) => Array.isArray(obj.subRows) && obj.subRows.length > 0)){
               topCompo = true;
             }
-            
-            
-          }
+            }
         }
       }else if (restructureItem[0]?.Item_x0020_Type === "Sprint") {
         let newarrays: any = [];
@@ -1229,8 +1116,7 @@ const RestructuringCom = (props: any, ref: any) => {
                     if ( items?.Id === obj.Id && items?.Item_x0020_Type == obj.Item_x0020_Type && items?.siteType == obj.siteType) {
                       newObj = {
                         Title: obj?.Title,
-                        TaskType: {
-                          Id: obj.TaskType?.Id == undefined   ? ""   : obj.TaskType?.Id,},
+                        TaskType: {Id: obj.TaskType?.Id == undefined   ? ""   : obj.TaskType?.Id,},
                         Id: obj.Id,
                         Item_x0020_Type: obj.Item_x0020_Type,
                         siteIcon: obj.SiteIconTitle === undefined   ? obj.SiteIcon   : obj.SiteIconTitle,};
@@ -1255,18 +1141,8 @@ const RestructuringCom = (props: any, ref: any) => {
                       }
                     } else {
                       if (items?.Id === sub.Id &&  items?.Item_x0020_Type == sub.Item_x0020_Type &&  items?.siteType == sub.siteType) {
-                        newObj = {
-                          Title: obj?.Title,
-                          TaskType: { Id:   obj.TaskType?.Id == undefined     ? ""     : obj.TaskType?.Id,},
-                          Item_x0020_Type: obj.Item_x0020_Type,
-                          Id: obj.Id,
-                          siteIcon: obj.SiteIconTitle === undefined   ? obj.SiteIcon   : obj.SiteIconTitle,
-                          newSubChild: {
-                            Title: sub?.Title,
-                            TaskType: {Id:  sub.TaskType?.Id == undefined    ? ""    : sub.TaskType?.Id,},
-                            Item_x0020_Type: sub.Item_x0020_Type,
-                            Id: sub.Id,
-                            siteIcon: sub.SiteIconTitle === undefined   ? sub.SiteIcon   : sub.SiteIconTitle,},
+                        newObj = {Title: obj?.Title,TaskType: { Id:   obj.TaskType?.Id == undefined     ? ""     : obj.TaskType?.Id,},Item_x0020_Type: obj.Item_x0020_Type,Id: obj.Id,siteIcon: obj.SiteIconTitle === undefined   ? obj.SiteIcon   : obj.SiteIconTitle,
+                          newSubChild: {Title: sub?.Title,TaskType: {Id:  sub.TaskType?.Id == undefined    ? ""    : sub.TaskType?.Id,},Item_x0020_Type: sub.Item_x0020_Type,Id: sub.Id,siteIcon: sub.SiteIconTitle === undefined   ? sub.SiteIcon   : sub.SiteIconTitle,},
                         };
                         newarrays?.push(obj);
                         setRestructuredItemarray(newarrays);
@@ -1288,33 +1164,14 @@ const RestructuringCom = (props: any, ref: any) => {
                           }
                         } else {
                           if ( items?.Id === feature.Id && items?.Item_x0020_Type == feature.Item_x0020_Type && items?.siteType == feature.siteType) {
-                            newObj = {
-                              Title: obj?.Title,
-                              TaskType: { Id:   obj.TaskType?.Id == undefined     ? ""     : obj.TaskType?.Id,},
-                              Item_x0020_Type: obj.Item_x0020_Type,
-                              Id: obj.Id,
-                              siteIcon: obj.SiteIconTitle === undefined   ? obj.SiteIcon   : obj.SiteIconTitle,
-                              newSubChild: {
-                                Title: sub?.Title,
-                                TaskType: {Id:  sub.TaskType?.Id == undefined    ? ""    : sub.TaskType?.Id,},
-                                Item_x0020_Type: sub.Item_x0020_Type,
-                                Id: sub.Id,
-                                siteIcon: sub.SiteIconTitle === undefined   ? sub.SiteIcon   : sub.SiteIconTitle,
-                                newFeatChild: {
-                                  Title: feature?.Title,
-                                  TaskType: { Id:feature.TaskType?.Id == undefined  ? ""  : feature.TaskType?.Id,},
-                                  Item_x0020_Type: feature.Item_x0020_Type,
-                                  Id: feature.Id,
-                                  siteIcon: feature.SiteIconTitle === undefined   ? feature.SiteIcon   : feature.SiteIconTitle,
-                                },
-                              },
-                            };
+                            newObj = {Title: obj?.Title,TaskType: { Id:   obj.TaskType?.Id == undefined     ? ""     : obj.TaskType?.Id,},Item_x0020_Type: obj.Item_x0020_Type,Id: obj.Id,siteIcon: obj.SiteIconTitle === undefined   ? obj.SiteIcon   : obj.SiteIconTitle,
+                              newSubChild: {Title: sub?.Title,TaskType: {Id:  sub.TaskType?.Id == undefined    ? ""    : sub.TaskType?.Id,},Item_x0020_Type: sub.Item_x0020_Type,Id: sub.Id,siteIcon: sub.SiteIconTitle === undefined   ? sub.SiteIcon   : sub.SiteIconTitle,
+                                newFeatChild: {Title: feature?.Title,TaskType: { Id:feature.TaskType?.Id == undefined  ? ""  : feature.TaskType?.Id,},Item_x0020_Type: feature.Item_x0020_Type,Id: feature.Id,siteIcon: feature.SiteIconTitle === undefined   ? feature.SiteIcon   : feature.SiteIconTitle,
+                                },},};
                             newarrays?.push(obj);
                             setRestructuredItemarray(newarrays);
                             setCheckSubChilds(feature);
-                            newChildarray?.push(
-                              newObj.newSubChild.newFeatChild
-                            );
+                            newChildarray?.push(newObj.newSubChild.newFeatChild);
                             setRestructureChecked(newChildarray);
                             ArrayTest?.push(newObj);
                             actionsPerformed = true;
@@ -1343,6 +1200,15 @@ const RestructuringCom = (props: any, ref: any) => {
 
 
  const prjtMngmntRestructuring=async ()=>{
+  const deepCloneArray = _.cloneDeep(allData);
+  let array = deepCloneArray;
+  let newChildarray: any = [];
+  let ArrayTest: any = [];
+  let newarrays: any = [];
+  let newObj: any;
+  let topCompo = true;
+  let hasTask:any = null;
+  let hasSprint:any = null;
   
   let childData:any = [];
    // Define getChilds function with async keyword
@@ -1379,14 +1245,7 @@ const RestructuringCom = (props: any, ref: any) => {
     }
   }
 
-  let array = allData;
-  let newChildarray: any = [];
-  let ArrayTest: any = [];
-  let newarrays: any = [];
-  let newObj: any;
-  let topCompo = true;
-  let hasTask:any = null;
-  let hasSprint:any = null;
+ 
 
 
   
@@ -1546,17 +1405,17 @@ const RestructuringCom = (props: any, ref: any) => {
         alert('You are not allowed to restructure this item !')
       }
 
-      for (const item of restructureItem) {
-        if (item.TaskType?.Id == 1 || item.TaskType?.Id == 2 || item.TaskType?.Id == 3) {
-          // Iterate over subRows and remove items that match childData
-          for (let i = item.subRows.length - 1; i >= 0; i--) {
-            const subRow = item.subRows[i];
-            if (childData.some((data : any) => data.Id === subRow.Id)) {
-              item.subRows.splice(i, 1); // Remove matching item
-            }
-          }
-        }
-      }
+      // for (const item of restructureItem) {
+      //   if (item.TaskType?.Id == 1 || item.TaskType?.Id == 2 || item.TaskType?.Id == 3) {
+      //     // Iterate over subRows and remove items that match childData
+      //     for (let i = item.subRows.length - 1; i >= 0; i--) {
+      //       const subRow = item.subRows[i];
+      //       if (childData.some((data : any) => data.Id === subRow.Id)) {
+      //         item.subRows.splice(i, 1); // Remove matching item
+      //       }
+      //     }
+      //   }
+      // }
 
 
       const updateNestedArray = (array : any, restructureItem : any) => {
@@ -2214,7 +2073,6 @@ const RestructuringCom = (props: any, ref: any) => {
                                   checkchild = 3;
                                   checkTrue = true;
                                 }
-
                                 if (items.TaskType?.Id === 2 && !checkTrue) {
                                   checkchild = 2;
                                 }
@@ -2244,13 +2102,10 @@ const RestructuringCom = (props: any, ref: any) => {
                             newSubChild:{...sub, TaskType: {Id:sub.TaskType?.Id == undefined ? "" : sub.TaskType?.Id,Title:sub.TaskType?.Title}, siteIcon:sub.SiteIconTitle === undefined? sub.SiteIcon: sub.SiteIconTitle,
                             newFeatChild : {...feature, TaskType: {Id:feature.TaskType?.Id == undefined ? "" : feature.TaskType?.Id,Title:feature.TaskType?.Title}, siteIcon:feature.SiteIconTitle === undefined? feature.SiteIcon: feature.SiteIconTitle,
                             newActChild : {...activity, TaskType: {Id:activity.TaskType?.Id == undefined ? "" : activity.TaskType?.Id,Title:activity.TaskType?.Title}, siteIcon:activity.SiteIconTitle === undefined? activity.SiteIcon: activity.SiteIconTitle}} }}
-                            
                             newarrays?.push(obj);
                             setRestructuredItemarray(newarrays);
                             setCheckSubChilds(activity);
-                            newChildarray?.push(
-                              newObj.newSubChild.newFeatChild.newActChild
-                            );
+                            newChildarray?.push(newObj.newSubChild.newFeatChild.newActChild);
                             setRestructureChecked(newChildarray);
                             ArrayTest?.push(newObj);
                             activity.isRestructureActive = false;
@@ -2271,7 +2126,6 @@ const RestructuringCom = (props: any, ref: any) => {
                                       checkchild = 3;
                                       checkTrue = true;
                                     }
-
                                     if (items.TaskType?.Id === 2 &&!checkTrue) {
                                       checkchild = 2;
                                     }
@@ -2306,10 +2160,7 @@ const RestructuringCom = (props: any, ref: any) => {
                                 newarrays?.push(obj);
                                 setRestructuredItemarray(newarrays);
                                 setCheckSubChilds(wrkstrm);
-                                newChildarray?.push(
-                                  newObj.newSubChild.newFeatChild.newActChild
-                                    .newWrkChild
-                                );
+                                newChildarray?.push(newObj.newSubChild.newFeatChild.newActChild.newWrkChild);
                                 setRestructureChecked(newChildarray);
                                 ArrayTest?.push(newObj);
                                 activity.isRestructureActive = false;
@@ -3236,6 +3087,11 @@ const RestructuringCom = (props: any, ref: any) => {
                     pushData = true;
                   }
 
+                  if ( !pushData && (newItemBackUp == undefined || newItemBackUp == null) && props?.queryItems != undefined && props?.queryItems != null && obj.Title === 'Others' && restructureItem[0]?.TaskType?.Id ==1) {
+                    obj.subRows?.push(...latestCheckedList);
+                    pushData = true;
+                  }
+
                   if (obj.subRows != undefined && obj.subRows?.length > 0) {
                     processArray(obj.subRows, pushData, spliceData);
                   }
@@ -3775,19 +3631,9 @@ const RestructuringCom = (props: any, ref: any) => {
               (items.TaskType = {
                 Id: TaskTypeId,
                 Level: TaskTypeId == 1 ? 1 : TaskTypeId == 2 ? 3 : 2,
-                Title:
-                  TaskTypeId == 1
-                    ? "Activity"
-                    : TaskTypeId == 2
-                    ? "Task"
-                    : "Workstream",
+                Title:TaskTypeId == 1  ? "Activity"  : TaskTypeId == 2  ? "Task"  : "Workstream",
               }),
-              (items.TaskID =
-                TaskTypeId == 2
-                  ? newItemBackUp?.PortfolioStructureID == undefined
-                    ? newItemBackUp?.TaskID + "-" + TaskId
-                    : newItemBackUp?.PortfolioStructureID + "-" + TaskId
-                  : TaskId);
+              (items.TaskID = TaskTypeId == 2  ? newItemBackUp?.PortfolioStructureID == undefined    ? newItemBackUp?.TaskID + "-" + TaskId    : newItemBackUp?.PortfolioStructureID + "-" + TaskId  : TaskId);
           });
 
           let onceRender: any = true;
@@ -3805,6 +3651,11 @@ const RestructuringCom = (props: any, ref: any) => {
                 if ( !spliceData && obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type ===   backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title ===   backupCheckedList[0]?.TaskType?.Title && obj.Portfolio?.Id == backupCheckedList[0]?.Portfolio?.Id && obj.ParentTask?.Id == backupCheckedList[0]?.ParentTask?.Id) {
                   arr.splice(index, 1);
                   spliceData = true;
+                }
+
+                if ( !pushData && (newItemBackUp == undefined || newItemBackUp == null) && props?.queryItems != undefined && props?.queryItems != null && obj.Title === 'Others' && restructureItem[0]?.TaskType?.Id ==1) {
+                  obj.subRows?.push(...latestCheckedList);
+                  pushData = true;
                 }
                  
                 if ( !pushData && obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && obj.Portfolio?.Id == newItemBackUp?.Portfolio?.Id) {
@@ -4402,12 +4253,20 @@ const RestructuringCom = (props: any, ref: any) => {
             items.Portfolio = Portfolio,
             items.TaskLevel = PortfolioLevel,
             items.TaskType = {Id: TaskType,Level: TaskType == 1 ? 1 : TaskType == 2 ? 3 : 2,Title: TaskType == 1  ? "Activity"  : TaskType == 2  ? "Task"  : "Workstream",},
-            items.TaskID = TaskID;
+            items.TaskID = TaskType == 2 ? 'T' + items?.Id : TaskID;
           });
 
           let onceRender: any = true;
-          array?.map((obj: any, index: any) => {
+          for (let index = array.length - 1; index >= 0; index--) {
+            const obj = array[index];
             obj.isRestructureActive = false;
+           
+            if(checkUpdate != 3 && latestCheckedList[0]?.TaskType?.Id == 2  && (newItemBackUp == undefined ||   newItemBackUp == null || newItemBackUp?.length == 0) && (props?.queryItems?.Item_x0020_Type == 'Component' || props?.queryItems?.Item_x0020_Type == 'SubComponent' || props?.queryItems?.Item_x0020_Type == 'Feature')){
+              if(obj?.Title == 'Others'){
+                obj.subRows?.push(...latestCheckedList);
+                checkUpdate = checkUpdate + 1;
+              }
+            }
             if (( newItemBackUp == undefined || newItemBackUp == null) && onceRender && checkUpdate != 3) {
               if(latestCheckedList[0]?.TaskType?.Id !== 2 && (newItemBackUp == undefined ||   newItemBackUp == null || newItemBackUp?.length == 0) && (props?.queryItems?.Item_x0020_Type == 'Component' || props?.queryItems?.Item_x0020_Type == 'SubComponent' || props?.queryItems?.Item_x0020_Type == 'Feature')){
                 array?.push(...latestCheckedList);
@@ -4415,12 +4274,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 onceRender = false;
               }
              }
-            if(checkUpdate != 3 && latestCheckedList[0]?.TaskType?.Id == 2  && (newItemBackUp == undefined ||   newItemBackUp == null || newItemBackUp?.length == 0) && (props?.queryItems?.Item_x0020_Type == 'Component' || props?.queryItems?.Item_x0020_Type == 'SubComponent' || props?.queryItems?.Item_x0020_Type == 'Feature')){
-              if(obj?.Title == 'Others'){
-                obj.subRows?.push(...latestCheckedList);
-                checkUpdate = checkUpdate + 1;
-              }
-            }
+           
             if ( newItemBackUp !== undefined && newItemBackUp !== null && newItemBackUp?.length !== 0 && obj.Id === newItemBackUp?.Id && obj?.Title != 'Others' &&  obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               obj.subRows?.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
@@ -4527,7 +4381,8 @@ const RestructuringCom = (props: any, ref: any) => {
                 }
               });
             }
-          });
+
+          };
 
           const sortedArray = array.sort((a: any, b: any) => {
             if (a.Title === "Others") return 1;
@@ -4574,7 +4429,7 @@ const RestructuringCom = (props: any, ref: any) => {
   const onRenderCustomCalculateS1C = () => {
     return (
       <>
-        <div className="subheading siteColor">Restucturing Tool -
+        <div className="subheading siteColor" style={{color:restructureItem[0]?.PortfolioType?.Color}}>Restucturing Tool -
         
           <>
            {restructureTitle?.map((items: any) => (
@@ -4608,11 +4463,12 @@ const RestructuringCom = (props: any, ref: any) => {
   const onRenderCustomCalculateSCProject = () => {
     return (
       <>
-        <div className="subheading siteColor">Restucturing Tool -
+        <div className="subheading siteColor" style={{color:restructureItem[0]?.PortfolioType?.Color}}>Restucturing Tool -
         
           <>
            {restructureTitle?.map((items: any) => (
                         <a
+                        style={{color:restructureItem[0]?.PortfolioType?.Color}}
                           data-interception="off"
                           target="_blank"
                           className="hreflink mx-2 f-16"
@@ -4637,11 +4493,12 @@ const RestructuringCom = (props: any, ref: any) => {
   const onRenderCustomCalculateS4CProject = () => {
     return (
       <>
-        <div className="subheading siteColor">Restucturing Tool -
+        <div className="subheading siteColor" style={{color:restructureItem[0]?.PortfolioType?.Color}}>Restucturing Tool -
         
           <>
            {restructureTitle?.map((items: any) => (
                         <a
+                        style={{color:restructureItem[0]?.PortfolioType?.Color}}
                           data-interception="off"
                           target="_blank"
                           className="hreflink mx-2 f-16"
@@ -4672,7 +4529,7 @@ const RestructuringCom = (props: any, ref: any) => {
   const onRenderCustomCalculateSCmulti = () => {
     return (
       <>
-        <div className="subheading siteColor">Restucturing Tool</div>
+        <div className="subheading siteColor" style={{color:restructureItem[0]?.PortfolioType?.Color}}>Restucturing Tool</div>
         <div>
           <Tooltip ComponentId="454" />
         </div>
@@ -5039,8 +4896,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         obj?.newSubChild?.newFeatChild != null ? (
                      ""
                     ) : obj?.newSubChild?.Title}
-                            
-                          </a>
+                         </a>
                           </div>
                           </div>
                         </div>
@@ -5478,7 +5334,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                     <input
                       type="radio"
                       className="radio"
-                      name="fav_language"
+                      name="fav_language" 
                       value="Task"
                       checked={RestructureChecked[0]?.TaskType?.Id === 2 ? true : false}
                       onChange={(e) => setRestructure(RestructureChecked, 2)}
@@ -5491,7 +5347,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
               " "
             )}
               </>
-
             }
 
             {selectedItems != undefined && selectedItems?.length > 0 && selectedItems[0]?.Item_x0020_Type === "Task" && newItemBackUp?.Item_x0020_Type != "Task" && ((selectedItems[0]?.TaskType?.Id == 3 &&   selectedItems[0]?.subRows?.length == 0) ||   selectedItems[0]?.TaskType?.Id == 2 ||   (selectedItems[0]?.TaskType?.Id == 1 &&     selectedItems[0]?.subRows?.length == 0)) ? (
@@ -5530,6 +5385,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             <footer className="mt-2 text-end">
               {selectedItems != undefined && selectedItems?.length > 0 && selectedItems[0]?.Item_x0020_Type === "Task" ? (
                 <button
+                style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
                   type="button"
                   className="btn btn-primary "
                   onClick={(e) => UpdateTaskRestructure()}
@@ -5546,6 +5402,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                 </button>
               )}
               <button
+              style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
                 type="button"
                 className="btn btn-default ms-1"
                 onClick={closePanel}
@@ -5581,7 +5438,15 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                     props?.queryItems?.Item_x0020_Type == 'Component' &&  (newItemBackUp == undefined || newItemBackUp == null) && restructureItem[0]?.TaskType?.Id == 2 ?
                     'After restructuring selected item becomes Activity inside' : (
                       props?.queryItems?.Item_x0020_Type == 'Component' &&  (newItemBackUp == undefined || newItemBackUp == null) && restructureItem[0]?.TaskType?.Id == 3 ?
-                      'After restructuring selected item becomes Activity inside' : 'Selected items will restructure inside '
+                      'After restructuring selected item becomes Activity inside' : (
+                        props?.queryItems !== undefined && props?.queryItems !== null && props?.queryItems?.TaskType?.Id == 1 &&
+                        (newItemBackUp == undefined || newItemBackUp == null) && restructureItem[0]?.TaskType?.Id == 3 ? 'After restructuring selected item becomes Task inside' :
+                        (
+                          props?.queryItems !== undefined && props?.queryItems !== null && props?.queryItems?.TaskType?.Id == 1 &&
+                        (newItemBackUp == undefined || newItemBackUp == null) && restructureItem[0]?.TaskType?.Id == 2 ? 'After restructuring selected item becomes Workstream inside' :
+                                 'Selected items will restructure inside '
+                        )
+                      )  
                     )
                       )))
                 }
@@ -5641,7 +5506,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                 className="hreflink serviceColor_Active"
                 href={props?.contextValue?.siteUrl +"/SitePages/Portfolio-Profile.aspx?taskId=" +props?.queryItems?.Id
                 }
-              >
+              >  
                 <span>{props?.queryItems?.Title} </span>
               </a>
             ) : (
@@ -5788,8 +5653,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         type="radio"
                         className="radio"
                         value="SubComponent"
-                        checked={RestructureChecked[0]?.Item_x0020_Type == 'SubComponent'  ? true  : false
-                        }
+                        checked={RestructureChecked[0]?.Item_x0020_Type == 'SubComponent'  ? true  : false}
                         onChange={(e) => setRestructure(RestructureChecked, 'SubComponent')}
                       />
                     </label>
@@ -5822,12 +5686,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
 
           <footer className="mt-2 text-end">
             <button
+            style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
               className="me-2 btn btn-primary"
               onClick={makeMultiSameTask}
             >
               Save
             </button>
-            <button className="me-2 btn btn-default" onClick={closePanel}>
+            <button style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}} className="me-2 btn btn-default" onClick={closePanel}>
               Cancel
             </button>
           </footer>
@@ -5903,11 +5768,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             className="radio"
                             name="fav_language"
                             value="Task"
-                            checked={
-                              RestructureChecked[0]?.TaskType?.Id === 2
-                                ? true
-                                : false
-                            }
+                            checked={RestructureChecked[0]?.TaskType?.Id === 2  ? true  : false}
                             onChange={(e) =>setRestructure(RestructureChecked, 2)}
                           />
                         </label>
@@ -5919,12 +5780,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
           </>
           <footer className="mt-2 text-end">
             <button
+            style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
               className="me-2 btn btn-primary"
               onClick={projectRestruture}
             >
               Save
             </button>
-            <button className="me-2 btn btn-default" onClick={() => setProjects(false)}>
+            <button style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}} className="me-2 btn btn-default" onClick={() => setProjects(false)}>
               Cancel
             </button>
           </footer>
@@ -5971,10 +5833,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         data-interception="off"
                         target="_blank"
                         className="serviceColor_Active "
-                        href={ props?.contextValue?.siteUrl +
-                                "/SitePages/PX-Profile.aspx?ProjectId=" +
-                                obj?.Id}
-                      >
+                        href={ props?.contextValue?.siteUrl +"/SitePages/PX-Profile.aspx?ProjectId=" +obj?.Id}>
                               {obj?.newSubChild != undefined &&
                     obj?.newSubChild != null ? (
                       ""
@@ -5991,12 +5850,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
                         <div className="alignCenter fw-semibold">
-                        
-                              
-                                {obj?.newSubChild?.Item_x0020_Type == 'Project' ? <span className="Dyicons me-1">P</span> :   
+                          {obj?.newSubChild?.Item_x0020_Type == 'Project' ? <span className="Dyicons me-1">P</span> :   
                                 (obj?.newSubChild?.Item_x0020_Type == "Sprint" ? <span className="Dyicons me-1">X</span> : 
-                                <img className="workmember" src={obj?.newSubChild?.SiteIcon} />
-                                )
+                                <img className="workmember" src={obj?.newSubChild?.SiteIcon} />)
                                 }
                               
                               <span className="mx-2">
@@ -6008,9 +5864,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             className=""
                             data-interception="off"
                             target="_blank"
-                            href={ props?.contextValue?.siteUrl +
-                              "/SitePages/PX-Profile.aspx?ProjectId=" +
-                              obj?.newSubChild?.Id}
+                            href={ props?.contextValue?.siteUrl +"/SitePages/PX-Profile.aspx?ProjectId=" +obj?.newSubChild?.Id}
                           >
                              {obj?.newSubChild?.Title}
                           </a></div>
@@ -6039,9 +5893,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 className=""
                                 data-interception="off"
                                 target="_blank"
-                                href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/PX-Profile.aspx?ProjectId=" +
-                                  obj?.newSubChild?.newFeatChild?.Id}
+                                href={ props?.contextValue?.siteUrl +"/SitePages/PX-Profile.aspx?ProjectId=" +obj?.newSubChild?.newFeatChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.Title}
                               </a></div>
@@ -6175,10 +6027,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                           <a
                             data-interception="off"
                             target="_blank"
-                            href={props?.contextValue?.siteUrl +
-                                    "/SitePages/Project-Management.aspx?ProjectId" +
-                                    obj?.newSubChild?.Id
-                            }
+                            href={props?.contextValue?.siteUrl +"/SitePages/Project-Management.aspx?ProjectId" +obj?.newSubChild?.Id}
                           >
                           </a></div>
                           </div>
@@ -6270,9 +6119,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 className=""
                                 data-interception="off"
                                 target="_blank"
-                                href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/PX-Profile.aspx?ProjectId=" +
-                                  obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Id}
+                                href={ props?.contextValue?.siteUrl +"/SitePages/PX-Profile.aspx?ProjectId=" +obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}
                               </a></div>
@@ -6300,29 +6147,20 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                           data-interception="off"
                           target="_blank"
                           className="hreflink serviceColor_Active fw-semibold reStuTile"
-                          href={ props?.contextValue?.siteUrl +
-                                "/SitePages/Project-Management.aspx?ProjectId" +
-                                obj?.Id
-                          }
+                          href={ props?.contextValue?.siteUrl +"/SitePages/Project-Management.aspx?ProjectId" +obj?.Id}
                         >
                           
                           {
                            newItemBackUp != undefined && newItemBackUp != null ?
-                           (
-                            RestructureChecked[0]?.Item_x0020_Type == 'Sprint' || RestructureChecked[0]?.Item_x0020_Type == 'Project'  ?
+                           (RestructureChecked[0]?.Item_x0020_Type == 'Sprint' || RestructureChecked[0]?.Item_x0020_Type == 'Project'  ?
                              <span className="Dyicons">X</span> :  <img className="workmember" src={RestructureChecked[0]?.SiteIcon} />
-                             
-                            
-                           ) : 'P'
+                             ) : 'P'
                           }
                           {
                             RestructureChecked[0]?.Item_x0020_Type == 'Sprint' ? 
                             <div className="alignCenter ms-1 me-2">{`${newItemBackUp?.TaskID}-X${newItemBackUp?.subRows?.length+1}`}</div> :
                             <div className="alignCenter ms-1 me-2">{RestructureChecked[0]?.TaskID}</div>
                           }
-                          
-                          
-                         
                           {items?.Title}
                         </a>
                       </div>
@@ -6337,13 +6175,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                       type="radio"
                       className="radio"                 
                       value="Workstream"
-                      checked={
-                        RestructureChecked[0]?.TaskType?.Id == 3
-                          ? true
-                          : RestructureChecked[0]?.TaskType?.Id == 1
-                          ? true
-                          : false
-                      }
+                      checked={RestructureChecked[0]?.TaskType?.Id == 3 ? true : RestructureChecked[0]?.TaskType?.Id == 1 ? true : false}
                       onChange={(e) => setRestructure(RestructureChecked, 3)}
                        />
                      {"Workstream"}
@@ -6372,12 +6204,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                       type="radio"
                       className="radio"                 
                       value="Activity"
-                      checked={
-                        RestructureChecked[0]?.TaskType?.Id == 3
-                          ? true
-                          : RestructureChecked[0]?.TaskType?.Id == 1
-                          ? true
-                          : false
+                      checked={RestructureChecked[0]?.TaskType?.Id == 3 ? true : RestructureChecked[0]?.TaskType?.Id == 1 ? true : false
                       }
                       onChange={(e) => setRestructure(RestructureChecked, 1)}
                        />
@@ -6389,9 +6216,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                       className="radio"
                       name="fav_language"
                       value="Task"
-                      checked={
-                        RestructureChecked[0]?.TaskType?.Id === 2 ? true : false
-                      }
+                      checked={RestructureChecked[0]?.TaskType?.Id === 2 ? true : false}
                       onChange={(e) => setRestructure(RestructureChecked, 2)}
                     /> {"Task"}
                   </label>
@@ -6402,10 +6227,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
               })}
             </div>
         <footer className="mt-4 text-end">
-          <button className="me-2 btn btn-primary" onClick={projectRestruture}>
+          <button className="me-2 btn btn-primary" style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}} onClick={projectRestruture}>
             Save
           </button>
           <button
+          style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
             className="btn me-2 btn-default ms-1"
             onClick={() => setProjects(false)}
           >
@@ -6429,18 +6255,18 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
   onDismiss={() => setTopProject(false)}
 >
   <div className="mt-2">
-   {
-    props?.projectmngmnt == "projectmngmnt" ? "After restructuring selected item tagged with Project" : " After restructuring selected item becomes Project"
-   }
+   {props?.projectmngmnt == "projectmngmnt" ? "After restructuring selected item tagged with Project" : " After restructuring selected item becomes Project"}
    
     <footer className="mt-4 text-end">
       <button
+        style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
         className="me-2 btn btn-primary"
         onClick={projectRestruture}
       >
         Save
       </button>
       <button
+      style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
         className="btn me-2 btn-default ms-1"
         onClick={() => setTopProject(false)}
       >
@@ -6477,8 +6303,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
               }
               {" " + newItemBackUp?.Title }
             </div>
-            {
-                 (newItemBackUp?.TaskType?.Id == 1) && (restructureItem[0]?.TaskType?.Id == 1 || restructureItem[0]?.TaskType?.Id == 3 || restructureItem[0]?.TaskType?.Id == 2)  ?
+            {(newItemBackUp?.TaskType?.Id == 1) && (restructureItem[0]?.TaskType?.Id == 1 || restructureItem[0]?.TaskType?.Id == 3 || restructureItem[0]?.TaskType?.Id == 2)  ?
                  restructureItem.some((item:any) => Array.isArray(item?.subRows) && item.subRows.length > 0) ? "" :
                  <>
                  {"Select Task Type :"}
@@ -6487,13 +6312,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                       type="radio"
                       className="radio" 
                       value="Workstream"
-                      checked={
-                        RestructureChecked[0]?.TaskType?.Id == 3
-                          ? true
-                          : RestructureChecked[0]?.TaskType?.Id == 1
-                          ? true
-                          : false
-                      }
+                      checked={RestructureChecked[0]?.TaskType?.Id == 3 ? true : RestructureChecked[0]?.TaskType?.Id == 1 ? true : false}
                       onChange={()=>setRestructure(RestructureChecked, 3)}/>
                   </label>
                   <label className="ms-1"> {"Workstream"} </label>
@@ -6503,14 +6322,8 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                       className="radio"
                       name="fav_language"
                       value="Task"
-                      checked={
-                        RestructureChecked[0]?.TaskType?.Id === 2
-                          ? true
-                          : false
-                      }
-                      onChange={(e) =>
-                        setRestructure(RestructureChecked, 2)
-                      }
+                      checked={RestructureChecked[0]?.TaskType?.Id === 2 ? true : false}
+                      onChange={(e) =>setRestructure(RestructureChecked, 2)}
                     />
                   </label>
                   <label className="ms-1"> {"Task"} </label>
@@ -6518,12 +6331,14 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
               }
     <footer className="mt-4 text-end">
       <button
+      style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
         className="me-2 btn btn-primary"
         onClick={projectMngmntFuc}
       >
         Save
       </button>
       <button
+      style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
         className="btn me-2 btn-default ms-1"
         onClick={() => setProjectmngmnt(false)}
       >
@@ -6539,7 +6354,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
       {
         projectmngmnt === true && restructureItem?.length == 1 &&
         <Panel
-      onRenderHeader={onRenderCustomCalculateS4CProject}
+        onRenderHeader={onRenderCustomCalculateS4CProject}
         isOpen={projectmngmnt}
         type={PanelType.medium}
         isBlocking={false}
@@ -6560,32 +6375,21 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                     <div className={`${obj?.newSubChild != undefined && obj?.newSubChild != null ? 'alignCenter' : 'alignCenter fw-semibold'}`}>
                     {  obj?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.Item_x0020_Type == "Sprint" ? 
                             <div className="Dyicons">X</div> :
-                            <img
-                            className="workmember"
-                              src={obj?.SiteIcon}
-                            />)}
+                            <img className="workmember" src={obj?.SiteIcon} />)}
                             <span className="mx-2">
                             <ReactPopperTooltipSingleLevel CMSToolId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
-                     
-                            </span>
-                        
-                      <a
+                             </span>
+                          <a
                         data-interception="off"
                         target="_blank"
                         className="serviceColor_Active alignCenter"
-                        href={obj.Item_x0020_Type == "Project" || obj.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                                "/SitePages/PX-Profile.aspx?ProjectId=" +
-                                obj?.Id :props?.contextValue?.siteUrl +
-                                "/SitePages/Task-Profile.aspx?taskId=" +
-                                obj?.Id + "&Site=" + obj?.siteType }
-                      >
-                      
-                          {obj?.newSubChild != undefined &&
-                    obj?.newSubChild != null ? (
-                     ""
-                    ) : (
-                      <>{obj?.Title}</>
-                    )}
+                        href={obj.Item_x0020_Type == "Project" || obj.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +"/SitePages/PX-Profile.aspx?ProjectId=" +obj?.Id :props?.contextValue?.siteUrl +"/SitePages/Task-Profile.aspx?taskId=" +obj?.Id + "&Site=" + obj?.siteType }>
+                        {obj?.newSubChild != undefined &&
+                               obj?.newSubChild != null ? (
+                                   ""
+                                 ) : (
+                                <>{obj?.Title}</>
+                                       )}
                           
                       </a></div>
                       </div>
@@ -6609,15 +6413,8 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             className=""
                             data-interception="off"
                             target="_blank"
-                            href={ obj?.newSubChild?.Item_x0020_Type == "Project" || obj?.newSubChild?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                            "/SitePages/PX-Profile.aspx?ProjectId=" +
-                            obj?.newSubChild?.Id :props?.contextValue?.siteUrl +
-                            "/SitePages/Task-Profile.aspx?taskId=" +
-                            obj?.newSubChild?.Id + "&Site=" + obj?.newSubChild?.siteType}
-                          >
-                             {/* <div className="alignCenter">{obj?.newSubChild?.TaskID}</div> */}
-                             
-                          {obj?.newSubChild?.feature != undefined &&
+                            href={ obj?.newSubChild?.Item_x0020_Type == "Project" || obj?.newSubChild?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +"/SitePages/PX-Profile.aspx?ProjectId=" +obj?.newSubChild?.Id :props?.contextValue?.siteUrl +"/SitePages/Task-Profile.aspx?taskId=" +obj?.newSubChild?.Id + "&Site=" + obj?.newSubChild?.siteType}>
+                           {obj?.newSubChild?.feature != undefined &&
                     obj?.newSubChild?.feature != null ? (
                      ""
                     ) : (
@@ -6649,18 +6446,10 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                           <a
                             data-interception="off"
                             target="_blank"
-                            href={
-                              obj?.newSubChild?.feature?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/PX-Profile.aspx?ProjectId=" +
-                              obj?.newSubChild?.feature?.Id :props?.contextValue?.siteUrl +
-                              "/SitePages/Task-Profile.aspx?taskId=" +
-                              obj?.newSubChild?.feature?.Id + "&Site=" + obj?.newSubChild?.feature?.siteType
-                            }
+                            href={ obj?.newSubChild?.feature?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl + "/SitePages/PX-Profile.aspx?ProjectId=" + obj?.newSubChild?.feature?.Id :props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.newSubChild?.feature?.Id + "&Site=" + obj?.newSubChild?.feature?.siteType}
                             className="alignCenter"
                           >
-                            {/* <div className="alignCenter">{obj?.newSubChild?.feature?.TaskID}</div> */}
-                     
-                          {obj?.newSubChild?.feature?.activity != undefined &&
+                            {obj?.newSubChild?.feature?.activity != undefined &&
                     obj?.newSubChild?.feature?.activity != null ? (
                      ""
                     ) : (
@@ -6691,13 +6480,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                           <a
                             data-interception="off"
                             target="_blank"
-                            href={
-                              obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/PX-Profile.aspx?ProjectId=" +
-                              obj?.newSubChild?.feature?.activity?.Id :props?.contextValue?.siteUrl +
-                              "/SitePages/Task-Profile.aspx?taskId=" +
-                              obj?.newSubChild?.feature?.activity?.Id + "&Site=" + obj?.newSubChild?.feature?.activity?.siteType
-                            }
+                            href={obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +"/SitePages/PX-Profile.aspx?ProjectId=" +obj?.newSubChild?.feature?.activity?.Id :props?.contextValue?.siteUrl +"/SitePages/Task-Profile.aspx?taskId=" +obj?.newSubChild?.feature?.activity?.Id + "&Site=" + obj?.newSubChild?.feature?.activity?.siteType}
                             className=""
                           > {obj?.newSubChild?.feature?.activity?.Title}
                           </a></div>
@@ -6737,10 +6520,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         data-interception="off"
                         target="_blank"
                         className="hreflink serviceColor_Active "
-                        href={props?.contextValue?.siteUrl +
-                                "/SitePages/Project-Management.aspx?ProjectId" +
-                                obj?.Id
-                        }
+                        href={props?.contextValue?.siteUrl + "/SitePages/Project-Management.aspx?ProjectId" + obj?.Id }
                       >
                       </a></div>
                       </div>
@@ -6764,9 +6544,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                           <a
                             data-interception="off"
                             target="_blank"
-                            href={props?.contextValue?.siteUrl +
-                                    "/SitePages/Project-Management.aspx?ProjectId" +
-                                    obj?.newSubChild?.Id
+                            href={props?.contextValue?.siteUrl +"/SitePages/Project-Management.aspx?ProjectId" +obj?.newSubChild?.Id
                             }
                           >
                           </a></div>
@@ -6794,13 +6572,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                           <a
                             data-interception="off"
                             target="_blank"
-                            href={
-                              obj?.newSubChild?.feature?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/PX-Profile.aspx?ProjectId=" +
-                              obj?.newSubChild?.feature?.Id :props?.contextValue?.siteUrl +
-                              "/SitePages/Task-Profile.aspx?taskId=" +
-                              obj?.newSubChild?.feature?.Id + "&Site=" + obj?.newSubChild?.feature?.siteType
-                            }
+                            href={obj?.newSubChild?.feature?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +"/SitePages/PX-Profile.aspx?ProjectId=" +obj?.newSubChild?.feature?.Id :props?.contextValue?.siteUrl +"/SitePages/Task-Profile.aspx?taskId=" +obj?.newSubChild?.feature?.Id + "&Site=" + obj?.newSubChild?.feature?.siteType}
                             className=""
                           >
                           {obj?.newSubChild?.feature?.activity != undefined &&
@@ -6824,24 +6596,15 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         {  obj?.newSubChild?.feature?.activity?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ? 
                             <div className="Dyicons">X</div> :
                             <img
-                            className="workmember"
-                              src={obj?.newSubChild?.feature?.activity?.SiteIcon}
-                            />)}
+                            className="workmember" src={obj?.newSubChild?.feature?.activity?.SiteIcon} />)}
                             <span className="mx-2">
                             <ReactPopperTooltipSingleLevel CMSToolId={obj?.newSubChild?.feature?.activity?.TaskID} row={obj?.newSubChild?.feature?.activity} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
-                         
                             </span>
                        
                           <a
                             data-interception="off"
                             target="_blank"
-                            href={
-                              obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/PX-Profile.aspx?ProjectId=" +
-                              obj?.newSubChild?.feature?.activity?.Id :props?.contextValue?.siteUrl +
-                              "/SitePages/Task-Profile.aspx?taskId=" +
-                              obj?.newSubChild?.feature?.activity?.Id + "&Site=" + obj?.newSubChild?.feature?.activity?.siteType
-                            }
+                            href={obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +"/SitePages/PX-Profile.aspx?ProjectId=" +obj?.newSubChild?.feature?.activity?.Id :props?.contextValue?.siteUrl +"/SitePages/Task-Profile.aspx?taskId=" +obj?.newSubChild?.feature?.activity?.Id + "&Site=" + obj?.newSubChild?.feature?.activity?.siteType}
                             className=""
                           > {obj?.newSubChild?.feature?.activity?.Title}
                           </a></div>
@@ -6857,22 +6620,10 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                           data-interception="off"
                           target="_blank"
                           className="hreflink serviceColor_Active fw-semibold reStuTile"
-                          href={ props?.contextValue?.siteUrl +
-                            "/SitePages/Task-Profile.aspx?taskId=" +
-                            items?.Id + "&Site=" + items?.siteType
-                          }
+                          href={ props?.contextValue?.siteUrl +"/SitePages/Task-Profile.aspx?taskId=" +items?.Id + "&Site=" + items?.siteType}
                         >
-                          
-                        
-                                <img
-                                 className="workmember"
-                                  src={items?.SiteIcon}
-                                />
-                                {/* <span className="mx-2">
-                                {items?.TaskID}
-                                </span> */}
-                        
-                          {items?.Title}
+                          <img className="workmember" src={items?.SiteIcon} />
+                                {items?.Title}
                         </a>
                       </div>
                     ))}
@@ -6885,8 +6636,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
              
             </div>
             <div>
-            {restructureItem != undefined && (restructureItem[0]?.TaskType?.Id == 3  || restructureItem[0]?.TaskType?.Id == 2 ||  restructureItem[0]?.TaskType?.Id == 1 ) && (restructureItem[0]?.subRows?.length == 0 || getSelectedChild?.length == 0) && 
+            {restructureItem != undefined && (restructureItem[0]?.TaskType?.Id == 3  || restructureItem[0]?.TaskType?.Id == 2 ||  restructureItem[0]?.TaskType?.Id == 1 ) && (restructureItem[0]?.subRows?.length == 0 && getSelectedChild?.length == 0) && 
             newItemBackUp?.TaskType?.Id == 1 && (
+              
               <div className="mt-2">
                   <label className="form-label me-2">{"Select Task Type :"}</label>
                   <label className="SpfxCheckRadio">
@@ -6941,10 +6693,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             </div>
             </div>
         <footer className="mt-4 text-end">
-          <button className="me-2 btn btn-primary" onClick={projectMngmntFuc}>
+          <button style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}  className="me-2 btn btn-primary" onClick={projectMngmntFuc}>
             Save
           </button>
           <button
+          style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
             className="btn btn-default ms-1"
             onClick={() => setProjectmngmnt(false)}
           >
@@ -6966,10 +6719,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             <div className="mt-2">
               After restructuring selected item becomes {query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 2 ? 'Activity' : (query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 1 ? 'Task' : (query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 3 ? 'Activity' : query4TopIcon ) ) }
               <footer className="mt-4 text-end">
-                <button className="me-2 btn btn-primary" onClick={makeTopComp}>
+                <button style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}} className="me-2 btn btn-primary" onClick={makeTopComp}>
                   Save
                 </button>
                 <button
+                style={{color:restructureItem[0]?.PortfolioType?.Color}}
                   className="btn me-2 btn-default ms-1"
                   onClick={closePanel}
                 >
