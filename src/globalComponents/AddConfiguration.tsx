@@ -755,7 +755,7 @@ const AddConfiguration = (props: any) => {
                                                     </div>
                                                 </Col>
                                                 <Col sm="3" md="3" lg="3">
-                                                    {items?.IsTemplate != true && <><div> Show WebPart</div>
+                                                    {items?.IsTemplate != true && props?.SingleWebpart != true && <><div> Show WebPart</div>
                                                         <label className="switch me-2" htmlFor={`ShowWebpartCheckbox${index}`}>
                                                             <input checked={items?.ShowWebpart} onChange={(e: any) => {
                                                                 const isChecked = e.target.checked;
