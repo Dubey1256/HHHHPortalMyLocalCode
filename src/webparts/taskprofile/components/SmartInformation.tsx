@@ -17,6 +17,7 @@ import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/People
 import EditorComponent from '../../../globalComponents/HtmlEditor/CopyHtmlEditor';
 import { ContentState, EditorState, Modifier } from 'draft-js';
 import { SlArrowDown, SlArrowRight, SlArrowUp } from 'react-icons/sl';
+import { SPHttpClient } from "@microsoft/sp-http";
 import { event } from 'jquery';
 let AllTasktagsmartinfo: any = [];
 let hhhsmartinfoId: any = [];
@@ -29,7 +30,7 @@ const SmartInformation = (props: any, ref: any) => {
   const myContextData2: any = React.useContext<any>(myContextValue)
   const [show, setShow] = useState(false);
   const [popupEdit, setpopupEdit] = useState(false);
-  const [smartInformationArrow, setsmartInformationArrow]:any = useState();
+  const [smartInformationArrow, setsmartInformationArrow]: any = useState();
   const [copySmartInfo, setcopySmartInfo] = useState([])
   const [allValue, setallSetValue] = useState({
     Title: "", Id: 1021, URL: "", Acronym: "", Description: "", InfoType: "Information Note", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
@@ -272,9 +273,8 @@ const SmartInformation = (props: any, ref: any) => {
               // MovefolderItemUrl2 = `/${tagsmartinfo.Id}_.000`
             }
             if (tagsmartinfo?.Id == items?.Id) {
-
+              tagsmartinfo.Description = tagsmartinfo.Description.replace(/<span[^>]*>(.*?)<\/span>/gi, '$1');
               allSmartInformationglobal.push(tagsmartinfo);
-
             }
           })
         }
@@ -351,7 +351,7 @@ const SmartInformation = (props: any, ref: any) => {
 
             if (allSmartInformationglobal.length == allSmartInformationglobaltagdocuments.length) {
               let initialData = allSmartInformationglobaltagdocuments.slice(0, 5);
-              setSmartInformation(initialData);             
+              setSmartInformation(initialData);
               if (addSmartInfoPopupAddlinkDoc2 && (props.showHide === "projectManagement" || props.showHide === "ANCTaskProfile")) {
                 props?.callback?.();
                 addSmartInfoPopupAddlinkDoc2 = false;
@@ -527,7 +527,8 @@ const SmartInformation = (props: any, ref: any) => {
           InfoTypeId: metaDataId != undefined ? metaDataId : null,
           Description: allValue?.Description != "" ? allValue.InfoType === 'Information Source' ? sourcedescription : allValue?.Description : sourcedescription != undefined ? sourcedescription : "",
           SelectedFolder: allValue?.SelectedFolder,
-          SmartNoteAuthorId: smartnoteAuthor?.length > 0 ? smartnoteAuthor[0]?.AssingedToUser?.Id : typeof (smartnoteAuthor) === 'object' && smartnoteAuthor?.Id != undefined ? smartnoteAuthor?.Id : null,
+          // SmartNoteAuthorId: smartnoteAuthor?.length > 0 ? smartnoteAuthor[0]?.AssingedToUser?.Id : typeof (smartnoteAuthor) === 'object' && smartnoteAuthor[0]?.Id != undefined ? smartnoteAuthor?.Id : null,
+          SmartNoteAuthorId: smartnoteAuthor?.length > 0 ? smartnoteAuthor[0]?.Id : null,
           RequirementSource: InfoSource?.text,
           SmartNoteDate: InfoDate != '' ? moment(new Date(InfoDate)).tz("Europe/Berlin").format('DD MMM YYYY HH:mm') : null,
           Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
@@ -648,9 +649,9 @@ const SmartInformation = (props: any, ref: any) => {
 
   //===========show hide smartInformation===========
 
-  const showhideComposition = (showhideComposition: any,index:any) => {
-  setsmartInformationArrow(index)
-   }
+  const showhideComposition = (showhideComposition: any, index: any) => {
+    setsmartInformationArrow(index)
+  }
 
   //========delete function smartinfomation items ==================
 
@@ -748,7 +749,7 @@ const SmartInformation = (props: any, ref: any) => {
   //===============create folder function========================
 
   const createFolder = async (folderName: any) => {
-    const web: any = new Web(props?.AllListId?.siteUrl);    
+    const web: any = new Web(props?.AllListId?.siteUrl);
     if (folderName != "") {
       var libraryName = "Documents";
       var newFolderResult = await web?.rootFolder?.folders.getByName(libraryName).folders.add(folderName);
@@ -806,7 +807,7 @@ const SmartInformation = (props: any, ref: any) => {
   // ===========get file upload data and Id ============= .
 
   const getAll = async (folderName: any, folderPath: any) => {
-    const web: any = new Web(props?.AllListId?.siteUrl);    
+    const web: any = new Web(props?.AllListId?.siteUrl);
     let fileName: any = "";
     if (allValue?.fileupload != "") {
       fileName = allValue?.fileupload;
@@ -975,21 +976,85 @@ const SmartInformation = (props: any, ref: any) => {
   ]
   //================ People picker function===================
 
+
+
+  const getUserInfo = async (userMail: string) => {
+    const userEndPoint: any = `${props?.Context?.pageContext?.web?.absoluteUrl}/_api/Web/EnsureUser`;
+
+    const userData: string = JSON.stringify({
+      logonName: userMail,
+    });
+
+    const userReqData = {
+      body: userData,
+    };
+
+    const resUserInfo = await props?.Context?.spHttpClient.post(
+      userEndPoint,
+      SPHttpClient.configurations.v1,
+      userReqData
+    );
+    const userInfo = await resUserInfo.json();
+
+    return userInfo;
+  };
+
+  // const AssignedToUser = async (items: any[]) => {
+  //   let userId: number = undefined;
+  //   let userTitle: any;
+  //   let userSuffix: string = undefined;
+  //   if (items.length > 0) {
+  //     let userMail = items[0].id.split("|")[2];
+  //     EmailNotification = userMail
+  //     let userInfo = await getUserInfo(userMail);
+  //     userId = userInfo.Id;
+  //     userTitle = userInfo.Title;
+  //     userSuffix = userTitle
+  //       .split(" ")
+  //       .map((i: any) => i.charAt(0))
+  //       .join("");
+  //     setAssignedToUser(userInfo);
+  //     setIsUserNameValid(true);
+  //   } else {
+  //     setAssignedToUser([]);
+  //     setIsUserNameValid(false);
+  //   }
+  // };
+
   const userIdentifier = EditSmartinfoValue?.SmartNoteAuthor != undefined ? EditSmartinfoValue?.SmartNoteAuthor?.Name : editvalue?.SmartNoteAuthor?.Name;
   const email = userIdentifier ? userIdentifier.split('|').pop() : '';
 
-  const smartNoteAuthor = (item: any) => {
-    if (item.length > 0) {
-      const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
+  const smartNoteAuthor = async (item: any) => {
+    let userId: number = undefined;
+    let userTitle: any;
+    let userSuffix: string = undefined;
 
-      if (item[0].text === 'Stefan Hochhuth') {
-        var member = taskUser.filter((elem: any) => elem.AssingedToUser != undefined && elem.AssingedToUser.Id === 32)
-      }
-      else {
-        // var member = taskUser.filter((elem: any) => elem.Email.toLowerCase() === email.toLowerCase())
-        var member = taskUser.filter((elem: any) => new RegExp('^' + email + '$', 'i').test(elem.Email));
-      }
-      setsmartnoteAuthor(member)
+    if (item.length > 0) {
+      const email = item.length > 0 ? item[0].loginName.split('|').pop().indexOf('ext') > -1 ? item[0]?.secondaryText : item[0].loginName.split('|').pop() : null;
+
+      // if (item[0].text === 'Stefan Hochhuth') {
+      //   var member = taskUser.filter((elem: any) => elem.AssingedToUser != undefined && elem.AssingedToUser.Id === 32)
+      // }
+      // else {
+      //   // var member = taskUser.filter((elem: any) => elem.Email.toLowerCase() === email.toLowerCase())
+      //   // const emailName = email.split("@")[0]
+      //   // var member = taskUser.filter((elem: any) => {
+      //   //   const regex = new RegExp('^' + emailName + '$', 'i');
+      //   //   const elemEmailName = elem.Email.split('@')[0]; // Extract the name part from elem.Email
+      //   //   return regex.test(elemEmailName);
+      //   // });
+
+      //   var member = taskUser.filter((elem: any) => new RegExp('^' + email + '$', 'i').test(elem.Email));
+      // }
+
+      let userInfo = await getUserInfo(email);
+      userId = userInfo.Id;
+      userTitle = userInfo.Title;
+      userSuffix = userTitle
+        .split(" ")
+        .map((i: any) => i.charAt(0))
+        .join("");
+      setsmartnoteAuthor([userInfo])
       setIsUserNameValid(true);
     }
     else {
@@ -1112,14 +1177,14 @@ const SmartInformation = (props: any, ref: any) => {
   }
   const handlesearchingvalue = (event: any) => {
     const value = event.target.value;
-    let filtersmartvalue: any = [];    
+    let filtersmartvalue: any = [];
     setsearchvalue(event.target.value)
     if (value) {
       copySmartInfo.map((val: any) => {
         if (val?.Title?.toLowerCase()?.indexOf(value?.toLowerCase()) > -1 || val?.Title.toLowerCase() === value?.toLowerCase()) {
-          if (!IsitemExists(filtersmartvalue , val) )
+          if (!IsitemExists(filtersmartvalue, val))
             filtersmartvalue.push(val)
-        }        
+        }
       })
     }
     else {
@@ -1130,8 +1195,8 @@ const SmartInformation = (props: any, ref: any) => {
 
 
   const sortByAsc = (type: any) => {
-    let array = [...SmartInformation]; 
-    let sortarray: any = [];   
+    let array = [...SmartInformation];
+    let sortarray: any = [];
     if (type === "asc") {
       sortarray = array.sort((a: any, b: any) => { return a.Title.localeCompare(b.Title) });
     } else {
@@ -1181,7 +1246,7 @@ const SmartInformation = (props: any, ref: any) => {
     handleClose()
 
   }
-  return (   
+  return (
     <div>
 
       {(props?.showHide != "projectManagement" && SmartInformation?.length > 0) && <div className='mb-3 card commentsection'>
@@ -1192,36 +1257,35 @@ const SmartInformation = (props: any, ref: any) => {
               <Tooltip ComponentId='993' /></span></div>
         </div>
         <div className='sortinginput'>
-          <input type='text' className='full-width' placeholder='Title' value={searchvalue} onChange={(e)=>handlesearchingvalue(e)}></input>
+          <input type='text' className='full-width' placeholder='Title' value={searchvalue} onChange={(e) => handlesearchingvalue(e)}></input>
           <div className='defultSortingIcons'>
             <div className='upArrow'><SlArrowDown onClick={() => sortByAsc("asc")} /></div> <div className='downArrow'><SlArrowUp onClick={() => sortByAsc("desc")} /></div>
           </div>
         </div>
-        {SmartInformation != null && SmartInformation.length > 0  && <div className="subiteminfo">{SmartInformation?.map((SmartInformation: any, i: any) => {
+        {SmartInformation != null && SmartInformation.length > 0 && <div className="subiteminfo">{SmartInformation?.map((SmartInformation: any, i: any) => {
           if ((props?.Context?.pageContext?.legacyPageContext?.userId == SmartInformation?.Author?.Id && SmartInformation?.SelectedFolder == "Only For Me") || SmartInformation.SelectedFolder == "Public") {
             return (
               <>
                 <div className='infoitem'>
                   <div className='bgyellow  d-flex py-1 '>
                     <span className='full-width'>
-                      <a className='d-flex' onClick={() => showhideComposition(SmartInformation,i)}>
-                        <span className='px-1 alignCenter'>{smartInformationArrow == i? <SlArrowDown /> : <SlArrowRight />}</span >
+                      <a className='d-flex' onClick={() => showhideComposition(SmartInformation, i)}>
+                        <span className='px-1 alignCenter'>{smartInformationArrow == i ? <SlArrowDown /> : <SlArrowRight />}</span >
                         <span className="pe-3">{SmartInformation?.Title != undefined ? SmartInformation?.Title : ""}</span>
                       </a>
-
                     </span>
                     <span className='alignCenter'>
                       <a style={{ cursor: "pointer" }} onClick={() => addDocument("AddDocument", SmartInformation)}>
-                        <span className='svg__iconbox svg__icon--Plus mini hreflink' title="Add Document"></span>
+                        <span className="svg__iconbox svg__icon--attach mini hreflink" title="Add Document"></span>
                       </a>
                       <a style={{ cursor: "pointer" }}
                         onClick={() => handleShow(SmartInformation, "edit")}>
-                        <span className='svg__iconbox svg__icon--editBox hreflink' title="Edit SmartInformation"></span></a>
-                    
+                        <span className='svg__iconbox svg__icon--editBox hreflink' title="Edit SmartInformation"></span>
+                      </a>
                     </span>
                   </div>
 
-                  <div className="border-0 border-bottom m-0 bgLightyellow" style={{ display: smartInformationArrow ==i? 'block' : 'none', fontSize: "small" }}>
+                  <div className="border-0 border-bottom m-0 bgLightyellow" style={{ display: smartInformationArrow == i ? 'block' : 'none', fontSize: "small" }}>
                     <div className="p-1 px-2" style={{ fontSize: "small" }} dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
                     {SmartInformation?.TagDocument != undefined && SmartInformation?.TagDocument?.length > 0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
                       return (
@@ -1272,7 +1336,7 @@ const SmartInformation = (props: any, ref: any) => {
                       )
                     })}
 
-                    <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By <span>{SmartInformation?.Editor != null && SmartInformation?.Editor?.Title}</span></span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : ""}</span> </div>
+                    <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span>}</span> </div>
                   </div>
                   {/* <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Author?.Id)} title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url} /> : ""}</span></div> */}
                 </div>
@@ -1285,7 +1349,7 @@ const SmartInformation = (props: any, ref: any) => {
         </div>}
 
 
-        {(copySmartInfo != undefined && copySmartInfo?.length > 5 && copySmartInfo?.length !==  SmartInformation.length ) && <div className="showmorbtn hyperlink" onClick={showMoreInfo}> Show more Options</div>}
+        {(copySmartInfo != undefined && copySmartInfo?.length > 5 && copySmartInfo?.length !== SmartInformation.length) && <div className="showmorbtn hyperlink" onClick={showMoreInfo}> Show more Options</div>}
       </div>}
       {/* ================= smartInformation add and edit panel=========== */}
 

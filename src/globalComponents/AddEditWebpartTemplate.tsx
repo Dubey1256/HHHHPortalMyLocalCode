@@ -14,9 +14,10 @@ let BackupTaskCategoriesData: any = [];
 let PrevSelectedSmartFav: any = '';
 let SelectedDashboard: any;
 let autoSuggestItem: any;
-const AddConfiguration = (props: any) => {
+const AddEditWebpartTemplate = (props: any) => {
     props.props.siteUrl = props?.props?.Context?._pageContext?._web?.absoluteUrl
     const [progressBar, setprogressBar] = useState(true)
+    const [selectedTemplate, setselectedTemplate] = useState('')
     const params = new URLSearchParams(window.location.search);
     let DashboardId: any = params.get('DashBoardId');
     if (DashboardId == undefined || DashboardId == '')
@@ -172,88 +173,65 @@ const AddConfiguration = (props: any) => {
         setNewItem([]);
         props?.CloseConfigPopup(false)
     }
+    const formatId = (id: number): string => {
+        const paddedId = '00' + id;
+        return paddedId.slice(-3);
+    }
     const SaveConfigPopup = async () => {
         try {
             let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").orderBy("Created", false).getAll().then(async (data: any) => {
+            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").orderBy("orderby", true).getAll().then(async (data: any) => {
                 let result: any;
-                if (data?.length && data[data.length - 1].Value != undefined && data[data.length - 1].Value != '') {
-                    result = parseInt(data[data.length - 1].Value) + 1;
+                if (data?.length && data[0].Value != undefined && data[0].Value != '') {
+                    result = parseInt(data[0].Value) + 1;
                 }
                 else {
                     result = data?.length + 1;
                 }
-                if (props?.SingleWebpart == true) {
-                    let FilteredData = data?.filter((config: any) => config?.Value == DashboardId)[0];
-                    if (props?.DashboardConfigBackUp && NewItem[0]?.Id !== undefined) {
-                        props.DashboardConfigBackUp.forEach((item: any) => {
-                            if (item?.Id !== undefined && item.Id === NewItem[0].Id) {
-                                Object.keys(NewItem[0]).forEach((key) => {
-                                    if (key in item) {
-                                        item[key] = NewItem[0][key];
-                                        if (item?.FilterType == 'Categories') {
-                                            let extractedData = TaskCategoriesData.map((item: any) => {
-                                                return { ID: item.Id, Id: item.Id, Title: item.Title };
-                                            });
-                                            item.Status = extractedData != undefined && extractedData?.length > 0 ? extractedData : []
-                                        }
-                                    }
-                                });
-                            }
+
+                let newArray = [...NewItem];
+                newArray?.forEach((item: any, Itemindex: any) => {
+                    delete item.IsDefaultTile;
+                    delete item.selectedSmartFav;
+                    delete item?.SmatFavSearchKey
+                    if (item?.IsShowTile === true)
+                        item.TileName = item.WebpartTitle.replaceAll(" ", "")
+                    else if (item?.IsShowTile != true)
+                        item.TileName = '';
+                    delete item.IsShowTile;
+                    if (item?.FilterType == 'Categories') {
+                        let extractedData = TaskCategoriesData.map((item: any) => {
+                            return { ID: item.Id, Id: item.Id, Title: item.Title };
                         });
+                        item.Status = extractedData != undefined && extractedData?.length > 0 ? extractedData : []
                     }
-                    await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(FilteredData.Id).update({ Title: FilteredData?.Title, Configurations: JSON.stringify(props?.DashboardConfigBackUp) })
+                    if (props?.EditItem == undefined || props?.EditItem == '') {
+                        item.WebpartId = 'WP-' + formatId(result)
+                    }
+                })
+                setNewItem(newArray);
+                if (props?.EditItem != undefined && props?.EditItem != '') {
+                    await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(props?.EditItem?.UpdatedId).update({ Title: DashboardTitle, Configurations: JSON.stringify(NewItem[0]) })
                         .then(async (res: any) => {
                             setNewItem([]);
                             props?.CloseConfigPopup(true)
-                            if (ContextData != undefined && ContextData?.callbackFunction != undefined)
-                                ContextData?.callbackFunction(false);
+                            if (props?.SingleWebpart == true) {
+                                if (ContextData != undefined && ContextData?.callbackFunction != undefined)
+                                    ContextData?.callbackFunction(false);
+                            }
+
                         }).catch((err: any) => {
                             console.log(err);
                         })
                 }
                 else {
-                    let newArray = [...NewItem];
-                    newArray?.forEach((item: any, Itemindex: any) => {
-                        delete item.IsDefaultTile;
-                        delete item.selectedSmartFav;
-                        delete item?.SmatFavSearchKey
-                        if (item?.IsShowTile === true)
-                            item.TileName = item.WebpartTitle.replaceAll(" ", "")
-                        else if (item?.IsShowTile != true)
-                            item.TileName = '';
-                        delete item.IsShowTile;
-                        if (item?.FilterType == 'Categories') {
-                            let extractedData = TaskCategoriesData.map((item: any) => {
-                                return { ID: item.Id, Id: item.Id, Title: item.Title };
-                            });
-                            item.Status = extractedData != undefined && extractedData?.length > 0 ? extractedData : []
-                        }
-                    })
-                    setNewItem(newArray);
-                    if (props?.EditItem != undefined && props?.EditItem != '') {
-                        await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(props?.EditItem?.Id).update({ Title: DashboardTitle, Configurations: JSON.stringify(NewItem) })
-                            .then(async (res: any) => {
-                                setNewItem([]);
-                                props?.CloseConfigPopup(true)
-                                if (props?.SingleWebpart == true) {
-                                    if (ContextData != undefined && ContextData?.callbackFunction != undefined)
-                                        ContextData?.callbackFunction(false);
-                                }
-
-                            }).catch((err: any) => {
-                                console.log(err);
-                            })
-                    }
-                    else {
-                        await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: DashboardTitle, Key: "DashBoardConfigurationId", Value: result != undefined ? result.toString() : undefined, Configurations: JSON.stringify(NewItem) })
-                            .then(async (res: any) => {
-                                setNewItem([]);
-                                props?.CloseConfigPopup(true)
-                            }).catch((err: any) => {
-                                console.log(err);
-                            })
-                    }
+                    await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: DashboardTitle, Key: "WebpartTemplate", Value: result != undefined ? result.toString() : undefined, Configurations: JSON.stringify(NewItem[0]) })
+                        .then(async (res: any) => {
+                            setNewItem([]);
+                            props?.CloseConfigPopup(true)
+                        }).catch((err: any) => {
+                            console.log(err);
+                        })
                 }
 
             }).catch((err: any) => {
@@ -269,7 +247,7 @@ const AddConfiguration = (props: any) => {
         return (
             <>
                 <div className='siteColor subheading'>
-                    {props?.EditItem != undefined && props?.EditItem != '' ? <span>Edit Dashboard Configuration</span> : <span>Add Dashboard Configuration</span>}
+                    {props?.EditItem != undefined && props?.EditItem != '' ? <span>Edit Template Configuration</span> : <span>Add Template Configuration</span>}
                 </div>
                 {props?.EditItem != undefined && props?.EditItem != '' ? <Tooltip ComponentId={869} /> : <Tooltip ComponentId={1107} />}
 
@@ -332,6 +310,11 @@ const AddConfiguration = (props: any) => {
     }
     const SelectedTemplate = (check: any, items: any, index: any) => {
         setIsCheck(check)
+        if (items?.WebpartTitle != undefined) {
+            setDashboardTitle(items?.WebpartTitle)
+            setselectedTemplate(items?.WebpartTitle)
+        }
+
         let newArray = [...NewItem];
         let Template = [...DashboardTemplate];
         let IsExecuteElse = true
@@ -344,6 +327,7 @@ const AddConfiguration = (props: any) => {
                     newArray.push(item)
                 }
                 else {
+                    newArray = [];
                     newArray.push(item)
                 }
                 IsExecuteElse = false;
@@ -365,7 +349,6 @@ const AddConfiguration = (props: any) => {
             })
         }
         setDashboardTemplate(Template);
-
         setNewItem(newArray);
     }
     const handleFilterChange = (event: any, index: any, items: any) => {
@@ -612,7 +595,7 @@ const AddConfiguration = (props: any) => {
         SelectedDashboard.items = items;
         SelectedDashboard.index = index;
         setselectedSmartFav(SelectedDashboard?.items?.selectedSmartFav)
-        PrevSelectedSmartFav = { ...SelectedDashboard?.items?.selectedSmartFav }
+        PrevSelectedSmartFav = { ...selectedSmartFav }
         setPopupSmartFav(true)
     }
     const saveSelectSmartFav = () => {
@@ -676,28 +659,6 @@ const AddConfiguration = (props: any) => {
         const updatedItems = [...NewItem];
         updatedItems[SelectedDashboard?.index] = { ...SelectedDashboard?.items, selectedSmartFav: {}, smartFevId: '', Status: '', selectUserFilterType: '' };
     }
-    const AddWebpartToGallery = async (items: any, index: any) => {
-        const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-        web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate' and Value eq '" + props?.EditItem?.Id.toString() + items?.Id + "' ").getAll().then(async (data: any) => {
-            if (data?.length) {
-                alert('This webpart is already exist')
-            }
-            else {
-                delete items?.IsDefaultTile;
-                delete items?.selectedSmartFav;
-                delete items?.SmatFavSearchKey;
-                await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: items?.WebpartTitle != undefined && items?.WebpartTitle != '' ? items?.WebpartTitle : '', Key: "WebpartTemplate", Value: props?.EditItem?.Id != undefined ? props?.EditItem?.Id.toString() + items?.Id : undefined, Configurations: items != undefined ? JSON.stringify(items) : '' })
-                    .then(async (res: any) => {
-                        console.log(items)
-                        alert('Webpart Added Successfully')
-                    }).catch((err: any) => {
-                        console.log(err);
-                    })
-            }
-        }).catch((err: any) => {
-            console.log(err);
-        })
-    }
     useEffect(() => {
         SmartMetaDataListInformations()
         LoadSmartFav();
@@ -713,31 +674,25 @@ const AddConfiguration = (props: any) => {
                 type={PanelType.medium}>
                 <div className='border container modal-body p-1 mb-1'>
                     {progressBar && <PageLoader />}
-                    {props?.SingleWebpart != true && <Row className="Metadatapannel p-2 mb-2">
-                        <Col sm="6" md="6" lg="6">
-                            <div className="input-group">
-                                <label className='form-label full-width'>Dashboard Title</label>
-                                <input className='form-control' type='text' placeholder="Dashboard Title" value={DashboardTitle} onChange={(e) => setDashboardTitle(e.target.value)} />
-                            </div>
-                        </Col>
-                        <Col sm="6" md="6" lg="6">
-                            <label className='form-label full-width'>Templates</label>
-                            {DashboardTemplate != undefined && DashboardTemplate?.length > 0 && DashboardTemplate.map((items: any, index: any) => {
-                                return (
-                                    <>
-                                        <div >
-                                            <input type="checkbox" checked={items?.IsSelectedTemp} className="form-check-input me-1" onClick={(e: any) => SelectedTemplate(e.target.checked, items, index)} />
-                                            <label className="form-check-label">{items?.WebpartTitle}</label>
-                                        </div>
-                                    </>
-                                )
-                            })}
+                    <Row className="Metadatapannel p-2 mb-2">
+                        <Col>
+                            <h6>Templates</h6>
+                            <label className='form-label full-width SpfxCheckRadio mb-1'>
+                                {DashboardTemplate != undefined && DashboardTemplate?.length > 0 && DashboardTemplate.map((items: any, index: any) => {
+                                    return (
+                                        <>
+                                            <input type="radio" value={items?.WebpartTitle} checked={items?.WebpartTitle == selectedTemplate} className={index == 0 ? "radio" : "radio ms-3"} onClick={(e: any) => SelectedTemplate(true, items, index)} />
+                                            {items?.WebpartTitle}
 
+                                        </>
+                                    )
+                                })}
+                            </label>
                         </Col>
-                    </Row>}
+                    </Row>
                     <Row className="Metadatapannel p-2 mb-2">
                         <Col sm="12" md="12" lg="12">
-                            <label className='form-label full-width'>Webpart Configuartion</label>
+                            <label className='form-label full-width'>Template Configuartion</label>
                             {NewItem != undefined && NewItem?.length > 0 && NewItem.map((items: any, index: any) => {
                                 return (
                                     <>
@@ -750,88 +705,23 @@ const AddConfiguration = (props: any) => {
                                                         <input className='form-control' type='text' placeholder="Name"
                                                             value={items?.WebpartTitle} onChange={(e) => {
                                                                 const updatedItems = [...NewItem]; updatedItems[index] = { ...items, WebpartTitle: e.target.value };
-                                                                setNewItem(updatedItems);
+                                                                setNewItem(updatedItems); setDashboardTitle(e.target.value);
                                                             }} />
                                                     </div>
                                                 </Col>
-                                                <Col sm="3" md="3" lg="3">
-                                                    {items?.IsTemplate != true && <><div> Show WebPart</div>
-                                                        <label className="switch me-2" htmlFor={`ShowWebpartCheckbox${index}`}>
-                                                            <input checked={items?.ShowWebpart} onChange={(e: any) => {
-                                                                const isChecked = e.target.checked;
-                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, ShowWebpart: isChecked };
-                                                                setNewItem(updatedItems);
-                                                                if (!isChecked) { alert('Webpart will not be shown when toggle is active!'); }
-                                                            }} type="checkbox" id={`ShowWebpartCheckbox${index}`} />
-                                                            {items?.ShowWebpart === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
-                                                        </label></>}
-                                                </Col>
-                                                <Col sm="4" md="4" lg="4">
-                                                    {/* {props?.EditItem != undefined && props?.EditItem != '' ? <a className="pull-right hreflink" title="Add To Webpart Gallery" onClick={(e) => AddWebpartToGallery(items, index)}>Add To Webpart Gallery</a> : ''} */}
-                                                    {items?.IsTemplate != true && <> <div> Group By View</div>
-                                                        <label className="switch me-2" htmlFor={`GroupByViewCheckbox${index}`}>
-                                                            <input checked={items?.GroupByView} onChange={(e: any) => {
-                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, GroupByView: e.target.checked, };
-                                                                setNewItem(updatedItems);
-                                                            }}
-
-                                                                type="checkbox" id={`GroupByViewCheckbox${index}`} />
-                                                            {items?.GroupByView === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
-                                                        </label></>}
-                                                </Col>
-                                                <Col sm="1" md="1" lg="1">
-                                                    {index != 0 && <a className="pull-right hreflink" title="Remove webpart" onClick={(e) => RemoveWebpart(items, index)}><span className="svg__iconbox svg__icon--cross "></span></a>}
-                                                </Col>
-                                            </Row>
-                                            <Row className="Metadatapannel mb-2">
-                                                <Col sm="12" md="12" lg="12">
-                                                    <label className='form-label full-width'>Webpart Position</label>
-                                                </Col>
-                                                <Col sm="6" md="6" lg="6">
-                                                    <div className="input-group">
-                                                        <label className='form-label full-width'>Row Position</label>
-                                                        <input className='form-control' type='text' placeholder="Row" value={items?.WebpartPosition?.Row}
-                                                            onChange={(e) => {
-                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, WebpartPosition: { ...items.WebpartPosition, Row: e.target.value.trim() === '' ? '' : parseInt(e.target.value) } };
-                                                                setNewItem(updatedItems);
-                                                            }} />
-                                                    </div>
-                                                </Col>
-                                                <Col sm="6" md="6" lg="6">
-                                                    <div className="input-group">
-                                                        <label className='form-label full-width'>Column Position</label>
-                                                        <input className='form-control' type='text' placeholder="Column" value={items?.WebpartPosition?.Column}
-                                                            onChange={(e) => {
-                                                                const updatedItems = [...NewItem];
-                                                                updatedItems[index] = { ...items, WebpartPosition: { ...items.WebpartPosition, Column: e.target.value.trim() === '' ? '' : parseInt(e.target.value) } };
-                                                                setNewItem(updatedItems);
-                                                            }} />
-                                                    </div>
-                                                </Col>
-                                            </Row>
-                                            <Row className="Metadatapannel">
                                                 {items?.IsTemplate != true && <><Col sm="4" md="4" lg="4"><label className='form-label full-width'>Data Source</label>
                                                     <Dropdown id="DataSource" options={[{ key: '', text: '' }, ...(DataSource?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.DataSource}
                                                         onChange={(e, option) => handleDataSourceChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }}
                                                     /> </Col></>}
-                                                {items?.IsTemplate != true && <> <Col sm="4" md="4" lg="4">
-                                                    <div className="form-check form-check-inline m-4">
-                                                        <input type="checkbox" checked={items?.IsDefaultTile} className="form-check-input me-1" onClick={(e: any) => SelectedTile(e.target.checked, items, index)} />
-                                                        <label className="form-check-label">Default Tile</label>
-                                                    </div>
-                                                </Col>
-                                                    <Col sm="4" md="4" lg="4">
-                                                        <div className="form-check form-check-inline m-4">
-                                                            <input type="checkbox" checked={items?.IsShowTile} className="form-check-input me-1" onChange={(e: any) => {
-                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, IsShowTile: e.target.checked, };
-                                                                setNewItem(updatedItems);
-                                                            }} />
-                                                            <label className="form-check-label">Show Tile</label>
-                                                        </div>
-                                                    </Col>
-                                                </>}
                                             </Row>
+                                            {/* <Row className="Metadatapannel">
+                                                {items?.IsTemplate != true && <><Col sm="4" md="4" lg="4"><label className='form-label full-width'>Data Source</label>
+                                                    <Dropdown id="DataSource" options={[{ key: '', text: '' }, ...(DataSource?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.DataSource}
+                                                        onChange={(e, option) => handleDataSourceChange(option?.key, index, items)}
+                                                        styles={{ dropdown: { width: '100%' } }}
+                                                    /> </Col></>}
+                                            </Row> */}
                                             <Row className="Metadatapannel">
                                                 {items.DataSource != 'TimeSheet' &&
                                                     <Col sm="12" md="12" lg="12">
@@ -902,9 +792,6 @@ const AddConfiguration = (props: any) => {
                                                                     <span className="svg__iconbox svg__icon--editBox"></span>
                                                                 </span>
                                                             </div>
-                                                            {/* <Dropdown id="FiltesSmartFav" options={[{ key: '', text: '' }, ...(SmartFav?.map((item: any) => ({ key: item?.UpdatedId, text: item?.Title })) || [])]} selectedKey={items?.smartFevId}
-                                                                onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
-                                                                styles={{ dropdown: { width: '100%' } }} /> */}
                                                         </>
                                                     }
                                                     {(items.DataSource == "Tasks" || items.DataSource == "Project") && items?.selectFilterType == 'custom' && !items.FilterType && <><label className='form-label full-width'>Status</label> <Dropdown id="FiltersCustom" options={[{ key: '', text: '' }, ...(StatusOptions?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.Status}
@@ -999,7 +886,7 @@ const AddConfiguration = (props: any) => {
                         </Col>
                     </Row>
                 </div>
-                {props?.SingleWebpart != true && <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => AddMorewebpart()}> +Add More </a></div>}
+                {/* {props?.SingleWebpart != true && <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => AddMorewebpart()}> +Add More </a></div>} */}
                 <div className='modal-footer mt-2'>
                     {/* || IsCheck == false */}
                     <button className="btn btn-primary ms-1" onClick={SaveConfigPopup} disabled={DashboardTitle == ''}>Save</button>
@@ -1069,4 +956,4 @@ const AddConfiguration = (props: any) => {
         </>
     );
 };
-export default AddConfiguration;
+export default AddEditWebpartTemplate;
