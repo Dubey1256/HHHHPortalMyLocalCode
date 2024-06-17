@@ -6,7 +6,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import Tooltip from "../Tooltip";
 import { Web } from "sp-pnp-js";
 import { HiOutlineArrowTopRightOnSquare } from 'react-icons/hi2';
-
+import { Avatar } from "@fluentui/react-components";
 const BackgroundCommentComponent = (Props: any) => {
     const [BackgroundComment, setBackgroundComment] = useState('');
     const [EditCommentPanel, setEditCommentPanel] = useState(false);
@@ -84,7 +84,7 @@ const BackgroundCommentComponent = (Props: any) => {
                 editable: false,
                 Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
                 Body: BackgroundComment,
-                AuthorImage: CurrentUser?.Item_x0020_Cover != null ? CurrentUser?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                AuthorImage: CurrentUser?.Item_x0020_Cover != null ? CurrentUser?.Item_x0020_Cover?.Url : null,
                 AuthorName: CurrentUser?.Title != undefined ? CurrentUser?.Title : Context?.pageContext?._user.displayName,
                 ID: (BackgroundComments != undefined ? BackgroundComments?.length + 1 : 0)
             }
@@ -218,7 +218,15 @@ const BackgroundCommentComponent = (Props: any) => {
                                         <div className="alignCenter">
                                             <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
                                             <span className="mx-1">
-                                                <img className="imgAuthor" title={ImageDtl.UserName} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
+                                                <Avatar
+                                                    className="UserImage"
+                                                    title={ImageDtl?.UserName}
+                                                    name={ImageDtl?.UserName}
+                                                    image={ImageDtl?.UserImage != undefined && ImageDtl?.UserImage!=''? {
+                                                        src: ImageDtl?.UserImage,
+                                                    } : undefined}
+                                                    initials={ImageDtl?.UserImage == undefined && ImageDtl?.Suffix != undefined ? ImageDtl?.Suffix : undefined}
+                                                />
                                             </span>
                                         </div>
                                         <div className="alignCenter mt--10">
@@ -255,9 +263,17 @@ const BackgroundCommentComponent = (Props: any) => {
                     return (
                         <div className={`col-12 d-flex float-end add_cmnt my-1 `}>
                             <div className="">
-                                <img className="workmember"
-                                    src={dataItem.AuthorImage != undefined && dataItem.AuthorImage != '' ?
-                                        dataItem.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                <Avatar
+                                    className="UserImage"
+                                    title={dataItem?.AuthorName}
+                                    name={dataItem?.AuthorName}
+                                    image={dataItem.AuthorImage != undefined ? {
+                                        src: dataItem.AuthorImage,
+                                    } : undefined}
+                                    initials={dataItem.AuthorImage == undefined && dataItem?.Suffix!=undefined? dataItem?.Suffix : undefined}
+                                />
+
+
                             </div>
                             <div className="col-11 ms-3 pe-0 text-break" >
                                 <div className='d-flex justify-content-between align-items-center'>
@@ -267,11 +283,11 @@ const BackgroundCommentComponent = (Props: any) => {
                                     <span className="alignCenter">
                                         {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                         <span onClick={() => openEditModal(Index, dataItem.Body)} title="Edit Comment" className="svg__iconbox hreflink svg__icon--edit"></span>
-                                    
+
                                         {/* <img src={require('../../Assets/ICON/cross.svg')} width="25">
                                         </img> */}
-                                        <span  onClick={() => DeleteBackgroundCommentFunction(dataItem.ID, dataItem.Body)} title="Delete Comment" className="svg__iconbox hreflink ms-1 svg__icon--trash"></span>
-                                    
+                                        <span onClick={() => DeleteBackgroundCommentFunction(dataItem.ID, dataItem.Body)} title="Delete Comment" className="svg__iconbox hreflink ms-1 svg__icon--trash"></span>
+
                                     </span>
                                 </div>
                                 <div>

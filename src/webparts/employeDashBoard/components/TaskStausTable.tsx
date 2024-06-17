@@ -882,7 +882,7 @@ const TaskStatusTbl = (Tile: any) => {
               rel='noopener noreferrer' data-interception="off" > {row?.original?.Title}
             </a>
             {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != "" && (
-              <span className="alignIcon"> <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
+              <span className="alignIcon mt--5"> <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
             )}
           </div>
         ),
@@ -910,7 +910,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "SmartPriority",
         resetColumnFilters: false,
         resetSorting: false,
-        isColumnDefultSortingDesc: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === undefined ? true : false,
+        isColumnDefultSortingDesc: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === undefined ? true : false,
         header: "",
         size: 45,
         isColumnVisible: true,
@@ -971,7 +971,7 @@ const TaskStatusTbl = (Tile: any) => {
         accessorFn: (row: any) => row?.TaskTypeValue,
         cell: ({ row, column, getValue }: any) => (
           <div draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)} >
-            <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"></span></span>
+            <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content">{row?.original?.TaskTypeValue}</span></span>
           </div>
         ),
         placeholder: "Task Type",
@@ -1039,7 +1039,7 @@ const TaskStatusTbl = (Tile: any) => {
                 {row?.original?.EstimatedTime}
               </span>
             </span>
-            <span>{row?.original?.EstimatedTime != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"EstimatedTimeDescr"} />}</span>
+            <span className="alignIcon mt--5">{row?.original?.EstimatedTime != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"EstimatedTimeDescr"} />}</span>
           </div>
         ),
         id: "TotalEstimatedTime",
@@ -1059,7 +1059,7 @@ const TaskStatusTbl = (Tile: any) => {
                 {row?.original?.WorkingDate}
               </span>
             </span>
-            <span>{row?.original?.WorkingDate != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"WorkingDate"} />}</span>
+            <span className="alignIcon mt--5">{row?.original?.WorkingDate != undefined && row?.original?.WorkingDate != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"WorkingDate"} />}</span>
           </div>
         ),
         id: "WorkingDate",
@@ -1103,7 +1103,7 @@ const TaskStatusTbl = (Tile: any) => {
         size: 100,
         isColumnVisible: true,
         fixedColumnWidth: true,
-        isColumnDefultSortingDesc: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Created" ? true : false
+        isColumnDefultSortingDesc: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Created" ? true : false
       },
       {
         accessorFn: (row: any) => row?.DueDate,
@@ -1125,7 +1125,7 @@ const TaskStatusTbl = (Tile: any) => {
         size: 91,
         isColumnVisible: false,
         fixedColumnWidth: true,
-        isColumnDefultSortingDesc: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "DueDate" ? true : false
+        isColumnDefultSortingDesc: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "DueDate" ? true : false
       },
       {
         accessorFn: (row: any) => row?.Modified,
@@ -1150,7 +1150,7 @@ const TaskStatusTbl = (Tile: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Modified",
-        isColumnVisible: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Modified" ? true : false,
+        isColumnVisible: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Modified" ? true : false,
         filterFn: (row: any, columnName: any, filterValue: any) => {
           if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
             return true
@@ -1161,7 +1161,7 @@ const TaskStatusTbl = (Tile: any) => {
         header: "",
         size: 100,
         fixedColumnWidth: true,
-        isColumnDefultSortingDesc: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Modified" ? true : false
+        isColumnDefultSortingDesc: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Modified" ? true : false
       },
 
       {
@@ -1418,8 +1418,12 @@ const TaskStatusTbl = (Tile: any) => {
       var subject = ContextData?.currentUserData?.Title + ' - ' + config?.WebpartTitle;
       let Currentdate = new Date(); // Use your JavaScript Date object here
       let CurrentformattedDate = Moment(Currentdate).format('YYYY-MM-DD');
+      let UserTotalTime = 0
+      tasksCopy = tasksCopy?.sort((a: any, b: any) => {
+        return b?.SmartPriority - a?.SmartPriority;
+      });
       tasksCopy?.map((item: any) => {
-        totalTime += item?.EstimatedTime
+        // totalTime += item?.EstimatedTime
         let teamUsers: any = [];
         item?.TeamMembers?.map((item1: any) => {
           teamUsers.push(item1?.Title)
@@ -1431,24 +1435,56 @@ const TaskStatusTbl = (Tile: any) => {
           item.TaskDueDatenew = '';
         if (item.Categories == undefined || item.Categories == '')
           item.Categories = '';
-        text =
-          `<tr>
+
+        item.EstimatedTimeEntry = 0;
+        item.EstimatedTimeEntryDesc = '';
+        if (ContextData?.todaysDrafTimeEntry?.length > 0) {
+          ContextData?.todaysDrafTimeEntry?.map((value: any) => {
+            let entryDetails: any = [];
+            try {
+              entryDetails = JSON.parse(value.AdditionalTimeEntry)
+
+            } catch (e) {
+
+            }
+            if (entryDetails?.length > 0 && value[`Task${item?.siteType}`] != undefined && value[`Task${item?.siteType}`].Id == item?.Id) {
+              entryDetails?.map((timeEntry: any) => {
+                let parts = timeEntry?.TaskDate?.split('/');
+                let timeEntryDate: any = new Date(parts[2], parts[1] - 1, parts[0]);
+                if (timeEntryDate?.setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0) && timeEntry?.AuthorId == ContextData?.currentUserData?.AssingedToUserId) {
+                  item.EstimatedTimeEntryDesc += ' ' + timeEntry?.Description
+                  item.EstimatedTimeEntry += parseFloat(timeEntry?.TaskTime)
+                  totalTime += Number(timeEntry?.TaskTime)
+                  UserTotalTime += Number(timeEntry?.TaskTime)
+                }
+              })
+
+
+            }
+          })
+        }
+
+        if (item?.EstimatedTimeEntry > 0) {
+          text =
+            `<tr>
                   <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
                   <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
                   <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
                   <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
                   <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.PercentComplete} </td>
                   <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.EstimatedTime} </td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${item.EstimatedTimeDescr} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.EstimatedTimeEntry} </td>
+                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${item.EstimatedTimeEntryDesc} </td>
                   </tr>`
-        body1.push(text);
+          body1.push(text);
+        }
       });
-      body =
-        '<h2>'
-        + ContextData?.currentUserData?.Title + ' - ' + config?.WebpartTitle
-        + '</h2>'
-        + ` <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
+      if (body1?.length > 0) {
+        body =
+          '<h2>'
+          + ContextData?.currentUserData?.Title + ' - ' + config?.WebpartTitle
+          + '</h2>'
+          + ` <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
                     <thead>
                     <tr>
                     <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Site</th>
@@ -1457,19 +1493,20 @@ const TaskStatusTbl = (Tile: any) => {
                     <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Category</th>
                     <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">% </th>
                     <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Smart Priority</th>
-                    <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px" >Est Time</th>
-                    <th height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px; border-right:0px" >Est Desc.</th>
+                    <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px" >Time</th>
+                    <th height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px; border-right:0px" >Timesheet Description (Draft)</th>
                     </tr>
                     </thead>
                     <tbody>
                     ${body1}
                     </tbody>
                     </table>`
-        + '<p>' + 'For the complete Dashboard of ' + ContextData?.currentUserData?.Title + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx` + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx` + '</span>' + '</a>' + '</p>'
-      subject = `[${config?.WebpartTitle} - ${ContextData?.currentUserData?.Title}] ${CurrentformattedDate}: ${tasksCopy?.length} Tasks; ${totalTime}hrs scheduled`
+          + '<p>' + 'For the complete Dashboard of ' + ContextData?.currentUserData?.Title + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx` + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/Dashboard.aspx` + '</span>' + '</a>' + '</p>'
+        subject = `[${config?.WebpartTitle} - ${ContextData?.currentUserData?.Title}] ${CurrentformattedDate}: ${tasksCopy?.length} Tasks; ${totalTime}hrs scheduled`
 
+      }
+      body = body.replaceAll('>,<', '><').replaceAll(',', '')
     }
-    body = body.replaceAll('>,<', '><').replaceAll(',', '')
     if (body1.length > 0 && body1 != undefined) {
       if (ContextData?.currentUserData?.Email != undefined) {
         to.push(ContextData?.currentUserData?.Email)
@@ -1589,7 +1626,7 @@ const TaskStatusTbl = (Tile: any) => {
                   <div className="Alltable" draggable={true} onDragStart={(e) => handleDragStart(e, config, '')} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
                       <GlobalCommanTable wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
-                        pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
+                        pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
                       {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={AllListId} emailStatus={"Approved"} items={approveItem} />}
@@ -1683,10 +1720,10 @@ const TaskStatusTbl = (Tile: any) => {
                             {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => (
                               user.IsShowTask == true && (
                                 <>
-                                  <h3 className="f-15">{user?.Title} Working Tasks</h3>
+                                  <h3 className="f-15">{user?.Title} Working Today Tasks</h3>
                                   <div key={index} className="Alltable mb-2" onDragStart={(e) => handleDragStart(e, user, '')} draggable={false}>
                                     <GlobalCommanTable bulkEditIcon={true} updatedSmartFilterFlatView={true} customHeaderButtonAvailable={true} customTableHeaderButtons={customWorkingTableHeaderButtons(config, user, undefined, 'DateTask')} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={user?.Tasks}
-                                      callBackData={callBackData} pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
+                                      callBackData={callBackData} pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                                   </div>
                                 </>
                               )
@@ -1702,7 +1739,7 @@ const TaskStatusTbl = (Tile: any) => {
                                       <><h3 className="f-15">{user?.Title} Un-Assigned Tasks</h3>
                                         <div onDragStart={(e) => handleDragStart(e, user, 'Un-Assigned')} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} key={index} className="Alltable mb-2">
                                           <GlobalCommanTable bulkEditIcon={true} updatedSmartFilterFlatView={true} customHeaderButtonAvailable={true} customTableHeaderButtons={customWorkingTableHeaderButtons(config, user, undefined, 'Un-AssignedTask')} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date?.Tasks}
-                                            callBackData={callBackData} pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
+                                            callBackData={callBackData} pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                                         </div></>
                                     }
                                   </>
@@ -1728,11 +1765,11 @@ const TaskStatusTbl = (Tile: any) => {
                     <div className="Alltable" >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
                         <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
-                          pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
+                          pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ?config?.configurationData[0]?.showPageSizeSetting?.tablePageSize:''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ?config?.configurationData[0]?.showPageSizeSetting?.showPagination:''} />
                       )}
                       {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
                         <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
-                          pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
+                          pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ?config?.configurationData[0]?.showPageSizeSetting?.tablePageSize:''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ?config?.configurationData[0]?.showPageSizeSetting?.showPagination:''} />
                       )}
                     </div>
                   </>}

@@ -7,7 +7,6 @@ import TaskStatusTbl from './TaskStausTable';
 import * as Moment from "moment";
 import PageLoader from '../../../globalComponents/pageLoader';
 import { map } from "jquery";
-
 var taskUsers: any;
 let GroupByUsers: any = [];
 let AllUsers: any = [];
@@ -23,6 +22,11 @@ let timeSheetConfig: any = {};
 let TimeSheetLists: any = [];
 let dates: any = [];
 let AllTimeEntry: any = [];
+let CurrentMatchableDate = new Date();
+let todaysDrafTimeEntry: any = [];
+var AllTaskTimeEntries: any = [];
+let timesheetListConfiguration: any = [];
+CurrentMatchableDate.setHours(0, 0, 0, 0)
 const EmployeProfile = (props: any) => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
@@ -185,18 +189,27 @@ const EmployeProfile = (props: any) => {
                   }
                 })
               }
+              if (IsLoadTask != false) {
+                setprogressBar(true);
+                if (Type != false)
+                  smartTimeTotal();
+                else
+                  getAllData(Type)
+              }
             } catch (error) {
               console.log(error);
             }
           }
+          else {
+            if (IsLoadTask != false) {
+              setprogressBar(true);
+              if (Type != false)
+                smartTimeTotal();
+              else
+                getAllData(Type)
+            }
+          }
         })
-        if (IsLoadTask != false) {
-          setprogressBar(true);
-          if (Type != false)
-            smartTimeTotal();
-          else
-            getAllData(Type)
-        }
       }
     }).catch((err: any) => {
       console.log(err);
@@ -345,8 +358,8 @@ const EmployeProfile = (props: any) => {
   }
   const smartMetaData = async () => {
     var AllsiteData: any = []
-    var timesheetListConfig = await globalCommon?.loadSmartMetadata(props?.props, 'timesheetListConfigrations')
-    setTimesheetListConfig(timesheetListConfig)
+    timesheetListConfiguration = await globalCommon?.loadSmartMetadata(props?.props, 'timesheetListConfigrations')
+    setTimesheetListConfig(timesheetListConfiguration)
     AllsiteData = await globalCommon?.loadSmartMetadata(props?.props, 'Sites')
     AllsiteData = AllsiteData?.filter((item: any) => item.Title != "" && item.Title != "Master Tasks" && item.Title != "SDC Sites" && item.Title != "Offshore Tasks" && item.Configurations != null)
     setAllSite(AllsiteData)
@@ -621,13 +634,16 @@ const EmployeProfile = (props: any) => {
                     Task?.WorkingAction?.map((workingMember: any) => {
                       if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
                         workingMember?.InformationData?.map((workingDetails: any) => {
+                          let WorkingDate: any = Moment(workingDetails.WorkingDate, 'DD/MM/YYYY');
+                          WorkingDate?._d.setHours(0, 0, 0, 0)
                           if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
                             workingDetails?.WorkingMember?.forEach((workingUser: any) => {
                               if (Task?.AssignedTo != undefined && Task?.AssignedTo?.length > 0) {
                                 Task?.AssignedTo?.forEach((assign: any) => {
-                                  if (assign.Id != undefined && User.AssingedToUserId != undefined && assign.Id === User.AssingedToUserId && assign.Id == workingUser?.Id) {
+                                  if (assign.Id != undefined && User.AssingedToUserId != undefined && assign.Id === User.AssingedToUserId && assign.Id == workingUser?.Id && WorkingDate?._d.getTime() >= CurrentMatchableDate?.getTime()) {
                                     IsUnAssigedTask = false
                                   }
+
                                 })
                               }
                               if (User.AssingedToUserId != undefined && workingUser?.Id === User.AssingedToUserId) {
@@ -647,7 +663,7 @@ const EmployeProfile = (props: any) => {
                                 Date.TotalTask += 1;
                                 Date.TotalEstimatedTime += Task?.EstimatedTime;
                               }
-                              if (User.AssingedToUserId != undefined && workingUser?.Id === User.AssingedToUserId && !isTaskItemExists(User.Tasks, Task)) {
+                              if (User.AssingedToUserId != undefined && workingUser?.Id === User.AssingedToUserId && Date.ServerDate?.getTime() == WorkingDate?._d.getTime() && !isTaskItemExists(User.Tasks, Task)) {
                                 if (User?.Tasks == undefined)
                                   User.Tasks = [];
                                 User.Tasks.push(CopyTask)
@@ -675,17 +691,6 @@ const EmployeProfile = (props: any) => {
                   }
                 })
               })
-              // array.map((Task: any) => {
-              //   if (Task?.AssignedTo != undefined && Task?.AssignedTo?.length > 0) {
-              //     Task?.AssignedTo?.forEach((assign: any) => {
-              //       if (assign.Id != undefined && User.AssingedToUserId != undefined && assign.Id === User.AssingedToUserId && Task.IsTodaysTask === true && !isTaskItemExists(User?.Tasks, Task)) {
-              //         User.Tasks.push(Task);
-              //         User.TotalTask += 1;
-              //         User.TotalEstimatedTime += Task?.EstimatedTime;
-              //       }
-              //     })
-              //   }
-              // })
             })
           }
           AllUsers?.map((item: any) => {
@@ -883,9 +888,6 @@ const EmployeProfile = (props: any) => {
           }
           items.AssignedTo?.forEach((assign: any) => {
             if (assign && assign.Id === currentUserData?.AssingedToUser?.Id) {
-              // if (config.IsTodaysTask != undefined && items.IsTodaysTask === config.IsTodaysTask && !isTaskItemExists(config?.Tasks, items)) {
-              //   config?.Tasks.push(items)
-              // }
               if (config?.IsImmediateTask != undefined && items.Categories?.toLowerCase().indexOf(config?.IsImmediateTask.toLowerCase()) > -1 && items?.PercentComplete != undefined && items?.PercentComplete < 80 && !isTaskItemExists(config?.Tasks, items)) {
                 config?.Tasks.push(items);
               }
@@ -925,9 +927,62 @@ const EmployeProfile = (props: any) => {
       console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage)
     }
   };
+  const checkTimeEntrySite = (timeEntry: any) => {
+    let result = ''
+    result = allData?.filter((task: any) => {
+      let site = '';
+      if (task?.siteType == 'Offshore Tasks') {
+        site = 'OffshoreTasks'
+      } else {
+        site = task?.siteType;
+      }
+      if (timeEntry[`Task${site}`] != undefined && task?.Id == timeEntry[`Task${site}`]?.Id) {
+        return task;
+      }
+    });
+    return result;
+  }
+
+  const loadAllTimeEntry = async () => {
+    AllTaskTimeEntries = [];
+    todaysDrafTimeEntry = [];
+    if (timesheetListConfiguration?.length > 0) {
+      let timesheetLists: any = [];
+      let startDate = getStartingDate('This Week').toISOString();
+      timesheetLists = JSON.parse(timesheetListConfiguration[0]?.Configurations)
+
+      if (timesheetLists?.length > 0) {
+        const fetchPromises = timesheetLists.map(async (list: any) => {
+          let web = new Web(list?.siteUrl);
+          try {
+            let todayDateToCheck = new Date().setHours(0, 0, 0, 0,)
+            const data = await web.lists
+              .getById(list?.listId)
+              .items.select(list?.query)
+              .filter(`(Modified ge '${startDate}') and (TimesheetTitle/Id ne null)`)
+              .getAll();
+
+            data?.forEach((item: any) => {
+              let entryDate = new Date(item?.Modified).setHours(0, 0, 0, 0)
+              if (entryDate == todayDateToCheck) {
+                todaysDrafTimeEntry?.push(item);
+              }
+              item.taskDetails = checkTimeEntrySite(item);
+              AllTaskTimeEntries.push(item);
+            });
+            // currentUserTimeEntry('This Week');           
+          } catch (error) {
+            console.log(error, 'HHHH Time');
+          }
+        });
+        await Promise.all(fetchPromises)
+      }
+    }
+  }
   const getAllData = async (IsLoad: any) => {
     if (IsLoad != undefined && IsLoad === true) {
       await globalCommon?.loadAllSiteTasks(props?.props, undefined).then((data: any) => {
+        loadAllTimeEntry();
         data?.map((items: any) => {
           items.descriptionsSearch = '';
           if (items?.FeedBack != undefined && Array.isArray(items?.FeedBack)) {
@@ -1104,9 +1159,7 @@ const EmployeProfile = (props: any) => {
       } else {
         return filterArray.some((filter: any) => filter[FilterProperty] === data[ItemProperty]);
       }
-    } catch (error) {
-
-    }
+    } catch (error) { }
   };
   const updatedCheckCategoryMatch = (data: any, Categories: any) => {
     try {
@@ -1125,9 +1178,7 @@ const EmployeProfile = (props: any) => {
         }
       }
       return false;
-    } catch (error) {
-
-    }
+    } catch (error) { }
   };
   const updatedCheckProjectMatch = (data: any, selectedProject: any) => {
     try {
@@ -1190,12 +1241,31 @@ const EmployeProfile = (props: any) => {
         }
       }
       if (Config?.configurationData[0]?.isTodaysTask === true && Config?.configurationData[0]?.isAssignedto === true || Config?.configurationData[0]?.isTodaysTask === true && Config?.configurationData[0]?.isAssignedto === false) {
-        if (data?.IsTodaysTask === true) {
-          // let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ') && data?.IsTodaysTask === true));
-          let result = data?.AssignedTo?.some((elem2: any) => teamMembers.some((filter: any) => filter?.Id === elem2?.Id && data?.IsTodaysTask === true));
-          if (result === true) {
-            return true;
-          }
+        let WorkingTask: any = [];
+        // let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ') && data?.IsTodaysTask === true));
+        if (data?.WorkingAction != undefined && data?.WorkingAction?.length > 0) {
+          data?.WorkingAction?.map((workingDetails: any) => {
+            if (workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title === "WorkingDetails" && workingDetails?.InformationData.length > 0) {
+              workingDetails?.InformationData?.map((workingTask: any) => {
+                if (workingTask?.WorkingMember != undefined && workingTask?.WorkingMember?.length > 0) {
+                  workingTask?.WorkingMember?.map((assign: any) => {
+                    let WorkingDate: any = Moment(workingTask?.WorkingDate, 'DD/MM/YYYY');
+                    WorkingDate?._d.setHours(0, 0, 0, 0)
+                    teamMembers?.map((filter: any) => {
+                      if (assign != undefined && assign?.Id == filter?.Id && WorkingDate?._d.getTime() == CurrentMatchableDate?.getTime() && !isTaskItemExists(WorkingTask, data)) {
+                        data.WorkingDate = workingTask?.WorkingDate;
+                        WorkingTask?.push(data);
+                      }
+                    })
+                  })
+                }
+              })
+            }
+          })
+        }
+        let result = data?.AssignedTo?.some((elem2: any) => teamMembers.some((filter: any) => filter?.Id === elem2?.Id && data?.IsTodaysTask === true));
+        if (result === true || WorkingTask?.length) {
+          return true;
         }
       }
       if (Config?.configurationData[0]?.isCreatedBy === false && Config?.configurationData[0]?.isModifiedby === false && Config?.configurationData[0]?.isAssignedto === false && Config?.configurationData[0]?.isTeamMember === false && Config?.configurationData[0]?.isTeamLead === false && Config?.configurationData[0]?.isTodaysTask === false) {
@@ -1367,7 +1437,7 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      <myContextValue.Provider value={{ ...myContextValue, todaysDrafTimeEntry: todaysDrafTimeEntry, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div> <Header /></div>
         {IsCallContext == true && <TaskStatusTbl />}
       </myContextValue.Provider >

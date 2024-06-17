@@ -52,13 +52,13 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
 
     }
     const deleteSmartMetadata = async (item: any) => {
-        var flag = confirm(`Are you sure, you want to delete this id?`)
+        var flag = confirm(`Are you sure, you want to delete this Item?`)
         if (flag === true) {
             let web = new Web(props?.AllList?.SPSitesListUrl);
             web.lists.getById(props?.AllList?.SmartMetadataListID).items.getById(item.Id).recycle().then((response: any) => {
-                console.log("delete successful")
                 if (response) {
                     DeleteItemCallBack(props.AllMetadata, '', smartMetadataItem.TaxType, '');
+                    alert('Item deleted successfully...')
                     closeDeleteSmartMetaPopup();
                 }
             }).catch((error: any) => {
