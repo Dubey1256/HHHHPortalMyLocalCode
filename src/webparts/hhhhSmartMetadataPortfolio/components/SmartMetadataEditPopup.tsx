@@ -112,7 +112,7 @@ export default function SmartMetadataEditPopup(props: any) {
         return Items;
     }
     const deleteDataFunction = async (item: any) => {
-        var deleteConfirmation = confirm("Are you sure, you want to delete this?");
+        var deleteConfirmation = confirm("Are you sure, you want to delete this item?");
         if (deleteConfirmation) {
             let web = new Web(props?.AllList?.SPSitesListUrl);
             await web.lists
@@ -421,13 +421,13 @@ export default function SmartMetadataEditPopup(props: any) {
                 //SmartTopicsId: { "results": smart_Topics },
                 href: {
                     "__metadata": { type: "SP.FieldUrlValue" },
-                    Description: SmartTaxonomyItem?.href?.Description,
-                    Url: SmartTaxonomyItem?.href?.Url,
+                    Description: SmartTaxonomyItem?.href?.Description != undefined ? SmartTaxonomyItem?.href?.Description : null,
+                    Url: SmartTaxonomyItem?.href?.Url != undefined ? SmartTaxonomyItem?.href?.Url : null,
                 },
-                ItemCover: {
+                Item_x0020_Cover: {
                     "__metadata": { type: "SP.FieldUrlValue" },
-                    Description: SmartTaxonomyItem?.Item_x002d_Image != undefined ? SmartTaxonomyItem?.Item_x002d_Image?.Url : null,
-                    Url: SmartTaxonomyItem?.Item_x002d_Image != undefined ? SmartTaxonomyItem?.Item_x002d_Image?.Url : null
+                    Description: SmartTaxonomyItem?.Item_x0020_Cover?.Description != undefined ? SmartTaxonomyItem?.Item_x0020_Cover.Description : null,
+                    Url: SmartTaxonomyItem?.Item_x0020_Cover?.Url != undefined ? SmartTaxonomyItem?.Item_x0020_Cover?.Url : null
                 },
             };
             if (modaltype == "Add") {
