@@ -1838,8 +1838,8 @@ const Apps = (props: any) => {
       subject = "Leave Request approved";
       txtComment = `
       <div>
-        <p>Hi ${employeeName},</p>
-        <p>Your applied leave for ${eventDate} To ${eventEndDate} has been approved.</p>
+        <p>Hi ${employeeName},</p><br>
+        <p>Your applied leave for ${eventDate} To ${eventEndDate} has been approved.</p><br>
         <p>Regards,<br>Manager</p>
       </div>
     `;
@@ -1847,8 +1847,8 @@ const Apps = (props: any) => {
       subject = "Leave Request rejected";
       txtComment = `
       <div>
-        <p>Hi ${employeeName},</p>
-        <p>Your applied leave for ${eventDate} To ${eventEndDate} has been rejected due to ${comment}.</p>
+        <p>Hi ${employeeName},</p><br>
+        <p>Your applied leave for ${eventDate} To ${eventEndDate} has been rejected due to ${comment}.</p><br>
         <p>Regards,<br>Manager</p>
       </div>
     `;

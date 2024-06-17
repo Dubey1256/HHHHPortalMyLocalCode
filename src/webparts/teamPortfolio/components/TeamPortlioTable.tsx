@@ -3283,9 +3283,10 @@ function TeamPortlioTable(SelectedProp: any) {
 
 
     const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
-        renderData = [];
-        renderData = renderData.concat(getData);
-        refreshData();
+        // renderData = [];
+        // renderData = renderData.concat(getData);
+        // refreshData();
+        setData(getData);
         setTopCompoIcon(topCompoIcon);
     }, []);
 
