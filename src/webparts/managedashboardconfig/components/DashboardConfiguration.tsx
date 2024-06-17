@@ -10,6 +10,7 @@ const DashboardConfiguration = (props: any) => {
     const [WebpartConfig, setWebpartConfig] = React.useState<any>([]);
     const [IsOpenPopup, setIsOpenPopup] = React.useState<any>(false);
     const [EditItem, setEditItem] = React.useState<any>(undefined);
+    const [IsOpenEditDashboardPopup, setIsOpenEditDashboardPopup] = React.useState<any>(false);
     try {
         $("#spPageCanvasContent").removeClass();
         $("#spPageCanvasContent").addClass("hundred");
@@ -96,6 +97,24 @@ const DashboardConfiguration = (props: any) => {
             {
                 cell: ({ row }) => (
                     <>
+                        {/* <div className='text-end'>
+                            <a data-bs-toggle="tooltip" data-bs-placement="auto" title={'Edit ' + `${row.original.Title}`}  >
+                                {" "}
+                                <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditDashboard(row?.original)} ></span>
+                            </a>
+                        </div> */}
+                    </>
+                ),
+                id: "row?.original.Id",
+                canSort: false,
+                placeholder: "",
+                header: "",
+                size: 30,
+                isColumnVisible: true,
+            },
+            {
+                cell: ({ row }) => (
+                    <>
                         <div className='text-end'>
                             <a data-bs-toggle="tooltip" data-bs-placement="auto" title={'Edit ' + `${row.original.Title}`}  >
                                 {" "}
@@ -126,6 +145,17 @@ const DashboardConfiguration = (props: any) => {
             LoadAdminConfiguration()
 
     }
+    const EditDashboard = (item: any) => {
+        setEditItem(item)
+        setIsOpenEditDashboardPopup(true);
+    }
+    const CloseEditConfiguration = (IsLoad: any) => {
+        setEditItem(undefined)
+        setIsOpenEditDashboardPopup(false);
+        if (IsLoad === true)
+            LoadAdminConfiguration()
+
+    }
     return (
         <>
             <h3 className="heading">Dashboard Landing Page
@@ -139,6 +169,7 @@ const DashboardConfiguration = (props: any) => {
                     )}
                 </div>
                 {IsOpenPopup && <AddConfiguration props={props?.props} EditItem={EditItem} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseConfigPopup} />}
+                {/* {IsOpenEditDashboardPopup && <EditConfiguration props={props?.props} EditItem={EditItem} IsOpenPopup={IsOpenEditDashboardPopup} CloseConfigPopup={CloseEditConfiguration} />} */}
             </div>
 
         </>
