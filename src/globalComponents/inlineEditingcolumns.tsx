@@ -184,6 +184,9 @@ const inlineEditingcolumns = (props: any) => {
         }
       }
       else {
+        TempArrya.forEach((item: any) => {
+          item.ActiveTile = true
+        })
         setCategoriesData(TempArrya)
       }
       if (
