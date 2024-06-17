@@ -50,7 +50,8 @@ const today: Date = new Date();
 const minDate: Date = today;
 let queryevent: any;
 let userEmail: any;
-let backuprecurringarr:any = [];
+let ApproveruserEmail: any;
+let backuprecurringarr: any = [];
 let leaveapproved = false;
 const leaveTypes = [
   { key: "Sick", text: "Sick" },
@@ -134,7 +135,7 @@ const Apps = (props: any) => {
 
 
   // Generic funtion to send email
-  const SendEmailMessage = (body: any, subject: any, to: any,Text:any) => {
+  const SendEmailMessage = (body: any, subject: any, to: any, Text: any) => {
     let sp = spfi().using(spSPFx(props?.props?.context));
     sp.utility
       .sendEmail({
@@ -147,7 +148,7 @@ const Apps = (props: any) => {
       })
       .then(() => {
         console.log("Email Sent!");
-        alert(`${Text} Sent Successfully!` );
+        alert(`${Text} Sent Successfully!`);
       })
       .catch((error) => {
         console.error("Error sending email:", error);
@@ -774,11 +775,13 @@ const Apps = (props: any) => {
         localArr = processDataArray(filteredData);
         setChkName(localArr)
         setRecurringEvents(filteredData);
-        backuprecurringarr= filteredData;
+        backuprecurringarr = filteredData;
         if (filteredData?.length > 0 && id != null) {
           queryevent = filteredData.find((item: any) => item?.Id == id);
           userEmail = AllTaskUser.find((Employee: any) => (Employee?.AssingedToUserId === queryevent?.Employee?.Id))
-          leaveapproved=queryevent?.Approved;
+          ApproveruserEmail = AllTaskUser.find((item: any) => item?.AssingedToUserId == userEmail?.ApproverId[0]);
+
+          leaveapproved = queryevent?.Approved;
           handleDateClick(queryevent)
 
         }
@@ -974,10 +977,12 @@ const Apps = (props: any) => {
   // Handle
   async function handleDateClick(event: any) {
     // queryevent = event;
-    
+
     queryevent = backuprecurringarr.find((item: any) => item?.Id == event?.Id);
     userEmail = AllTaskUser.find((Employee: any) => (Employee?.AssingedToUserId === queryevent?.Employee?.Id))
-    leaveapproved=queryevent?.Approved;
+    ApproveruserEmail = AllTaskUser.find((item: any) => item?.AssingedToUserId == userEmail?.ApproverId[0]);
+
+    leaveapproved = queryevent?.Approved;
     console.log(event);
     setInputValueName(event?.Title);
     setshowRecurrence(false);
@@ -1245,7 +1250,7 @@ const Apps = (props: any) => {
         HalfDay: editedEvent.HalfDay,
         HalfDayTwo: editedEvent.HalfDayTwo,
         Color: mycolors,
-        Approved:leaveapproved,
+        Approved: leaveapproved,
         RecurrenceData: editedEvent.RecurrenceData ? await deCodeHtmlEntities(editedEvent.RecurrenceData) : "",
         MasterSeriesItemID: editedEvent.MasterSeriesItemID,
         RecurrenceID: editedEvent.RecurrenceID ? editedEvent.RecurrenceID : undefined
@@ -1479,8 +1484,8 @@ const Apps = (props: any) => {
 
     let Body = BindHtmlBody
     let Subject = "Leave Request - " + formattedstartDate + "-" + EventData?.Designation + "-" + EventData?.type + "-" + EventData?.title
-    let To = ["santosh.kumar@hochhuth-consulting.de"]
-    SendEmailMessage(Body, Subject, To,"Email")
+    let To = ["ranu.trivedi@hochhuth-consulting.de", "juli.kumari@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"]
+    SendEmailMessage(Body, Subject, To, "Email")
   };
 
 
@@ -1612,7 +1617,7 @@ const Apps = (props: any) => {
       setSelectedTimeEnd(selectedTimeEnd);
       return;
     }
-    const updateTitle = (inputValueName:any, type:any, leaveApproveded:any) => {
+    const updateTitle = (inputValueName: any, type: any, leaveApproveded: any) => {
       const leaveTypes = [
         "Un-Planned",
         "Sick",
@@ -1623,15 +1628,15 @@ const Apps = (props: any) => {
         "fulldayevent",
         "LWP"
       ];
-    
+
       const regex = new RegExp(leaveTypes.join("|"), "g");
       const updatedTitle = inputValueName.replace(regex, type);
-    
+
       return leaveApproveded ? `${updatedTitle} Approved` : updatedTitle;
     };
     const web = new Web(props.props.siteUrl);
     const newEvent = {
-      title: updateTitle(inputValueName,type,leaveapproved),
+      title: updateTitle(inputValueName, type, leaveapproved),
       name: peopleName,
       start: startDate,
       end: endDate,
@@ -1653,10 +1658,10 @@ const Apps = (props: any) => {
     }
 
     const mycolors = (newEvent.halfdayevent || newEvent.halfdayeventT) ? "#6d36c5" :
-    (newEvent.type === "Work From Home") ? "#e0a209" :
-    ((newEvent.type === "Company Holiday") || (newEvent.type === "National Holiday")) ? "#228B22" :
-    (leaveapproved && newEvent.type !== "Work From Home" && !newEvent.halfdayevent && !newEvent.halfdayeventT) ? "#178c1f" : "";
-  
+      (newEvent.type === "Work From Home") ? "#e0a209" :
+        ((newEvent.type === "Company Holiday") || (newEvent.type === "National Holiday")) ? "#228B22" :
+          (leaveapproved && newEvent.type !== "Work From Home" && !newEvent.halfdayevent && !newEvent.halfdayeventT) ? "#178c1f" : "";
+
 
     await web.lists.getById(props.props.SmalsusLeaveCalendar)
       .items.getById(eventPass.Id)
@@ -1670,7 +1675,7 @@ const Apps = (props: any) => {
         EventDate: ConvertLocalTOServerDateToSave(startDate, selectedTime) + " " + (selectedTime + "" + ":00"),
         HalfDay: newEvent.halfdayevent,
         HalfDayTwo: newEvent.halfdayeventT,
-        Approved:leaveapproved,
+        Approved: leaveapproved,
         Color: mycolors,
         fAllDayEvent: newEvent.fulldayevent
       })
@@ -1811,7 +1816,7 @@ const Apps = (props: any) => {
     const employeeName = queryevent?.Employee?.Title;
     const context = props?.props?.context;
     const allListId = props?.props;
-    const To = [userEmail?.Email, "anubhav@hochhuth-consulting.de"];
+    const To = [userEmail?.Email, ApproveruserEmail?.Email,"deepak@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de", "juli.kumari@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"];
     // const To = ["anubhav@hochhuth-consulting.de"];
 
     let subject, txtComment;
@@ -1838,7 +1843,7 @@ const Apps = (props: any) => {
         <p>Regards,<br>Manager</p>
       </div>
     `;
-   } else if (type === "reject") {
+    } else if (type === "reject") {
       subject = "Leave Request rejected";
       txtComment = `
       <div>
@@ -1846,17 +1851,18 @@ const Apps = (props: any) => {
         <p>Your applied leave for ${eventDate} To ${eventEndDate} has been rejected due to ${comment}.</p>
         <p>Regards,<br>Manager</p>
       </div>
-    `;}
+    `;
+    }
 
     await GlobalCommon.SendTeamMessage(mention_To, txtComment, context, allListId).then(() => {
       console.log("MS Teams Notification sent");
     });
 
-    SendEmailMessage(txtComment, subject, To,"Notification");
+    SendEmailMessage(txtComment, subject, To, "Notification");
 
     if (type === "approve") {
       console.log("Your leave is approved");
-      leaveapproved=true;
+      leaveapproved = true;
       updateElement()
       // closem((e:any)=>e);
     } else if (type === "reject") {
@@ -1893,9 +1899,9 @@ const Apps = (props: any) => {
   const allowedUserIds = [242, 36, 234, 192];
   const userId = props?.props?.context?.pageContext?.legacyPageContext?.userId;
   const isAllowedUser = allowedUserIds.indexOf(userId) !== -1;
-  
+
   const result = isAllowedUser && !disabl && !leaveapproved;
-  
+
   return (
 
     <div>
@@ -2160,27 +2166,27 @@ const Apps = (props: any) => {
               readOnly={IsDisableField}
             />
           </div>
-           {result &&
-          <div className="container mt-4">
-            <div className="row">
-              <div className="col">
-                <button type="button" className="btn btn-success me-2"onClick={handleApprove} disabled={isDisabled}>Approve</button>
-                <button type="button"className="btn btn-danger"onClick={handleReject}disabled={isDisabled}>Reject </button>
-              </div>
-            </div>
-            {showTextarea && (
-              <div className="row mt-3">
+          {result &&
+            <div className="container mt-4">
+              <div className="row">
                 <div className="col">
-                   <textarea className="form-control" placeholder="Enter reason for rejection" value={comment} onChange={(e) => setComment(e.target.value)}></textarea>
-                  <button type="button" className="btn btn-primary mt-2" onClick={handleSubmitReject}>
-                    Submit
-                  </button>
+                  <button type="button" className="btn btn-success me-2" onClick={handleApprove} disabled={isDisabled}>Approve</button>
+                  <button type="button" className="btn btn-danger" onClick={handleReject} disabled={isDisabled}>Reject </button>
                 </div>
               </div>
-            )}
-          </div>
+              {showTextarea && (
+                <div className="row mt-3">
+                  <div className="col">
+                    <textarea className="form-control" placeholder="Enter reason for rejection" value={comment} onChange={(e) => setComment(e.target.value)}></textarea>
+                    <button type="button" className="btn btn-primary mt-2" onClick={handleSubmitReject}>
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
-           } 
+          }
         </form>
 
         <br />
