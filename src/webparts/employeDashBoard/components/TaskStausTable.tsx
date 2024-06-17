@@ -882,7 +882,7 @@ const TaskStatusTbl = (Tile: any) => {
               rel='noopener noreferrer' data-interception="off" > {row?.original?.Title}
             </a>
             {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != "" && (
-              <span className="alignIcon"> <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
+              <span className="alignIcon mt--5"> <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
             )}
           </div>
         ),
@@ -910,7 +910,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "SmartPriority",
         resetColumnFilters: false,
         resetSorting: false,
-        isColumnDefultSortingDesc: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === undefined ? true : false,
+        isColumnDefultSortingDesc: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === undefined ? true : false,
         header: "",
         size: 45,
         isColumnVisible: true,
@@ -1039,7 +1039,7 @@ const TaskStatusTbl = (Tile: any) => {
                 {row?.original?.EstimatedTime}
               </span>
             </span>
-            <span>{row?.original?.EstimatedTime != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"EstimatedTimeDescr"} />}</span>
+            <span className="alignIcon mt--5">{row?.original?.EstimatedTime != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"EstimatedTimeDescr"} />}</span>
           </div>
         ),
         id: "TotalEstimatedTime",
@@ -1059,7 +1059,7 @@ const TaskStatusTbl = (Tile: any) => {
                 {row?.original?.WorkingDate}
               </span>
             </span>
-            <span>{row?.original?.WorkingDate != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"WorkingDate"} />}</span>
+            <span className="alignIcon mt--5">{row?.original?.WorkingDate != undefined && row?.original?.WorkingDate != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"WorkingDate"} />}</span>
           </div>
         ),
         id: "WorkingDate",
@@ -1103,7 +1103,7 @@ const TaskStatusTbl = (Tile: any) => {
         size: 100,
         isColumnVisible: true,
         fixedColumnWidth: true,
-        isColumnDefultSortingDesc: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Created" ? true : false
+        isColumnDefultSortingDesc: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Created" ? true : false
       },
       {
         accessorFn: (row: any) => row?.DueDate,
@@ -1125,7 +1125,7 @@ const TaskStatusTbl = (Tile: any) => {
         size: 91,
         isColumnVisible: false,
         fixedColumnWidth: true,
-        isColumnDefultSortingDesc: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "DueDate" ? true : false
+        isColumnDefultSortingDesc: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "DueDate" ? true : false
       },
       {
         accessorFn: (row: any) => row?.Modified,
@@ -1150,7 +1150,7 @@ const TaskStatusTbl = (Tile: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Modified",
-        isColumnVisible: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Modified" ? true : false,
+        isColumnVisible: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Modified" ? true : false,
         filterFn: (row: any, columnName: any, filterValue: any) => {
           if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
             return true
@@ -1161,7 +1161,7 @@ const TaskStatusTbl = (Tile: any) => {
         header: "",
         size: 100,
         fixedColumnWidth: true,
-        isColumnDefultSortingDesc: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Modified" ? true : false
+        isColumnDefultSortingDesc: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Modified" ? true : false
       },
 
       {
@@ -1626,7 +1626,7 @@ const TaskStatusTbl = (Tile: any) => {
                   <div className="Alltable" draggable={true} onDragStart={(e) => handleDragStart(e, config, '')} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
                       <GlobalCommanTable wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
-                        pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
+                        pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
                       {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={AllListId} emailStatus={"Approved"} items={approveItem} />}
@@ -1720,10 +1720,10 @@ const TaskStatusTbl = (Tile: any) => {
                             {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => (
                               user.IsShowTask == true && (
                                 <>
-                                  <h3 className="f-15">{user?.Title} Working Tasks</h3>
+                                  <h3 className="f-15">{user?.Title} Working Today Tasks</h3>
                                   <div key={index} className="Alltable mb-2" onDragStart={(e) => handleDragStart(e, user, '')} draggable={false}>
                                     <GlobalCommanTable bulkEditIcon={true} updatedSmartFilterFlatView={true} customHeaderButtonAvailable={true} customTableHeaderButtons={customWorkingTableHeaderButtons(config, user, undefined, 'DateTask')} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={user?.Tasks}
-                                      callBackData={callBackData} pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
+                                      callBackData={callBackData} pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                                   </div>
                                 </>
                               )
@@ -1739,7 +1739,7 @@ const TaskStatusTbl = (Tile: any) => {
                                       <><h3 className="f-15">{user?.Title} Un-Assigned Tasks</h3>
                                         <div onDragStart={(e) => handleDragStart(e, user, 'Un-Assigned')} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} key={index} className="Alltable mb-2">
                                           <GlobalCommanTable bulkEditIcon={true} updatedSmartFilterFlatView={true} customHeaderButtonAvailable={true} customTableHeaderButtons={customWorkingTableHeaderButtons(config, user, undefined, 'Un-AssignedTask')} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date?.Tasks}
-                                            callBackData={callBackData} pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
+                                            callBackData={callBackData} pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                                         </div></>
                                     }
                                   </>
@@ -1765,11 +1765,11 @@ const TaskStatusTbl = (Tile: any) => {
                     <div className="Alltable" >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
                         <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
-                          pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
+                          pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ?config?.configurationData[0]?.showPageSizeSetting?.tablePageSize:''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ?config?.configurationData[0]?.showPageSizeSetting?.showPagination:''} />
                       )}
                       {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
                         <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
-                          pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
+                          pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ?config?.configurationData[0]?.showPageSizeSetting?.tablePageSize:''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ?config?.configurationData[0]?.showPageSizeSetting?.showPagination:''} />
                       )}
                     </div>
                   </>}

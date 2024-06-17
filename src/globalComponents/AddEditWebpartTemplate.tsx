@@ -180,10 +180,10 @@ const AddEditWebpartTemplate = (props: any) => {
     const SaveConfigPopup = async () => {
         try {
             let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").orderBy("orderby", true).getAll().then(async (data: any) => {
+            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").getAll().then(async (data: any) => {
                 let result: any;
-                if (data?.length && data[0].Value != undefined && data[0].Value != '') {
-                    result = parseInt(data[0].Value) + 1;
+                if (data?.length && data[data.length - 1].Value != undefined && data[data.length - 1].Value != '') {
+                    result = parseInt(data[data.length - 1].Value) + 1;
                 }
                 else {
                     result = data?.length + 1;
@@ -310,8 +310,11 @@ const AddEditWebpartTemplate = (props: any) => {
     }
     const SelectedTemplate = (check: any, items: any, index: any) => {
         setIsCheck(check)
-        if (items?.WebpartTitle != undefined)
+        if (items?.WebpartTitle != undefined) {
+            setDashboardTitle(items?.WebpartTitle)
             setselectedTemplate(items?.WebpartTitle)
+        }
+
         let newArray = [...NewItem];
         let Template = [...DashboardTemplate];
         let IsExecuteElse = true

@@ -538,6 +538,14 @@
         }
       ]
     },
+    "manage-dashboard-template-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/manageDashboardTemplate/ManageDashboardTemplateWebPart.js",
+          "manifest": "./src/webparts/manageDashboardTemplate/ManageDashboardTemplateWebPart.manifest.json"
+        }
+      ]
+    },
     "manage-webpart-template-web-part": {
       "components": [
         {
@@ -636,6 +644,7 @@
     "ContentEditingEventsWebPartStrings": "lib/webparts/contentEditingEvents/loc/{locale}.js",
     "ContentEditingNewsWebPartStrings": "lib/webparts/contentEditingNews/loc/{locale}.js",
     "ContentEditingDocumentsWebPartStrings": "lib/webparts/contentEditingDocuments/loc/{locale}.js",
-    "ManageWebpartTemplateWebPartStrings": "lib/webparts/manageWebpartTemplate/loc/{locale}.js"
+    "ManageWebpartTemplateWebPartStrings": "lib/webparts/manageWebpartTemplate/loc/{locale}.js",
+    "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js"
   }
 }
