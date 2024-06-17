@@ -3936,7 +3936,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
           ) : null
           }
-          {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
+          {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} allSitesItems={this.allDataOfTask}  AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
 
           {this.state.EditSiteCompositionStatus ?
             <CentralizedSiteComposition

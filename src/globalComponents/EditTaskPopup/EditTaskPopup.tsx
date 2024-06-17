@@ -42,6 +42,7 @@ import CentralizedSiteComposition from "../SiteCompositionComponents/Centralized
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
 import SmartPriorityHover from "./SmartPriorityHover";
 import TaskDetailsComponent from "./DesignTaskTemplate";
+import ReactPopperTooltipSingleLevel from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -73,6 +74,7 @@ var listName = "";
 var isApprovalByStatus = false;
 let ApprovalStatusGlobal: any = false;
 let SiteCompositionPrecentageValue: any = 0;
+let allDataSites:any;
 
 // var TaskCreatorApproverBackupArray: any = [];
 var ReplaceImageIndex: any;
@@ -103,7 +105,8 @@ const EditTaskPopup = (Items: any) => {
     // Items.Items.Id = Items?.Items?.ID;
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
-    let SiteWebConfigData: any = [];
+        allDataSites=Items?.allSitesItems
+        let SiteWebConfigData: any = [];
     const [usersAssignedIDs, setusersAssignedIDs] = useState([])
     const [workingToday, setWorkingToday] = useState(false);
     const [TaskImages, setTaskImages] = useState([]);
@@ -5281,11 +5284,10 @@ const EditTaskPopup = (Items: any) => {
                 >
                     <img className="imgWid29 pe-1" src={Items.Items.SiteIcon} />
                     <span className="siteColor">
-                        {`${EditData.TaskId != undefined || EditData.TaskId != null
-                            ? EditData.TaskId
-                            : ""
-                            } ${EditData.Title != undefined || EditData.Title != null
-                                ? EditData.Title
+                    {EditData.TaskId != undefined || EditData.TaskId != null?
+                        <ReactPopperTooltipSingleLevel CMSToolId={EditData.TaskId} AllListId={AllListIdData} row={EditData} singleLevel={true} masterTaskData={GlobalServiceAndComponentData} AllSitesTaskData={allDataSites} />:''}
+                        {`   ${EditData.Title != undefined || EditData.Title != null
+                                ?`${"  "} ${EditData.Title}`
                                 : ""
                             }`}
                     </span>
