@@ -114,7 +114,7 @@ const SmartInformation = (props: any, ref: any) => {
         })
       }
       try {
-        item.Description = item?.Description.replace(/<[^>]*>|&[^;]+;/g, '');
+        item.Description = item?.Description?.replace(/<[^>]*>|&[^;]+;/g, '');
         if (item?.InfoType?.Title === 'Information Source') {
           setsourceTitle(item.Title);
           setEditorState(insertText(item?.Description, editorState));
@@ -273,7 +273,7 @@ const SmartInformation = (props: any, ref: any) => {
               // MovefolderItemUrl2 = `/${tagsmartinfo.Id}_.000`
             }
             if (tagsmartinfo?.Id == items?.Id) {
-              tagsmartinfo.Description = tagsmartinfo.Description.replace(/<span[^>]*>(.*?)<\/span>/gi, '$1');
+              tagsmartinfo.Description = tagsmartinfo?.Description?.replace(/<span[^>]*>(.*?)<\/span>/gi, '$1');
               allSmartInformationglobal.push(tagsmartinfo);
             }
           })
@@ -316,7 +316,7 @@ const SmartInformation = (props: any, ref: any) => {
           .then(async (result: any[]) => {
             console.log(result);
             result?.map((servicecomponent: any) => {
-              servicecomponent.Title = servicecomponent.Title.replace('.', "")
+              servicecomponent.Title = servicecomponent?.Title?.replace('.', "")
               servicecomponent.Description = servicecomponent?.Body
               if (servicecomponent.Portfolios != undefined && servicecomponent.Portfolios.length > 0) {
                 mastertaskdetails.map((mastertask: any) => {
@@ -1509,7 +1509,6 @@ const SmartInformation = (props: any, ref: any) => {
               </p>
 
               <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_LibraryBooks.png" title="Documents" data-themekey="#" />
-
 
             </a>
             <a className={SelectedTilesTitle == "UploadEmail" ? "docbox  BoxShadow" : "docbox"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('UploadEmail')}>
