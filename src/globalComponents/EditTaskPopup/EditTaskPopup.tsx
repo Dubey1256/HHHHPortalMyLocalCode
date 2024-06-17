@@ -94,8 +94,8 @@ let categoryTitle: any = "";
 let onHoldCategory: any = [];
 let globalSelectedProject: any = { PriorityRank: 1 };
 let oldWorkingAction: any = []
-let linkedportfoliopop:any;
-let portfoliopop:any;
+let linkedportfoliopop: any;
+let portfoliopop: any;
 const EditTaskPopup = (Items: any) => {
     const Context = Items?.context;
     const AllListIdData = Items?.AllListId;
@@ -818,7 +818,7 @@ const EditTaskPopup = (Items: any) => {
                     )
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
-                    .expand("Project, Approver, ClientCategory")
+                    .expand("Project, Approver, ClientCategory,SmartInformation")
                     .get();
                 if (extraLookupColumnData.length > 0) {
                     let Data: any;
@@ -1383,12 +1383,12 @@ const EditTaskPopup = (Items: any) => {
     //  ******************************* this is Service And Component Portfolio Popup Related All function and CallBack *******************
     const OpenTeamPortfolioPopupFunction = (item: any, usedFor: any) => {
         if (usedFor == "Portfolio") {
-            portfoliopop=true,
-            setOpenTeamPortfolioPopup(true);
+            portfoliopop = true,
+                setOpenTeamPortfolioPopup(true);
         }
         if (usedFor == "Linked-Portfolios") {
-            linkedportfoliopop=true,
-            setopenLinkedPortfolioPopup(true);
+            linkedportfoliopop = true,
+                setopenLinkedPortfolioPopup(true);
         }
     };
     const EditComponentPicker = (item: any, usedFor: any) => {
@@ -1494,7 +1494,7 @@ const EditTaskPopup = (Items: any) => {
                 if (portfoliopop) {
                     setTaggedPortfolioData(DataItem);
                     setOpenTeamPortfolioPopup(false);
-                    portfoliopop=false
+                    portfoliopop = false
                 }
                 // Check if the linked portfolio popup is open
                 else if (linkedportfoliopop) {
@@ -1502,11 +1502,11 @@ const EditTaskPopup = (Items: any) => {
                     LinkedPortfolioDataBackup = DataItem;
                     setopenLinkedPortfolioPopup(false);
                     linkedportfoliopop = false
-                }else{
+                } else {
                     setOpenTeamPortfolioPopup(false);
                     setopenLinkedPortfolioPopup(false);
                 }
-            }else {
+            } else {
                 if (DataItem != undefined && DataItem.length > 0) {
                     if (DataItem[0]?.Item_x0020_Type !== "Project" || DataItem[0]?.Item_x0020_Type !== "Sprint") {
                         if (DataItem[0].ClientCategory?.length > 0) {
@@ -4522,13 +4522,13 @@ const EditTaskPopup = (Items: any) => {
             })
         }
         let UpdatedJSON = {
-            EstimatedTimeDescription:FunctionsType == 'Copy-Task'?null:EditData.EstimatedTimeDescription,
-            Comments: FunctionsType == 'Copy-Task'?null:EditData.Comments,
-            DueDate:FunctionsType == 'Copy-Task'?null:Moment(EditData.DueDate).format("MM-DD-YYYY"),
-            StartDate:FunctionsType == 'Copy-Task'?null:Moment(EditData.StartDate).format("MM-DD-YYYY"),
-            Status:FunctionsType == 'Copy-Task'?null:EditData.Status,
-            PercentComplete: FunctionsType == 'Move-Task'?(EditData.PercentComplete / 100):0,
-            TotalTime : FunctionsType == 'Copy-Task'? 0 :EditData?.TotalTime,
+            EstimatedTimeDescription: FunctionsType == 'Copy-Task' ? null : EditData.EstimatedTimeDescription,
+            Comments: FunctionsType == 'Copy-Task' ? null : EditData.Comments,
+            DueDate: FunctionsType == 'Copy-Task' ? null : Moment(EditData.DueDate).format("MM-DD-YYYY"),
+            StartDate: FunctionsType == 'Copy-Task' ? null : Moment(EditData.StartDate).format("MM-DD-YYYY"),
+            Status: FunctionsType == 'Copy-Task' ? null : EditData.Status,
+            PercentComplete: FunctionsType == 'Move-Task' ? (EditData.PercentComplete / 100) : 0,
+            TotalTime: FunctionsType == 'Copy-Task' ? 0 : EditData?.TotalTime,
             SmartInformationId: {
                 results:
                     TempSmartInformationIds != undefined &&

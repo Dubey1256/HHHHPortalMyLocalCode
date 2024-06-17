@@ -65,12 +65,12 @@ const TimeEntryPopup = (item: any) => {
     let index = item?.props?.siteUrl.indexOf('/', 'https://'.length);
     RelativeUrl = item?.props?.siteUrl.substring(index);
     CurrentSiteUrl = item?.props?.siteUrl;
-    PortfolioType = item?.props?.Portfolio_x0020_Type;
+    PortfolioType = item?.props?.Portfolio?.PortfolioType != undefined?item?.props?.Portfolio?.PortfolioType?.Title:item?.props?.PortfolioType?.Title;
     CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
     CurrentUserTitle =
       item?.Context?.pageContext?._legacyPageContext?.userDisplayName;
   } else {
-    PortfolioType = item?.props?.Portfolio_x0020_Type;
+    PortfolioType = item?.props?.Portfolio?.PortfolioType != undefined?item?.props?.Portfolio?.PortfolioType?.Title:item?.props?.PortfolioType?.Title;
     CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
     CurrentUserTitle =
       item.Context.pageContext?._legacyPageContext?.userDisplayName;
