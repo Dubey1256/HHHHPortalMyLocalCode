@@ -1606,6 +1606,7 @@ const Apps = (props: any) => {
     setInputValueReason(value);
   };
   const updateElement = async () => {
+    let normalizedNewType: string
     if (editRecurrenceEvent) {
       await saveRecurrenceEvent();
       void getEvents();
@@ -1617,26 +1618,60 @@ const Apps = (props: any) => {
       setSelectedTimeEnd(selectedTimeEnd);
       return;
     }
-    const updateTitle = (inputValueName: any, type: any, leaveApproveded: any) => {
-      const leaveTypes = [
-        "Un-Planned",
-        "Sick",
-        "Planned Leave",
-        "Restricted Holiday",
-        "Work From Home",
-        "Half Day",
-        "fulldayevent",
-        "LWP"
+    const replaceType = (input: any, newType: any, isFirstHalfDChecked: any, isSecondtHalfDChecked: any, isChecked: any) => {
+      const replacements = [
+          "Half Day Un-Planned",
+          "Half Day Planned Leave",
+          "Un-Planned",
+          "Sick",
+          "Planned Leave",
+          "Restricted Holiday",
+          "Work From Home",
+          "fulldayevent",
+          "LWP"
       ];
+      const normalize = (text: any) => text.toLowerCase().replace(/[-\s]+/g, '');
+  
+      let result = input;
+      let normalizedNewType = normalize(newType);
 
-      const regex = new RegExp(leaveTypes.join("|"), "g");
-      const updatedTitle = inputValueName.replace(regex, type);
+      // Determine if "Half Day" should be added
+      const shouldAddHalfDay = isFirstHalfDChecked || isSecondtHalfDChecked;
+      const hasHalfDay = result.includes("Half Day");
 
-      return leaveApproveded ? `${updatedTitle} Approved` : updatedTitle;
-    };
+      if ((shouldAddHalfDay && !hasHalfDay) || (shouldAddHalfDay && hasHalfDay)) {
+        newType = "Half Day " + newType;
+        normalizedNewType = normalize(newType);
+      }
+      
+      replacements.forEach(replacement => {
+          const normalizedReplacement = normalize(replacement);
+        const regex = new RegExp(replacement, 'gi');
+  
+        if (normalize(result).indexOf(normalizedReplacement) !== -1) {
+                      result = result.replace(regex, newType);
+                  }
+
+      });
+      
+      // Remove the "Half Day" prefix if neither condition is true
+      if (shouldAddHalfDay) {
+          const halfDayRegex = /Half Day\s*/gi;
+        const hyphenIndex = result.indexOf('-');
+        result = result.replace(halfDayRegex, '').trim();
+        if (hyphenIndex >= 0) {
+          result = result.slice(0, hyphenIndex + 1) + " Half Day" + result.slice(hyphenIndex + 1);
+        }
+      } else {
+        const halfDayRegex = /Half Day\s*/gi;
+        result = result.replace(halfDayRegex, '').trim();
+      }
+      
+      return result;
+  };
     const web = new Web(props.props.siteUrl);
     const newEvent = {
-      title: updateTitle(inputValueName, type, leaveapproved),
+      title: replaceType(inputValueName, type, isFirstHalfDChecked, isSecondtHalfDChecked, isChecked),
       name: peopleName,
       start: startDate,
       end: endDate,
@@ -1723,6 +1758,7 @@ const Apps = (props: any) => {
       allDay = true;
       HalfDaye = false;
       HalfDayT = false;
+      // setType(type.replace(/^Half Day\s*/, ""));
       setIsFirstHalfDChecked(false);
       setisSecondtHalfDChecked(false);
     } else {
@@ -1747,8 +1783,8 @@ const Apps = (props: any) => {
       allDay = false;
       HalfDayT = false;
       HalfDaye = true;
-      setisSecondtHalfDChecked(false)
-      setType('Half Day')
+      setisSecondtHalfDChecked(false);
+      // setType(`Half Day ${type}`);
       setIsChecked(false);
     } else {
       maxD = new Date(8640000000000000);
@@ -1774,7 +1810,7 @@ const Apps = (props: any) => {
       setIsFirstHalfDChecked(false)
       setType('Half Day')
       setIsChecked(false);
-      //console.log("allDay", allDay);
+      //setType(`Half Day ${type}`);
     } else {
       maxD = new Date(8640000000000000);
       setDisableTime(false);
