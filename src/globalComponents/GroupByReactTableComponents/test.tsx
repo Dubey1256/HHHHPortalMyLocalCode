@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import GlobalTooltip from "../../globalComponents/Tooltip";
-import { Tooltip } from "@fluentui/react-components";
+import Tooltip from "../../globalComponents/Tooltip";
 import "react-popper-tooltip/dist/styles.css";
 import { Web } from "sp-pnp-js";
 import CoustomInfoIcon from "./CoustomInfoIcon";
@@ -332,9 +331,9 @@ const ColumnsSetting = (props: any) => {
         return (
             <>
                 <div className="alignCenter subheading">
-                    <span style={{ color: `${props?.portfolioColor}` }} className="siteColor">Global SmartTable Settings</span>
+                    <span style={{ color: `${props?.portfolioColor}` }} className="siteColor">General Settings</span>
                 </div>
-                <GlobalTooltip ComponentId={7464} />
+                <Tooltip ComponentId={7464} />
             </>
         );
     };
@@ -464,21 +463,14 @@ const ColumnsSetting = (props: any) => {
                                 <th className="f-16 border-0" style={{ width: "20%" }}>Table Header</th>
                                 <th className="f-16 border-0" style={{ width: "20%" }}></th>
                                 <th className="f-16 border-0" style={{ width: "40%" }}>Table Height</th>
-                                <th className="f-16 border-0" style={{ width: "20%" }}>Table Size</th>
+                                <th className="f-16 border-0" style={{ width: "20%" }}>Page Size</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><div className="alignCenter"><label><input className="form-check-input cursor-pointer me-1" type="checkbox" checked={showHeader} onChange={handleCheckboxChange} name="showHeader" />Show Header</label><CoustomInfoIcon Discription="If the item is unchecked the Table Header (the CSF AWT, search field, buttons, icons) won’t be visible" /></div></td>
+                                <td><label><input className="form-check-input cursor-pointer me-1" type="checkbox" checked={showHeader} onChange={handleCheckboxChange} name="showHeader" />Show Header</label></td>
                                 <td>
-                                    <div className="alignCenter hreflink siteColor" onClick={handleClearLocalStorage}><span>Restore default table</span>
-                                        {/* <CoustomInfoIcon Discription="Pressing on “Restore default table” will remove all changes and set the table to the default view." /> */}
-                                        <Tooltip withArrow content="Pressing on “Restore default table” will remove all changes and set the table to the default view." relationship="label" positioning="below">
-                                            <div className='alignCenter hover-text'>
-                                                <span className="svg__iconbox svg__icon--info"></span>
-                                            </div>
-                                        </Tooltip>
-                                    </div>
+                                    <div className="alignCenter hreflink siteColor" onClick={handleClearLocalStorage}><span>Restore default table</span> <span className="alignCenter"><CoustomInfoIcon Discription="Restore the Column Settings to their Default Value." /></span> </div>
                                 </td>
                                 <td>
                                     <div className="SpfxCheckRadio alignCenter">
@@ -492,14 +484,7 @@ const ColumnsSetting = (props: any) => {
                                     </div>
 
                                 </td>
-                                <td><div className="d-flex"><input style={{ width: "36%", height: "27px" }} type="number" className="ms-1" value={tablePageSize} onChange={(e) => setTablePageSize(e.target.value)} />
-                                    {/* <CoustomInfoIcon Discription="These features enable you to adjust the page size, determining the amount of data you wish to display." /> */}
-                                    <Tooltip withArrow content="These features enable you to adjust the Table Size, determining the amount of data you wish to display." relationship="label" positioning="below">
-                                        <div className='alignCenter hover-text'>
-                                            <span className="svg__iconbox svg__icon--info"></span>
-                                        </div>
-                                    </Tooltip>
-                                </div></td>
+                                <td><div className="d-flex"><input style={{ width: "36%", height: "27px" }} type="number" className="ms-1" value={tablePageSize} onChange={(e) => setTablePageSize(e.target.value)} /><span className="alignCenter"><CoustomInfoIcon Discription="These features enable you to adjust the page size, determining the amount of data you wish to display." /></span></div></td>
                             </tr>
                         </tbody>
                     </table>
@@ -510,32 +495,11 @@ const ColumnsSetting = (props: any) => {
                     <table className="w-100">
                         <thead>
                             <tr>
-                                <th className="border-0" style={{ width: "28%" }}> <div className="alignCenter"><span className="f-16">Columns</span>
-                                    {/* <CoustomInfoIcon Discription="Default settings are stored in centralized database the changes done here will be only for current user on this table it will not impact anyone else. For centralized changes suggestions contact admin." /> */}
-                                    <Tooltip withArrow content="Default settings are stored in centralized database the changes done here will be only for current user on this table it will not impact anyone else. For centralized changes suggestions contact admin." relationship="label" positioning="below">
-                                        <div className='alignCenter hover-text'>
-                                            <span className="svg__iconbox svg__icon--info"></span>
-                                        </div>
-                                    </Tooltip>
-                                </div></th>
-                                <th className="f-16 border-0" style={{ width: "21%" }}><div className="alignCenter"><span className="f-16">Column Width</span>
-                                    {/* <CoustomInfoIcon Discription="Enter the column width of the particular item. Note: the width of some items can’t be changed (those items has grey background)." /> */}
-                                    <Tooltip withArrow content="Enter the column width of the particular item. Note: the width of some items can’t be changed (those items has grey background)." relationship="label" positioning="below">
-                                        <div className='alignCenter hover-text'>
-                                            <span className="svg__iconbox svg__icon--info"></span>
-                                        </div>
-                                    </Tooltip>
-                                </div></th>
+                                <th className="border-0" style={{ width: "28%" }}> <div className="alignCenter"><span className="f-16">Columns</span> <span className="alignCenter fw-normal"><CoustomInfoIcon Discription="Default settings are stored in centralized database the changes done here will be only for current user on this table it will not impact anyone else. For centralized changes suggestions contact admin." /></span></div></th>
+                                <th className="f-16 border-0" style={{ width: "21%" }}>Column Width</th>
                                 <th className="f-16 border-0" style={{ width: "30%" }}>
                                     <div className="alignCenter position-relative">
-                                        <div className="alignCenter"><span className="f-16">Column Ordering</span>
-                                            {/* <CoustomInfoIcon Discription="To change the column order drag and drop the items." /> */}
-                                            <Tooltip withArrow content="To change the column order drag and drop the items." relationship="label" positioning="below">
-                                                <div className='alignCenter hover-text'>
-                                                    <span className="svg__iconbox svg__icon--info"></span>
-                                                </div>
-                                            </Tooltip>
-                                        </div>
+                                        Column Ordering
                                         <div className="sorticon ms-2" style={{ top: '-6px' }}>
                                             <div className="up hreflink" style={{ display: 'grid', textAlign: 'center', padding: "2px" }} onClick={() => sortByAsc("desc")}>
                                                 <SlArrowUp style={colunOredrAsc === "desc" ? { color: "var(--SiteBlue)", height: "16px", width: "16px" } : { color: "gray", height: "16px", width: "16px" }} />
@@ -606,7 +570,7 @@ const ColumnsSetting = (props: any) => {
                     </table>
                 </div>
             </div>
-            <footer className="modal-footer pe-0">
+            <footer className="modal-footer">
                 <button type="button" className="btn btn-primary mx-1" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={handleChangeDateAndDataCallBack}>
                     Apply
                 </button>
