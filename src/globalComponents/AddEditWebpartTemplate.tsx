@@ -171,7 +171,7 @@ const AddEditWebpartTemplate = (props: any) => {
     }
     const CloseConfiguationPopup = () => {
         setNewItem([]);
-        props?.CloseConfigPopup(false)
+        props?.CloseConfigPopup(false, undefined)
     }
     const formatId = (id: number): string => {
         const paddedId = '00' + id;
@@ -214,7 +214,7 @@ const AddEditWebpartTemplate = (props: any) => {
                     await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(props?.EditItem?.UpdatedId).update({ Title: DashboardTitle, Configurations: JSON.stringify(NewItem[0]) })
                         .then(async (res: any) => {
                             setNewItem([]);
-                            props?.CloseConfigPopup(true)
+                            props?.CloseConfigPopup(true, 'Update')
                             if (props?.SingleWebpart == true) {
                                 if (ContextData != undefined && ContextData?.callbackFunction != undefined)
                                     ContextData?.callbackFunction(false);
@@ -228,7 +228,7 @@ const AddEditWebpartTemplate = (props: any) => {
                     await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: DashboardTitle, Key: "WebpartTemplate", Value: result != undefined ? result.toString() : undefined, Configurations: JSON.stringify(NewItem[0]) })
                         .then(async (res: any) => {
                             setNewItem([]);
-                            props?.CloseConfigPopup(true)
+                            props?.CloseConfigPopup(true, 'Add')
                         }).catch((err: any) => {
                             console.log(err);
                         })

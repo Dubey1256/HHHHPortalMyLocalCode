@@ -46,7 +46,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
             console.log(err);
         })
     }
-    const CloseConfigPopup = (IsLoad: any) => {
+    const CloseConfigPopup = (IsLoad: any, Type: any) => {
         setEditItem(undefined)
         setIsOpenPopup(false);
         if (IsLoad === true)
