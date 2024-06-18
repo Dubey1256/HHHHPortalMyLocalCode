@@ -33,7 +33,9 @@ import RelevantDocuments from "../../taskprofile/components/RelevantDocuments";
 import RelevantEmail from '../../taskprofile/components/./ReleventEmails'
 import KeyDocuments from '../../taskprofile/components/KeyDocument';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
+import WorkingActionInformation from '../../../globalComponents/WorkingActionInformation';
 import Tooltip from "../../../globalComponents/Tooltip";
+
 //import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs";
 var QueryId: any = "";
 let smartPortfoliosData: any = [];
@@ -94,6 +96,7 @@ const ProjectManagementMain = (props: any) => {
   const [workingTodayFiltered, setWorkingTodayFiltered] = React.useState(false);
   const [pageLoaderActive, setPageLoader] = React.useState(false)
   const [CMSComponent, setCMSComponent] = React.useState("");
+  const [tagPortfolio, setTagPortfolio] = React.useState("")
   const [AllTasks, setAllTasks] = React.useState([]);
   const rerender = React.useReducer(() => ({}), {})[1]
   const refreshData = () => setProjectTableData(() => renderData);
@@ -123,6 +126,7 @@ const ProjectManagementMain = (props: any) => {
   const [searchedKeyPortfolios, setSearchedkeyPortfolios] = React.useState([])
   const [ActivityPopup, setActivityPopup] = React.useState(false);
   const [activeTile, setActiveTile] = React.useState("")
+  const [keyRelevantPortfolios, setKeyRelevantPortfolios] = React.useState(false)
   const childRef = React.useRef<any>();
   const StatusArray = [
     { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
@@ -408,9 +412,9 @@ const ProjectManagementMain = (props: any) => {
               const suggestedKeywords = fetchedProject?.Title.toLowerCase().split(/\s+/);
               if (suggestedKeywords.length > 0) {
                 suggestedPortfolioItems = MasterListData.filter((masterItm: any) => {
-                  const titleWords = masterItm?.Title.toLowerCase();
-                  const includesAnyKeyword = suggestedKeywords.some((keyword: any) => titleWords.includes(keyword));
-                  const isNotMatchingTitles = titleWords !== fetchedProject?.Title.toLowerCase() && titleWords !== 'latest annual report';
+                  const titleWords = masterItm?.Title?.toLowerCase();
+                  const includesAnyKeyword = suggestedKeywords?.some((keyword: any) => titleWords?.includes(keyword));
+                  const isNotMatchingTitles = titleWords !== fetchedProject?.Title?.toLowerCase() && titleWords !== 'latest annual report';
                   return includesAnyKeyword && isNotMatchingTitles && masterItm?.Item_x0020_Type !== 'Project' && masterItm?.Item_x0020_Type !== 'Sprint';
                 });
               }
@@ -766,7 +770,7 @@ const ProjectManagementMain = (props: any) => {
               }
             });
           });
-        }
+      }
         items.TaskID = globalCommon.GetTaskId(items);
         AllUser?.map((user: any) => {
           if (user.AssingedToUserId == items.Author.Id) {
@@ -1054,6 +1058,11 @@ const ProjectManagementMain = (props: any) => {
     setCMSComponent(item);
     setIsPortfolio(true);
   };
+
+  const EditKeyRelevantPortfolio = (item: any) => {
+    setTagPortfolio(item);
+    setKeyRelevantPortfolios(true);
+  };
   const OpenAddStructureModal = () => {
     setIsAddStructureOpen(true);
   }
@@ -1226,6 +1235,15 @@ const ProjectManagementMain = (props: any) => {
     setIsComponent(false);
     setIsPortfolio(false);
 
+  }, [])
+
+  const keyRelevantPortfolioPopupCallback = React.useCallback((DataItem: any, Type: any, functionType: any) => {
+    if (DataItem?.length > 0 && Type == "Single") {
+      DataItem?.forEach((data: any) => {
+        setTaggedPortfolioItem(data)
+      })
+    }
+    setKeyRelevantPortfolios(false);
   }, [])
 
 
@@ -1578,22 +1596,6 @@ const ProjectManagementMain = (props: any) => {
         size: 80
       },
       {
-        accessorKey: "descriptionsSearch",
-        placeholder: "descriptionsSearch",
-        header: "",
-        resetColumnFilters: false,
-        size: 100,
-        id: "descriptionsSearch",
-      },
-      {
-        accessorKey: "commentsSearch",
-        placeholder: "commentsSearch",
-        header: "",
-        resetColumnFilters: false,
-        size: 100,
-        id: "commentsSearch",
-      },
-      {
         accessorFn: (row) => row?.PercentComplete,
         cell: ({ row }) => (
           <span>
@@ -1639,8 +1641,26 @@ const ProjectManagementMain = (props: any) => {
         placeholder: "TeamMembers",
         header: "",
         size: 110,
-        isColumnVisible: true,
-        fixedColumnWidth: true,
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row) => row?.workingActionTitle,
+        cell: ({ row }) => (
+            <div className="alignCenter">
+                {row?.original?.workingActionValue?.map((elem: any) => {
+                    const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                    return relevantTitles?.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
+                        <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
+                    );
+                })}
+            </div>
+        ),
+        placeholder: "Working Actions",
+        header: "",
+        resetColumnFilters: false,
+        size: 130,
+        id: "workingActionTitle",
+        isColumnVisible: false
       },
       {
         accessorFn: (row) => row?.SmartInformationTitle,
@@ -2372,6 +2392,16 @@ const ProjectManagementMain = (props: any) => {
                 groupedData={groupedComponentData}
               ></ServiceComponentPortfolioPopup>
             )}
+            {keyRelevantPortfolios && (
+              <ServiceComponentPortfolioPopup
+                props={tagPortfolio}
+                Dynamic={AllListId}
+                ComponentType={"Component"}
+                Call={keyRelevantPortfolioPopupCallback}
+                selectionType={"Single"}
+                groupedData={groupedComponentData}
+              ></ServiceComponentPortfolioPopup>
+            )}
             {remark && <SmartInformation Id={remarkData?.Id}
               AllListId={AllListId}
               Context={props?.Context}
@@ -2424,6 +2454,7 @@ const ProjectManagementMain = (props: any) => {
                         </div>
                       </div>
                     ) : (
+                      <>
                       <div className="mt-4 clearfix">
                         <h4 className="titleBorder "> Type</h4>
                         <div className="col p-0 taskcatgoryPannel">
@@ -2434,36 +2465,44 @@ const ProjectManagementMain = (props: any) => {
                             <span className="tasks-label">Task</span>
                           </a>
                         </div>
-                        <div className="mt-4 clearfix">
-                          <h4 className="titleBorder"> Key/Relevant Portfolios</h4>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={suggestedPortfolio}
-                            onChange={(e) => searchSuggestedPortfolio2(e)}
-                            placeholder="Search Portfolio Items"
-                          />
-                          {searchedKeyPortfolios?.length > 0 ? (
-                            <div className="SmartTableOnTaskPopup p-0 position-static">
-                              <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                {searchedKeyPortfolios.map((Item: any) => {
-                                  return (
-                                    <li
-                                      className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                      key={Item.id}
-                                      onClick={() =>
-                                        setTaggedPortfolioItem(Item)
-                                      }
-                                    >
-                                      <a>{Item.Path}</a>
-                                    </li>
-                                  );
-                                })}
-                              </ul>
-                            </div>
-                          ) : null}
-                        </div>
+                       
                       </div>
+                       <div className="clearfix col-12 mt-3 position-relative">
+                       <h4 className="titleBorder">Key/Relevant Portfolios</h4>
+                       <div className="clearfix col-12">
+                       <input type="text" className="form-control"
+                         value={suggestedPortfolio}
+                         onChange={(e) => searchSuggestedPortfolio2(e)}
+                         placeholder="Search Portfolio Items"
+                       />
+                       <span className="input-group-text">
+                         <span
+                           onClick={() => EditKeyRelevantPortfolio(checkedList)}
+                           title="Edit Portfolios"
+                           className="hreflink svg__iconbox svg__icon--editBox"
+                         ></span>
+                       </span>
+                       </div>
+                       {searchedKeyPortfolios?.length > 0 ? (
+                         <div className="SmartTableOnTaskPopup p-0 position-static">
+                           <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                             {searchedKeyPortfolios.map((Item: any) => {
+                               return (
+                                 <li
+                                   className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                   key={Item.id}
+                                   onClick={() =>
+                                     setTaggedPortfolioItem(Item)
+                                   }
+                                 >
+                                   <a>{Item.Path}</a>
+                                 </li>
+                               );
+                             })}
+                           </ul>
+                         </div>
+                       ) : null}
+                     </div></>
                     )}
                   </div>
                 </div>
@@ -2472,7 +2511,7 @@ const ProjectManagementMain = (props: any) => {
                 <button
                   type="button"
                   className="btn btn-primary mx-2"
-                  onClick={() => Createbutton()} disabled={activeTile === "" ? true : false}
+                  onClick={() => Createbutton()} disabled={activeTile === "" || suggestedPortfolio === ""}
                 >
                   Create
                 </button>
