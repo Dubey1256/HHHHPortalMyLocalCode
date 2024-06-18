@@ -5,12 +5,13 @@ import { Web } from 'sp-pnp-js'
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 // import { CheckBoxSelection, Inject, MultiSelectComponent } from '@syncfusion/ej2-react-dropdowns';
 import Button from 'react-bootstrap/Button';
-
+import * as globalCommon from "../../../globalComponents/globalCommon";
 let copyAllCategory:any=[]
 let copyAllSiteData:any=[];
+let users: any = []
 const AddTaskConfigPopup = (props: any) => {
  const [DefaultSelectedUseremail, setDefaultSelectedUseremail] = React.useState([]);
-    const [NotificationType ,setnotificationType]:any= useState(["All","Teams", "Email","Assigned To"])
+    const [NotificationType ,setnotificationType]:any= useState(["All","Teams", "Email","Assigned To","Lead"])
     const [Notify,setnotify]:any=useState(["Creator","Approval","Specific"])
     const [notificationType, setNotificationType] = useState("")
     const [Category, setCategory] = useState("")
@@ -35,7 +36,7 @@ const AddTaskConfigPopup = (props: any) => {
                 let selectesUser:any=[];
                 if(props?.editTaskconfigData?.Notifier?.length>0){
                     props?.editTaskconfigData?.Notifier?.map((data:any)=>{
-                        selectesUser.push(data?.secondaryText)  
+                        selectesUser.push(data?.Email)  
                     })
                 }
                 setDefaultSelectedUseremail(selectesUser)
@@ -45,6 +46,7 @@ const AddTaskConfigPopup = (props: any) => {
 
           }
         GetSmartMetadata()
+        loadusersAndGroups();
     },[])
 
     //==================GET SMARTMETADATA FOR GET
@@ -76,6 +78,19 @@ const AddTaskConfigPopup = (props: any) => {
 
 
     };
+    const loadusersAndGroups = async () => {
+        let pageInfo = await globalCommon.pageContext()
+        if (pageInfo?.WebFullUrl) {
+            let web = new Web(pageInfo.WebFullUrl);
+            await web.siteUsers.get().then((userData) => {
+                console.log(userData)
+                users = userData
+            }).catch((error: any) => {
+                console.log(error)
+            });
+        }
+
+    }
     const onRenderCustomHeader = (
     ) => {
         return (
@@ -129,7 +144,15 @@ const AddTaskConfigPopup = (props: any) => {
     //============create config function start=================
     const CreateConfig=()=>{
         let allConfigData:any=[];
+        let peopleAndGroup: any = [];
         allConfigData=props?.allTaskStatusToConfigure;
+        selectedPersonsAndGroups?.map((user: any) => {
+            let foundPerson = users?.find((person: any) => (person?.LoginName == user?.id) || (person?.Title == user?.Title));
+            if (foundPerson?.Id != undefined) {
+                peopleAndGroup?.push(foundPerson)
+            }
+        })
+        
         let configData:any={
             percentComplete:props?.percentageComplete,
             NotificationType:notificationType,
@@ -137,7 +160,7 @@ const AddTaskConfigPopup = (props: any) => {
             selectedSite:selectedSite,
             ExceptionSite:selectedSite=="All"?exceptionSite:"",
             ExceptionCategory:Category=="All"?exceptionCategory:"",
-            Notifier:notify=="Specific"?selectedPersonsAndGroups:[],
+            Notifier:notify=="Specific"?peopleAndGroup:[],
             Notify:notify,
             avoidItself:avoidItself
         }
