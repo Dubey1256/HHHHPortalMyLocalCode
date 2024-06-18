@@ -33,7 +33,9 @@ import RelevantDocuments from "../../taskprofile/components/RelevantDocuments";
 import RelevantEmail from '../../taskprofile/components/./ReleventEmails'
 import KeyDocuments from '../../taskprofile/components/KeyDocument';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
+import WorkingActionInformation from '../../../globalComponents/WorkingActionInformation';
 import Tooltip from "../../../globalComponents/Tooltip";
+
 //import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs";
 var QueryId: any = "";
 let smartPortfoliosData: any = [];
@@ -484,10 +486,10 @@ const ProjectManagementMain = (props: any) => {
     if (elem?.TaskType != undefined) {
       setCheckedList(elem);
     }
-      else if (elem?.TaskType == undefined) {
-        selectedItem = elem
-      }
-       else {
+    else if (elem?.TaskType == undefined) {
+      selectedItem = elem
+    }
+    else {
       setCheckedList({});
     }
   }, []);
@@ -768,6 +770,7 @@ const ProjectManagementMain = (props: any) => {
           });
         }
         items.TaskID = globalCommon.GetTaskId(items);
+
         AllUser?.map((user: any) => {
           if (user.AssingedToUserId == items.Author.Id) {
             items.createdImg = user?.Item_x0020_Cover?.Url;
@@ -1060,8 +1063,8 @@ const ProjectManagementMain = (props: any) => {
   const CreateActivityPopup = (type: any) => {
     setActiveTile(type)
     if (checkedList?.TaskType === undefined) {
-        checkedList.NoteCall = type;
-        selectedItem.NoteCall = type;
+      checkedList.NoteCall = type;
+      selectedItem.NoteCall = type;
     }
     if (checkedList?.TaskType?.Id == 1) {
       checkedList.NoteCall = type;
@@ -1578,22 +1581,6 @@ const ProjectManagementMain = (props: any) => {
         size: 80
       },
       {
-        accessorKey: "descriptionsSearch",
-        placeholder: "descriptionsSearch",
-        header: "",
-        resetColumnFilters: false,
-        size: 100,
-        id: "descriptionsSearch",
-      },
-      {
-        accessorKey: "commentsSearch",
-        placeholder: "commentsSearch",
-        header: "",
-        resetColumnFilters: false,
-        size: 100,
-        id: "commentsSearch",
-      },
-      {
         accessorFn: (row) => row?.PercentComplete,
         cell: ({ row }) => (
           <span>
@@ -1639,8 +1626,26 @@ const ProjectManagementMain = (props: any) => {
         placeholder: "TeamMembers",
         header: "",
         size: 110,
-        isColumnVisible: true,
-        fixedColumnWidth: true,
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row) => row?.workingActionTitle,
+        cell: ({ row }) => (
+          <div className="alignCenter">
+            {Array.isArray(row?.original?.workingActionValue) && row.original.workingActionValue.map((elem: any) => {
+              const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+              return relevantTitles.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
+                <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
+              );
+            })}
+          </div>
+        ),
+        placeholder: "Working Actions",
+        header: "",
+        resetColumnFilters: false,
+        size: 130,
+        id: "workingActionTitle",
+        isColumnVisible: false
       },
       {
         accessorFn: (row) => row?.SmartInformationTitle,
@@ -2116,17 +2121,17 @@ const ProjectManagementMain = (props: any) => {
                                   >
                                     {Masterdata?.Item_x0020_Type !== "Sprint"
                                       ? `${Masterdata?.Item_x0020_Type?.charAt(
-                                          0
-                                        )}`
+                                        0
+                                      )}`
                                       : "X"}
                                   </div>
-                                  
-                                    {`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`}
-                                    <span
-                                      onClick={() => EditComponentPopup(Masterdata)}
-                                      className="mx-1 svg__iconbox svg__icon--edit hreflink" style={{width:'24px', height:'24px'}}
-                                      title="Edit Project"
-                                    ></span>
+
+                                  {`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`}
+                                  <span
+                                    onClick={() => EditComponentPopup(Masterdata)}
+                                    className="mx-1 svg__iconbox svg__icon--edit hreflink" style={{ width: '24px', height: '24px' }}
+                                    title="Edit Project"
+                                  ></span>
 
                                 </h2>
                                 <div>
@@ -2239,7 +2244,7 @@ const ProjectManagementMain = (props: any) => {
                                       </dl>
                                     </div>
                                     {/* <div className="col-md-12 url"><div className="d-flex p-0"><div className="bg-fxdark p-2"><label>Url</label></div><div className="bg-light p-2 text-break full-width"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></div></div></div> */}
-                                    <div className="col-md-12 pe-1"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField" style={{width:'93.9%'}}><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
+                                    <div className="col-md-12 pe-1"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField" style={{ width: '93.9%' }}><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
                                     {
                                       Masterdata?.Body != undefined ? <div className="mt-2 col-md-12  detailsbox">
                                         <details className="pe-0" open>
@@ -2495,8 +2500,8 @@ const ProjectManagementMain = (props: any) => {
                 LoadAllSiteTasks={LoadAllSiteTasks}
                 selectedItem={
                   checkedList != null && checkedList.Id != null
-                  ? checkedList
-                  : selectedItem
+                    ? checkedList
+                    : selectedItem
                 }
                 taggedPortfolioItem={taggedPortfolioItem}
               ></CreateActivity>
