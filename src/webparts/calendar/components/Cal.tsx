@@ -1590,6 +1590,7 @@ const Apps = (props: any) => {
     setInputValueReason(value);
   };
   const updateElement = async () => {
+    let normalizedNewType: string
     if (editRecurrenceEvent) {
       await saveRecurrenceEvent();
       void getEvents();
@@ -1601,7 +1602,7 @@ const Apps = (props: any) => {
       setSelectedTimeEnd(selectedTimeEnd);
       return;
     }
-    const replaceType = (input:any, newType:any) => {
+    const replaceType = (input: any, newType: any, isFirstHalfDChecked: any, isSecondtHalfDChecked: any, isChecked: any) => {
       const replacements = [
           "Half Day Un-Planned",
           "Half Day Planned Leave",
@@ -1613,42 +1614,48 @@ const Apps = (props: any) => {
           "fulldayevent",
           "LWP"
       ];
-      const normalize = (text:any) => text.toLowerCase().replace(/[-\s]+/g, '');
+      const normalize = (text: any) => text.toLowerCase().replace(/[-\s]+/g, '');
   
       let result = input;
-      const normalizedNewType = normalize(newType);
+      let normalizedNewType = normalize(newType);
+
+      // Determine if "Half Day" should be added
+      const shouldAddHalfDay = isFirstHalfDChecked || isSecondtHalfDChecked;
+      const hasHalfDay = result.includes("Half Day");
+
+      if ((shouldAddHalfDay && !hasHalfDay) || (shouldAddHalfDay && hasHalfDay)) {
+        newType = "Half Day " + newType;
+        normalizedNewType = normalize(newType);
+      }
       
       replacements.forEach(replacement => {
           const normalizedReplacement = normalize(replacement);
-          const normalizedInput = normalize(result);
+        const regex = new RegExp(replacement, 'gi');
   
-          if (normalizedInput.indexOf(normalizedReplacement) !== -1) {
-              const regex = new RegExp(replacement, 'gi');
-              if (replacement.substring(0, 8).toLowerCase() === "half day") {
-                  if (newType.substring(0, 8).toLowerCase() === "half day") {
+        if (normalize(result).indexOf(normalizedReplacement) !== -1) {
                       result = result.replace(regex, newType);
-                  } else {
-                      result = result.replace(regex, "Half Day " + newType);
                   }
-              } else {
-                  result = result.replace(regex, newType);
-              }
-          }
+
       });
       
-      // Special handling to ensure correct format when changing from "Half Day" to full day types
-      if (normalizedNewType.indexOf("halfday") === -1) {
+      // Remove the "Half Day" prefix if neither condition is true
+      if (shouldAddHalfDay) {
           const halfDayRegex = /Half Day\s*/gi;
-          result = result.replace(halfDayRegex, '');
+        const hyphenIndex = result.indexOf('-');
+        result = result.replace(halfDayRegex, '').trim();
+        if (hyphenIndex >= 0) {
+          result = result.slice(0, hyphenIndex + 1) + " Half Day" + result.slice(hyphenIndex + 1);
+        }
+      } else {
+        const halfDayRegex = /Half Day\s*/gi;
+        result = result.replace(halfDayRegex, '').trim();
       }
       
       return result;
   };
-  
-
     const web = new Web(props.props.siteUrl);
     const newEvent = {
-      title: replaceType(inputValueName, type),
+      title: replaceType(inputValueName, type, isFirstHalfDChecked, isSecondtHalfDChecked, isChecked),
       name: peopleName,
       start: startDate,
       end: endDate,
@@ -1748,7 +1755,7 @@ const Apps = (props: any) => {
       allDay = true;
       HalfDaye = false;
       HalfDayT = false;
-      setType(type.replace(/^Half Day\s*/, ""));
+      // setType(type.replace(/^Half Day\s*/, ""));
       setIsFirstHalfDChecked(false);
       setisSecondtHalfDChecked(false);
     } else {
@@ -1774,7 +1781,7 @@ const Apps = (props: any) => {
       HalfDayT = false;
       HalfDaye = true;
       setisSecondtHalfDChecked(false);
-      setType(`Half Day ${type}`);
+      // setType(`Half Day ${type}`);
       setIsChecked(false);
     } else {
       maxD = new Date(8640000000000000);
@@ -1800,7 +1807,7 @@ const Apps = (props: any) => {
       HalfDayT = true;
       setIsFirstHalfDChecked(false);
       setIsChecked(false);
-      setType(`Half Day ${type}`);
+      //setType(`Half Day ${type}`);
     } else {
       maxD = new Date(8640000000000000);
       setDisableTime(false);

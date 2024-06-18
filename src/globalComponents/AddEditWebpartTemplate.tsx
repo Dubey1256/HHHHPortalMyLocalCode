@@ -171,7 +171,7 @@ const AddEditWebpartTemplate = (props: any) => {
     }
     const CloseConfiguationPopup = () => {
         setNewItem([]);
-        props?.CloseConfigPopup(false)
+        props?.CloseConfigPopup(false, undefined)
     }
     const formatId = (id: number): string => {
         const paddedId = '00' + id;
@@ -180,10 +180,10 @@ const AddEditWebpartTemplate = (props: any) => {
     const SaveConfigPopup = async () => {
         try {
             let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").orderBy("orderby", true).getAll().then(async (data: any) => {
+            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").getAll().then(async (data: any) => {
                 let result: any;
-                if (data?.length && data[0].Value != undefined && data[0].Value != '') {
-                    result = parseInt(data[0].Value) + 1;
+                if (data?.length && data[data.length - 1].Value != undefined && data[data.length - 1].Value != '') {
+                    result = parseInt(data[data.length - 1].Value) + 1;
                 }
                 else {
                     result = data?.length + 1;
@@ -214,7 +214,7 @@ const AddEditWebpartTemplate = (props: any) => {
                     await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(props?.EditItem?.UpdatedId).update({ Title: DashboardTitle, Configurations: JSON.stringify(NewItem[0]) })
                         .then(async (res: any) => {
                             setNewItem([]);
-                            props?.CloseConfigPopup(true)
+                            props?.CloseConfigPopup(true, 'Update')
                             if (props?.SingleWebpart == true) {
                                 if (ContextData != undefined && ContextData?.callbackFunction != undefined)
                                     ContextData?.callbackFunction(false);
@@ -228,7 +228,7 @@ const AddEditWebpartTemplate = (props: any) => {
                     await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: DashboardTitle, Key: "WebpartTemplate", Value: result != undefined ? result.toString() : undefined, Configurations: JSON.stringify(NewItem[0]) })
                         .then(async (res: any) => {
                             setNewItem([]);
-                            props?.CloseConfigPopup(true)
+                            props?.CloseConfigPopup(true, 'Add')
                         }).catch((err: any) => {
                             console.log(err);
                         })

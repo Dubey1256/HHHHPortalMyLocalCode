@@ -189,18 +189,27 @@ const EmployeProfile = (props: any) => {
                   }
                 })
               }
+              if (IsLoadTask != false) {
+                setprogressBar(true);
+                if (Type != false)
+                  smartTimeTotal();
+                else
+                  getAllData(Type)
+              }
             } catch (error) {
               console.log(error);
             }
           }
+          else {
+            if (IsLoadTask != false) {
+              setprogressBar(true);
+              if (Type != false)
+                smartTimeTotal();
+              else
+                getAllData(Type)
+            }
+          }
         })
-        if (IsLoadTask != false) {
-          setprogressBar(true);
-          if (Type != false)
-            smartTimeTotal();
-          else
-            getAllData(Type)
-        }
       }
     }).catch((err: any) => {
       console.log(err);
