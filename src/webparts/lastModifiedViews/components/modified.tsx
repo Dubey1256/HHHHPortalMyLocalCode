@@ -962,7 +962,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
             <>
               {type == 'WEB PAGES' ?
                 <>
-                  <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
+                  <div className="alignCenter" onClick={() => deleteData(row.original)}><span className="svg__iconbox hreflink svg__icon--trash"></span></div>
                 </>
                 : undefined}
             </>
@@ -1046,7 +1046,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
             <>
               {type == 'DOCUMENTS' || type == 'WEB PAGES' ?
                 <>
-                  <div className="mt--2" onClick={() => editDocOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
+                  <div className="alignCenter" onClick={() => editDocOpen(row.original)}><span className="svg__iconbox svg__icon--edit"></span></div>
                 </>
                 : undefined}
             </>
@@ -1058,7 +1058,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
             <>
               {type == 'DOCUMENTS' || type == 'WEB PAGES' ?
                 <>
-                  <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
+                  <div className="alignCenter" onClick={() => deleteData(row.original)}><span className="svg__iconbox hreflink svg__icon--trash"></span></div>
                 </>
                 : undefined}
             </>
@@ -1145,7 +1145,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           id: 'delteSmartPages',
           cell: ({ row }) =>
             <>
-              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
+              <div className="alignCenter" onClick={() => deleteData(row.original)}><span className="svg__iconbox hreflink svg__icon--trash"></span></div>
             </>
 
         }
@@ -1224,7 +1224,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           id: 'delteSmartMetaData', size: 25,
           cell: ({ row }) =>
             <>
-              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
+              <div className="alignCenter" onClick={() => deleteData(row.original)}><span className="svg__iconbox hreflink svg__icon--trash"></span></div>
             </>
 
         }
@@ -1320,7 +1320,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           id: 'updateContact',
           cell: ({ row }) =>
             <>
-              <div className="mt--2" onClick={() => editContactOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
+              <div className="alignCenter" onClick={() => editContactOpen(row.original)}><span className="svg__iconbox svg__icon--edit"></span></div>
             </>
 
         },
@@ -1328,7 +1328,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           id: 'deleteContact',
           cell: ({ row }) =>
             <>
-              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
+              <div className="alignCenter" onClick={() => deleteData(row.original)}><span className="svg__iconbox hreflink svg__icon--trash"></span></div>
             </>
 
         }
@@ -1427,7 +1427,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           id: 'deleteEvents',
           cell: ({ row }) =>
             <>
-              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
+              <div className="alignCenter" onClick={() => deleteData(row.original)}><span className="svg__iconbox hreflink svg__icon--trash"></span></div>
             </>
 
         }
@@ -1516,7 +1516,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           id: 'deleteNews',
           cell: ({ row }) =>
             <>
-              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
+              <div className="alignCenter" onClick={() => deleteData(row.original)}><span className="svg__iconbox hreflink svg__icon--trash"></span></div>
             </>
 
         }
@@ -1639,7 +1639,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           id: 'updateComponent',
           cell: ({ row }) =>
             <>
-              <div className="mt--2" onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
+              <div className="alignCenter" onClick={() => editComponentPopUp(row.original)}><span className="svg__iconbox svg__icon--edit"></span></div>
             </>
 
         },
@@ -1647,7 +1647,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           id: 'deleteComponent',
           cell: ({ row }) =>
             <>
-              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
+              <div className="alignCenter" onClick={() => deleteData(row.original)}><span className="svg__iconbox hreflink svg__icon--trash"></span></div>
             </>
 
         },
@@ -1812,7 +1812,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           cell: ({ row }) =>
 
             <>
-              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
+              <div className="alignCenter" onClick={() => editPopUp(row.original)}><span className="svg__iconbox svg__icon--edit"></span></div>
             </>,
 
         }
@@ -1820,7 +1820,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           id: 'delteTask',
           cell: ({ row }) =>
             <>
-              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
+              <div className="alignCenter" onClick={() => deleteData(row.original)}><span className="svg__iconbox hreflink svg__icon--trash"></span></div>
             </>
 
         }

@@ -19,7 +19,7 @@ interface NameIdData {
 let message: any;
 let count: any = 1;
 let counts = 0;
-let membersWorkfromHome = []
+let membersWorkfromHome:any = []
 let Juniordevavailabel = 0;
 let smalsusleadavailabel = 0;
 let hhhhteamavailabel = 0;
@@ -30,6 +30,8 @@ let Allteamoforganization = 0;
 let leaveallteammemebrstoday = 0;
 let availableteammeberstoday = 0;
 const EmailComponenet = (props: any) => {
+  let data = props?.data?.filter((item:any)=> item?.eventType !== "Work From Home");
+  
   const [AllTaskuser, setAllTaskuser] = React.useState([]);
   const [leaveData, setleaveData] = React.useState([]);
   const [nameidTotals, setNameidTotals] = useState<NameIdData>({});
@@ -52,7 +54,7 @@ const EmailComponenet = (props: any) => {
     loadleave()
     if (Object.keys(nameidTotals).length !== 0 && AllTaskuser?.length != 0) {
       SendEmail()
-    } else if (props?.data?.length === 0 && AllTaskuser?.length != 0) {
+    } else if (data?.length === 0 && AllTaskuser?.length != 0) {
       SendEmail()
     }
 
@@ -186,7 +188,7 @@ const EmailComponenet = (props: any) => {
     // Assuming 'yeardata' is available from somewhere (prop, state, or elsewhere)
     // const yeardata = ...;
 
-    const userId = props?.data?.filter((item: any) => item?.NameId != null);
+    const userId = data?.filter((item: any) => item?.NameId != null);
 
     const nameidData: any = {};
 
@@ -207,15 +209,13 @@ const EmailComponenet = (props: any) => {
   }, [props?.data]);
 
 
-  console.log(nameidTotals)
-
 
 
 
   // arr.map((item:any)=>{})
 
   // For prepare the property
-  const data = props?.data;
+  
   {
     data?.map((item: any, index: any) => {
       let condate = new Date(item.end);
@@ -322,22 +322,22 @@ const EmailComponenet = (props: any) => {
 
   // {Object?.keys(nameidTotals)?.length === 0 ? `The ${formattedDate} is a great Day! All ${Allteamoforganization} are in Office today!` : `${formattedDate}: ${(Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length)} are on leave, ${Allteamoforganization - (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length)} are working`}
   // </div>
-
+  
   const AllStaff = SPfxtotal?.length + Mobiletotal?.length + Managementtotal?.length + TotalEmployees?.length + qatotal?.length + designtotal?.length + HRtotal?.length + JTMTotal?.length;
   const AllStaffLeave = SPfxtotalLeave?.length + MobiletotalLeave?.length + ManagementtotalLeave?.length + TotalEmployeesLeave?.length + qatotalLeave?.length + designtotalLeave?.length + HRtotalLeave?.length + JTMTotalLeave?.length;
   const AllTrainees = SPFxTrainee?.length + ManagementTrainee?.length + MobileTrainee?.length + Totalsmalsustrainee?.length + DesignTrainee?.length + QATrainee?.length + HRTrainee?.length + JTMTrainee?.length;
   const AllTraineesLeave = SPFxTraineeLeave?.length + ManagementTraineeLeave?.length + MobileTraineeLeave?.length + TotalsmalsustraineeLeave?.length + DesignTraineeLeave?.length + QATraineeLeave?.length + JTMTraineeLeave?.length + HRTraineeLeave?.length;
   const CompleteTeam = AllStaff + AllTrainees;
-  availableteammeberstoday = CompleteTeam - (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length);
+  availableteammeberstoday = CompleteTeam - data?.length;
   if (Object.keys(nameidTotals).length !== 0) {
-    props?.data.filter((items: any) => {
-      if (items?.eventType == 'Work From Home') {
-        membersWorkfromHome.push(items)
-      }
+    // props?.data.filter((items: any) => {
+    //   if (items?.eventType == 'Work From Home') {
+    //     membersWorkfromHome.push(items)
+    //   }
 
-    })
-    availableteammeberstoday = CompleteTeam - (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length);
-    leaveallteammemebrstoday = (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length);
+    // })
+    availableteammeberstoday = CompleteTeam - data?.length;
+    leaveallteammemebrstoday = data?.length;
   }
   const returnEmailHtml = (): any => {
     let structure = `    

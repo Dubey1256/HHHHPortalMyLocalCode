@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback, useContext } from 'react';
+import * as React from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback, useContext } from 'react';
 import { Web } from 'sp-pnp-js';
 import { ColumnDef } from '@tanstack/react-table';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
@@ -82,7 +83,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         setSmartMetadataCount(Count);
     }
     //...........................................................End Filter SmartMetadata Items counts....................................................
-    const GetAdminConfig = async () => {
+    const GetAdminConfig = async (Tab:any) => {
         try {
             let web = new Web(selectedProps.AllList.SPSitesListUrl);
             const Config = await web.lists.getById(selectedProps.AllList.SPSiteConfigListID).items.select("ID,Title,OrderBy,WebpartId,DisplayColumns,Columns,QueryType,FilterItems&$filter=WebpartId eq 'AllManageSmartMetadataPortfolioTabs'").getAll();
@@ -91,12 +92,12 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 setTabs(JSON.parse(Config[0].DisplayColumns));
                 console.log(Tabs);
             }
-            LoadSmartMetadata();
+            LoadSmartMetadata(Tab);
         } catch (error) {
             console.error(error);
         }
     };
-    const LoadSmartMetadata = async () => {
+    const LoadSmartMetadata = async (Tab:any) => {
         try {
             let web = new Web(selectedProps?.AllList?.SPSitesListUrl);
             const AllMetaDataItems = await web.lists.getById(selectedProps?.AllList?.SmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title&$filter=isDeleted ne 1").getAll();
@@ -115,7 +116,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
                         if (siteName === 'SP' || siteName === 'ILF')
                             ShowingTabsData("Categories");
                         if (siteName === 'GmbH')
-                            ShowingTabsData("Topics");
+                            if(Tab !== '' && Tab !== undefined)
+                                ShowingTabsData(Tab);
+                            else
+                                ShowingTabsData("Topics");
                     }
                 })
             }
@@ -150,10 +154,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
             ParentMetaDataItems = [];
         SmartmetadataItems?.filter((comp: any) => {
             if (comp.TaxType === 'Smart Pages') {
-                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Pages.aspx?SmartId=${comp.Id}&Item=${comp.Title}`
+                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Pages.aspx?SmartID=${comp.Id}&Item=${comp.Title}`
             }
             if (comp.TaxType === 'Topics') {
-                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Profiles.aspx?SmartId=${comp.Id}&Item=${comp.Title}`
+                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Profiles.aspx?SmartID=${comp.Id}&Item=${comp.Title}`
             }
             if (comp?.TaxType === Tab && comp?.ParentID === 0) {
                 comp['flag'] = true;
@@ -213,7 +217,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         setSmartMetadataDeletePopupOpen(true);
     };
     useEffect(() => {
-        GetAdminConfig();
+        GetAdminConfig('');
     }, [0]);
     const columns = useMemo<ColumnDef<any, unknown>[]>(() => [
         {
@@ -447,12 +451,11 @@ export default function ManageSmartMetadata(selectedProps: any) {
         }
         if (Taxtype) {
             setSmartmetadataAdd(false)
-
             SmartmetadataItems = [];
             Array = {};
             setRestructureIcon(false)
             setSelectedItem({});
-            GetAdminConfig();
+            GetAdminConfig(Taxtype);
         }
     }, []);
     const callChildFunction = (items: any) => {

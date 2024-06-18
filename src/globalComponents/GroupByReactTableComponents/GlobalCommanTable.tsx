@@ -16,6 +16,7 @@ import {
     Row
 } from "@tanstack/react-table";
 import { useVirtualizer, notUndefined } from "@tanstack/react-virtual";
+import { exportmeExcel } from "excel-ent";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaPlus, FaMinus, FaListAlt } from 'react-icons/fa';
 import { HTMLProps } from 'react';
@@ -44,6 +45,7 @@ import { TbChevronDown, TbChevronUp, TbSelector } from 'react-icons/tb';
 import { myContextValue, deepCopy } from '../globalCommon';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import moment from 'moment';
+import ExportColumnSelect from './ExportColumnSelect'
 // import TileBasedTasks from './TileBasedTasks';
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -280,6 +282,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [selectedFilterPanelIsOpen, setSelectedFilterPanelIsOpen] = React.useState(false);
     const [dateColumnFilter, setDateColumnFilter] = React.useState(false);
     const [bulkEditingSettingPopup, setBulkEditingSettingPopup] = React.useState(false);
+    const [exportVisibility, setExportVisibility] = React.useState({})
+    const [exportColumnOpen, setExportColumnOpen] = React.useState(false);
     const [dateColumnFilterData, setDateColumnFilterData] = React.useState({});
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [trueRestructuring, setTrueRestructuring] = React.useState(false);
@@ -979,77 +983,104 @@ const GlobalCommanTable = (items: any, ref: any) => {
         doc.save('Data PrintOut');
     }
     // Export To Excel////////
-    const exportToExcel = () => {
-        const flattenedData: any[] = [];
-        const flattenRowData = (row: any) => {
-            const flattenedRow: any = {};
-            columns.forEach((column: any) => {
-                if (column.placeholder != undefined && column.placeholder != '') {
-                    flattenedRow[column.id] = row.original[column.id];
-                }
-            });
-            flattenedData.push(flattenedRow);
-            if (row.getCanExpand()) {
-                row.subRows.forEach(flattenRowData);
-            }
-        };
-        table.getRowModel().rows.forEach(flattenRowData);
-        const worksheet = XLSX.utils.aoa_to_sheet([]);
-        function removeDuplicates(arr: any) {
-            const uniqueArray = [];
-            const seen = new Set();
-            for (const obj of arr) { const objString = JSON.stringify(obj); if (!seen.has(objString)) { uniqueArray.push(obj); seen.add(objString); } }
-            return uniqueArray;
-        }
-        const uniqueArray: any = removeDuplicates(flattenedData);
-        XLSX.utils.sheet_add_json(worksheet, uniqueArray, {
-            skipHeader: false,
-            origin: "A1",
-        });
-        const maxLength = 32767;
-        const sheetRange = XLSX.utils.decode_range(worksheet["!ref"]);
-        for (let R = sheetRange.s.r; R <= sheetRange.e.r; ++R) {
-            for (let C = sheetRange.s.c; C <= sheetRange.e.c; ++C) {
-                const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
-                const cell = worksheet[cellAddress];
-                if (cell && cell.t === "s" && cell.v.length > maxLength) {
-                    const chunks = [];
-                    let text = cell.v;
-                    while (text.length > maxLength) {
-                        chunks.push(text.slice(0, maxLength));
-                        text = text.slice(maxLength);
-                    }
-                    chunks.push(text);
-                    cell.v = chunks.shift();
-                    chunks.forEach((chunk) => {
-                        const newCellAddress = XLSX.utils.encode_cell({
-                            r: R + chunks.length,
-                            c: C,
-                        });
-                        worksheet[newCellAddress] = { t: "s", v: chunk };
-                    });
-                }
-            }
-        }
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-        const excelBuffer = XLSX.write(workbook, {
-            bookType: "xlsx",
-            type: "array",
-        });
-        const excelData = new Blob([excelBuffer], {
-            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
+    const exportToExcel = async () => {
+        setExportVisibility(columnVisibility)
+        setExportColumnOpen(true)
+    }
+    const exportCallBack = React.useCallback((columnChecked: any) => {
+        if (columnChecked != 'close') {
+            let headerColur="0a1c3e"
+            let currentUrl:any=window.location.href;
+           
+            let match = currentUrl.match(/\/([^/]+\.aspx)(\?.*)?$/);
 
-        if (typeof saveAs === "function") {
-            saveAs(excelData, "table.xlsx");
+            let FileSaveName = match[1].replace('.aspx','');
+
+
+            if(currentUrl.toString().includes('PortfolioType=Service')){
+                headerColur= '#228B22'
+            }
+            let allHeaderColoumns = columnChecked.filter((column: any) => {
+                return (column?.displayChecked == true);
+            });
+            const flattenedData: any[] = [];
+            const flattenRowData = (row: any) => {
+                const flattenedRow: any = {};
+                allHeaderColoumns.forEach((column: any) => {
+                    if (column?.placeholder != undefined && column?.placeholder != '') {
+                        if (row.original[column?.id] != undefined && row.original[column?.id] != null) {
+                            flattenedRow[column?.id] = row.original[column?.id];
+                        } else {
+                            flattenedRow[column?.id] = ''
+                        }
+
+                    }
+                });
+                flattenedData.push(flattenedRow);
+                if (row.getCanExpand()) {
+                    row.subRows.forEach(flattenRowData);
+                }
+            };
+            table.getRowModel().rows.forEach(flattenRowData);
+            let widthArray: any = []
+            allHeaderColoumns.map((coulumnValue: any) => {
+                let maxWidth: any = 15;
+                let columnWidth: any = 15
+                flattenedData.map((item: any) => {
+                    if (item[coulumnValue?.id] != undefined && item[coulumnValue?.id]?.toString()?.length < 100 && item[coulumnValue?.id]?.toString()?.length > maxWidth) {
+                        maxWidth = item[coulumnValue.id]?.toString()?.length
+                        columnWidth = maxWidth + 12
+                    }
+                })
+                widthArray.push(columnWidth)
+            })
+
+            exportmeExcel({
+                data: flattenedData,
+                fileName: `${FileSaveName} excel`,
+                exportAs: {
+                    type: "download",
+                },
+                options: {
+                    columnWidths: widthArray,
+                    globalRowHeight: 25,
+                    headerStyle: {
+                        fill: {
+                            fgColor: {
+                                rgb: headerColur,
+                            },
+                        },
+                        font: {
+                            bold: true,
+                            color: {
+                                rgb: "ffffff",
+                            },
+                        },
+                        alignment: {
+                            vertical: "center",
+                            horizontal: "center",
+                        },
+
+                    },
+                    bodyStyle: {
+
+                        alignment: {
+                            vertical: "center",
+                            horizontal: "center",
+                        },
+
+                    },
+
+                },
+            })
+            setExportColumnOpen(false)
         } else {
-            const downloadLink = document.createElement("a");
-            downloadLink.href = URL.createObjectURL(excelData);
-            downloadLink.download = "table.xlsx";
-            downloadLink.click();
+            setExportColumnOpen(false)
         }
-    };
+
+    }, []);
+
+    // Export To Excel////////
     ////Export to excel end/////
 
     const expndpopup = (e: any) => {
@@ -1711,6 +1742,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 expandIcon={items?.expandIcon} expndpopup={expndpopup} tablecontiner={tablecontiner}
                 columnSettingIcon={items?.columnSettingIcon} setColumnSettingPopup={setColumnSettingPopup}
             />}
+
+{exportColumnOpen && <ExportColumnSelect isOpen={exportColumnOpen} AllColumns={columns} NotVisbleColumns={exportVisibility} exportCallBack={exportCallBack} />}
             {/* {showTilesView && <TileBasedTasks ContextValue={items?.AllListId} AllUsers={items?.TaskUsers} tableData={data} />} */}
         </>
     )
