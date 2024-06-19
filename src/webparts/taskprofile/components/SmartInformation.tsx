@@ -114,7 +114,7 @@ const SmartInformation = (props: any, ref: any) => {
         })
       }
       try {
-        item.Description = item?.Description.replace(/<[^>]*>|&[^;]+;/g, '');
+        item.Description = item?.Description?.replace(/<[^>]*>|&[^;]+;/g, '');
         if (item?.InfoType?.Title === 'Information Source') {
           setsourceTitle(item.Title);
           setEditorState(insertText(item?.Description, editorState));
@@ -273,7 +273,7 @@ const SmartInformation = (props: any, ref: any) => {
               // MovefolderItemUrl2 = `/${tagsmartinfo.Id}_.000`
             }
             if (tagsmartinfo?.Id == items?.Id) {
-              tagsmartinfo.Description = tagsmartinfo.Description.replace(/<span[^>]*>(.*?)<\/span>/gi, '$1');
+              tagsmartinfo.Description = tagsmartinfo?.Description?.replace(/<span[^>]*>(.*?)<\/span>/gi, '$1');
               allSmartInformationglobal.push(tagsmartinfo);
             }
           })
@@ -316,7 +316,7 @@ const SmartInformation = (props: any, ref: any) => {
           .then(async (result: any[]) => {
             console.log(result);
             result?.map((servicecomponent: any) => {
-              servicecomponent.Title = servicecomponent.Title.replace('.', "")
+              servicecomponent.Title = servicecomponent?.Title?.replace('.', "")
               servicecomponent.Description = servicecomponent?.Body
               if (servicecomponent.Portfolios != undefined && servicecomponent.Portfolios.length > 0) {
                 mastertaskdetails.map((mastertask: any) => {
@@ -1336,7 +1336,7 @@ const SmartInformation = (props: any, ref: any) => {
                       )
                     })}
 
-                    <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span>}</span> </div>
+                    <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified:</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span>}</span> </div>
                   </div>
                   {/* <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Author?.Id)} title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url} /> : ""}</span></div> */}
                 </div>
@@ -1509,7 +1509,6 @@ const SmartInformation = (props: any, ref: any) => {
               </p>
 
               <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_LibraryBooks.png" title="Documents" data-themekey="#" />
-
 
             </a>
             <a className={SelectedTilesTitle == "UploadEmail" ? "docbox  BoxShadow" : "docbox"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('UploadEmail')}>

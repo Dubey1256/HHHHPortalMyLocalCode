@@ -11,7 +11,9 @@ export default class ComponentPermissionMgmt extends React.Component<IComponentP
       isDarkTheme,
       environmentMessage,
       hasTeamsContext,
-      userDisplayName
+      siteUrl,
+      userDisplayName,
+      TaskUserListID,
     } = this.props;
 
     return (
