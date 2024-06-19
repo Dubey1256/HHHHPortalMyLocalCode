@@ -33,19 +33,20 @@ let timeSheetConfig: any = {};
 const TeamSmartFilter = (item: any) => {
     let MyContextdata: any = React.useContext(myContextValue);
     let web = new Web(item?.ContextValue?.Context?.pageContext?._web?.absoluteUrl + '/');
-    let allMasterTasksData: any = item.AllMasterTasksData;
-    let allTastsData: any = item.AllSiteTasksData;
+    let allMasterTasksData: any = item?.AllMasterTasksData;
+    let allTastsData: any = item?.AllSiteTasksData;
     let AllSiteTasksDataLoadAll = item?.AllSiteTasksDataLoadAll;
-    let smartFiltercallBackData = item.smartFiltercallBackData;
+    let smartFiltercallBackData = item?.smartFiltercallBackData;
     let ContextValue = item?.ContextValue;
     let portfolioColor: any = item?.portfolioColor
     let AllProjectBackupArray: any = []
     try {
+        if (item?.ProjectData == undefined)
+            item.ProjectData = [];
         AllProjectBackupArray = JSON.parse(JSON.stringify(item?.ProjectData));
     } catch (e) {
         console.log(e);
     }
-    const [changeInDatePicker,setChangeDatePicker]=React.useState(false)
     const [loadeAllData, setLoadeAllData] = React.useState(false)
     const [PreSetPanelIsOpen, setPreSetPanelIsOpen] = React.useState(false);
     const [TaskUsersData, setTaskUsersData] = React.useState([]);
@@ -148,7 +149,7 @@ const TeamSmartFilter = (item: any) => {
             year.push(i);
         }
         setYear(year);
-        
+
     }, [])
 
     React.useEffect(() => {
@@ -159,7 +160,7 @@ const TeamSmartFilter = (item: any) => {
                 ); // Set the desired color value here
             }
         }, 1000)
-    }, [PreSetPanelIsOpen, selectedFilterPanelIsOpenUpdate, selectedFilterPanelIsOpen,ProjectManagementPopup]);
+    }, [PreSetPanelIsOpen, selectedFilterPanelIsOpenUpdate, selectedFilterPanelIsOpen, ProjectManagementPopup]);
 
     ///// Year Range Using Piker end////////
 
@@ -203,7 +204,6 @@ const TeamSmartFilter = (item: any) => {
         }
     }
 
-     
     const GetSmartmetadata = async () => {
         let siteConfigSites: any = []
         let web = new Web(ContextValue?.siteUrl);
@@ -268,7 +268,8 @@ const TeamSmartFilter = (item: any) => {
             setSmartFavoritesItemsQueryStringBasedBackup(allMasterTaskDataFlatLoadeViewBackup);
             let SmartFavoritesItemsQueryStringBasedTableConfigValue = [];
             SmartFavoritesItemsQueryStringBasedTableConfigValue.push(configurationData[0]?.smartFabBasedColumnsSetting);
-            item?.setSmartFabBasedColumnsSetting(SmartFavoritesItemsQueryStringBasedTableConfigValue)
+            if (item?.setSmartFabBasedColumnsSetting != undefined)
+                item?.setSmartFabBasedColumnsSetting(SmartFavoritesItemsQueryStringBasedTableConfigValue)
             setSmartFavoritesItemsQueryStringBased(configurationData);
         } catch (error) {
             console.log(error);
@@ -1016,7 +1017,7 @@ const TeamSmartFilter = (item: any) => {
         }
         let filteredMasterTaskData: any = []
         if (portFolio.length > 0) {
-            filteredMasterTaskData = allMasterTasksData.filter((data: any) =>
+            filteredMasterTaskData = allMasterTasksData?.filter((data: any) =>
                 updatedCheckMatch(data, 'Item_x0020_Type', 'Title', portFolio) &&
                 // updatedCheckMatch(data, 'ClientCategory', 'Title', clientCategory) &&
                 updatedCheckClintCategoryMatch(data, clientCategory) &&
@@ -1027,7 +1028,7 @@ const TeamSmartFilter = (item: any) => {
         }
         let filteredTaskData: any = [];
         if (type.length > 0) {
-            filteredTaskData = allTastsData.filter((data: any) =>
+            filteredTaskData = allTastsData?.filter((data: any) =>
                 updatedCheckMatch(data, 'siteType', 'Title', site) &&
                 updatedCheckTaskType(data, type) &&
                 updatedCheckProjectMatch(data, selectedProject) &&
@@ -1041,7 +1042,7 @@ const TeamSmartFilter = (item: any) => {
                 updatedCheckPriority(data, priorityType)
             );
         }
-        let allFinalResult = filteredMasterTaskData.concat(filteredTaskData);
+        let allFinalResult = filteredMasterTaskData?.concat(filteredTaskData);
         if (allFinalResult?.length == 0) {
             item?.setLoaded(true)
         }
@@ -1355,21 +1356,49 @@ const TeamSmartFilter = (item: any) => {
         }
     };
     const UpdateFilterData = (event: any) => {
-        if (event === "udateClickTrue") {
-            if (AllSiteTasksDataLoadAll?.length > 0) {
-                allTastsData = [];
-                allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
+        if (item?.webPartTemplateSmartFilter != true) {
+            if (event === "udateClickTrue") {
+                if (AllSiteTasksDataLoadAll?.length > 0) {
+                    allTastsData = [];
+                    allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
+                }
+                item?.setLoaded(false);
+                setUpdatedSmartFilter(true);
+                FilterDataOnCheck();
+            } else if (event === "udateClickFalse" && updatedSmartFilter === true) {
+                item?.setLoaded(false);
+                setUpdatedSmartFilter(true);
+                FilterDataOnCheck();
+            } else if (event === "udateClickFalse" && updatedSmartFilter === false) {
+                item?.setLoaded(false);
+                FilterDataOnCheck();
             }
-            item?.setLoaded(false);
-            setUpdatedSmartFilter(true);
-            FilterDataOnCheck();
-        } else if (event === "udateClickFalse" && updatedSmartFilter === true) {
-            item?.setLoaded(false);
-            setUpdatedSmartFilter(true);
-            FilterDataOnCheck();
-        } else if (event === "udateClickFalse" && updatedSmartFilter === false) {
-            item?.setLoaded(false);
-            FilterDataOnCheck();
+        } else if (item?.webPartTemplateSmartFilter === true && event === "udateClickTrue") {
+            let Favorite = {
+                Title: "",
+                SmartFavoriteType: "SmartFilterBased",
+                CurrentUserID: item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userId,
+                isShowEveryone: true,
+                filterGroupsData: filterGroupsData,
+                allFilterClintCatogryData: allFilterClintCatogryData,
+                allStites: allStites,
+                selectedProject: selectedProject,
+                startDate: startDate,
+                endDate: endDate,
+                isCreatedBy: isCreatedBy,
+                isModifiedby: isModifiedby,
+                isAssignedto: isAssignedto,
+                isTeamLead: isTeamLead,
+                isTeamMember: isTeamMember,
+                isTodaysTask: isTodaysTask,
+                selectedFilter: selectedFilter,
+                isCreatedDateSelected: isCreatedDateSelected,
+                isModifiedDateSelected: isModifiedDateSelected,
+                isDueDateSelected: isDueDateSelected,
+                TaskUsersData: TaskUsersData,
+                smartFabBasedColumnsSetting: MyContextdata?.allContextValueData?.smartFabBasedColumnsSetting ? MyContextdata?.allContextValueData?.smartFabBasedColumnsSetting : {},
+            }
+            smartFiltercallBackData(Favorite);
         }
     };
 
@@ -1515,7 +1544,7 @@ const TeamSmartFilter = (item: any) => {
         if (timeSheetConfig?.Id !== undefined) {
             AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
         }
-        let allSites = smartmetaDataDetails.filter((e) => e.TaxType === "Sites")
+        let allSites = smartmetaDataDetails?.filter((e) => e.TaxType === "Sites")
         AllTimeEntries?.forEach((entry: any) => {
             allSites.forEach((site) => {
                 const taskTitle = `Task${site.Title}`;
@@ -1581,9 +1610,9 @@ const TeamSmartFilter = (item: any) => {
     //*************************************************************smartTimeTotal End*********************************************************************/
     /// **************** CallBack Part *********************///
     React.useEffect(() => {
-        if (updatedSmartFilter === true) {
+        if (updatedSmartFilter === true && item?.webPartTemplateSmartFilter != true) {
             smartFiltercallBackData(finalArray, updatedSmartFilter, smartTimeTotal, flatView)
-        } else if (updatedSmartFilter === false) {
+        } else if (updatedSmartFilter === false && item?.webPartTemplateSmartFilter != true) {
             smartFiltercallBackData(finalArray, updatedSmartFilter, smartTimeTotal, flatView)
         }
     }, [finalArray])
@@ -1664,55 +1693,15 @@ const TeamSmartFilter = (item: any) => {
                     setEndDate(new Date(storedDataEndDate));
                 }
                 break;
-                case  "custom":
-                if(changeInDatePicker!=true){
-                    setStartDate(null);
-                    setEndDate(null);     
-                }
-                break;
-
             default:
                 setStartDate(null);
                 setEndDate(null);
                 break;
         }
     }, [selectedFilter]);
-   
-   
-    const selectingStartDate=(date:any)=>{
-        setStartDate(date)
-        const currentDate: any = new Date();
-        if(currentDate.getDate()!=date.getDate() && currentDate.getDate()-1!=date.getDate()){
-            setChangeDatePicker(true)
-            setSelectedFilter("custom")
-        }
-        else if(currentDate.getDate()==date.getDate() && endDate.getDate()==date.getDate()){       
-            setSelectedFilter("today")
-    }
-    else if(currentDate.getDate()-1==date.getDate() && endDate.getDate()==date.getDate()){       
-        setSelectedFilter("yesterday")
-}
-
-    }
-
-    const selectingEndDate=(date:any)=>{
-        setEndDate(date);
-        const currentDate: any = new Date();
-        if(currentDate.getDate()!=date.getDate() && currentDate.getDate()-1!=date.getDate()){
-            setChangeDatePicker(true)
-            setSelectedFilter("custom")
-        }
-        else if(currentDate.getDate()==date.getDate() && startDate.getDate()==date.getDate()){       
-                setSelectedFilter("today")
-        }
-        else if(currentDate.getDate()-1==date.getDate() && startDate.getDate()==date.getDate()){       
-            setSelectedFilter("yesterday")
-    }
-    }
 
     const handleDateFilterChange = (event: any) => {
         setSelectedFilter(event.target.value);
-        setChangeDatePicker(false)
         // setPreSet(false);
         // rerender();
         if (
@@ -2096,7 +2085,7 @@ const TeamSmartFilter = (item: any) => {
         if (!found) {
             setSelectedUsers([...selectedUsers, user]);
         } else {
-            const updatedUsers = selectedUsers.filter((selectedUser: any) => selectedUser.Id !== user.Id);
+            const updatedUsers = selectedUsers?.filter((selectedUser: any) => selectedUser.Id !== user.Id);
             setSelectedUsers(updatedUsers);
         }
     };
@@ -2113,10 +2102,10 @@ const TeamSmartFilter = (item: any) => {
             } if (!userFound) { allSelected = false; break; }
         }
         if (allSelected) {
-            const updatedUsers = selectedUsers.filter((user: any) => !groupUsers.some((groupUser: any) => groupUser.Id === user.Id));
+            const updatedUsers = selectedUsers?.filter((user: any) => !groupUsers.some((groupUser: any) => groupUser.Id === user.Id));
             setSelectedUsers(updatedUsers);
         } else {
-            const updatedUsers = [...selectedUsers, ...groupUsers.filter((user: any) => !selectedUsers.some((selectedUser: any) => selectedUser.Id === user.Id))];
+            const updatedUsers = [...selectedUsers, ...groupUsers?.filter((user: any) => !selectedUsers.some((selectedUser: any) => selectedUser.Id === user.Id))];
             setSelectedUsers(updatedUsers);
         }
     };
@@ -2152,14 +2141,14 @@ const TeamSmartFilter = (item: any) => {
                 <a onClick={() => OpenSmartfavorites('goToSmartFavorites')}>Add Smart Favorite</a>
             </div>} */}
             {/* <a className="mx-3" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a> */}
-            <div className='justify-content-end d-flex'>
+            {item?.webPartTemplateSmartFilter != true && <div className='justify-content-end d-flex'>
                 {isSmartFevShowHide === true && <div>
                     <a className='hreflink' onClick={() => OpenSmartfavorites('goToSmartFilter')}>Go to Smart Filter</a>
                 </div>}
                 {isSmartFevShowHide === false && <div>
                     <a className='hreflink' onClick={() => OpenSmartfavorites('goToSmartFavorites')}>Go to Smart Favorites</a>
                 </div>}
-            </div>
+            </div>}
 
 
             <section className='smartFilter bg-light border mb-2 col'>
@@ -2174,65 +2163,66 @@ const TeamSmartFilter = (item: any) => {
                                     </div>
                                     <div className='alignCenter col-sm-4'>
                                         <div className='ml-auto alignCenter'>
-                                            <div className="svg__iconbox svg__icon--setting hreflink me-2" style={{ backgroundColor: `${portfolioColor}` }} ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()}></div>
-                                            {action === "click" && visible && (
-                                                <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container m-0 p-0" })}>
-                                                    {/* <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button> */}
-
-                                                    <div className='d-flex settingTooltip'>
-                                                        {filterGroupsData != null && filterGroupsData.length > 0 &&
-                                                            filterGroupsData?.map((MainGroup: any, index: any) => {
-                                                                if (MainGroup?.Title == "Type") {
-                                                                    return (
-                                                                        <>
-                                                                            {MainGroup?.values?.map((Group: any) => {
-                                                                                return (
-                                                                                    <div className='dataSec'>
-                                                                                        <div className="alignCenter dataSecParentSec">
-                                                                                            <input className={"form-check-input cursor-pointer mt-0"}
-                                                                                                style={Group?.values?.length === MainGroup?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
-                                                                                                type="checkbox"
-                                                                                                checked={MainGroup?.checked?.some((datachecked: any) => datachecked == Group?.Id && Group.selectAllChecked === true) || Group.children?.every((child: any) => MainGroup?.checked.includes(child.Id)) ? true : false}
-                                                                                                onChange={(e: any) => selectAllFromAbove(Group, e.target.checked)}
-                                                                                                ref={(input) => {
-                                                                                                    if (input) {
-                                                                                                        const isIndeterminate = !(MainGroup?.checked?.some((datachecked: any) => datachecked == Group?.Id)) && !Group.children?.every((child: any) => MainGroup?.checked.includes(child.Id));
-                                                                                                        input.indeterminate = isIndeterminate;
-                                                                                                        if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
-                                                                                                    }
-                                                                                                }}
-                                                                                            />
-                                                                                            <div className="fw-semibold ms-8 f-16 text-dark">{Group.Title}</div>
+                                            {item?.webPartTemplateSmartFilter != true && <>
+                                                <div className="svg__iconbox svg__icon--setting hreflink me-2" style={{ backgroundColor: `${portfolioColor}` }} ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()}></div>
+                                                {action === "click" && visible && (
+                                                    <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container m-0 p-0" })}>
+                                                        {/* <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button> */}
+                                                        <div className='d-flex settingTooltip'>
+                                                            {filterGroupsData != null && filterGroupsData.length > 0 &&
+                                                                filterGroupsData?.map((MainGroup: any, index: any) => {
+                                                                    if (MainGroup?.Title == "Type") {
+                                                                        return (
+                                                                            <>
+                                                                                {MainGroup?.values?.map((Group: any) => {
+                                                                                    return (
+                                                                                        <div className='dataSec'>
+                                                                                            <div className="alignCenter dataSecParentSec">
+                                                                                                <input className={"form-check-input cursor-pointer mt-0"}
+                                                                                                    style={Group?.values?.length === MainGroup?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
+                                                                                                    type="checkbox"
+                                                                                                    checked={MainGroup?.checked?.some((datachecked: any) => datachecked == Group?.Id && Group.selectAllChecked === true) || Group.children?.every((child: any) => MainGroup?.checked.includes(child.Id)) ? true : false}
+                                                                                                    onChange={(e: any) => selectAllFromAbove(Group, e.target.checked)}
+                                                                                                    ref={(input) => {
+                                                                                                        if (input) {
+                                                                                                            const isIndeterminate = !(MainGroup?.checked?.some((datachecked: any) => datachecked == Group?.Id)) && !Group.children?.every((child: any) => MainGroup?.checked.includes(child.Id));
+                                                                                                            input.indeterminate = isIndeterminate;
+                                                                                                            if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
+                                                                                                        }
+                                                                                                    }}
+                                                                                                />
+                                                                                                <div className="fw-semibold ms-8 f-16 text-dark">{Group.Title}</div>
+                                                                                            </div>
+                                                                                            <div className='dataSecChild'>
+                                                                                                {Group?.values?.sort((a: any, b: any) => a.SortOrder - b.SortOrder)?.map((insideCheckBox: any) => {
+                                                                                                    return (
+                                                                                                        <label className='alignCenter f-16 dataSecChildSec'>
+                                                                                                            <input type="checkbox" className={"form-check-input cursor-pointer mt-0"} checked={MainGroup?.checked?.some((datachecked: any) => datachecked == insideCheckBox?.Id)} onChange={() => selectChild(insideCheckBox)} />
+                                                                                                            <div className='ms-8'>{insideCheckBox?.Title}</div>
+                                                                                                        </label>
+                                                                                                    )
+                                                                                                })}
+                                                                                            </div>
                                                                                         </div>
-                                                                                        <div className='dataSecChild'>
-                                                                                            {Group?.values?.sort((a: any, b: any) => a.SortOrder - b.SortOrder)?.map((insideCheckBox: any) => {
-                                                                                                return (
-                                                                                                    <label className='alignCenter f-16 dataSecChildSec'>
-                                                                                                        <input type="checkbox" className={"form-check-input cursor-pointer mt-0"} checked={MainGroup?.checked?.some((datachecked: any) => datachecked == insideCheckBox?.Id)} onChange={() => selectChild(insideCheckBox)} />
-                                                                                                        <div className='ms-8'>{insideCheckBox?.Title}</div>
-                                                                                                    </label>
-                                                                                                )
-                                                                                            })}
-                                                                                        </div>
-                                                                                    </div>
-                                                                                )
-                                                                            })}
-                                                                        </>
-                                                                    )
-                                                                }
-                                                            })
-                                                        }
-                                                        <div className='crossSec text-end'><span onClick={handleCloseClick} className='svg__iconbox svg__icon--cross ml-auto hreflink dark'></span></div>
+                                                                                    )
+                                                                                })}
+                                                                            </>
+                                                                        )
+                                                                    }
+                                                                })
+                                                            }
+                                                            <div className='crossSec text-end'><span onClick={handleCloseClick} className='svg__iconbox svg__icon--cross ml-auto hreflink dark'></span></div>
+                                                        </div>
+                                                        <div {...getArrowProps({ className: "tooltip-arrow" })} />
                                                     </div>
-                                                    <div {...getArrowProps({ className: "tooltip-arrow" })} />
-                                                </div>
-                                            )}
-                                            <span style={{ color: `${portfolioColor}` }} className='me-1'>Flat View</span>
-                                            <label className="switch me-2" htmlFor="checkbox">
-                                                <input checked={flatView} onChange={handleSwitchToggle} type="checkbox" id="checkbox" />
-                                                {flatView === true ? <div className="slider round" title='Switch to Groupby View' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div title='Switch to Flat-View' className="slider round"></div>}
-                                            </label>
-                                            <div className="ml-auto" ><a className="hreflink" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a></div>
+                                                )}
+                                                <span style={{ color: `${portfolioColor}` }} className='me-1'>Flat View</span>
+                                                <label className="switch me-2" htmlFor="checkbox">
+                                                    <input checked={flatView} onChange={handleSwitchToggle} type="checkbox" id="checkbox" />
+                                                    {flatView === true ? <div className="slider round" title='Switch to Groupby View' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div title='Switch to Flat-View' className="slider round"></div>}
+                                                </label>
+                                                <div className="ml-auto" ><a className="hreflink" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a></div>
+                                            </>}
                                             <div className="ms-1">
                                                 <Tooltip ComponentId={1651} />
                                             </div>
@@ -2322,7 +2312,7 @@ const TeamSmartFilter = (item: any) => {
                                             {SearchedProjectData?.length > 0 ? (
                                                 <div className="SmartTableOnTaskPopup col-sm-7">
                                                     <ul className="list-group">
-                                                        {SearchedProjectData.map((item: any) => {
+                                                        {SearchedProjectData?.map((item: any) => {
                                                             return (
                                                                 <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion(item)} >
                                                                     <a>{item.Title}</a>
@@ -2334,7 +2324,7 @@ const TeamSmartFilter = (item: any) => {
                                                 </div>) : null}
                                             {selectedProject != undefined && selectedProject.length > 0 ?
                                                 <div>
-                                                    {selectedProject.map((ProjectData: any, index: any) => {
+                                                    {selectedProject?.map((ProjectData: any, index: any) => {
                                                         return (
                                                             <div className="block w-100">
                                                                 <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}>
@@ -2846,7 +2836,7 @@ const TeamSmartFilter = (item: any) => {
                                                 <div className="col-2 dateformate ps-0" style={{ width: "160px" }}>
                                                     <div className="input-group">
                                                         <label className='mb-1 form-label full-width'>Start Date</label>
-                                                        <DatePicker selected={startDate} onChange={(date) => selectingStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                                                        <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                                                             className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
                                                             maxDate={endDate}
                                                             renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
@@ -2863,7 +2853,7 @@ const TeamSmartFilter = (item: any) => {
                                                 <div className="col-2 dateformate" style={{ width: "160px" }}>
                                                     <div className="input-group">
                                                         <label className='mb-1 form-label full-width'>End Date</label>
-                                                        <DatePicker selected={endDate} onChange={(date) =>selectingEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                                                        <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                                                             className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
                                                             minDate={startDate}
                                                             renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
@@ -2887,8 +2877,8 @@ const TeamSmartFilter = (item: any) => {
 
                             </div>
                         </div >
-                        <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'><button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Update Filter</button>
-                            <button className='btn  btn-default px-3 py-1' onClick={ClearFilter}> Clear Filters</button></div>
+                        {item?.webPartTemplateSmartFilter != true ? <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'><button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Update Filter</button>
+                            <button className='btn  btn-default px-3 py-1' onClick={ClearFilter}> Clear Filters</button></div> : <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'><button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Save Filter</button></div>}
                     </section> : ''}
 
                 </>}
@@ -2913,7 +2903,7 @@ const TeamSmartFilter = (item: any) => {
                                             return (<>
                                                 <div className='bg-ee my-1 p-1 w-100'>
                                                     <span className='d-flex'>
-                                                        <a className='hreflink' onClick={() => handleOpenSamePage(item1, "filterSmaePage")}>{item1.Title}</a><span className='d-flex'><a className="hreflink" data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} href={`${ContextValue.siteUrl}/SitePages/Team-Portfolio.aspx${item.IsUpdated ? `?PortfolioType=${encodeURIComponent(item.IsUpdated)}` : ''}${item.IsUpdated ? '&' : '?'}SmartfavoriteId=${encodeURIComponent(item1.Id)}&smartfavorite=${encodeURIComponent(item1?.Title)}`}><span className="svg__iconbox svg__icon--openWeb"></span></a><span onClick={() => handleUpdateFaborites(item1)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item1)} className="svg__icon--trash  svg__iconbox"></span></span>
+                                                        <a className='hreflink' onClick={() => handleOpenSamePage(item1, "filterSmaePage")}>{item1.Title}</a><span className='d-flex'><a className="hreflink" data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} href={`${ContextValue.siteUrl}/SitePages/Team-Portfolio.aspx${item?.IsUpdated ? `?PortfolioType=${encodeURIComponent(item?.IsUpdated)}` : ''}${item?.IsUpdated ? '&' : '?'}SmartfavoriteId=${encodeURIComponent(item1?.Id)}&smartfavorite=${encodeURIComponent(item1?.Title)}`}><span className="svg__iconbox svg__icon--openWeb"></span></a><span onClick={() => handleUpdateFaborites(item1)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item1)} className="svg__icon--trash  svg__iconbox"></span></span>
                                                     </span>
                                                 </div>
                                             </>)
@@ -2945,12 +2935,12 @@ const TeamSmartFilter = (item: any) => {
                                 </label>
                                 {isOnlyMeShow === true ? <div className="togglecontent mb-3 ms-20 pt-1 mt-1" style={{ display: "block", borderTop: "1.5px solid #ccc" }}>
                                     <div className="col-sm-12">
-                                        <div>{CreateMeSmartFavorites?.length > 0 && CreateMeSmartFavorites.map((item2: any) => {
+                                        <div>{CreateMeSmartFavorites?.length > 0 && CreateMeSmartFavorites?.map((item2: any) => {
                                             return (<>
                                                 <div className='bg-ee my-1 p-1 w-100'>
                                                     <div>
                                                         <span className='d-flex'>
-                                                            <a className='hreflink' onClick={() => handleOpenSamePage(item2, "filterSmaePage")}>{item2.Title}</a><span className='d-flex'><a className="hreflink" data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} href={`${ContextValue.siteUrl}/SitePages/Team-Portfolio.aspx${item.IsUpdated ? `?PortfolioType=${encodeURIComponent(item.IsUpdated)}` : ''}${item.IsUpdated ? '&' : '?'}SmartfavoriteId=${encodeURIComponent(item2.Id)}&smartfavorite=${encodeURIComponent(item2?.Title)}`}><span className="svg__iconbox svg__icon--openWeb"> </span></a><span onClick={() => handleUpdateFaborites(item2)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item2)} className="svg__icon--trash  svg__iconbox"></span></span>
+                                                            <a className='hreflink' onClick={() => handleOpenSamePage(item2, "filterSmaePage")}>{item2.Title}</a><span className='d-flex'><a className="hreflink" data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} href={`${ContextValue.siteUrl}/SitePages/Team-Portfolio.aspx${item?.IsUpdated ? `?PortfolioType=${encodeURIComponent(item?.IsUpdated)}` : ''}${item?.IsUpdated ? '&' : '?'}SmartfavoriteId=${encodeURIComponent(item2.Id)}&smartfavorite=${encodeURIComponent(item2?.Title)}`}><span className="svg__iconbox svg__icon--openWeb"> </span></a><span onClick={() => handleUpdateFaborites(item2)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item2)} className="svg__icon--trash  svg__iconbox"></span></span>
                                                         </span>
                                                     </div>
                                                 </div>
