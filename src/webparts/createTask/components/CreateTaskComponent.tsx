@@ -559,7 +559,7 @@ function CreateTaskComponent(props: any) {
                 else if (paramTaskType == 'UX') {
                     DirectTask = true;
                     subCategories?.map((item: any) => {
-                        if (item.Title == "User Experience - UX") {
+                        if (item.Title == "UX-New") {
                             selectSubTaskCategory(item.Title, item.Id, item)
                         }
                     })
@@ -927,7 +927,7 @@ function CreateTaskComponent(props: any) {
             })
             if (CategoryTitle !== undefined) {
                 CategoryTitle.split(';')?.map((cat: any) => {
-                    if (cat === 'User Experience - UX') {
+                    if (cat === 'User Experience - UX' || cat === 'UX-New') {
                         AssignedToIds.push(298)
                         TeamMembersIds.push(298);
                         ResponsibleIds.push(49);
@@ -964,12 +964,12 @@ function CreateTaskComponent(props: any) {
             if (MailArrayTitle != undefined && MailArrayTitle.length > 0) {
                 RecipientMail = [];
                 MailArrayTitle?.map((MailName: any) => {
-                    if (MailName != 'User Experience - UX') {
+                    if (MailName != 'User Experience - UX'|| MailName?.Title == 'UX-New') {
                         taskUsers?.map((User: any) => {
                             if (User.Title != undefined && MailName.Title != undefined && User.Title.toLowerCase().indexOf(MailName.Title.toLowerCase()) > -1 && User.ItemType != 'Group') {
                                 RecipientMail.push(User);
                             }
-                            if (MailName?.Title == 'User Experience - UX' && loggedInUser?.AssingedToUserId != 49 && User?.Title == 'Robert Ungethuem') {
+                            if ((MailName?.Title == 'User Experience - UX'|| MailName?.Title == 'UX-New') && loggedInUser?.AssingedToUserId != 49 && User?.Title == 'Robert Ungethuem') {
                                 RecipientMail.push(User);
                             }
 
@@ -1003,7 +1003,7 @@ function CreateTaskComponent(props: any) {
                     try {
                         if (selectedPortfolio !== undefined && selectedPortfolio.length >= 0) {
                             $.each(selectedPortfolio, function (index: any, smart: any) {
-                                if (CategoryTitle?.indexOf("User Experience - UX") < 0) {
+                                if (CategoryTitle?.indexOf("User Experience - UX") < 0 || CategoryTitle?.indexOf("UX-New") < 0) {
                                     if (smart?.AssignedTo && smart?.AssignedTo?.length > 0) {
                                         smart?.AssignedTo.forEach(function (i: any) {
                                             ResponsibleIds.push(i.Id)
@@ -1171,7 +1171,7 @@ function CreateTaskComponent(props: any) {
                             setSendApproverMail(true);
                         }
 
-                        if (CategoryTitle?.indexOf("User Experience - UX") > -1) {
+                        if (CategoryTitle?.indexOf("User Experience - UX") > -1 || CategoryTitle?.indexOf("UX-New") > -1) {
                             globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'DesignMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
                                 console.log(response);
                             });

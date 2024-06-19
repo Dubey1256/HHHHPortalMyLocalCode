@@ -769,6 +769,7 @@ const ProjectManagementMain = (props: any) => {
             });
           });
         }
+      
         items.TaskID = globalCommon.GetTaskId(items);
 
         AllUser?.map((user: any) => {
