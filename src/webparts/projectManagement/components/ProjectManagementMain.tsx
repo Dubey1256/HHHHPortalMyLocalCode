@@ -1647,16 +1647,6 @@ const ProjectManagementMain = (props: any) => {
       {
         accessorFn: (row) => row?.workingActionTitle,
         cell: ({ row }) => (
-<<<<<<< HEAD
-            <div className="alignCenter">
-                {row?.original?.workingActionValue?.map((elem: any) => {
-                    const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
-                    return relevantTitles?.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
-                        <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
-                    );
-                })}
-            </div>
-=======
           <div className="alignCenter">
             {Array.isArray(row?.original?.workingActionValue) && row.original.workingActionValue.map((elem: any) => {
               const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
@@ -1665,7 +1655,6 @@ const ProjectManagementMain = (props: any) => {
               );
             })}
           </div>
->>>>>>> a0923c0d108810b65f54f33beaa7884e9c1415f9
         ),
         placeholder: "Working Actions",
         header: "",
