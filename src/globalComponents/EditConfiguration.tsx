@@ -128,7 +128,7 @@ const EditConfiguration = (props: any) => {
 
             // Extract the item being dragged
             let draggedItemContent: any = ExistingWeparts[dragItem.Current];
-            draggedItemContent.WebpartTitle = draggedItemContent.Title;
+            draggedItemContent.WebpartTitle = draggedItemContent.WebpartTitle===undefined ?draggedItemContent.Title:draggedItemContent.WebpartTitle;
             let obj: any = {};
             obj.Column = dragOverItem.Current;
             obj.Row = dragOverItem.CurrentIndex;
@@ -139,7 +139,7 @@ const EditConfiguration = (props: any) => {
                 draggedItemContent = _.cloneDeep(draggedItemContent123);
             }
             let filterGroups = [...ExistingWeparts];
-            let ExistingWepartsNew = filterGroups.filter((obj: any) => obj.Id != draggedItemContent.Id)
+            let ExistingWepartsNew = filterGroups.filter((obj: any) => obj.WebpartTitle != draggedItemContent.WebpartTitle)
             //  ExistingWeparts.splice(index, 1);
             // rerender();
 
@@ -399,7 +399,7 @@ const EditConfiguration = (props: any) => {
         updatedItems?.forEach((item: any, index: any) => {
             if (index === arrayIndex)
                 item?.ArrayValue?.forEach((subChild: any, indexChild: any) => {
-                    if (itemValue.Id === subChild?.Id) {
+                    if (itemValue.WebpartTitle === subChild?.WebpartTitle) {
                         let findItem: any = [];
                         findItem = ExistingWepartsBackup?.filter((filt: any) => filt.WebpartTitle === subChild.WebpartTitle)
                         if (findItem?.length > 0) {
@@ -540,7 +540,7 @@ const EditConfiguration = (props: any) => {
                                                         onDragEnd={(e) => drop(item, index, index, "DifferentArray")}
                                                         key={index}
                                                         draggable
-                                                    >{item.Title}
+                                                    >{item.WebpartTitle ===undefined ?item.Title :item.WebpartTitle}
                                                     </div>
                                                 </>
                                             )

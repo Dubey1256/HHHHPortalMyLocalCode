@@ -53,6 +53,8 @@ let userEmail: any;
 let ApproveruserEmail: any;
 let backuprecurringarr: any = [];
 let leaveapproved = false;
+let leaverejected = false;
+
 const leaveTypes = [
   { key: "Sick", text: "Sick" },
   { key: "Planned Leave", text: "Planned" },
@@ -716,7 +718,7 @@ const Apps = (props: any) => {
     const web = new Web(props.props.siteUrl);
     const regionalSettings = await web.regionalSettings.get(); console.log(regionalSettings);
     const query =
-      "RecurrenceData,Duration,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Designation,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color,Created,Modified,Approved";
+      "RecurrenceData,Duration,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Designation,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color,Created,Modified,Approved,Rejected";
     try {
       const results = await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
@@ -787,6 +789,7 @@ const Apps = (props: any) => {
           ApproveruserEmail = AllTaskUser.find((item: any) => item?.AssingedToUserId == userEmail?.ApproverId[0]);
 
           leaveapproved = queryevent?.Approved;
+          leaverejected = queryevent?.Rejected;
           handleDateClick(queryevent)
 
         }
@@ -982,6 +985,7 @@ const Apps = (props: any) => {
     ApproveruserEmail = AllTaskUser.find((item: any) => item?.AssingedToUserId == userEmail?.ApproverId[0]);
 
     leaveapproved = queryevent?.Approved;
+    leaverejected = queryevent?.Rejected;
     console.log(event);
     setInputValueName(event?.Title);
     setshowRecurrence(false);
@@ -1246,6 +1250,7 @@ const Apps = (props: any) => {
         HalfDayTwo: editedEvent.HalfDayTwo,
         Color: mycolors,
         Approved: leaveapproved,
+        Rejected:leaverejected,
         RecurrenceData: editedEvent.RecurrenceData ? await deCodeHtmlEntities(editedEvent.RecurrenceData) : "",
         MasterSeriesItemID: editedEvent.MasterSeriesItemID,
         RecurrenceID: editedEvent.RecurrenceID ? editedEvent.RecurrenceID : undefined
@@ -1595,84 +1600,95 @@ const Apps = (props: any) => {
   };
   const updateElement = async () => {
     if (editRecurrenceEvent) {
-      await saveRecurrenceEvent();
-      void getEvents();
-      closem(undefined);
-      setIsFirstHalfDChecked(false);
-      setisSecondtHalfDChecked(false);
-      setIsChecked(false);
-      setSelectedTime(selectedTime);
-      setSelectedTimeEnd(selectedTimeEnd);
-      return;
+        await saveRecurrenceEvent();
+        void getEvents();
+        closem(undefined);
+        setIsFirstHalfDChecked(false);
+        setisSecondtHalfDChecked(false);
+        setIsChecked(false);
+        setSelectedTime(selectedTime);
+        setSelectedTimeEnd(selectedTimeEnd);
+        return;
     }
-    const updateTitle = (inputValueName: any, type: any, leaveApproveded: any) => {
-      const leaveTypes = [
-        "Un-Planned",
-        "Sick",
-        "Planned Leave",
-        "Restricted Holiday",
-        "Work From Home",
-        "Half Day",
-        "fulldayevent",
-        "LWP"
-      ];
 
-      const regex = new RegExp(leaveTypes.join("|"), "g");
-      const updatedTitle = inputValueName.replace(regex, type);
+    const updateTitle = (inputValueName:any, type:any, leaveApproveded:any, leaverejected:any) => {
+        const leaveTypes = [
+            "Un-Planned",
+            "Sick",
+            "Planned Leave",
+            "Restricted Holiday",
+            "Work From Home",
+            "Half Day",
+            "fulldayevent",
+            "LWP"
+        ];
 
-      return leaveApproveded ? `${updatedTitle} Approved` : updatedTitle;
+        const regex = new RegExp(leaveTypes.join("|"), "g");
+        let updatedTitle = inputValueName.replace(regex, type);
+
+        if (leaveApproveded) {
+            updatedTitle += " Approved";
+        } else if (leaverejected) {
+            updatedTitle += " Rejected";
+        }
+
+        return updatedTitle;
     };
+
     const web = new Web(props.props.siteUrl);
     const newEvent = {
-      title: updateTitle(inputValueName, type, leaveapproved),
-      name: peopleName,
-      start: startDate,
-      end: endDate,
-      reason: inputValueReason,
-      type: type,
-      Designation: dType,
-      loc: location,
-      halfdayevent: isFirstHalfDChecked,
-      halfdayeventT: isSecondtHalfDChecked,
-      fulldayevent: isChecked
+        title: updateTitle(inputValueName, type, leaveapproved, leaverejected),
+        name: peopleName,
+        start: startDate,
+        end: endDate,
+        reason: inputValueReason,
+        type: type,
+        Designation: dType,
+        loc: location,
+        halfdayevent: isFirstHalfDChecked,
+        halfdayeventT: isSecondtHalfDChecked,
+        fulldayevent: isChecked
     };
 
     if (selectedTime === undefined || selectedTimeEnd === undefined || newEvent.loc === undefined) {
-      const date = moment(startDate).tz("Asia/Kolkata");
-      setSelectedTime(date.format());
-      const dateend = moment(endDate).tz("Asia/Kolkata");
-      setSelectedTimeEnd(dateend.format());
-      newEvent.loc = "";
+        const date = moment(startDate).tz("Asia/Kolkata");
+        setSelectedTime(date.format());
+        const dateend = moment(endDate).tz("Asia/Kolkata");
+        setSelectedTimeEnd(dateend.format());
+        newEvent.loc = "";
     }
 
-    const mycolors = (newEvent.halfdayevent || newEvent.halfdayeventT) ? "#6d36c5" :
-      (newEvent.type === "Work From Home") ? "#e0a209" :
+    const mycolors = leaverejected ? "#fe2e2e" :
+        (newEvent.halfdayevent || newEvent.halfdayeventT) ? "#6d36c5" :
+        (newEvent.type === "Work From Home") ? "#e0a209" :
         ((newEvent.type === "Company Holiday") || (newEvent.type === "National Holiday")) ? "#228B22" :
-          (leaveapproved && newEvent.type !== "Work From Home" && !newEvent.halfdayevent && !newEvent.halfdayeventT) ? "#178c1f" : "";
+        (leaveapproved && newEvent.type !== "Work From Home" && !newEvent.halfdayevent && !newEvent.halfdayeventT) ? "#178c1f" : "#fe2e2e";
 
     await web.lists.getById(props.props.SmalsusLeaveCalendar)
-      .items.getById(eventPass.Id)
-      .update({
-        Title: newEvent.title,
-        Location: newEvent.loc,
-        Event_x002d_Type: newEvent.type,
-        Description: newEvent.reason,
-        Designation: newEvent.Designation,
-        EndDate: ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) + " " + (selectedTimeEnd + "" + ":00"),
-        EventDate: ConvertLocalTOServerDateToSave(startDate, selectedTime) + " " + (selectedTime + "" + ":00"),
-        HalfDay: newEvent.halfdayevent,
-        HalfDayTwo: newEvent.halfdayeventT,
-        Approved: leaveapproved,
-        Color: mycolors,
-        fAllDayEvent: newEvent.fulldayevent
-      })
-      .then(() => {
-        void getEvents();
-        closem(undefined);
-        setSelectedTime(startTime);
-        setSelectedTimeEnd(endTime);
-      });
-  };
+        .items.getById(eventPass.Id)
+        .update({
+            Title: newEvent.title,
+            Location: newEvent.loc,
+            Event_x002d_Type: newEvent.type,
+            Description: newEvent.reason,
+            Designation: newEvent.Designation,
+            EndDate: ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) + " " + (selectedTimeEnd + "" + ":00"),
+            EventDate: ConvertLocalTOServerDateToSave(startDate, selectedTime) + " " + (selectedTime + "" + ":00"),
+            HalfDay: newEvent.halfdayevent,
+            HalfDayTwo: newEvent.halfdayeventT,
+            Approved: leaveapproved,
+            Rejected:leaverejected,
+            Color: mycolors,
+            fAllDayEvent: newEvent.fulldayevent
+        })
+        .then(() => {
+            void getEvents();
+            closem(undefined);
+            setSelectedTime(startTime);
+            setSelectedTimeEnd(endTime);
+        });
+};
+
 
   const emailComp = () => {
     const currentDate = new Date();
@@ -1842,7 +1858,8 @@ const Apps = (props: any) => {
         leaveapproved = true;
         updateElement(); // Assuming this function handles updating the UI or data
       } else if (type === "reject") {
-        deleteElement(queryevent?.Id); // Assuming this function handles deleting the leave request
+        leaverejected = true;
+        updateElement();
         console.log("Your leave is rejected");
       }
     } catch (error) {
@@ -1881,7 +1898,7 @@ const Apps = (props: any) => {
   const userId = props?.props?.context?.pageContext?.legacyPageContext?.userId;
   const isAllowedUser = allowedUserIds.indexOf(userId) !== -1;
 
-  const result = isAllowedUser && !disabl && !leaveapproved;
+  const result = isAllowedUser && !disabl && (!leaveapproved || !leaverejected);
 
   return (
 
@@ -2141,7 +2158,7 @@ const Apps = (props: any) => {
               <div className="row">
                 <div className="col">
                   <button type="button" className="btn btn-success me-2" onClick={handleApprove} disabled={isDisabled}>Approve</button>
-                  <button type="button" className="btn btn-danger" onClick={handleReject} disabled={isDisabled}>Reject </button>
+                  <button type="button" className="btn btn-danger" onClick={handleSubmitReject} disabled={isDisabled}>Reject </button>
                 </div>
               </div>
               {showTextarea && (
