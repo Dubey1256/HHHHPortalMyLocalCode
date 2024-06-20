@@ -817,9 +817,9 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 < button type="button" className="btn btn-primary" title='Compare' style={{ color: '#fff' }} onClick={() => openCompareTool()}>Compare</button> :
                 <button type="button" className="btn btn-primary" style={{ color: '#fff' }} disabled={true} >Compare</button>
             }
-            <label className="switch me-2" htmlFor="checkbox5">
+           <label className="switch me-2" htmlFor="checkbox5">
                 <input checked={IsSelectionsBelow} onChange={() => checkSelection1("SelectionsBelow")} type="checkbox" id="checkbox5" />
-                {IsSelectionsBelow === true ? <div className="slider round" title='Switch to Single Selection' ></div> : <div title='Switch to  Multi Selection' className="slider round"></div>}
+                {IsSelectionsBelow === true ? <div className="slider round" title={showProject ? 'Select Single Project':'Select Single Portfolio' } ></div> : <div title={showProject ? 'Select Multiple Project':'Select Multiple Portfolio' }className="slider round"></div>}
             </label>
         </>
     )

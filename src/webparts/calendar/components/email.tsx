@@ -38,10 +38,11 @@ const EmailComponenet = (props: any) => {
   const loadleave = () => {
     const web = new Web(props.Listdata.siteUrl);
     web.lists.getById(props.Listdata.SmalsusLeaveCalendar).items.select(
-      "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type"
+      "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type,Approved,Rejected"
     ).expand("Author,Editor,Employee").top(500).getAll()
       .then((results: any) => {
-        setleaveData(results);
+        const FilterRejectedData = results.filter((item:any)=> item.Rejected !== true)
+        setleaveData(FilterRejectedData);
       })
       .catch((err: any) => {
         console.log(err);

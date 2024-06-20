@@ -2601,6 +2601,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           </div>
                         }
                         {/*feedback comment section code */}
+                        
                         <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 p-0 mt-2"}>
                           {this.state.Result["TaskTypeTitle"] != null && (this.state.Result["TaskTypeTitle"] == '' ||
                             this.state.Result["TaskTypeTitle"] == 'Task' || this.state.Result["TaskTypeTitle"] == "Workstream" || this.state.Result["TaskTypeTitle"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
@@ -2979,6 +2980,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                     </div>
                   :
                     //============ New Design Templates Start ===========
+                    <div className='row'>
                   <div className="col-sm-12 p-0 mt-2">
                           {this.state.Result["TaskTypeTitle"] != null && (this.state.Result["TaskTypeTitle"] == '' ||
                             this.state.Result["TaskTypeTitle"] == 'Task' || this.state.Result["TaskTypeTitle"] == "Workstream" || this.state.Result["TaskTypeTitle"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
@@ -3344,7 +3346,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             }
 
                           })}
-                          <div className='mt-2'>
+                          <div className='mt-2 UXSlider bg-white p-2 rounded-1'>
 
                           <TabContext value={this?.state?.CurrentActiveTab}>
                           <TabList  onChange={this.handleChangeTab} aria-label="lab API tabs example">
@@ -3772,7 +3774,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             
                            
                           }
-                        </div>
+                        </div></div>
                     // =========New design templates End ============
                   }
                      
