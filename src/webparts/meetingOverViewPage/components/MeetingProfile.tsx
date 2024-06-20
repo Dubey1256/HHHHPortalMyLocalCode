@@ -23,7 +23,7 @@ import RelevantDocuments from '../../taskprofile/components/RelevantDocuments';
 import MeetingPopupComponent from '../../../globalComponents/MeetingPopup/MeetingPopup';
 import MettingTable from './MeetingFooterTable';
 import { map } from 'jquery';
-import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
+// import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
 var count = 0;
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
@@ -123,12 +123,15 @@ const MeetingProfile = (props: any) => {
             if (item.TaxType == "Sites") {
               if (item.Title != "DRR" && item.Title != "Master Tasks" && item.Title != "SDC Sites" && item.Configurations != null) {
                 AllsiteData.push(item)
+                getAllData(item).then((data: any) => {
+                  resolve(data)
+                });
                 let a: any = JSON.parse(item.Configurations);
                 a?.map((newitem: any) => {
                   dataLength.push(newitem);
-                  getAllData(newitem).then((data: any) => {
-                    resolve(data)
-                  });
+                  // getAllData(newitem).then((data: any) => {
+                  //   resolve(data)
+                  // });
                 });
 
               }
@@ -149,10 +152,10 @@ const MeetingProfile = (props: any) => {
   };
   const getAllData = async (site: any) => {
     return new Promise<void>((resolve, reject) => {
-      const web = new Web(site?.siteUrl);
+      const web = new Web(props.props?.siteUrl);
       web.lists
         .getById(site?.listId)
-        .items.select("Title", "PercentComplete", "Categories", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "Priority_x0020_Rank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
+        .items.select("Title", "PercentComplete", "Categories", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
         .expand("Team_x0020_Members", "Author", "Editor", "Responsible_x0020_Team", "AssignedTo")
         .top(5000)
         .getAll()
@@ -927,14 +930,14 @@ const MeetingProfile = (props: any) => {
                   onClick={() => setshowMeetingPopup(true)}
                 > <span className='alignIcon svg__iconbox svg__icon--edit'></span></a>
                 </span>
-                {resultData.Id != null && <span>< TagTaskToProjectPopup projectItem={resultData}
+                {/* {resultData.Id != null && <span>< TagTaskToProjectPopup projectItem={resultData}
                 className="ms-2"
                 meetingPages={true}
                 projectId={resultData.ID}
                 AllListId={AllListId}
                 callBack={tagAndCreateCallBack}
                 projectTitle={resultData.Title} 
-                masterTaskData={MasterListData}/> </span>}
+                masterTaskData={MasterListData}/> </span>} */}
                 
             </h2>
           </section>

@@ -18,7 +18,7 @@ const EditConfiguration = (props: any) => {
     if (DashboardId == undefined || DashboardId == '')
         DashboardId = 1;
     const ContextData: any = useContext(myContextValue);
-    let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": '', "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
+    let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": '', "IsDashboardFav": false, "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
     const [NewItem, setNewItem]: any = useState<any>([defaultConfig]);
     const [Items, setItems]: any = useState<any>([defaultConfig]);
     const [SmartFav, setSmartFav] = useState<any>([]);
@@ -119,7 +119,7 @@ const EditConfiguration = (props: any) => {
             const updatedItems = [...NewItem];
 
             // Extract the item being dragged
-            let draggedItemContent:any = ExistingWeparts[dragItem.Current];
+            let draggedItemContent: any = ExistingWeparts[dragItem.Current];
             draggedItemContent.WebpartTitle = draggedItemContent.Title;
             let obj: any = {};
             obj.Column = dragOverItem.Current;
@@ -127,8 +127,8 @@ const EditConfiguration = (props: any) => {
             draggedItemContent.WebpartPosition = obj;
             // Remove the dragged item from its original position
             if (draggedItemContent?.Configurations != undefined) {
-              let  draggedItemContent123:any= JSON.parse(draggedItemContent?.Configurations);
-              draggedItemContent =_.cloneDeep(draggedItemContent123);
+                let draggedItemContent123: any = JSON.parse(draggedItemContent?.Configurations);
+                draggedItemContent = _.cloneDeep(draggedItemContent123);
             }
             ExistingWeparts.splice(index, 1);
             setExistingWeparts(ExistingWeparts);
@@ -162,7 +162,7 @@ const EditConfiguration = (props: any) => {
         let SmartFavData: any = []
 
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-        web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'Smartfavorites'").getAll().then((data: any) => {
+        web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'Smartfavorites' or Key eq 'WebPartGallarySmartfavorites'").getAll().then((data: any) => {
             data.forEach((config: any) => {
                 config.configurationData = JSON.parse(config?.Configurations);
                 config?.configurationData?.forEach((elem: any) => {

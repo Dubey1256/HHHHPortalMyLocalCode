@@ -46,7 +46,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
             console.log(err);
         })
     }
-    const CloseConfigPopup = (IsLoad: any) => {
+    const CloseConfigPopup = (IsLoad: any, Type: any) => {
         setEditItem(undefined)
         setIsOpenPopup(false);
         if (IsLoad === true)
@@ -54,7 +54,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
 
     }
     const EditTemplate = (item: any) => {
-        setEditItem(item)
+        setEditItem(item);
         setIsOpenPopup(true);
     }
     const OpenAddTemplatePopup = () => {
@@ -191,7 +191,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
     }, []);
     return (
         <>
-            <h3 className="heading mb-3">Manage Webpart Template
+            <h3 className="heading mb-3">Manage Webpart Gallery
             </h3>
             <div className='TableSection'>
                 <div className="Alltable">
