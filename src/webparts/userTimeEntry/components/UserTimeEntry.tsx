@@ -1838,7 +1838,7 @@ export default class UserTimeEntry extends React.Component<
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(25, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(29, "days").format();
       var b = new Date(change);
       formattedDate = b;
     } else if (startDateOf == "Last Week") {

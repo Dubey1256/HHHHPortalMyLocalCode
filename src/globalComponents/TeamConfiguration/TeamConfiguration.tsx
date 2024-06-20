@@ -206,7 +206,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         let pickUpMonth=new Date(date);
 
   if(date!=""&& previousMonth.getMonth()== pickUpMonth.getMonth()){
-    let pickupDateValue = moment(date);
+    let pickupDateValue:any = moment(date);
         pickupDateValue._d.setHours(0, 0, 0, 0)
         let dateValue: any = {}
         let workingDaysValue = this.state.datesInfo

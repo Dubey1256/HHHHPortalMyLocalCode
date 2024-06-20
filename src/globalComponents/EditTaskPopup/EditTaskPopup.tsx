@@ -42,7 +42,6 @@ import CentralizedSiteComposition from "../SiteCompositionComponents/Centralized
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
 import SmartPriorityHover from "./SmartPriorityHover";
 import TaskDetailsComponent from "./DesignTaskTemplate";
-import ReactPopperTooltipSingleLevel from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -74,7 +73,6 @@ var listName = "";
 var isApprovalByStatus = false;
 let ApprovalStatusGlobal: any = false;
 let SiteCompositionPrecentageValue: any = 0;
-let allDataSites:any;
 
 // var TaskCreatorApproverBackupArray: any = [];
 var ReplaceImageIndex: any;
@@ -96,8 +94,8 @@ let categoryTitle: any = "";
 let onHoldCategory: any = [];
 let globalSelectedProject: any = { PriorityRank: 1 };
 let oldWorkingAction: any = []
-let linkedportfoliopop:any;
-let portfoliopop:any;
+let linkedportfoliopop: any;
+let portfoliopop: any;
 const EditTaskPopup = (Items: any) => {
     const Context = Items?.context;
     const AllListIdData = Items?.AllListId;
@@ -105,8 +103,7 @@ const EditTaskPopup = (Items: any) => {
     // Items.Items.Id = Items?.Items?.ID;
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
-        allDataSites=Items?.allSitesItems
-        let SiteWebConfigData: any = [];
+    let SiteWebConfigData: any = [];
     const [usersAssignedIDs, setusersAssignedIDs] = useState([])
     const [workingToday, setWorkingToday] = useState(false);
     const [TaskImages, setTaskImages] = useState([]);
@@ -821,7 +818,7 @@ const EditTaskPopup = (Items: any) => {
                     )
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
-                    .expand("Project, Approver, ClientCategory")
+                    .expand("Project, Approver, ClientCategory,SmartInformation")
                     .get();
                 if (extraLookupColumnData.length > 0) {
                     let Data: any;
@@ -1386,12 +1383,12 @@ const EditTaskPopup = (Items: any) => {
     //  ******************************* this is Service And Component Portfolio Popup Related All function and CallBack *******************
     const OpenTeamPortfolioPopupFunction = (item: any, usedFor: any) => {
         if (usedFor == "Portfolio") {
-            portfoliopop=true,
-            setOpenTeamPortfolioPopup(true);
+            portfoliopop = true,
+                setOpenTeamPortfolioPopup(true);
         }
         if (usedFor == "Linked-Portfolios") {
-            linkedportfoliopop=true,
-            setopenLinkedPortfolioPopup(true);
+            linkedportfoliopop = true,
+                setopenLinkedPortfolioPopup(true);
         }
     };
     const EditComponentPicker = (item: any, usedFor: any) => {
@@ -1497,7 +1494,7 @@ const EditTaskPopup = (Items: any) => {
                 if (portfoliopop) {
                     setTaggedPortfolioData(DataItem);
                     setOpenTeamPortfolioPopup(false);
-                    portfoliopop=false
+                    portfoliopop = false
                 }
                 // Check if the linked portfolio popup is open
                 else if (linkedportfoliopop) {
@@ -1505,11 +1502,11 @@ const EditTaskPopup = (Items: any) => {
                     LinkedPortfolioDataBackup = DataItem;
                     setopenLinkedPortfolioPopup(false);
                     linkedportfoliopop = false
-                }else{
+                } else {
                     setOpenTeamPortfolioPopup(false);
                     setopenLinkedPortfolioPopup(false);
                 }
-            }else {
+            } else {
                 if (DataItem != undefined && DataItem.length > 0) {
                     if (DataItem[0]?.Item_x0020_Type !== "Project" || DataItem[0]?.Item_x0020_Type !== "Sprint") {
                         if (DataItem[0].ClientCategory?.length > 0) {
@@ -4525,7 +4522,13 @@ const EditTaskPopup = (Items: any) => {
             })
         }
         let UpdatedJSON = {
-            Comments: EditData.Comments,
+            EstimatedTimeDescription: FunctionsType == 'Copy-Task' ? null : EditData.EstimatedTimeDescription,
+            Comments: FunctionsType == 'Copy-Task' ? null : EditData.Comments,
+            DueDate: FunctionsType == 'Copy-Task' ? null : Moment(EditData.DueDate).format("MM-DD-YYYY"),
+            StartDate: FunctionsType == 'Copy-Task' ? null : Moment(EditData.StartDate).format("MM-DD-YYYY"),
+            Status: FunctionsType == 'Copy-Task' ? null : EditData.Status,
+            PercentComplete: FunctionsType == 'Move-Task' ? (EditData.PercentComplete / 100) : 0,
+            TotalTime: FunctionsType == 'Copy-Task' ? 0 : EditData?.TotalTime,
             SmartInformationId: {
                 results:
                     TempSmartInformationIds != undefined &&
@@ -4557,9 +4560,6 @@ const EditTaskPopup = (Items: any) => {
 
                         if (FunctionsType == "Copy-Task") {
                             setLoaded(true)
-                            if (timesheetData != undefined && timesheetData.length > 0) {
-                                await moveTimeSheet(SelectedSite, res.data, 'copy');
-                            }
                             newGeneratedId = res.data.Id;
                             console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
                             let url = `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${newGeneratedId}&Site=${SelectedSite}`;
@@ -5284,10 +5284,11 @@ const EditTaskPopup = (Items: any) => {
                 >
                     <img className="imgWid29 pe-1" src={Items.Items.SiteIcon} />
                     <span className="siteColor">
-                    {EditData.TaskId != undefined || EditData.TaskId != null?
-                        <ReactPopperTooltipSingleLevel CMSToolId={EditData.TaskId} AllListId={AllListIdData} row={EditData} singleLevel={true} masterTaskData={GlobalServiceAndComponentData} AllSitesTaskData={allDataSites} />:''}
-                        {`   ${EditData.Title != undefined || EditData.Title != null
-                                ?`${"  "} ${EditData.Title}`
+                        {`${EditData.TaskId != undefined || EditData.TaskId != null
+                            ? EditData.TaskId
+                            : ""
+                            } ${EditData.Title != undefined || EditData.Title != null
+                                ? EditData.Title
                                 : ""
                             }`}
                     </span>
