@@ -84,6 +84,7 @@ const inlineEditingcolumns = (props: any) => {
   const [comments, setComments] = useState([])
   const [onHoldPanel, setOnHoldPanel] = useState(false)
   const [DesignStatus, setDesignStatus] = useState(false);
+  const [workingAction, setWorkingAction] = useState([])
   const StatusArray = [
     { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
     { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -411,12 +412,21 @@ const inlineEditingcolumns = (props: any) => {
       });
       if (instantCat != null && instantCat != undefined) {
         instantCat?.forEach((instCat: any) => {
-          props?.item?.TaskCategories?.forEach((cat: any) => {
-            if (instCat.Id === cat.Id) {
-              instCat.ActiveTile = true
-            }
-          })
-        })
+          if (props?.item?.TaskCategories.length > 0){
+            props?.item?.TaskCategories?.forEach((cat: any) => {
+              if (instCat.Id === cat.Id) {
+                instCat.ActiveTile = true;
+              }
+            });
+          }
+          else if (props?.item?.TaskCategories?.results.length > 0) {
+            props?.item?.TaskCategories?.results.forEach((cat: any) => {
+              if (instCat.Id === cat.Id) {
+                instCat.ActiveTile = true;
+              }
+            });
+          }     
+        });
       }
       let uniqueArray: any = [];
       AutoCompleteItemsArray.map((currentObject: any) => {
@@ -579,6 +589,7 @@ const inlineEditingcolumns = (props: any) => {
         postData.AssignedToId = { results: AssignedToIds ?? [] };
         postData.ResponsibleTeamId = { results: ResponsibleTeamIds ?? [] };
         postData.TeamMembersId = { results: TeamMemberIds ?? [] };
+        postData.WorkingAction = JSON.stringify(workingAction)
         break;
 
       case 'Priority':
@@ -646,6 +657,7 @@ const inlineEditingcolumns = (props: any) => {
             }
             task.ResponsibleTeam = TaskResponsibleTeam;
             task.TeamMembers = TaskTeamMembers;
+            task.WorkingAction = JSON.stringify(workingAction)
             task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
             task.DisplayDueDate =
               task.DueDate != null
@@ -674,6 +686,7 @@ const inlineEditingcolumns = (props: any) => {
         setTaskPriorityPopup(false);
         setTeamMembersPopup(false);
         setTaskStatus("")
+        setWorkingAction([])
         clearEstimations();
         setRemark(false);
         closeTaskDueDate();
@@ -749,7 +762,7 @@ const inlineEditingcolumns = (props: any) => {
     }
     onHoldCategory = [];
   }, []);
-  const DDComponentCallBack = React.useCallback((dt: any) => {
+  const DDComponentCallBack = React.useCallback(async (dt: any) => {
     setTeamConfig(dt);
 
 
@@ -798,7 +811,33 @@ const inlineEditingcolumns = (props: any) => {
       ResponsibleTeamIds = []
       setTaskResponsibleTeam([])
     }
-  },[]);
+    if (dt?.dateInfo?.length > 0) {
+      let storeInWorkingAction: any = { "Title": "WorkingDetails", "InformationData": [] }
+      let userData: any = []
+      if (dt?.oldWorkingDaysInfo != undefined || dt?.oldWorkingDaysInfo != null && dt?.oldWorkingDaysInfo?.length > 0) {
+        dt?.oldWorkingDaysInfo.map((oldJson: any) => {
+          userData?.push(oldJson)
+        })
+    }
+      let oldWorkingActionData = props?.item?.WorkingActionParsed ? [...props.item.WorkingActionParsed] : [];
+      
+      dt.dateInfo.forEach((date: any) => {
+        let dataAccordingDays: any = {}
+        if (date.userInformation.length > 0) {
+          dataAccordingDays.WorkingDate = date?.originalDate
+          dataAccordingDays.WorkingMember = [];
+            date.userInformation.map((user: any) => {
+              dataAccordingDays.WorkingMember.push({ Id: user?.AssingedToUserId, Title: user.Title })
+            });                       
+            userData?.push(dataAccordingDays)
+        }
+    });
+    storeInWorkingAction.InformationData = [...userData]
+    oldWorkingActionData = oldWorkingActionData.filter((item: any) => item.Title != "WorkingDetails")
+    
+    setWorkingAction([...oldWorkingActionData, storeInWorkingAction]);
+    }
+  }, []);
 
   const EditComponentPicker = (item: any) => {
     setIsComponentPicker(true);
