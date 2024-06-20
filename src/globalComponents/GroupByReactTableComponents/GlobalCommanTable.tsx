@@ -16,7 +16,7 @@ import {
     Row
 } from "@tanstack/react-table";
 import { useVirtualizer, notUndefined } from "@tanstack/react-virtual";
-import { exportmeExcel } from "excel-ent";
+//import { exportmeExcel } from "excel-ent";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaPlus, FaMinus, FaListAlt } from 'react-icons/fa';
 import { HTMLProps } from 'react';
@@ -1035,44 +1035,44 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 widthArray.push(columnWidth)
             })
 
-            exportmeExcel({
-                data: flattenedData,
-                fileName: `${FileSaveName} excel`,
-                exportAs: {
-                    type: "download",
-                },
-                options: {
-                    columnWidths: widthArray,
-                    globalRowHeight: 25,
-                    headerStyle: {
-                        fill: {
-                            fgColor: {
-                                rgb: headerColur,
-                            },
-                        },
-                        font: {
-                            bold: true,
-                            color: {
-                                rgb: "ffffff",
-                            },
-                        },
-                        alignment: {
-                            vertical: "center",
-                            horizontal: "center",
-                        },
+            // exportmeExcel({
+            //     data: flattenedData,
+            //     fileName: `${FileSaveName} excel`,
+            //     exportAs: {
+            //         type: "download",
+            //     },
+            //     options: {
+            //         columnWidths: widthArray,
+            //         globalRowHeight: 25,
+            //         headerStyle: {
+            //             fill: {
+            //                 fgColor: {
+            //                     rgb: headerColur,
+            //                 },
+            //             },
+            //             font: {
+            //                 bold: true,
+            //                 color: {
+            //                     rgb: "ffffff",
+            //                 },
+            //             },
+            //             alignment: {
+            //                 vertical: "center",
+            //                 horizontal: "center",
+            //             },
 
-                    },
-                    bodyStyle: {
+            //         },
+            //         bodyStyle: {
 
-                        alignment: {
-                            vertical: "center",
-                            horizontal: "center",
-                        },
+            //             alignment: {
+            //                 vertical: "center",
+            //                 horizontal: "center",
+            //             },
 
-                    },
+            //         },
 
-                },
-            })
+            //     },
+            // })
             setExportColumnOpen(false)
         } else {
             setExportColumnOpen(false)

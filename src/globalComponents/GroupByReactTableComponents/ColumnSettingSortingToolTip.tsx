@@ -34,7 +34,7 @@ const columnSettingSortingToolTip = (item: any) => {
                                         </div> */}
                                         <div className='mt-1 mb-2'>
                                             <input type="checkbox" className='form-check-input me-1' id={`${item?.column.id}-none`} checked={item?.columnSorting[item?.column.id]?.asc} onChange={() => item?.handleSortClick(item?.column.id, item?.columnSorting[item?.column.id]?.asc ? null : { id: item?.column.id, asc: true, desc: false })} />
-                                            <label className="mx-1" htmlFor={`${item?.column.id}-none`}>Default Order</label>
+                                            <label className="mx-1" htmlFor={`${item?.column.id}-none`}>Defult Order</label>
                                         </div>
                                         <div>
                                             <label htmlFor={`${item?.column.id}-asc`} className='SpfxCheckRadio me-3'>
@@ -51,7 +51,7 @@ const columnSettingSortingToolTip = (item: any) => {
                                     <>
                                         <div className='mt-1 mb-2'>
                                             <input type="checkbox" className='form-check-input me-1' id={`${item?.column.id}-none`} checked={item?.columnSorting[item?.column.id]?.asc} onChange={() => item?.handleSortClick(item?.column.id, item?.columnSorting[item?.column.id]?.asc ? null : { id: item?.column.id, asc: true, desc: false })} />
-                                            <label htmlFor={`${item?.column.id}-none`}>Default Order</label>
+                                            <label htmlFor={`${item?.column.id}-none`}>Defult Order</label>
 
                                         </div>
                                         <div>
@@ -89,7 +89,7 @@ const columnSettingSortingToolTip = (item: any) => {
                                         </div> */}
                                         <div className='mt-1 mb-2'>
                                             <input type="checkbox" className='form-check-input me-1' id={`${item?.column.id}-none`} checked={item?.columnSorting[item?.column.id]?.asc} onChange={() => item?.handleSortClick(item?.column.id, item?.columnSorting[item?.column.id]?.asc ? null : { id: item?.column.id, asc: true, desc: false })} />
-                                            <label className="mx-1" htmlFor={`${item?.column.id}-none`}>Default Order</label>
+                                            <label className="mx-1" htmlFor={`${item?.column.id}-none`}>Defult Order</label>
                                         </div>
                                         <div>
                                             <label htmlFor={`${item?.column.id}-asc`} className='SpfxCheckRadio me-3'>
@@ -106,7 +106,7 @@ const columnSettingSortingToolTip = (item: any) => {
                                     <>
                                         <div className='mt-1 mb-2'>
                                             <input type="checkbox" className='form-check-input me-1' id={`${item?.column.id}-none`} checked={item?.columnSorting[item?.column.id]?.asc} onChange={() => item?.handleSortClick(item?.column.id, item?.columnSorting[item?.column.id]?.asc ? null : { id: item?.column.id, asc: true, desc: false })} />
-                                            <label className="mx-1" htmlFor={`${item?.column.id}-none`}>Default Order</label>
+                                            <label className="mx-1" htmlFor={`${item?.column.id}-none`}>Defult Order</label>
 
                                         </div>
                                         <div>
