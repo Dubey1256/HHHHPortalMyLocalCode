@@ -850,8 +850,12 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
     }
   }
   const EditDataTimeEntryData = (item: any) => {
+    let timeEntryValue=item
+    if(timeEntryValue.siteType!=undefined){
+      timeEntryValue.siteType=timeEntryValue.siteType.toLowerCase();
+    }
     setIsTimeEntryOpen(true);
-    setCurrentTimeEntry(item);
+    setCurrentTimeEntry(timeEntryValue);
   }
   const TimeEntryCallBack = () => {
     setIsTimeEntryOpen(false);
@@ -1681,7 +1685,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           cell: ({ row }) => (
             <div className="alignCenter">
               <span className={row.original.Title!= undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
-                <>{row.original.Title != undefined ?<a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596 ' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
+                <>{row.original.Title != undefined ?<a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596 ' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row?.original?.siteType?.toLowerCase()}`}>
               {row.original.Title}
               </a> : ''}</>
                 <span className="tooltip-text pop-right">

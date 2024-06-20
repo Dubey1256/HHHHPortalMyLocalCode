@@ -45,7 +45,7 @@ const TeamSmartFilter = (item: any) => {
     } catch (e) {
         console.log(e);
     }
-    const [changeInDatePicker,setChangeDatePicker]=React.useState(false)
+    const [changeInDatePicker, setChangeDatePicker] = React.useState(false)
     const [loadeAllData, setLoadeAllData] = React.useState(false)
     const [PreSetPanelIsOpen, setPreSetPanelIsOpen] = React.useState(false);
     const [TaskUsersData, setTaskUsersData] = React.useState([]);
@@ -148,7 +148,7 @@ const TeamSmartFilter = (item: any) => {
             year.push(i);
         }
         setYear(year);
-        
+
     }, [])
 
     React.useEffect(() => {
@@ -159,7 +159,7 @@ const TeamSmartFilter = (item: any) => {
                 ); // Set the desired color value here
             }
         }, 1000)
-    }, [PreSetPanelIsOpen, selectedFilterPanelIsOpenUpdate, selectedFilterPanelIsOpen,ProjectManagementPopup]);
+    }, [PreSetPanelIsOpen, selectedFilterPanelIsOpenUpdate, selectedFilterPanelIsOpen, ProjectManagementPopup]);
 
     ///// Year Range Using Piker end////////
 
@@ -203,7 +203,7 @@ const TeamSmartFilter = (item: any) => {
         }
     }
 
-     
+
     const GetSmartmetadata = async () => {
         let siteConfigSites: any = []
         let web = new Web(ContextValue?.siteUrl);
@@ -1664,10 +1664,10 @@ const TeamSmartFilter = (item: any) => {
                     setEndDate(new Date(storedDataEndDate));
                 }
                 break;
-                case  "custom":
-                if(changeInDatePicker!=true){
+            case "custom":
+                if (changeInDatePicker != true) {
                     setStartDate(null);
-                    setEndDate(null);     
+                    setEndDate(null);
                 }
                 break;
 
@@ -1677,37 +1677,39 @@ const TeamSmartFilter = (item: any) => {
                 break;
         }
     }, [selectedFilter]);
-   
-   
-    const selectingStartDate=(date:any)=>{
+
+
+    const selectingStartDate = (date: any) => {
         setStartDate(date)
         const currentDate: any = new Date();
-        if(currentDate.getDate()!=date.getDate() && currentDate.getDate()-1!=date.getDate()){
+        if (currentDate.getDate() != date.getDate() &&  endDate.getDate()!=date.getDate()) {
             setChangeDatePicker(true)
             setSelectedFilter("custom")
         }
-        else if(currentDate.getDate()==date.getDate() && endDate.getDate()==date.getDate()){       
+       else if (currentDate.getDate() == date.getDate() && endDate.getDate() == date.getDate()) {
             setSelectedFilter("today")
-    }
-    else if(currentDate.getDate()-1==date.getDate() && endDate.getDate()==date.getDate()){       
-        setSelectedFilter("yesterday")
-}
+        }
+        else if (currentDate.getDate() - 1 == date.getDate() && endDate.getDate() == date.getDate()) {
+            setSelectedFilter("yesterday")
+        }
+        
 
     }
 
-    const selectingEndDate=(date:any)=>{
+    const selectingEndDate = (date: any) => {
         setEndDate(date);
         const currentDate: any = new Date();
-        if(currentDate.getDate()!=date.getDate() && currentDate.getDate()-1!=date.getDate()){
+        if (currentDate.getDate() != date.getDate() &&  startDate.getDate()!=date.getDate()) {
             setChangeDatePicker(true)
             setSelectedFilter("custom")
         }
-        else if(currentDate.getDate()==date.getDate() && startDate.getDate()==date.getDate()){       
-                setSelectedFilter("today")
+        else if (currentDate.getDate() == date.getDate() && startDate.getDate() == date.getDate()) {
+            setSelectedFilter("today")
         }
-        else if(currentDate.getDate()-1==date.getDate() && startDate.getDate()==date.getDate()){       
+        else if (currentDate.getDate() - 1 == date.getDate() && startDate.getDate() == date.getDate()) {
             setSelectedFilter("yesterday")
-    }
+        }
+
     }
 
     const handleDateFilterChange = (event: any) => {
