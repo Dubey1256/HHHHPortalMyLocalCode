@@ -25,7 +25,7 @@ const AddConfiguration = (props: any) => {
     const [IsComponentPicker, setIsComponentPicker] = useState<any>(false);
     const [selectedSmartFav, setselectedSmartFav] = useState<any>(undefined);
     const [SiteTypes, setSiteTypes] = useState<any>([]);
-    let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": true, "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
+    let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": true, "IsDashboardFav": false, "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
     const [NewItem, setNewItem]: any = useState<any>([defaultConfig]);
     const [SmartFav, setSmartFav] = useState<any>([]);
     const [AllTaskUsers, setAllTaskUsers] = useState<any>([]);
@@ -48,7 +48,7 @@ const AddConfiguration = (props: any) => {
         if (props?.SingleWebpart != undefined && props?.SingleWebpart == true)
             setIsCheck(true);
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-        web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'Smartfavorites'").getAll().then((data: any) => {
+        web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'Smartfavorites' or Key eq 'WebPartGallarySmartfavorites'").getAll().then((data: any) => {
             data.forEach((config: any) => {
                 config.configurationData = JSON.parse(config?.Configurations);
                 config?.configurationData?.forEach((elem: any) => {
