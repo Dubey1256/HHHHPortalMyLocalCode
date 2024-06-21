@@ -22,6 +22,7 @@ import HighlightableCell from "../../../globalComponents/highlight";
 import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
 import { Panel } from '@fluentui/react';
 import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
+import AddEditWebpartTemplate from "../../../globalComponents/AddEditWebpartTemplate";
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -1608,7 +1609,7 @@ const TaskStatusTbl = (Tile: any) => {
     let currentRow: any = [];
     DashboardConfig.forEach((config: any, index: any) => {
       let smartFavTableConfig: any = [];
-      if (config?.configurationData != undefined && config?.configurationData?.length > 0 && config?.configurationData[0]?.smartFabBasedColumnsSetting != undefined && config?.configurationData[0]?.smartFabBasedColumnsSetting != '') {
+      if (config?.configurationData != undefined && config?.configurationData?.length > 0 && config?.configurationData[0]?.smartFabBasedColumnsSetting != undefined && config?.configurationData[0]?.smartFabBasedColumnsSetting != '' && Object.keys(config?.configurationData[0]?.smartFabBasedColumnsSetting).length !== 0) {
         config.configurationData[0].smartFabBasedColumnsSetting.tableId = "DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"
         smartFavTableConfig.push(config?.configurationData[0]?.smartFabBasedColumnsSetting)
       }
@@ -1765,11 +1766,11 @@ const TaskStatusTbl = (Tile: any) => {
                     <div className="Alltable" >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
                         <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
-                          pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ?config?.configurationData[0]?.showPageSizeSetting?.tablePageSize:''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ?config?.configurationData[0]?.showPageSizeSetting?.showPagination:''} />
+                          pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                       )}
                       {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
                         <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
-                          pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ?config?.configurationData[0]?.showPageSizeSetting?.tablePageSize:''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ?config?.configurationData[0]?.showPageSizeSetting?.showPagination:''} />
+                          pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                       )}
                     </div>
                   </>}
@@ -1824,7 +1825,9 @@ const TaskStatusTbl = (Tile: any) => {
         </span>
         <span>
           {/* {IsManageConfigPopup && <ManageConfigPopup DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} props={ContextData?.propsValue} SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />} */}
-          {IsManageConfigPopup && <AddConfiguration DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} props={ContextData?.propsValue} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}
+          {/* {IsManageConfigPopup && <AddConfiguration DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} props={ContextData?.propsValue} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />} */}
+
+          {IsManageConfigPopup && <AddEditWebpartTemplate props={ContextData?.propsValue} DashboardPage={true} DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}
         </span>
       </div>
       {
