@@ -1840,7 +1840,10 @@ const TeamSmartFilter = (item: any) => {
         if (preSetEndDate != undefined) {
             setEndDate(preSetEndDate);
         }
-        setSelectedFilter("Pre-set");
+        if(preSetStartDate!=undefined ||preSetEndDate != undefined ){
+            setSelectedFilter("Pre-set");
+        }
+       
         setPreSetPanelIsOpen(false)
     }, []);
     const handleSwitchToggle = () => {
@@ -2725,10 +2728,10 @@ const TeamSmartFilter = (item: any) => {
                                                                                         return (
                                                                                             <>
                                                                                                 {
-                                                                                                    user?.Item_x0020_Cover != undefined && user?.Item_x0020_Cover?.Url != undefined && user?.AssingedToUser != undefined ? <div key={user.Id} style={{ marginRight: "4px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "3px solid var(--SiteBlue)" : "3px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)}>
+                                                                                                    user?.Item_x0020_Cover != undefined && user?.Item_x0020_Cover?.Url != undefined && user?.AssingedToUser != undefined ? <div key={user.Id} style={{ marginRight: "2px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "3px solid var(--SiteBlue)" : "3px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)}>
                                                                                                         <img src={user?.Item_x0020_Cover?.Url} title={user.Title} alt={user.Title} style={{ width: "24px", height: "24px", borderRadius: "50%" }} />
                                                                                                     </div> :
-                                                                                                        <div key={user.Id} style={{ marginRight: "4px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "3px solid var(--SiteBlue)" : "3px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)} >
+                                                                                                        <div key={user.Id} style={{ marginRight: "2px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "3px solid var(--SiteBlue)" : "3px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)} >
                                                                                                             <span title={user.Title} className='suffix_Usericon showSuffixIcon'>{user.Suffix}</span>
                                                                                                         </div>
                                                                                                 }
