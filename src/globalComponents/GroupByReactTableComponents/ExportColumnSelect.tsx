@@ -57,7 +57,7 @@ const ExportColumnSelect = (props: any) => {
 
     return (
         <Panel className="overflow-x-visible"
-            type={PanelType.custom}
+            type={PanelType.custom} 
             customWidth="276px"
             isOpen={props?.isOpen}
             onDismiss={handleClosePopup}
