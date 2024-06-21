@@ -583,7 +583,7 @@ const RestructuringCom = (props: any, ref: any) => {
                     if ((obj.TaskType?.Id == 1 || obj.TaskType?.Id == 3) && obj?.siteType !== items?.siteType) {
                       obj.isRestructureActive = false;
                     }
-                    if (items?.TaskType?.Id == 3 && obj?.TaskType?.Id == 3) {
+                    if (items?.TaskType?.Id == 3 && obj?.TaskType?.Id == 3 && items?.subRows?.length > 0) {
                       obj.isRestructureActive = false;
                     }
                     if (items?.TaskType?.Id == 1 && obj?.TaskType?.Id == 3 && obj?.TaskType?.Id == 1) {
@@ -617,7 +617,7 @@ const RestructuringCom = (props: any, ref: any) => {
                       if ((sub.TaskType?.Id == 1 || sub.TaskType?.Id == 3) &&sub?.siteType !== items?.siteType) {
                         sub.isRestructureActive = false;
                       }
-                      if (items?.TaskType?.Id == 3 && sub?.TaskType?.Id == 3) {
+                      if (items?.TaskType?.Id == 3 && sub?.TaskType?.Id == 3 && items?.subRows?.length > 0) {
                         sub.isRestructureActive = false;
                       }
                       if (items?.TaskType?.Id == 1 &&sub?.TaskType?.Id == 3 &&sub?.TaskType?.Id == 1) {
@@ -654,7 +654,7 @@ const RestructuringCom = (props: any, ref: any) => {
                           if ( (feature.TaskType?.Id == 1 ||   feature.TaskType?.Id == 3) && feature?.siteType !== items?.siteType) {
                             feature.isRestructureActive = false;
                           }
-                          if (items?.TaskType?.Id == 3 &&feature?.TaskType?.Id == 3) {
+                          if (items?.TaskType?.Id == 3 &&feature?.TaskType?.Id == 3 && items?.subRows?.length > 0) {
                             feature.isRestructureActive = false;
                           }
                           if (items?.TaskType?.Id == 1 && feature?.TaskType?.Id == 3 && feature?.TaskType?.Id == 1) {
@@ -699,7 +699,7 @@ const RestructuringCom = (props: any, ref: any) => {
                               if ((activity.TaskType?.Id == 1 ||  activity.TaskType?.Id == 3) &&activity?.siteType !== items?.siteType) {
                                 activity.isRestructureActive = false;
                               }
-                              if (items?.TaskType?.Id == 3 &&activity?.TaskType?.Id == 3) {
+                              if (items?.TaskType?.Id == 3 && activity?.TaskType?.Id == 3 && items?.subRows?.length > 0) {
                                 activity.isRestructureActive = false;
                               }
                             } else {
@@ -739,7 +739,7 @@ const RestructuringCom = (props: any, ref: any) => {
                                   if ((wrkstrm.TaskType?.Id == 1 ||  wrkstrm.TaskType?.Id == 3) &&wrkstrm?.siteType !== items?.siteType) {
                                     wrkstrm.isRestructureActive = false;
                                   }
-                                  if (items?.TaskType?.Id == 3 &&wrkstrm?.TaskType?.Id == 3) {
+                                  if (items?.TaskType?.Id == 3 && wrkstrm?.TaskType?.Id == 3 && items?.subRows?.length > 0) {
                                     wrkstrm.isRestructureActive = false;
                                   }
                                 } else {
@@ -2003,8 +2003,10 @@ const RestructuringCom = (props: any, ref: any) => {
                     newChildarray?.push(newObj.newSubChild);
                     setRestructureChecked(newChildarray);
                     ArrayTest?.push(newObj);
-                    obj.isRestructureActive = false;
-                    sub.isRestructureActive = false;
+                    if(items?.subRows?.length > 0){
+                      obj.isRestructureActive = false;
+                    }
+                   sub.isRestructureActive = false;
                   }
                   if ((sub.TaskType?.Id == 1 || sub.TaskType?.Id == 3) && sub?.siteType !== items?.siteType) {
                     sub.isRestructureActive = false;
@@ -2056,8 +2058,11 @@ const RestructuringCom = (props: any, ref: any) => {
                         newChildarray?.push(newObj.newSubChild.newFeatChild);
                         setRestructureChecked(newChildarray);
                         ArrayTest?.push(newObj);
+                        if(items?.subRows?.length > 0){
+                          sub.isRestructureActive = false;
+                        }
                         feature.isRestructureActive = false;
-                        sub.isRestructureActive = false;
+                     
                       }
                       if ((feature.TaskType?.Id == 1 ||   feature.TaskType?.Id == 3) && feature?.siteType !== items?.siteType) {
                         feature.isRestructureActive = false;
@@ -2109,7 +2114,10 @@ const RestructuringCom = (props: any, ref: any) => {
                             setRestructureChecked(newChildarray);
                             ArrayTest?.push(newObj);
                             activity.isRestructureActive = false;
-                            feature.isRestructureActive = false;
+                            if(items?.subRows?.length > 0){
+                              feature.isRestructureActive = false;
+                            }
+                           
                           }
                           if ((activity.TaskType?.Id == 1 ||  activity.TaskType?.Id == 3) &&activity?.siteType !== items?.siteType) {
                             activity.isRestructureActive = false;
@@ -4429,7 +4437,7 @@ const RestructuringCom = (props: any, ref: any) => {
   const onRenderCustomCalculateS1C = () => {
     return (
       <>
-        <div className="subheading siteColor" style={{color:restructureItem[0]?.PortfolioType?.Color}}>Restucturing Tool -
+        <div className="subheading" style={{color:restructureItem[0]?.PortfolioType?.Color}}>Restucturing Tool -
         
           <>
            {restructureTitle?.map((items: any) => (
@@ -4527,9 +4535,9 @@ const RestructuringCom = (props: any, ref: any) => {
   };
 
   const onRenderCustomCalculateSCmulti = () => {
-    return (
+   return (
       <>
-        <div className="subheading siteColor" style={{color:restructureItem[0]?.PortfolioType?.Color}}>Restucturing Tool</div>
+        <div className="subheading" style={{color:restructureItem[0]?.PortfolioType?.Color}}>Restucturing Tool</div>
         <div>
           <Tooltip ComponentId="454" />
         </div>
@@ -4644,12 +4652,15 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
         let TaskLevel: number = 0;
         let Level: number = 0;
         let taskType :any = null;
+        if(newItemBackUp?.TaskType?.Id == 1 &&  RestructureChecked[0]?.TaskType?.Id == 1){
+          RestructureChecked[0].TaskType.Id = 3;
+        }
         if ( newItemBackUp?.subRows != undefined && newItemBackUp?.subRows?.length > 0 && RestructureChecked[0]?.TaskType?.Id == 3) {
           newItemBackUp?.subRows?.map((sub: any) => {
             if (RestructureChecked[0]?.TaskType?.Id === sub?.TaskType?.Id) {
               if (TaskLevel <= sub.TaskLevel) {
                 TaskLevel = sub.TaskLevel;
-                Level = sub.TaskLevel;
+                Level = sub.TaskLevel; 
               }
             }
           });
@@ -4667,6 +4678,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             TaskId = newItemBackUp?.TaskID + "-" + "T" + items?.Id;
             taskType = 2;
           }
+       
           if (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3) {
             ParentTask_Portfolio = {  Id: newItemBackUp?.Portfolio?.Id,  ItemType: newItemBackUp?.Portfolio?.ItemType,  PortfolioStructureID:    newItemBackUp?.Portfolio?.PortfolioStructureID,  Title: newItemBackUp?.Portfolio?.Title,},
               ParentTask_ID = {Id: newItemBackUp?.Id,Title: newItemBackUp?.Title,TaskID: newItemBackUp?.TaskID,};
@@ -5379,7 +5391,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                 </span>
               </div>
             ) : (
-              " "
+              ""
             )}
 
             <footer className="mt-2 text-end">
@@ -5404,7 +5416,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
               <button
               style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
                 type="button"
-                className="btn btn-default ms-1"
+                className="btn btn-primary"
                 onClick={closePanel}
               >
                 Cancel
@@ -6693,7 +6705,8 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             </div>
             </div>
         <footer className="mt-4 text-end">
-          <button style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}  className="me-2 btn btn-primary" onClick={projectMngmntFuc}>
+          <button style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}  
+          className="me-2 btn btn-primary" onClick={projectMngmntFuc}>
             Save
           </button>
           <button
@@ -6707,7 +6720,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
         </Panel>
       }
 
-
+ 
        {trueTopCompo == true ? (
         <span>
           <Panel
@@ -6719,11 +6732,12 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             <div className="mt-2">
               After restructuring selected item becomes {query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 2 ? 'Activity' : (query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 1 ? 'Task' : (query4TopIcon == "" && restructureItem[0]?.TaskType?.Id == 3 ? 'Activity' : query4TopIcon ) ) }
               <footer className="mt-4 text-end">
-                <button style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}} className="me-2 btn btn-primary" onClick={makeTopComp}>
+                <button style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}} 
+                className="me-2 btn btn-primary" onClick={makeTopComp}>
                   Save
                 </button>
                 <button
-                style={{color:restructureItem[0]?.PortfolioType?.Color}}
+                  style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color}}
                   className="btn me-2 btn-default ms-1"
                   onClick={closePanel}
                 >
