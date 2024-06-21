@@ -39,7 +39,7 @@ const ClientCategoryPopup = (Props: any) => {
             AllClientCategoriesFlatData = await web.lists
                 .getById(SmartMetaDataListId)
                 .items
-                .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail")
+                .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,IsVisible,Created,Modified,Description,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail")
                 .expand('Author,Editor,IsSendAttentionEmail')
                 .getAll();
             if (AllClientCategoriesFlatData?.length > 0) {
@@ -143,7 +143,7 @@ const ClientCategoryPopup = (Props: any) => {
         data.forEach((item) => {
             if (
                 item.newLabel?.toLowerCase().includes(searchedKey.toLowerCase()) ||
-                item.Description1?.toLowerCase().includes(searchedKey.toLowerCase())
+                item.Description?.toLowerCase().includes(searchedKey.toLowerCase())
             ) {
                 tempArray.push(item);
             }
@@ -303,11 +303,11 @@ const ClientCategoryPopup = (Props: any) => {
                                                     >
                                                         <a>
                                                             {item.Title}
-                                                            {item.Description1 ?
+                                                            {item.Description ?
                                                                 <span className="hover-text alignIcon">
                                                                     <span className="svg__iconbox svg__icon--info dark"></span>
                                                                     <span className="tooltip-text pop-right">
-                                                                        {item.Description1}
+                                                                        {item.Description}
                                                                     </span>
                                                                 </span> : null}
                                                         </a>
@@ -330,10 +330,10 @@ const ClientCategoryPopup = (Props: any) => {
                                                                                         /> :
                                                                                         null}
                                                                                     {child1.Title}
-                                                                                    {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                    {child1.Description ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
                                                                                         <div className="popover__content">
-                                                                                            <span>{child1.Description1}</span>
+                                                                                            <span>{child1.Description}</span>
                                                                                         </div>
                                                                                     </div> : null}
                                                                                 </a>
@@ -356,10 +356,10 @@ const ClientCategoryPopup = (Props: any) => {
                                                                                                                 /> :
                                                                                                                 null}
                                                                                                             {child2.Title}
-                                                                                                            {child2.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                                            {child2.Description ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
                                                                                                                 <div className="popover__content">
-                                                                                                                    <span>{child2.Description1}</span>
+                                                                                                                    <span>{child2.Description}</span>
                                                                                                                 </div>
                                                                                                             </div> : null}
                                                                                                         </a>
