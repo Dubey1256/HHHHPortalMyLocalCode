@@ -14,6 +14,7 @@ import { IComponentPermissionMgmtProps } from './components/IComponentPermission
 
 export interface IComponentPermissionMgmtWebPartProps {
   description: string;
+  TaskUserListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
 }
 
 export default class ComponentPermissionMgmtWebPart extends BaseClientSideWebPart<IComponentPermissionMgmtWebPartProps> {
@@ -30,7 +31,9 @@ export default class ComponentPermissionMgmtWebPart extends BaseClientSideWebPar
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        context: this.context
+        context: this.context,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        TaskUserListID: this.properties.TaskUserListID
       }
     );
 
@@ -98,6 +101,9 @@ export default class ComponentPermissionMgmtWebPart extends BaseClientSideWebPar
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('TaskUserListID', {
+                  label: "TaskUserListID"
                 })
               ]
             }
