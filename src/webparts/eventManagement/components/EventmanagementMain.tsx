@@ -25,12 +25,14 @@ const EventManagementmain = (props: any) => {
     const [AllFoldersGrouped, setAllFoldersGrouped]: any = React.useState([]);
     const [ImageFolderItem, setImageFolderItem]: any = React.useState([])
     const [itemcreated, setitemcreated] = React.useState(false);
+    const [foldercreated, setfoldercreated] = React.useState(false);
+    const [imagefoldercreated, setimagefoldercreated] = React.useState(false);
     const [ShortTitle, setShortTitle] = React.useState('');
     const [PageTitle, setPageTitle] = React.useState('');
     const [setfolderurl, folderurl] = React.useState('');
     const [itemRank, setitemRank] = React.useState('');
     const [CreateFolderLocation, showCreateFolderLocation] = React.useState(false);
-    const [choosePathPopup,setChoosePathPopup] = React.useState(false)
+    const [choosePathPopup, setChoosePathPopup] = React.useState(false)
     const [openpopup, setopenpopup] = React.useState(false);
     const [currentFolderFiles, setCurrentFolderFiles]: any = React.useState([]);
     const [Item, setItem]: any = React.useState({});
@@ -53,11 +55,11 @@ const EventManagementmain = (props: any) => {
         { rankTitle: '(1) Archive', rank: 1 },
         { rankTitle: '(0) No Show', rank: 0 }
     ]
-   
+
     React.useEffect(() => {
         pathGenerator()
         rootSiteName = propsvalue?.Context.pageContext.site.absoluteUrl.split(propsvalue?.Context.pageContext.site.serverRelativeUrl)[0];
-    },[])
+    }, [])
     const openCreateeventpopup = () => {
         setopenpopup(true)
         setitemcreated(false)
@@ -68,9 +70,9 @@ const EventManagementmain = (props: any) => {
             Title: ShortTitle,
             Date: StartDate,
             ItemRank: itemRank == '' ? null : itemRank,
-            ParentID: 0,                  
+            ParentID: 0,
             TaxType: 'Activities',
-            ProfileType: 'Event',      
+            ProfileType: 'Event',
         }
         const web = new Web(propsvalue?.siteUrl);
         web.lists.getById('136503cd-706e-4466-941f-eb2dcb39db7f').items.add(postData)
@@ -87,7 +89,7 @@ const EventManagementmain = (props: any) => {
     const createEvent = () => {
         // const copyStartDate = StartDate.split('-')[2] + '/' + StartDate.split('-')[1] + '/' + StartDate.split('-')[0]
         const postData = {
-            Title: ShortTitle,           
+            Title: ShortTitle,
             EventDate: StartDate,
             ItemRank: itemRank == '' ? null : itemRank,
             Event_x002d_Type: 'Event',
@@ -95,14 +97,14 @@ const EventManagementmain = (props: any) => {
         }
         const web = new Web(propsvalue?.siteUrl);
         web.lists.getById('860a08d5-9711-4d8e-bd26-93fe09362bd4').items.add(postData)
-            .then((data: any) => { 
+            .then((data: any) => {
                 console.log(data)
                 console.log("your item has been created")
-                setitemcreated(true)  
+                setitemcreated(true)
                 CreateFolder()
             })
-            .catch((e:any) => {
-               console.log(e)
+            .catch((e: any) => {
+                console.log(e)
             })
 
     }
@@ -131,6 +133,7 @@ const EventManagementmain = (props: any) => {
 
             AllFilesAndFolderBackup.push(newFolder);
             setAllFilesAndFolder(AllFilesAndFolderBackup);
+            setfoldercreated(true)
             createImageFolder()
             return newFolder; // Return the folder object here
         } catch (error) {
@@ -140,16 +143,25 @@ const EventManagementmain = (props: any) => {
     const createImageFolder = async (): Promise<any> => {
         try {
             let web = new Web(propsvalue?.siteUrl);
-            const library = web.lists.getByTitle('PublishingImages');
-            const parentFolder = web.getFolderByServerRelativeUrl('/sites/HHHH/GmBH/PublishingImages/SliderImages');
+            const library = web.lists.getByTitle('PublishingImages1');
+            const parentFolder = web.getFolderByServerRelativeUrl('/sites/HHHH/GmBH/PublishingImages1/SliderImages');
             const data = await parentFolder.folders.add(ShortTitle);
+
+            if (data?.data?.ServerRelativeUrl) {
+                data.data.ServerRelativeUrl = data.data.ServerRelativeUrl.replaceAll('%20', ' ');
+            }
+
             console.log('Image Folder created successfully.');
-            data?.data?.ServerRelativeUrl?.replaceAll('%20', ' ');
             setImageFolderItem(data?.data);
+            setimagefoldercreated(true)
+            setopenpopup(false)
+            alert("All folders has been created cuccessfully!")
         } catch (error) {
+            console.error('Error creating image folder:', error);
             return Promise.reject(error);
         }
-    }
+    };
+
 
     //End
     // Create Group Hierarchy of Folder //
@@ -358,6 +370,16 @@ const EventManagementmain = (props: any) => {
             </>
         );
     };
+    const EventCreationToolHeader = () => {
+        return (
+            <>
+                <div className='subheading'>
+                    Event Creation Tool
+                </div>
+                <Tooltip ComponentId="7643" />
+            </>
+        );
+    };
     const Folder = ({ folder, onToggle }: any) => {
         const hasChildren = folder.subRows && folder.subRows.length > 0;
 
@@ -480,6 +502,18 @@ const EventManagementmain = (props: any) => {
         );
     };
 
+    const EventCreationToolFooter = () => {
+        return (
+            <footer className='p-2 px-4 text-end'>
+                <button type='button' className='btn btn-primary' onClick={createsmartmetadataItem}>
+                    OK
+                </button>
+                <button type='button' className='btn btn-default ms-2' onClick={closepopup}>
+                    Cancel
+                </button>
+            </footer>
+        )
+    };
     const handleToggle = (clickedFolder: any) => {
         const toggleFolderRecursively = (folder: any) => {
             if (folder.EncodedAbsUrl === clickedFolder.EncodedAbsUrl) {
@@ -514,6 +548,11 @@ const EventManagementmain = (props: any) => {
     }
     return (
         <>
+            <div className="col-sm-12 clearfix">
+                <h2 className="d-flex justify-content-between heading align-items-center siteColor serviceColor_Active">
+                    <div>Event Tool</div>
+                </h2>
+            </div>
             <section>
                 <div className='row'>
                     <div className="col-sm-12 pad0">
@@ -530,9 +569,9 @@ const EventManagementmain = (props: any) => {
                                     </div>
                                     <div className="col-sm-10 titlefield">
                                         <div className="alignCenter col-6 gap-3">
-                                            <input type="date" autoComplete="off"  title="Start Date" placeholder="dd/mm/yyyy"  className="form-control" value={StartDate}
-                                                    onChange={(e) => setStartDate(e.target.value)} />
-                                            <span className="alignCenter col-4 gap-1"><input className="form-check-input" type="checkbox" ng-model="addenddate" ng-click="checkenddate(addenddate)"/><label>Multiday Event</label></span>
+                                            <input type="date" autoComplete="off" title="Start Date" placeholder="dd/mm/yyyy" className="form-control" value={StartDate}
+                                                onChange={(e) => setStartDate(e.target.value)} />
+                                            <span className="alignCenter col-4 gap-1"><input className="form-check-input" type="checkbox" ng-model="addenddate" ng-click="checkenddate(addenddate)" /><label>Multiday Event</label></span>
                                         </div>
                                     </div>
                                 </div>
@@ -542,11 +581,9 @@ const EventManagementmain = (props: any) => {
                                         <label className="full-width " >Short Event Title <span className='text-danger' title="will be used for metadata and folder names">*</span> </label>
                                     </div>
                                     <div className="col-sm-10 titlefield">
-                                      
                                         <div className="alignCenter col gap-3">
-                                            <span className="col-1">YYYY-MM</span>
-                                            <input type="text" placeholder="Short Event Name"  className="form-control" value={ShortTitle}
-                                                onChange={(e) => setShortTitle(e.target.value)} />
+                                            <span className="col-1">{StartDate ? `${StartDate?.split('-')[0] + '-' + StartDate?.split('-')[1]} ` : 'YYYY-MM'}</span>
+                                            <input type="text" placeholder="Short Event Name" className="form-control" value={ShortTitle} onChange={(e) => setShortTitle(e.target.value)} />
                                         </div>
                                     </div>
                                 </div>
@@ -563,27 +600,27 @@ const EventManagementmain = (props: any) => {
                                     </div>
                                 </div>
 
-                            <div className="row border-btm pad0" id="divFolderTitle" >
+                                <div className="row border-btm pad0" id="divFolderTitle" >
                                     <div className="col-sm-2 titleLabel">
-                                        <label>Folder Url <span className='text-danger'  title="will be saved in this folder Location"></span></label>
+                                        <label>Folder Url <span className='text-danger' title="will be saved in this folder Location"></span></label>
                                     </div>
                                     <div className="col-sm-10 titlefield">
                                         <span>{selectedPath?.displayPath}<span><a title="Click for Associated Folder" className='ms-2 siteColor' onClick={() => setChoosePathPopup(true)} >Change Path </a></span></span>
                                     </div>
                                 </div>
-                            <div className="row border-btm pad0" id="divFolderTitle" >
+                                <div className="row border-btm pad0" id="divFolderTitle" >
                                     <div className="col-sm-2 titleLabel">
                                         <label> Select Item Rank </label>
                                     </div>
                                     <div className="col-sm-10 titlefield">
                                         <div className="col-sm-4">
-                                    <select className="form-select" defaultValue={itemRank} onChange={(e) => setitemRank(e.target.value)}>
-                                        {ItemRank.map(function (h: any, i: any) {
-                                            return (
-                                                <option key={i} selected={itemRank == h?.rank} value={h?.rank} >{h?.rankTitle}</option>
-                                            )
-                                        })}
-                                    </select>
+                                            <select className="form-select" defaultValue={itemRank} onChange={(e) => setitemRank(e.target.value)}>
+                                                {ItemRank.map(function (h: any, i: any) {
+                                                    return (
+                                                        <option key={i} selected={itemRank == h?.rank} value={h?.rank} >{h?.rankTitle}</option>
+                                                    )
+                                                })}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -601,7 +638,7 @@ const EventManagementmain = (props: any) => {
                     </div>
                 </div>
             </section>
-                {/* <div className='row'>
+            {/* <div className='row'>
                     <div className='col-sm-12'>
                         <div className='input-group'>
                             <label className="full-width "> Start Date <span className='text-danger'>*</span> </label>
@@ -649,27 +686,16 @@ const EventManagementmain = (props: any) => {
                         </div>
                     </div>
                 </footer> */}
-          
 
-            <Panel isOpen={openpopup} isBlocking={false} onDismiss={closepopup} type={PanelType.medium}>
+
+            <Panel isOpen={openpopup} isBlocking={false} onDismiss={closepopup} type={PanelType.medium} onRenderHeader={EventCreationToolHeader} onRenderFooter={EventCreationToolFooter}>
                 <div className='col'>
-                    <h3>Event Creation Tool, The following items will be created</h3>
-                    <div>{itemcreated && <span className='ms-2'><Icon iconName="SkypeCircleCheck" /></span>}SmartMetadata item {StartDate} {ShortTitle}</div>
-                    <div>Folder {StartDate} {ShortTitle} in {selectedPath?.displayPath}</div>
-                    <div>Image Folder {StartDate} {ShortTitle} in /sites/HHHH/GmBH/PublishingImages/SliderImages</div>
+                    <div className="clearfix col-12 pb-3"><strong>The following items will be created</strong></div>
+                    <div className='pb-3'>{itemcreated && <span className='ms-2'><Icon iconName="SkypeCircleCheck" /></span>} SmartMetadata item <strong>{StartDate} {ShortTitle}</strong></div>
+                    <div className='pb-3'>{foldercreated && <span className='ms-2'><Icon iconName="SkypeCircleCheck" /></span>} Folder <strong>{StartDate} {ShortTitle}</strong> in {selectedPath?.displayPath}</div>
+                    <div>{imagefoldercreated && <span className='ms-2'><Icon iconName="SkypeCircleCheck" /></span>} Image Folder {StartDate} {ShortTitle} in /sites/HHHH/GmBH/PublishingImages/SliderImages</div>
                 </div>
-                <footer className='text-end'>
-                    <div className='col-sm-12 row m-0'>
-                        <div className='col-sm-6 mt-2 p-0'>
-                            <button type='button' className='btn btn-primary mx-2' onClick={createsmartmetadataItem}>
-                                Ok
-                            </button>
-                            <button type='button' className='btn btn-default' onClick={closepopup}>
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </footer>
+
             </Panel>
             <Panel type={PanelType.medium} isOpen={choosePathPopup} onDismiss={cancelPathFolder} onRenderHeader={ChoosePathCustomHeader} onRenderFooter={onRenderCustomFooterMain} isBlocking={false} >
                 <div id="folderHierarchy" >
