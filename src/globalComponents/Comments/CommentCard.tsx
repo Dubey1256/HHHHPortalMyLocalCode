@@ -951,7 +951,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                     <a target="_blank">
                       {topCmnt?.ItemCoverURL != null || topCmnt?.Suffix != null? <Avatar
                         onClick={(e) => this.topCommentersClick(e)}
-                        className="UserImage"
+                        className="UserImage workmember"
                         title={topCmnt?.Title}
                         name={topCmnt?.Title}
                         image={topCmnt?.ItemCoverURL != undefined ? {
