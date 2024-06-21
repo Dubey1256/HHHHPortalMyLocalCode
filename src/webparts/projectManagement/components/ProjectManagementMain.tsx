@@ -2481,7 +2481,7 @@ const ProjectManagementMain = (props: any) => {
                          <span
                            onClick={() => EditKeyRelevantPortfolio(checkedList)}
                            title="Edit Portfolios"
-                           className="hreflink svg__iconbox svg__icon--editBox"
+                           className="hreflink svg__iconbox svg__icon--editBox mt-15"
                          ></span>
                        </span>
                        </div>
