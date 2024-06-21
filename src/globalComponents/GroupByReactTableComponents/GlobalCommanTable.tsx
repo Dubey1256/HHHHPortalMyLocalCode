@@ -179,7 +179,7 @@ const getFirstColCell = ({ setExpanded, hasCheckbox, hasCustomExpanded, hasExpan
                 </div>
             )}{" "}
             {hasCheckbox && row?.original?.Title != "Others" && (
-                <span style={{ marginLeft: hasExpanded && row.getCanExpand() ? '11px' : hasExpanded !== true ? '0px' : '23px' }}> <IndeterminateCheckbox {...{ checked: row.getIsSelected(), indeterminate: row.getIsSomeSelected(), onChange: row.getToggleSelectedHandler(), }} />{" "}</span>
+                <span className="alignCenter" style={{ marginLeft: hasExpanded && row.getCanExpand() ? '11px' : hasExpanded !== true ? '0px' : '23px' }}> <IndeterminateCheckbox {...{ checked: row.getIsSelected(), indeterminate: row.getIsSomeSelected(), onChange: row.getToggleSelectedHandler(), }} />{" "}</span>
             )}
             {hasCustomExpanded && <div>
                 {((row.getCanExpand() &&
@@ -1410,11 +1410,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         {selectedFilterCount?.selectedFilterCount == "No item is selected" ? <span className="svg__iconbox svg__icon--setting hreflink" style={{ backgroundColor: 'gray' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span> :
                             <span className="svg__iconbox svg__icon--setting hreflink" style={selectedFilterCount?.selectedFilterCount == 'All content' ? { backgroundColor: "var(--SiteBlue)" } : { backgroundColor: 'rgb(68 114 199)' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>}
                     </div>
-                    <span className='mx-1'>
-                        <select style={{ height: "30px", paddingTop: "3px" }}
+                    <span className='custom-select mx-1'>
+                        <select style={{ height: "30px"}}
                             className="w-100 siteColor"
                             aria-label="Default select example"
-                            value={globalSearchType}
+                            value={globalSearchType}    
                             onChange={(e) => {
                                 setGlobalSearchType(e.target.value);
                                 setGlobalFilter("");
