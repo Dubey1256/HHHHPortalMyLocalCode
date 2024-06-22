@@ -164,6 +164,9 @@ const EmployeProfile = (props: any) => {
         return a.WebpartPosition.Row - b.WebpartPosition.Row;
       });
       DashboardConfigBackUp = JSON.parse(JSON.stringify(DashboardConfig));
+      DashboardConfigBackUp.map((config: any) => {
+        config.UpdatedId = data?.Id
+      })
       DashboardConfig.forEach((config: any) => {
         if (config?.AdditonalHeader != undefined && config?.AdditonalHeader === true)
           ActiveTile = config?.TileName

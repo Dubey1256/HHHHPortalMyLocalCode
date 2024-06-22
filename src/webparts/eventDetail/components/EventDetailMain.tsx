@@ -3,6 +3,7 @@ import React from 'react';
 import { Web } from "sp-pnp-js";
 import $ from "jquery";
 import Editpopup from './EventEditPopup';
+import { IoCalendarOutline } from 'react-icons/io5';
 
 let AlleventsItem: any = [];
 let EventlistId: any = '';
@@ -82,39 +83,50 @@ const EventDetailmain = (props: any) => {
 
     return (
         <>
+
             <section>
-                <div className="col-md-12 no-padding publicationItem ">
+                <div className="publicationItem has-shadow">
                     {EventItem.length > 0 && EventItem.map((Item: any) => {
                         return (<div className="col-sm-12 mt-10 mb-10" key={Item.Id}>
-                            <div className="alignCenter">
+                            {/* <div className="alignCenter">
                                 <span className='alignCenter gap-1 pull-left'>
                                     <span className="svg__iconbox svg__icon--calendar"></span>
                                     {Item?.EventDate != undefined && <span>{Item?.EventDate}</span>}
                                     <span className="svg__iconbox svg__icon--edit ml-5" onClick={() => openEditEventPopup(Item)}></span>
                                 </span>
-                                <a className="ml-auto" href={`${propsValue?.siteUrl}/SitePages/Event-Home.aspx`} target='_blank' data-interception="off">
+                                <a className="ml-auto" href={`${propsValue?.siteUrl}/SitePages/EventsHome.aspx`} target='_blank' data-interception="off">
+                                    Back to all Events
+                                </a>
+                            </div> */}
+                            <div className="entry-meta">
+                                <IoCalendarOutline />
+                                <strong>
+                                    {Item?.EventDate != undefined && <span>{Item?.EventDate}</span>}
+                                </strong>
+                                <span title="Edit" onClick={() => openEditEventPopup(Item)} className="svg__icon--edit svg__iconbox"></span>
+                                <a className="ml-auto" href={`${propsValue?.siteUrl}/SitePages/EventsHome.aspx`} target='_blank' data-interception="off">
                                     Back to all Events
                                 </a>
                             </div>
-                            <div className="col-sm-12">
-                                <h1 className="newstitle">
-                                    {Item?.Title}
-                                </h1>
+                            <div className="spotlighttitle valign-middle">
+                                <h4 className="f-600">
+                                    <a className="hreflink">{Item?.Title}</a>
+                                </h4>
                             </div>
-                            {Item?.Item_x0020_Cover == undefined && <div className="col-sm-12">
-                                <div className="labeltext fixxd">
-                                    <span dangerouslySetInnerHTML={{ __html: Item?.Description }}></span>
-                                </div>
-                            </div>}
-                            {Item?.Item_x0020_Cover != undefined && <div className="col-sm-12">
-                                <div className="col-sm-2" id="imagedetail">
-                                    <img className="image" src={Item?.Item_x0020_Cover.Url} />
-                                </div>
-                                <div id="marg-p">
-                                    <span dangerouslySetInnerHTML={{ __html: Item?.Description }}></span>
-                                </div>
-                            </div>}
-
+                            <div className="entry-content clearfix">
+                                {Item?.Item_x0020_Cover == undefined && <div className="col-sm-12 pad0">
+                                        <div dangerouslySetInnerHTML={{ __html: Item?.Description }}></div>
+                                </div>}
+                                {Item?.Item_x0020_Cover != undefined && <div className="col-sm-12 pad0">
+                                    <div className="col-sm-2" id="imagedetail">
+                                        <img className="image" src={Item?.Item_x0020_Cover.Url} />
+                                    </div>
+                                    <div id="marg-p">
+                                        <span dangerouslySetInnerHTML={{ __html: Item?.Description }}></span>
+                                    </div>
+                                </div>}
+                            </div>
+                            <div className="clearfix"></div>
                             <div className="col-md-12 ItemInfo" style={{ paddingTop: '15px' }}>
                                 <div>
                                     Created <span>{Item?.Created}</span> by <span className="footerUsercolor">{Item?.Author?.Title}</span>
@@ -126,6 +138,7 @@ const EventDetailmain = (props: any) => {
                         </div>)
                     })}
                 </div>
+
             </section>
             {iseditOpen && <Editpopup EditEventData={AddEditEventvalue} Context={propsValue?.Context} callBack={callBack} />}
         </>
