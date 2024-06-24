@@ -331,8 +331,201 @@ export default function FroalaCommnetBoxes(textItems: any) {
     }, [])
 
     function createRows(state: any[]) {
-    }
+        return (
+            <div>
+                {TextItems?.length > 0 ? <div className={IndexCount % 2 == 0 ? "add-text-box" : "add-text-box"}>
+                    {state?.map((obj, i) => {
+                        let index: any = i + 1;
+                        return (
+                            <div className={"FeedBack-comment row my-1"}>
+                                <div
+                                    data-id={i}
+                                    className= "col"
+                                    onChange={handleChange}
+                                >
+                                    <div className="Task-panel d-flex justify-content-between">
+                                        <div className="d-flex">
+                                            {ApprovalStatus ?
+                                                <div>
+                                                    {/* {isCurrentUserApprover ? */}
+                                                    <div className={isCurrentUserApprover ? "alignCenter mt-1" : "alignCenter Disabled-Link mt-1"}>
+                                                        <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
+                                                            <span title="Rejected" onClick={() => SmartLightUpdateSubComment(i, "Reject")}
+                                                                className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
+                                                            >
+                                                            </span>
+                                                            <span title="Maybe" onClick={() => SmartLightUpdateSubComment(i, "Maybe")} className={obj.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
+                                                            </span>
+                                                            <span title="Approved" onClick={() => SmartLightUpdateSubComment(i, "Approve")} className={obj.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    {/* :null} */}
+                                                </div>
+                                                : null
+                                            }
+                                            {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
+                                                <>
 
+                                                    <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(i, obj)}>
+                                                        {obj.ApproverData[obj.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={obj.ApproverData[obj.ApproverData?.length - 1]?.Title}><span><a href={`${Context.pageContext.web.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${obj.ApproverData[obj.ApproverData?.length - 1]?.Id}&Name=${obj.ApproverData[obj.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={obj.ApproverData[obj.ApproverData?.length - 1]?.Title}> <img className='imgAuthor' src={obj.ApproverData[obj.ApproverData?.length - 1]?.ImageUrl} /></a></span></a></span>
+
+                                                </> :
+                                                null
+                                            }
+                                        </div>
+                                        <div>
+                                            <span className="mx-1">
+                                                {/* <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    checked={obj.SeeAbove != undefined && obj.SeeAbove == true ? true : false}
+                                                    value={obj.SeeAbove != undefined && obj.SeeAbove == true ? "true" : "false"}
+                                                    name='SeeAbove'
+                                                /> */}
+                                                <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    data-id={i}
+                                                    name="SeeAbove"
+                                                    checked={obj.SeeAbove}
+                                                />
+
+                                                {/* Similar setup for other checkboxes like Phone, LowImportance, etc. */}
+
+                                                <label className="commentSectionLabel ms-1">See Above</label>
+                                            </span>
+                                            <span> | </span>
+                                            <span className="mx-1">
+                                                {/* <input className="form-check-input mt--3" type="checkbox"
+                                                    checked={obj.Phone}
+                                                    value={obj.Phone}
+                                                    name='Phone'
+                                                /> */}
+                                                <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    data-id={i}
+                                                    name="Phone"
+                                                    checked={obj.Phone}
+                                                />
+                                                <label className="commentSectionLabel ms-1">Phone</label>
+                                            </span>
+                                            <span> | </span>
+                                            <span className="mx-1">
+                                                {/* <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mt--3" /> */}
+                                                <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    data-id={i}
+                                                    name="LowImportance"
+                                                    checked={obj.LowImportance}
+                                                />
+                                                <label className="commentSectionLabel ms-1">
+                                                    Low Importance
+                                                </label>
+                                            </span>
+                                            <span> | </span>
+                                            <span className="mx-1">
+                                                {/* <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
+                                                    value={obj.HighImportance} className="form-check-input mt--3"
+                                                /> */}
+                                                <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    data-id={i}
+                                                    name="HighImportance"
+                                                    checked={obj.HighImportance}
+                                                />
+                                                <label className="commentSectionLabel ms-1">
+                                                    High Importance
+                                                </label>
+                                            </span>
+                                            <span> | </span>
+                                            <span className="mx-1">
+                                                {/* <input type="checkbox" id="" className="form-check-input mt--3"
+                                                    name='Completed' checked={obj.Completed} value={obj.Completed} /> */}
+                                                <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    data-id={i}
+                                                    name="Completed"
+                                                    checked={obj.Completed}
+                                                />
+                                                <label className="commentSectionLabel ms-1">
+                                                    Mark As Completed
+                                                </label>
+                                            </span>
+                                            <span> | </span>
+                                            <span className="mx-1">
+                                                <span className="hreflink siteColor commentSectionLabel" onClick={() => postBtnHandle(i)}> Add Comment </span>
+                                            </span>
+                                            <span> | </span>
+                                            <span className="mx-1">
+                                                <span className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9 siteColor hreflink commentSectionLabel" : "siteColor hreflink commentSectionLabel"}
+                                                 onClick={() => CreateSeparateTaskFunction(obj, i)}>
+                                                    Create Task
+                                                </span>
+                                            </span>
+                                            <span> | </span>
+                                            <a className="hreflink alignIcon"
+                                                style={{ cursor: "pointer" }} target="_blank"
+                                                onClick={() => RemoveItem(obj, i)}>
+                                                <span className="svg__iconbox hreflink mini svg__icon--trash"></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="d-flex" title={obj.isShowLight}>
+                                            <span className="SubTestBorder p-1 me-1">{index + 1}</span>
+                                            <textarea
+                                                style={{ width: "100%" }}
+                                                className="form-control"
+                                                defaultValue={obj?.Title?.replace(/<[^>]*>/g, ' ')}
+                                                value={obj?.Title?.replace(/<[^>]*>/g, ' ')}
+                                                name='Title'
+                                            ></textarea>
+                                        </div>
+                                    </div>
+                                </div >
+                                <div>
+                                    <div>
+                                        {globalCount && <AddCommentComponent
+                                            Data={obj.Comments != null ? obj.Comments : []}
+                                            allFbData={TextItems}
+                                            index={i}
+                                            postStatus={i == Number(currentIndex) && postBtnStatus ? true : false}
+                                            allUsers={textItems.allUsers}
+                                            callBack={postBtnHandleCallBack}
+                                            CancelCallback={postBtnHandleCallBackCancel}
+                                            Context={Context}
+                                            ApprovalStatus={ApprovalStatus}
+                                            isCurrentUserApprover={isCurrentUserApprover}
+                                            SmartLightStatus={obj?.isShowLight}
+                                            FeedbackCount={globalCount}
+                                        />}
+                                    </div>
+                                    <div>
+                                        <Example
+                                            SubTextItemsArray={obj.Subtext ? obj.Subtext : []}
+                                            index={i + 1}
+                                            commentId={obj.Id}
+                                            currentIndex={i}
+                                            callBack={subTextCallBack}
+                                            allUsers={textItems.allUsers}
+                                            ApprovalStatus={ApprovalStatus}
+                                            SmartLightStatus={obj?.isShowLight}
+                                            SmartLightPercentStatus={SmartLightPercentStatus}
+                                            isCurrentUserApprover={isCurrentUserApprover}
+                                            Context={Context}
+                                            isFirstComment={false}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                    {btnStatus ? <button className="btn btn-primary" onClick={addMainRowInDiv}>Add New Box</button> : null}
+                </div> : null}
+
+               
+            </div>
+        )
+    }
     return (
         <div className="col mt-2">
             {State.length ? null : <button className="btn btn-primary" onClick={addMainRow}>Add New Box</button>}
