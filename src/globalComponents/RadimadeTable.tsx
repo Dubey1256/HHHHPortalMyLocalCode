@@ -3,7 +3,7 @@ import * as $ from "jquery";
 import * as Moment from "moment";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import { FaCompressArrowsAlt, FaFilter, } from "react-icons/fa";
-import pnp, { Web, sp } from "sp-pnp-js";
+import pnp, { Web } from "sp-pnp-js";
 import { map } from "jquery";
 import EditInstitution from "../webparts/EditPopupFiles/EditComponent";
 import TimeEntryPopup from "./TimeEntry/TimeEntryComponent";
@@ -470,227 +470,11 @@ function ReadyMadeTable(SelectedProp: any) {
     }
 
     // * page loade Task Data Only * ///////
-    const LoadAllSiteTasks = async function () {
-        
-        if (siteConfig !== undefined && siteConfig?.length > 0 && SelectedProp?.TaskFilter == "PercentComplete gt '0.89'") {
-            let AllTasksData: any = [];
-            let Counter = 0;
-            const batchSize = 1000;
-    
-            const promises = siteConfig.map(async (config: any) => {
-                let web = new Web(ContextValue.siteUrl);
-                let allItems: any[] = [];
-                let lastId = 0;
-                let hasMoreItems = true;
-    
-                while (hasMoreItems) {
-                    const items = await web.lists
-                        .getById(config.listId)
-                        .items
-                        .select(
-                            "ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id",
-                            "ClientCategory/Id", "ClientCategory/Title", "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title",
-                            "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID",
-                            "DueDate", "Comments", "Categories", "Status", "Body", "PercentComplete", "ClientCategory", "Priority",
-                            "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID",
-                            "Portfolio/Title", "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id",
-                            "Project/PortfolioStructureID", "Project/Title", "Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title",
-                            "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "Created", "Modified", "IsTodaysTask",
-                            "workingThisWeek", "WorkingAction"
-                        )
-                        .expand(
-                            "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo",
-                            "Editor", "Author", "TaskCategories", "Project"
-                        )
-                        .orderBy("ID", true)
-                        .filter(lastId > 0 ? `ID gt ${lastId}` : "")
-                        .top(batchSize)
-                        .get();
-    
-                    if (items.length > 0) {
-                        allItems = allItems.concat(items);
-                        lastId = items[items.length - 1].ID;
-                    } else {
-                        hasMoreItems = false;
-                    }
-                }
-    
-                if (allItems.length > 0) {
-                    map(allItems, (item: any) => {
-                        item.isDrafted = false;
-                        item.flag = true;
-                        item.TitleNew = item.Title;
-                        item.childs = [];
-                        item.siteType = config.Title;
-                        item.listId = config.listId;
-                        item.siteUrl = ContextValue.siteUrl;
-                        item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
-                        item.fontColorTask = "#000";
-    
-                        // Additional processing can be done here...
-    
-                        AllTasksData.push(item);
-                    });
-                }
-            });
-    
-            await Promise.all(promises);
-    
-            // Further processing on AllTasksData
-            map(AllTasksData, (result: any) => {
-                result.Id = result.Id != undefined ? result.Id : result.ID;
-                result.TeamLeaderUser = [];
-                result.AllTeamName = result.AllTeamName === undefined ? "" : result.AllTeamName;
-                result.chekbox = false;
-                result.timeSheetsDescriptionSearch = '';
-                result.SmartPriority = 0;
-                result.TaskTypeValue = '';
-                result.projectPriorityOnHover = '';
-                result.taskPriorityOnHover = result?.PriorityRank;
-                result.showFormulaOnHover;
-                result.portfolioItemsSearch = '';
-                result.descriptionsSearch = '';
-                result.commentsSearch = '';
-                result.descriptionsDeliverablesSearch = '';
-                result.descriptionsHelpInformationSarch = '';
-                result.descriptionsShortDescriptionSearch = '';
-                result.descriptionsTechnicalExplanationsSearch = '';
-                result.descriptionsBodySearch = '';
-                result.descriptionsAdminNotesSearch = '';
-                result.descriptionsValueAddedSearch = '';
-                result.descriptionsIdeaSearch = '';
-                result.descriptionsBackgroundSearch = '';
-                result.FeatureTypeTitle = '';
-                if (result?.DueDate != null && result?.DueDate != undefined) {
-                    result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0);
-                }
-                if (result?.Modified != null && result?.Modified != undefined) {
-                    result.serverModifiedDate = new Date(result?.Modified).setHours(0, 0, 0, 0);
-                }
-                if (result?.Created != null && result?.Created != undefined) {
-                    result.serverCreatedDate = new Date(result?.Created).setHours(0, 0, 0, 0);
-                }
-                result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
-                if (result.DisplayCreateDate == "Invalid date" || "") {
-                    result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
-                }
-                if (result.Author) {
-                    result.Author.autherImage = findUserByName(result.Author?.Id);
-                }
-                result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
-                if (result.DisplayDueDate == "Invalid date" || "") {
-                    result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
-                }
-                result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
-                if (result.Editor) {
-                    result.Editor.autherImage = findUserByName(result.Editor?.Id);
-                }
-                if (result?.TaskType) {
-                    result.portfolioItemsSearch = result?.TaskType?.Title;
-                }
-    
-                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-    
-                if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
-                    result.percentCompleteValue = parseInt(result?.PercentComplete);
-                }
-                if (result?.Portfolio != undefined) {
-                    allMasterTaskDataFlatLoadeViewBackup.map((item: any) => {
-                        if (item.Id === result?.Portfolio?.Id) {
-                            result.Portfolio = item;
-                            result.PortfolioType = item?.PortfolioType;
-                        }
-                    });
-                }
-    
-                result.chekbox = false;
-                if (result?.FeedBack && result?.FeedBack != undefined) {
-                    const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
-                    let descriptionSearchData = '';
-                    try {
-                        const feedbackData = JSON.parse(result.FeedBack);
-                        descriptionSearchData = feedbackData[0]?.FeedBackDescriptions?.map((child: any) => {
-                            const childText = cleanText(child?.Title);
-                            const comments = (child?.Comments || [])?.map((comment: any) => {
-                                const commentText = cleanText(comment?.Title);
-                                const replyText = (comment?.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
-                                return [commentText, replyText]?.filter(Boolean).join(' ');
-                            }).join(' ');
-    
-                            const subtextData = (child.Subtext || [])?.map((subtext: any) => {
-                                const subtextComment = cleanText(subtext?.Title);
-                                const subtextReply = (subtext.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
-                                const subtextComments = (subtext.Comments || [])?.map((subComment: any) => {
-                                    const subCommentTitle = cleanText(subComment?.Title);
-                                    const subCommentReplyText = (subComment.ReplyMessages || []).map((val: any) => cleanText(val?.Title)).join(' ');
-                                    return [subCommentTitle, subCommentReplyText]?.filter(Boolean).join(' ');
-                                }).join(' ');
-                                return [subtextComment, subtextReply, subtextComments].filter(Boolean).join(' ');
-                            }).join(' ');
-    
-                            return [childText, comments, subtextData].filter(Boolean).join(' ');
-                        }).join(' ');
-    
-                        result.descriptionsSearch = descriptionSearchData;
-                    } catch (error) {
-                        console.error("Error:", error);
-                    }
-                }
-    
-                try {
-                    if (result?.Comments != null && result?.Comments != undefined) {
-                        const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
-                        const commentsFormData = JSON?.parse(cleanedComments);
-                        result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
-                            return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
-                        }, "").trim();
-                    }
-                } catch (error) {
-                    console.error("An error occurred:", error);
-                }
-                try {
-                    if (result?.WorkingAction != null) {
-                        result.workingActionValue = [];
-                        result.workingActionValue = JSON.parse(result?.WorkingAction);
-                        result.workingActionTitle = ""; result.workingActionIcon = {};
-                        result?.workingActionValue?.map((item: any, index: any) => {
-                            result.workingActionTitle += (result.workingActionTitle === "" ? "" : ",") + item.WorkingActionTitle;
-                            result.workingActionIcon[item.WorkingActionTitle] = item.WorkingActionIcon;
-                        })
-                    }
-                } catch (error) {
-                    console.error("An error occurred:", error);
-                }
-                
-            });
-            if(filterTaskType){
-                console.log(AllSiteTasksData)
-                 AlltaskfilterData=[...AllSiteTasksData,...AllTasksData]
-                 await smartTimeUseLocalStorage(AlltaskfilterData)
-               
-                 setAllSiteTasksData(AlltaskfilterData);
-                 DataPrepareForCSFAWT()
-            }
-            
-            else{
-                await smartTimeUseLocalStorage(AllTasksData)
-                setAllSiteTasksData(AllTasksData);
-            }
-           
-            try {
-                allTaskDataFlatLoadeViewBackup = AllTasksData?.length>0?JSON.parse(JSON.stringify(AllTasksData)):[]
-            } catch (error) {
-                console.log("backup Json parse error Page Loade Task Data");
-            }
-            if(AllTasksData?.length==0 ){
-                let data=[{}];
-                setAllSiteTasksData(data);
-            }
-        
-        }else if (siteConfig != undefined && siteConfig.length > 0) {
-            
-            let AllTasksData: any = [];
-            let Counter = 0;
+    const LoadAllSiteTasks = function () {
+   
+        let AllTasksData: any = [];
+        let Counter = 0;
+        if (siteConfig != undefined && siteConfig.length > 0) {
             map(siteConfig, async (config: any) => {
                 let web = new Web(ContextValue.siteUrl);
                 let AllTasksMatches: any = [];
@@ -958,9 +742,7 @@ function ReadyMadeTable(SelectedProp: any) {
             });
             // GetComponents();
         }
-
     };
-    
     const smartTimeUseLocalStorage = (AllTasksData:any) => {
         if (timeEntryDataLocalStorage?.length > 0) {
             const timeEntryIndexLocalStorage = JSON.parse(timeEntryDataLocalStorage)
