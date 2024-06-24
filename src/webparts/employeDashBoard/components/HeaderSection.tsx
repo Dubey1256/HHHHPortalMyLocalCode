@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useReducer, useState } from 'react'
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import WorldClock from './WorldClock';
 import TaskStatusTbl from './TaskStausTable';
 import EmployeePieChart from './EmployeePieChart';
-import { Web } from 'sp-pnp-js';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { GrNext, GrPrevious } from "react-icons/gr";
 import Slider from "react-slick";
@@ -13,21 +12,15 @@ let Count: any = 0
 const Header = () => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
-  const ContextData: any = React.useContext(myContextValue)
+  const ContextData: any = useContext(myContextValue)
   let userName: any = ContextData?.currentUserData;
-  let DashboardTitle = ContextData?.DashboardTitle
-  const currentTime: any = ContextData?.currentTime;
-  let annouceMents: any = ContextData?.annouceMents;
   const [activeTile, setActiveTile] = useState(ContextData?.ActiveTile);
   const [IsOpenTimeSheetPopup, setIsOpenTimeSheetPopup] = useState(false);
-  const [IsAnnouncement, setIsAnnouncement] = React.useState(false);
-  const [IsPortfolioLeads, setIsPortfolioLeads] = React.useState(false);
-  const [newAnnouncement, setNewAnnouncement] = React.useState('');
-  const [, rerender] = React.useReducer(() => ({}), {});
-  const [IsShowConfigBtn, setIsShowConfigBtn] = React.useState(false);
-  const [AllPortfolioLeads, setAllPortfolioLeads] = React.useState([]);
-  const [SelectedLead, setSelectedLead] = React.useState(undefined);
-  let UserGroup: any = ContextData?.AllTaskUser?.filter((x: any) => x.AssingedToUser?.Id === ContextData?.propsValue?.Context._pageContext._legacyPageContext.userId)
+  const [IsPortfolioLeads, setIsPortfolioLeads] = useState(false);
+  const [, rerender] = useReducer(() => ({}), {});
+  const [IsShowConfigBtn, setIsShowConfigBtn] = useState(false);
+  const [AllPortfolioLeads, setAllPortfolioLeads] = useState([]);
+  const [SelectedLead, setSelectedLead] = useState(undefined);
   if (ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
     DashboardConfig = JSON.parse(JSON.stringify(ContextData?.DashboardConfig));
     DashboardConfig.sort((a: any, b: any) => a.Id - b.Id);
@@ -80,43 +73,8 @@ const Header = () => {
       setActiveTile(tileName);
     }
   };
-  const openAnnouncementPopup = (event: any) => {
-    setIsAnnouncement(true);
-  }
-  const deleteAnnouncement = (deleteitem: any) => {
-    const web = new Web(ContextData?.propsValue?.siteUrl);
-    web.lists.getById(ContextData?.propsValue?.Announcements).items.getById(deleteitem.Id).update({
-      Title: deleteitem.Title,
-      Body: deleteitem.Body,
-      isShow: false
-    })
-      .then((updatedItem: any) => {
-        annouceMents.map((itm: any, index: any) => {
-          if (deleteitem.Id === itm.Id) {
-            itm.isShow = false;
-            annouceMents.splice(index, 1)
-          }
-        })
-        rerender();
-      }).catch((err: any) => {
-        console.log(err)
-      })
-  };
-  const closeAnnouncementpopup = () => {
-    setIsAnnouncement(false)
-  }
-  const onRenderCustomHeaderAnnouncement = () => {
-    return (
-      <>
-        <div className='siteColor subheading'>
-          Add New Announcement
-        </div>
-      </>
-    );
-  };
   const openPortfolioLeadsPopup = () => {
     let SelectedUser = ContextData?.AllTaskUser?.filter((user: any) => user?.AssingedToUserId != undefined && user?.AssingedToUserId != undefined && user?.AssingedToUserId != '' && user?.AssingedToUserId == ContextData?.currentUserData?.AssingedToUserId)[0];
-
     setSelectedLead(SelectedUser)
     setIsPortfolioLeads(true)
   }
@@ -133,9 +91,7 @@ const Header = () => {
       localStorage.setItem('CurrentUserId', SelectedLead?.AssingedToUserId);
       setIsPortfolioLeads(false)
       location.reload();
-      // ContextData?.LoadPortfolioLeads(SelectedLead)
     }
-
   }
   const onRenderCustomHeaderPortfolioLeads = () => {
     return (
@@ -146,27 +102,6 @@ const Header = () => {
       </>
     );
   };
-  const handleInputChange = (e: any) => {
-    const value = e.target.value;
-    setNewAnnouncement(value);
-  };
-  const saveAnnounceMents = () => {
-    const web = new Web(ContextData?.propsValue?.siteUrl);
-    web.lists.getById(ContextData?.propsValue?.Announcements).items.add(
-      {
-        Title: newAnnouncement,
-        isShow: true
-      })
-      .then((result: any) => {
-        annouceMents.push(result.data);
-        closeAnnouncementpopup();
-        setNewAnnouncement('');
-        rerender();
-      })
-      .catch((error) => {
-        console.error('Error adding announcement:', error);
-      });
-  }
   const CallBack = () => {
     setIsOpenTimeSheetPopup(false)
   }
@@ -293,21 +228,6 @@ const Header = () => {
       <span>
         {IsOpenTimeSheetPopup == true && <EmployeePieChart IsOpenTimeSheetPopup={IsOpenTimeSheetPopup} Call={() => { CallBack() }} />}
       </span>
-      <Panel onRenderHeader={onRenderCustomHeaderAnnouncement}
-        isOpen={IsAnnouncement}
-        onDismiss={closeAnnouncementpopup}
-        type={PanelType.medium}>
-        <div className='modal-body'>
-          <div className='input-group'>
-            <label className='form-label full-width'>Title</label>
-            <textarea className="form-control" defaultValue={newAnnouncement} onChange={handleInputChange} />
-          </div>
-        </div>
-        <div className='modal-footer mt-2'>
-          <button className="btn btn-primary ms-1" onClick={saveAnnounceMents}>Save</button>
-          <button className='btn btn-default ms-1' onClick={closeAnnouncementpopup}>Cancel</button>
-        </div>
-      </Panel>
       <Panel onRenderHeader={onRenderCustomHeaderPortfolioLeads}
         isOpen={IsPortfolioLeads}
         onDismiss={ClosePortfolioLeadPopup}
