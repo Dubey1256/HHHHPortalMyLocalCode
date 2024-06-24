@@ -210,6 +210,16 @@ export const NotificationsAddPopup = (props: any) => {
         setEditTaskconfigData(selectedData)
         setOpenEditConfigPopup(true)
     }
+    const DeleteTaskNotificationPopup = (selectedData: any, index: any) => {
+        const copyallTaskStatusToConfigure = allTaskStatusToConfigure?.filter((item: any, indx: any) => {
+            return index !== indx;
+        });
+
+        setAllTaskStatusToConfigure(copyallTaskStatusToConfigure)
+        // selectedData.index = index
+        // setEditTaskconfigData(selectedData)
+        // setOpenEditConfigPopup(true)
+    }
     const deleteDocumentsData = async (DeletItemId: any) => {
         console.log(DeletItemId);
         const web = new Web(props?.AllListId?.siteUrl);
@@ -359,7 +369,8 @@ export const NotificationsAddPopup = (props: any) => {
                                                                 {config?.NotificationType == "Email" ? <span className='svg__iconbox svg__icon--mail hreflink'></span> :
                                                                     <span className='svg__iconbox svg__icon--team hreflink'></span>}
                                                                 <span className='ms-2'>{config?.Notifier[0]?.text}</span>
-                                                                <span className='svg__iconbox svg__icon--edit hreflink ml-auto' onClick={() => EditTaskNotificationPopup(config, index)}></span>
+                                                                <span className='svg__iconbox svg__icon--edit ml-auto' onClick={() => EditTaskNotificationPopup(config, index)}></span>
+                                                                <span className='svg__iconbox svg__icon--trash' onClick={() => DeleteTaskNotificationPopup(config, index)}></span>
                                                             </div>
                                                             <div className='alignCenter'>
                                                                 <label className='form-label'>Task Status:</label>
