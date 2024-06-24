@@ -124,9 +124,14 @@ export function Filter({
 }): any {
     const columnFilterValue = column.getFilterValue();
     return (
-        <input style={{ width: "100%", paddingRight: "10px" }} className="m-1 on-search-cross" title={placeholder?.placeholder} type="search" value={(columnFilterValue ?? "") as string}
-            onChange={(e) => column.setFilterValue(e.target.value)} placeholder={`${placeholder?.placeholder}`} />
-    );
+ 
+            <>
+            <input style={{ width: "100%", paddingRight: "10px" }} className="m-1" title={placeholder?.placeholder} type="search" value={(columnFilterValue ?? "") as string}
+                       onChange={(e) => column.setFilterValue(e.target.value)} placeholder={`${placeholder?.placeholder}`} />
+                       {columnFilterValue && <span className='searchClear' onClick={(e:any)=>column.setFilterValue("")}></span>}
+           </>
+
+        );
 }
 
 export function IndeterminateCheckbox(
@@ -179,7 +184,7 @@ const getFirstColCell = ({ setExpanded, hasCheckbox, hasCustomExpanded, hasExpan
                 </div>
             )}{" "}
             {hasCheckbox && row?.original?.Title != "Others" && (
-                <span style={{ marginLeft: hasExpanded && row.getCanExpand() ? '11px' : hasExpanded !== true ? '0px' : '23px' }}> <IndeterminateCheckbox {...{ checked: row.getIsSelected(), indeterminate: row.getIsSomeSelected(), onChange: row.getToggleSelectedHandler(), }} />{" "}</span>
+                <span className="alignCenter" style={{ marginLeft: hasExpanded && row.getCanExpand() ? '11px' : hasExpanded !== true ? '0px' : '23px' }}> <IndeterminateCheckbox {...{ checked: row.getIsSelected(), indeterminate: row.getIsSomeSelected(), onChange: row.getToggleSelectedHandler(), }} />{" "}</span>
             )}
             {hasCustomExpanded && <div>
                 {((row.getCanExpand() &&
@@ -1400,21 +1405,26 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </div> :
                         <span style={{ color: "#333333", flex: "none" }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
                     <span className="mx-1">{items?.showDateTime}</span>
+            <span className="SearchInput-container">
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
                         placeholder="Search All..."
                         portfolioColor={portfolioColor}
                     />
+                    {globalFilter && <span className='searchClear' onClick={()=>setGlobalFilter('')}></span>}
+                    </span>
+
+
                     <div className='alignCenter'>
                         {selectedFilterCount?.selectedFilterCount == "No item is selected" ? <span className="svg__iconbox svg__icon--setting hreflink" style={{ backgroundColor: 'gray' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span> :
                             <span className="svg__iconbox svg__icon--setting hreflink" style={selectedFilterCount?.selectedFilterCount == 'All content' ? { backgroundColor: "var(--SiteBlue)" } : { backgroundColor: 'rgb(68 114 199)' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>}
                     </div>
-                    <span className='mx-1'>
-                        <select style={{ height: "30px", paddingTop: "3px" }}
+                    <span className='custom-select mx-1'>
+                        <select style={{ height: "30px"}}
                             className="w-100 siteColor"
                             aria-label="Default select example"
-                            value={globalSearchType}
+                            value={globalSearchType}    
                             onChange={(e) => {
                                 setGlobalSearchType(e.target.value);
                                 setGlobalFilter("");

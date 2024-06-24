@@ -645,7 +645,13 @@ const onUploadImageFunction = async (imageList: any, addUpdateIndex: any, AddMor
                     textItems?.EditData?.Id +
                     "/" +
                     fileName,
-                ImageUrl: imgItem.data_url,
+                ImageUrl: textItems?.EditData?.siteUrl +
+                    "/Lists/" +
+                    CurrentSiteName +
+                    "/Attachments/" +
+                    textItems?.EditData?.Id +
+                    "/" +
+                    fileName,
                 UserImage:
                     currentUserDataObject != undefined &&
                         currentUserDataObject.Item_x0020_Cover?.Url?.length > 0
@@ -808,19 +814,21 @@ const DesignCategoriesTask = (state: any) => {
                         <Tab key={index} label={tab?.setTitle!=""?tab?.setTitle:`Set${index + 1}`} value={index} />
                     ))}
                     <div className="alignCenter">
-                    {btnStatus?<span className="alignCenter"><span className="svg__iconbox svg__icon--Plus hreflink me-2" title="Add set" onClick={addMainRowInDiv}></span> Add New Set</span>:""}
+                    {btnStatus?<a className="alignCenter ms-2 hreflink" onClick={addMainRowInDiv}><span className="svg__iconbox svg__icon--Plus hreflink mini" title="Add set" ></span> Add New Set</a>:""}
                     {/* {btnStatus ? <button className="btn btn-primary" onClick={addMainRowInDiv}>{textItems?.DesignStatus ? "Add set" : "Add New Box"}</button> : null} */}
                     </div>
                 </TabList>
                 {TextItems?.length > 0 ?
-                    <div className={IndexCount % 2 == 0 ? "add-text-box" : "add-text-box"}>
+                    <div className={IndexCount % 2 == 0 ? "DesignCategoriesTask" : "DesignCategoriesTask"}>
                         {state.map((obj: any, i: any) => {
                             let index: any = i;
                             return (
                                 <TabPanel key={i} value={i}>
                                     <div className="col-sm-12 row">
-                                    <div className="full-width my-3">
+                                    <div className="full-width my-2">
+                                        <span className="alignCenter">
                                         <input placeholder="Set Title"value={obj?.setTitle}onChange={(e)=>ChangeSetTitle(i,e.target.value)} />
+                                        <a className="ms-2 alignCenter hreflink" onClick={() => AddMoreImages(i)}><span className="svg__iconbox svg__icon--Plus hreflink mini" title="Add set" ></span> Add Images</a></span>
                                         </div>
                                         {
                                             obj?.setImagesInfo?.length == 0 && <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} imageIndex={i} />}
@@ -839,7 +847,7 @@ const DesignCategoriesTask = (state: any) => {
                                                     <div className="Footerimg d-flex align-items-center justify-content-between p-1 ">
                                                         <div className='usericons'>
                                                             <span>
-                                                                <span className="svg__iconbox svg__icon--Plus hreflink" title="Add More Image" onClick={() => AddMoreImages(i)}></span>
+                                                                {/* <span className="svg__iconbox svg__icon--Plus hreflink" title="Add More Image" onClick={() => AddMoreImages(i)}></span> */}
                                                                 <span >{imgData?.UploadeDate}</span>
                                                                 <span className='round px-1'>
                                                                     {imgData?.UserImage != null && imgData?.UserImage != "" ?
@@ -882,7 +890,7 @@ const DesignCategoriesTask = (state: any) => {
                                                                     <div className='usericons'>
 
                                                                         <div className="d-flex">
-                                                                            <span className="svg__iconbox svg__icon--Plus hreflink" title="Add More Image" onClick={() => AddMoreImages(i)}></span>
+                                                                            {/* <span className="svg__iconbox svg__icon--Plus hreflink" title="Add More Image" onClick={() => AddMoreImages(i)}></span> */}
                                                                             <span className="mx-2" >{imgData?.UploadeDate}</span>
                                                                             <span className='round px-1'>
                                                                                 {imgData?.UserImage != null && imgData?.UserImage != "" ?
@@ -1039,7 +1047,7 @@ const DesignCategoriesTask = (state: any) => {
                                                 </div>
                                                 <div className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9" : ""}>
                                                     <div className="d-flex" title={obj.isShowLight}>
-                                                        <span className="SubTestBorder p-1 me-1">{index + 1}</span>
+                                                        <span className="SubTestBorder p-1 me-1">{1}</span>
                                                         <textarea
                                                             style={{ width: "100%" }}
                                                             className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "form-control Disabled-Link bg-e9" : "form-control"}
@@ -1056,7 +1064,7 @@ const DesignCategoriesTask = (state: any) => {
                                                     {globalCount && <AddCommentComponent
                                                         Data={obj.Comments != null ? obj.Comments : []}
                                                         allFbData={TextItems}
-                                                        index={i}
+                                                        index={0}
                                                         postStatus={i == Number(currentIndex) && postBtnStatus ? true : false}
                                                         allUsers={textItems.allUsers}
                                                         callBack={postBtnHandleCallBack}
@@ -1071,7 +1079,7 @@ const DesignCategoriesTask = (state: any) => {
                                                 <div>
                                                     <Example
                                                         SubTextItemsArray={obj.Subtext ? obj.Subtext : []}
-                                                        index={i}
+                                                        index={0}
                                                         commentId={obj.Id}
                                                         currentIndex={i}
                                                         callBack={subTextCallBack}
