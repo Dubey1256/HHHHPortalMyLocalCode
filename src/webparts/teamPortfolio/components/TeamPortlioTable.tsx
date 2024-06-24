@@ -30,6 +30,7 @@ import CreateAllStructureComponent from "../../../globalComponents/CreateAllStru
 import { myContextValue } from "../../../globalComponents/globalCommon";
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import WorkingActionInformation from "../../../globalComponents/WorkingActionInformation";
+import { Avatar } from "@fluentui/react-components";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -296,16 +297,35 @@ function TeamPortlioTable(SelectedProp: any) {
         }
     }
 
+    // const findUserByName = (name: any) => {
+    //     let userInfo: any = { Image: null, Suffix: null }
+    //     const user = AllUsers.filter(
+    //         (user: any) => user?.AssingedToUser?.Id === name
+    //     );
+    //     let Image: any;
+    //     let Suffix: any;
+    //     if (user[0]?.Suffix != undefined) {
+    //         Suffix = user[0]?.Suffix;
+    //     }
+    //     if (user[0]?.Item_x0020_Cover != undefined) {
+    //         Image = user[0].Item_x0020_Cover.Url;
+    //     }
+    //     userInfo.Image = Image
+    //     userInfo.Suffix = Suffix
+    //     // else { Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; }
+    //     return user ? userInfo : null;
+    // };
     const findUserByName = (name: any) => {
         const user = AllUsers.filter(
             (user: any) => user?.AssingedToUser?.Id === name
         );
-        let Image: any;
+        let authImg: any = { Image: "", Suffix: "" }
         if (user[0]?.Item_x0020_Cover != undefined) {
-            Image = user[0].Item_x0020_Cover.Url;
-        } else { Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; }
-        return user ? Image : null;
+            authImg.Image = user[0]?.Item_x0020_Cover.Url;
+        } else { authImg.Suffix = user[0]?.Suffix }
+        return user ? authImg : null;
     };
+  
 
     /// backGround Loade All Task Data /////
     const LoadAllSiteTasksAllData = async function () {
@@ -388,10 +408,20 @@ function TeamPortlioTable(SelectedProp: any) {
                         }
                         result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
                         if (result.Editor) {
-                            result.Editor.autherImage = findUserByName(result.Editor?.Id)
+                            let authImg = findUserByName(result.Editor?.Id);
+                            if (authImg.Image != undefined && authImg.Image != "") {
+                                result.Editor.autherImage = authImg.Image
+                            } else {
+                                result.Editor.suffix = authImg.Suffix
+                            }
                         }
                         if (result.Author) {
-                            result.Author.autherImage = findUserByName(result.Author?.Id)
+                            let authImg = findUserByName(result.Author?.Id);
+                            if (authImg.Image != undefined && authImg.Image != "") {
+                                result.Author.autherImage = authImg.Image
+                            } else {
+                                result.Author.suffix = authImg.Suffix
+                            }
                         }
                         result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
                         if (result.DisplayDueDate == "Invalid date" || "") {
@@ -670,16 +700,33 @@ function TeamPortlioTable(SelectedProp: any) {
                         if (result.DisplayCreateDate == "Invalid date" || "") {
                             result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
                         }
+                        // if (result.Author) {
+                        //     result.Author.autherImage = findUserByName(result.Author?.Id)
+
+                        // }
+                        // if (result.Author) {
+                        //     result.Author.Suffix = findUserByName(result.Author?.Id)
                         if (result.Author) {
-                            result.Author.autherImage = findUserByName(result.Author?.Id)
+                            let authImg = findUserByName(result.Author?.Id);
+                            if (authImg.Image != undefined && authImg.Image != "") {
+                                result.Author.autherImage = authImg.Image
+                            } else {
+                                result.Author.suffix = authImg.Suffix
+                            }
                         }
+
                         result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
                         if (result.DisplayDueDate == "Invalid date" || "") {
                             result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
                         }
                         result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
                         if (result.Editor) {
-                            result.Editor.autherImage = findUserByName(result.Editor?.Id)
+                            let authImg = findUserByName(result.Editor?.Id);
+                            if (authImg.Image != undefined && authImg.Image != "") {
+                                result.Editor.autherImage = authImg.Image
+                            } else {
+                                result.Editor.suffix = authImg.Suffix
+                            }
                         }
                         if (result?.TaskType) {
                             result.portfolioItemsSearch = result?.TaskType?.Title;
@@ -949,11 +996,21 @@ function TeamPortlioTable(SelectedProp: any) {
                 result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
             }
             if (result.Author) {
-                result.Author.autherImage = findUserByName(result.Author?.Id)
+                let authImg = findUserByName(result.Author?.Id);
+                if (authImg.Image != undefined && authImg.Image != "") {
+                    result.Author.autherImage = authImg.Image
+                } else {
+                    result.Author.suffix = authImg.Suffix
+                }
             }
             result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
-            if (result?.Editor) {
-                result.Editor.autherImage = findUserByName(result?.Editor?.Id)
+            if (result.Editor) {
+                let authImg = findUserByName(result.Editor?.Id);
+                if (authImg.Image != undefined && authImg.Image != "") {
+                    result.Editor.autherImage = authImg.Image
+                } else {
+                    result.Editor.suffix = authImg.Suffix
+                }
             }
             result.PercentComplete = (result?.PercentComplete * 100).toFixed(0) === "0" ? "" : (result?.PercentComplete * 100).toFixed(0);
             if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
@@ -2772,7 +2829,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 size: 100,
                 isColumnVisible: true
-            },         
+            },
             {
                 accessorFn: (row) => row?.workingActionTitle,
                 cell: ({ row }) => (
@@ -3082,9 +3139,19 @@ function TeamPortlioTable(SelectedProp: any) {
                                 <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayCreateDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
                                 {row?.original?.Author != undefined &&
                                     <>
+
                                         <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
                                             target="_blank" data-interception="off">
-                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
+                                            {row?.original?.Author?.autherImage || row?.original?.Author?.suffix ? <Avatar
+                                                className="UserImage"
+                                                title={row?.original?.Author?.Title}
+                                                name={row?.original?.Author?.Title}
+                                                image={{ src: row?.original?.Author?.autherImage }}
+                                                initials={row?.original?.Author?.autherImage == undefined ? row.original?.Author?.suffix : undefined}
+
+                                            /> :
+                                            <Avatar  title={row?.original?.Author?.Title}
+                                            name={row?.original?.Author?.Title} className="UserImage" />}
                                         </a>
                                     </>
                                 }
@@ -3119,7 +3186,16 @@ function TeamPortlioTable(SelectedProp: any) {
                                     <>
                                         <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
                                             target="_blank" data-interception="off">
-                                            <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.Editor?.autherImage} />
+                                                {row?.original?.Editor?.autherImage || row?.original?.Editor?.suffix ? <Avatar
+                                                className="UserImage"
+                                                title={row?.original?.Editor?.Title}
+                                                name={row?.original?.Editor?.Title}
+                                                image={{ src: row?.original?.Editor?.autherImage }}
+                                                initials={row?.original?.Editor?.autherImage == undefined ? row.original?.Editor?.suffix : undefined}
+
+                                            /> :
+                                            <Avatar  title={row?.original?.Editor?.Title}
+                                            name={row?.original?.Editor?.Title} className="UserImage" />}
                                         </a>
                                     </>
                                 }
@@ -3770,7 +3846,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 </section>
                 <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={callbackdataAllStructure} >
                     {/* <PortfolioStructureCreationCard
-                    CreatOpen={CreateOpenCall}
+                    CreatOpen={CreateOpenCall}el
                     Close={AddStructureCallBackCall}
                     PortfolioType={IsUpdated}
                     PropsValue={ContextValue}
