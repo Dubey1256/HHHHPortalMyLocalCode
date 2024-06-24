@@ -19,6 +19,7 @@ import AddProject from "../../webparts/projectmanagementOverviewTool/components/
 import EditProjectPopup from "../EditProjectPopup";
 import CreateAllStructureComponent from "../CreateAllStructure";
 import WorkingActionInformation from "../WorkingActionInformation";
+import ReactPopperTooltipSingleLevel from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 var LinkedServicesBackupArray: any = [];
 var MultiSelectedData: any = [];
 let AllMetadata: any = [];
@@ -35,6 +36,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     // const [modalIsOpen, setModalIsOpen] = React.useState(true);
     const [OpenAddStructurePopup, setOpenAddStructurePopup] = React.useState(false);
     const refreshData = () => setData(() => renderData);
+    const [allMaster,setAllMaster]= React.useState([]);
     const [data, setData] = React.useState([]);
     const [dataUpper, setdataUpper] = React.useState([]);
     copyDtaArray = data;
@@ -249,7 +251,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             GlobalArray = await globalCommon.GetServiceAndComponentAllData(PropsObject);
             if (GlobalArray?.GroupByData != undefined && GlobalArray?.GroupByData?.length > 0 && showProject != true) {
                 let Selecteddata: any;
-
+                setAllMaster(GlobalArray?.AllData)
                 if (props?.Portfolios?.results?.length > 0) {
                     // Selecteddata = GlobalArray?.AllData.filter((item: any) => item?.Id === props?.Portfolios?.results[0]?.Id);
                     Selecteddata = GlobalArray?.AllData.filter((item: any) => {
@@ -458,8 +460,11 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                                 )}
                             </>
                         )}
-                        {getValue()}
+                        {
+                        <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.PortfolioStructureID} AllListId={Dynamic} row={row?.original} singleLevel={true} masterTaskData={allMaster} />
+                        }
                     </div>
+                
                 ),
             },
             {
@@ -812,7 +817,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 < button type="button" className="btn btn-primary" title='Compare' style={{ color: '#fff' }} onClick={() => openCompareTool()}>Compare</button> :
                 <button type="button" className="btn btn-primary" style={{ color: '#fff' }} disabled={true} >Compare</button>
             }
-            <label className="switch me-2" htmlFor="checkbox5">
+           <label className="switch me-2" htmlFor="checkbox5">
                 <input checked={IsSelectionsBelow} onChange={() => checkSelection1("SelectionsBelow")} type="checkbox" id="checkbox5" />
                 {IsSelectionsBelow === true ? <div className="slider round" title={showProject ? 'Select Single Project':'Select Single Portfolio' } ></div> : <div title={showProject ? 'Select Multiple Project':'Select Multiple Portfolio' }className="slider round"></div>}
             </label>
