@@ -123,15 +123,12 @@ const MeetingProfile = (props: any) => {
             if (item.TaxType == "Sites") {
               if (item.Title != "DRR" && item.Title != "Master Tasks" && item.Title != "SDC Sites" && item.Configurations != null) {
                 AllsiteData.push(item)
-                getAllData(item).then((data: any) => {
-                  resolve(data)
-                });
                 let a: any = JSON.parse(item.Configurations);
                 a?.map((newitem: any) => {
                   dataLength.push(newitem);
-                  // getAllData(newitem).then((data: any) => {
-                  //   resolve(data)
-                  // });
+                  getAllData(newitem).then((data: any) => {
+                    resolve(data)
+                  });
                 });
 
               }
@@ -152,7 +149,7 @@ const MeetingProfile = (props: any) => {
   };
   const getAllData = async (site: any) => {
     return new Promise<void>((resolve, reject) => {
-      const web = new Web(props.props?.siteUrl);
+      const web = new Web(site?.siteUrl);
       web.lists
         .getById(site?.listId)
         .items.select("Title", "PercentComplete", "Categories", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
