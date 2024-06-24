@@ -576,19 +576,44 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
 
         }
         else {
-            let userExistsWorkingDates = this.state.datesInfo.some((item: any) =>
-            item?.userInformation.some((user: any) =>
-                user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id
-            )
-        );
-            if (!userExistsWorkingDates) {
-        this.state.taskUsers.forEach(function (child: any) {
-            if (child.ID == $data.UserGroupId) {
-                if (!self.isItemExists(child.childs, $data.Id))
-                    child.childs.push($data);
-            }
+            if (dragItem.userType == "Assigned User") {
+                this.state.datesInfo.map((item: any) => {
+                    item?.userInformation.map((user: any, index: any) => {
+                        if (user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id) {
+                            item?.userInformation.splice(index, 1)
+                        }
+                    })
                 })
-            }   
+            }
+            let userExistsWorkingDates = this.state.datesInfo.some((item: any) =>
+                item?.userInformation.some((user: any) =>
+                    user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id
+                )
+            );
+            let userExistsTeamMembers = this.state.TeamMemberUsers.some((user: any) => {
+                if (user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+            let userExistsLeads = this.state.ResponsibleTeam.some((user: any) => {
+                if (user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+
+
+            if (userExistsWorkingDates != true && userExistsLeads != true && userExistsTeamMembers != true ) {
+                this.state.taskUsers.forEach(function (child: any) {
+                    if (child.ID == $data.UserGroupId) {
+                        if (!self.isItemExists(child.childs, $data.Id))
+                            child.childs.push($data);
+                    }
+                })
+            }
         }
         this.dropSuccessHandler(true, '');
     }
