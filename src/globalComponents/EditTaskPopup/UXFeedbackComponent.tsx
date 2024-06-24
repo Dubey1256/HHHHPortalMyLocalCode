@@ -7,6 +7,7 @@ import * as Moment from 'moment';
 import ApprovalHistoryPopup from "./ApprovalHistoryPopup";
 import CreateTaskCompareTool from '../CreateTaskCompareTool/CreateTaskCompareTool';
 // code by vivek
+import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import { FaAngleLeft } from "react-icons/fa";
 import { FaAngleRight } from "react-icons/fa";
@@ -617,7 +618,56 @@ export default function UXFeedbackComponent(textItems: any) {
             </div>
         );
     };
-
+    const DeleteImageFunction = (imageIndex: any, imageName: any, FunctionType: any) => {
+      
+            let tempArray: any = [];
+            
+            if (FunctionType == "Remove") {
+                designTemplatesArray[copyCurrentActiveTab]?.setImagesInfo?.map((imageData:any, index:any) => {
+                    if (index != imageIndex) {
+                        tempArray.push(imageData);
+                    }
+                });
+                setTaskImages(tempArray);
+            }
+            if (textItems?.TaskListDetails?.ListId != undefined) {
+                (async () => {
+                    try {
+                        let web = new Web(textItems?.TaskListDetails?.SiteURL);
+                        let item = web.lists
+                            .getById(textItems?.TaskListDetails?.ListId)
+                            .items.getById(textItems?.TaskListDetails?.TaskId);
+                        await item.attachmentFiles.getByName(imageName).recycle();
+                       designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
+                       setState([...designTemplatesArray]);
+                        console.log("Attachment deleted");
+                      
+                    } catch (error) {
+                        console.log("Error deleting attachment:", error);
+                        
+                    }
+                })();
+            } else {
+                (async () => {
+                    try {
+                        let web = new Web(textItems?.TaskListDetails?.SiteURL);
+                        let item = web.lists
+                            .getByTitle(textItems?.TaskListDetails?.siteType)
+                            .items.getById(textItems?.TaskListDetails?.TaskId);
+                        await item.attachmentFiles.getByName(imageName).recycle();
+                        designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
+                       
+                        setState([...designTemplatesArray]);
+                        console.log("Attachment deleted");
+                       
+                    } catch (error) {
+                        console.log("Error deleting attachment:", error);
+                       
+                    }
+                })();
+            }
+        
+    };
     //=====================End Image upload function ===============
 
 // -----------  change the tab name and its function strat -----------------
@@ -759,6 +809,22 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                     {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
                                                                         <BiInfoCircle />
                                                                     </span>}
+                                                                    <span
+                                                                                className="mx-1 hover-text"
+                                                                                onClick={() =>
+                                                                                    DeleteImageFunction(
+                                                                                        index,
+                                                                                        imgData.ImageName,
+                                                                                        "Remove"
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                {" "}
+                                                                                | <RiDeleteBin6Line /> |
+                                                                                <span className="tooltip-text pop-right">
+                                                                                    Delete
+                                                                                </span>
+                                                                            </span>
 
                                                                 </span>
                                                             </div>
