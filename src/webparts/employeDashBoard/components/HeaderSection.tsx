@@ -9,6 +9,7 @@ import { GrNext, GrPrevious } from "react-icons/gr";
 import Slider from "react-slick";
 let smartFavTableConfig: any = [];
 let DashboardConfig: any = [];
+let Count: any = 0
 const Header = () => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
@@ -20,15 +21,29 @@ const Header = () => {
   const [activeTile, setActiveTile] = useState(ContextData?.ActiveTile);
   const [IsOpenTimeSheetPopup, setIsOpenTimeSheetPopup] = useState(false);
   const [IsAnnouncement, setIsAnnouncement] = React.useState(false);
+  const [IsPortfolioLeads, setIsPortfolioLeads] = React.useState(false);
   const [newAnnouncement, setNewAnnouncement] = React.useState('');
   const [, rerender] = React.useReducer(() => ({}), {});
   const [IsShowConfigBtn, setIsShowConfigBtn] = React.useState(false);
-
+  const [AllPortfolioLeads, setAllPortfolioLeads] = React.useState([]);
+  const [SelectedLead, setSelectedLead] = React.useState(undefined);
   let UserGroup: any = ContextData?.AllTaskUser?.filter((x: any) => x.AssingedToUser?.Id === ContextData?.propsValue?.Context._pageContext._legacyPageContext.userId)
   if (ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
     DashboardConfig = JSON.parse(JSON.stringify(ContextData?.DashboardConfig));
     DashboardConfig.sort((a: any, b: any) => a.Id - b.Id);
   }
+  useEffect(() => {
+    if (ContextData?.AllTaskUser != undefined && ContextData?.AllTaskUser?.length > 0) {
+      let AllUsers = ContextData?.AllTaskUser?.filter((user: any) => user?.UserGroup != undefined && user?.UserGroup?.Id != undefined && user?.UserGroup?.Id != '' && user?.UserGroup?.Id == 9);
+      let SelectedUser = ContextData?.AllTaskUser?.filter((user: any) => user?.AssingedToUserId != undefined && user?.AssingedToUserId != undefined && user?.AssingedToUserId != '' && user?.AssingedToUserId == ContextData?.currentUserData?.AssingedToUserId)[0];
+      if (Count == 0) {
+        setAllPortfolioLeads(AllUsers)
+        setSelectedLead(SelectedUser)
+      }
+      Count++;
+    }
+  }, [ContextData?.currentUserData?.AssingedToUserId]);
+
   let numSlides = ContextData?.DashboardConfig?.filter((e: { TileName: string; }) => e.TileName != undefined && e.TileName != '');
   let settings = {
     dots: false, infinite: false, speed: 700,
@@ -99,6 +114,38 @@ const Header = () => {
       </>
     );
   };
+  const openPortfolioLeadsPopup = () => {
+    let SelectedUser = ContextData?.AllTaskUser?.filter((user: any) => user?.AssingedToUserId != undefined && user?.AssingedToUserId != undefined && user?.AssingedToUserId != '' && user?.AssingedToUserId == ContextData?.currentUserData?.AssingedToUserId)[0];
+
+    setSelectedLead(SelectedUser)
+    setIsPortfolioLeads(true)
+  }
+  const ClosePortfolioLeadPopup = () => {
+    localStorage.setItem('CurrentUserId', ContextData?.currentUserData?.AssingedToUserId);
+    setIsPortfolioLeads(false)
+    setSelectedLead(undefined)
+  }
+  const savePortfolioLeads = () => {
+    if (SelectedLead?.AssingedToUserId == undefined || SelectedLead?.AssingedToUserId == '') {
+      alert('Please select any portfolio Lead')
+    }
+    else {
+      localStorage.setItem('CurrentUserId', SelectedLead?.AssingedToUserId);
+      setIsPortfolioLeads(false)
+      location.reload();
+      // ContextData?.LoadPortfolioLeads(SelectedLead)
+    }
+
+  }
+  const onRenderCustomHeaderPortfolioLeads = () => {
+    return (
+      <>
+        <div className='siteColor subheading'>
+          Portfolio Leads
+        </div>
+      </>
+    );
+  };
   const handleInputChange = (e: any) => {
     const value = e.target.value;
     setNewAnnouncement(value);
@@ -123,37 +170,23 @@ const Header = () => {
   const CallBack = () => {
     setIsOpenTimeSheetPopup(false)
   }
+  const SelectedUser = (User: any) => {
+    if (User.IsSelcetdUser == undefined)
+      User.IsSelcetdUser = false;
+    if (SelectedLead?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && SelectedLead?.AssingedToUserId == User?.AssingedToUserId) {
+      setSelectedLead(undefined)
+    }
+    else {
+      setSelectedLead(User)
+    }
+    rerender();
+  }
   useEffect(() => {
     handleTileClick(ContextData?.ActiveTile, undefined)
   }, [ContextData?.ActiveTile]);
 
   return (
     <div>
-      {/* {UserGroup != undefined && (UserGroup[0]?.UserGroup?.Title === 'Senior Developer Team' || UserGroup[0]?.UserGroup?.Title === 'Smalsus Lead Team') ?
-        <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => openAnnouncementPopup(e)}> Add Announcement </a>
-        </div>
-        : ''} */}
-      {/* {annouceMents.length > 0 && (<section className='annocumentSec'>
-        <div id="carouselExampleIndicators" className="carousel slide" data-bs-ride="carousel">
-          <div className="carousel-indicators">
-            {annouceMents?.map((items: any, index: number) => {
-              return (<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to={`${index}`} className={`${index == 0 ? 'active' : ''}`} key={index} aria-current={`${index == 0 && true}`} aria-label={`Slide ${index}`}></button>)
-            })}
-          </div>
-          <div className="carousel-inner">
-            {annouceMents?.map((items: any, index: any) => {
-              return (
-                <div className={`carousel-item ${index == 0 ? 'active' : ''}`} data-bs-interval="2000" key={index}>
-                  <div className="alignCenter px-2 pb-4 pt-2 mb-3 empBg">
-                    <span title='Announcement' className="svg__iconbox svg__icon--annocument light me-2 wid30"></span>
-                    {items.Title}{UserGroup != undefined && (UserGroup[0]?.UserGroup?.Title === 'Senior Developer Team' || UserGroup[0]?.UserGroup?.Title === 'Smalsus Lead Team') ? <span title='delete' className="ml-auto svg__iconbox svg__icon--cross light wid30" onClick={() => deleteAnnouncement(items)}></span> : ''}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </section>)} */}
       <section className="tabSec">
         <div className="row">
           <div className='col-8'>
@@ -252,6 +285,7 @@ const Header = () => {
             </span>
             <WorldClock />
             <img className="rounded-circle" title={userName?.Title} width={30} height={30} src={userName?.Item_x0020_Cover?.Url} alt={userName?.Title} />
+            {DashboardId == '5' && <span title='Open leads popup' className="svg__iconbox svg__icon--editBox" onClick={(e) => openPortfolioLeadsPopup()} ></span>}
           </div>
         </div>
         {DashboardConfig?.length > 0 && <div><TaskStatusTbl activeTile={activeTile} smartFavTableConfig={smartFavTableConfig} /></div>}
@@ -272,6 +306,30 @@ const Header = () => {
         <div className='modal-footer mt-2'>
           <button className="btn btn-primary ms-1" onClick={saveAnnounceMents}>Save</button>
           <button className='btn btn-default ms-1' onClick={closeAnnouncementpopup}>Cancel</button>
+        </div>
+      </Panel>
+      <Panel onRenderHeader={onRenderCustomHeaderPortfolioLeads}
+        isOpen={IsPortfolioLeads}
+        onDismiss={ClosePortfolioLeadPopup}
+        type={PanelType.medium}>
+        <div className='modal-body'>
+          <div className='input-group'>
+            {AllPortfolioLeads?.length && AllPortfolioLeads?.map((user: any, index: number) => (
+              <>
+                <div className="top-assign mb-3">
+                  {user.Item_x0020_Cover != undefined && user.AssingedToUser != undefined &&
+                    <span onClick={() => SelectedUser(user)}>
+                      <img className={SelectedLead?.AssingedToUserId == user?.AssingedToUserId == true ? 'large_teamsimgCustom me-2 activeimg' : 'large_teamsimgCustom me-2'} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
+                    </span>
+                  }
+                </div>
+              </>
+            ))}
+          </div>
+        </div>
+        <div className='modal-footer mt-2'>
+          <button className="btn btn-primary ms-1" onClick={savePortfolioLeads}>Save</button>
+          <button className='btn btn-default ms-1' onClick={ClosePortfolioLeadPopup}>Cancel</button>
         </div>
       </Panel>
     </div >
