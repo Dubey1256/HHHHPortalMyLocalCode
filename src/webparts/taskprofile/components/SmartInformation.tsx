@@ -1737,7 +1737,7 @@ const SmartInformation = (props: any, ref: any) => {
               <div className='text-lg-end mt-2'><Button className='btn btn-default text-end  btn btn-primary' onClick={() => closeDoc()}>Cancel</Button></div>
             </div>}
             {SelectedTilesTitle === "CreateLink" && <div><div className="card mt-3 ">
-              <div className="card-header">
+              <div className="form-label full-width fw-semibold titleheading">
                 Link</div>
               <div className='mx-3 my-2'><label htmlFor="Name">Name</label>
                 <input type='text' id="Name" className="form-control" placeholder='Name' value={allValue?.LinkTitle != "" ? allValue?.LinkTitle : null} onChange={(e) => setallSetValue({ ...allValue, LinkTitle: e.target.value })}></input>
@@ -1752,7 +1752,7 @@ const SmartInformation = (props: any, ref: any) => {
 
             </div>}
             {SelectedTilesTitle === "Task" && <div className='card mt-3'>
-              <div className='card-header'>Task</div>
+              <div className='form-label full-width fw-semibold titleheading'>Task</div>
               <div className='mx-3 my-2'><label htmlFor="Title">Title</label>
                 <input type='text' id="Title" className="form-control" placeholder='Name' onChange={(e) => setallSetValue({ ...allValue, taskTitle: e.target.value })}></input>
               </div>
