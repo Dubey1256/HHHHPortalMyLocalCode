@@ -25,7 +25,9 @@ import "react-popper-tooltip/dist/styles.css";
 import TeamSmartFavoritesCopy from './Smart Favrorites/TeamSmartFavoritesCopy';
 import { GlobalConstants } from '../LocalCommon';
 import { myContextValue } from '../globalCommon';
+import * as Moment from "moment";
 import ServiceComponentPortfolioPopup from '../EditTaskPopup/ServiceComponentPortfolioPopup';
+import SmartfilterSettingTypePanel from './SmartfilterSettingTypePanel';
 
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
@@ -115,6 +117,9 @@ const TeamSmartFilter = (item: any) => {
     const [isTeamMember, setIsTeamMember] = React.useState(false);
     const [isTodaysTask, setIsTodaysTask] = React.useState(false);
     const [isSelectAll, setIsSelectAll] = React.useState(false);
+    const [isPhone, setIsPhone] = React.useState(false);
+    const [isBottleneck, setIsBottleneck] = React.useState(false);
+    const [isAttention, setIsAttention] = React.useState(false);
     // const [isWorkingThisWeek, setIsWorkingThisWeek] = React.useState(false);
     //*******************************************************Teams Section End********************************************************************/
 
@@ -126,10 +131,7 @@ const TeamSmartFilter = (item: any) => {
     //*************************************************** Portfolio Items & Task Items selected ***************************************************************** */
     const [isPortfolioItems, setIsPortfolioItems] = React.useState(true);
     const [isTaskItems, setIsTaskItems] = React.useState(true);
-    const [controlledVisible, setControlledVisible] = React.useState(false);
-    const [feedbackArray, setfeedbackArray] = React.useState([]);
-    const [showHoverTitle, setshowHoverTitle] = React.useState<any>();
-    const [action, setAction] = React.useState("");
+    const [smartFilterTypePannel, setSmartFilterTypePannel] = React.useState(false)
     //*************************************************** Portfolio Items & Task Items End ***************************************************************** */
     const [selectedFilterPanelIsOpen, setSelectedFilterPanelIsOpen] = React.useState(false);
     const [selectedFilterPanelIsOpenUpdate, setSelectedFilterPanelIsOpenUpdate] = React.useState(false);
@@ -1128,6 +1130,14 @@ const TeamSmartFilter = (item: any) => {
     const updatedCheckTeamMembers = (data: any, teamMembers: any) => {
         try {
             if (teamMembers.length === 0) {
+                if (isTodaysTask) {
+                    if (data?.workingTodayUsers?.length > 0) {
+                        let todayStr = Moment().format('DD/MM/YYYY');
+                        return data.workingTodayUsers[0].WorkingDate === todayStr;
+                    } else {
+                        return false;
+                    }
+                }
                 return true;
             }
             if (isCreatedBy === true) {
@@ -1144,15 +1154,14 @@ const TeamSmartFilter = (item: any) => {
                     return true;
                 }
             }
-            if (isAssignedto === true && isTodaysTask === false) {
-                if (data?.AssignedTo.length > 0) {
+            if (isAssignedto === true) {
+                if (data?.AssignedTo?.length > 0) {
                     // let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
                     let result = data?.AssignedTo?.some((elem0: any) => teamMembers.some((filter: any) => filter?.Id === elem0?.Id));
                     if (result === true) {
                         return true;
                     }
                 }
-
             }
             if (isTeamLead === true) {
                 if (data?.ResponsibleTeam.length > 0) {
@@ -1173,16 +1182,39 @@ const TeamSmartFilter = (item: any) => {
                     }
                 }
             }
-            if (isTodaysTask === true && isAssignedto === true || isTodaysTask === true && isAssignedto === false) {
-                if (data?.IsTodaysTask === true) {
-                    // let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ') && data?.IsTodaysTask === true));
-                    let result = data?.AssignedTo?.some((elem2: any) => teamMembers.some((filter: any) => filter?.Id === elem2?.Id && data?.IsTodaysTask === true));
+            if (isTodaysTask === true) {
+                if (data?.workingTodayUsers?.length > 0) {
+                    let result = data?.workingTodayUsers[0]?.WorkingMember?.some((elem2: any) => teamMembers.some((filter: any) => filter?.Id === elem2?.Id));
                     if (result === true) {
                         return true;
                     }
                 }
             }
-            if (isCreatedBy === false && isModifiedby === false && isAssignedto === false && isTeamMember === false && isTeamLead === false && isTodaysTask === false) {
+            if (isPhone === true) {
+                if (data?.workingDetailsPhone?.InformationData?.length > 0) {
+                    let result = data?.workingDetailsPhone?.InformationData?.some((elem0: any) => teamMembers?.some((filter: any) => filter?.Id === elem0?.TaggedUsers?.AssingedToUserId));
+                    if (result === true) {
+                        return true;
+                    }
+                }
+            }
+            if (isBottleneck === true) {
+                if (data?.workingDetailsBottleneck?.InformationData?.length > 0) {
+                    let result = data?.workingDetailsBottleneck?.InformationData?.some((elem0: any) => teamMembers?.some((filter: any) => filter?.Id === elem0?.TaggedUsers?.AssingedToUserId));
+                    if (result === true) {
+                        return true;
+                    }
+                }
+            }
+            if (isAttention === true) {
+                if (data?.workingDetailsAttention?.InformationData?.length > 0) {
+                    let result = data?.workingDetailsAttention?.InformationData?.some((elem0: any) => teamMembers?.some((filter: any) => filter?.Id === elem0?.TaggedUsers?.AssingedToUserId));
+                    if (result === true) {
+                        return true;
+                    }
+                }
+            }
+            if (isCreatedBy === false && isModifiedby === false && isAssignedto === false && isTeamMember === false && isTeamLead === false && isTodaysTask === false && isPhone === false && isBottleneck === false && isAttention === false) {
                 let result = data?.TeamLeaderUser?.some((elem3: any) => teamMembers.some((filter: any) => filter?.Id === elem3?.Id));
                 if (result === true) {
                     return true;
@@ -1193,7 +1225,6 @@ const TeamSmartFilter = (item: any) => {
             return false;
         }
     };
-
     const updatedCheckTaskType = (data: any, type: any) => {
         try {
             if (type?.length === 0) {
@@ -1324,6 +1355,9 @@ const TeamSmartFilter = (item: any) => {
             setIsTeamLead(false);
             setIsTeamMember(false);
             setIsTodaysTask(false);
+            setIsPhone(false)
+            setIsBottleneck(false)
+            setIsAttention(false)
             setcollapseAll(true);
             setIconIndex(0)
             setIsSitesExpendShow(false);
@@ -1900,14 +1934,6 @@ const TeamSmartFilter = (item: any) => {
     React.useEffect(() => {
         checkBoxColor();
     }, [iscategoriesAndStatusExpendShow, isClientCategory]);
-
-    const { getArrowProps, getTooltipProps, setTooltipRef, setTriggerRef, visible, } = usePopperTooltip({ trigger: null, interactive: true, closeOnOutsideClick: false, placement: "auto", visible: controlledVisible, onVisibleChange: setControlledVisible, });
-    const handlAction = (newAction: any) => {
-        if (action === "click" && newAction === "hover") return;
-        setAction(newAction); setControlledVisible(true);
-    };
-    const handleMouseLeave = () => { if (action === "click") return; setAction(""); setControlledVisible(!controlledVisible); };
-    const handleCloseClick = () => { setAction(""); setControlledVisible(!controlledVisible); };
     const selectAllFromAbove = (selectedItem: any, event: any) => {
         let allSmartOptions = JSON.parse(JSON.stringify(filterGroupsData));
         allSmartOptions?.map((MainGroup: any, index: any) => {
@@ -2082,37 +2108,6 @@ const TeamSmartFilter = (item: any) => {
 
 
     ///////////////////////////////+++++++++++++++++++++ team User Selection + ///////////////////////////////////////////////////
-    const handleUserClick = (user: any) => {
-        let found = false;
-        for (let i = 0; i < selectedUsers.length; i++) { if (selectedUsers[i].Id === user.Id) { found = true; break; } }
-        if (!found) {
-            setSelectedUsers([...selectedUsers, user]);
-        } else {
-            const updatedUsers = selectedUsers?.filter((selectedUser: any) => selectedUser.Id !== user.Id);
-            setSelectedUsers(updatedUsers);
-        }
-    };
-    const handleGroupClick = (group: any) => {
-        const groupUsers: any = group.values;
-        let allSelected = true;
-        for (let i = 0; i < groupUsers.length; i++) {
-            let userFound = false;
-            for (let j = 0; j < selectedUsers.length; j++) {
-                if (selectedUsers[j].Id === groupUsers[i].Id) {
-                    userFound = true;
-                    break;
-                }
-            } if (!userFound) { allSelected = false; break; }
-        }
-        if (allSelected) {
-            const updatedUsers = selectedUsers?.filter((user: any) => !groupUsers.some((groupUser: any) => groupUser.Id === user.Id));
-            setSelectedUsers(updatedUsers);
-        } else {
-            const updatedUsers = [...selectedUsers, ...groupUsers?.filter((user: any) => !selectedUsers.some((selectedUser: any) => selectedUser.Id === user.Id))];
-            setSelectedUsers(updatedUsers);
-        }
-    };
-
     const handleTeamMemberClick = async (user: any, groupIndex: number) => {
         const isChecked = !user.checked;
         const eventId = "FilterTeamMembers";
@@ -2131,9 +2126,12 @@ const TeamSmartFilter = (item: any) => {
         await onCheck(checkedIds, groupIndex, eventId);
         setTaskUsersData(updatedTaskUsersData);
     }
-
-
-
+    const isGroupChecked = (MainGroup: any, Group: any) => {
+        const mainGroupChecked = MainGroup?.checked ?? []; const groupChildren = Group?.children ?? [];
+        const filteredChecked = mainGroupChecked?.filter((checkedItem: any) => groupChildren?.some((child: any) => child.Id == checkedItem && child?.ParentID !== "0"));
+        let val = false; let countk = 0;
+        groupChildren.forEach((el: any, index: any) => { let found: any = filteredChecked?.map((e: any) => { return e == el.Id ? true : false }); if (found) { countk = countk + 1; } }); if (countk === filteredChecked.length) { val = true; } return val == true ? true : false;
+    };
     ///////////////////////////////+++++++++++++++++++++ team User Selection end + ///////////////////////////////////////////////////
     return (
         <>
@@ -2166,66 +2164,13 @@ const TeamSmartFilter = (item: any) => {
                                     </div>
                                     <div className='alignCenter col-sm-4'>
                                         <div className='ml-auto alignCenter'>
-                                            {item?.webPartTemplateSmartFilter != true && <>
-                                                <div className="svg__iconbox svg__icon--setting hreflink me-2" style={{ backgroundColor: `${portfolioColor}` }} ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()}></div>
-                                                {action === "click" && visible && (
-                                                    <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container m-0 p-0" })}>
-                                                        {/* <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button> */}
-                                                        <div className='d-flex settingTooltip'>
-                                                            {filterGroupsData != null && filterGroupsData.length > 0 &&
-                                                                filterGroupsData?.map((MainGroup: any, index: any) => {
-                                                                    if (MainGroup?.Title == "Type") {
-                                                                        return (
-                                                                            <>
-                                                                                {MainGroup?.values?.map((Group: any) => {
-                                                                                    return (
-                                                                                        <div className='dataSec'>
-                                                                                            <div className="alignCenter dataSecParentSec">
-                                                                                                <input className={"form-check-input cursor-pointer mt-0"}
-                                                                                                    style={Group?.values?.length === MainGroup?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
-                                                                                                    type="checkbox"
-                                                                                                    checked={MainGroup?.checked?.some((datachecked: any) => datachecked == Group?.Id && Group.selectAllChecked === true) || Group.children?.every((child: any) => MainGroup?.checked.includes(child.Id)) ? true : false}
-                                                                                                    onChange={(e: any) => selectAllFromAbove(Group, e.target.checked)}
-                                                                                                    ref={(input) => {
-                                                                                                        if (input) {
-                                                                                                            const isIndeterminate = !(MainGroup?.checked?.some((datachecked: any) => datachecked == Group?.Id)) && !Group.children?.every((child: any) => MainGroup?.checked.includes(child.Id));
-                                                                                                            input.indeterminate = isIndeterminate;
-                                                                                                            if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
-                                                                                                        }
-                                                                                                    }}
-                                                                                                />
-                                                                                                <div className="fw-semibold ms-8 f-16 text-dark">{Group.Title}</div>
-                                                                                            </div>
-                                                                                            <div className='dataSecChild'>
-                                                                                                {Group?.values?.sort((a: any, b: any) => a.SortOrder - b.SortOrder)?.map((insideCheckBox: any) => {
-                                                                                                    return (
-                                                                                                        <label className='alignCenter f-16 dataSecChildSec'>
-                                                                                                            <input type="checkbox" className={"form-check-input cursor-pointer mt-0"} checked={MainGroup?.checked?.some((datachecked: any) => datachecked == insideCheckBox?.Id)} onChange={() => selectChild(insideCheckBox)} />
-                                                                                                            <div className='ms-8'>{insideCheckBox?.Title}</div>
-                                                                                                        </label>
-                                                                                                    )
-                                                                                                })}
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    )
-                                                                                })}
-                                                                            </>
-                                                                        )
-                                                                    }
-                                                                })
-                                                            }
-                                                            <div className='crossSec text-end'><span onClick={handleCloseClick} className='svg__iconbox svg__icon--cross ml-auto hreflink dark'></span></div>
-                                                        </div>
-                                                        <div {...getArrowProps({ className: "tooltip-arrow" })} />
-                                                    </div>
-                                                )}
-                                                <span style={{ color: `${portfolioColor}` }} className='me-1'>Flat View</span>
-                                                <label className="switch me-2" htmlFor="checkbox">
-                                                    <input checked={flatView} onChange={handleSwitchToggle} type="checkbox" id="checkbox" />
-                                                    {flatView === true ? <div className="slider round" title='Switch to Groupby View' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div title='Switch to Flat-View' className="slider round"></div>}
-                                                </label>
-                                                <div className="ml-auto" ><a className="hreflink" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a></div>
-                                            </>}
+                                            <a className="hreflink" onClick={() => setSmartFilterTypePannel(true)}><div className="svg__iconbox svg__icon--setting hreflink me-2"></div></a>
+                                            <span style={{ color: `${portfolioColor}` }} className='me-1'>Flat View</span>
+                                            <label className="switch me-2" htmlFor="checkbox">
+                                                <input checked={flatView} onChange={handleSwitchToggle} type="checkbox" id="checkbox" />
+                                                {flatView === true ? <div className="slider round" title='Switch to Groupby View' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div title='Switch to Flat-View' className="slider round"></div>}
+                                            </label>
+                                            <div className="ml-auto" ><a className="hreflink" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a></div>
                                             <div className="ms-1">
                                                 <Tooltip ComponentId={1651} />
                                             </div>
@@ -2628,6 +2573,17 @@ const TeamSmartFilter = (item: any) => {
                                         <label className='me-3'>
                                             <input className='form-check-input' type="checkbox" value="isTodaysTask" checked={isTodaysTask} onChange={() => setIsTodaysTask(!isTodaysTask)} /> Working Today
                                         </label>
+
+                                        <label className='me-3'>
+                                            <input className='form-check-input' type="checkbox" value="isPhone" checked={isPhone} onChange={() => setIsPhone(!isPhone)} /> Phone
+                                        </label>
+                                        <label className='me-3'>
+                                            <input className='form-check-input' type="checkbox" value="isBottleneck" checked={isBottleneck} onChange={() => setIsBottleneck(!isBottleneck)} /> Bottleneck
+                                        </label>
+                                        <label className='me-3'>
+                                            <input className='form-check-input' type="checkbox" value="isAttention" checked={isAttention} onChange={() => setIsAttention(!isAttention)} /> Attention
+                                        </label>
+
                                     </Col>
                                     {/* <div className="col-sm-12 pad0">
                                         <div className="togglecontent mt-1">
@@ -3006,6 +2962,7 @@ const TeamSmartFilter = (item: any) => {
                 ContextValue={ContextValue}
                 AllUsers={AllUsers}
             />}
+             {smartFilterTypePannel && <SmartfilterSettingTypePanel isGroupChecked={isGroupChecked} isOpen={smartFilterTypePannel} filterGroupsData={filterGroupsData} portfolioColor={portfolioColor} selectAllFromAbove={selectAllFromAbove} selectChild={selectChild} setSmartFilterTypePannel={setSmartFilterTypePannel}/>}
         </>
     )
 }

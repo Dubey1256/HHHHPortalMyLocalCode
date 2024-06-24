@@ -569,6 +569,22 @@ function TeamPortlioTable(SelectedProp: any) {
                                 result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                             }
                         }
+                        try {
+                            if (result?.WorkingAction) {
+                                const workingActionValue = JSON.parse(result.WorkingAction);
+                                const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                                result.workingActionValue = workingActionValue;
+                                result.workingActionTitle = workingActionValue?.filter((elem: any) => relevantTitles?.includes(elem.Title))?.map((elem: any) => elem.Title)?.join(" ");
+                                const todayStr = Moment().format('DD/MM/YYYY');
+                                result.workingDetailsBottleneck = workingActionValue?.find((item: any) => item.Title === 'Bottleneck' && item?.InformationData?.length > 0);
+                                result.workingDetailsAttention = workingActionValue?.find((item: any) => item.Title === 'Attention' && item?.InformationData?.length > 0);
+                                result.workingDetailsPhone = workingActionValue?.find((item: any) => item.Title === 'Phone' && item?.InformationData?.length > 0);
+                                const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
+                                if (workingDetails) { result.workingTodayUsers = workingDetails?.InformationData?.filter((detail: any) => detail.WorkingDate === todayStr); }
+                            }
+                        } catch (error) {
+                            console.error("An error occurred:", error);
+                        }
                         result = globalCommon.findTaskCategoryParent(taskCatagory, result)
                         result.SmartPriority = globalCommon.calculateSmartPriority(result);
                         result["Item_x0020_Type"] = "Task";
@@ -807,17 +823,18 @@ function TeamPortlioTable(SelectedProp: any) {
                             console.error("An error occurred:", error);
                         }
                         try {
-                            if (result?.WorkingAction != null) {
-                                result.workingActionValue = [];
-                                result.workingActionValue = JSON.parse(result?.WorkingAction);
-                                result.workingActionTitle = ""; result.workingActionIcon = {};
-                                result?.workingActionValue?.forEach((elem: any) => {
-                                    if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
-                                        result.workingActionTitle = result.workingActionTitle ? result.workingActionTitle + " " + elem.Title : elem.Title;
-                                    }
-                                });
+                            if (result?.WorkingAction) {
+                                const workingActionValue = JSON.parse(result.WorkingAction);
+                                const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                                result.workingActionValue = workingActionValue;
+                                result.workingActionTitle = workingActionValue?.filter((elem: any) => relevantTitles?.includes(elem.Title))?.map((elem: any) => elem.Title)?.join(" ");
+                                const todayStr = Moment().format('DD/MM/YYYY');
+                                result.workingDetailsBottleneck = workingActionValue?.find((item: any) => item.Title === 'Bottleneck' && item?.InformationData?.length > 0);
+                                result.workingDetailsAttention = workingActionValue?.find((item: any) => item.Title === 'Attention' && item?.InformationData?.length > 0);
+                                result.workingDetailsPhone = workingActionValue?.find((item: any) => item.Title === 'Phone' && item?.InformationData?.length > 0);
+                                const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
+                                if (workingDetails) { result.workingTodayUsers = workingDetails?.InformationData?.filter((detail: any) => detail.WorkingDate === todayStr); }
                             }
-
                         } catch (error) {
                             console.error("An error occurred:", error);
                         }
@@ -3460,109 +3477,6 @@ function TeamPortlioTable(SelectedProp: any) {
         refreshData();
 
     }, [])
-
-    const AddStructureCallBackCall = React.useCallback((item) => {
-        childRef?.current?.setRowSelection({});
-        if (!isOpenPopup && item.CreatedItem != undefined) {
-            item.CreatedItem.forEach((obj: any) => {
-                obj.data.childs = [];
-                obj.data.subRows = [];
-                obj.data.flag = true;
-                obj.data.TitleNew = obj.data.Title;
-                obj.data.siteType = "Master Tasks";
-                obj.data.SiteIconTitle = obj?.data?.Item_x0020_Type?.charAt(0);
-                obj.data["TaskID"] = obj.data.PortfolioStructureID;
-                if (
-                    item.props != undefined &&
-                    item.props.SelectedItem != undefined &&
-                    item.props.SelectedItem.subRows != undefined
-                ) {
-                    item.props.SelectedItem.subRows =
-                        item.props.SelectedItem.subRows == undefined
-                            ? []
-                            : item.props.SelectedItem.subRows;
-                    item.props.SelectedItem.subRows.unshift(obj.data);
-                }
-            });
-            if (copyDtaArray != undefined && copyDtaArray.length > 0) {
-                copyDtaArray.forEach((compnew: any, index: any) => {
-                    if (compnew.subRows != undefined && compnew.subRows.length > 0) {
-                        item.props.SelectedItem.downArrowIcon = compnew.downArrowIcon;
-                        item.props.SelectedItem.RightArrowIcon = compnew.RightArrowIcon;
-                        return false;
-                    }
-                });
-                copyDtaArray.forEach((comp: any, index: any) => {
-                    if (
-                        comp.Id != undefined &&
-                        item.props.SelectedItem != undefined &&
-                        comp.Id === item.props.SelectedItem.Id
-                    ) {
-                        comp.childsLength = item.props.SelectedItem.subRows.length;
-                        comp.show = comp.show == undefined ? false : comp.show;
-                        comp.downArrowIcon = item.props.SelectedItem.downArrowIcon;
-                        comp.RightArrowIcon = item.props.SelectedItem.RightArrowIcon;
-
-                        //comp.childs = item.props.SelectedItem.subRows;
-                        comp.subRows = item.props.SelectedItem.subRows;
-                    }
-                    if (comp.subRows != undefined && comp.subRows.length > 0) {
-                        comp.subRows.forEach((subcomp: any, index: any) => {
-                            if (
-                                subcomp.Id != undefined &&
-                                item.props.SelectedItem != undefined &&
-                                subcomp.Id === item.props.SelectedItem.Id
-                            ) {
-                                subcomp.childsLength = item.props.SelectedItem.subRows.length;
-                                subcomp.show = subcomp.show == undefined ? false : subcomp.show;
-                                subcomp.childs = item.props.SelectedItem.childs;
-                                subcomp.subRows = item.props.SelectedItem.subRows;
-                                comp.downArrowIcon = item.props.SelectedItem.downArrowIcon;
-                                comp.RightArrowIcon = item.props.SelectedItem.RightArrowIcon;
-                            }
-                        });
-                    }
-                });
-                // }
-            }
-            if (item?.CreateOpenType === 'CreatePopup') {
-                const openEditItem = (item?.CreatedItem != undefined ? item.CreatedItem[0]?.data : item.data);
-                setCMSToolComponent(openEditItem);
-                setIsComponent(true);
-            }
-            renderData = [];
-            renderData = renderData.concat(copyDtaArray)
-            refreshData();
-            // rerender();
-        }
-        if (!isOpenPopup && item.data != undefined) {
-            item.data.subRows = [];
-            item.data.flag = true;
-            item.data.TitleNew = item.data.Title;
-            item.data.siteType = "Master Tasks";
-            if (portfolioTypeData != undefined && portfolioTypeData.length > 0) {
-                portfolioTypeData.forEach((obj: any) => {
-                    if (item.data?.PortfolioTypeId != undefined)
-                        item.data.PortfolioType = obj;
-                })
-            }
-            item.data.SiteIconTitle = item?.data?.Item_x0020_Type?.charAt(0);
-            item.data["TaskID"] = item.data.PortfolioStructureID;
-            copyDtaArray.unshift(item.data);
-            renderData = [];
-            renderData = renderData.concat(copyDtaArray)
-            if (item?.CreateOpenType === 'CreatePopup') {
-                const openEditItem = (item?.CreatedItem != undefined ? item.CreatedItem[0]?.data : item.data);
-                setCMSToolComponent(openEditItem);
-                setIsComponent(true);
-            }
-            refreshData();
-        }
-        setOpenAddStructurePopup(false);
-    }, []);
-
-    const CreateOpenCall = React.useCallback((item) => { }, []);
-    /// END ////
 
     //----------------------------Code By Anshu---------------------------------------------------------------------------
 
