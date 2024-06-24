@@ -645,7 +645,13 @@ const onUploadImageFunction = async (imageList: any, addUpdateIndex: any, AddMor
                     textItems?.EditData?.Id +
                     "/" +
                     fileName,
-                ImageUrl: imgItem.data_url,
+                ImageUrl: textItems?.EditData?.siteUrl +
+                    "/Lists/" +
+                    CurrentSiteName +
+                    "/Attachments/" +
+                    textItems?.EditData?.Id +
+                    "/" +
+                    fileName,
                 UserImage:
                     currentUserDataObject != undefined &&
                         currentUserDataObject.Item_x0020_Cover?.Url?.length > 0

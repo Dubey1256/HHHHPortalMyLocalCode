@@ -1,4 +1,4 @@
-  import { Panel, PanelType } from "office-ui-fabric-react";
+import { Panel, PanelType } from "office-ui-fabric-react";
 import { Web } from "sp-pnp-js";
 import React, { useState } from "react";
 import * as Moment from "moment";
@@ -84,6 +84,7 @@ const inlineEditingcolumns = (props: any) => {
   const [comments, setComments] = useState([])
   const [onHoldPanel, setOnHoldPanel] = useState(false)
   const [DesignStatus, setDesignStatus] = useState(false);
+  const [workingAction, setWorkingAction] = useState([])
   const StatusArray = [
     { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
     { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -157,22 +158,43 @@ const inlineEditingcolumns = (props: any) => {
       } else {
         siteUrl = props?.AllListId?.siteUrl;
       }
-      if (props?.item?.TaskCategories?.length > 0) {
+      if (TempArrya.length == 0) {
         if (props?.item?.TaskCategories?.length > 0) {
-          props?.item?.TaskCategories?.map((cat: any) => {
-            cat.ActiveTile = true;
-          });
-          setDesignStatus(props?.item?.TaskCategories?.some((category: any) => category.Title === "Design"));
+          if (props?.item?.TaskCategories?.length > 0) {
+            props?.item?.TaskCategories?.map((cat: any) => {
+              cat.ActiveTile = true;
+            });
+            setDesignStatus(
+              props?.item?.TaskCategories?.some(
+                (category: any) => category.Title === "Design"
+              )
+            );
+            setCategoriesData(props?.item?.TaskCategories);
+          }
+        } else if (props?.item?.TaskCategories?.length == 0) {
+            setCategoriesData([]);
+        } else if (props?.item?.TaskCategories?.results?.length > 0) {
+          if (props?.item?.TaskCategories?.results?.length > 0) {
+            props?.item?.TaskCategories?.results?.map((cat: any) => {
+              cat.ActiveTile = true;
+            });
+            setCategoriesData(props?.item?.TaskCategories?.results);
+          }
+        } else if (props?.item?.TaskCategories?.results?.length == 0) {
+          setCategoriesData([]);
         }
-        setCategoriesData(props?.item?.TaskCategories);
-      } else if (props?.item?.TaskCategories?.results?.length > 0) {
-        if (props?.item?.TaskCategories?.results?.length > 0) {
-          props?.item?.TaskCategories?.results?.map((cat: any) => {
-            cat.ActiveTile = true;
-          });
-        }
-        setCategoriesData(props?.item?.TaskCategories?.results);
-      } else if ((props?.item?.TaskCategories?.length == 0 || props?.item?.TaskCategories?.results?.length == 0) && props?.item?.Categories?.length > 0) {
+      }
+      else {
+        TempArrya.forEach((item: any) => {
+          item.ActiveTile = true
+        })
+        setCategoriesData(TempArrya)
+      }
+      if (
+        (props?.item?.TaskCategories?.length == 0 ||
+          props?.item?.TaskCategories?.results?.length == 0) &&
+        props?.item?.Categories?.length > 0
+      ) {
         selectedCatTitleVal = [];
         selectedCatTitleVal = props?.item?.Categories?.split(";")
 
@@ -388,6 +410,24 @@ const inlineEditingcolumns = (props: any) => {
           instantCat.push(cat);
         }
       });
+      if (instantCat != null && instantCat != undefined) {
+        instantCat?.forEach((instCat: any) => {
+          if (props?.item?.TaskCategories.length > 0){
+            props?.item?.TaskCategories?.forEach((cat: any) => {
+              if (instCat.Id === cat.Id) {
+                instCat.ActiveTile = true;
+              }
+            });
+          }
+          else if (props?.item?.TaskCategories?.results.length > 0) {
+            props?.item?.TaskCategories?.results.forEach((cat: any) => {
+              if (instCat.Id === cat.Id) {
+                instCat.ActiveTile = true;
+              }
+            });
+          }     
+        });
+      }
       let uniqueArray: any = [];
       AutoCompleteItemsArray.map((currentObject: any) => {
         if (!uniqueArray.find((obj: any) => obj.Id === currentObject.Id)) {
@@ -549,6 +589,7 @@ const inlineEditingcolumns = (props: any) => {
         postData.AssignedToId = { results: AssignedToIds ?? [] };
         postData.ResponsibleTeamId = { results: ResponsibleTeamIds ?? [] };
         postData.TeamMembersId = { results: TeamMemberIds ?? [] };
+        postData.WorkingAction = JSON.stringify(workingAction)
         break;
 
       case 'Priority':
@@ -616,6 +657,7 @@ const inlineEditingcolumns = (props: any) => {
             }
             task.ResponsibleTeam = TaskResponsibleTeam;
             task.TeamMembers = TaskTeamMembers;
+            task.WorkingAction = JSON.stringify(workingAction)
             task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
             task.DisplayDueDate =
               task.DueDate != null
@@ -643,7 +685,8 @@ const inlineEditingcolumns = (props: any) => {
         setTaskStatusPopup(false);
         setTaskPriorityPopup(false);
         setTeamMembersPopup(false);
-        setTaskStatus("")
+        setTaskStatus("");
+        setWorkingAction([])
         clearEstimations();
         setRemark(false);
         closeTaskDueDate();
@@ -768,7 +811,33 @@ const inlineEditingcolumns = (props: any) => {
       ResponsibleTeamIds = []
       setTaskResponsibleTeam([])
     }
-  },[]);
+    if (dt?.dateInfo?.length > 0) {
+      let storeInWorkingAction: any = { "Title": "WorkingDetails", "InformationData": [] }
+      let userData: any = []
+      if (dt?.oldWorkingDaysInfo != undefined || dt?.oldWorkingDaysInfo != null && dt?.oldWorkingDaysInfo?.length > 0) {
+        dt?.oldWorkingDaysInfo.map((oldJson: any) => {
+          userData?.push(oldJson)
+        })
+    }
+      let oldWorkingActionData = props?.item?.WorkingActionParsed ? [...props.item.WorkingActionParsed] : [];
+      
+      dt.dateInfo.forEach((date: any) => {
+        let dataAccordingDays: any = {}
+        if (date.userInformation.length > 0) {
+          dataAccordingDays.WorkingDate = date?.originalDate
+          dataAccordingDays.WorkingMember = [];
+            date.userInformation.map((user: any) => {
+              dataAccordingDays.WorkingMember.push({ Id: user?.AssingedToUserId, Title: user.Title })
+            });                       
+            userData?.push(dataAccordingDays)
+        }
+    });
+    storeInWorkingAction.InformationData = [...userData]
+    oldWorkingActionData = oldWorkingActionData.filter((item: any) => item.Title != "WorkingDetails")
+    
+    setWorkingAction([...oldWorkingActionData, storeInWorkingAction]);
+    }
+  }, []);
 
   const EditComponentPicker = (item: any) => {
     setIsComponentPicker(true);
