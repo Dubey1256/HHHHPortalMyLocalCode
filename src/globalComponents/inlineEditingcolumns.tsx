@@ -196,7 +196,7 @@ const inlineEditingcolumns = (props: any) => {
         props?.item?.Categories?.length > 0
       ) {
         selectedCatTitleVal = [];
-        selectedCatTitleVal = props?.item?.Categories?.split(";")
+        selectedCatTitleVal = props?.item?.Categories?.split("; ")
       }
 
       loadTaskUsers();
@@ -546,9 +546,9 @@ const inlineEditingcolumns = (props: any) => {
         taskCategoryType?.map((item: any) => {
           if (category === item.Id) {
             if (CategoryTitle?.length == 0) {
-              CategoryTitle = item.Title + ";";
+              CategoryTitle = item.Title + "; ";
             } else {
-              CategoryTitle += item.Title + ";";
+              CategoryTitle += item.Title + "; ";
             }
           }
         });
@@ -560,9 +560,9 @@ const inlineEditingcolumns = (props: any) => {
         if (!selectedCategoriesId?.some((cat: any) => cat == item?.Id)) {
           selectedCategoriesId.push(item?.Id);
           if (CategoryTitle?.length == 0) {
-            CategoryTitle = item.Title + ";";
+            CategoryTitle = item.Title + "; ";
           } else {
-            CategoryTitle += item.Title + ";";
+            CategoryTitle += item.Title + "; ";
           }
         }
       });
