@@ -1838,7 +1838,7 @@ export default class UserTimeEntry extends React.Component<
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(32, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(29, "days").format();
       var b = new Date(change);
       formattedDate = b;
     } else if (startDateOf == "Last Week") {
@@ -2867,6 +2867,7 @@ export default class UserTimeEntry extends React.Component<
         totalDays: this.TotalDays,
         totalEntries: this.AllTimeEntry.length,
       };
+    
       this.setState(
         {
           AllTimeEntry: this.AllTimeEntry,
@@ -2899,14 +2900,20 @@ export default class UserTimeEntry extends React.Component<
           RoundAdjustedTime += parseFloat(element.RoundAdjustedTime);
         }
       }
+     
       resultSummary = {
         totalTime: this.TotalTimeEntry,
         totalDays: this.TotalDays,
         totalEntries: this.AllTimeEntry.length,
       };
+    const allTimeEntry=  this.AllTimeEntry.sort((a: any, b: any) => {
+        const dateA: any = new Date(a.TimeEntryDate.split('/').reverse().join('/'));
+        const dateB: any = new Date(b.TimeEntryDate.split('/').reverse().join('/'));
+        return dateB - dateA;
+    }); 
       this.setState(
         {
-          AllTimeEntry: this.AllTimeEntry,
+          AllTimeEntry: allTimeEntry,
           resultSummary,
         },
         () => this.createTableColumns()
@@ -3410,7 +3417,7 @@ export default class UserTimeEntry extends React.Component<
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Time Entry",
-        isColumnDefultSortingDesc: true,
+        isColumnDefultSortingDesc: false,
         header: "",
         size: 104,
       },
