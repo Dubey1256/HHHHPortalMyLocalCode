@@ -18,8 +18,9 @@ let CreatedSmartFavId: any;
 let autoSuggestItem: any;
 let SmartFavDashboardTitle: any = undefined;
 const AddEditWebpartTemplate = (props: any) => {
-    props.props.siteUrl = props?.props?.Context?._pageContext?._web?.absoluteUrl
-    props.props.AdminconfigrationID = props?.props?.AdminConfigurationListId
+    props.props.siteUrl = props?.props?.Context?._pageContext?._web?.absoluteUrl;
+    props.props.AdminconfigrationID = props?.props?.AdminConfigurationListId;
+    props.props.TaskUserListID = props?.props?.TaskUserListId;
     const [progressBar, setprogressBar] = useState(true)
     const [selectedTemplate, setselectedTemplate] = useState('')
     const params = new URLSearchParams(window.location.search);
