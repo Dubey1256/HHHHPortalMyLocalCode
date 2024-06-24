@@ -539,6 +539,22 @@ function TeamPortlioTable(SelectedProp: any) {
                                 result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                             }
                         }
+                        try {
+                            if (result?.WorkingAction) {
+                                const workingActionValue = JSON.parse(result.WorkingAction);
+                                const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                                result.workingActionValue = workingActionValue;
+                                result.workingActionTitle = workingActionValue?.filter((elem: any) => relevantTitles?.includes(elem.Title))?.map((elem: any) => elem.Title)?.join(" ");
+                                const todayStr = Moment().format('DD/MM/YYYY');
+                                result.workingDetailsBottleneck = workingActionValue?.find((item: any) => item.Title === 'Bottleneck' && item?.InformationData?.length > 0);
+                                result.workingDetailsAttention = workingActionValue?.find((item: any) => item.Title === 'Attention' && item?.InformationData?.length > 0);
+                                result.workingDetailsPhone = workingActionValue?.find((item: any) => item.Title === 'Phone' && item?.InformationData?.length > 0);
+                                const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
+                                if (workingDetails) { result.workingTodayUsers = workingDetails?.InformationData?.filter((detail: any) => detail.WorkingDate === todayStr); }
+                            }
+                        } catch (error) {
+                            console.error("An error occurred:", error);
+                        }
                         result = globalCommon.findTaskCategoryParent(taskCatagory, result)
                         result.SmartPriority = globalCommon.calculateSmartPriority(result);
                         result["Item_x0020_Type"] = "Task";
@@ -760,20 +776,23 @@ function TeamPortlioTable(SelectedProp: any) {
                             console.error("An error occurred:", error);
                         }
                         try {
-                            if (result?.WorkingAction != null) {
-                                result.workingActionValue = [];
-                                result.workingActionValue = JSON.parse(result?.WorkingAction);
-                                result.workingActionTitle = ""; result.workingActionIcon = {};
-                                result?.workingActionValue?.forEach((elem: any) => {
-                                    if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
-                                        result.workingActionTitle = result.workingActionTitle ? result.workingActionTitle + " " + elem.Title : elem.Title;
-                                    }
-                                });
+                            if (result?.WorkingAction) {
+                                const workingActionValue = JSON.parse(result.WorkingAction);
+                                const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                                result.workingActionValue = workingActionValue;
+                                result.workingActionTitle = workingActionValue?.filter((elem: any) => relevantTitles?.includes(elem.Title))?.map((elem: any) => elem.Title)?.join(" ");
+                                const todayStr = Moment().format('DD/MM/YYYY');
+                                result.workingDetailsBottleneck = workingActionValue?.find((item: any) => item.Title === 'Bottleneck' && item?.InformationData?.length > 0);
+                                result.workingDetailsAttention = workingActionValue?.find((item: any) => item.Title === 'Attention' && item?.InformationData?.length > 0);
+                                result.workingDetailsPhone = workingActionValue?.find((item: any) => item.Title === 'Phone' && item?.InformationData?.length > 0);
+                                const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
+                                if (workingDetails) { result.workingTodayUsers = workingDetails?.InformationData?.filter((detail: any) => detail.WorkingDate === todayStr); }
                             }
-
                         } catch (error) {
                             console.error("An error occurred:", error);
                         }
+
+
                         if (
                             result.AssignedTo != undefined &&
                             result.AssignedTo.length > 0
@@ -950,6 +969,7 @@ function TeamPortlioTable(SelectedProp: any) {
             }
             if (result.Author) {
                 result.Author.autherImage = findUserByName(result.Author?.Id)
+
             }
             result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
             if (result?.Editor) {
@@ -3283,9 +3303,10 @@ function TeamPortlioTable(SelectedProp: any) {
 
 
     const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
-        renderData = [];
-        renderData = renderData.concat(getData);
-        refreshData();
+        // renderData = [];
+        // renderData = renderData.concat(getData);
+        // refreshData();
+        setData(getData);
         setTopCompoIcon(topCompoIcon);
     }, []);
 
