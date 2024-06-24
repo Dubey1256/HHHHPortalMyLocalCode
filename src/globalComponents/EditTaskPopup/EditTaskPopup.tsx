@@ -41,7 +41,8 @@ import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
 import SmartPriorityHover from "./SmartPriorityHover";
-import TaskDetailsComponent from "./DesignTaskTemplate";
+import UXDesignPopupTemplate from "./UXDesignPopupTemplate";
+
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -1667,7 +1668,33 @@ const EditTaskPopup = (Items: any) => {
                     }
                     setSendCategoryName(selectedData?.Title);
                 }
+                //  code by vivek
+             
                 if (selectedData?.Title == "UX-New") {
+                    let firstIndexData:any=[]
+                    const RestructureData=JSON.parse(JSON.stringify(EditDataBackup))
+                    if(RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length>0){
+                        console.log(EditData)
+                        firstIndexData=RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
+                        let imageData= RestructureData?.BasicImageInfo!=null ?JSON.parse(RestructureData?.BasicImageInfo):[]
+                        RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
+                        let setDataFeedback= RestructureData.FeedBackBackup[0].FeedBackDescriptions;
+                        
+                    let designTemplates: any =[ firstIndexData,{
+                        setTitle: "A.SET1",
+                        setImagesInfo: imageData?.length>0?imageData:[],
+                        TemplatesArray: setDataFeedback
+                    }]
+                    RestructureData.FeedBackBackup[0].FeedBackDescriptions=designTemplates
+                    let updatedItem :any= {
+                        ...EditDataBackup,
+                        FeedBackBackup:RestructureData.FeedBackBackup,
+                        FeedBackArray:RestructureData?.designTemplates,
+                         FeedBack:JSON.stringify(RestructureData?.FeedBackBackup)
+                    };
+                    setEditData(updatedItem);
+                    EditDataBackup = updatedItem;
+                    }
                     setDesignNewTemplates(true)
                 }
             })
@@ -1681,7 +1708,34 @@ const EditTaskPopup = (Items: any) => {
                 } else {
                     BackupTaskCategoriesData.push(existingData);
                 }
+                // code by vivek
+               
+               
                 if (existingData?.Title == "UX-New") {
+                    let firstIndexData:any=[]
+                    const RestructureData=JSON.parse(JSON.stringify(EditDataBackup))
+                    if(RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length>0){
+                        console.log(EditData)
+                        firstIndexData=RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
+                        let imageData= RestructureData?.BasicImageInfo!=null ?JSON.parse(RestructureData?.BasicImageInfo):[]
+                        RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
+                        let setDataFeedback= RestructureData.FeedBackBackup[0].FeedBackDescriptions;
+                        
+                    let designTemplates: any =[ firstIndexData,{
+                        setTitle: "A.SET1",
+                        setImagesInfo: imageData?.length>0?imageData:[],
+                        TemplatesArray: setDataFeedback
+                    }]
+                    RestructureData.FeedBackBackup[0].FeedBackDescriptions=designTemplates
+                    let updatedItem :any= {
+                        ...EditDataBackup,
+                        FeedBackBackup:RestructureData.FeedBackBackup,
+                        FeedBackArray:RestructureData?.designTemplates,
+                         FeedBack:JSON.stringify(RestructureData?.FeedBackBackup)
+                    };
+                    setEditData(updatedItem);
+                    EditDataBackup = updatedItem;
+                    }
                     setDesignNewTemplates(true)
                 }
             });
@@ -3276,7 +3330,10 @@ const EditTaskPopup = (Items: any) => {
                 updateFeedbackArray[0].FeedBackDescriptions = result;
             }
         } else {
+            if(!DesignNewTemplates){
             updateFeedbackArray = JSON.parse(EditData?.FeedBack);
+        }
+            
         }
         // FeedBackBackupArray = [];
         let CategoriesTitle: any = "";
@@ -3922,6 +3979,7 @@ const EditTaskPopup = (Items: any) => {
         if (PhoneCount > 0) {
             CategoryChangeUpdateFunction("false", "Phone");
         }
+        EditDataBackup.FeedBackArray=TempFeedBackArray
     };
 
     const setStatusOnChangeSmartLight = (StatusInput: any) => {
@@ -5654,6 +5712,11 @@ const EditTaskPopup = (Items: any) => {
         );
     };
 
+     // code by vivek
+        const DesignTemplatesCallback=(designFeedbackData:any)=>{
+            updateFeedbackArray[0].FeedBackDescriptions=designFeedbackData
+            
+        } 
 
     return (
         <div
@@ -8010,21 +8073,20 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                 </div> :
                                     <div className="row py-3">
-                                        {EditData.Id != null && <TaskDetailsComponent data={
+                                        {EditData.Id != null && <UXDesignPopupTemplate data={
                                             EditData?.FeedBackBackup?.length > 0
                                                 ? EditData?.FeedBackBackup[0]
                                                     ?.FeedBackDescriptions
                                                 : []
                                         }
-                                            callBack={CommentSectionCallBack}
+                                        DesignTemplatesCallback={DesignTemplatesCallback}
                                             allUsers={taskUsers}
                                             ApprovalStatus={ApprovalStatus}
                                             SmartLightStatus={SmartLightStatus}
                                             SmartLightPercentStatus={SmartLightPercentStatus}
                                             Context={Context}
                                             FeedbackCount={FeedBackCount}
-                                            SubCommentSectionCallBack={SubCommentSectionCallBack}
-                                            MakeUpdateDataJSON={MakeUpdateDataJSON}
+                                           
                                             EditData={EditData}
                                             TaskListDetails={{
                                                 SiteURL: siteUrls,
@@ -8036,7 +8098,7 @@ const EditTaskPopup = (Items: any) => {
                                                 siteType: Items.Items.siteType,
                                             }}
                                             taskCreatedCallback={UpdateTaskInfoFunction}
-                                            DesignStatus={DesignNewTemplates}
+                                            UXStatus={DesignNewTemplates}
                                             currentUserBackupArray={currentUserBackupArray}
                                         />
                                         }

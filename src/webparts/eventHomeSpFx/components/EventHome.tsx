@@ -93,9 +93,9 @@ const EventHome = (props: any) => {
     return (
         <>
             <div className='event_home'>
-                <span className='heading siteColor'>Events Home
-                    {<EditPage context={context} changeHeader={changeHeader} />}
-                </span>
+                <h2 className='heading siteColor'>Events Home
+                   <span>{<EditPage context={context} changeHeader={changeHeader} />}</span> 
+                </h2>
 
                 <div id='tabs' className='exTab3  mt-15'>
                     <ul className="nav nav-tabs" id="eventTab" role='tablist'>
