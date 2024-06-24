@@ -667,7 +667,7 @@ export default function UXFeedbackComponent(textItems: any) {
         if (isChecked) {
             setSelectedMoveData([...selectedMoveData, data]);
         } else {
-            setSectedMoveImageData(selectedMoveData.filter(item => item.Title !== data.Title));
+            setSelectedMoveData(selectedMoveData.filter(item => item.Title !== data.Title));
         }
     }
     //------------------move set function End-------------

@@ -5,9 +5,14 @@ import { Panel, PanelType } from "office-ui-fabric-react";
 import Tooltip from "../Tooltip";
 const MoveSetComponent = (props: any) => {
     const [selectedItems, setSelectedItems] = useState([]);
-    const handleCheckboxChange = (data:any, isChecked:any) => {
-         setSelectedItems( data);
-     
+    const handleCheckboxChange = (data:any) => {
+        setSelectedItems([data]);
+        // if (isChecked) {
+        //     setSelectedItems([...selectedItems, data]);
+        // } 
+        // else {
+        //     setSelectedItems(selectedItems.filter(item => item.setTitle !== data.setTitle));
+        // }
     };
     const onRenderCustomMoveSetHeader = () => {
         return (
@@ -56,16 +61,15 @@ const Update=()=>{
                 <div>
                 <div className="modal-body mt-3">
             {props?.AllSetData?.length > 0 && props?.AllSetData.map((allsetdata:any, index:any) => {
-                const isChecked = selectedItems.some(item => item.setTitle === allsetdata.setTitle);
+                // const isChecked = selectedItems.some(item => item.setTitle === allsetdata.setTitle);
                 return (
                     <div key={index} className="SpfxCheckRadio">
                         <input className="radio"
                             type="radio"
                             id={`checkbox-${index}`}
                             name={`checkbox-${index}`}
-                            value={allsetdata.setTitle}
-                            checked={isChecked}
-                            onChange={(e) => handleCheckboxChange(allsetdata, e.target.checked)}
+                            value={allsetdata}
+                          onChange={(e) => handleCheckboxChange(allsetdata)}
                         />
                         <label className="ms-2"htmlFor={`checkbox-${index}`}> {allsetdata?.setTitle}</label><br />
                     </div>
