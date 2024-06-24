@@ -340,7 +340,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                             <div className={"FeedBack-comment row my-1"}>
                                 <div
                                     data-id={i}
-                                    className= "col"
+                                    className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9 col py-3" : "col"}
                                     onChange={handleChange}
                                 >
                                     <div className="Task-panel d-flex justify-content-between">
@@ -456,7 +456,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <span className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9 siteColor hreflink commentSectionLabel" : "siteColor hreflink commentSectionLabel"}
+                                            <span className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9 siteColor hreflink commentSectionLabel" : "siteColor hreflink commentSectionLabel"}
                                                  onClick={() => CreateSeparateTaskFunction(obj, i)}>
                                                     Create Task
                                                 </span>
@@ -469,12 +469,12 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             </a>
                                         </div>
                                     </div>
-                                    <div>
+                                    <div className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9" : ""}>
                                         <div className="d-flex" title={obj.isShowLight}>
                                             <span className="SubTestBorder p-1 me-1">{index + 1}</span>
                                             <textarea
                                                 style={{ width: "100%" }}
-                                                className="form-control"
+                                                className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "form-control Disabled-Link bg-e9" : "form-control"}
                                                 defaultValue={obj?.Title?.replace(/<[^>]*>/g, ' ')}
                                                 value={obj?.Title?.replace(/<[^>]*>/g, ' ')}
                                                 name='Title'
@@ -522,7 +522,26 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     {btnStatus ? <button className="btn btn-primary" onClick={addMainRowInDiv}>Add New Box</button> : null}
                 </div> : null}
 
-               
+                {/* ********************* this is Approval History panel ****************** */}
+                {ApprovalPointHistoryStatus ?
+                    <ApprovalHistoryPopup
+                        ApprovalPointUserData={ApprovalPointUserData}
+                        ApprovalPointCurrentIndex={ApprovalPointCurrentIndex + 1}
+                        ApprovalPointHistoryStatus={ApprovalPointHistoryStatus}
+                        callBack={ApprovalHistoryPopupCallBack}
+                    />
+                    : null
+                }
+                {/* ********************* this is Task Popup panel ****************** */}
+                {IsOpenCreateTaskPanel ?
+                    <CreateTaskCompareTool
+                        ItemDetails={ItemDetails}
+                        RequiredListIds={TaskDetails.AllListIdData}
+                        CallbackFunction={CreateTaskCallBack}
+                        CreateTaskForThisPoint={CreateTaskForThis}
+                        Context={Context}
+                    /> : null
+                }
             </div>
         )
     }
