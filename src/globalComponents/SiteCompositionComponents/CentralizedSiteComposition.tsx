@@ -904,6 +904,7 @@ const CentralizedSiteComposition = (Props: any) => {
                             listId={ItemDetails?.listId}
                             RequiredListIds={RequiredListIds}
                             siteUrls={siteUrl}
+                            listName='Master Tasks'
                         />
                         : ""}
                 </div>
