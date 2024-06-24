@@ -142,8 +142,8 @@ const MeetingOverviewMain = (props: any) => {
             let Alltask: any = [];
             // var AllUsers: any = []
             Alltask = await web.lists.getById(AllListId?.MasterTaskListID).items
-                .select("Deliverables,TechnicalExplanations,PortfolioLevel,PortfolioStructureID,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,Component/Id,Component/Title,Component/ItemType,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
-                .expand("ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,TeamMembers,Parent,ResponsibleTeam")
+                .select("Deliverables,TechnicalExplanations,PortfolioLevel,PortfolioStructureID,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .expand("ComponentCategory,AssignedTo,AttachmentFiles,Author,Editor,TeamMembers,Parent,ResponsibleTeam")
                 .top(4999).filter("Item_x0020_Type eq 'Meeting'")
                 .getAll();
             Alltask.map((items: any) => {
@@ -352,8 +352,8 @@ const MeetingOverviewMain = (props: any) => {
                         smartmeta = await web.lists
                             .getById(config?.listId)
                             .items
-                            .select("Id,Title,PriorityRank,ParentTask/Id,EstimatedTime,TaskID,TaskLevel,EstimatedTimeDescription,ComponentLink,workingThisWeek,EstimatedTime,OffshoreImageUrl,OffshoreComments,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,Events/Id,ComponentId,Categories,ServicesId,EventsId,PriorityRank,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,AssignedTo/Id,AssignedTo/Title,Portfolio/Id,Portfolio/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,component_x0020_link,TaskCategories/Title,TaskCategories/Id")
-                            .expand('AssignedTo,Team_x0020_Members,Portfolio,ParentTask,Component,Services,Events,TaskType,Responsible_x0020_Team,TaskCategories')
+                            .select("Id,Title,PriorityRank,ParentTask/Id,EstimatedTime,TaskID,TaskLevel,EstimatedTimeDescription,ComponentLink,workingThisWeek,EstimatedTime,OffshoreImageUrl,OffshoreComments,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,PriorityRank,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,AssignedTo/Id,AssignedTo/Title,Portfolio/Id,Portfolio/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,component_x0020_link,TaskCategories/Title,TaskCategories/Id")
+                            .expand('AssignedTo,Team_x0020_Members,Portfolio,ParentTask,TaskType,Responsible_x0020_Team,TaskCategories')
                             .top(4999)
                             .get();
                         arraycount++;
@@ -387,18 +387,18 @@ const MeetingOverviewMain = (props: any) => {
                                     items.teamMember.push(mem?.Id)
                                 })
                             }
-                            if (items?.ComponentId?.length > 0) {
-                                items['Portfoliotype'] = 'Component';
-                                items['parentPortfolioid'] = items.ComponentId[0]
+                            // if (items?.ComponentId?.length > 0) {
+                            //     items['Portfoliotype'] = 'Component';
+                            //     items['parentPortfolioid'] = items.ComponentId[0]
 
-                            } else if (items?.ServicesId?.length > 0) {
-                                items['Portfoliotype'] = 'Service';
-                                items['parentPortfolioid'] = items.ServicesId[0]
-                            } else if (items?.EventsId?.length > 0) {
-                                items['Portfoliotype'] = 'Event';
-                                items['parentPortfolioid'] = items.EventsId[0]
+                            // } else if (items?.ServicesId?.length > 0) {
+                            //     items['Portfoliotype'] = 'Service';
+                            //     items['parentPortfolioid'] = items.ServicesId[0]
+                            // } else if (items?.EventsId?.length > 0) {
+                            //     items['Portfoliotype'] = 'Event';
+                            //     items['parentPortfolioid'] = items.EventsId[0]
 
-                            }
+                            // }
 
                             if (items?.PriorityRank != undefined) {
                                 items.PriorityRank = items?.PriorityRank

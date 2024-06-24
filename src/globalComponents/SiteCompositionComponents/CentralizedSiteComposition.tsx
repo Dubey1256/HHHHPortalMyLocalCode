@@ -539,7 +539,7 @@ const CentralizedSiteComposition = (Props: any) => {
     }
 
     const GetIndividualSiteAllData = async () => {
-        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/PortfolioStructureID,workingThisWeek,SiteCompositionSettings,Sitestagging,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/PortfolioStructureID,workingThisWeek,SiteCompositionSettings,Sitestagging,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
         try {
             const data = await web.lists.getById(ItemDetails?.listId).items.select(query).getAll();
             data?.map((task: any) => {
@@ -904,6 +904,7 @@ const CentralizedSiteComposition = (Props: any) => {
                             listId={ItemDetails?.listId}
                             RequiredListIds={RequiredListIds}
                             siteUrls={siteUrl}
+                            listName='Master Tasks'
                         />
                         : ""}
                 </div>
