@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import ReactDOM from "react-dom";
@@ -1669,31 +1668,31 @@ const EditTaskPopup = (Items: any) => {
                     setSendCategoryName(selectedData?.Title);
                 }
                 //  code by vivek
-             
+
                 if (selectedData?.Title == "UX-New") {
-                    let firstIndexData:any=[]
-                    const RestructureData=JSON.parse(JSON.stringify(EditDataBackup))
-                    if(RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length>0){
+                    let firstIndexData: any = []
+                    const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
+                    if (RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length > 0) {
                         console.log(EditData)
-                        firstIndexData=RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
-                        let imageData= RestructureData?.BasicImageInfo!=null ?JSON.parse(RestructureData?.BasicImageInfo):[]
+                        firstIndexData = RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
+                        let imageData = RestructureData?.BasicImageInfo != null ? JSON.parse(RestructureData?.BasicImageInfo) : []
                         RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
-                        let setDataFeedback= RestructureData.FeedBackBackup[0].FeedBackDescriptions;
-                        
-                    let designTemplates: any =[ firstIndexData,{
-                        setTitle: "A.SET1",
-                        setImagesInfo: imageData?.length>0?imageData:[],
-                        TemplatesArray: setDataFeedback
-                    }]
-                    RestructureData.FeedBackBackup[0].FeedBackDescriptions=designTemplates
-                    let updatedItem :any= {
-                        ...EditDataBackup,
-                        FeedBackBackup:RestructureData.FeedBackBackup,
-                        FeedBackArray:RestructureData?.designTemplates,
-                         FeedBack:JSON.stringify(RestructureData?.FeedBackBackup)
-                    };
-                    setEditData(updatedItem);
-                    EditDataBackup = updatedItem;
+                        let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
+
+                        let designTemplates: any = [firstIndexData, {
+                            setTitle: "SET1",
+                            setImagesInfo: imageData?.length > 0 ? imageData : [],
+                            TemplatesArray: setDataFeedback
+                        }]
+                        RestructureData.FeedBackBackup[0].FeedBackDescriptions = designTemplates
+                        let updatedItem: any = {
+                            ...EditDataBackup,
+                            FeedBackBackup: RestructureData.FeedBackBackup,
+                            FeedBackArray: RestructureData?.designTemplates,
+                            FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
+                        };
+                        setEditData(updatedItem);
+                        EditDataBackup = updatedItem;
                     }
                     setDesignNewTemplates(true)
                 }
@@ -1709,32 +1708,32 @@ const EditTaskPopup = (Items: any) => {
                     BackupTaskCategoriesData.push(existingData);
                 }
                 // code by vivek
-               
-               
+
+
                 if (existingData?.Title == "UX-New") {
-                    let firstIndexData:any=[]
-                    const RestructureData=JSON.parse(JSON.stringify(EditDataBackup))
-                    if(RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length>0){
+                    let firstIndexData: any = []
+                    const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
+                    if (RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length > 0) {
                         console.log(EditData)
-                        firstIndexData=RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
-                        let imageData= RestructureData?.BasicImageInfo!=null ?JSON.parse(RestructureData?.BasicImageInfo):[]
+                        firstIndexData = RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
+                        let imageData = RestructureData?.BasicImageInfo != null ? JSON.parse(RestructureData?.BasicImageInfo) : []
                         RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
-                        let setDataFeedback= RestructureData.FeedBackBackup[0].FeedBackDescriptions;
-                        
-                    let designTemplates: any =[ firstIndexData,{
-                        setTitle: "A.SET1",
-                        setImagesInfo: imageData?.length>0?imageData:[],
-                        TemplatesArray: setDataFeedback
-                    }]
-                    RestructureData.FeedBackBackup[0].FeedBackDescriptions=designTemplates
-                    let updatedItem :any= {
-                        ...EditDataBackup,
-                        FeedBackBackup:RestructureData.FeedBackBackup,
-                        FeedBackArray:RestructureData?.designTemplates,
-                         FeedBack:JSON.stringify(RestructureData?.FeedBackBackup)
-                    };
-                    setEditData(updatedItem);
-                    EditDataBackup = updatedItem;
+                        let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
+
+                        let designTemplates: any = [firstIndexData, {
+                            setTitle: "A.SET1",
+                            setImagesInfo: imageData?.length > 0 ? imageData : [],
+                            TemplatesArray: setDataFeedback
+                        }]
+                        RestructureData.FeedBackBackup[0].FeedBackDescriptions = designTemplates
+                        let updatedItem: any = {
+                            ...EditDataBackup,
+                            FeedBackBackup: RestructureData.FeedBackBackup,
+                            FeedBackArray: RestructureData?.designTemplates,
+                            FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
+                        };
+                        setEditData(updatedItem);
+                        EditDataBackup = updatedItem;
                     }
                     setDesignNewTemplates(true)
                 }
@@ -3330,10 +3329,10 @@ const EditTaskPopup = (Items: any) => {
                 updateFeedbackArray[0].FeedBackDescriptions = result;
             }
         } else {
-            if(!DesignNewTemplates){
-            updateFeedbackArray = JSON.parse(EditData?.FeedBack);
-        }
-            
+            if (!DesignNewTemplates) {
+                updateFeedbackArray = JSON.parse(EditData?.FeedBack);
+            }
+
         }
         // FeedBackBackupArray = [];
         let CategoriesTitle: any = "";
@@ -3979,7 +3978,7 @@ const EditTaskPopup = (Items: any) => {
         if (PhoneCount > 0) {
             CategoryChangeUpdateFunction("false", "Phone");
         }
-        EditDataBackup.FeedBackArray=TempFeedBackArray
+        EditDataBackup.FeedBackArray = TempFeedBackArray
     };
 
     const setStatusOnChangeSmartLight = (StatusInput: any) => {
@@ -5427,16 +5426,10 @@ const EditTaskPopup = (Items: any) => {
 
     const onRenderCustomApproverHeader = () => {
         return (
-            <div
-                className={
-                    ServicesTaskCheck
-                        ? "d-flex full-width pb-1 serviepannelgreena"
-                        : "d-flex full-width pb-1"
-                }
-            >
-                <div className="subheading siteColor"> {useFor != "" ? `Select${useFor}` : `Select Approver`}</div>
+            <>
+                <div className="subheading"> {useFor != "" ? `Select${useFor}` : `Select Approver`}</div>
                 <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
-            </div>
+            </>
         );
     };
 
@@ -5712,11 +5705,11 @@ const EditTaskPopup = (Items: any) => {
         );
     };
 
-     // code by vivek
-        const DesignTemplatesCallback=(designFeedbackData:any)=>{
-            updateFeedbackArray[0].FeedBackDescriptions=designFeedbackData
-            
-        } 
+    // code by vivek
+    const DesignTemplatesCallback = (designFeedbackData: any) => {
+        updateFeedbackArray[0].FeedBackDescriptions = designFeedbackData
+
+    }
 
     return (
         <div
@@ -7502,11 +7495,13 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 && (
-                                                                            <span
-                                                                                onClick={() => openBottleneckPopup("Bottleneck")}
-                                                                                title="Add User Popup"
-                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                            ></span>
+
+                                                                            <span className="hover-text alignCenter">
+                                                                                <span onClick={() => openBottleneckPopup("Bottleneck")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    Add User
+                                                                                </span>
+                                                                            </span>
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -7666,10 +7661,13 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 ? (
-                                                                            <span onClick={() => openBottleneckPopup("Attention")}
-                                                                                title="Add User Popup"
-                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                            ></span>
+
+                                                                            <span className="hover-text alignCenter">
+                                                                                <span onClick={() => openBottleneckPopup("Attention")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    Add User
+                                                                                </span>
+                                                                            </span>
                                                                         ) : null}
                                                                     </div>
                                                                 </div>
@@ -7788,11 +7786,12 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 ? (
-                                                                            <span
-                                                                                onClick={() => openBottleneckPopup("Phone")}
-                                                                                title="Add User Popup"
-                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                            ></span>
+                                                                            <span className="hover-text alignCenter">
+                                                                                <span onClick={() => openBottleneckPopup("Phone")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    Add User
+                                                                                </span>
+                                                                            </span>
                                                                         ) : null}
                                                                     </div>
                                                                 </div>
@@ -8079,14 +8078,14 @@ const EditTaskPopup = (Items: any) => {
                                                     ?.FeedBackDescriptions
                                                 : []
                                         }
-                                        DesignTemplatesCallback={DesignTemplatesCallback}
+                                            DesignTemplatesCallback={DesignTemplatesCallback}
                                             allUsers={taskUsers}
                                             ApprovalStatus={ApprovalStatus}
                                             SmartLightStatus={SmartLightStatus}
                                             SmartLightPercentStatus={SmartLightPercentStatus}
                                             Context={Context}
                                             FeedbackCount={FeedBackCount}
-                                           
+
                                             EditData={EditData}
                                             TaskListDetails={{
                                                 SiteURL: siteUrls,
@@ -10125,12 +10124,12 @@ const EditTaskPopup = (Items: any) => {
                                                                                         </span>
                                                                                     </span>
                                                                                     {WAItemData?.InformationData?.length === 1 && (
-                                                                                        <span onClick={() => openBottleneckPopup("Bottleneck")}>
-                                                                                            <span
-                                                                                                title="Add Comment"
-                                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                                            ></span>
-                                                                                        </span>
+                                                                                         <span className="hover-text alignCenter">
+                                                                                         <span onClick={() => openBottleneckPopup("Bottleneck")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                         <span className="tooltip-text pop-left">
+                                                                                             Add User
+                                                                                         </span>
+                                                                                     </span>
                                                                                     )}
                                                                                 </div>
                                                                             </div>
@@ -10289,12 +10288,12 @@ const EditTaskPopup = (Items: any) => {
                                                                                         </span>
                                                                                     </span>
                                                                                     {WAItemData?.InformationData?.length === 1 ? (
-                                                                                        <span onClick={() => openBottleneckPopup("Attention")}>
-                                                                                            <span
-                                                                                                title="Add Comment"
-                                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                                            ></span>
+                                                                                        <span className="hover-text alignCenter">
+                                                                                        <span onClick={() => openBottleneckPopup("Attention")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                        <span className="tooltip-text pop-left">
+                                                                                            Add User
                                                                                         </span>
+                                                                                    </span>
                                                                                     ) : null}
                                                                                 </div>
                                                                             </div>
@@ -10413,12 +10412,12 @@ const EditTaskPopup = (Items: any) => {
                                                                                         </span>
                                                                                     </span>
                                                                                     {WAItemData?.InformationData?.length === 1 ? (
-                                                                                        <span onClick={() => openBottleneckPopup("Phone")}>
-                                                                                            <span
-                                                                                                title="Add Comment"
-                                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                                            ></span>
+                                                                                        <span className="hover-text alignCenter">
+                                                                                        <span onClick={() => openBottleneckPopup("Phone")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                        <span className="tooltip-text pop-left">
+                                                                                            Add User
                                                                                         </span>
+                                                                                    </span> 
                                                                                     ) : null}
                                                                                 </div>
                                                                             </div>
@@ -10954,7 +10953,7 @@ const EditTaskPopup = (Items: any) => {
                                 </div>
                             ) : null}
                             {ApproverData?.length > 0 ? (
-                                <div className="border full-width my-1 p-1">
+                                <div className="ps-0 full-width my-1 p-1">
                                     {ApproverData?.map((val: any) => {
                                         return (
                                             <a className="hreflink block me-1">
@@ -11022,23 +11021,22 @@ const EditTaskPopup = (Items: any) => {
                             </ul>
                         </div>
                     </div>
-                    <footer className="fixed-bottom">
-                        <div className="align-items-center d-flex pull-right px-4 py-2">
-                            <button
-                                type="button"
-                                className="btn btn-primary px-3 mx-1"
-                                onClick={UpdateApproverFunction}
-                            >
-                                Save
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-default px-3"
-                                onClick={closeApproverPopup}
-                            >
-                                Cancel
-                            </button>
-                        </div>
+                    <footer className="modal-footer">
+                        <button
+                            type="button"
+                            className="btn btn-primary px-3 mx-1"
+                            onClick={UpdateApproverFunction}
+                        >
+                            Save
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-default px-3"
+                            onClick={closeApproverPopup}
+                        >
+                            Cancel
+                        </button>
+
                     </footer>
                 </div>
             </Panel>
