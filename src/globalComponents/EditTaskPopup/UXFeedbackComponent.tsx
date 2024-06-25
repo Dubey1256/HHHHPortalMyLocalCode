@@ -338,7 +338,7 @@ export default function UXFeedbackComponent(textItems: any) {
             }
         })
         designTemplatesArray[copyCurrentActiveTab].TemplatesArray=copy
-        setState(designTemplatesArray);
+        setState([...designTemplatesArray]);
         callBack(designTemplatesArray);
        
     }
