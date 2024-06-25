@@ -6,6 +6,6 @@ export interface IManageWebpartTemplateProps {
   userDisplayName: string;
   Context: any;
   AdminConfigurationListId: string;
-  TaskUserListId: any;
+  TaskUserListID: any;
   SmartMetadataListID: any;
 }
