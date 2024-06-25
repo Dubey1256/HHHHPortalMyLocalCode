@@ -592,7 +592,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         AllSiteTasksDataBackGroundLoad.push(result)
                     });
                     smartTimeUseLocalStorage(AllSiteTasksDataBackGroundLoad)
-                    tasksDataLoadUpdate = tasksDataLoadUpdate.concat(allTaskDataFlatLoadeViewBackup);
+                    // tasksDataLoadUpdate = tasksDataLoadUpdate.concat(allTaskDataFlatLoadeViewBackup);
                     tasksDataLoadUpdate = tasksDataLoadUpdate.concat(AllSiteTasksDataBackGroundLoad);
                     setAllSiteTasksDataLoadAll(tasksDataLoadUpdate);
                     let taskBackup: any = []
