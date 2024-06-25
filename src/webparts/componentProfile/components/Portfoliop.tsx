@@ -359,7 +359,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
     return (
       <div>
         <span title={formattedDate != 'Invalid date'?formattedDate:''}>{formattedDate != 'Invalid date'?formattedDate:''}</span>
-        <a className="alignIcon ms-1 pencil-icons" onClick={handleEdit}>
+        <a className="alignIcon ms-1 pencil-icons pull-right" onClick={handleEdit}>
           <span className="svg__iconbox svg__icon--calendar"></span>
         </a>
       </div>
@@ -1428,7 +1428,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                           </dt>
                           <dd className="bg-light">
                             {data.map((item: any, index: any) => (
-                              <a  className="ml-auto pancil-icons">
+                              <a>
                                 <EditableField
                                   key={index}
                                   listName="Master Tasks"
@@ -1587,7 +1587,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                           <dd className="bg-light">
                             <span>
                               {data.map((item: any, index: any) => (
-                                <a  className="ml-auto pancil-icons">
+                                <a>
                                   <EditableField
                                     key={index}
                                     listName="Master Tasks"
@@ -1761,7 +1761,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                       </dt>
                       <dd className="bg-light">
                         {data.map((item: any, index: any) => (
-                          <a className="ml-auto pancil-icons">
+                          <a>
                             <EditableField
                               key={index}
                               listName="Master Tasks"

@@ -32,6 +32,8 @@ let TaskApproverBackupArray: any = [];
 let StatusValue: any
 let onHoldCategory: any = []
 let TempArrya: any = [];
+let UpdatedItemRank: any = "";
+
 const inlineEditingcolumns = (props: any) => {
   const [EditData, setEditData] = React.useState(props?.item)
   const [TimeInHours, setTimeInHours] = React.useState(0);
@@ -51,6 +53,7 @@ const inlineEditingcolumns = (props: any) => {
   const [TaskCat, setTaskCat] = React.useState("");
   const [instantCategories, setInstantCategories] = React.useState([]);
   const [TaskPriorityPopup, setTaskPriorityPopup] = React.useState(false);
+  const [ItemRankPopup, setItemRankPopup] = React.useState(false);
   const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState("");
   const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
   const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
@@ -76,6 +79,7 @@ const inlineEditingcolumns = (props: any) => {
   const [taskCategoryType, setTaskCategoryType] = React.useState([]);
   const [taskStatus, setTaskStatus] = React.useState("");
   const [taskPriority, setTaskPriority] = React.useState("");
+  const [ItemRankPortfolio, setItemRankPortfolio] = useState<number | 0>(0);
   const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
   const [UpdateEstimatedTime, setUpdateEstimatedTime] = React.useState(false);
   const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true);
@@ -84,7 +88,6 @@ const inlineEditingcolumns = (props: any) => {
   const [comments, setComments] = useState([])
   const [onHoldPanel, setOnHoldPanel] = useState(false)
   const [DesignStatus, setDesignStatus] = useState(false);
-  const [workingAction, setWorkingAction] = useState([])
   const StatusArray = [
     { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
     { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -101,10 +104,19 @@ const inlineEditingcolumns = (props: any) => {
     { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" },
   ];
-
+  const TaskItemRank = [
+    { rankTitle: "(8) Top Highlights", rank: 8 },
+    { rankTitle: "(7) Featured Item", rank: 7 },
+    { rankTitle: "(6) Key Item", rank: 6 },
+    { rankTitle: "(5) Relevant Item", rank: 5 },
+    { rankTitle: "(4) Background Item", rank: 4 },
+    { rankTitle: "(2) to be verified", rank: 2 },
+    { rankTitle: "(1) Archive", rank: 1 },
+    { rankTitle: "(0) No Show", rank: 0 },
+  ];
   React.useEffect(() => {
     updateItemValues();
-  }, [dueDate.editPopup, UpdateFeatureType, TaskStatusPopup, remark, teamMembersPopup, UpdateEstimatedTime, TaskPriorityPopup, taskCategoriesPopup, props?.item?.TaskCategories?.results]);
+  }, [dueDate.editPopup, UpdateFeatureType, TaskStatusPopup, remark, teamMembersPopup, UpdateEstimatedTime, TaskPriorityPopup, taskCategoriesPopup, props?.item?.TaskCategories?.results, ItemRankPortfolio]);
 
   React.useEffect(() => {
     updateTaskComments();
@@ -112,12 +124,12 @@ const inlineEditingcolumns = (props: any) => {
 
   React.useEffect(() => {
     setTimeout(() => {
-        const panelMain: any = document.querySelector('.ms-Panel-main');
-        if (panelMain && props.portfolioColor) {
-            $('.ms-Panel-main').css('--SiteBlue', props?.portfolioColor); // Set the desired color value here
-        }
+      const panelMain: any = document.querySelector('.ms-Panel-main');
+      if (panelMain && props.portfolioColor) {
+        $('.ms-Panel-main').css('--SiteBlue', props?.portfolioColor); // Set the desired color value here
+      }
     }, 1500)
-}, [taskCategoriesPopup]);
+  }, [taskCategoriesPopup]);
 
   const updateItemValues = () => {
     selectedCatTitleVal = [];
@@ -134,7 +146,7 @@ const inlineEditingcolumns = (props: any) => {
       a = JSON.parse(a)
       a = a.filter((item: any) => item.Title != 'Bottleneck')
       localStorage.setItem('taskCategoryType', JSON.stringify(a))
-      
+
     }
     catch (e) {
       console.error("JSON cannot be parsed")
@@ -158,43 +170,22 @@ const inlineEditingcolumns = (props: any) => {
       } else {
         siteUrl = props?.AllListId?.siteUrl;
       }
-      if (TempArrya.length == 0) {
+      if (props?.item?.TaskCategories?.length > 0) {
         if (props?.item?.TaskCategories?.length > 0) {
-          if (props?.item?.TaskCategories?.length > 0) {
-            props?.item?.TaskCategories?.map((cat: any) => {
-              cat.ActiveTile = true;
-            });
-            setDesignStatus(
-              props?.item?.TaskCategories?.some(
-                (category: any) => category.Title === "Design"
-              )
-            );
-            setCategoriesData(props?.item?.TaskCategories);
-          }
-        } else if (props?.item?.TaskCategories?.length == 0) {
-            setCategoriesData([]);
-        } else if (props?.item?.TaskCategories?.results?.length > 0) {
-          if (props?.item?.TaskCategories?.results?.length > 0) {
-            props?.item?.TaskCategories?.results?.map((cat: any) => {
-              cat.ActiveTile = true;
-            });
-            setCategoriesData(props?.item?.TaskCategories?.results);
-          }
-        } else if (props?.item?.TaskCategories?.results?.length == 0) {
-          setCategoriesData([]);
+          props?.item?.TaskCategories?.map((cat: any) => {
+            cat.ActiveTile = true;
+          });
+          setDesignStatus(props?.item?.TaskCategories?.some((category: any) => category.Title === "Design"));
         }
-      }
-      else {
-        TempArrya.forEach((item: any) => {
-          item.ActiveTile = true
-        })
-        setCategoriesData(TempArrya)
-      }
-      if (
-        (props?.item?.TaskCategories?.length == 0 ||
-          props?.item?.TaskCategories?.results?.length == 0) &&
-        props?.item?.Categories?.length > 0
-      ) {
+        setCategoriesData(props?.item?.TaskCategories);
+      } else if (props?.item?.TaskCategories?.results?.length > 0) {
+        if (props?.item?.TaskCategories?.results?.length > 0) {
+          props?.item?.TaskCategories?.results?.map((cat: any) => {
+            cat.ActiveTile = true;
+          });
+        }
+        setCategoriesData(props?.item?.TaskCategories?.results);
+      } else if ((props?.item?.TaskCategories?.length == 0 || props?.item?.TaskCategories?.results?.length == 0) && props?.item?.Categories?.length > 0) {
         selectedCatTitleVal = [];
         selectedCatTitleVal = props?.item?.Categories?.split(";")
 
@@ -219,6 +210,7 @@ const inlineEditingcolumns = (props: any) => {
       setTaskResponsibleTeam(props?.item?.ResponsibleTeam);
       setSelectedCatId(selectedCategoryId);
       setTaskPriority(props?.item?.PriorityRank);
+      // setItemRankPortfolio(props?.item?.ItemRank)
       setFeedback(props?.item?.Remark);
       setEstimatedTimeProps();
       if (props?.item?.PercentComplete != undefined) {
@@ -288,7 +280,7 @@ const inlineEditingcolumns = (props: any) => {
           site == null ||
           instantCat == null ||
           site != siteUrl) &&
-        (!DataLoaded||site != siteUrl)
+        (!DataLoaded || site != siteUrl)
       ) {
         impTaskCategories = [];
         CMSTaskCategories = [];
@@ -410,24 +402,6 @@ const inlineEditingcolumns = (props: any) => {
           instantCat.push(cat);
         }
       });
-      if (instantCat != null && instantCat != undefined) {
-        instantCat?.forEach((instCat: any) => {
-          if (props?.item?.TaskCategories.length > 0){
-            props?.item?.TaskCategories?.forEach((cat: any) => {
-              if (instCat.Id === cat.Id) {
-                instCat.ActiveTile = true;
-              }
-            });
-          }
-          else if (props?.item?.TaskCategories?.results.length > 0) {
-            props?.item?.TaskCategories?.results.forEach((cat: any) => {
-              if (instCat.Id === cat.Id) {
-                instCat.ActiveTile = true;
-              }
-            });
-          }     
-        });
-      }
       let uniqueArray: any = [];
       AutoCompleteItemsArray.map((currentObject: any) => {
         if (!uniqueArray.find((obj: any) => obj.Id === currentObject.Id)) {
@@ -589,7 +563,6 @@ const inlineEditingcolumns = (props: any) => {
         postData.AssignedToId = { results: AssignedToIds ?? [] };
         postData.ResponsibleTeamId = { results: ResponsibleTeamIds ?? [] };
         postData.TeamMembersId = { results: TeamMemberIds ?? [] };
-        postData.WorkingAction = JSON.stringify(workingAction)
         break;
 
       case 'Priority':
@@ -626,7 +599,9 @@ const inlineEditingcolumns = (props: any) => {
       case 'FeatureType':
         postData.FeatureTypeId = selectedFeateureItem?.Id;
         break;
-
+      case 'ItemRank':
+        postData.ItemRank = UpdatedItemRank;
+        break;
       default:
         break;
     }
@@ -657,7 +632,6 @@ const inlineEditingcolumns = (props: any) => {
             }
             task.ResponsibleTeam = TaskResponsibleTeam;
             task.TeamMembers = TaskTeamMembers;
-            task.WorkingAction = JSON.stringify(workingAction)
             task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
             task.DisplayDueDate =
               task.DueDate != null
@@ -684,9 +658,9 @@ const inlineEditingcolumns = (props: any) => {
         setTaskCategoriesPopup(false);
         setTaskStatusPopup(false);
         setTaskPriorityPopup(false);
+        setItemRankPopup(false)
         setTeamMembersPopup(false);
-        setTaskStatus("");
-        setWorkingAction([])
+        setTaskStatus("")
         clearEstimations();
         setRemark(false);
         closeTaskDueDate();
@@ -777,7 +751,7 @@ const inlineEditingcolumns = (props: any) => {
       });
       setTaskAssignedTo(tempAssigned);
     }
-    else{
+    else {
       AssignedToIds = []
       setTaskAssignedTo([])
     }
@@ -792,7 +766,7 @@ const inlineEditingcolumns = (props: any) => {
       });
       setTaskTeamMembers(tempTeam);
     }
-    else{
+    else {
       TeamMemberIds = []
       setTaskTeamMembers([])
     }
@@ -807,35 +781,9 @@ const inlineEditingcolumns = (props: any) => {
       });
       setTaskResponsibleTeam(tempResponsible);
     }
-    else{
+    else {
       ResponsibleTeamIds = []
       setTaskResponsibleTeam([])
-    }
-    if (dt?.dateInfo?.length > 0) {
-      let storeInWorkingAction: any = { "Title": "WorkingDetails", "InformationData": [] }
-      let userData: any = []
-      if (dt?.oldWorkingDaysInfo != undefined || dt?.oldWorkingDaysInfo != null && dt?.oldWorkingDaysInfo?.length > 0) {
-        dt?.oldWorkingDaysInfo.map((oldJson: any) => {
-          userData?.push(oldJson)
-        })
-    }
-      let oldWorkingActionData = props?.item?.WorkingActionParsed ? [...props.item.WorkingActionParsed] : [];
-      
-      dt.dateInfo.forEach((date: any) => {
-        let dataAccordingDays: any = {}
-        if (date.userInformation.length > 0) {
-          dataAccordingDays.WorkingDate = date?.originalDate
-          dataAccordingDays.WorkingMember = [];
-            date.userInformation.map((user: any) => {
-              dataAccordingDays.WorkingMember.push({ Id: user?.AssingedToUserId, Title: user.Title })
-            });                       
-            userData?.push(dataAccordingDays)
-        }
-    });
-    storeInWorkingAction.InformationData = [...userData]
-    oldWorkingActionData = oldWorkingActionData.filter((item: any) => item.Title != "WorkingDetails")
-    
-    setWorkingAction([...oldWorkingActionData, storeInWorkingAction]);
     }
   }, []);
 
@@ -1112,6 +1060,7 @@ const inlineEditingcolumns = (props: any) => {
       });
     }
   };
+
   const closeTaskStatusUpdatePopup = () => {
     setTaskStatusPopup(false);
   };
@@ -1282,6 +1231,14 @@ const inlineEditingcolumns = (props: any) => {
     }
   }, [])
 
+
+  // Item Rank Update 
+  const UpdateItemRank = () => {
+    UpdatedItemRank = ItemRankPortfolio;
+    UpdateTaskStatus()
+  }
+  // Item Rank Update End 
+
   return (
     <>
       {props?.columnName == "Team" ? (
@@ -1328,7 +1285,7 @@ const inlineEditingcolumns = (props: any) => {
           >
 
             {props?.mypriority === true && props?.item?.PriorityRank != null && props?.item?.PriorityRank != undefined ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}` : props?.item?.PriorityRank}
-            {props?.item?.TaskCategories?.map((items: any) =>
+            {props?.item?.TaskCategories?.length > 0 && props?.item?.TaskCategories?.map((items: any) =>
               items?.Title === "On-Hold" ? (
                 <div className="hover-text">
                   <IoHandRightOutline
@@ -1356,7 +1313,7 @@ const inlineEditingcolumns = (props: any) => {
                 </div>
               ) : null
             )}
-            {props?.item?.TaskCategories?.map((category: any) => {
+            {props?.item?.TaskCategories?.length > 0 && props?.item?.TaskCategories?.map((category: any) => {
               if (category?.Title == "Immediate") {
                 return (
                   <a title="Immediate">
@@ -1544,10 +1501,40 @@ const inlineEditingcolumns = (props: any) => {
           )}
         </span>
       ) : (
-       ''
+        ''
       )}
 
       {/* Panel to edit due-date */}
+
+      {/* Item Rank Popup*/}
+      {props?.columnName == "ItemRank" ? (
+        <span
+          className={
+            ServicesTaskCheck && props.pageName !== "ProjectOverView"
+              ? "serviepannelgreena hreflink"
+              : "hreflink"
+          }
+          style={{ display: "flex", width: "100%", height: "100%" }}
+          onClick={() => {
+            setItemRankPopup(true);
+            // setItemRankPortfolio(
+            //   props?.item?.ItemRank != undefined ? props?.item?.ItemRank : null
+            // );
+          }}
+        >
+          <>&nbsp;</>
+          {props?.item?.ItemRank != undefined ? props?.item?.ItemRank : <>&nbsp;</>}
+          {showEditPencil && (
+            <a className="pancil-icons ml-auto">
+              <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
+            </a>
+          )}
+        </span>
+      ) : (
+        ''
+      )}
+
+      {/* Item Rank Popup End */}
 
       <Panel
         onRenderHeader={() => onRenderCustomHeader("Due Date")}
@@ -1802,7 +1789,7 @@ const inlineEditingcolumns = (props: any) => {
               </ul>
             </div>
           </div>
-          {props?.mypriority != true &&
+          {(props?.mypriority != true && props.pageName !== "portfolioprofile") &&
             <>
               {impTaskCategoryType?.map((option) => (
                 option.Title !== 'Bottleneck' && (
@@ -1855,6 +1842,57 @@ const inlineEditingcolumns = (props: any) => {
           </footer>
         </div>
       </Panel>
+      {/* Item Rank Popup  */}
+      <Panel
+      onRenderHeader={() => onRenderCustomHeader("Item Rank")}
+      isOpen={ItemRankPopup}
+      customWidth="500px"
+      onDismiss={() => setItemRankPopup(false)}
+      isBlocking={ItemRankPopup}
+    >
+      <div
+        className={
+          ServicesTaskCheck
+            ? "serviepannelgreena inline-update-priority"
+            : "inline-update-priority"
+        }
+      >
+        <div className="modal-body">
+          <div>
+            <ul className="list-none">
+              {TaskItemRank.map((item, index) => (
+                <li key={index}>
+                  <div className="SpfxCheckRadio">
+                    <input
+                      className="radio"
+                      type="radio"
+                      checked={ItemRankPortfolio === item.rank}
+                      onChange={() => setItemRankPortfolio(item.rank)}
+                    />
+                    <label className="form-check-label mx-2">
+                      {item.rankTitle}
+                    </label>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <footer className="float-end">
+          <button
+            type="button"
+            className="btn btn-primary px-3"
+            onClick={UpdateItemRank}
+          >
+            Save
+          </button>
+        </footer>
+      </div>
+    </Panel>
+
+
+      {/* Item Rank Popup End  */}
       <Panel
         onRenderHeader={() => onRenderCustomHeader("Team Members")}
         isOpen={teamMembersPopup}
@@ -1918,7 +1956,7 @@ const inlineEditingcolumns = (props: any) => {
           onClick={() => setTaskCategoriesPopup(true)}
           style={{ display: "flex", width: "100%", height: "100%" }}
         >
-         
+
           {props?.item?.Categories}  &nbsp;
           {showEditPencil && (
             <a className="pancil-icons ml-auto">
