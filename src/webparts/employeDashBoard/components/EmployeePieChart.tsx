@@ -34,12 +34,12 @@ const EmployeePieChart = (SelectedProps: any) => {
   const loadAllTimeEntry = async () => {
     var AllTaskTimeEntries: any = [];
     let weeklyData = [0, 0, 0, 0, 0];
-    if (timesheetListConfig?.length > 0) {
+    if (timesheetListConfig != null && timesheetListConfig != undefined && timesheetListConfig != '') {
       let timesheetLists: any = [];
       let startDate = getStartingDate('This Week').toISOString();
       let taskLists: any = [];
-      timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
-      taskLists = JSON.parse(timesheetListConfig[0]?.Description != undefined ? timesheetListConfig[0]?.Description : null)
+      timesheetLists = JSON.parse(timesheetListConfig?.Configurations)
+      taskLists = JSON.parse(timesheetListConfig?.Description != undefined ? timesheetListConfig?.Description : null)
       if (timesheetLists?.length > 0) {
         const fetchPromises = timesheetLists.map(async (list: any) => {
           let web = new Web(contextdata?.siteUrl);
