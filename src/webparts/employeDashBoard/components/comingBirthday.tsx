@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Web } from 'sp-pnp-js';
 import { myContextValue } from '../../../globalComponents/globalCommon';
-import ManageConfigPopup from '../../../globalComponents/ManageConfigPopup';
 import AddConfiguration from '../../../globalComponents/AddConfiguration';
 let data: any;
 let endOfWeek: any;

@@ -19,7 +19,7 @@ const SmartfilterSettingTypePanel = (items: any) => {
                 isOpen={items?.isOpen}
                 onDismiss={handleChangeData}
                 type={PanelType.custom}
-                customWidth="300px"
+                customWidth="400px"
                 onRenderHeader={onRenderCustomHeader}
                 isBlocking={false}
             >
