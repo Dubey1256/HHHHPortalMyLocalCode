@@ -3383,9 +3383,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                               role="tabpanel"
                               aria-labelledby={designtempateData?.setTitle}
                           >
-                                <div className='carouselSlider taskImgTemplate'>
+                                <div className={`carouselSlider taskImgTemplate ${designtempateData?.setImagesInfo?.length==1?"ArrowIconHide":""}`} >
                                   <Slider {...settings}>
                               {designtempateData?.setImagesInfo?.map((imgData: any, indeximage: any) => {
+                             
                                       return (
                                         <div key={indeximage} className='carouselHeight'>
                                           <img className="img-fluid"
