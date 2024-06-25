@@ -55,7 +55,7 @@ export default function UXFeedbackComponent(textItems: any) {
     const [selectedMoveData,setSelectedMoveData]=useState([])
   
     const [moveTo,setMoveTo]=useState(false)
-    const [currentActiveTab, setCurrentActiveTab] = React.useState(0);
+    const [currentActiveTab, setCurrentActiveTab] :any= React.useState();
     const [openAddMoreImagePopup, setopenAddMoreImagePopup] = useState(false)
     const [imageIndex, setImageIndex]: any = useState()
     const [isEditing, setIsEditing] = useState({editable:false,index:0});
@@ -121,6 +121,7 @@ export default function UXFeedbackComponent(textItems: any) {
 
                 }
             })
+            setCurrentActiveTab(0)
             setState((prev: any) => designTemplatesArray);
             setBtnStatus(true)
 
@@ -156,7 +157,7 @@ export default function UXFeedbackComponent(textItems: any) {
 
       
             let designTemplates: any = {
-                setTitle: `${arrayOfChar[designTemplatesArray?.length]}. set${designTemplatesArray?.length + 1}`,
+                setTitle: `set${designTemplatesArray?.length + 1}`,
                 setImagesInfo: [],
                 TemplatesArray: []
             }
@@ -673,16 +674,19 @@ export default function UXFeedbackComponent(textItems: any) {
 // -----------  change the tab name and its function strat -----------------
     const handleChangeTab = (newValue: any) => {
         setCurrentActiveTab(newValue)
-        copyCurrentActiveTab=newValue
-        setIsEditing({...isEditing,editable:false,index:0})
+            copyCurrentActiveTab=newValue
+            if(currentActiveTab!=newValue){
+            setIsEditing({...isEditing,editable:false,index:0})
+        }
+      
     }
 
     const handleEditClick = (index:any) => {
-        setIsEditing({...isEditing,editable:true,index:index});
+        let editablefield=!isEditing.editable
+        setIsEditing({...isEditing,editable:editablefield,index:index});
     };
     const handleTitleInputChange = (index: any, value: any) => {
-
-        UpdatedFeedBackParentArray = State;
+          UpdatedFeedBackParentArray = State;
         UpdatedFeedBackParentArray[index].setTitle = value;
 
         setState((prevItems: any) => (
@@ -745,7 +749,9 @@ export default function UXFeedbackComponent(textItems: any) {
                         value={tab?.setTitle}
                         onChange={(e)=>handleTitleInputChange(index,e.target.value)}
                         autoFocus
-                    />:tab?.setTitle} 
+                    />:
+                    
+                   arrayOfChar[index]+"."+tab?.setTitle}
                    
                     
                  </button>
@@ -1052,7 +1058,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                             </div>
                                                             <div className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9" : ""}>
                                                                 <div className="d-flex" title={obj.isShowLight}>
-                                                                    <span className="SubTestBorder p-1 me-1">{`${arrayOfChar[currentActiveTab]}. ${i + 1}`}</span>
+                                                                    <span className="SubTestBorder p-1 me-1">{`${arrayOfChar[currentActiveTab]}.${i + 1}`}</span>
                                                                     <textarea
                                                                         style={{ width: "100%" }}
                                                                         className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "form-control Disabled-Link bg-e9" : "form-control"}
