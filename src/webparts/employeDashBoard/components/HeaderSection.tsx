@@ -20,6 +20,7 @@ const Header = () => {
   const [, rerender] = useReducer(() => ({}), {});
   const [IsShowConfigBtn, setIsShowConfigBtn] = useState(false);
   const [AllPortfolioLeads, setAllPortfolioLeads] = useState([]);
+  const [IsRestoreDefault, setIsRestoreDefault] = useState(false);
   const [SelectedLead, setSelectedLead] = useState(undefined);
   if (ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
     DashboardConfig = JSON.parse(JSON.stringify(ContextData?.DashboardConfig));
@@ -84,11 +85,16 @@ const Header = () => {
     setSelectedLead(undefined)
   }
   const savePortfolioLeads = () => {
-    if (SelectedLead?.AssingedToUserId == undefined || SelectedLead?.AssingedToUserId == '') {
+    if ((SelectedLead?.AssingedToUserId == undefined || SelectedLead?.AssingedToUserId == '') && IsRestoreDefault == false) {
       alert('Please select any portfolio Lead')
     }
     else {
-      localStorage.setItem('CurrentUserId', SelectedLead?.AssingedToUserId);
+      if (!IsRestoreDefault) {
+        localStorage.setItem('CurrentUserId', SelectedLead?.AssingedToUserId);
+      }
+      else if (IsRestoreDefault) {
+        localStorage.setItem('CurrentUserId', '');
+      }
       setIsPortfolioLeads(false)
       location.reload();
     }
@@ -106,6 +112,7 @@ const Header = () => {
     setIsOpenTimeSheetPopup(false)
   }
   const SelectedUser = (User: any) => {
+    setIsRestoreDefault(false);
     if (User.IsSelcetdUser == undefined)
       User.IsSelcetdUser = false;
     if (SelectedLead?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && SelectedLead?.AssingedToUserId == User?.AssingedToUserId) {
@@ -115,6 +122,10 @@ const Header = () => {
       setSelectedLead(User)
     }
     rerender();
+  }
+  const RestoreDefault = () => {
+    setIsRestoreDefault(true);
+    setSelectedLead(undefined)
   }
   useEffect(() => {
     handleTileClick(ContextData?.ActiveTile, undefined)
@@ -233,19 +244,28 @@ const Header = () => {
         onDismiss={ClosePortfolioLeadPopup}
         type={PanelType.medium}>
         <div className='modal-body'>
-          <div className='input-group'>
-            {AllPortfolioLeads?.length && AllPortfolioLeads?.map((user: any, index: number) => (
-              <>
-                <div className="top-assign mb-3">
-                  {user.Item_x0020_Cover != undefined && user.AssingedToUser != undefined &&
-                    <span onClick={() => SelectedUser(user)}>
-                      <img className={SelectedLead?.AssingedToUserId == user?.AssingedToUserId == true ? 'large_teamsimgCustom me-2 activeimg' : 'large_teamsimgCustom me-2'} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
-                    </span>
-                  }
-                </div>
-              </>
-            ))}
+          <div className='row'>
+            <div className='col-9'>
+              <div className='input-group'>
+                {AllPortfolioLeads?.length && AllPortfolioLeads?.map((user: any, index: number) => (
+                  <>
+                    <div className="top-assign mb-3">
+                      {user.Item_x0020_Cover != undefined && user.AssingedToUser != undefined &&
+                        <span onClick={() => SelectedUser(user)}>
+                          <img className={SelectedLead?.AssingedToUserId == user?.AssingedToUserId == true ? 'large_teamsimgCustom me-2 activeimg' : 'large_teamsimgCustom me-2'} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
+                        </span>
+                      }
+                    </div>
+                  </>
+                ))}
+              </div>
+            </div>
+            <div className='col-3 pull-right'>
+              <a className='hreflink' onClick={(e) => { RestoreDefault() }} >+Restore Default</a>
+            </div>
+
           </div>
+
         </div>
         <div className='modal-footer mt-2'>
           <button className="btn btn-primary ms-1" onClick={savePortfolioLeads}>Save</button>
