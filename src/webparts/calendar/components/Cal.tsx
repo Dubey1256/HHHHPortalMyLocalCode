@@ -1739,11 +1739,12 @@ function handleYearlyByDay(frequency: any, currentDate: any, dates: any, AllEven
       const regex = new RegExp(leaveTypes.join("|"), "g");
       let updatedTitle = inputValueName.replace(regex, type);
 
-      if (leaveApproveded) {
-        updatedTitle += " Approved";
+     if (leaveApproveded && !isLeaveApproved) {
+          updatedTitle += " Approved";
       } else if (leaverejected) {
-        updatedTitle += " Rejected";
+          updatedTitle += " Rejected";
       }
+
 
       return updatedTitle;
     };
@@ -2012,7 +2013,7 @@ function handleYearlyByDay(frequency: any, currentDate: any, dates: any, AllEven
   const isAllowedUser = allowedUserIds.indexOf(userId) !== -1;
 
   const result = isAllowedUser && !disabl && (!leaveapproved || !leaverejected);
-
+  const isLeaveApproved = inputValueName.indexOf("Approved") >= 0;
   return (
 
     <div>
