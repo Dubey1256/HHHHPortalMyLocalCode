@@ -123,6 +123,7 @@ const ProjectManagementMain = (props: any) => {
   const [editSmartInfo, setEditSmartInfo] = React.useState(false)
   const [suggestedItems, setSuggestedItems] = React.useState('')
   const [suggestedPortfolio, setSuggestedPortfolio] = React.useState("")
+  const [taggedPortfolio, setTaggedPortfolio] = React.useState([])
   const [searchedKeyPortfolios, setSearchedkeyPortfolios] = React.useState([])
   const [ActivityPopup, setActivityPopup] = React.useState(false);
   const [activeTile, setActiveTile] = React.useState("")
@@ -1068,6 +1069,9 @@ const ProjectManagementMain = (props: any) => {
   }
   const CreateActivityPopup = (type: any) => {
     setActiveTile(type)
+    if (Masterdata != null && Masterdata != undefined) {
+      Masterdata.NoteCall = type;
+    }
     if (checkedList?.TaskType === undefined) {
         checkedList.NoteCall = type;
         selectedItem.NoteCall = type;
@@ -1081,6 +1085,7 @@ const ProjectManagementMain = (props: any) => {
     if (checkedList?.TaskType?.Id == 2) {
       alert("You can not create ny item inside Task");
     }
+    
   };
   const addActivity = (type: any) => {
     keyRelevantPortfolioItems = [...Masterdata?.taggedPortfolios, ...TaskTaggedPortfolios]
@@ -1118,6 +1123,7 @@ const ProjectManagementMain = (props: any) => {
     }
     setSearchedkeyPortfolios([])
     setSuggestedPortfolio("")
+    setTaggedPortfolio([])
   };
   const Call = (propsItems: any, type: any) => {
     if (propsItems?.Id != undefined) {
@@ -1240,7 +1246,8 @@ const ProjectManagementMain = (props: any) => {
   const keyRelevantPortfolioPopupCallback = React.useCallback((DataItem: any, Type: any, functionType: any) => {
     if (DataItem?.length > 0 && Type == "Single") {
       DataItem?.forEach((data: any) => {
-        setTaggedPortfolioItem(data)
+        taggedPortfolioItem = data
+        setTaggedPortfolio([data])
       })
     }
     setKeyRelevantPortfolios(false);
@@ -2455,54 +2462,107 @@ const ProjectManagementMain = (props: any) => {
                       </div>
                     ) : (
                       <>
-                      <div className="mt-4 clearfix">
-                        <h4 className="titleBorder "> Type</h4>
-                        <div className="col p-0 taskcatgoryPannel">
-                          <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Activities")} className={activeTile == "Activities" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                            <span className="tasks-label">Activity</span>
-                          </a>
-                          <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                            <span className="tasks-label">Task</span>
-                          </a>
+                        <div className="mt-4 clearfix">
+                          <h4 className="titleBorder "> Type</h4>
+                          <div className="col p-0 taskcatgoryPannel">
+                            <a
+                              id="subcategorytasks936"
+                              onClick={() => CreateActivityPopup("Activities")}
+                              className={
+                                activeTile == "Activities"
+                                  ? "active bg-siteColor subcategoryTask text-center"
+                                  : "bg-siteColor subcategoryTask text-center"
+                              }
+                            >
+                              <span className="tasks-label">Activity</span>
+                            </a>
+                            <a
+                              id="subcategorytasks936"
+                              onClick={() => CreateActivityPopup("Task")}
+                              className={
+                                activeTile == "Task"
+                                  ? "active bg-siteColor subcategoryTask text-center"
+                                  : "bg-siteColor subcategoryTask text-center"
+                              }
+                            >
+                              <span className="tasks-label">Task</span>
+                            </a>
+                          </div>
                         </div>
-                       
-                      </div>
-                       <div className="clearfix col-12 mt-3 position-relative">
-                       <h4 className="titleBorder">Key/Relevant Portfolios</h4>
-                       <div className="clearfix col-12">
-                       <input type="text" className="form-control"
-                         value={suggestedPortfolio}
-                         onChange={(e) => searchSuggestedPortfolio2(e)}
-                         placeholder="Search Portfolio Items"
-                       />
-                       <span className="input-group-text">
-                         <span
-                           onClick={() => EditKeyRelevantPortfolio(checkedList)}
-                           title="Edit Portfolios"
-                           className="hreflink svg__iconbox svg__icon--editBox"
-                         ></span>
-                       </span>
-                       </div>
-                       {searchedKeyPortfolios?.length > 0 ? (
-                         <div className="SmartTableOnTaskPopup p-0 position-static">
-                           <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                             {searchedKeyPortfolios.map((Item: any) => {
-                               return (
-                                 <li
-                                   className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                   key={Item.id}
-                                   onClick={() =>
-                                     setTaggedPortfolioItem(Item)
-                                   }
-                                 >
-                                   <a>{Item.Path}</a>
-                                 </li>
-                               );
-                             })}
-                           </ul>
-                         </div>
-                       ) : null}
-                     </div></>
+                        <div className="clearfix col-12 mt-3 position-relative">
+                          <h4 className="titleBorder">
+                            Key/Relevant Portfolios
+                          </h4>
+                          <div className="clearfix col-12">
+                            {taggedPortfolio.length > 0 ? (
+                              <span className="full-width">
+                                {taggedPortfolio?.map((com: any) => {
+                                  return (
+                                    <>
+                                      <div
+                                        className="full-width replaceInput pe-0 alignCenter"
+                                        style={{ width: "90%" }}
+                                      >
+                                        <a
+                                          title={com?.Title}
+                                          target="_blank"
+                                          data-interception="off"
+                                          className="textDotted"
+                                          href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com?.Id}`}
+                                        >
+                                          {com?.Title}
+                                        </a>
+                                        <span
+                                          title="Remove Component"
+                                          onClick={() => setTaggedPortfolio([])}
+                                          style={{ backgroundColor: "black" }}
+                                          className="svg__iconbox svg__icon--cross hreflink mx-2"
+                                        ></span>
+                                      </div>
+                                    </>
+                                  );
+                                })}
+                              </span>
+                            ) : (
+                              <input
+                                type="text"
+                                className="form-control"
+                                value={suggestedPortfolio}
+                                onChange={(e) => searchSuggestedPortfolio2(e)}
+                                placeholder="Search Portfolio Item"
+                              />
+                            )}
+                            <span className="input-group-text">
+                              <span
+                                onClick={() =>
+                                  EditKeyRelevantPortfolio(checkedList)
+                                }
+                                title="Edit Portfolios"
+                                className="hreflink svg__iconbox svg__icon--editBox mt-15"
+                              ></span>
+                            </span>
+                          </div>
+                          {searchedKeyPortfolios?.length > 0 ? (
+                            <div className="SmartTableOnTaskPopup p-0 position-static">
+                              <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                {searchedKeyPortfolios.map((Item: any) => {
+                                  return (
+                                    <li
+                                      className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                      key={Item.id}
+                                      onClick={() =>
+                                        setTaggedPortfolioItem(Item)
+                                      }
+                                    >
+                                      <a>{Item.Path}</a>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+                          ) : null}
+                        </div>
+                      </>
                     )}
                   </div>
                 </div>
@@ -2511,7 +2571,8 @@ const ProjectManagementMain = (props: any) => {
                 <button
                   type="button"
                   className="btn btn-primary mx-2"
-                  onClick={() => Createbutton()} disabled={activeTile === "" || suggestedPortfolio === ""}
+                  onClick={() => Createbutton()}
+                  disabled={activeTile === "" || taggedPortfolio.length == 0}
                 >
                   Create
                 </button>
@@ -2534,8 +2595,8 @@ const ProjectManagementMain = (props: any) => {
                 LoadAllSiteTasks={LoadAllSiteTasks}
                 selectedItem={
                   checkedList != null && checkedList.Id != null
-                  ? checkedList
-                  : selectedItem
+                    ? checkedList
+                    : selectedItem ? selectedItem : Masterdata
                 }
                 taggedPortfolioItem={taggedPortfolioItem}
               ></CreateActivity>

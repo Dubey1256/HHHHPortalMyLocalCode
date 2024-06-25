@@ -5,7 +5,7 @@ import AddCommentComponent from './AddCommentComponent';
 import pnp from 'sp-pnp-js';
 import * as Moment from 'moment';
 import ApprovalHistoryPopup from "./ApprovalHistoryPopup";
-
+let arrayOfChar = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',]
 export default function subCommentComponent(SubTextItemsArray: any) {
     const SubTextItems = SubTextItemsArray.SubTextItemsArray;
     const callBack = SubTextItemsArray.callBack;
@@ -272,7 +272,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                 >
                                     <div className="Task-panel alignCenter justify-content-between">
                                         <div className="alignCenter">
-                                            <span className="me-1">{`${SubTextItemsArray.index + 1}.${index + 1}`}</span>
+                                            <span className="me-1">{`${SubTextItemsArray?.SetChar!=undefined? SubTextItemsArray?.SetChar:""}${SubTextItemsArray.index + 1}.${index + 1}`}</span>
                                             <div className="d-flex">
                                                 {ApprovalStatus ?
                                                     <div>

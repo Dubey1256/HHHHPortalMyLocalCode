@@ -4,6 +4,7 @@ import { Web } from "sp-pnp-js";
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import * as Moment from 'moment';
 import Button from 'react-bootstrap/Button';
+import Tooltip from "../../../globalComponents/Tooltip";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import moment from 'moment';
 let usersAndGroups: any = [];
@@ -12,6 +13,7 @@ const ContentPermissionPopup = (props: any) => {
     const [Editdata, setEditData]: any = React.useState('')
     const [selectedPersonsAndGroups, setSelectedPersonsAndGroups] = React.useState([]);
     const [DefaultSelectedUser, setDefaultSelectedUser] = React.useState([]);
+    const [vId, setVId] = React.useState();
     React.useEffect(() => {
         try {
             loadusersAndGroups();
@@ -52,6 +54,7 @@ const ContentPermissionPopup = (props: any) => {
                 }
                 setPermissionTitle(data?.Title)
                 setEditData(data)
+                setVId(data.ID)
                 setDefaultSelectedUser(userTitle);
             })
 
@@ -94,12 +97,15 @@ const ContentPermissionPopup = (props: any) => {
     const onRenderCustomHeader = (
     ) => {
         return (
-            <div className="full-width pb-1" > <h3>
-                <span className="siteColor">
-                    {props?.SelectedEditItem?.Id != undefined ? `Edit Permission - ${props?.SelectedEditItem?.Title}` : 'Add Permission'}
-                </span>
-            </h3>
-            </div>
+            <>
+                <div className="full-width pb-1" > <h3>
+                    <span className="siteColor">
+                        {props?.SelectedEditItem?.Id != undefined ? `Edit Permission - ${props?.SelectedEditItem?.Title}` : 'Add Permission'}
+                    </span>
+                </h3>
+                </div>
+                <Tooltip ComponentId={11945} />
+            </>
         );
     };
     const removeItem = async () => {
@@ -184,9 +190,16 @@ const ContentPermissionPopup = (props: any) => {
                                 by
                                 <span className="primary-color"> {Editdata?.Editor?.Title}</span>
                             </div>
-                            <div> <a className="alignIcon" onClick={() => removeItem()}><i className="ms-Icon ms-Icon--Delete" aria-hidden="true"></i> Delete this item</a></div>
+                            <div> <a className="alignIcon" onClick={() => removeItem()}><i className="svg__iconbox hreflink mini svg__icon--trash" aria-hidden="true"></i>
+                                <span> Delete this item</span></a></div>
                         </div> : ''}
                     <div className="col text-end">
+                    <a className='me-1' data-interception="off"
+                                target="_blank"
+                                href={`${props.context?._pageContext?._web.absoluteUrl}/Lists/ComponentPermissions/EditForm.aspx?ID=${vId}`}
+                            >
+                                Open out-of-the-box form
+                            </a>
                         {
                             props?.SelectedEditItem?.Id != undefined ?
                                 <Button type="button" variant="primary" className='me-1' onClick={() => updateItem()}>Save</Button> :

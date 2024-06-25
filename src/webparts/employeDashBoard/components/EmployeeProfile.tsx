@@ -25,7 +25,6 @@ let AllTimeEntry: any = [];
 let CurrentMatchableDate = new Date();
 let todaysDrafTimeEntry: any = [];
 var AllTaskTimeEntries: any = [];
-let timesheetListConfiguration: any = [];
 let currentUserId: any
 CurrentMatchableDate.setHours(0, 0, 0, 0)
 const EmployeProfile = (props: any) => {
@@ -35,7 +34,6 @@ const EmployeProfile = (props: any) => {
   const [AllSite, setAllSite] = useState([]);
   const [data, setData]: any = React.useState({ AllTaskUser: [] });
   const [currentTime, setCurrentTime]: any = useState([]);
-  const [annouceMents, setAnnouceMents]: any = useState([]);
   const [approverEmail, setApproverEmail]: any = useState([]);
   const [timesheetListConfig, setTimesheetListConfig] = React.useState<any>()
   const [smartmetaDataDetails, setSmartmetaDataDetails] = React.useState([])
@@ -53,7 +51,6 @@ const EmployeProfile = (props: any) => {
     LoadAdminConfiguration(false, undefined)
     loadMasterTask();
     loadTaskUsers(undefined);
-    annouceMent();
     getAllData(true);
     generateDateRange()
   }, []);
@@ -128,10 +125,13 @@ const EmployeProfile = (props: any) => {
   const GetSmartmetadata = async () => {
     const web = new Web(props.props?.siteUrl);
     let smartmetaDetails: any = [];
+    var AllsiteData: any = []
     smartmetaDetails = await web.lists.getById(props.props?.SmartMetadataListID).items.select("Id", "Title", "IsVisible", "ParentID", "SmartSuggestions", "TaxType", "Configurations", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", 'Color_x0020_Tag', "Parent/Id", "Parent/Title")
       .top(4999).expand("Parent").get();
     smartmetaDetails?.map((newtest: any) => {
-      // if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
+      if (newtest?.TaxType == "Sites" && newtest?.Title != "" && newtest?.Title != "Master Tasks" && newtest?.Title != "SDC Sites" && newtest?.Title != "Offshore Tasks" && newtest?.Configurations != null) {
+        AllsiteData.push(newtest)
+      }
       if (newtest.Title == "SDC Sites" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
         newtest.DataLoadNew = false;
       if (newtest?.TaxType == 'timesheetListConfigrations') {
@@ -139,6 +139,8 @@ const EmployeProfile = (props: any) => {
         TimeSheetLists = JSON.parse(timeSheetConfig?.Configurations)
       }
     })
+    setAllSite(AllsiteData)
+    setTimesheetListConfig(timeSheetConfig)
     setSmartmetaDataDetails(smartmetaDetails);
   };
   const addHighestColumnToObject = (obj: any, array: any) => {
@@ -358,22 +360,6 @@ const EmployeProfile = (props: any) => {
       console.log(error)
     })
   }
-  const annouceMent = async () => {
-    const web = new Web(props.props?.siteUrl);
-    await web.lists.getById(props?.props?.Announcements).items.select("Title", "ID", "Body", "isShow").filter("isShow eq 1").getAll().then(async (data: any) => {
-      setAnnouceMents(data)
-    }).catch((err: any) => {
-      console.log(err);
-    })
-  }
-  const smartMetaData = async () => {
-    var AllsiteData: any = []
-    timesheetListConfiguration = await globalCommon?.loadSmartMetadata(props?.props, 'timesheetListConfigrations')
-    setTimesheetListConfig(timesheetListConfiguration)
-    AllsiteData = await globalCommon?.loadSmartMetadata(props?.props, 'Sites')
-    AllsiteData = AllsiteData?.filter((item: any) => item.Title != "" && item.Title != "Master Tasks" && item.Title != "SDC Sites" && item.Title != "Offshore Tasks" && item.Configurations != null)
-    setAllSite(AllsiteData)
-  };
   const getChilds = (item: any, items: any) => {
     item.childs = [];
     for (let index = 0; index < items.length; index++) {
@@ -406,7 +392,6 @@ const EmployeProfile = (props: any) => {
             mailApprover = item?.Approver[0];
           else
             mailApprover = null;
-          smartMetaData()
         }
         if (mailApprover != undefined && mailApprover != null) {
           if (mailApprover.Id == item.AssingedToUserId && item.Email != undefined && item.Email != null)
@@ -927,7 +912,10 @@ const EmployeProfile = (props: any) => {
                         const inCurrentWeek = givenDateAsDate >= startOfWeek && givenDateAsDate <= endOfWeek;
                         // Assuming 'config' and 'items' are defined somewhere
                         if (greaterThanToday && inCurrentWeek) {
-                          config?.Tasks.push(items);
+                          objDetails?.WorkingMember?.forEach((user: any) => {
+                            if (user?.Id === currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items))
+                              config?.Tasks.push(items);
+                          })
                         }
                       }
                     })
@@ -983,15 +971,12 @@ const EmployeProfile = (props: any) => {
     });
     return result;
   }
-
   const loadAllTimeEntry = async () => {
     AllTaskTimeEntries = [];
     todaysDrafTimeEntry = [];
-    if (timesheetListConfiguration?.length > 0) {
+    if (TimeSheetLists?.length > 0) {
       let timesheetLists: any = [];
       let startDate = getStartingDate('This Week').toISOString();
-      timesheetLists = JSON.parse(timesheetListConfiguration[0]?.Configurations)
-
       if (timesheetLists?.length > 0) {
         const fetchPromises = timesheetLists.map(async (list: any) => {
           let web = new Web(list?.siteUrl);
@@ -1002,7 +987,6 @@ const EmployeProfile = (props: any) => {
               .items.select(list?.query)
               .filter(`(Modified ge '${startDate}') and (TimesheetTitle/Id ne null)`)
               .getAll();
-
             data?.forEach((item: any) => {
               let entryDate = new Date(item?.Modified).setHours(0, 0, 0, 0)
               if (entryDate == todayDateToCheck) {
@@ -1011,7 +995,6 @@ const EmployeProfile = (props: any) => {
               item.taskDetails = checkTimeEntrySite(item);
               AllTaskTimeEntries.push(item);
             });
-            // currentUserTimeEntry('This Week');           
           } catch (error) {
             console.log(error, 'HHHH Time');
           }
@@ -1165,7 +1148,6 @@ const EmployeProfile = (props: any) => {
 
   };
   const callbackFunction = (Type: any) => {
-    // getAllData(true)
     LoadAdminConfiguration(true, Type)
   }
   /*smartFavId filter functionaloity*/
@@ -1389,17 +1371,6 @@ const EmployeProfile = (props: any) => {
       return false;
     }
   };
-  const LoadPortfolioLeads = (SelectedUser: any) => {
-    if (SelectedUser == undefined) {
-      alert('Please select any portfolio Lead')
-    }
-    else {
-      LoginUserTeamMembers = [];
-      loadTaskUsers(SelectedUser);
-      LoadAdminConfiguration(true, false)
-
-    }
-  }
   const FilterDataOnCheck = function (Config: any) {
     let portFolio: any[] = [];
     let site: any[] = [];
@@ -1489,7 +1460,7 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, todaysDrafTimeEntry: todaysDrafTimeEntry, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction, LoadPortfolioLeads: LoadPortfolioLeads }}>
+      <myContextValue.Provider value={{ ...myContextValue, todaysDrafTimeEntry: todaysDrafTimeEntry, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div> <Header /></div>
         {IsCallContext == true && <TaskStatusTbl />}
       </myContextValue.Provider >
