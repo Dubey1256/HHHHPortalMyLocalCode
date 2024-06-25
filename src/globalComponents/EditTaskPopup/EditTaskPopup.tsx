@@ -1688,12 +1688,14 @@ const EditTaskPopup = (Items: any) => {
                         let updatedItem: any = {
                             ...EditDataBackup,
                             FeedBackBackup: RestructureData.FeedBackBackup,
-                            FeedBackArray: RestructureData?.designTemplates,
+                            FeedBackArray:designTemplates,
                             FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
                         };
                         setEditData(updatedItem);
+                        updateFeedbackArray[0].FeedBackDescriptions=designTemplates
                         EditDataBackup = updatedItem;
                     }
+                   
                     setDesignNewTemplates(true)
                 }
             })
@@ -1709,7 +1711,6 @@ const EditTaskPopup = (Items: any) => {
                 }
                 // code by vivek
 
-
                 if (existingData?.Title == "UX-New") {
                     let firstIndexData: any = []
                     const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
@@ -1721,7 +1722,7 @@ const EditTaskPopup = (Items: any) => {
                         let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
 
                         let designTemplates: any = [firstIndexData, {
-                            setTitle: "A.SET1",
+                            setTitle: "SET1",
                             setImagesInfo: imageData?.length > 0 ? imageData : [],
                             TemplatesArray: setDataFeedback
                         }]
@@ -1729,12 +1730,14 @@ const EditTaskPopup = (Items: any) => {
                         let updatedItem: any = {
                             ...EditDataBackup,
                             FeedBackBackup: RestructureData.FeedBackBackup,
-                            FeedBackArray: RestructureData?.designTemplates,
+                            FeedBackArray:designTemplates,
                             FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
                         };
                         setEditData(updatedItem);
+                        updateFeedbackArray[0].FeedBackDescriptions=designTemplates
                         EditDataBackup = updatedItem;
                     }
+                   
                     setDesignNewTemplates(true)
                 }
             });
