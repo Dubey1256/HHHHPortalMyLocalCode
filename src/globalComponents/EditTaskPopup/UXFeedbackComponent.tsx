@@ -55,7 +55,7 @@ export default function UXFeedbackComponent(textItems: any) {
     const [selectedMoveData,setSelectedMoveData]=useState([])
   
     const [moveTo,setMoveTo]=useState(false)
-    const [currentActiveTab, setCurrentActiveTab] = React.useState(0);
+    const [currentActiveTab, setCurrentActiveTab] :any= React.useState();
     const [openAddMoreImagePopup, setopenAddMoreImagePopup] = useState(false)
     const [imageIndex, setImageIndex]: any = useState()
     const [isEditing, setIsEditing] = useState({editable:false,index:0});
@@ -121,6 +121,7 @@ export default function UXFeedbackComponent(textItems: any) {
 
                 }
             })
+            setCurrentActiveTab(0)
             setState((prev: any) => designTemplatesArray);
             setBtnStatus(true)
 
@@ -156,7 +157,7 @@ export default function UXFeedbackComponent(textItems: any) {
 
       
             let designTemplates: any = {
-                setTitle: `${arrayOfChar[designTemplatesArray?.length]}. set${designTemplatesArray?.length + 1}`,
+                setTitle: `set${designTemplatesArray?.length + 1}`,
                 setImagesInfo: [],
                 TemplatesArray: []
             }
@@ -314,11 +315,11 @@ export default function UXFeedbackComponent(textItems: any) {
             ApprovalDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
             isShowLight: value
         }
-        const copy = [...State];
+        const copy =  designTemplatesArray[copyCurrentActiveTab].TemplatesArray;
         let tempApproverData: any = copy[index].ApproverData;
-        const obj = { ...State[index], isShowLight: value, ApproverData: tempApproverData };
+        const obj = { ...copy[index], isShowLight: value, ApproverData: tempApproverData };
         copy[index] = obj;
-        setState(copy);
+  
         copy[index].isShowLight = value;
         copy[index].ApproverData.push(temObject);
         copy?.forEach((ele: any) => {
@@ -336,8 +337,10 @@ export default function UXFeedbackComponent(textItems: any) {
                 })
             }
         })
-        callBack(copy);
-        UpdatedFeedBackParentArray = copy;
+        designTemplatesArray[copyCurrentActiveTab].TemplatesArray=copy
+        setState(designTemplatesArray);
+        callBack(designTemplatesArray);
+       
     }
     const postBtnHandleCallBackCancel = useCallback((status: any) => {
         if (status) {
@@ -673,16 +676,19 @@ export default function UXFeedbackComponent(textItems: any) {
 // -----------  change the tab name and its function strat -----------------
     const handleChangeTab = (newValue: any) => {
         setCurrentActiveTab(newValue)
-        copyCurrentActiveTab=newValue
-        setIsEditing({...isEditing,editable:false,index:0})
+            copyCurrentActiveTab=newValue
+            if(currentActiveTab!=newValue){
+            setIsEditing({...isEditing,editable:false,index:0})
+        }
+      
     }
 
     const handleEditClick = (index:any) => {
+        // let editablefield=!isEditing.editable
         setIsEditing({...isEditing,editable:true,index:index});
     };
     const handleTitleInputChange = (index: any, value: any) => {
-
-        UpdatedFeedBackParentArray = State;
+          UpdatedFeedBackParentArray = State;
         UpdatedFeedBackParentArray[index].setTitle = value;
 
         setState((prevItems: any) => (
@@ -745,7 +751,9 @@ export default function UXFeedbackComponent(textItems: any) {
                         value={tab?.setTitle}
                         onChange={(e)=>handleTitleInputChange(index,e.target.value)}
                         autoFocus
-                    />:tab?.setTitle} 
+                    />:
+                    
+                   arrayOfChar[index]+"."+tab?.setTitle}
                    
                     
                  </button>
@@ -878,6 +886,22 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                             {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
                                                                                 <BiInfoCircle />
                                                                             </span>}
+                                                                            <span
+                                                                                className="mx-1 hover-text"
+                                                                                onClick={() =>
+                                                                                    DeleteImageFunction(
+                                                                                        index,
+                                                                                        imgData.ImageName,
+                                                                                        "Remove"
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                {" "}
+                                                                                | <RiDeleteBin6Line /> |
+                                                                                <span className="tooltip-text pop-right">
+                                                                                    Delete
+                                                                                </span>
+                                                                            </span>
 
                                                                         </div>
                                                                     </div>
@@ -1052,7 +1076,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                             </div>
                                                             <div className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9" : ""}>
                                                                 <div className="d-flex" title={obj.isShowLight}>
-                                                                    <span className="SubTestBorder p-1 me-1">{`${arrayOfChar[currentActiveTab]}. ${i + 1}`}</span>
+                                                                    <span className="SubTestBorder p-1 me-1">{`${arrayOfChar[currentActiveTab]}.${i + 1}`}</span>
                                                                     <textarea
                                                                         style={{ width: "100%" }}
                                                                         className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "form-control Disabled-Link bg-e9" : "form-control"}
