@@ -338,7 +338,7 @@ export default function UXFeedbackComponent(textItems: any) {
             }
         })
         designTemplatesArray[copyCurrentActiveTab].TemplatesArray=copy
-        setState(designTemplatesArray);
+        setState([...designTemplatesArray]);
         callBack(designTemplatesArray);
        
     }
@@ -643,11 +643,14 @@ export default function UXFeedbackComponent(textItems: any) {
                         await item.attachmentFiles.getByName(imageName).recycle();
                        designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
                        setState([...designTemplatesArray]);
+                       callBack(designTemplatesArray);
                         console.log("Attachment deleted");
                       
                     } catch (error) {
                         console.log("Error deleting attachment:", error);
-                        
+                        designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
+                        setState([...designTemplatesArray]);
+                        callBack(designTemplatesArray);
                     }
                 })();
             } else {
@@ -665,6 +668,9 @@ export default function UXFeedbackComponent(textItems: any) {
                        
                     } catch (error) {
                         console.log("Error deleting attachment:", error);
+                        designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
+                        setState([...designTemplatesArray]);
+                        callBack(designTemplatesArray);
                        
                     }
                 })();
@@ -821,7 +827,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                                 className="mx-1 hover-text"
                                                                                 onClick={() =>
                                                                                     DeleteImageFunction(
-                                                                                        index,
+                                                                                        imageIndex,
                                                                                         imgData.ImageName,
                                                                                         "Remove"
                                                                                     )
@@ -890,7 +896,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                                 className="mx-1 hover-text"
                                                                                 onClick={() =>
                                                                                     DeleteImageFunction(
-                                                                                        index,
+                                                                                        indeximage,
                                                                                         imgData.ImageName,
                                                                                         "Remove"
                                                                                     )
