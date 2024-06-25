@@ -6,7 +6,6 @@ import { Web } from 'sp-pnp-js';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { AiFillLeftCircle, AiFillRightCircle, AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import moment from 'moment';
-import ManageConfigPopup from '../../../globalComponents/ManageConfigPopup';
 import AddConfiguration from '../../../globalComponents/AddConfiguration';
 const MyNotes = (MyNotes: any) => {
   const ContextData: any = React.useContext(myContextValue);
