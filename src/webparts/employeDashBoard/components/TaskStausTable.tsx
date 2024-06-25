@@ -1823,10 +1823,7 @@ const TaskStatusTbl = (Tile: any) => {
         <span>
           {EditCompPopup && <EditProjectPopup props={CompResult} AllListId={AllListId} Call={() => { CallBack() }} />}
         </span>
-        <span>
-          {/* {IsManageConfigPopup && <ManageConfigPopup DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} props={ContextData?.propsValue} SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />} */}
-          {/* {IsManageConfigPopup && <AddConfiguration DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} props={ContextData?.propsValue} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />} */}
-
+        <span>         
           {IsManageConfigPopup && <AddEditWebpartTemplate props={ContextData?.propsValue} DashboardPage={true} DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}
         </span>
       </div>
