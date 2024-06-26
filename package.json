@@ -93,6 +93,7 @@
     "reactflow": "^11.10.4",
     "reactjs-popup": "^2.0.5",
     "reactstrap": "^8.10.1",
+    "recharts": "^2.12.7",
     "setimmediate": "^1.0.5",
     "slick-carousel": "^1.8.1",
     "sp-pnp-js": "^3.0.10",

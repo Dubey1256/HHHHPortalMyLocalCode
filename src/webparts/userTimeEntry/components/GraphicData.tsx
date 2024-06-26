@@ -2,12 +2,24 @@ import * as React from 'react';
 import { Panel, PanelType } from "office-ui-fabric-react";
 import ReactApexChart from 'react-apexcharts';
 import * as Moment from "moment";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend
+} from "recharts";
 let EndDate: any
 let backup: any = []
 let finaldata: any = []
 let isWeekMonthDay = false;
 let checkType = 'Day';
 const GraphData = (data: any) => {
+  let processedData:any=[]
+  let transformedData:any = [];
   const [count, setCount] = React.useState(0)
   const mydata = data.data.sort(datecomp);
   const calculateTotalTimeByDay = (data: any) => {
@@ -43,7 +55,7 @@ const GraphData = (data: any) => {
     });
 
     // Convert the accumulated data into chart data format
-    const chartData = Object.keys(totalTimeByDay)?.map(day => {
+    const chartDatas = Object.keys(totalTimeByDay)?.map(day => {
       const { total, ...sites } = totalTimeByDay[day]; // Extract total time for the day
       const siteData = Object.keys(sites).map(site => ({
         Site: site,
@@ -52,9 +64,14 @@ const GraphData = (data: any) => {
       return { Day: day, Time: total, SiteData: siteData };
     });
 
-    return chartData;
+    return chartDatas;
   };
   let totalTimeByDay = calculateTotalTimeByDay(mydata);
+
+   totalTimeByDay.map((entry: any) => {
+     entry.color = entry.Time === 0 ? '#FF0000' : '#4987f1'; // Red for zero time, green for others
+    
+  });
   console.log(totalTimeByDay)
 
   //--------------------------------------Add Weekend dates----------------------------------------------------------------------------
@@ -151,56 +168,203 @@ const GraphData = (data: any) => {
       });
       entry.TotalTime = totalTime;
     });
+    finaldata.map((entry: any) => {
+      // entry.color = entry.Time === 0 ? '#FF0000' : '#4987f1'; // Red for zero time, green for others
+      entry.SiteData = entry.SiteData.map((siteEntry: any) => ({
+        ...siteEntry,
+        color: (siteEntry.Site === 'HHHH') ? '#0d6efd' : 
+               (siteEntry.Site === 'Gruene') ? '#2e7d32' : 
+               (siteEntry.Site === 'Offshore Tasks') ? '#00FF00' : 
+               '#FFFF00' // Default color for other sites
+      }));
+     
+   });
+   
   }
-  //---------------------------------------End------------------------------------------------------------------------------------------
 
-  const handleDataPointMouseEnter = (event: any, chartContext: any, config: any) => {
-    const dayData = finaldata[config.dataPointIndex];
-    const siteData = dayData.SiteData.map((site: any) => `${site.Site}: ${site.Time} hours`).join('<br>');
-    chartContext.w.globals.tooltipTitle = siteData;
+// Create series data
+let siteTimeData:any = {};
+
+// Iterate through the data array
+
+finaldata = finaldata.map((entry:any) => ({
+  ...entry,
+  finaldata: entry.Time !== 0
+})); 
+finaldata?.forEach((entry: any) => {
+  let dayData = entry.SiteData;
+  dayData.forEach((siteEntry: any) => {
+    let siteName = siteEntry.Site;
+    let timeValue = siteEntry.Time || 0; // If Time is not present, default to 0
+    
+    if (siteTimeData[siteName]) {
+      siteTimeData[siteName].push(timeValue);
+    } else {
+      siteTimeData[siteName] = [timeValue];
+    }
+  });
+});
+
+let siteNames: any = Object.keys(siteTimeData);
+let maxLength = Math.max(...siteNames.map((name: any) => siteTimeData[name].length));
+
+siteNames.forEach((name: any) => {
+  let currentLength = siteTimeData[name].length;
+  if (currentLength < maxLength) {
+    let fillArray = [];
+    for (let i = 0; i < maxLength - currentLength; i++) {
+      fillArray.push(0);
+    }
+    siteTimeData[name] = siteTimeData[name].concat(fillArray);
+  }
+});
+
+let formattedData: { name: string, data: number[], color: string }[] = Object.keys(siteTimeData).map(name => {
+  let color = finaldata.find((entry:any) => entry.SiteData.some((site:any) => site.Site === name))?.SiteData.find((site:any) => site.Site === name)?.color || '#000000';
+  let data = siteTimeData[name];
+
+  // Ensure all data arrays are of equal length
+  let maxLength = 0;
+  for (let key in siteTimeData) {
+    if (siteTimeData.hasOwnProperty(key)) {
+      maxLength = Math.max(maxLength, siteTimeData[key].length);
+    }
+  }
+  
+  if (data.length < maxLength) {
+    let fillArray = [];
+    for (let i = 0; i < maxLength - data.length; i++) {
+      fillArray.push(0);
+    }
+    data = data.concat(fillArray);
+  }
+
+  return { name: name, data: data, color: color };
+});
+formattedData = formattedData.filter(site => {
+  return finaldata.some((entry:any) => {
+    let dayData = entry.SiteData.find((siteEntry:any) => siteEntry.Site === site.name);
+    return dayData && dayData.Time !== 0;
+  });
+}).map(site => {
+  return {
+    name: site.name,
+    data: finaldata.map((entry:any) => {
+      let dayData = entry.SiteData.find((siteEntry:any) => siteEntry.Site === site.name);
+      return dayData ? dayData.Time : 0;
+    }),
+    color: site.color
   };
-  const chartData = {
-    options: {
-      chart: {
-        id: 'basic-bar'
-      },
-      xaxis: {
-        categories: finaldata.map((entry: any) => entry.Day),
-        title: {
-          text: `${checkType}` // Add 'Hours' as the Y-axis title
-        }
-      },
-      yaxis: {
-        title: {
-          text: 'Hours'
-        }
-      },
-      tooltip: {
-        custom: function ({ series, seriesIndex, dataPointIndex, w }: any) {
-          const dayData = finaldata[dataPointIndex];
-          const siteData = dayData.SiteData.map((site: any) => ` ${site.Time} h - ${site.Site}`).join('<br>');
-          return '<div class="custom-tooltip" style="border: 1px solid #aeabab;padding: 4px; width:200px">' +
-            '<div>' + siteData + '</div>' +
-            '<div>'+ dayData.Time +' h - '+ 'Total'  + '</div>' +
-            '</div>';
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      events: {
-        dataPointMouseEnter: handleDataPointMouseEnter
-      }
-    },
-    series: [{
-      name: 'Time',
-      data: finaldata.map((entry: any) => ({
-        x: entry.Day,
-        y: entry.Time,
-        SiteData: entry.SiteData
-      }))
-    }]
+});
+
+// Log formattedData to console
+console.log(formattedData);
+
+const handleDataPointMouseEnter = (event: any, chartContext: any, config: any) => {
+  const dayData = finaldata[config.dataPointIndex];
+  const siteData = dayData.SiteData.map((site: any) => `${site.Site}: ${site.Time} hours`).join('<br>');
+  chartContext.w.globals.tooltipTitle = siteData;
+};
+
+let filteredData = formattedData.map(site => ({
+  name: site.name,
+  data: site.data.filter((time:any) => time !== 0)
+}));
+
+
+finaldata?.forEach((entry:any) => {
+  // Initialize an object to hold transformed data for each day
+  let transformedEntry = {
+    Day: entry.Day,
+    Time: entry.Time,
+    HHHH: 0,
+    Gruene: 0,
+    Education: 0,
+    Migration: 0,
+    EI:0,
+    EPS:0,
+    OffShoreTasks:0
+
   };
+
+  // Loop through SiteData of the current entry
+  entry.SiteData.forEach((site:any) => {
+    if (site.Site === 'HHHH') {
+      transformedEntry.HHHH = site.Time;
+    } else if (site.Site === 'Gruene') {
+      transformedEntry.Gruene = site.Time;
+    }
+    else if (site.Site === 'Education') {
+      transformedEntry.Education = site.Time;
+    }
+    else if (site.Site === 'EI') {
+      transformedEntry.EI = site.Time;
+    }
+    else if (site.Site === 'EPS') {
+      transformedEntry.EPS = site.Time;
+    }
+    else if (site.Site === 'Migration') {
+      transformedEntry.Migration = site.Time;
+    }
+    else{
+      transformedEntry.OffShoreTasks = site.Time;
+    }
+  });
+
+  // Push transformed entry to the transformedData array
+  transformedData.push(transformedEntry);
+});
+// const chartData = {
+//   options: {
+//     chart: {
+//       id: 'stacked-bar',
+//       stacked: true
+//     },
+//     xaxis: {
+//       categories: finaldata.map((entry: any) => entry.Day),
+//       title: {
+//         text: `${checkType} Hours` // Add 'Hours' as the Y-axis title
+//       },
+//     },
+//     yaxis: {
+//       title: {
+//         text: 'Hours'
+//       }
+//     },
+//     tooltip: {
+//       custom: function ({ series, seriesIndex, dataPointIndex, w }: any) {
+//         const dayData = finaldata[dataPointIndex];
+//         const siteData = dayData.SiteData.map((site: any) => ` ${site.Time} h - ${site.Site}`).join('<br>');
+//         return '<div class="custom-tooltip" style="border: 1px solid #aeabab;padding: 4px; width:200px">' +
+//           '<div>' + siteData + '</div>' +
+//           '<div>' + dayData.Time + ' h - ' + 'Total' + '</div>' +
+//           '</div>';
+//       }
+//     },
+//     dataLabels: {
+//       enabled: false
+//     },
+//     events: {
+//       dataPointMouseEnter: handleDataPointMouseEnter
+//     },
+//     plotOptions: {
+//       bar: {
+//         distributed: true // Enable distributed mode to use individual colors for each bar
+//       }
+//     },
+//     colors: finaldata.flatMap((entry: any) =>
+//       entry.SiteData.map((siteEntry: any) => siteEntry.color)
+//     )
+//   },
+//    series : finaldata.map((entry:any) => ({
+//     name: entry.Day, // Day as series name
+//     data: entry.SiteData.map((site:any) => site.Time) // Time as data points for each site
+//   }))
+// };
+
+console.log(transformedData);
+ 
+
   function datecomp(d1: any, d2: any) {
     if (d1.TaskDate != null && d2.TaskDate != null) {
       var a1 = d1.TaskDate.split("/");
@@ -210,7 +374,7 @@ const GraphData = (data: any) => {
 
       return a1 - a2;
     }
-  }
+  } 
 
   const setModalIsOpenToFalse = () => {
     finaldata = []
@@ -384,7 +548,7 @@ const GraphData = (data: any) => {
     let weekData: any = {
       WeekStartDate: weekStartDate.toLocaleDateString('en-GB'), // Format "DD/MM/YYYY"
       WeekEndDate: weekEndDate.toLocaleDateString('en-GB'), // Format "DD/MM/YYYY"
-      Time: 0,
+      Time: 0, 
       SiteData: [],
       Day: Moment(weekStartDate).format("DD/MM/YYYY")
     };
@@ -443,6 +607,50 @@ const GraphData = (data: any) => {
 
     return monthData;
   };
+  const CustomTick = ({ x, y, payload }: any) => {
+    const item = transformedData?.find((item:any) => item.Day === payload.value);
+    const fill = item && item.Time === 0 ? 'red' : 'black';
+  
+    return (
+      <text x={x} y={y + 10} textAnchor="middle" fill={fill}>
+        {payload.value}
+      </text>
+    );
+  };
+  
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      const keysToDisplay = ['HHHH', 'Education', 'EPS', 'EI', 'Migration', 'Gruene'];
+  
+      const filteredData = keysToDisplay
+        .filter(key => data[key] !== undefined && data[key] > 0)
+        .map(key => ({ key, value: data[key] }));
+  
+      if (filteredData.length === 0) {
+        return null; // No data to display
+      }
+  
+      return (
+        <div className="custom-tooltip" style={{ backgroundColor: '#fff', border: '1px solid #ccc', padding: '10px' }}>
+          <p className="label">{`Day : ${label}`}</p>
+          {filteredData.map((entry, index) => (
+            <p key={`item-${index}`} style={{ color: payload[0]?.color }}>
+              {`${entry.key} : ${entry.value}`}
+            </p>
+          ))}
+        </div>
+      );
+    }
+  
+    return null;
+  };
+  // const minValue = Math.min(...transformedData?.map((d:any) => d.value));
+  // const maxValue = Math.max(...transformedData?.map((d:any) => d.value));
+  // const yTicks = [];
+  // for (let i = Math.floor(minValue); i <= Math.ceil(maxValue); i += 2) {
+  //   yTicks.push(i);
+  // }
   return (
     <div>
       <Panel
@@ -459,7 +667,30 @@ const GraphData = (data: any) => {
             <span className={`Week` === checkType ? 'siteBdrBottom' : ''} onClick={() => changeDateType('Week')}>Week</span>
             <span className={`Month` === checkType ? 'siteBdrBottom' : ''} onClick={() => changeDateType('Month')}>Month</span>
           </div>
-          <ReactApexChart options={chartData?.options} series={chartData?.series} type="bar" height={350} />
+          {/* <ReactApexChart options={chartData?.options} series={chartData?.series} type="bar" height={350} /> */}
+          <ResponsiveContainer width="100%" height={300}>
+          <BarChart
+      width={1000}
+      height={350}
+      data={transformedData}
+    >
+      <CartesianGrid strokeDasharray="2 2" />
+      <XAxis
+      dataKey="Day"
+      tick={<CustomTick />} 
+    />
+      <YAxis />
+      <Tooltip content={<CustomTooltip />}/>
+      <Legend />
+      <Bar dataKey="HHHH" stackId="a" fill="#2251d5" />
+      <Bar dataKey="Gruene" stackId="a" fill="#4caf50" />
+      <Bar dataKey="Education" stackId="a" fill="#b82ddb" />
+      <Bar dataKey="Migartion" stackId="a" fill="#66b2d7" />
+      <Bar dataKey="EI" stackId="a" fill="#121314" />
+      <Bar dataKey="EPS" stackId="a" fill="#f50627" />
+      <Bar dataKey="OffShoreTasks" stackId="a" fill="#c1722e" />
+    </BarChart>
+    </ResponsiveContainer>
 
         </div>
       </Panel>
@@ -468,3 +699,4 @@ const GraphData = (data: any) => {
 };
 
 export default GraphData;
+
