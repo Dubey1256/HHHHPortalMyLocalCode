@@ -52,6 +52,7 @@ let UserName: any = "";
 let backupEdit: any = [];
 let AllUsers: any = [];
 let TimesheetConfiguration: any = [];
+let QuickTimesheetData: any = [];
 let isShowCate: any = "";
 let expendedTrue: any = true;
 var change: any = new Date();
@@ -61,16 +62,17 @@ const SP = spfi();
 let AllMetadata: [] = [];
 let checkedFlat = false;
 const TimeEntryPopup = (item: any) => {
+  if (item?.props?.Portfolio?.PortfolioType?.Color != undefined) {
+    document?.documentElement?.style?.setProperty('--SiteBlue', item?.props?.Portfolio?.PortfolioType?.Color);
+  }
   if (item?.props?.siteUrl != undefined) {
     let index = item?.props?.siteUrl.indexOf('/', 'https://'.length);
     RelativeUrl = item?.props?.siteUrl.substring(index);
     CurrentSiteUrl = item?.props?.siteUrl;
-    PortfolioType = item?.props?.Portfolio_x0020_Type;
     CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
     CurrentUserTitle =
       item?.Context?.pageContext?._legacyPageContext?.userDisplayName;
   } else {
-    PortfolioType = item?.props?.Portfolio_x0020_Type;
     CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
     CurrentUserTitle =
       item.Context.pageContext?._legacyPageContext?.userDisplayName;
@@ -679,11 +681,7 @@ const TimeEntryPopup = (item: any) => {
     MetaData.forEach((itemss: any) => {
      if(item?.props?.siteType=="Offshore%20Tasks")
         {
-          if (
-       
-            itemss?.Title?.toLowerCase() == 'offshore tasks' &&
-            itemss.TaxType == "Sites"
-          ) {
+          if (itemss?.Title?.toLowerCase() == 'offshore tasks' && itemss.TaxType == "Sites") {
             TimesheetConfiguration = JSON.parse(itemss.Configurations);
           }
         }
@@ -695,6 +693,10 @@ const TimeEntryPopup = (item: any) => {
           ) {
             TimesheetConfiguration = JSON.parse(itemss.Configurations);
           }
+        }
+        if(itemss?.TaxType == 'QuickTimesheet'){
+          let data = JSON.parse(itemss?.Configurations)
+          QuickTimesheetData = data;
         }
     });
     TimesheetConfiguration?.forEach((val: any) => {
@@ -2639,9 +2641,13 @@ function reverseArray(arr: any) {
     }
 
     if (Use === 'remove') {
+      setsaveEditTaskTimeChild((prev: any) => ({
+        ...prev,
+        TaskTimeInMin: 0,
+        TaskTime: 0,
+      }));
     changeTime = 0;
-    setsaveEditTaskTimeChild({});
-    setTimeInMinutes(0);
+      setTimeInMinutes(changeTime);
     setTimeInHours(0);
     } else {
     changeTime = inputValue;
@@ -3080,10 +3086,22 @@ function reverseArray(arr: any) {
     ],
     [data]
   );
-
+  const selectQuickTime=(data:any)=>{
+    var TimeInHour: any = data?.Time / 60;
+    setTimeInHours(TimeInHour.toFixed(2));
+    setTimeInMinutes(data?.Time)
+    saveEditTaskTimeChild.Description = data?.Description;
+    setPostData({
+      ...postData,
+      Description: data?.Description
+  })
+  setcheckCategories(data?.Category);
+  setcheckCategoriesTitle(data?.Category)
+  setshowCat(data?.Category);
+}
   return (
   
-    <div className={PortfolioType == "Service" ? "serviepannelgreena" : ""}>
+    <div>
       <div>
         <div className="col-sm-12 p-0">
           <span></span>
@@ -3127,6 +3145,7 @@ function reverseArray(arr: any) {
                       hideOpenNewTableIcon={true}
                         columns={column}
                         data={data}
+                        PortfolioTypeColor={PortfolioType}
                         callBackData={callBackData}
                         expendedTrue={expendedTrue}
                       />
@@ -3613,7 +3632,7 @@ function reverseArray(arr: any) {
     onChange={(e) => changeTimeFunction(Number(e.target.value), PopupType,'Add')}
 />
 {((TimeInMinutes > 0 || saveEditTaskTimeChild?.TaskTimeInMin != undefined) && (
-    <span className="input-group-text" style={{zIndex:'9'}}><span className="dark mini svg__icon--cross mt-1 svg__iconbox" onClick={(e)=>changeTimeFunction(Number(e), PopupType,'remove')}></span></span>
+                        <span className="input-group-text" style={{ zIndex: '9' }}><span className="dark mini svg__icon--cross mt-1 svg__iconbox" onClick={(e) => changeTimeFunction(Number(saveEditTaskTimeChild.TaskTimeInMin), PopupType, 'remove')}></span></span>
 ))}
 </div>
                   </div>
@@ -3832,6 +3851,21 @@ function reverseArray(arr: any) {
               </div>
             </footer>
           </div>
+          <div className="row">
+            <div className="col-sm-6">
+              <div className="header">Fill Quick Timesheet</div>
+              <ul>
+              {QuickTimesheetData?.map((val:any)=>{
+              return(
+                <div> <span><input  type='radio' className="radio"
+                onChange={(e) => selectQuickTime(val)}
+                name="category"></input></span>{val?.Title}</div>
+              )
+                 
+              })}
+              </ul>
+            </div>
+          </div>
         </div>
       </Panel>
 
@@ -3850,7 +3884,7 @@ function reverseArray(arr: any) {
             PortfolioType == "Service"
               ? "modal-body border p-1 serviepannelgreena"
               : "modal-body border p-1"
-          }
+          } 
         >
           <div className="row">
             {categoryData?.map((item) => {
@@ -3928,9 +3962,12 @@ function reverseArray(arr: any) {
         </div>
         <div
           className={
-            PortfolioType == "Service"
-              ? "modal-footer mt-2 serviepannelgreena"
-              : "modal-footer mt-2"
+            PortfolioType == "Events"
+              ? "eventpannelorange"
+              : PortfolioType == "Service" ||
+              PortfolioType == "Service Portfolio"
+                ? "serviepannelgreena"
+                : "component Portfolio clearfix"
           }
         >
           <button
