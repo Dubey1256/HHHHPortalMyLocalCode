@@ -428,34 +428,34 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
 
       switch (this.state.selectedWeekDay) {
         case 'day':
-          recurrencePatern = recurrencePatern + `day="TRUE"`;
+          recurrencePatern = recurrencePatern + ` day="TRUE"`;
           break;
         case 'weekday':
-          recurrencePatern = recurrencePatern + `weekday="TRUE"`;
+          recurrencePatern = recurrencePatern + ` weekday="TRUE"`;
           break;
         case 'weekendday':
-          recurrencePatern = recurrencePatern + `weekend_day="TRUE"`;
+          recurrencePatern = recurrencePatern + ` weekend_day="TRUE"`;
           break;
         case 'sunday':
-          recurrencePatern = recurrencePatern + `su="TRUE"`;
+          recurrencePatern = recurrencePatern + ` su="TRUE"`;
           break;
         case 'monday':
-          recurrencePatern = recurrencePatern + `mo="TRUE"`;
+          recurrencePatern = recurrencePatern + ` mo="TRUE"`;
           break;
         case 'tuesday':
-          recurrencePatern = recurrencePatern + `tu="TRUE"`;
+          recurrencePatern = recurrencePatern + ` tu="TRUE"`;
           break;
         case 'wednesday':
-          recurrencePatern = recurrencePatern + `we="TRUE"`;
+          recurrencePatern = recurrencePatern + ` we="TRUE"`;
           break;
         case 'thursday':
-          recurrencePatern = recurrencePatern + `th="TRUE"`;
+          recurrencePatern = recurrencePatern + ` th="TRUE"`;
           break;
         case 'friday':
-          recurrencePatern = recurrencePatern + `fr="TRUE"`;
+          recurrencePatern = recurrencePatern + ` fr="TRUE"`;
           break;
         case 'saturday':
-          recurrencePatern = recurrencePatern + `sa="TRUE"`;
+          recurrencePatern = recurrencePatern + ` sa="TRUE"`;
           break;
         default:
           break;
