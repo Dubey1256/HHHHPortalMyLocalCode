@@ -2641,9 +2641,13 @@ function reverseArray(arr: any) {
     }
 
     if (Use === 'remove') {
+      setsaveEditTaskTimeChild((prev: any) => ({
+        ...prev,
+        TaskTimeInMin: 0,
+        TaskTime: 0,
+      }));
     changeTime = 0;
-    setsaveEditTaskTimeChild({});
-    setTimeInMinutes(0);
+      setTimeInMinutes(changeTime);
     setTimeInHours(0);
     } else {
     changeTime = inputValue;
@@ -3628,7 +3632,7 @@ function reverseArray(arr: any) {
     onChange={(e) => changeTimeFunction(Number(e.target.value), PopupType,'Add')}
 />
 {((TimeInMinutes > 0 || saveEditTaskTimeChild?.TaskTimeInMin != undefined) && (
-    <span className="input-group-text" style={{zIndex:'9'}}><span className="dark mini svg__icon--cross mt-1 svg__iconbox" onClick={(e)=>changeTimeFunction(Number(e), PopupType,'remove')}></span></span>
+                        <span className="input-group-text" style={{ zIndex: '9' }}><span className="dark mini svg__icon--cross mt-1 svg__iconbox" onClick={(e) => changeTimeFunction(Number(saveEditTaskTimeChild.TaskTimeInMin), PopupType, 'remove')}></span></span>
 ))}
 </div>
                   </div>

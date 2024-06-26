@@ -315,11 +315,11 @@ export default function UXFeedbackComponent(textItems: any) {
             ApprovalDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
             isShowLight: value
         }
-        const copy = [...State];
+        const copy =  designTemplatesArray[copyCurrentActiveTab].TemplatesArray;
         let tempApproverData: any = copy[index].ApproverData;
-        const obj = { ...State[index], isShowLight: value, ApproverData: tempApproverData };
+        const obj = { ...copy[index], isShowLight: value, ApproverData: tempApproverData };
         copy[index] = obj;
-        setState(copy);
+  
         copy[index].isShowLight = value;
         copy[index].ApproverData.push(temObject);
         copy?.forEach((ele: any) => {
@@ -337,8 +337,10 @@ export default function UXFeedbackComponent(textItems: any) {
                 })
             }
         })
-        callBack(copy);
-        UpdatedFeedBackParentArray = copy;
+        designTemplatesArray[copyCurrentActiveTab].TemplatesArray=copy
+        setState([...designTemplatesArray]);
+        callBack(designTemplatesArray);
+       
     }
     const postBtnHandleCallBackCancel = useCallback((status: any) => {
         if (status) {
@@ -641,11 +643,14 @@ export default function UXFeedbackComponent(textItems: any) {
                         await item.attachmentFiles.getByName(imageName).recycle();
                        designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
                        setState([...designTemplatesArray]);
+                       callBack(designTemplatesArray);
                         console.log("Attachment deleted");
                       
                     } catch (error) {
                         console.log("Error deleting attachment:", error);
-                        
+                        designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
+                        setState([...designTemplatesArray]);
+                        callBack(designTemplatesArray);
                     }
                 })();
             } else {
@@ -663,6 +668,9 @@ export default function UXFeedbackComponent(textItems: any) {
                        
                     } catch (error) {
                         console.log("Error deleting attachment:", error);
+                        designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
+                        setState([...designTemplatesArray]);
+                        callBack(designTemplatesArray);
                        
                     }
                 })();
@@ -682,8 +690,8 @@ export default function UXFeedbackComponent(textItems: any) {
     }
 
     const handleEditClick = (index:any) => {
-        let editablefield=!isEditing.editable
-        setIsEditing({...isEditing,editable:editablefield,index:index});
+        // let editablefield=!isEditing.editable
+        setIsEditing({...isEditing,editable:true,index:index});
     };
     const handleTitleInputChange = (index: any, value: any) => {
           UpdatedFeedBackParentArray = State;
@@ -819,7 +827,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                                 className="mx-1 hover-text"
                                                                                 onClick={() =>
                                                                                     DeleteImageFunction(
-                                                                                        index,
+                                                                                        imageIndex,
                                                                                         imgData.ImageName,
                                                                                         "Remove"
                                                                                     )
@@ -884,6 +892,22 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                             {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
                                                                                 <BiInfoCircle />
                                                                             </span>}
+                                                                            <span
+                                                                                className="mx-1 hover-text"
+                                                                                onClick={() =>
+                                                                                    DeleteImageFunction(
+                                                                                        indeximage,
+                                                                                        imgData.ImageName,
+                                                                                        "Remove"
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                {" "}
+                                                                                | <RiDeleteBin6Line /> |
+                                                                                <span className="tooltip-text pop-right">
+                                                                                    Delete
+                                                                                </span>
+                                                                            </span>
 
                                                                         </div>
                                                                     </div>
