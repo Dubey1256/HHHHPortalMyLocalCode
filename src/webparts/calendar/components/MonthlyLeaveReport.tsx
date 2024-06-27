@@ -14,9 +14,7 @@ import { setMonth } from 'office-ui-fabric-react';
 import { end } from '@popperjs/core';
 import moment from 'moment';
 import { Start } from '@mui/icons-material';
-
-
-
+let currentUser: any
 let allReportData: any = [];
 let Short_x0020_Description_x0020_On: any = '';
 let filteredData: any = [];
@@ -84,9 +82,10 @@ export const MonthlyLeaveReport = (props: any) => {
     const web = new Web(props?.props?.siteUrl);
     try {
       const results: any = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.select(
-        "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,Created,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type"
+        "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,Created,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type,Approved,Rejected"
       ).expand("Author,Editor,Employee").getAll();
-      setLeaveData(results);
+      const FilterRejectedData = results.filter((item:any)=> item.Rejected !== true)
+      setLeaveData(FilterRejectedData);
     } catch (err) {
       console.log(err);
     }
@@ -199,8 +198,8 @@ export const MonthlyLeaveReport = (props: any) => {
     console.log(`The option ${ev.currentTarget.title}.`);
     console.log(item);
     //console.log(Parent);
-    let ImageSelectedUser = ImageSelectedUsers;
-
+    let ImageSelectedUser = ImageSelectedUsers
+  
     const collection = document.getElementsByClassName("AssignUserPhoto mr-5");
     for (let i = 0; i < collection.length; i++) {
       collection[i].classList.remove('seclected-Image');
@@ -208,32 +207,58 @@ export const MonthlyLeaveReport = (props: any) => {
     if (ev.currentTarget.className.indexOf('seclected-Image') > -1) {
       ev.currentTarget.classList.remove('seclected-Image');
       item.IsSelected = false;
-      for (let index = 0; index < ImageSelectedUser.length; index++) {
-        let sel = ImageSelectedUser[index];
-        if (sel.Id != undefined && item.Id != undefined && sel.Id == item.Id) {
-          item.IsSelected = false;
-          ImageSelectedUser.splice(index, 1);
-          break;
+      ImageSelectedUser = ImageSelectedUser.filter((user: any) => user.Id != item.Id)
+    } else {
+      ev.currentTarget.classList.add('seclected-Image'); // add element
+      if (currentUser) {
+        let userExists = false;
+      
+        currentUser.forEach((user: any) => {
+          if (user.Id == item.Id) {
+            userExists = true;
+            currentUser = currentUser.filter((user: any) => user.Id != item.Id);
+            item.IsSelected = false;
+            ImageSelectedUser = ImageSelectedUser.filter((sel: any) => sel.Id != item.Id);
+          }
+        });
+      
+        if (!userExists) {
+          item.IsSelected = true;
+          ImageSelectedUser.push(item);
         }
+      } else {
+        item.IsSelected = true;
+        ImageSelectedUser.push(item);
+      }
+      if (ImageSelectedUser?.length > 0) {
+        ImageSelectedUser = ImageSelectedUser.reduce(function (
+          previous: any,
+          current: any
+        ) {
+          var alredyExists =
+            previous.filter(function (item: any) {
+              return item.Title === current.Title;
+            }).length > 0;
+          if (!alredyExists) {
+            previous.push(current);
+          }
+          return previous;
+        },
+          []);
       }
     }
-    else {
-      ev.currentTarget.classList.add('seclected-Image'); //add element
-      item.IsSelected = true;
-      ImageSelectedUser = [];
-      ImageSelectedUser.push(item);
-    }
-
-    AllTaskuser.forEach((item: any) => {
-      if (item.SelectedGroup == true)
-        SelectGroupName = SelectGroupName + item.Title + ' ,'
-    })
-    SelectGroupName = SelectGroupName.replace(/.$/, "")
-    setSelectGroupName(SelectGroupName)
-    setImageSelectedUsers(ImageSelectedUser)
-
-    console.log(ImageSelectedUsers);
-  }
+  
+    AllTaskuser.forEach((taskItem: any) => {
+      if (taskItem.SelectedGroup === true) {
+        SelectGroupName = SelectGroupName + taskItem.Title + ' ,';
+      }
+    });
+    SelectGroupName = SelectGroupName.replace(/.$/, "");
+    setSelectGroupName(SelectGroupName);
+  
+    // Logging updated state will not reflect the immediate change due to state being asynchronous
+    setImageSelectedUsers(ImageSelectedUser);
+  };
 
   const SelectedGroup = (ev: any, user: any) => {
     let SelectGroupName = '';
@@ -290,7 +315,7 @@ export const MonthlyLeaveReport = (props: any) => {
     setendDate(dt)
   }
 
-const selectDate = (types: string) => {
+  const selectDate = (types: string) => {
     let startdt = new Date(), enddt = new Date(), tempdt = new Date();
     let diff: number, lastday: number;
     switch (types) {
@@ -364,30 +389,30 @@ const selectDate = (types: string) => {
         enddt = new Date();
         settypes('AllTime')
         break;
-    case 'Pre-set':
-      let storedDataStartDate: string | null = localStorage.getItem('startDate');
-      let storedDataEndDate: string | null = localStorage.getItem('endDate');
-      try {
-        if (storedDataStartDate && storedDataEndDate) {
-          const parsedStartDate = new Date(JSON.parse(storedDataStartDate));
-          const parsedEndDate = new Date(JSON.parse(storedDataEndDate));
+      case 'Pre-set':
+        let storedDataStartDate: string | null = localStorage.getItem('startDate');
+        let storedDataEndDate: string | null = localStorage.getItem('endDate');
+        try {
+          if (storedDataStartDate && storedDataEndDate) {
+            const parsedStartDate = new Date(JSON.parse(storedDataStartDate));
+            const parsedEndDate = new Date(JSON.parse(storedDataEndDate));
 
-          if (!isNaN(parsedStartDate.getTime()) && !isNaN(parsedEndDate.getTime())) {
-            startdt = parsedStartDate;
-            enddt = parsedEndDate;
-            settypes('Pre-set')
-        break;
+            if (!isNaN(parsedStartDate.getTime()) && !isNaN(parsedEndDate.getTime())) {
+              startdt = parsedStartDate;
+              enddt = parsedEndDate;
+              settypes('Pre-set')
+              break;
+            }
           }
+
+        } catch (error) {
+          console.error("Failed to parse dates from localStorage", error);
         }
-        
-      } catch (error) {
-        console.error("Failed to parse dates from localStorage", error);
-      }
-      // If parsing fails, fall through to the default case
-      startdt = null;
-      enddt = null;
-      //settypes('Pre-set')
-      break;
+        // If parsing fails, fall through to the default case
+        startdt = null;
+        enddt = null;
+        //settypes('Pre-set')
+        break;
       default:
     }
 
@@ -538,21 +563,21 @@ const selectDate = (types: string) => {
   };
   const PreSetPikerCallBack = React.useCallback((preSetStartDate: any, preSetEndDate) => {
     if (preSetStartDate != undefined) {
-        setStartDate(preSetStartDate);
+      setStartDate(preSetStartDate);
     }
     if (preSetEndDate != undefined) {
-        setEndDate(preSetEndDate);
+      setEndDate(preSetEndDate);
     }
     // setselectedType(true)
     settypes("Pre-set");
     setPreSetPanelIsOpen(false)
-}, []);
+  }, []);
   const preSetIconClick = () => {
     // setPreSet(true);
     setPreSetPanelIsOpen(true);
-   
-    
-}
+
+
+  }
   const isWeekend = (startDate: Date, endDate: Date) => {
     const startDay = startDate.getDay();
     const endDay = endDate.getDay();
@@ -663,13 +688,13 @@ const selectDate = (types: string) => {
           if ((item.Event_x002d_Type === "Un-Planned" || item.Event_x002d_Type === "Sick") && item.Title != undefined) {
             let eventDateFormat: any = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
             leavediscriptionUnPlanned.push({ Short_x0020_Description_x0020_On: item.Title, eventDate: eventDateFormat })
-        }
-      })
+          }
+        })
         let UnplannedLeaveString = `${UnPlanedEventDates.join(', ')}`;
         //let UnplannedDiscription = Short_x0020_Description_x0020_On
         const MyHalfdayData = matchedData.filter((item: any) => item?.HalfDay === true || item?.HalfDayTwo === true)
         MyHalfdayData?.map((item: any) => {
-          
+
           const endDate = new Date(item.EndDate);
           endDate.setHours(endDate.getHours() - 9);
           endDate.setMinutes(endDate.getMinutes() - 30);
@@ -691,26 +716,26 @@ const selectDate = (types: string) => {
           if (item?.HalfDay === true || item?.HalfDayTwo === true && item.Title != undefined) {
             let eventDateFormat: any = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
             leavediscriptionHalfday.push({ Short_x0020_Description_x0020_On: item.Title, eventDate: eventDateFormat })
-        }
-      })
+          }
+        })
         let HalfplannedLeaveString = `${HalfdayEventDates.join(', ')}`;
         const MyRHdayData = matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Restricted Holiday") {
-       
-        let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-        // let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
-        // if (item.fAllDayEvent == false) {
-        //   endDateFirst = endDateFirst.subtract(3, 'hours')
-        //   item.EndDate = endDateFirst.utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
-        // }
-        let endDate = moment(item.EndDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
 
-        if (startDate !== endDate) {
-          return `${startDate}-${endDate}`;
-        } else {
-          return startDate;
-        }
-      }
+            let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+            // let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
+            // if (item.fAllDayEvent == false) {
+            //   endDateFirst = endDateFirst.subtract(3, 'hours')
+            //   item.EndDate = endDateFirst.utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+            // }
+            let endDate = moment(item.EndDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+
+            if (startDate !== endDate) {
+              return `${startDate}-${endDate}`;
+            } else {
+              return startDate;
+            }
+          }
         }).filter((date: any) => date);
         let leavediscriptionRh: any = []
         matchedData.map((item: any) => {
@@ -877,7 +902,7 @@ const selectDate = (types: string) => {
                           <label>Last Month</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => selectDate('Last3Month')}  checked={types === "Last3Month"} className="radio" />
+                          <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => selectDate('Last3Month')} checked={types === "Last3Month"} className="radio" />
                           <label>Last 3 Months</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>

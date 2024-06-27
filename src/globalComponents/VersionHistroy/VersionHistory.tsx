@@ -1017,15 +1017,14 @@ export default function VersionHistory(props: any) {
                                             {SCVersionHistoryData?.length - Index}
                                         </td>
                                         <td>
-                                            <span className="siteColor"><a href={`${siteTypeUrl}/Lists/${sitetype}/DispForm.aspx?ID=${SCItem.ID}&VersionNo=${SCItem.version}`}>{SCItem?.ModifiedDate}</a></span>
-                                        </td>
-                                        <td>
                                             <div className='Info-VH-Col'>
                                                 {renderSiteComposition(SCItem)}
                                             </div>
                                         </td>
                                         <td>
-                                            <span className="siteColor">{SCItem?.ModifiedBy}</span>
+                                            <span className="siteColor"><a href={`${siteTypeUrl}/Lists/${sitetype}/DispForm.aspx?ID=${SCItem.ID}&VersionNo=${SCItem.version}`}>{SCItem?.ModifiedDate}</a></span>
+                                            <a href={`${siteTypeUrl}/SitePages/TaskDashboard.aspx?UserId=${SCItem.UserId}&Name=${SCItem?.ModifiedBy}`} target='_blank' data-interception='off'>{SCItem?.ItemImage ? <img className='workmember hreflink ms-1' src={SCItem?.ItemImage} title={SCItem?.ModifiedBy} /> : <span title={SCItem?.ModifiedBy ? SCItem?.ModifiedBy : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>}</a>
+                                            {/* <span className="siteColor">{SCItem?.ModifiedBy}</span> */}
                                         </td>
                                     </tr>
                                 )
