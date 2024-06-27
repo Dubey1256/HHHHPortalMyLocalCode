@@ -151,7 +151,8 @@ const DashboardConfiguration = (props: any) => {
                         <GlobalCommanTable columnSettingIcon={true} tableId="DashboardConfigID" AllListId={AllListId} hideOpenNewTableIcon={true} hideTeamIcon={true} showHeader={true} portfolioColor={'#000066'} columns={columns} data={WebpartConfig} callBackData={callBackData} />
                     )}
                 </div>
-                {IsOpenPopup && <AddConfiguration props={props?.props} EditItem={EditItem} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseConfigPopup} />}
+                {/* {IsOpenPopup && <AddConfiguration props={props?.props} EditItem={EditItem} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseConfigPopup} />} */}
+                {IsOpenPopup && <EditConfiguration props={props?.props} EditItem={EditItem} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseConfigPopup} />}
                 {IsOpenEditDashboardPopup && <EditConfiguration props={props?.props} EditItem={EditItem} IsOpenPopup={IsOpenEditDashboardPopup} CloseConfigPopup={CloseEditConfiguration} />}
             </div>
 
