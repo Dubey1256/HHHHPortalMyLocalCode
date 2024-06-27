@@ -7627,12 +7627,12 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                 </div>
                                 {DesignNewTemplates != true ?
-                                    <div>
-                                        <div className="row py-3">
+                                    <div className="d-flex">
+                                       
                                             <div
                                                 className={
                                                     IsShowFullViewImage != true
-                                                        ? "col-sm-3 padL-0 DashboardTaskPopup-Editor above"
+                                                        ? "col-sm-3 me-2 padL-0 DashboardTaskPopup-Editor above"
                                                         : "col-sm-6  padL-0 DashboardTaskPopup-Editor above"
                                                 }
                                             >
@@ -7813,7 +7813,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </ImageUploading>
                                                 </div>
                                             </div>
-                                        </div>
+                                      
                                         <div
                                             className={
                                                 IsShowFullViewImage != true
