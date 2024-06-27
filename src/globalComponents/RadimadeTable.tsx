@@ -29,6 +29,8 @@ import PageLoader from "./pageLoader";
 import CompareTool from "./CompareTool/CompareTool";
 import TrafficLightComponent from "./TrafficLightVerification/TrafficLightComponent";
 import RestructuringCom from "./Restructuring/RestructuringCom";
+import { Avatar } from "@fluentui/react-components";
+
 var filt: any = "";
 var ContextValue: any = {};
 let isUpdated: any = "";
@@ -394,11 +396,11 @@ function ReadyMadeTable(SelectedProp: any) {
         const user = AllUsers.filter(
             (user: any) => user?.AssingedToUser?.Id === name
         );
-        let Image: any;
+        let authImg: any = { Image: "", Suffix: "" }
         if (user[0]?.Item_x0020_Cover != undefined) {
-            Image = user[0].Item_x0020_Cover.Url;
-        } else { Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; }
-        return user ? Image : null;
+            authImg.Image = user[0]?.Item_x0020_Cover.Url;
+        } else { authImg.Suffix = user[0]?.Suffix }
+        return user ? authImg : null;
     };
     const countComponentLevel = (countTaskAWTLevel: any) => {
         if (countTaskAWTLevel?.length > 0) {
@@ -573,17 +575,28 @@ function ReadyMadeTable(SelectedProp: any) {
                 if (result.DisplayCreateDate == "Invalid date" || "") {
                     result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
                 }
+                result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
                 if (result.Author) {
-                    result.Author.autherImage = findUserByName(result.Author?.Id);
+                    let authImg = findUserByName(result.Author?.Id);
+                    if (authImg.Image != undefined && authImg.Image != "") {
+                        result.Author.autherImage = authImg.Image
+                    } else {
+                        result.Author.suffix = authImg.Suffix
+                    }
+                }
+                 if (result.Editor) {
+                    let authImg = findUserByName(result.Editor?.Id);
+                    if (authImg.Image != undefined && authImg.Image != "") {
+                        result.Editor.autherImage = authImg.Image
+                    } else {
+                        result.Editor.suffix = authImg.Suffix
+                    }
                 }
                 result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
                 if (result.DisplayDueDate == "Invalid date" || "") {
                     result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
                 }
                 result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
-                if (result.Editor) {
-                    result.Editor.autherImage = findUserByName(result.Editor?.Id);
-                }
                 if (result?.TaskType) {
                     result.portfolioItemsSearch = result?.TaskType?.Title;
                 }
@@ -2265,12 +2278,18 @@ function ReadyMadeTable(SelectedProp: any) {
                                 <div style={{ width: "70px" }} className="me-1">{row?.original?.DisplayCreateDate}</div>
                                 {row?.original?.Author != undefined || row?.original?.AuthoId != undefined ? (
                                     <>
-                                        <a
-                                            href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
-                                            target="_blank"
-                                            data-interception="off"
-                                        >
-                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.AuthorId != undefined ? row?.original?.AuthorId : row?.original?.Author?.Id)} />
+                                        <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                            target="_blank" data-interception="off">
+                                            {row?.original?.Author?.autherImage || row?.original?.Author?.suffix ? <Avatar
+                                                className="UserImage"
+                                                title={row?.original?.Author?.Title}
+                                                name={row?.original?.Author?.Title}
+                                                image={{ src: row?.original?.Author?.autherImage }}
+                                                initials={row?.original?.Author?.autherImage == undefined ? row.original?.Author?.suffix : undefined}
+
+                                            /> :
+                                            <Avatar  title={row?.original?.Author?.Title}
+                                            name={row?.original?.Author?.Title} className="UserImage" />}
                                         </a>
                                     </>
                                 ) : (
@@ -2305,9 +2324,18 @@ function ReadyMadeTable(SelectedProp: any) {
                                 <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayModifiedDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
                                 {row?.original?.Editor != undefined &&
                                     <>
-                                        <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                                      <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
                                             target="_blank" data-interception="off">
-                                            <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={findUserByName(row?.original?.EditorId != undefined ? row?.original?.EditorId : row?.original?.Editor?.Id)} />
+                                                {row?.original?.Editor?.autherImage || row?.original?.Editor?.suffix ? <Avatar
+                                                className="UserImage"
+                                                title={row?.original?.Editor?.Title}
+                                                name={row?.original?.Editor?.Title}
+                                                image={{ src: row?.original?.Editor?.autherImage }}
+                                                initials={row?.original?.Editor?.autherImage == undefined ? row.original?.Editor?.suffix : undefined}
+
+                                            /> :
+                                            <Avatar  title={row?.original?.Editor?.Title}
+                                            name={row?.original?.Editor?.Title} className="UserImage" />}
                                         </a>
                                     </>
                                 }

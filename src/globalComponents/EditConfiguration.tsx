@@ -339,7 +339,7 @@ const EditConfiguration = (props: any) => {
         return (
             <>
                 <div className='siteColor subheading'>
-                    {props?.EditItem != undefined && props?.EditItem != '' ? <span>Edit Dashboard Configuration</span> : <span>Edit Dashboard Configuration</span>}
+                    {props?.EditItem != undefined && props?.EditItem != '' ? <span>Edit Dashboard Configuration</span> : <span>Add Dashboard Configuration</span>}
                 </div>
                 {props?.EditItem != undefined && props?.EditItem != '' ? <Tooltip ComponentId={869} /> : <Tooltip ComponentId={1107} />}
 

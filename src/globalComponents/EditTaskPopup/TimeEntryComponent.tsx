@@ -3851,8 +3851,7 @@ function reverseArray(arr: any) {
               </div>
             </footer>
           </div>
-          <div className="row">
-            <div className="col-sm-6">
+          <div className="mt-3">
               <div className="boldClable header">Fill Quick Timesheet</div>
               <ul className='p-0'>
               {QuickTimesheetData?.map((val:any)=>{
@@ -3864,7 +3863,6 @@ function reverseArray(arr: any) {
                  
               })}
               </ul>
-            </div>
           </div>
         </div>
       </Panel>
