@@ -2641,9 +2641,13 @@ function reverseArray(arr: any) {
     }
 
     if (Use === 'remove') {
+      setsaveEditTaskTimeChild((prev: any) => ({
+        ...prev,
+        TaskTimeInMin: 0,
+        TaskTime: 0,
+      }));
     changeTime = 0;
-    setsaveEditTaskTimeChild({});
-    setTimeInMinutes(0);
+      setTimeInMinutes(changeTime);
     setTimeInHours(0);
     } else {
     changeTime = inputValue;
@@ -3628,7 +3632,7 @@ function reverseArray(arr: any) {
     onChange={(e) => changeTimeFunction(Number(e.target.value), PopupType,'Add')}
 />
 {((TimeInMinutes > 0 || saveEditTaskTimeChild?.TaskTimeInMin != undefined) && (
-    <span className="input-group-text" style={{zIndex:'9'}}><span className="dark mini svg__icon--cross mt-1 svg__iconbox" onClick={(e)=>changeTimeFunction(Number(e), PopupType,'remove')}></span></span>
+                        <span className="input-group-text" style={{ zIndex: '9' }}><span className="dark mini svg__icon--cross mt-1 svg__iconbox" onClick={(e) => changeTimeFunction(Number(saveEditTaskTimeChild.TaskTimeInMin), PopupType, 'remove')}></span></span>
 ))}
 </div>
                   </div>
@@ -3847,20 +3851,18 @@ function reverseArray(arr: any) {
               </div>
             </footer>
           </div>
-          <div className="row">
-            <div className="col-sm-6">
-              <div className="header">Fill Quick Timesheet</div>
-              <ul>
+          <div className="mt-3">
+              <div className="boldClable header">Fill Quick Timesheet</div>
+              <ul className='p-0'>
               {QuickTimesheetData?.map((val:any)=>{
               return(
-                <div> <span><input  type='radio' className="radio"
-                onChange={(e) => selectQuickTime(val)}
-                name="category"></input></span>{val?.Title}</div>
+                <div className='SpfxCheckRadio'><input  type='radio' className="radio"
+                onChange={(e) => selectQuickTime(val)}  
+                name="category"></input> {val?.Title}</div>
               )
                  
               })}
               </ul>
-            </div>
           </div>
         </div>
       </Panel>

@@ -20,7 +20,7 @@ const EditConfiguration = (props: any) => {
     if (DashboardId == undefined || DashboardId == '')
         DashboardId = 1;
     const ContextData: any = useContext(myContextValue);
-    let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": '', "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
+    let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": '', "WebpartPosition": { "Row": 1, "Column": 1 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
     const [NewItem, setNewItem]: any = useState([defaultConfig]);
     const [Items, setItems]: any = useState<any>([defaultConfig]);
     const [SmartFav, setSmartFav] = useState<any>([]);
@@ -67,7 +67,7 @@ const EditConfiguration = (props: any) => {
         let isExists = false;
         for (let index = 0; index < array.length; index++) {
             let item = array[index];
-            if (item.Id == Item?.Id) {
+            if (item.WebpartId === Item?.WebpartId) {
                 isExists = true;
                 //return false;
             }
@@ -169,7 +169,7 @@ const EditConfiguration = (props: any) => {
     const LoadSmartFav = () => {
         let SmartFavData: any = []
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-        web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'Smartfavorites' or Key eq 'WebPartGallarySmartfavorites'").getAll().then((data: any) => {
+        web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'Smartfavorites'").getAll().then((data: any) => {
             data.forEach((config: any) => {
 
                 config.configurationData = JSON.parse(config?.Configurations);
@@ -221,8 +221,10 @@ const EditConfiguration = (props: any) => {
                     }
                 })
                 TempBackup = _.cloneDeep(newArray);
-                setItems(newArray);
-                setType(newArray[0]);
+                if (newArray?.length > 0) {
+                    setItems(newArray);
+                    setType(newArray[0]);
+                }
                 let arrayItem: any = [];
                 let Count = 1;
                 NewConfigarray(newArray, arrayItem, Count);
@@ -234,9 +236,17 @@ const EditConfiguration = (props: any) => {
                     AddColumn('FirstTime');
             }
             else {
-                setNewItem([defaultConfig])
+                let arrayItem: any = [];
+                let ColumnsValue: any = {};
+                ColumnsValue.ColumnTitle = 'Column' + 1;
+                ColumnsValue.ColumnValue = 1;
+                ColumnsValue.ArrayValue = arrayItem;
+                // arrayItem.push(ColumnsValue);
+                setNewItem([ColumnsValue]);
                 setItems(defaultConfig);
+
             }
+
             setprogressBar(false)
             setSmartFav(SmartFavData)
         }).catch((err: any) => {
@@ -253,25 +263,18 @@ const EditConfiguration = (props: any) => {
             let backupaaray: any = [];
             data?.forEach((webpart: any) => {
                 if (webpart?.Configurations != undefined) {
+
                     let ConfigItem: any = JSON.parse(webpart?.Configurations);
+                    ConfigItem.UpdatedId = webpart.Id;
                     backupaaray.push(ConfigItem);
-                    let items = TempBackup?.filter((obj: any) => obj.WebpartTitle === ConfigItem.WebpartTitle);
+                    let items = TempBackup?.filter((obj: any) => obj.WebpartId === ConfigItem.WebpartId);
                     if (items?.length === 0) {
                         ConfigItem.Title = ConfigItem.WebpartTitle != undefined ? ConfigItem.WebpartTitle : ConfigItem.Title
                         aaray.push(ConfigItem)
                     }
                 }
             })
-            // const updatedItems = [...NewItem];
-            // updatedItems?.forEach((item: any, index: any) => {
-            //     item?.ArrayValue?.forEach((subChild: any) => {
-            //         let items = aaray?.filter((obj: any) => obj.WebpartTitle === subChild.WebpartTitle);
-            //         if (items?.length > 0) {
-            //             subChild.IsNotShowRemoveIcon = false;
-            //         }
-            //     })
-            // })
-            // setNewItem(updatedItems);
+
             ExistingWepartsBackup = _.cloneDeep(backupaaray);
             setExistingWeparts(aaray);
         }).catch((err: any) => {
@@ -296,18 +299,36 @@ const EditConfiguration = (props: any) => {
             arrayItems?.forEach((filter: any) => {
                 filter.selectedSmartFav = {};
             })
-            await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(props?.EditItem?.Id).update({ Title: DashboardTitle, Configurations: JSON.stringify(arrayItems) })
-                .then(async (res: any) => {
-                    setNewItem([]);
-                    props?.CloseConfigPopup(true)
-                    if (props?.SingleWebpart == true) {
-                        if (ContextData != undefined && ContextData?.callbackFunction != undefined)
-                            ContextData?.callbackFunction(false);
-                    }
+            if (props?.EditItem?.Id != undefined) {
+                await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(props?.EditItem?.Id).update({ Title: DashboardTitle, Configurations: JSON.stringify(arrayItems) })
+                    .then(async (res: any) => {
+                        setNewItem([]);
+                        props?.CloseConfigPopup(true)
+                        if (props?.SingleWebpart == true) {
+                            if (ContextData != undefined && ContextData?.callbackFunction != undefined)
+                                ContextData?.callbackFunction(false);
+                        }
 
+                    }).catch((err: any) => {
+                        console.log(err);
+                    })
+            } else {
+
+                await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").top(1).orderBy("Id", false).get().then(async (data: any) => {
+                    await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: DashboardTitle, Key: "DashBoardConfigurationId", Value: data?.length != undefined ? (data[0].Value === undefined ? 1 : (parseInt(data[0].Value) + 1)).toString() : undefined, Configurations: JSON.stringify(arrayItems) })
+                        .then(async (res: any) => {
+                            setNewItem([]);
+                            if (ContextData != undefined && ContextData?.callbackFunction != undefined)
+                                ContextData?.callbackFunction('Add');
+                            props?.CloseConfigPopup(true)
+                        }).catch((err: any) => {
+                            console.log(err);
+                        })
                 }).catch((err: any) => {
                     console.log(err);
                 })
+
+            }
 
         } catch (error) {
             console.log(error);
@@ -318,7 +339,7 @@ const EditConfiguration = (props: any) => {
         return (
             <>
                 <div className='siteColor subheading'>
-                    {props?.EditItem != undefined && props?.EditItem != '' ? <span>Edit Dashboard Configuration</span> : <span>Edit Dashboard Configuration</span>}
+                    {props?.EditItem != undefined && props?.EditItem != '' ? <span>Edit Dashboard Configuration</span> : <span>Add Dashboard Configuration</span>}
                 </div>
                 {props?.EditItem != undefined && props?.EditItem != '' ? <Tooltip ComponentId={869} /> : <Tooltip ComponentId={1107} />}
 
@@ -357,7 +378,7 @@ const EditConfiguration = (props: any) => {
         setIsManageConfigPopup(true);
         setSelectedItem(Config);
     }
-    const CloseConfigPopup = () => {
+    const CloseConfigPopup = (itesm: any, newitem: any) => {
         setIsManageConfigPopup(false);
         setSelectedItem('');
     }
@@ -477,6 +498,11 @@ const EditConfiguration = (props: any) => {
                 type={PanelType.large}>
                 <div className='modal-body'>
                     {progressBar && <PageLoader />}
+                  
+                    <div className="mb-2">
+                        <label className='form-label full-width'>Dashboard Title</label>
+                        <input className='form-control' type='text' placeholder="Dashboard Title" value={DashboardTitle} onChange={(e) => setDashboardTitle(e.target.value)} />
+                    </div>
                     <div className="mb-2">
                         <label className='form-label full-width fw-semibold'>Drag and drop tiles between columns in any vertical order.</label></div>
                     <div className="Metadatapannel border p-2 mb-2">
@@ -509,7 +535,7 @@ const EditConfiguration = (props: any) => {
                                                             </>
                                                         )
                                                     }) : <div>
-                                                        <div className="alignCenter justify-content-center mb-2 w-100" style={{ height: '50px', width: "150px" }}
+                                                        <div className="alignCenter justify-content-center mb-2 w-100" style={{ height: '200px', width: "150px" }}
                                                             onDragStart={(e) => dragStart(e, 0, index)}
                                                             onDragEnter={(e) => dragEnd(e, 0, index)}
                                                             // onDragEnd={(e) => drop(e, index, "sameArray")}
@@ -614,8 +640,11 @@ const EditConfiguration = (props: any) => {
                     <button className='btn btn-default ms-1' onClick={CloseConfiguationPopup}>Cancel</button>
                 </div>
             </Panel >
-            <span>
+            {/* <span>
                 {IsManageConfigPopup && <AddConfiguration DashboardConfigBackUp={Items} SingleWebpart={true} props={props.props} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}
+            </span> */}
+            <span>
+                {IsManageConfigPopup && <AddEditWebpartTemplate props={props?.props} SingleWebpart={true} EditItem={SelectedItem} IsOpenPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />}
             </span>
             <span>
                 {IsOpenPopup && <AddEditWebpartTemplate props={props?.props} SingleWebpart={true} EditItem={""} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseIsConfigPopup} />}

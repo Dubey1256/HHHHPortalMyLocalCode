@@ -23,7 +23,7 @@ const SmartfilterSettingTypePanel = (items: any) => {
                 onRenderHeader={onRenderCustomHeader}
                 isBlocking={false}
             >
-                <div className='d-flex settingTooltip'>
+                <div className='settingsPortfolioPanel'>
                     {items?.filterGroupsData != null && items?.filterGroupsData.length > 0 &&
                         items?.filterGroupsData?.map((MainGroup: any, index: any) => {
                             if (MainGroup?.Title == "Type") {

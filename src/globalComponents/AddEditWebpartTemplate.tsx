@@ -100,8 +100,8 @@ const AddEditWebpartTemplate = (props: any) => {
                                             if (CreatedSmartFavId && item?.IsDashboardFav != true) {
                                                 item[key] = CreatedSmartFavId;
                                                 item['IsDashboardFav'] = true;
-                                                item['WebpartTitle'] = SmartFavDashboardTitle
                                             }
+                                            item['WebpartTitle'] = SmartFavDashboardTitle
                                         }
                                     }
                                 });
