@@ -3,14 +3,33 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import Example from "./FroalaCommnetBoxes";
 import CommentBoxComponent from './CommentBoxComponent';
 import UXFeedbackComponent from './UXFeedbackComponent';
+
 const UXDesignPopupTemplate = (props: any) => {
     let firstIndexData:any=[props?.data[0]]
+    let copyTemplatesData:any=[];
+    useEffect(()=>{
+        let secondIndex:any=[]
+        props?.data?.map((data:any,index:any)=>{
+            if(index>0){
+                secondIndex.push(data)
+            }
+
+        })
+        copyTemplatesData=secondIndex
+    })
+ 
     const designFeedbackData=React.useRef<any>()
   const ObjectiveDataCallback=(objectiveData:any)=>{
     firstIndexData=objectiveData
+    if(copyTemplatesData?.length>0){
+       props.DesignTemplatesCallback(firstIndexData.concat(copyTemplatesData))  
+    }else{
+        props.DesignTemplatesCallback(firstIndexData) 
+    }
+    
   }
   const setDesignNewTemplatesCallback=(TemplatesData:any)=>{
-    let copyTemplatesData:any=[];
+    copyTemplatesData=[]
     if(firstIndexData?.length>0){
         copyTemplatesData = firstIndexData.concat(TemplatesData);
     }else{

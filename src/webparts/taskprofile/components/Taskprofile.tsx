@@ -77,6 +77,7 @@ var settings = {
   prevArrow: <FaAngleLeft />,
   nextArrow: <FaAngleRight />
 };
+let arrayOfChar = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',]
 export interface ITaskprofileState {
   Result: any;
   TagConceptPaper: any;
@@ -323,7 +324,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         if ((index == taskDetails["TaskCategories"]?.length - 1) || (taskDetails["TaskCategories"].length == 1)) {
           category = category + item?.Title
         } else {
-          category = category + item?.Title + ";"
+          category = category + item?.Title + "; "
         }
 
         let ApprovalCheck = category?.search("Approval");
@@ -3361,7 +3362,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             aria-selected="true"
                             onClick={() => { this.handleChangeTab(index) }}
                         >
-                            {tab?.setTitle}
+                           {arrayOfChar[index-1]+"."+tab?.setTitle}
 
                         </button>
                             )}
@@ -3382,9 +3383,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                               role="tabpanel"
                               aria-labelledby={designtempateData?.setTitle}
                           >
-                                <div className='carouselSlider taskImgTemplate'>
+                                <div className={`carouselSlider taskImgTemplate ${designtempateData?.setImagesInfo?.length==1?"ArrowIconHide":""}`} >
                                   <Slider {...settings}>
                               {designtempateData?.setImagesInfo?.map((imgData: any, indeximage: any) => {
+                             
                                       return (
                                         <div key={indeximage} className='carouselHeight'>
                                           <img className="img-fluid"
@@ -3483,7 +3485,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                               <div className="d-flex p-0 FeedBack-comment ">
                                 <div className="border p-1 me-1">
-                                  <span>{i+1}.</span>
+                                  <span>{arrayOfChar[indexdesign-1]+"."+(i+1)}.</span>
                                   <ul className='list-none'>
                                     <li>
                                       {fbData['Completed'] != null && fbData['Completed'] &&
@@ -3649,7 +3651,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                                 <div className="d-flex pe-0 FeedBack-comment">
                                   <div className="border p-1 me-1">
-                                    <span >{i+1}.{j + 1}</span>
+                                    <span >{arrayOfChar[indexdesign-1]+"."+(i+1)}.{j + 1}</span>
                                     <ul className="list-none">
                                       <li>
                                         {fbSubData?.Completed != null && fbSubData?.Completed &&
