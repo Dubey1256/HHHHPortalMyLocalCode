@@ -67,7 +67,7 @@ const EditConfiguration = (props: any) => {
         let isExists = false;
         for (let index = 0; index < array.length; index++) {
             let item = array[index];
-            if (item.Id == Item?.Id) {
+            if (item.WebpartId === Item?.WebpartId) {
                 isExists = true;
                 //return false;
             }
@@ -339,7 +339,7 @@ const EditConfiguration = (props: any) => {
         return (
             <>
                 <div className='siteColor subheading'>
-                    {props?.EditItem != undefined && props?.EditItem != '' ? <span>Edit Dashboard Configuration</span> : <span>Edit Dashboard Configuration</span>}
+                    {props?.EditItem != undefined && props?.EditItem != '' ? <span>Edit Dashboard Configuration</span> : <span>Add Dashboard Configuration</span>}
                 </div>
                 {props?.EditItem != undefined && props?.EditItem != '' ? <Tooltip ComponentId={869} /> : <Tooltip ComponentId={1107} />}
 
@@ -498,10 +498,11 @@ const EditConfiguration = (props: any) => {
                 type={PanelType.large}>
                 <div className='modal-body'>
                     {progressBar && <PageLoader />}
-                    {props?.EditItem === undefined && <div className="mb-2">
+                  
+                    <div className="mb-2">
                         <label className='form-label full-width'>Dashboard Title</label>
                         <input className='form-control' type='text' placeholder="Dashboard Title" value={DashboardTitle} onChange={(e) => setDashboardTitle(e.target.value)} />
-                    </div>}
+                    </div>
                     <div className="mb-2">
                         <label className='form-label full-width fw-semibold'>Drag and drop tiles between columns in any vertical order.</label></div>
                     <div className="Metadatapannel border p-2 mb-2">
@@ -534,7 +535,7 @@ const EditConfiguration = (props: any) => {
                                                             </>
                                                         )
                                                     }) : <div>
-                                                        <div className="alignCenter justify-content-center mb-2 w-100" style={{ height: '50px', width: "150px" }}
+                                                        <div className="alignCenter justify-content-center mb-2 w-100" style={{ height: '200px', width: "150px" }}
                                                             onDragStart={(e) => dragStart(e, 0, index)}
                                                             onDragEnter={(e) => dragEnd(e, 0, index)}
                                                             // onDragEnd={(e) => drop(e, index, "sameArray")}

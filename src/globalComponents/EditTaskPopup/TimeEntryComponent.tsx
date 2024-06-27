@@ -3851,20 +3851,18 @@ function reverseArray(arr: any) {
               </div>
             </footer>
           </div>
-          <div className="row">
-            <div className="col-sm-6">
-              <div className="header">Fill Quick Timesheet</div>
-              <ul>
+          <div className="mt-3">
+              <div className="boldClable header">Fill Quick Timesheet</div>
+              <ul className='p-0'>
               {QuickTimesheetData?.map((val:any)=>{
               return(
-                <div> <span><input  type='radio' className="radio"
-                onChange={(e) => selectQuickTime(val)}
-                name="category"></input></span>{val?.Title}</div>
+                <div className='SpfxCheckRadio'><input  type='radio' className="radio"
+                onChange={(e) => selectQuickTime(val)}  
+                name="category"></input> {val?.Title}</div>
               )
                  
               })}
               </ul>
-            </div>
           </div>
         </div>
       </Panel>
