@@ -59,7 +59,7 @@ const AddEditWebpartTemplate = (props: any) => {
                     })
                     setNewItem(newArray);
                     if (props?.EditItem != undefined && props?.EditItem != '') {
-                        await web.lists.getById(props?.props?.AdminConfigurationListId).items.getById(props?.EditItem?.UpdatedId).update({ Title: SmartFavDashboardTitle, Configurations: JSON.stringify(NewItem[0]) })
+                        await web.lists.getById(props?.props?.AdminConfigurationListId).items.getById(props?.EditItem?.UpdatedId).update({ Title: SmartFavDashboardTitle, Configurations: BackupNewItem != undefined && BackupNewItem?.length > 0 ? JSON.stringify(newArray[0]) : JSON.stringify(NewItem[0]) })
                             .then(async (res: any) => {
                                 setNewItem([]);
                                 CreatedSmartFavId = undefined;
@@ -184,7 +184,7 @@ const AddEditWebpartTemplate = (props: any) => {
                     item.smartFevId = parseInt(item?.smartFevId)
             })
             setNewItem(newArray);
-            BackupNewItem.push(newArray);
+            BackupNewItem = [...newArray];
             UpdatedItem = JSON.parse(JSON.stringify(newArray));
         }
         else {
