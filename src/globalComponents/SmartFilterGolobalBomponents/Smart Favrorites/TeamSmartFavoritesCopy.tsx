@@ -59,6 +59,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
     const [isCreatedDateSelected, setIsCreatedDateSelected] = React.useState(false);
     const [isModifiedDateSelected, setIsModifiedDateSelected] = React.useState(false);
     const [isDueDateSelected, setIsDueDateSelected] = React.useState(false);
+    const [isWorkingDate, setIsWorkingDate] = React.useState(false);
     // const [preSet, setPreSet] = React.useState(false);
     //*******************************************************Date Section End********************************************************************/
 
@@ -70,6 +71,9 @@ const TeamSmartFavoritesCopy = (item: any) => {
     const [isTeamMember, setIsTeamMember] = React.useState(false);
     const [isTodaysTask, setIsTodaysTask] = React.useState(false);
     const [isSelectAll, setIsSelectAll] = React.useState(false);
+    const [isPhone, setIsPhone] = React.useState(false);
+    const [isBottleneck, setIsBottleneck] = React.useState(false);
+    const [isAttention, setIsAttention] = React.useState(false);
     // const [isWorkingThisWeek, setIsWorkingThisWeek] = React.useState(false);
     //*******************************************************Teams Section End********************************************************************/
     ///// Year Range Using Piker ////////
@@ -100,6 +104,12 @@ const TeamSmartFavoritesCopy = (item: any) => {
             setIsTeamLead(item?.isTeamLead);
             setIsTeamMember(item?.isTeamMember);
             setIsTodaysTask(item?.isTodaysTask);
+
+            setIsPhone(item?.isPhone);
+            setIsBottleneck(item?.isBottleneck);
+            setIsAttention(item?.isAttention);
+            setIsWorkingDate(item?.isWorkingDate);
+
             setSelectedFilter(item?.selectedFilter);
             setIsCreatedDateSelected(item?.isCreatedDateSelected);
             setIsModifiedDateSelected(item?.isModifiedDateSelected);
@@ -120,6 +130,12 @@ const TeamSmartFavoritesCopy = (item: any) => {
             setIsAssignedto((prev: any) => item?.updatedEditData?.isAssignedto);
             setIsTeamLead((prev: any) => item?.updatedEditData?.isTeamLead);
             setIsTeamMember((prev: any) => item?.updatedEditData?.isTeamMember);
+
+            setIsPhone((prev: any) => item?.updatedEditData?.isPhone);
+            setIsBottleneck((prev: any) => item?.updatedEditData?.isBottleneck);
+            setIsAttention((prev: any) => item?.updatedEditData?.isAttention);
+            setIsWorkingDate((prev: any) => item?.updatedEditData?.isWorkingDate);
+
             setIsTodaysTask((prev: any) => item?.updatedEditData?.isTodaysTask);
             setSelectedFilter((prev: any) => item?.updatedEditData?.selectedFilter);
             setIsCreatedDateSelected((prev: any) => item?.updatedEditData?.isCreatedDateSelected);
@@ -169,7 +185,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 filterGroups[index].selectAllChecked = childrenLength === checked?.length;
             }
             // ///end///
-            handleTeamsFilterCreatedModifiAssign(event);
+            // handleTeamsFilterCreatedModifiAssign(event);
             setTaskUsersData(filterGroups);
             rerender();
 
@@ -188,26 +204,26 @@ const TeamSmartFavoritesCopy = (item: any) => {
         }
         rerender()
     }
-    const handleTeamsFilterCreatedModifiAssign = (event: any) => {
-        if (
-            !isCreatedBy &&
-            !isModifiedby &&
-            !isAssignedto
-        ) {
-            switch (event) {
-                case "FilterTeamMembers":
-                    setIsCreatedBy(true);
-                    setIsModifiedby(true);
-                    setIsAssignedto(true);
-                    break;
-                default:
-                    setIsCreatedBy(false);
-                    setIsModifiedby(false);
-                    setIsAssignedto(false);
-                    break;
-            }
-        }
-    };
+    // const handleTeamsFilterCreatedModifiAssign = (event: any) => {
+    //     if (
+    //         !isCreatedBy &&
+    //         !isModifiedby &&
+    //         !isAssignedto
+    //     ) {
+    //         switch (event) {
+    //             case "FilterTeamMembers":
+    //                 setIsCreatedBy(true);
+    //                 setIsModifiedby(true);
+    //                 setIsAssignedto(true);
+    //                 break;
+    //             default:
+    //                 setIsCreatedBy(false);
+    //                 setIsModifiedby(false);
+    //                 setIsAssignedto(false);
+    //                 break;
+    //         }
+    //     }
+    // };
     const handleSelectAllChangeTeamSection = () => {
         setIsSelectAll(!isSelectAll);
         setIsCreatedBy(!isSelectAll);
@@ -304,7 +320,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
             filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
             setTaskUsersData((prev: any) => filterGroups);
             rerender()
-        } 
+        }
         else if (event == "ClintCatogry") {
             const filterGroups = [...allFilterClintCatogryData];
             const selectedIds: any[] = [];
@@ -428,31 +444,31 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 $('.ms-Panel-main').css('--SiteBlue', item?.portfolioColor); // Set the desired color value here
             }
         }, 1000)
-    }, [PreSetPanelIsOpen,ProjectManagementPopup]);
+    }, [PreSetPanelIsOpen, ProjectManagementPopup]);
 
     const handleDateFilterChange = (event: any) => {
         setSelectedFilter(event.target.value);
-        // setPreSet(false);
-        // rerender();
-        if (
-            !isCreatedDateSelected &&
-            !isModifiedDateSelected &&
-            !isDueDateSelected
-        ) {
-            switch (event.target.value) {
-                case "today": case "yesterday": case "thisweek": case "last7days":
-                case "thismonth": case "last30days": case "last3months": case "thisyear": case "lastyear": case "Pre-set":
-                    setIsCreatedDateSelected(true);
-                    setIsModifiedDateSelected(true);
-                    setIsDueDateSelected(true);
-                    break;
-                default:
-                    setIsCreatedDateSelected(false);
-                    setIsModifiedDateSelected(false);
-                    setIsDueDateSelected(false);
-                    break;
-            }
-        }
+        // // setPreSet(false);
+        // // rerender();
+        // if (
+        //     !isCreatedDateSelected &&
+        //     !isModifiedDateSelected &&
+        //     !isDueDateSelected
+        // ) {
+        //     switch (event.target.value) {
+        //         case "today": case "yesterday": case "thisweek": case "last7days":
+        //         case "thismonth": case "last30days": case "last3months": case "thisyear": case "lastyear": case "Pre-set":
+        //             setIsCreatedDateSelected(true);
+        //             setIsModifiedDateSelected(true);
+        //             setIsDueDateSelected(true);
+        //             break;
+        //         default:
+        //             setIsCreatedDateSelected(false);
+        //             setIsModifiedDateSelected(false);
+        //             setIsDueDateSelected(false);
+        //             break;
+        //     }
+        // }
     };
     const clearDateFilters = () => {
         setSelectedFilter("");
@@ -498,7 +514,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
             </div>
         )
     }
-    
+
     // ************** this is for Project Management Section Functions ************
     const SelectProjectFunction = (selectedData: any) => {
         let selectedTempArray: any = [];
@@ -535,7 +551,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
         }
 
     }
-    
+
     const SelectProjectFromAutoSuggestion = (data: any) => {
         setProjectSearchKey('');
         setSearchedProjectData([]);
@@ -553,14 +569,14 @@ const TeamSmartFavoritesCopy = (item: any) => {
         setSelectedProject(tempArray)
     }
 
-    const callBackData = React.useCallback((checkData: any,Type:any, functionType:any) => {
+    const callBackData = React.useCallback((checkData: any, Type: any, functionType: any) => {
         let MultiSelectedData: any = [];
-        if (checkData?.length>0 && functionType=="Save") {
+        if (checkData?.length > 0 && functionType == "Save") {
             checkData.map((item: any) => MultiSelectedData?.push(item))
             SelectProjectFunction(MultiSelectedData);
-            setProjectManagementPopup(false);  
-                    } else {
-           
+            setProjectManagementPopup(false);
+        } else {
+
             setProjectManagementPopup(false);
         }
     }, []);
@@ -572,7 +588,10 @@ const TeamSmartFavoritesCopy = (item: any) => {
         if (preSetEndDate != undefined) {
             setEndDate(preSetEndDate);
         }
-        setSelectedFilter("Pre-set");
+        if(preSetStartDate!=undefined ||preSetEndDate != undefined ){
+            setSelectedFilter("Pre-set");
+        }
+       
         setPreSetPanelIsOpen(false)
     }, []);
     const preSetIconClick = () => {
@@ -636,6 +655,10 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 isAssignedto: isAssignedto,
                 isTeamLead: isTeamLead,
                 isTeamMember: isTeamMember,
+                isPhone: isPhone,
+                isBottleneck: isBottleneck,
+                isAttention: isAttention,
+                isWorkingDate: isWorkingDate,
                 isTodaysTask: isTodaysTask,
                 selectedFilter: selectedFilter,
                 isCreatedDateSelected: isCreatedDateSelected,
@@ -846,7 +869,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                     </div>
                                                 </span>
                                             </label>
-                                            <div className="togglecontent mb-3 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #bdbdbd"}}>
+                                            <div className="togglecontent mb-3 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #bdbdbd" }}>
                                                 <div className="col-sm-12 pad0">
                                                     <div className="togglecontent">
                                                         <table width="100%" className="indicator_search">
@@ -1073,6 +1096,36 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                         <label className="toggler full_width active">
                                             <span className='full_width'>
                                                 <div className='alignCenter'>
+                                                    <span className='f-15 fw-semibold'>Actions</span>
+                                                </div>
+
+                                            </span>
+                                        </label>
+                                        <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
+                                            <Col className='mb-2 '>
+                                                <div>
+                                                    <label className='me-3'>
+                                                        <input className='form-check-input' type="checkbox" value="isPhone" checked={isPhone} onChange={() => setIsPhone(!isPhone)} /> Phone
+                                                    </label>
+                                                    <label className='me-3'>
+                                                        <input className='form-check-input' type="checkbox" value="isBottleneck" checked={isBottleneck} onChange={() => setIsBottleneck(!isBottleneck)} /> Bottleneck
+                                                    </label>
+                                                    <label className='me-3'>
+                                                        <input className='form-check-input' type="checkbox" value="isAttention" checked={isAttention} onChange={() => setIsAttention(!isAttention)} /> Attention
+                                                    </label>
+                                                </div>
+                                            </Col>
+                                        </div>
+                                    </div>
+                                </div >
+                            </section>
+
+                            <section className="smartFilterSection p-0 mb-1">
+                                <div className="px-2">
+                                    <div className="togglebox">
+                                        <label className="toggler full_width active">
+                                            <span className='full_width'>
+                                                <div className='alignCenter'>
                                                     <span className='f-15 fw-semibold'>Team Members</span>
                                                 </div>
                                             </span>
@@ -1192,6 +1245,10 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                         <input className="form-check-input" type="checkbox" value="isDueDate" checked={isDueDateSelected} onChange={() => setIsDueDateSelected(!isDueDateSelected)} />{" "}
                                                         Due Date
                                                     </label>
+                                                    <label className="me-3">
+                                                        <input className="form-check-input" type="checkbox" value="isWorkingDate" checked={isWorkingDate} onChange={() => setIsWorkingDate(!isWorkingDate)} />{" "}
+                                                        Working Date
+                                                    </label>
                                                 </Col>
                                                 <Col className='my-3'>
                                                     <span className='SpfxCheckRadio  me-3'>
@@ -1240,7 +1297,6 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                             checked={selectedFilter === "Pre-set"} />
                                                         <label className='ms-1'>Pre-set <span style={{ backgroundColor: `${portfolioColor}` }} onClick={() => preSetIconClick()} className="svg__iconbox svg__icon--editBox alignIcon hreflink"></span></label>
                                                     </span>
-
                                                 </Col>
                                                 <div className="px-2">
                                                     <Row>
@@ -1290,13 +1346,13 @@ const TeamSmartFavoritesCopy = (item: any) => {
                         </>}
                     </section>
                     {item?.ProjectData != undefined && item?.ProjectData?.length > 0 && ProjectManagementPopup ?
-                    <ServiceComponentPortfolioPopup
-                    Dynamic={item?.ContextValue}
-                    Call={(DataItem: any, Type: any, functionType: any) => {callBackData(DataItem, Type, functionType) }}  
-                    showProject={ProjectManagementPopup}
-                    selectionType = 'Multi'
-                  />
-                   
+                        <ServiceComponentPortfolioPopup
+                            Dynamic={item?.ContextValue}
+                            Call={(DataItem: any, Type: any, functionType: any) => { callBackData(DataItem, Type, functionType) }}
+                            showProject={ProjectManagementPopup}
+                            selectionType='Multi'
+                        />
+
                         : null
                     }
                     <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>
