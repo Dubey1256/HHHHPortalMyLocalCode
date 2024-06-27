@@ -345,12 +345,14 @@ export const NotificationsAddPopup = (props: any) => {
                             </div>
 
                             <div className='row mt-4'>
-                                <div className='col-sm-3'>
+                                <div className='col-sm-3 '>
                                     {TaskStatus?.map((StatusData: any) => {
                                         return (
                                             <>
-
-                                                <div><a onClick={() => setPercentageComplete(StatusData?.value)}> {StatusData?.status}</a></div>
+                                                <div className={`${percentageComplete == StatusData?.value ? 'alignCenter border p-2 activeCategory' : 'alignCenter border p-2 hoverCategory'}`}>
+                                                    <a> {StatusData?.status}</a>
+                                                    <span className="hreflink ml-auto svg__icon--Plus wid30 svg__iconbox" onClick={() => setPercentageComplete(StatusData?.value)}></span>
+                                                </div>
                                             </>
                                         )
 
@@ -362,7 +364,7 @@ export const NotificationsAddPopup = (props: any) => {
                                         return (
                                             <>
                                                 {config?.percentComplete == percentageComplete &&
-                                                    <section>
+                                                    <section className='mb-2'>
                                                         <Card>
 
                                                             <div className='alignCenter'>
@@ -373,24 +375,24 @@ export const NotificationsAddPopup = (props: any) => {
                                                                 <span className='svg__iconbox svg__icon--trash' onClick={() => DeleteTaskNotificationPopup(config, index)}></span>
                                                             </div>
                                                             <div className='alignCenter'>
-                                                                <label className='form-label'>Task Status:</label>
+                                                                <label className='form-label'>Task Status :</label>
                                                                 <span className='ms-2'>
                                                                     {`${config?.percentComplete} %`}
                                                                 </span>
                                                             </div>
 
                                                             <div>
-                                                                <label className='form-label'>Avoid ItSelf:</label>
+                                                                <label className='form-label'>Avoid ItSelf :</label>
                                                                 <span className='SpfxCheckRadio ms-2'>
                                                                     <input type="checkbox" className='form-check-input' checked={config?.avoidItself == "true"} />
                                                                 </span>
                                                             </div>
                                                             <div>
-                                                                <label className='form-label'>Category:</label>
-                                                                <span className='ms-2'>{config?.Category} </span>
+                                                                <label className='form-label'>Category :</label>
+                                                                <span className='ms-2'>{config?.Category?.length > 1 ? config?.Category?.join(',') : config?.Category} </span>
                                                             </div>
                                                             <div>
-                                                                <label className='form-label'>Exception Category:</label>
+                                                                <label className='form-label'>Exception Category :</label>
                                                                 <span className='ms-2'>{config?.ExceptionCategory[0]} </span>
                                                             </div>
                                                         </Card>
@@ -402,15 +404,14 @@ export const NotificationsAddPopup = (props: any) => {
 
                                     }) :
 
-                                        <>
+                                        <div className='border p-2 text-center'>
                                             "No Configuration Available"
-
-                                        </>}
-                                    <span className='ms-3 mt-2'>
-                                        <button type="button" className='me-1 btn btn-primary'
+                                        </div>}
+                                    <div className='ms-3 mt-2 text-end'>
+                                        <button type="button" className='btnCol btn btn-primary '
                                             onClick={() => setOpenAddConfigPopup(true)}
                                         >Add Config </button>
-                                    </span >
+                                    </div>
                                 </div>}
 
                             </div>
@@ -443,7 +444,7 @@ export const NotificationsAddPopup = (props: any) => {
                     </div>
                 </footer>
 
-               
+
             </Panel>
             {openAddConfigPopup && <AddTaskConfigPopup TaskconfigCallback={TaskconfigCallback} percentageComplete={percentageComplete} AllListId={props?.AllListId} setAllTaskStatusToConfigure={setAllTaskStatusToConfigure} allTaskStatusToConfigure={allTaskStatusToConfigure} ></AddTaskConfigPopup>}
             {openEditConfigPopup && <AddTaskConfigPopup TaskconfigCallback={TaskconfigCallback} editTaskconfigData={editTaskconfigData} percentageComplete={percentageComplete} AllListId={props?.AllListId} setAllTaskStatusToConfigure={setAllTaskStatusToConfigure} allTaskStatusToConfigure={allTaskStatusToConfigure} />}
