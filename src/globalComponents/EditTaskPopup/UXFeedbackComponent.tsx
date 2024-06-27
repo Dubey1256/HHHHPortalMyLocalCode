@@ -733,6 +733,21 @@ export default function UXFeedbackComponent(textItems: any) {
         }
     }
     //------------------move set function End-------------
+     
+
+    //--------------Delete set Fuctionality----------------
+    const DeleteSet=(index:any)=>{
+        designTemplatesArray.splice(index,1) 
+        if(index==0){
+            setCurrentActiveTab(index)   
+        }else{
+            setCurrentActiveTab(index-1)
+        }
+       setState([...designTemplatesArray]);
+        callBack(designTemplatesArray);
+
+    }
+    //------------Delete set Data end -----------------
     
     const DesignCategoriesTask = (state: any) => {
         return (
@@ -765,6 +780,7 @@ export default function UXFeedbackComponent(textItems: any) {
                  </button>
                  <div className="alignCenter editTab">
                  <span className="svg__iconbox svg__icon--editBox hreflink" title="Edit set Title" onClick={()=>handleEditClick(index)}></span>
+                 <span  className="svg__iconbox hreflink mini svg__icon--trash" title="Delete Set"onClick={() => DeleteSet(index) } > </span>
                     </div>
                         </div>
                     
@@ -834,7 +850,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                                 }
                                                                             >
                                                                                 {" "}
-                                                                                | <RiDeleteBin6Line /> |
+                                                                                | <RiDeleteBin6Line /> 
                                                                                 <span className="tooltip-text pop-right">
                                                                                     Delete
                                                                                 </span>
@@ -903,7 +919,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                                 }
                                                                             >
                                                                                 {" "}
-                                                                                | <RiDeleteBin6Line /> |
+                                                                                | <RiDeleteBin6Line /> 
                                                                                 <span className="tooltip-text pop-right">
                                                                                     Delete
                                                                                 </span>
