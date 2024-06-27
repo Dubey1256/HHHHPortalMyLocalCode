@@ -66,7 +66,7 @@ const GraphData = (data: any) => {
 
     return chartDatas;
   };
-  let totalTimeByDay = calculateTotalTimeByDay(mydata);
+  let totalTimeByDay:any = calculateTotalTimeByDay(mydata);
 
    totalTimeByDay.map((entry: any) => {
      entry.color = entry.Time === 0 ? '#FF0000' : '#4987f1'; // Red for zero time, green for others
@@ -108,27 +108,44 @@ const GraphData = (data: any) => {
 
 
   }
-  const generateDateRange = (startDate: string, numDays: number) => {
+  const addWeekendProperty = (data:any) => {
+    return data.map((item:any) => {
+      let [day, month, year] = item.Day.split('/');
+      let date = new Date(year, month - 1, day);
+      let isWeekend = (date.getDay() === 6 || date.getDay() === 0); // 6 for Saturday, 0 for Sunday
+      return { ...item, isWeekend };
+    });
+  };
+  const generateDateRange = (startDate: string, endDate: string) => {
     const dates = [];
-    let [day, month, year] = startDate.split('/');
-    let currentDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-
-    for (let i = 0; i < numDays; i++) {
+    let [startDay, startMonth, startYear] = startDate.split('/');
+    let [endDay, endMonth, endYear] = endDate.split('/');
+    
+    let currentDate = new Date(parseInt(startYear), parseInt(startMonth) - 1, parseInt(startDay));
+    let endDateObj = new Date(parseInt(endYear), parseInt(endMonth) - 1, parseInt(endDay));
+  
+    while (currentDate <= endDateObj) {
       dates.push(currentDate.toLocaleDateString('en-GB'));
       currentDate.setDate(currentDate.getDate() + 1);
     }
-
+  
     return dates;
   };
 
 
   if (isWeekMonthDay == false) {
 
-
+    let dummyData=''
     const startDate = totalTimeByDay[0]?.Day;
-    const numDays = totalTimeByDay?.length;
-    let dummyData = new Date(totalTimeByDay[totalTimeByDay?.length - 1].Day)
-    const dateRange = generateDateRange(startDate, numDays)
+    const numDays = totalTimeByDay?.length-1;
+    if(totalTimeByDay[numDays]?.Day == 'aN/aN/NaN'){
+       dummyData = totalTimeByDay[numDays-1]?.Day
+    }
+    else{
+       dummyData = totalTimeByDay[numDays]?.Day
+    }
+    
+    const dateRange = generateDateRange(startDate, dummyData)
     const formattedDateRange = dateRange.map(date => {
       const [day, month, year] = date.split('/');
       return `${day}/${month}/${year}`;
@@ -146,21 +163,38 @@ const GraphData = (data: any) => {
       const dateB: any = new Date(b.Day.split('/').reverse().join('-'));
       return dateA - dateB;
     });
-    let copytotalTimeByDay = JSON.parse(JSON.stringify(totalTimeByDay))
+
+    const isValidDate = (dateStr:any) => {
+      const [day, month, year] = dateStr.split('/');
+      const date = new Date(`${year}-${month}-${day}`);
+      return !isNaN(date.getTime());
+    };
+    
+    const filteredData = totalTimeByDay.filter((item:any) => isValidDate(item.Day));
+  const updatedData = addWeekendProperty(filteredData);
+   
+    let copytotalTimeByDay = JSON.parse(JSON.stringify(updatedData))
     const checkData = fillMissingDates(copytotalTimeByDay);
     if (checkData?.length > 0) {
       console.log(checkData)
       totalTimeByDay = checkData;
     }
 
-    backup = totalTimeByDay.map(entry => ({ ...entry }));
-    const formattedTotalTimeByDay = totalTimeByDay?.map(entry => {
+   
+    updatedData?.sort((a: any, b: any) => {
+      const dateA: any = new Date(a.Day.split('/').reverse().join('-'));
+      const dateB: any = new Date(b.Day.split('/').reverse().join('-'));
+      return dateA - dateB;
+    });
+    backup = updatedData.map((entry:any) => ({ ...entry }));
+    const formattedTotalTimeByDay = updatedData?.map((entry:any) => {
       const [day, month] = entry.Day.split('/'); // Split the day and month components
       entry.Day = `${day}/${month}`; // Reassign the Day property in the desired format
       return entry;
     });
     console.log(data);
     finaldata = formattedTotalTimeByDay;
+
     finaldata.forEach((entry:any) => {
       let totalTime = 0;
       entry.SiteData.forEach((site:any) => {
@@ -283,7 +317,8 @@ finaldata?.forEach((entry:any) => {
     Migration: 0,
     EI:0,
     EPS:0,
-    OffShoreTasks:0
+    OffShoreTasks:0,
+    isWeekend:entry.isWeekend
 
   };
 
@@ -406,6 +441,8 @@ console.log(transformedData);
       </div>
     );
   };
+
+  
   // const changeDateType=(Type:any)=>{
   //    console.log(Type)
   //    if(Type == 'Week'){
@@ -609,7 +646,7 @@ console.log(transformedData);
   };
   const CustomTick = ({ x, y, payload }: any) => {
     const item = transformedData?.find((item:any) => item.Day === payload.value);
-    const fill = item && item.Time === 0 ? 'red' : 'black';
+    const fill = item && item?.isWeekend == true? 'red' : 'black';
   
     return (
       <text x={x} y={y + 10} textAnchor="middle" fill={fill}>
@@ -621,11 +658,20 @@ console.log(transformedData);
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      const keysToDisplay = ['HHHH', 'Education', 'EPS', 'EI', 'Migration', 'Gruene'];
+      const keysToDisplay = ['HHHH', 'Education', 'EPS', 'EI', 'Migration', 'Gruene','OffShoreTasks'];
+      const colorMap:any = {
+        HHHH: '#2251d5',
+        Education: '#b82ddb',
+        EPS: '#f50627',
+        EI: '#121314',
+        Migration: '#66b2d7',
+        Gruene: '#4caf50',
+        OffShoreTasks:'#c1722e'
+      };
   
       const filteredData = keysToDisplay
         .filter(key => data[key] !== undefined && data[key] > 0)
-        .map(key => ({ key, value: data[key] }));
+        .map(key => ({ key, value: data[key], color: colorMap[key] }));
   
       if (filteredData.length === 0) {
         return null; // No data to display
@@ -635,9 +681,18 @@ console.log(transformedData);
         <div className="custom-tooltip" style={{ backgroundColor: '#fff', border: '1px solid #ccc', padding: '10px' }}>
           <p className="label">{`Day : ${label}`}</p>
           {filteredData.map((entry, index) => (
-            <p key={`item-${index}`} style={{ color: payload[0]?.color }}>
-              {`${entry.key} : ${entry.value}`}
-            </p>
+            <div key={`item-${index}`} style={{ display: 'flex', alignItems: 'center' }}>
+              <div
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  borderRadius: '50%',
+                  backgroundColor: entry.color,
+                  marginRight: '10px',
+                }}
+              ></div>
+              <p style={{ margin: 0 }}>{`${entry.key} : ${entry.value}`}</p>
+            </div>
           ))}
         </div>
       );
@@ -645,6 +700,7 @@ console.log(transformedData);
   
     return null;
   };
+  
   // const minValue = Math.min(...transformedData?.map((d:any) => d.value));
   // const maxValue = Math.max(...transformedData?.map((d:any) => d.value));
   // const yTicks = [];
@@ -668,11 +724,14 @@ console.log(transformedData);
             <span className={`Month` === checkType ? 'siteBdrBottom' : ''} onClick={() => changeDateType('Month')}>Month</span>
           </div>
           {/* <ReactApexChart options={chartData?.options} series={chartData?.series} type="bar" height={350} /> */}
-          <ResponsiveContainer width="100%" height={300}>
+
+          <div style={{ overflowX: 'auto' }}>
+          <ResponsiveContainer width={(checkType !== 'Month' && checkType !== 'Week') ? transformedData.length * 60 : '100%'} height={350}>
           <BarChart
       width={1000}
       height={350}
       data={transformedData}
+      barGap={16}
     >
       <CartesianGrid strokeDasharray="2 2" />
       <XAxis
@@ -681,7 +740,7 @@ console.log(transformedData);
     />
       <YAxis />
       <Tooltip content={<CustomTooltip />}/>
-      <Legend />
+      <Legend verticalAlign="bottom" wrapperStyle={{ paddingTop: 10 }} />
       <Bar dataKey="HHHH" stackId="a" fill="#2251d5" />
       <Bar dataKey="Gruene" stackId="a" fill="#4caf50" />
       <Bar dataKey="Education" stackId="a" fill="#b82ddb" />
@@ -690,8 +749,8 @@ console.log(transformedData);
       <Bar dataKey="EPS" stackId="a" fill="#f50627" />
       <Bar dataKey="OffShoreTasks" stackId="a" fill="#c1722e" />
     </BarChart>
-    </ResponsiveContainer>
-
+         </ResponsiveContainer>
+          </div>
         </div>
       </Panel>
     </div>
