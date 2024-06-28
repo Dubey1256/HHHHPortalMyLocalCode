@@ -194,7 +194,7 @@ export default function UXFeedbackComponent(textItems: any) {
     }
     const addMainRowInDiv = () => {
         let testTaskIndex: any = State?.length + 1
-        let oldDesignArray = designTemplatesArray[copyCurrentActiveTab].TemplatesArray
+        let oldDesignArray = designTemplatesArray[copyCurrentActiveTab]?.TemplatesArray?.length>0?designTemplatesArray[copyCurrentActiveTab]?.TemplatesArray:[]
         IndexCount = IndexCount + 1;
         const object: any = {
             Completed: "",
