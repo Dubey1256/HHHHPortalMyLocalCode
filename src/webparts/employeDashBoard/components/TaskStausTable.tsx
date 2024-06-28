@@ -1757,7 +1757,9 @@ const TaskStatusTbl = (Tile: any) => {
                   <>
                     <div className="alignCenter empAllSec justify-content-between">
                       <span className="fw-bold">
-                        {config?.Status == "My TimSheet" && <>{`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}</>}
+                        {/* {config?.Status == "My TimSheet" && */}
+                         <>{`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}</>
+                         {/* } */}
                       </span>
                       <span className="alignCenter">
                         <span className="empCol me-1 mt-2 hreflink"><br /></span>
