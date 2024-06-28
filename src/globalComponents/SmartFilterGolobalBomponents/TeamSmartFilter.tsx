@@ -27,7 +27,7 @@ import { GlobalConstants } from '../LocalCommon';
 import { myContextValue } from '../globalCommon';
 import * as Moment from "moment";
 import ServiceComponentPortfolioPopup from '../EditTaskPopup/ServiceComponentPortfolioPopup';
-import SmartfilterSettingTypePanel from './SmartfilterSettingTypePanel';
+// import SmartfilterSettingTypePanel from './SmartfilterSettingTypePanel';
 
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
@@ -2962,7 +2962,7 @@ const TeamSmartFilter = (item: any) => {
                 ContextValue={ContextValue}
                 AllUsers={AllUsers}
             />}
-             {smartFilterTypePannel && <SmartfilterSettingTypePanel isGroupChecked={isGroupChecked} isOpen={smartFilterTypePannel} filterGroupsData={filterGroupsData} portfolioColor={portfolioColor} selectAllFromAbove={selectAllFromAbove} selectChild={selectChild} setSmartFilterTypePannel={setSmartFilterTypePannel}/>}
+             {/* {smartFilterTypePannel && <SmartfilterSettingTypePanel isGroupChecked={isGroupChecked} isOpen={smartFilterTypePannel} filterGroupsData={filterGroupsData} portfolioColor={portfolioColor} selectAllFromAbove={selectAllFromAbove} selectChild={selectChild} setSmartFilterTypePannel={setSmartFilterTypePannel}/>} */}
         </>
     )
 }

@@ -52,8 +52,7 @@ const RestructuringCom = (props: any, ref: any) => {
       });
       setRestructureItem(array);
       setSelectedItems(array);
-
-      const setPortfolioTypeCheck = (arr: any, portfolioTypeCheck: any) => {
+      const setPortfolioTypeCheck = (arr: any, portfolioTypeCheck: any) => { 
         arr?.forEach((obj: any) => {
           obj.PortfolioTypeCheck = "";
           const matchingTask = props?.AllMasterTasksData?.find((task: any) => obj?.Portfolio?.Id === task?.Id);
@@ -63,9 +62,10 @@ const RestructuringCom = (props: any, ref: any) => {
             if (portfolioTypeCheck !== "" && obj?.Item_x0020_Type !== "Task" && obj?.Title !== "Others") {
               obj.PortfolioTypeCheck = obj?.PortfolioType?.Title;
             } else if (portfolioTypeCheck !== "" && obj?.Title === "Others") {
-              obj.PortfolioTypeCheck = portfolioTypeCheck;
+              obj.PortfolioTypeCheck = portfolioTypeCheck; 
             }
           }
+
 
           if (obj?.subRows?.length > 0 && obj?.subRows != undefined) {
             setPortfolioTypeCheck(obj.subRows, portfolioTypeCheck);
@@ -573,7 +573,7 @@ const RestructuringCom = (props: any, ref: any) => {
               if (props?.queryItems?.TaskType?.Title === "Activities" && items?.TaskType?.Id == 3) {
                 topCompo = true;
                 setQuery4TopIcon("Task");
-              }
+              } 
 
               let newObj: any;
               if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck && !actionsPerformed) {
@@ -2973,7 +2973,11 @@ const RestructuringCom = (props: any, ref: any) => {
       }
 
       if(newItemBackUp?.TaskType?.Id == 3){
-        RestructureChecked[0].TaskType.Id = 2
+        RestructureChecked[0].TaskType.Id = 2 
+      }
+
+      if(newItemBackUp?.TaskType?.Id == 1 && RestructureChecked[0]?.TaskType?.Id == 1){
+        RestructureChecked[0].TaskType.Id = 3
       }
 
       if ( newItemBackUp?.subRows != undefined && newItemBackUp?.subRows?.length > 0 && RestructureChecked[0]?.TaskType?.Id == 3) {
@@ -5414,9 +5418,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                 </button>
               )}
               <button
-              style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
+             style={{color:restructureItem[0]?.PortfolioType?.Color, borderColor:restructureItem[0]?.PortfolioType?.Color}}
                 type="button"
-                className="btn btn-primary"
+                className="btn me-2 ms-1"
                 onClick={closePanel}
               >
                 Cancel
@@ -5649,6 +5653,57 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             ""
           )}
 
+          {selectedItems != undefined && selectedItems?.length > 1 && newItemBackUp == null && 
+          restructureItem[0]?.Item_x0020_Type == "Task" && props?.queryItems?.Item_x0020_Type !== "Task" &&
+          (
+            restructureItem[0]?.TaskType?.Id == 3 || selectedItems[0]?.TaskType?.Id == 3
+          ) ?  restructureItem.some((item:any) => Array.isArray(item?.subRows) && item.subRows.length > 0) ? "" : (
+            <div className="mt-2">
+              <span>
+                {newItemBackUp?.Item_x0020_Type != "Task" ? (
+                  <>
+                   {"Select Task Type :"}
+                    <label className="SpfxCheckRadio ms-3 me-1">
+                      <input
+                        type="radio"
+                        className="radio"
+                        value="Activity"
+                        checked={
+                          RestructureChecked[0]?.TaskType?.Id == 3
+                            ? true
+                            : RestructureChecked[0]?.TaskType?.Id == 1
+                            ? true
+                            : false
+                        }
+                        onChange={(e) => setRestructure(RestructureChecked, 1)}
+                      />
+                    </label>
+                    <label className="ms-1"> {"Activity"} </label>
+                    <label className="SpfxCheckRadio ms-3 me-1">
+                      <input
+                        type="radio"
+                        className="radio"
+                        name="fav_language"
+                        value="Task"
+                        checked={
+                          RestructureChecked[0]?.TaskType?.Id === 2
+                            ? true
+                            : false
+                        }
+                        onChange={(e) => setRestructure(RestructureChecked, 2)}
+                      />
+                    </label>
+                    <label className="ms-1"> {"Task"} </label>
+                  </>
+                ) : 
+               ""
+                }
+              </span>
+            </div>
+          ) : (
+            ""
+          )}
+
            {selectedItems != undefined && selectedItems?.length > 1 && newItemBackUp != null && 
           restructureItem[0]?.Item_x0020_Type !== "Task" &&
           (restructureItem[0]?.Item_x0020_Type == 'SubComponent' || selectedItems[0]?.Item_x0020_Type == 'SubComponent' ||
@@ -5704,7 +5759,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             >
               Save
             </button>
-            <button style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}} className="me-2 btn btn-default" onClick={closePanel}>
+            <button 
+           style={{color:restructureItem[0]?.PortfolioType?.Color, borderColor:restructureItem[0]?.PortfolioType?.Color}}
+            className="btn me-2 ms-1" onClick={closePanel}>
               Cancel
             </button>
           </footer>
@@ -5748,7 +5805,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             <input type="checkbox" className="form-check-input rounded-0"
                               checked={restructureItem.includes(val)} onChange={() => handleCheckboxChange(val)}
                               /></td>
-                            <td className="p-1"><img className="workmember" src={val.SiteIcon}/></td>
+                            <td className="p-1"> 
+
+                              <div className="Dyicons">
+                              {val.Item_x0020_Type == 'Project' ? "P" : val.Item_x0020_Type == 'Sprint' ? "X" : 
+                               <img className="workmember" src={val.SiteIcon}/>}
+                            </div>
+                             </td>
                             <td  className="p-1">
                             <ReactPopperTooltipSingleLevel CMSToolId={val?.TaskID} row={val} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
@@ -5798,7 +5861,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             >
               Save
             </button>
-            <button style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}} className="me-2 btn btn-default" onClick={() => setProjects(false)}>
+            <button 
+            style={{color:restructureItem[0]?.PortfolioType?.Color, borderColor:restructureItem[0]?.PortfolioType?.Color}} 
+            className="btn me-2 ms-1" onClick={() => setProjects(false)}>
               Cancel
             </button>
           </footer>
@@ -5809,7 +5874,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
 
 
       {
-        projects && restructureItem?.length == 1 &&
+        projects && selectedItems?.length == 1 && restructureItem?.length == 1 &&
       <Panel
         onRenderHeader={onRenderCustomCalculateSCProject}
         isOpen={projects}
@@ -6178,7 +6243,12 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                       </div>
                     ))}
                     
-                     {restructureItem != undefined && restructureItem?.length > 0 &&  restructureItem[0]?.TaskType?.Id == 2 && 
+               
+                  </div>
+                );
+              })}
+            </div>
+            {restructureItem != undefined && restructureItem?.length > 0 &&  restructureItem[0]?.TaskType?.Id == 2 && 
             newItemBackUp?.TaskType?.Id == 1 && (
               <div className="mt-2">
                   <label className="form-label me-2">{"Select Task Type :"}</label>
@@ -6234,17 +6304,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                   </label>
               </div>
             ) }
-                  </div>
-                );
-              })}
-            </div>
         <footer className="mt-4 text-end">
           <button className="me-2 btn btn-primary" style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}} onClick={projectRestruture}>
             Save
           </button>
           <button
-          style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
-            className="btn me-2 btn-default ms-1"
+           style={{color:restructureItem[0]?.PortfolioType?.Color, borderColor:restructureItem[0]?.PortfolioType?.Color}}
+            className="btn me-2 ms-1"
             onClick={() => setProjects(false)}
           >
             Cancel
@@ -6278,8 +6344,8 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
         Save
       </button>
       <button
-      style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
-        className="btn me-2 btn-default ms-1"
+       style={{color:restructureItem[0]?.PortfolioType?.Color, borderColor:restructureItem[0]?.PortfolioType?.Color}}
+        className="btn me-2 ms-1"
         onClick={() => setTopProject(false)}
       >
         Cancel
@@ -6292,7 +6358,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
 
 
 {
-  projectmngmnt === true && restructureItem?.length > 1 &&
+  projectmngmnt === true &&  restructureItem?.length > 1 &&
   <Panel
   onRenderHeader={onRenderCustomCalculateSCmulti}
   isOpen={projectmngmnt}
@@ -6350,8 +6416,8 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
         Save
       </button>
       <button
-      style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
-        className="btn me-2 btn-default ms-1"
+      style={{color:restructureItem[0]?.PortfolioType?.Color, borderColor:restructureItem[0]?.PortfolioType?.Color}}
+        className="btn me-2 ms-1"
         onClick={() => setProjectmngmnt(false)}
       >
         Cancel
@@ -6648,6 +6714,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
              
             </div>
             <div>
+            
+            </div>
+            </div>
             {restructureItem != undefined && (restructureItem[0]?.TaskType?.Id == 3  || restructureItem[0]?.TaskType?.Id == 2 ||  restructureItem[0]?.TaskType?.Id == 1 ) && (restructureItem[0]?.subRows?.length == 0 && getSelectedChild?.length == 0) && 
             newItemBackUp?.TaskType?.Id == 1 && (
               
@@ -6702,16 +6771,14 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                   </label>
               </div>
             ) }
-            </div>
-            </div>
         <footer className="mt-4 text-end">
           <button style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}  
           className="me-2 btn btn-primary" onClick={projectMngmntFuc}>
             Save
           </button>
           <button
-          style={{color:restructureItem[0]?.PortfolioType?.Color ,border:restructureItem[0]?.PortfolioType?.Color}}
-            className="btn btn-default ms-1"
+          style={{color:restructureItem[0]?.PortfolioType?.Color, borderColor:restructureItem[0]?.PortfolioType?.Color}}
+            className="btn me-2 ms-1"
             onClick={() => setProjectmngmnt(false)}
           >
             Cancel
@@ -6737,11 +6804,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                   Save
                 </button>
                 <button
-                  style={{backgroundColor:restructureItem[0]?.PortfolioType?.Color}}
-                  className="btn me-2 btn-default ms-1"
+                  style={{color:restructureItem[0]?.PortfolioType?.Color, borderColor:restructureItem[0]?.PortfolioType?.Color}}
+                  className="btn me-2 ms-1"
                   onClick={closePanel}
                 >
-                  Cancel
+                  Cancel 
                 </button>
               </footer>
             </div>
