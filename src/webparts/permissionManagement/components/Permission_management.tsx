@@ -6,7 +6,7 @@ import {
   PeoplePicker,
   PrincipalType,
 } from "@pnp/spfx-controls-react/lib/PeoplePicker";
-import { Web} from "sp-pnp-js";
+import { Web } from "sp-pnp-js";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import Tooltip from "../../../globalComponents/Tooltip";
 import EditPage from "../../../globalComponents/EditPanelPage/EditPage";
@@ -29,12 +29,12 @@ const Permission_management = (props: any) => {
   const [suggestions, setSuggestions] = React.useState([]);
   const [checkPermission, setCheckPermission] = React.useState(false);
   const [permissionUserGroup, setPermissionUserGroup]: any = React.useState([]);
- const [headerChange, setHeaderChange]: any = React.useState("");
+  const [headerChange, setHeaderChange]: any = React.useState("");
   const [selectedPeople, setSelectedPeople] = React.useState([]);
- const [checkUserPermission, setCheckUserPermission]: any = React.useState([]);
+  const [checkUserPermission, setCheckUserPermission]: any = React.useState([]);
 
-   React.useEffect(() => {
-     taskUserData();
+  React.useEffect(() => {
+    taskUserData();
     getData();
     tilesData();
   }, []);
@@ -59,8 +59,8 @@ const Permission_management = (props: any) => {
       .getById(props?.context?.TilesManagementListID)
       .items.getAll()
       .then((data: any) => {
-       console.log(data);
-       setTiles(data);
+        console.log(data);
+        setTiles(data);
       })
       .catch((err: any) => {
         console.log(err);
@@ -131,17 +131,17 @@ const Permission_management = (props: any) => {
         accept: "application/json;odata=verbose",
         "content-Type": "application/json;odata=verbose",
       },
-      success: function (data:any) {
+      success: function (data: any) {
         setTruePanel(true);
         setData(data?.d?.results);
       },
-      error: function (data:any) {
+      error: function (data: any) {
         alert("You do not have rights to access this section");
       },
     });
   };
 
-  
+
   const postUser = async () => {
     const webUrl = props?.context?.siteUrl;
     // const id = 1; // Replace with your actual group ID
@@ -178,7 +178,7 @@ const Permission_management = (props: any) => {
   };
 
   const checkUser = async () => {
-    const filteredSuggestions : any= taskUser.filter((suggestion: any) =>
+    const filteredSuggestions: any = taskUser.filter((suggestion: any) =>
       selectedPeople.some(
         (limitedItem: any) => limitedItem.secondaryText == suggestion?.Email
       )
@@ -219,9 +219,9 @@ const Permission_management = (props: any) => {
         },
       });
     });
-    const newArrayWithoutDuplicates = commanArray.filter((obj : any, index : any, self: any) =>
-  index === self.findIndex((o: any) => o.Id === obj.Id)
-);
+    const newArrayWithoutDuplicates = commanArray.filter((obj: any, index: any, self: any) =>
+      index === self.findIndex((o: any) => o.Id === obj.Id)
+    );
     // const newArrayWithoutDuplicates : any= Array.from(new Set(commanArray.map((obj:any) => obj.Id))).map((Id:any) => commanArray.find((obj:any) => obj.Id === Id));
     setPermissionUserGroup(newArrayWithoutDuplicates);
   };
@@ -248,17 +248,17 @@ const Permission_management = (props: any) => {
   };
 
   React.useEffect(() => {
-    if (descriptionChange != null && descriptionChange != undefined){
-        let modifiedDescription : any = descriptionChange.replace("<p>", "");
-        modifiedDescription = modifiedDescription.replace("</p>", "");
-        setDescriptionChange(modifiedDescription)
+    if (descriptionChange != null && descriptionChange != undefined) {
+      let modifiedDescription: any = descriptionChange.replace("<p>", "");
+      modifiedDescription = modifiedDescription.replace("</p>", "");
+      setDescriptionChange(modifiedDescription)
     }
-}, [changeDescription])
+  }, [changeDescription])
 
   const onRenderCustomCalculateSC = () => {
     return (
       <>
-       <div className="subheading">Manage Permissions</div>
+        <div className="subheading">Manage Permissions</div>
         <div>
           <Tooltip ComponentId="1229" />
         </div>
@@ -280,7 +280,7 @@ const Permission_management = (props: any) => {
   const onRenderCustomCalculateSC3 = () => {
     return (
       <>
-       
+
         <div className="subheading">Check User Permissions {optionsData}</div>
         <div>
           <Tooltip ComponentId="1126" />
@@ -335,7 +335,7 @@ const Permission_management = (props: any) => {
     [data]
   );
 
-  const callBackData = () => {};
+  const callBackData = () => { };
 
   const handleInputChange = (e: any) => {
     const value = e.target.value;
@@ -363,17 +363,17 @@ const Permission_management = (props: any) => {
     setPermissionUserGroup([]);
   };
 
-//   const AssignedToUser = (item: any) => {
-//     if (item.length > 0) {
-//       const email = item.length > 0 ? item[0].loginName.split("|").pop() : null;
-//       const member = data.filter((elem: any) => elem.Email === email);
-//       // setAssignedToUser(member)
-//       // setIsUserNameValid(true);
-//     } else {
-//       // setAssignedToUser([])
-//       // setIsUserNameValid(false);
-//     }
-//   };
+  //   const AssignedToUser = (item: any) => {
+  //     if (item.length > 0) {
+  //       const email = item.length > 0 ? item[0].loginName.split("|").pop() : null;
+  //       const member = data.filter((elem: any) => elem.Email === email);
+  //       // setAssignedToUser(member)
+  //       // setIsUserNameValid(true);
+  //     } else {
+  //       // setAssignedToUser([])
+  //       // setIsUserNameValid(false);
+  //     }
+  //   };
 
   const changeHeader = (items: any) => {
     setHeaderChange(items);
@@ -385,153 +385,146 @@ const Permission_management = (props: any) => {
 
   return (
     <>
-    
-        <div className="alignCenter">
-          <h2 className="heading">
-          Permission-Management
-            {headerChange != undefined &&
+
+      <div className="alignCenter">
+        <h2 className="heading">
+          {/* Permission-Management */}
+          {headerChange != undefined &&
             headerChange != null &&
             headerChange != ""
-              ? headerChange
-              : "Permission-Management"}{" "}
-          </h2>
-          <h4 className="heading">
-            {descriptionChange != undefined &&
+            ? headerChange
+            : "Permission-Management"}{" "}
+        </h2>
+        <EditPage
+          context={props?.context}
+          changeHeader={changeHeader}
+          changeDescription={changeDescription}
+          tooltipId={"956"}
+        />
+      </div>
+      <div className="d-flex justify-content-between">
+      <h2 className="heading">
+          {descriptionChange != undefined &&
             descriptionChange != null &&
             descriptionChange != ""
-              ? descriptionChange
-              : ""}
-          </h4>
-          <EditPage
-            context={props?.context}
-            changeHeader={changeHeader}
-            changeDescription = {changeDescription}
-            tooltipId={"956"}
-          /> 
-        </div>
-     
-      <div
-        className="d-flex justify-content-end"
-        onClick={() => {
-          setCheckPermission(true);
-        }}
-        role="button"
-      >
-        Check User Permissions
+            ? descriptionChange
+            : ""}
+        </h2> 
+        <a onClick={() => { setCheckPermission(true); }}>Check User Permissions</a>
       </div>
       {
-       tiles?.length > 0 && tiles.some((item:any) => item.Itemtype === 'Manage Permissions-Users') &&
-       <div className="mb-3 card commentsection">
-       <div className="card-header">
-         <h2 className="align-items-center heading card-title d-flex h5 justify-content-between my-2">
-           Manage Permissions - Users
-         </h2>
-       </div>
-       <div className="card-body d-flex justify-content-around  my-3">
-         {
-           tiles?.length > 0 &&
-           tiles?.map((tilesItem:any)=> tilesItem?.Itemtype == "Manage Permissions-Users" &&
-           <div
-           className="card"
-           style={{ width: "14rem" }}
-           onClick={() => {
-             GetUserByGroupId(tilesItem?.Title);
-           }}
-         >
-           <div className="card-body bg-siteColor">
-             <a className="d-flex flex-column align-items-center mt-2">
-               <h6 className="text-white">{tilesItem?.Title}</h6>
-               <img
-                 className="m-3"
-                 src="https://www.gruene-washington.de/PublishingImages/Icons/32/admin.png"
-               />
-               <span className="fw-bold text-white">{tilesItem?.Footer}</span>
-             </a>
-           </div>
-         </div>
-           )
-         }
-       </div>
-     </div>
+        tiles?.length > 0 && tiles.some((item: any) => item.Itemtype === 'Manage Permissions-Users') &&
+        <div className="mb-3 card commentsection">
+          <div className="card-header">
+            <h2 className="align-items-center heading card-title d-flex h5 justify-content-between my-2">
+              Manage Permissions - Users
+            </h2>
+          </div>
+          <div className="card-body d-flex justify-content-around  my-3">
+            {
+              tiles?.length > 0 &&
+              tiles?.map((tilesItem: any) => tilesItem?.Itemtype == "Manage Permissions-Users" &&
+                <div
+                  className="card"
+                  style={{ width: "14rem" }}
+                  onClick={() => {
+                    GetUserByGroupId(tilesItem?.Title);
+                  }}
+                >
+                  <div className="card-body bg-siteColor">
+                    <a className="d-flex flex-column align-items-center mt-2">
+                      <h6 className="text-white">{tilesItem?.Title}</h6>
+                      <img
+                        className="m-3"
+                        src="https://www.gruene-washington.de/PublishingImages/Icons/32/admin.png"
+                      />
+                      <span className="fw-bold text-white">{tilesItem?.Footer}</span>
+                    </a>
+                  </div>
+                </div>
+              )
+            }
+          </div>
+        </div>
       }
-    
-{
-   tiles?.length > 0 && tiles.some((item:any) => item.Itemtype === 'Manage Permissions-Team') &&
-   <div className="mb-3 card commentsection">
-   <div className="card-header">
-     <h2 className="align-items-center heading card-title d-flex h5 justify-content-between my-2">
-     Manage Permissions - Teams
-     </h2>
-   </div>
-   <div className="card-body d-flex justify-content-around  my-3">
-     {
-       tiles?.length > 0 &&
-       tiles?.map((tilesItem:any)=> tilesItem?.Itemtype == "Manage Permissions-Team" &&
-       <div
-       className="card"
-       style={{ width: "14rem" }}
-       onClick={() => {
-         GetUserByGroupId(tilesItem?.Title);
-       }}
-     >
-       <div className="card-body bg-siteColor">
-         <a className="d-flex flex-column align-items-center mt-2">
-           <h6 className="text-white">{tilesItem?.Title}</h6>
-           <img
-             className="m-3"
-             src="https://www.gruene-washington.de/PublishingImages/Icons/32/admin.png"
-           />
-           <span className="fw-bold text-white">{tilesItem?.Footer}</span>
-         </a>
-       </div>
-     </div>
-       )
-     }
-   </div>
- </div>
-}
 
-{
-  tiles?.length > 0 && tiles.some((item:any) => item.Itemtype === 'Manage Permissions-Admins') &&
-   
-  <div className="mb-3 card commentsection">
-  <div className="card-header">
-    <h2 className="align-items-center heading card-title d-flex h5 justify-content-between my-2">
-    Manage Permissions - Admins
-    </h2>
-  </div>
-  <div className="card-body  d-flex justify-content-around  my-3">
-    {
-      tiles?.length > 0 &&
-      tiles?.map((tilesItem:any)=> tilesItem?.Itemtype == "Manage Permissions-Admins" &&
-      <div
-      className="card"
-      style={{ width: "14rem" }}
-      onClick={() => {
-        GetUserByGroupId(tilesItem?.Title);
-      }}
-    >
-      <div className="card-body bg-siteColor">
-        <a className="d-flex flex-column align-items-center mt-2">
-          <h6 className="text-white">{tilesItem?.Title}</h6>
-          <img
-            className="m-3"
-            src="https://www.gruene-washington.de/PublishingImages/Icons/32/admin.png"
-          />
-          <span className="fw-bold text-white">{tilesItem?.Footer}</span>
-        </a>
-      </div>
-    </div>
-      )
-    }
-  </div>
-</div>
-}
-  
+      {
+        tiles?.length > 0 && tiles.some((item: any) => item.Itemtype === 'Manage Permissions-Team') &&
+        <div className="mb-3 card commentsection">
+          <div className="card-header">
+            <h2 className="align-items-center heading card-title d-flex h5 justify-content-between my-2">
+              Manage Permissions - Teams
+            </h2>
+          </div>
+          <div className="card-body d-flex justify-content-around  my-3">
+            {
+              tiles?.length > 0 &&
+              tiles?.map((tilesItem: any) => tilesItem?.Itemtype == "Manage Permissions-Team" &&
+                <div
+                  className="card"
+                  style={{ width: "14rem" }}
+                  onClick={() => {
+                    GetUserByGroupId(tilesItem?.Title);
+                  }}
+                >
+                  <div className="card-body bg-siteColor">
+                    <a className="d-flex flex-column align-items-center mt-2">
+                      <h6 className="text-white">{tilesItem?.Title}</h6>
+                      <img
+                        className="m-3"
+                        src="https://www.gruene-washington.de/PublishingImages/Icons/32/admin.png"
+                      />
+                      <span className="fw-bold text-white">{tilesItem?.Footer}</span>
+                    </a>
+                  </div>
+                </div>
+              )
+            }
+          </div>
+        </div>
+      }
+
+      {
+        tiles?.length > 0 && tiles.some((item: any) => item.Itemtype === 'Manage Permissions-Admins') &&
+
+        <div className="mb-3 card commentsection">
+          <div className="card-header">
+            <h2 className="align-items-center heading card-title d-flex h5 justify-content-between my-2">
+              Manage Permissions - Admins
+            </h2>
+          </div>
+          <div className="card-body  d-flex justify-content-around  my-3">
+            {
+              tiles?.length > 0 &&
+              tiles?.map((tilesItem: any) => tilesItem?.Itemtype == "Manage Permissions-Admins" &&
+                <div
+                  className="card"
+                  style={{ width: "14rem" }}
+                  onClick={() => {
+                    GetUserByGroupId(tilesItem?.Title);
+                  }}
+                >
+                  <div className="card-body bg-siteColor">
+                    <a className="d-flex flex-column align-items-center mt-2">
+                      <h6 className="text-white">{tilesItem?.Title}</h6>
+                      <img
+                        className="m-3"
+                        src="https://www.gruene-washington.de/PublishingImages/Icons/32/admin.png"
+                      />
+                      <span className="fw-bold text-white">{tilesItem?.Footer}</span>
+                    </a>
+                  </div>
+                </div>
+              )
+            }
+          </div>
+        </div>
+      }
+
 
       <a
-       target="_blank"
-       data-interception="off"
+        target="_blank"
+        data-interception="off"
         href={`${props?.context?.siteUrl}/_layouts/15/user.aspx`}
         className="d-flex justify-content-end"
       >
@@ -565,7 +558,7 @@ const Permission_management = (props: any) => {
               ))}
             </select>
           </div>
-           <div className="Alltable my-3">
+          <div className="Alltable my-3">
             <GlobalCommanTable
               showHeader={true}
               showPagination={true}
@@ -575,7 +568,7 @@ const Permission_management = (props: any) => {
               hideOpenNewTableIcon={true}
               hideTeamIcon={true}
             />
-          </div> 
+          </div>
         </div>
         <footer className="text-end">
           <button className="btn btn-primary">OK</button>
@@ -597,21 +590,21 @@ const Permission_management = (props: any) => {
           <div className="input-group">
             <label className="form-label full-width">User*</label>
             <div className="full-width">
-            <PeoplePicker
-                    titleText="Select People"
-                    personSelectionLimit={3}
-                    principalTypes={[PrincipalType.User]}
-                    resolveDelay={800}
-                    onChange={handlePeoplePickerChange}
-                    defaultSelectedUsers={selectedPeople}
-                    context={props?.context?.context != undefined?props?.context?.context:props?.context?.Context}
-                    
-                  />
-                  </div>
+              <PeoplePicker
+                titleText="Select People"
+                personSelectionLimit={3}
+                principalTypes={[PrincipalType.User]}
+                resolveDelay={800}
+                onChange={handlePeoplePickerChange}
+                defaultSelectedUsers={selectedPeople}
+                context={props?.context?.context != undefined ? props?.context?.context : props?.context?.Context}
+
+              />
+            </div>
           </div>
-         
+
         </div>
-        <footer className="d-block full-width text-end mt-2" style={{paddingRight:"0px !important"}}>
+        <footer className="d-block full-width text-end mt-2" style={{ paddingRight: "0px !important" }}>
           <button className="me-2 btn btn-primary" onClick={postUser}>
             Save
           </button>
@@ -643,39 +636,39 @@ const Permission_management = (props: any) => {
         <div className="modal-body">
           <div className="row">
             <div className="col-md-8">
-           
+
               <div className="input-group class-input">
                 <div className="w-100 peoplePickerData">
-                <PeoplePicker
+                  <PeoplePicker
                     titleText="Select People"
                     personSelectionLimit={3}
                     principalTypes={[PrincipalType.User]}
                     resolveDelay={800}
                     onChange={handlePeoplePickerChange}
                     defaultSelectedUsers={selectedPeople}
-                    context={props?.context?.context != undefined?props?.context?.context:props?.context?.Context}
+                    context={props?.context?.context != undefined ? props?.context?.context : props?.context?.Context}
                   />
                 </div>
               </div>
-             
-               
-                  {suggestions?.map((suggestion: any, index: any) => (
-                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionClick(suggestion)}>
-                      {suggestion?.Title}
-                    </li>
-                  ))}
-                
+
+
+              {suggestions?.map((suggestion: any, index: any) => (
+                <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionClick(suggestion)}>
+                  {suggestion?.Title}
+                </li>
+              ))}
+
             </div>
             <div className="col-md-4">
-        
-                <label className="full-width form-label"></label>
-                <button
-                  className="btnCol btn btn-primary mt-2"
-                  onClick={() => checkUser()}
-                >
-                  Check Permission
-                </button>
-             
+
+              <label className="full-width form-label"></label>
+              <button
+                className="btnCol btn btn-primary mt-2"
+                onClick={() => checkUser()}
+              >
+                Check Permission
+              </button>
+
             </div>
           </div>
           <div className="mt-16">

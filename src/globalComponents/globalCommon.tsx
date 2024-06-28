@@ -1933,7 +1933,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
             .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "HelpInformationVerifiedJson", "FoundationPageUrl", "HelpInformationVerified", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate",
                 "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "PriorityRank",
                 "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id",
-                "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables","WorkingAction",
+                "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables", "WorkingAction",
                 "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "FeatureType/Title", "FeatureType/Id", "Portfolios/Id", "Portfolios/Title", "Editor/Id", "Modified", "Editor/Title")
             .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "FeatureType", "ResponsibleTeam", "Editor", "Portfolios").filter(filter != null ? filter : '')
             .getAll();
@@ -2422,7 +2422,7 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                                 if (todaysWorkMembers?.WorkingMember?.length > 0) {
                                     task.IsTodaysTask = true;
                                     task.AssignedTo = todaysWorkMembers?.WorkingMember
-                                    task.AssignedToIds = todaysWorkMembers?.WorkingMember?.map((mem:any)=>{
+                                    task.AssignedToIds = todaysWorkMembers?.WorkingMember?.map((mem: any) => {
                                         return mem?.Id
                                     })
                                 }
@@ -2434,13 +2434,19 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                     try {
                         if (task?.WorkingAction != null) {
                             task.workingActionValue = [];
-                            task.workingActionValue = JSON.parse(task?.WorkingAction);
+                            try {
+                                task.workingActionValue = JSON.parse(task?.WorkingAction);
+                            } catch (error) {
+                                console.log(error)
+                            }
                             task.workingActionTitle = ""; task.workingActionIcon = {};
-                            task?.workingActionValue?.forEach((elem: any) => {
-                                if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
-                                    task.workingActionTitle = task.workingActionTitle ? task.workingActionTitle + " " + elem.Title : elem.Title;
-                                }
-                            });
+                            if( task?.workingActionValue != undefined && task?.workingActionValue != null && Array.isArray(task?.workingActionValue)){
+                                task?.workingActionValue?.forEach((elem: any) => {
+                                    if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
+                                        task.workingActionTitle = task.workingActionTitle ? task.workingActionTitle + " " + elem.Title : elem.Title;
+                                    }
+                                });
+                            }
                         }
 
                     } catch (error) {
@@ -2466,7 +2472,7 @@ export const verifyComponentPermission = async (permissionTitle: any) => {
         if (!lists) {
             permission = true
         }
-        else{
+        else {
             await web.currentUser.get().then(async (logginUser: any) => {
                 let userGroups = await web.getUserById(23).groups.get()
                 await web.lists.getByTitle('ComponentPermissions').items.filter(`Title eq '${permissionTitle}'`).get().then((result: any) => {
@@ -2475,38 +2481,38 @@ export const verifyComponentPermission = async (permissionTitle: any) => {
                     }
                 })
             });
-        }    
+        }
     }
-    return permission;  
+    return permission;
 }
 export const LoadAllNotificationConfigrations = async (configrationTitle: any, AllListId: any) => {
     let pageInfo = await pageContext()
     let AllTaskUser = await loadAllTaskUsers(AllListId)
     let copyRecipients: any
     if (pageInfo?.WebFullUrl) {
-      let web = new Web(pageInfo.WebFullUrl);
+        let web = new Web(pageInfo.WebFullUrl);
 
-      await web.lists.getByTitle("NotificationsConfigration").items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').filter(`Title eq '${configrationTitle}'`).expand('Author,Editor,Recipients ,PortfolioType').get().then((result: any) => {
-        result?.map((data: any) => {
-          data.showUsers = ""
-          data.DisplayModifiedDate = moment(data.Modified).format("DD/MM/YYYY");
-          if (data.DisplayModifiedDate == "Invalid date" || "") {
-            data.DisplayModifiedDate = data.DisplayModifiedDate.replaceAll("Invalid date", "");
-          }
-          data.DisplayCreatedDate = moment(data.Created).format("DD/MM/YYYY");
-          if (data.DisplayCreatedDate == "Invalid date" || "") {
-            data.DisplayCreatedDate = data.DisplayCreatedDate.replaceAll("Invalid date", "");
-          }
-          if (data?.Recipients?.length > 0) {
-            copyRecipients = AllTaskUser.filter((user: any) => data.Recipients.find((data2: any) => user.AssingedToUserId == data2.Id))
-          }
+        await web.lists.getByTitle("NotificationsConfigration").items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').filter(`Title eq '${configrationTitle}'`).expand('Author,Editor,Recipients ,PortfolioType').get().then((result: any) => {
+            result?.map((data: any) => {
+                data.showUsers = ""
+                data.DisplayModifiedDate = moment(data.Modified).format("DD/MM/YYYY");
+                if (data.DisplayModifiedDate == "Invalid date" || "") {
+                    data.DisplayModifiedDate = data.DisplayModifiedDate.replaceAll("Invalid date", "");
+                }
+                data.DisplayCreatedDate = moment(data.Created).format("DD/MM/YYYY");
+                if (data.DisplayCreatedDate == "Invalid date" || "") {
+                    data.DisplayCreatedDate = data.DisplayCreatedDate.replaceAll("Invalid date", "");
+                }
+                if (data?.Recipients?.length > 0) {
+                    copyRecipients = AllTaskUser.filter((user: any) => data.Recipients.find((data2: any) => user.AssingedToUserId == data2.Id))
+                }
+            })
+
         })
-
-      })
 
     }
     return copyRecipients;
-  }
+}
 
 export const descriptionSearchData = (result: any) => {
     let descriptionSearchData = '';

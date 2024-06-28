@@ -20,6 +20,25 @@ import { Title } from "@material-ui/icons";
 //     return result;
 // }
 
+
+// removeDuplicates that takes an array of objects and a key, and returns a new array with duplicates removed based on the value of the given key.
+
+export const removeDuplicates = (dataArray: any, key: string) => {
+    const seen = new Set();
+    return dataArray?.filter((item: any) => {
+        const keyValue: any = item[key];
+        if (seen?.has(keyValue)) {
+            return false;
+        } else {
+            seen.add(keyValue);
+            return true;
+        }
+    });
+}
+
+
+
+
 // this is used for Getting All Task users data 
 
 export const GetAllUsersData = (RequiredData: any): Promise<any[]> => {
@@ -136,6 +155,26 @@ const getSmartMetadataItemsByTaxType = function (
     });
     return Items;
 };
+
+
+
+
+export const prepareGroupByDataForCategories = (items: any, parentLabel: any = "") => {
+    let PrepareGroupByData: any = []
+    items.forEach((item: any) => {
+        if (item.newTitle !== undefined) {
+            item["Newlabel"] = parentLabel ? `${parentLabel} > ${item.newTitle}` : item.newTitle;
+            PrepareGroupByData.push(item);
+            if (item.childs && item.childs.length > 0) {
+                prepareGroupByDataForCategories(item.childs, item["Newlabel"]);
+            }
+        }
+    });
+    return removeDuplicates(PrepareGroupByData, "Id");
+}
+
+
+
 
 //  This is used for bulk updating item property like task status and task categories both with single function 
 

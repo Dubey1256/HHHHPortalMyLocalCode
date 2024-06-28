@@ -21,6 +21,7 @@ import "./style.css";
 import 'core-js/es/object/values';
 import "@pnp/sp/sputilities";
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
+import * as GlobalCommon from '../../../globalComponents/globalCommon';
 moment.locale("en-GB");
 let createdBY: any,
   modofiedBy: any,
@@ -47,6 +48,13 @@ let userData: any = []
 const localizer = momentLocalizer(moment);
 const today: Date = new Date();
 const minDate: Date = today;
+let queryevent: any;
+let userEmail: any;
+let ApproveruserEmail: any;
+let backuprecurringarr: any = [];
+let leaveapproved = false;
+let leaverejected = false;
+
 const leaveTypes = [
   { key: "Sick", text: "Sick" },
   { key: "Planned Leave", text: "Planned" },
@@ -88,6 +96,7 @@ const Apps = (props: any) => {
   const [isFirstHalfDChecked, setIsFirstHalfDChecked] = React.useState(false);
   const [isSecondtHalfDChecked, setisSecondtHalfDChecked] = React.useState(false);
   const [EmailReciptents, setEmailReciptents] = React.useState([]);
+  const [ApplyEmailReciptents, setApplyEmailReciptents] = React.useState([]);
   const [inputValueName, setInputValueName] = React.useState("");
   const [inputValueReason, setInputValueReason] = React.useState("");
   const [vId, setVId] = React.useState();
@@ -119,6 +128,37 @@ const Apps = (props: any) => {
   const [details, setDetails]: any = React.useState([]);
   const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] =
     React.useState(false);
+  const [showTextarea, setShowTextarea] = useState(false);
+  const [comment, setComment] = useState("");
+  const [isDisabled, setIsDisabled] = useState(false);
+  // For get query data from the querystring 
+  const queryString = window.location.search;
+  const params = new URLSearchParams(queryString);
+  const id = params.get('Id');
+
+
+  // Generic funtion to send email
+  const SendEmailMessage = (body: any, subject: any, to: any, Text: any) => {
+    let sp = spfi().using(spSPFx(props?.props?.context));
+    sp.utility
+      .sendEmail({
+        Body: body,
+        Subject: subject,
+        To: to,
+        AdditionalHeaders: {
+          "content-type": "text/html"
+        },
+      })
+      .then(() => {
+        console.log("Email Sent!");
+        alert(`${Text} Sent Successfully!`);
+      })
+      .catch((error) => {
+        console.error("Error sending email:", error);
+        alert("Error sending email. Please try again.");
+      });
+  }
+  // Generic funtion to send email is end here
   const deCodeHtmlEntities = async (string: string) => {
     const HtmlEntitiesMap = {
       "'": "&#39;",
@@ -383,8 +423,9 @@ const Apps = (props: any) => {
     if (pageInfo?.WebFullUrl) {
       let web = new Web(pageInfo.WebFullUrl);
 
-      web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').filter(`Title eq 'CalendarNotification'`).expand('Author,Editor,Recipients ,PortfolioType').get().then((result: any) => {
-        result?.map((data: any) => {
+      web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').expand('Author,Editor,Recipients ,PortfolioType').get().then((result: any) => {
+      //  let Notificationdata =  result?.filter((item:any)=>item?.Title == 'CalendarNotification' && item?.Title == 'ApplyLeaveNotification' )
+      result?.map((data: any) => {
           data.showUsers = ""
           data.DisplayModifiedDate = moment(data.Modified).format("DD/MM/YYYY");
           if (data.DisplayModifiedDate == "Invalid date" || "") {
@@ -394,9 +435,12 @@ const Apps = (props: any) => {
           if (data.DisplayCreatedDate == "Invalid date" || "") {
             data.DisplayCreatedDate = data.DisplayCreatedDate.replaceAll("Invalid date", "");
           }
-          if (data?.Recipients?.length > 0) {
+          if (data?.Recipients?.length > 0 && data?.Title == 'CalendarNotification') {
             let copyRecipients = AllTaskUser.filter((user: any) => data.Recipients.find((data2: any) => user.AssingedToUserId == data2.Id))
             setEmailReciptents(copyRecipients)
+          }if(data?.Recipients?.length > 0 && data?.Title == 'ApplyLeaveNotification'){
+            let copyRecipients = AllTaskUser.filter((user: any) => data.Recipients.find((data2: any) => user.AssingedToUserId == data2.Id))
+            setApplyEmailReciptents(copyRecipients)
           }
         })
 
@@ -674,7 +718,7 @@ const Apps = (props: any) => {
     const web = new Web(props.props.siteUrl);
     const regionalSettings = await web.regionalSettings.get(); console.log(regionalSettings);
     const query =
-      "RecurrenceData,Duration,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Designation,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color,Created,Modified";
+      "RecurrenceData,Duration,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Designation,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color,Created,Modified,Approved,Rejected";
     try {
       const results = await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
@@ -738,6 +782,17 @@ const Apps = (props: any) => {
         localArr = processDataArray(filteredData);
         setChkName(localArr)
         setRecurringEvents(filteredData);
+        backuprecurringarr = filteredData;
+        if (filteredData?.length > 0 && id != null) {
+          queryevent = filteredData.find((item: any) => item?.Id == id);
+          userEmail = AllTaskUser.find((Employee: any) => (Employee?.AssingedToUserId === queryevent?.Employee?.Id))
+          ApproveruserEmail = AllTaskUser.find((item: any) => item?.AssingedToUserId == userEmail?.ApproverId[0]);
+
+          leaveapproved = queryevent?.Approved;
+          leaverejected = queryevent?.Rejected;
+          handleDateClick(queryevent)
+
+        }
       }
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -794,6 +849,7 @@ const Apps = (props: any) => {
           "Duration",
           "Category",
           "UID",
+          "Approved",
           "HalfDay",
           "HalfDayTwo",
           "Color",
@@ -862,7 +918,6 @@ const Apps = (props: any) => {
       year: "numeric"
     });
     setDt(formattedDate);
-    // handleSelectSlot(slotinfo2);
 
     console.log("clicked", event, date);
     setShowM(event);
@@ -886,12 +941,6 @@ const Apps = (props: any) => {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
-    // If you want to check if the selected date is in the past, you can uncomment this code
-    // if (date.getTime() < today.getTime()) {
-    //   alert("Cannot add event in the past");
-    // }
-    // else {
     let IsOpenAddPopup = true;
     const { start, end } = slotInfo;
     const eventsInSlot = events.filter((event: any) => event.start >= start && event.end <= end);
@@ -927,14 +976,23 @@ const Apps = (props: any) => {
     setIsOpen(false);
   };
   // Handle
-  const handleDateClick = async (event: any) => {
+
+  async function handleDateClick(event: any) {
+    // queryevent = event;
+
+    queryevent = backuprecurringarr.find((item: any) => item?.Id == event?.Id);
+    userEmail = AllTaskUser.find((Employee: any) => (Employee?.AssingedToUserId === queryevent?.Employee?.Id))
+    ApproveruserEmail = AllTaskUser.find((item: any) => item?.AssingedToUserId == userEmail?.ApproverId[0]);
+
+    leaveapproved = queryevent?.Approved;
+    leaverejected = queryevent?.Rejected;
     console.log(event);
-    setInputValueName(event.Title);
+    setInputValueName(event?.Title);
     setshowRecurrence(false);
     setPeoplePickerShow(false);
     setShowRecurrenceSeriesInfo(false);
     setEditRecurrenceEvent(false);
-    setType(event.Event_x002d_Type);
+    setType(event?.Event_x002d_Type);
 
     if (event?.eventType === "Company Holiday" || event?.eventType === "National Holiday") {
       setIsDisableField(true);
@@ -1042,15 +1100,12 @@ const Apps = (props: any) => {
     );
     if (confirmed) {
       let web = new Web(props.props.siteUrl);
-
       await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
         .items.getById(eventids)
-        .delete()
-
+        .recycle()
         .then((i: any) => {
-          //console.log(i);
-          // void getData();
+          setIsDisabled(false);
           closem(undefined);
           closeModal();
           void getEvents();
@@ -1098,7 +1153,7 @@ const Apps = (props: any) => {
     allDay = "false";
     HalfDaye = "false";
     HalfDayT = "false";
-
+    setIsDisabled(false);
   };
   const returnRecurrenceInfo = (startDate: Date, endDate: Date, recurrenceData: string) => {
     const returnedRecurrenceInfo = {
@@ -1194,6 +1249,8 @@ const Apps = (props: any) => {
         HalfDay: editedEvent.HalfDay,
         HalfDayTwo: editedEvent.HalfDayTwo,
         Color: mycolors,
+        Approved: leaveapproved,
+        Rejected:leaverejected,
         RecurrenceData: editedEvent.RecurrenceData ? await deCodeHtmlEntities(editedEvent.RecurrenceData) : "",
         MasterSeriesItemID: editedEvent.MasterSeriesItemID,
         RecurrenceID: editedEvent.RecurrenceID ? editedEvent.RecurrenceID : undefined
@@ -1305,10 +1362,6 @@ const Apps = (props: any) => {
           userId.push(item.Id)
         }
       })
-      // userSuffix = userTitle
-      //   .split(" ")
-      //   .map((i: any) => i.charAt(0))
-      //   .join("");
       title_Id = userId;
       title_people = userTitle;
       setPeopleName(userTitle);
@@ -1321,10 +1374,6 @@ const Apps = (props: any) => {
         userId = item.Id
         userTitle = item.Title
       })
-      // userSuffix = userTitle
-      //   .split(" ")
-      //   .map((i: any) => i.charAt(0))
-      //   .join("");
       title_Id = userId;
       title_people = userTitle;
       setPeopleName(userTitle);
@@ -1412,7 +1461,8 @@ const Apps = (props: any) => {
       month: 'short',
       day: 'numeric',
     });
-
+    let sendAppliedEmail = ApplyEmailReciptents?.map((user: any) => { return user?.Email })
+    sendAppliedEmail = sendAppliedEmail?.filter((user: any) => user != undefined)
     let sp = spfi().using(spSPFx(props?.props?.context));
 
     let BindHtmlBody = `<div>
@@ -1421,29 +1471,16 @@ const Apps = (props: any) => {
     I am writing to request ${daysDifference} day of leave from ${formattedstartDate} to ${formattedendDate} due to ${EventData?.title}.<br><br>
     I have ensured that my tasks are up to date and arranged coverage during my absence. Your understanding and approval would be greatly appreciated.<br><br>
     Best regards,<br>
-    ${EventData?.name}
+    ${EventData?.name} <br> <a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx?Id=${EventData?.Id}"></a>
   </div>
 </div>`;
 
-    let SendEmailMessage =
-      sp.utility
-        .sendEmail({
-          Body: BindHtmlBody,
-          Subject: "Leave Request - " + formattedstartDate + "-" + EventData?.Designation + "-" + EventData?.type + "-" + EventData?.title, // Modified subject
-          To: ["ranu.trivedi@hochhuth-consulting.de", "juli.kumari@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"],
-          AdditionalHeaders: {
-            "content-type": "text/html",
-          },
-        })
-        .then(() => {
-          console.log("Email Sent!");
-          alert("Email Sent Successfully!");
-        })
-        .catch((error) => {
-          console.error("Error sending email:", error); // Log the error
-          alert("Error sending email. Please try again."); // Alert user about the error
-        });
+    let Body = BindHtmlBody
+    let Subject = "Leave Request - " + formattedstartDate + "-" + EventData?.Designation + "-" + EventData?.type + "-" + EventData?.title
+    let To = sendAppliedEmail?.length > 0 ? sendAppliedEmail : ["anubhav.shukla@hochhuth-consulting.de"]
+    SendEmailMessage(Body, Subject, To, "Email")
   };
+
 
   // Email End 
 
@@ -1510,16 +1547,22 @@ const Apps = (props: any) => {
             };
 
             let web = new Web(props.props.siteUrl);
-
             web.lists
               .getById(props.props.SmalsusLeaveCalendar)
               .items.add(eventData)
-              .then(() => {
+              .then((response) => {
+                const newItemId = response.data.Id; // Get the ID of the newly created item
+                console.log("New item ID:", newItemId);
+                newEvent.Id = response.data.Id;
                 if (newEvent.type !== "Work From Home") {
-                  SendEmail(newEvent, eventData)
+                  SendEmail(newEvent, eventData);
                 }
                 getEvents();
               })
+              .catch((error) => {
+                console.error("Error adding item:", error);
+                alert("Error adding item. Please try again.");
+              });
           });
           closem(undefined);
           setIsChecked(false);
@@ -1557,86 +1600,104 @@ const Apps = (props: any) => {
   };
   const updateElement = async () => {
     if (editRecurrenceEvent) {
-      await saveRecurrenceEvent();
-      void getEvents();
-      closem(undefined);
-      setIsFirstHalfDChecked(false);
-      setisSecondtHalfDChecked(false);
-      setIsChecked(false);
-      setSelectedTime(selectedTime);
-      setSelectedTimeEnd(selectedTimeEnd);
-      return;
+        await saveRecurrenceEvent();
+        void getEvents();
+        closem(undefined);
+        setIsFirstHalfDChecked(false);
+        setisSecondtHalfDChecked(false);
+        setIsChecked(false);
+        setSelectedTime(selectedTime);
+        setSelectedTimeEnd(selectedTimeEnd);
+        return;
     }
+
+    const updateTitle = (inputValueName:any, type:any, leaveApproveded:any, leaverejected:any) => {
+        const leaveTypes = [
+            "Un-Planned",
+            "Sick",
+            "Planned Leave",
+            "Restricted Holiday",
+            "Work From Home",
+            "Half Day",
+            "fulldayevent",
+            "LWP"
+        ];
+
+        const regex = new RegExp(leaveTypes.join("|"), "g");
+        let updatedTitle = inputValueName.replace(regex, type);
+
+        if (leaveApproveded && !isLeaveApproved) {
+          updatedTitle += " Approved";
+      } else if (leaverejected) {
+          updatedTitle += " Rejected";
+      }
+
+        return updatedTitle;
+    };
 
     const web = new Web(props.props.siteUrl);
     const newEvent = {
-      title: inputValueName.replace("Un-Planned", type)
-        .replace("Sick", type)
-        .replace("Planned Leave", type)
-        .replace("Restricted Holiday", type)
-        .replace("Work From Home", type)
-        .replace("Half Day", type)
-        .replace("fulldayevent", type)
-        .replace("LWP", type),
-      name: peopleName,
-      start: startDate,
-      end: endDate,
-      reason: inputValueReason,
-      type: type,
-      Designation: dType,
-      loc: location,
-      halfdayevent: isFirstHalfDChecked,
-      halfdayeventT: isSecondtHalfDChecked,
-      fulldayevent: isChecked
+        title: updateTitle(inputValueName, type, leaveapproved, leaverejected),
+        name: peopleName,
+        start: startDate,
+        end: endDate,
+        reason: inputValueReason,
+        type: type,
+        Designation: dType,
+        loc: location,
+        halfdayevent: isFirstHalfDChecked,
+        halfdayeventT: isSecondtHalfDChecked,
+        fulldayevent: isChecked
     };
 
     if (selectedTime === undefined || selectedTimeEnd === undefined || newEvent.loc === undefined) {
-      const date = moment(startDate).tz("Asia/Kolkata");
-      setSelectedTime(date.format());
-      const dateend = moment(endDate).tz("Asia/Kolkata");
-      setSelectedTimeEnd(dateend.format());
-      newEvent.loc = "";
+        const date = moment(startDate).tz("Asia/Kolkata");
+        setSelectedTime(date.format());
+        const dateend = moment(endDate).tz("Asia/Kolkata");
+        setSelectedTimeEnd(dateend.format());
+        newEvent.loc = "";
     }
 
-    const mycolors = (newEvent.halfdayevent || newEvent.halfdayeventT) ? "#6d36c5" :
-      (newEvent.type === "Work From Home") ? "#e0a209" :
-        ((newEvent.type === "Company Holiday") || (newEvent.type === "National Holiday")) ? "#228B22" : "";
+    const mycolors = leaverejected ? "#fe2e2e" :
+        (newEvent.halfdayevent || newEvent.halfdayeventT) ? "#6d36c5" :
+        (newEvent.type === "Work From Home") ? "#e0a209" :
+        ((newEvent.type === "Company Holiday") || (newEvent.type === "National Holiday")) ? "#228B22" :
+        (leaveapproved && newEvent.type !== "Work From Home" && !newEvent.halfdayevent && !newEvent.halfdayeventT) ? "#178c1f" : "#fe2e2e";
 
     await web.lists.getById(props.props.SmalsusLeaveCalendar)
-      .items.getById(eventPass.Id)
-      .update({
-        Title: newEvent.title,
-        Location: newEvent.loc,
-        Event_x002d_Type: newEvent.type,
-        Description: newEvent.reason,
-        Designation: newEvent.Designation,
-        EndDate: ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) + " " + (selectedTimeEnd + "" + ":00"),
-        EventDate: ConvertLocalTOServerDateToSave(startDate, selectedTime) + " " + (selectedTime + "" + ":00"),
-        HalfDay: newEvent.halfdayevent,
-        HalfDayTwo: newEvent.halfdayeventT,
-        Color: mycolors,
-        fAllDayEvent: newEvent.fulldayevent
-      })
-      .then(() => {
-        void getEvents();
-        closem(undefined);
-        setSelectedTime(startTime);
-        setSelectedTimeEnd(endTime);
-      });
-  };
+        .items.getById(eventPass.Id)
+        .update({
+            Title: newEvent.title,
+            Location: newEvent.loc,
+            Event_x002d_Type: newEvent.type,
+            Description: newEvent.reason,
+            Designation: newEvent.Designation,
+            EndDate: ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) + " " + (selectedTimeEnd + "" + ":00"),
+            EventDate: ConvertLocalTOServerDateToSave(startDate, selectedTime) + " " + (selectedTime + "" + ":00"),
+            HalfDay: newEvent.halfdayevent,
+            HalfDayTwo: newEvent.halfdayeventT,
+            Approved: leaveapproved,
+            Rejected:leaverejected,
+            Color: mycolors,
+            fAllDayEvent: newEvent.fulldayevent
+        })
+        .then(() => {
+            void getEvents();
+            closem(undefined);
+            setSelectedTime(startTime);
+            setSelectedTimeEnd(endTime);
+        });
+};
+
 
   const emailComp = () => {
     const currentDate = new Date();
     const currentDayEvents: any = [];
-
     chkName.map((item: any) => {
       if (item.start.setHours(0, 0, 0, 0) <= currentDate.setHours(0, 0, 0, 0) && currentDate.setHours(0, 0, 0, 0) <= item.end.setHours(0, 0, 0, 0)) {
         currentDayEvents.push(item);
       }
     });
-
-
-    console.log(currentDayEvents);
     setTodayEvent(currentDayEvents);
     setEmail(true);
   };
@@ -1644,8 +1705,6 @@ const Apps = (props: any) => {
   const emailCallback = React.useCallback(() => {
     getEvents();
   }, []);
-
-
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const checked = event.target.checked;
@@ -1712,7 +1771,6 @@ const Apps = (props: any) => {
       setIsFirstHalfDChecked(false)
       setType('Half Day')
       setIsChecked(false);
-      //console.log("allDay", allDay);
     } else {
       maxD = new Date(8640000000000000);
       setDisableTime(false);
@@ -1720,12 +1778,6 @@ const Apps = (props: any) => {
       console.log("HalfDayTwo", HalfDayT);
     }
   }
-
-  const handleInputChangeLocation = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setLocation((event.target as HTMLInputElement).value);
-  };
   const HandledLeaveType = (option: any) => {
     if (option == "Company Holiday" || option == "National Holiday") {
       setIsChecked(true);
@@ -1741,11 +1793,113 @@ const Apps = (props: any) => {
     }
     setType(option)
   }
-
-
   const openModal = () => {
     setIsOpen(true);
   };
+
+  // Leave approve and Reject Functionality implemention 
+
+  const sendLeaveNotification = async (type: any) => {
+    const mention_To = [userEmail?.Email];
+    const employeeName = queryevent?.Employee?.Title;
+    const context = props?.props?.context;
+    const allListId = props?.props;
+
+    // Extracted function for date formatting
+    const formatDate = (date: any) => {
+      return date.toLocaleDateString('en-GB', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    };
+
+    const startDate = new Date(queryevent?.start);
+    const endDate = new Date(queryevent?.end);
+    const eventDate = formatDate(startDate);
+    const eventEndDate = formatDate(endDate);
+
+    let subject, txtComment;
+    if (type === "approve") {
+      subject = "Leave Request approved";
+      txtComment = `
+        <div>
+          <p>Hi ${employeeName},</p><br>
+          <p>Your applied leave for ${eventDate} to ${eventEndDate} has been approved.</p><br>
+          <p>Regards,<br>Manager</p>
+        </div>
+      `;
+    } else if (type === "reject") {
+      const comment = "Reason for rejection"; // Replace with actual comment source
+      subject = "Leave Request rejected";
+      txtComment = `
+        <div>
+          <p>Hi ${employeeName},</p><br>
+          <p>Your applied leave for ${eventDate} to ${eventEndDate} has been rejected due to ${comment}.</p><br>
+          <p>Regards,<br>Manager</p>
+        </div>
+      `;
+    }
+
+    try {
+      // Send notification via MS Teams
+      await GlobalCommon.SendTeamMessage(mention_To, txtComment, context, allListId);
+      console.log("MS Teams Notification sent");
+
+      // Send notification via Email
+      const To = [userEmail?.Email, ApproveruserEmail?.Email, "deepak@hochhuth-consulting.de", "ranu.trivedi@hochhuth-consulting.de", "juli.kumari@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"];
+      const emailSubject = subject;
+      SendEmailMessage(txtComment, emailSubject, To, "Notification");
+
+      // Update logic based on approval or rejection
+      if (type === "approve") {
+        console.log("Your leave is approved");
+        leaveapproved = true;
+        updateElement(); // Assuming this function handles updating the UI or data
+      } else if (type === "reject") {
+        leaverejected = true;
+        updateElement();
+        console.log("Your leave is rejected");
+      }
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      // Handle error appropriately, possibly notify admin or retry mechanism
+    }
+  };
+
+
+  const LeaveApprove = async () => {
+    await sendLeaveNotification("approve");
+  };
+
+  const LeaveReject = async () => {
+    await sendLeaveNotification("reject");
+  };
+
+
+  const handleReject = () => {
+    setShowTextarea(true);
+    setIsDisabled(true); // Disable both buttons when reject is clicked
+  };
+
+  const handleSubmitReject = () => {
+    LeaveReject();
+    setShowTextarea(false); // Optionally hide textarea after submission
+    setIsDisabled(true); // Disable both buttons after submission
+  };
+
+  const handleApprove = () => {
+    LeaveApprove();
+    setIsDisabled(true); // Disable both buttons after approval
+  };
+
+  const allowedUserIds = [242, 36, 234, 192];
+  const userId = props?.props?.context?.pageContext?.legacyPageContext?.userId;
+  const isAllowedUser = allowedUserIds.indexOf(userId) !== -1;
+
+  const result = isAllowedUser && !disabl && (!leaveapproved || !leaverejected);
+  const isLeaveApproved = inputValueName.indexOf("Approved") >= 0;
   return (
 
     <div>
@@ -1828,7 +1982,6 @@ const Apps = (props: any) => {
                 return (
                   <tr>
                     <td>{item.title}</td>
-
                     <td>{moment(item.end).format("DD/MM/YYYY")}</td>
                     <td>
                       <a href="#" onClick={() => handleDateClick(item)}>
@@ -1893,13 +2046,10 @@ const Apps = (props: any) => {
                 hidden={showRecurrenceSeriesInfo}
                 disabled={IsDisableField}
               />
-
             </div>
           )}
-
           {showRecurrenceSeriesInfo != true && (
             <div className="col-md-6">
-
               <DatePicker
                 label="End Date"
                 value={endDate}
@@ -1910,7 +2060,6 @@ const Apps = (props: any) => {
               />
             </div>
           )}
-
           <div>
             <label className="SpfxCheckRadio alignCenter">
               <input
@@ -1946,45 +2095,41 @@ const Apps = (props: any) => {
                   disabled={IsDisableField}
                 /> Second HalfDay
               </label>
-
-
             </div>
           </div>
-          {
-            <div>
-              {showRecurrence && (
-                <div
-                  className="bdr-radius"
-                  style={{
-                    display: "inline-block",
-                    verticalAlign: "top",
-                    width: "200px"
-                  }}
-                >
-                  <Toggle
-                    className="rounded-pill"
-                    defaultChecked={false}
-                    checked={showRecurrenceSeriesInfo}
-                    inlineLabel
-                    label="Recurrence ?"
-                    onChange={handleRecurrenceCheck}
-                    disabled={IsDisableField}
-                  />
-                </div>
-              )}
-              {showRecurrenceSeriesInfo && (
-                <EventRecurrenceInfo
-                  context={props.props.context}
-                  display={true}
-                  recurrenceData={recurrenceData}
-                  startDate={startDate}
-                  siteUrl={props.props.siteUrl}
-                  returnRecurrenceData={returnRecurrenceInfo} selectedKey={undefined} selectedRecurrenceRule={undefined}
-                ></EventRecurrenceInfo>
-              )}
-            </div>
+          {<div>
+            {showRecurrence && (
+              <div
+                className="bdr-radius"
+                style={{
+                  display: "inline-block",
+                  verticalAlign: "top",
+                  width: "200px"
+                }}
+              >
+                <Toggle
+                  className="rounded-pill"
+                  defaultChecked={false}
+                  checked={showRecurrenceSeriesInfo}
+                  inlineLabel
+                  label="Recurrence ?"
+                  onChange={handleRecurrenceCheck}
+                  disabled={IsDisableField}
+                />
+              </div>
+            )}
+            {showRecurrenceSeriesInfo && (
+              <EventRecurrenceInfo
+                context={props.props.context}
+                display={true}
+                recurrenceData={recurrenceData}
+                startDate={startDate}
+                siteUrl={props.props.siteUrl}
+                returnRecurrenceData={returnRecurrenceInfo} selectedKey={undefined} selectedRecurrenceRule={undefined}
+              ></EventRecurrenceInfo>
+            )}
+          </div>
           }
-
           <Dropdown
             label="Leave Type"
             options={leaveTypes}
@@ -1993,8 +2138,6 @@ const Apps = (props: any) => {
             required
             errorMessage={type ? "" : "Please select a leave type"}
           />
-
-
           <Dropdown
             label="Team"
             options={Designation}
@@ -2010,12 +2153,28 @@ const Apps = (props: any) => {
               readOnly={IsDisableField}
             />
           </div>
+          {result &&
+            <div className="container mt-4">
+              <div className="row">
+                <div className="col">
+                  <button type="button" className="btn btn-success me-2" onClick={handleApprove} disabled={isDisabled}>Approve</button>
+                  <button type="button" className="btn btn-danger" onClick={handleReject} disabled={isDisabled}>Reject </button>
+                </div>
+              </div>
+              {showTextarea && (
+                <div className="row mt-3">
+                  <div className="col">
+                    <textarea className="form-control" placeholder="Enter reason for rejection" value={comment} onChange={(e) => setComment(e.target.value)}></textarea>
+                    <button type="button" className="btn btn-primary mt-2" onClick={handleSubmitReject}>
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          }
         </form>
-
         <br />
-
-
-
         {!disabl ? (
           <footer>
             <div className="align-items-center d-flex justify-content-between">

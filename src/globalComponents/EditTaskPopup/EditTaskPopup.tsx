@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import ReactDOM from "react-dom";
@@ -41,8 +40,8 @@ import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
 import SmartPriorityHover from "./SmartPriorityHover";
-import TaskDetailsComponent from "./DesignTaskTemplate";
-import ReactPopperTooltipSingleLevel from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
+import UXDesignPopupTemplate from "./UXDesignPopupTemplate";
+
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -74,7 +73,6 @@ var listName = "";
 var isApprovalByStatus = false;
 let ApprovalStatusGlobal: any = false;
 let SiteCompositionPrecentageValue: any = 0;
-let allDataSites:any;
 
 // var TaskCreatorApproverBackupArray: any = [];
 var ReplaceImageIndex: any;
@@ -96,8 +94,8 @@ let categoryTitle: any = "";
 let onHoldCategory: any = [];
 let globalSelectedProject: any = { PriorityRank: 1 };
 let oldWorkingAction: any = []
-let linkedportfoliopop:any;
-let portfoliopop:any;
+let linkedportfoliopop: any;
+let portfoliopop: any;
 const EditTaskPopup = (Items: any) => {
     const Context = Items?.context;
     const AllListIdData = Items?.AllListId;
@@ -105,8 +103,7 @@ const EditTaskPopup = (Items: any) => {
     // Items.Items.Id = Items?.Items?.ID;
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
-        allDataSites=Items?.allSitesItems
-        let SiteWebConfigData: any = [];
+    let SiteWebConfigData: any = [];
     const [usersAssignedIDs, setusersAssignedIDs] = useState([])
     const [workingToday, setWorkingToday] = useState(false);
     const [TaskImages, setTaskImages] = useState([]);
@@ -821,7 +818,7 @@ const EditTaskPopup = (Items: any) => {
                     )
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
-                    .expand("Project, Approver, ClientCategory")
+                    .expand("Project, Approver, ClientCategory,SmartInformation")
                     .get();
                 if (extraLookupColumnData.length > 0) {
                     let Data: any;
@@ -1386,12 +1383,12 @@ const EditTaskPopup = (Items: any) => {
     //  ******************************* this is Service And Component Portfolio Popup Related All function and CallBack *******************
     const OpenTeamPortfolioPopupFunction = (item: any, usedFor: any) => {
         if (usedFor == "Portfolio") {
-            portfoliopop=true,
-            setOpenTeamPortfolioPopup(true);
+            portfoliopop = true,
+                setOpenTeamPortfolioPopup(true);
         }
         if (usedFor == "Linked-Portfolios") {
-            linkedportfoliopop=true,
-            setopenLinkedPortfolioPopup(true);
+            linkedportfoliopop = true,
+                setopenLinkedPortfolioPopup(true);
         }
     };
     const EditComponentPicker = (item: any, usedFor: any) => {
@@ -1497,7 +1494,7 @@ const EditTaskPopup = (Items: any) => {
                 if (portfoliopop) {
                     setTaggedPortfolioData(DataItem);
                     setOpenTeamPortfolioPopup(false);
-                    portfoliopop=false
+                    portfoliopop = false
                 }
                 // Check if the linked portfolio popup is open
                 else if (linkedportfoliopop) {
@@ -1505,11 +1502,11 @@ const EditTaskPopup = (Items: any) => {
                     LinkedPortfolioDataBackup = DataItem;
                     setopenLinkedPortfolioPopup(false);
                     linkedportfoliopop = false
-                }else{
+                } else {
                     setOpenTeamPortfolioPopup(false);
                     setopenLinkedPortfolioPopup(false);
                 }
-            }else {
+            } else {
                 if (DataItem != undefined && DataItem.length > 0) {
                     if (DataItem[0]?.Item_x0020_Type !== "Project" || DataItem[0]?.Item_x0020_Type !== "Sprint") {
                         if (DataItem[0].ClientCategory?.length > 0) {
@@ -1670,7 +1667,35 @@ const EditTaskPopup = (Items: any) => {
                     }
                     setSendCategoryName(selectedData?.Title);
                 }
+                //  code by vivek
+
                 if (selectedData?.Title == "UX-New") {
+                    let firstIndexData: any = []
+                    const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
+                    if (RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length > 0) {
+                        console.log(EditData)
+                        firstIndexData = RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
+                        let imageData = RestructureData?.BasicImageInfo != null ? JSON.parse(RestructureData?.BasicImageInfo) : []
+                        RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
+                        let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
+
+                        let designTemplates: any = [firstIndexData, {
+                            setTitle: "SET1",
+                            setImagesInfo: imageData?.length > 0 ? imageData : [],
+                            TemplatesArray: setDataFeedback
+                        }]
+                        RestructureData.FeedBackBackup[0].FeedBackDescriptions = designTemplates
+                        let updatedItem: any = {
+                            ...EditDataBackup,
+                            FeedBackBackup: RestructureData.FeedBackBackup,
+                            FeedBackArray:designTemplates,
+                            FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
+                        };
+                        setEditData(updatedItem);
+                        updateFeedbackArray[0].FeedBackDescriptions=designTemplates
+                        EditDataBackup = updatedItem;
+                    }
+                   
                     setDesignNewTemplates(true)
                 }
             })
@@ -1684,7 +1709,35 @@ const EditTaskPopup = (Items: any) => {
                 } else {
                     BackupTaskCategoriesData.push(existingData);
                 }
+                // code by vivek
+
                 if (existingData?.Title == "UX-New") {
+                    let firstIndexData: any = []
+                    const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
+                    if (RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length > 0) {
+                        console.log(EditData)
+                        firstIndexData = RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
+                        let imageData = RestructureData?.BasicImageInfo != null ? JSON.parse(RestructureData?.BasicImageInfo) : []
+                        RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
+                        let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
+
+                        let designTemplates: any = [firstIndexData, {
+                            setTitle: "SET1",
+                            setImagesInfo: imageData?.length > 0 ? imageData : [],
+                            TemplatesArray: setDataFeedback
+                        }]
+                        RestructureData.FeedBackBackup[0].FeedBackDescriptions = designTemplates
+                        let updatedItem: any = {
+                            ...EditDataBackup,
+                            FeedBackBackup: RestructureData.FeedBackBackup,
+                            FeedBackArray:designTemplates,
+                            FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
+                        };
+                        setEditData(updatedItem);
+                        updateFeedbackArray[0].FeedBackDescriptions=designTemplates
+                        EditDataBackup = updatedItem;
+                    }
+                   
                     setDesignNewTemplates(true)
                 }
             });
@@ -3279,7 +3332,10 @@ const EditTaskPopup = (Items: any) => {
                 updateFeedbackArray[0].FeedBackDescriptions = result;
             }
         } else {
-            updateFeedbackArray = JSON.parse(EditData?.FeedBack);
+            if (!DesignNewTemplates) {
+                updateFeedbackArray = JSON.parse(EditData?.FeedBack);
+            }
+
         }
         // FeedBackBackupArray = [];
         let CategoriesTitle: any = "";
@@ -3925,6 +3981,7 @@ const EditTaskPopup = (Items: any) => {
         if (PhoneCount > 0) {
             CategoryChangeUpdateFunction("false", "Phone");
         }
+        EditDataBackup.FeedBackArray = TempFeedBackArray
     };
 
     const setStatusOnChangeSmartLight = (StatusInput: any) => {
@@ -4525,7 +4582,13 @@ const EditTaskPopup = (Items: any) => {
             })
         }
         let UpdatedJSON = {
-            Comments: EditData.Comments,
+            EstimatedTimeDescription: FunctionsType == 'Copy-Task' ? null : EditData.EstimatedTimeDescription,
+            Comments: FunctionsType == 'Copy-Task' ? null : EditData.Comments,
+            DueDate: FunctionsType == 'Copy-Task' ? null : Moment(EditData.DueDate).format("MM-DD-YYYY"),
+            StartDate: FunctionsType == 'Copy-Task' ? null : Moment(EditData.StartDate).format("MM-DD-YYYY"),
+            Status: FunctionsType == 'Copy-Task' ? null : EditData.Status,
+            PercentComplete: FunctionsType == 'Move-Task' ? (EditData.PercentComplete / 100) : 0,
+            TotalTime: FunctionsType == 'Copy-Task' ? 0 : EditData?.TotalTime,
             SmartInformationId: {
                 results:
                     TempSmartInformationIds != undefined &&
@@ -4557,9 +4620,6 @@ const EditTaskPopup = (Items: any) => {
 
                         if (FunctionsType == "Copy-Task") {
                             setLoaded(true)
-                            if (timesheetData != undefined && timesheetData.length > 0) {
-                                await moveTimeSheet(SelectedSite, res.data, 'copy');
-                            }
                             newGeneratedId = res.data.Id;
                             console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
                             let url = `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${newGeneratedId}&Site=${SelectedSite}`;
@@ -5284,10 +5344,11 @@ const EditTaskPopup = (Items: any) => {
                 >
                     <img className="imgWid29 pe-1" src={Items.Items.SiteIcon} />
                     <span className="siteColor">
-                    {EditData.TaskId != undefined || EditData.TaskId != null?
-                        <ReactPopperTooltipSingleLevel CMSToolId={EditData.TaskId} AllListId={AllListIdData} row={EditData} singleLevel={true} masterTaskData={GlobalServiceAndComponentData} AllSitesTaskData={allDataSites} />:''}
-                        {`   ${EditData.Title != undefined || EditData.Title != null
-                                ?`${"  "} ${EditData.Title}`
+                        {`${EditData.TaskId != undefined || EditData.TaskId != null
+                            ? EditData.TaskId
+                            : ""
+                            } ${EditData.Title != undefined || EditData.Title != null
+                                ? EditData.Title
                                 : ""
                             }`}
                     </span>
@@ -5368,16 +5429,10 @@ const EditTaskPopup = (Items: any) => {
 
     const onRenderCustomApproverHeader = () => {
         return (
-            <div
-                className={
-                    ServicesTaskCheck
-                        ? "d-flex full-width pb-1 serviepannelgreena"
-                        : "d-flex full-width pb-1"
-                }
-            >
-                <div className="subheading siteColor"> {useFor != "" ? `Select${useFor}` : `Select Approver`}</div>
+            <>
+                <div className="subheading"> {useFor != "" ? `Select${useFor}` : `Select Approver`}</div>
                 <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
-            </div>
+            </>
         );
     };
 
@@ -5653,6 +5708,11 @@ const EditTaskPopup = (Items: any) => {
         );
     };
 
+    // code by vivek
+    const DesignTemplatesCallback = (designFeedbackData: any) => {
+        updateFeedbackArray[0].FeedBackDescriptions = designFeedbackData
+
+    }
 
     return (
         <div
@@ -7438,11 +7498,13 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 && (
-                                                                            <span
-                                                                                onClick={() => openBottleneckPopup("Bottleneck")}
-                                                                                title="Add User Popup"
-                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                            ></span>
+
+                                                                            <span className="hover-text alignCenter">
+                                                                                <span onClick={() => openBottleneckPopup("Bottleneck")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    Add User
+                                                                                </span>
+                                                                            </span>
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -7602,10 +7664,13 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 ? (
-                                                                            <span onClick={() => openBottleneckPopup("Attention")}
-                                                                                title="Add User Popup"
-                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                            ></span>
+
+                                                                            <span className="hover-text alignCenter">
+                                                                                <span onClick={() => openBottleneckPopup("Attention")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    Add User
+                                                                                </span>
+                                                                            </span>
                                                                         ) : null}
                                                                     </div>
                                                                 </div>
@@ -7724,11 +7789,12 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 ? (
-                                                                            <span
-                                                                                onClick={() => openBottleneckPopup("Phone")}
-                                                                                title="Add User Popup"
-                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                            ></span>
+                                                                            <span className="hover-text alignCenter">
+                                                                                <span onClick={() => openBottleneckPopup("Phone")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    Add User
+                                                                                </span>
+                                                                            </span>
                                                                         ) : null}
                                                                     </div>
                                                                 </div>
@@ -8009,21 +8075,20 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                 </div> :
                                     <div className="row py-3">
-                                        {EditData.Id != null && <TaskDetailsComponent data={
+                                        {EditData.Id != null && <UXDesignPopupTemplate data={
                                             EditData?.FeedBackBackup?.length > 0
                                                 ? EditData?.FeedBackBackup[0]
                                                     ?.FeedBackDescriptions
                                                 : []
                                         }
-                                            callBack={CommentSectionCallBack}
+                                            DesignTemplatesCallback={DesignTemplatesCallback}
                                             allUsers={taskUsers}
                                             ApprovalStatus={ApprovalStatus}
                                             SmartLightStatus={SmartLightStatus}
                                             SmartLightPercentStatus={SmartLightPercentStatus}
                                             Context={Context}
                                             FeedbackCount={FeedBackCount}
-                                            SubCommentSectionCallBack={SubCommentSectionCallBack}
-                                            MakeUpdateDataJSON={MakeUpdateDataJSON}
+
                                             EditData={EditData}
                                             TaskListDetails={{
                                                 SiteURL: siteUrls,
@@ -8035,7 +8100,7 @@ const EditTaskPopup = (Items: any) => {
                                                 siteType: Items.Items.siteType,
                                             }}
                                             taskCreatedCallback={UpdateTaskInfoFunction}
-                                            DesignStatus={DesignNewTemplates}
+                                            UXStatus={DesignNewTemplates}
                                             currentUserBackupArray={currentUserBackupArray}
                                         />
                                         }
@@ -10062,12 +10127,12 @@ const EditTaskPopup = (Items: any) => {
                                                                                         </span>
                                                                                     </span>
                                                                                     {WAItemData?.InformationData?.length === 1 && (
-                                                                                        <span onClick={() => openBottleneckPopup("Bottleneck")}>
-                                                                                            <span
-                                                                                                title="Add Comment"
-                                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                                            ></span>
-                                                                                        </span>
+                                                                                         <span className="hover-text alignCenter">
+                                                                                         <span onClick={() => openBottleneckPopup("Bottleneck")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                         <span className="tooltip-text pop-left">
+                                                                                             Add User
+                                                                                         </span>
+                                                                                     </span>
                                                                                     )}
                                                                                 </div>
                                                                             </div>
@@ -10226,12 +10291,12 @@ const EditTaskPopup = (Items: any) => {
                                                                                         </span>
                                                                                     </span>
                                                                                     {WAItemData?.InformationData?.length === 1 ? (
-                                                                                        <span onClick={() => openBottleneckPopup("Attention")}>
-                                                                                            <span
-                                                                                                title="Add Comment"
-                                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                                            ></span>
+                                                                                        <span className="hover-text alignCenter">
+                                                                                        <span onClick={() => openBottleneckPopup("Attention")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                        <span className="tooltip-text pop-left">
+                                                                                            Add User
                                                                                         </span>
+                                                                                    </span>
                                                                                     ) : null}
                                                                                 </div>
                                                                             </div>
@@ -10350,12 +10415,12 @@ const EditTaskPopup = (Items: any) => {
                                                                                         </span>
                                                                                     </span>
                                                                                     {WAItemData?.InformationData?.length === 1 ? (
-                                                                                        <span onClick={() => openBottleneckPopup("Phone")}>
-                                                                                            <span
-                                                                                                title="Add Comment"
-                                                                                                className="svg__iconbox svg__icon--Plus"
-                                                                                            ></span>
+                                                                                        <span className="hover-text alignCenter">
+                                                                                        <span onClick={() => openBottleneckPopup("Phone")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                        <span className="tooltip-text pop-left">
+                                                                                            Add User
                                                                                         </span>
+                                                                                    </span> 
                                                                                     ) : null}
                                                                                 </div>
                                                                             </div>
@@ -10862,7 +10927,7 @@ const EditTaskPopup = (Items: any) => {
                 onDismiss={closeApproverPopup}
                 isBlocking={ApproverPopupStatus}
                 type={PanelType.medium}
-                className="mb-2">
+                >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
                     <div className="">
                         <div className="col-sm-12 categScroll" style={{ height: "auto" }}>
@@ -10891,7 +10956,7 @@ const EditTaskPopup = (Items: any) => {
                                 </div>
                             ) : null}
                             {ApproverData?.length > 0 ? (
-                                <div className="border full-width my-1 p-1">
+                                <div className="ps-0 full-width my-1 p-1">
                                     {ApproverData?.map((val: any) => {
                                         return (
                                             <a className="hreflink block me-1">
@@ -10959,23 +11024,22 @@ const EditTaskPopup = (Items: any) => {
                             </ul>
                         </div>
                     </div>
-                    <footer className="fixed-bottom">
-                        <div className="align-items-center d-flex pull-right px-4 py-2">
-                            <button
-                                type="button"
-                                className="btn btn-primary px-3 mx-1"
-                                onClick={UpdateApproverFunction}
-                            >
-                                Save
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-default px-3"
-                                onClick={closeApproverPopup}
-                            >
-                                Cancel
-                            </button>
-                        </div>
+                    <footer className="modal-footer">
+                        <button
+                            type="button"
+                            className="btn btn-primary px-3 mx-1"
+                            onClick={UpdateApproverFunction}
+                        >
+                            Save
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-default px-3"
+                            onClick={closeApproverPopup}
+                        >
+                            Cancel
+                        </button>
+
                     </footer>
                 </div>
             </Panel>

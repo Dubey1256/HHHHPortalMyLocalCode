@@ -5,16 +5,17 @@ import { Web } from 'sp-pnp-js'
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 // import { CheckBoxSelection, Inject, MultiSelectComponent } from '@syncfusion/ej2-react-dropdowns';
 import Button from 'react-bootstrap/Button';
-
+import * as globalCommon from "../../../globalComponents/globalCommon";
 let copyAllCategory:any=[]
 let copyAllSiteData:any=[];
+let users: any = []
 const AddTaskConfigPopup = (props: any) => {
  const [DefaultSelectedUseremail, setDefaultSelectedUseremail] = React.useState([]);
-    const [NotificationType ,setnotificationType]:any= useState(["All","Teams", "Email","Assigned To"])
+    const [NotificationType ,setnotificationType]:any= useState(["All","Teams", "Email","Assigned To","Lead"])
     const [Notify,setnotify]:any=useState(["Creator","Approval","Specific"])
     const [notificationType, setNotificationType] = useState("")
-    const [Category, setCategory] = useState("")
-    const[avoidItself,setAvoidItSelf]:any=useState()
+    const [Category, setCategory]= React.useState<string[]>([])
+    const[avoidItself,setAvoidItSelf]:any=useState(false)
     const [exceptionCategory, setExceptionCategory] = React.useState<string[]>([]);
     const [exceptionSite, setExceptionSite] = React.useState<string[]>([]);
     const [notify, setNotify] = useState("")
@@ -35,7 +36,7 @@ const AddTaskConfigPopup = (props: any) => {
                 let selectesUser:any=[];
                 if(props?.editTaskconfigData?.Notifier?.length>0){
                     props?.editTaskconfigData?.Notifier?.map((data:any)=>{
-                        selectesUser.push(data?.secondaryText)  
+                        selectesUser.push(data?.Email)  
                     })
                 }
                 setDefaultSelectedUseremail(selectesUser)
@@ -45,6 +46,7 @@ const AddTaskConfigPopup = (props: any) => {
 
           }
         GetSmartMetadata()
+        loadusersAndGroups();
     },[])
 
     //==================GET SMARTMETADATA FOR GET
@@ -76,6 +78,19 @@ const AddTaskConfigPopup = (props: any) => {
 
 
     };
+    const loadusersAndGroups = async () => {
+        let pageInfo = await globalCommon.pageContext()
+        if (pageInfo?.WebFullUrl) {
+            let web = new Web(pageInfo.WebFullUrl);
+            await web.siteUsers.get().then((userData) => {
+                console.log(userData)
+                users = userData
+            }).catch((error: any) => {
+                console.log(error)
+            });
+        }
+
+    }
     const onRenderCustomHeader = (
     ) => {
         return (
@@ -93,10 +108,10 @@ const AddTaskConfigPopup = (props: any) => {
         if (selectedType == "NotificationType") {
             setNotificationType(key)
         }
-        if (selectedType == "Category") {
+        // if (selectedType == "Category") {
            
-            setCategory(key)
-        }
+        //     setCategory(key)
+        // }
        
         if(selectedType=="Notify"){
             setNotify(key)
@@ -105,7 +120,14 @@ const AddTaskConfigPopup = (props: any) => {
             setSelectedSite(key)
         }
     }
-    const onChange = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
+    const onChangeCategory = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
+        if (item) {
+            setCategory(
+            item.selected ? [...Category, item.key as string] : AllCategory.filter(key => key !== item?.key),
+          );
+        }
+      };
+    const onChangeExceptionCategory = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
         if (item) {
             setExceptionCategory(
             item.selected ? [...exceptionCategory, item.key as string] : exceptionCategory.filter(key => key !== item?.key),
@@ -129,15 +151,23 @@ const AddTaskConfigPopup = (props: any) => {
     //============create config function start=================
     const CreateConfig=()=>{
         let allConfigData:any=[];
+        let peopleAndGroup: any = [];
         allConfigData=props?.allTaskStatusToConfigure;
+        selectedPersonsAndGroups?.map((user: any) => {
+            let foundPerson = users?.find((person: any) => (person?.LoginName == user?.id) || (person?.Title == user?.Title));
+            if (foundPerson?.Id != undefined) {
+                peopleAndGroup?.push(foundPerson)
+            }
+        })
+        
         let configData:any={
             percentComplete:props?.percentageComplete,
             NotificationType:notificationType,
             Category:Category,
             selectedSite:selectedSite,
             ExceptionSite:selectedSite=="All"?exceptionSite:"",
-            ExceptionCategory:Category=="All"?exceptionCategory:"",
-            Notifier:notify=="Specific"?selectedPersonsAndGroups:[],
+            ExceptionCategory:Category?.some((cat:any)=>cat==="All")?exceptionCategory:"",
+            Notifier:notify=="Specific"?peopleAndGroup:[],
             Notify:notify,
             avoidItself:avoidItself
         }
@@ -192,17 +222,20 @@ const AddTaskConfigPopup = (props: any) => {
                     <div className='col-9'>
 
                         <Dropdown className='full-width'
-                            id="ItemRankUpload"
-                            options={AllCategory?.map((AllCategory: any) => ({ key: AllCategory?.Title, text: AllCategory?.Title }))}
-                            selectedKey={Category}
-                            onChange=
-                            {(e, option) => handleChange(option?.key, 'Category')}
-                            styles={{ dropdown: { width: '100%' } }}
+                         placeholder="Select options"
+                          
+                         selectedKeys={Category}
+                         // eslint-disable-next-line react/jsx-no-bind
+                         onChange={onChangeCategory}
+                         multiSelect
+                         options={AllCategory?.map((AllCategory: any) => ({ key: AllCategory?.Title, text:AllCategory?.Title }))}
+                        styles={{ dropdown: { width: '100%' } }}
+                        
                         />
                     </div>
                 </div>
               
-                {Category == "All" && <div className='row alignCenter mb-3'>
+                {Category?.some((cat:any)=>cat==="All")&& <div className='row alignCenter mb-3'>
                     <div className='col-3'><label className='form-label fw-semibold'>Exception Category</label></div>
                     <div className='col-9 '>
                         <Dropdown
@@ -210,7 +243,7 @@ const AddTaskConfigPopup = (props: any) => {
                           
                             selectedKeys={exceptionCategory}
                             // eslint-disable-next-line react/jsx-no-bind
-                            onChange={onChange}
+                            onChange={onChangeExceptionCategory}
                             multiSelect
                             options={copyAllCategory?.map((copyAllCategory: any) => ({ key: copyAllCategory?.Title, text:copyAllCategory?.Title }))}
                            
@@ -282,7 +315,7 @@ const AddTaskConfigPopup = (props: any) => {
                     </div>
                 </div>}
                 <div className='row mb-3'>
-                      <label form="AvoidItself" className='alignCenter'><input type="checkbox" className='form-check-input ms-2' id="AvoidItself" name="AvoidItself" value="true" checked={avoidItself=="true"} onChange={(e)=>setAvoidItSelf(e.target.value)}/>Ignore If Creator or Notifier Same</label>
+                      <label form="AvoidItself" className='alignCenter'><input type="checkbox" className='form-check-input ms-2' id="AvoidItself" name="AvoidItself"defaultChecked={avoidItself}  checked={avoidItself} onChange={(e)=>setAvoidItSelf(e?.target?.checked)}/> <span className='me-2'>Ignore Notification if Creator and Notifier are the same person</span></label>
                 </div>
             </div>
             <footer className='alignCenter mt-2'>
