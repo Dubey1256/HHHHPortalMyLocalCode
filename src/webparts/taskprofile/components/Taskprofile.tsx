@@ -1820,6 +1820,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
             portfolio?.AssignedTo?.map((assignData: any) => {
               AssignedToId.push(assignData.Id)
             })
+          }
             if (portfolio?.ResponsibleTeam?.length > 0) {
               portfolio?.ResponsibleTeam?.map((resp: any) => {
                 ResponsibleTeamId.push(resp.Id)
@@ -1830,7 +1831,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                 TeamMembersId.push(teamMemb.Id)
               })
             }
-          }
+          
         })
 
 
