@@ -1502,6 +1502,10 @@ const TeamSmartFilter = (item: any) => {
                 isModifiedDateSelected: isModifiedDateSelected,
                 isDueDateSelected: isDueDateSelected,
                 TaskUsersData: TaskUsersData,
+                isPhone: isPhone,
+                isBottleneck: isBottleneck,
+                isAttention: isAttention,
+                isWorkingDate: isWorkingDate,
                 smartFabBasedColumnsSetting: MyContextdata?.allContextValueData?.smartFabBasedColumnsSetting ? MyContextdata?.allContextValueData?.smartFabBasedColumnsSetting : {},
             }
             smartFiltercallBackData(Favorite);
