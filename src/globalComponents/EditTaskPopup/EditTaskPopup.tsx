@@ -4176,8 +4176,8 @@ const EditTaskPopup = (Items: any) => {
         let UpdatedJSON = {
             EstimatedTimeDescription: FunctionsType == 'Copy-Task' ? null : EditData.EstimatedTimeDescription,
             Comments: FunctionsType == 'Copy-Task' ? null : EditData.Comments,
-            DueDate: FunctionsType == 'Copy-Task' ? null : Moment(EditData.DueDate).format("MM-DD-YYYY"),
-            StartDate: FunctionsType == 'Copy-Task' ? null : Moment(EditData.StartDate).format("MM-DD-YYYY"),
+            DueDate: FunctionsType == 'Copy-Task' ? null : (EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null),
+            StartDate: FunctionsType == 'Copy-Task' ? null : (EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null),
             Status: FunctionsType == 'Copy-Task' ? null : EditData.Status,
             PercentComplete: FunctionsType == 'Move-Task' ? (EditData.PercentComplete / 100) : 0,
             TotalTime: FunctionsType == 'Copy-Task' ? 0 : EditData?.TotalTime,
@@ -5033,9 +5033,10 @@ const EditTaskPopup = (Items: any) => {
         }
         if (usedFor == "Remove") {
             let CopyWorkingActionData: any = [...WorkingAction];
-            let TempWorkingActionData: any = removeDataFromInformationData(CopyWorkingActionData, ActionType, Index);
+        let TempWorkingActionData: any = removeDataFromInformationData(CopyWorkingActionData, ActionType, Index);
+            EditData.WorkingAction=[...TempWorkingActionData]
             console.log("Updated Data after removing User:", TempWorkingActionData);
-            setWorkingAction([...TempWorkingActionData])
+            setWorkingAction([...EditData.WorkingAction])
         }
     }
 
