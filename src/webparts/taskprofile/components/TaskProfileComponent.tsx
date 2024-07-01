@@ -79,14 +79,14 @@ const CopyTaskProfile = (props: any) => {
     const [ApprovalStatus, setApprovalStatus] = useState(false);
 
     const [state, setState] = useState<any>({
-        Result: {},       
+        Result: {},
         isEditReplyModalOpen: false,
         replyTextComment: "",
         keydoc: [],
         FileDirRef: '',
         currentDataIndex: 0,
-        buttonIdCounter: null,        
-        isCalloutVisible: false,               
+        buttonIdCounter: null,
+        isCalloutVisible: false,
         currentArraySubTextIndex: null,
         ApprovalPointUserData: null,
         ApprovalPointCurrentParentIndex: null,
@@ -111,7 +111,7 @@ const CopyTaskProfile = (props: any) => {
         imageInfo: {},
         Display: 'none',
         showcomment: 'none',
-        updateComment: false,    
+        updateComment: false,
         ShowEstimatedTimeDescription: false,
         isOpenEditPopup: false,
         TaskDeletedStatus: false,
@@ -124,7 +124,7 @@ const CopyTaskProfile = (props: any) => {
         maincollection: [],
         breadCrumData: [],
         cmsTimeComponent: [],
-        smarttimefunction: false,      
+        smarttimefunction: false,
         EditSiteCompositionStatus: false,
         showOnHoldComment: false,
         counter: 1,
@@ -144,11 +144,11 @@ const CopyTaskProfile = (props: any) => {
 
     const params = new URLSearchParams(window.location.search);
     const taskId = params.get('taskId');
-    const siteParam = params.get('Site');   
-  
+    const siteParam = params.get('Site');
+
 
     useEffect(() => {
-        const capitalizeFLetter = (site:any) => site[0].toUpperCase() + site.slice(1);
+        const capitalizeFLetter = (site: any) => site[0].toUpperCase() + site.slice(1);
         setSite(capitalizeFLetter(siteParam));
 
         setOldTaskLink(`${propsValue?.siteUrl}/SitePages/Task-Profile-Old.aspx?taskId=${taskId}&Site=${siteParam}`);
@@ -165,7 +165,7 @@ const CopyTaskProfile = (props: any) => {
         GetAllComponentAndServiceData('Component');
     }, []);
 
-    const GetAllComponentAndServiceData = async (ComponentType:any) => {
+    const GetAllComponentAndServiceData = async (ComponentType: any) => {
         let PropsObject = {
             MasterTaskListID: propsValue.MasterTaskListID,
             siteUrl: propsValue?.siteUrl,
@@ -189,7 +189,7 @@ const CopyTaskProfile = (props: any) => {
     const GetResult = async () => {
         await getsmartmetadataIcon();
 
-     
+
         try {
             isShowTimeEntry = propsValue?.TimeEntry !== "" ? JSON.parse(propsValue?.TimeEntry) : "";
             setisShowSiteCompostion(propsValue?.SiteCompostion !== "" ? JSON.parse(propsValue?.SiteCompostion) : "");
@@ -236,7 +236,7 @@ const CopyTaskProfile = (props: any) => {
                     if (index === taskDetails["TaskCategories"].length - 1 || taskDetails["TaskCategories"].length === 1) {
                         category += item.Title;
                     } else {
-                        category += item.Title + ";";
+                        category += item.Title + "; ";
                     }
 
                     if (category.search("Approval") >= 0) {
@@ -337,7 +337,7 @@ const CopyTaskProfile = (props: any) => {
             }
             let siteicon = GetSiteIcon(listName)
             setSiteIcon(siteicon)
-            let tempTask = {                
+            let tempTask = {
                 sitePage: propsValue.Context?._pageContext?._web?.title,
                 Comments: comments != null && comments != undefined ? comments : "",
                 Id: taskDetails["ID"],
@@ -385,7 +385,7 @@ const CopyTaskProfile = (props: any) => {
                 Created: taskDetails["Created"],
                 Author: GetUserObject(taskDetails["Author"]?.Title),
                 component_url: taskDetails["ComponentLink"],
-                BasicImageInfo: GetAllImages(JSON.parse(taskDetails["BasicImageInfo"])),           
+                BasicImageInfo: GetAllImages(JSON.parse(taskDetails["BasicImageInfo"])),
                 FeedBack: JSON.parse(taskDetails["FeedBack"]),
                 FeedBackBackup: JSON.parse(taskDetails["FeedBack"]),
                 FeedBackArray: feedBackData != undefined && feedBackData?.length > 0 ? feedBackData[0]?.FeedBackDescriptions : [],
@@ -496,11 +496,11 @@ const CopyTaskProfile = (props: any) => {
         //     Result: taskDeatails,
         // })
         copytaskuser = taskUsers
-        setTaskUsers(taskUsers) ;
+        setTaskUsers(taskUsers);
 
     }
 
-    const GetSmartMetaData = async (ClientCategory: any, Sitestagging: any)=> {
+    const GetSmartMetaData = async (ClientCategory: any, Sitestagging: any) => {
         let array2: any = [];
         ClientTimeArray = []
         if (((Sitestagging == null) && ClientTimeArray?.length == 0)) {
@@ -578,17 +578,17 @@ const CopyTaskProfile = (props: any) => {
                         }
                     }
                 })
-    
+
                 return siteicon;
             }
-            
+
         }
         catch (e) {
             console.log(e);
         }
     }
 
-    const updateResult = async (tempTask:any) => {            
+    const updateResult = async (tempTask: any) => {
         setState((prevState: any) => ({
             ...prevState,
             Result: tempTask,
@@ -596,10 +596,10 @@ const CopyTaskProfile = (props: any) => {
         }))
 
         if (tempTask.Portfolio !== undefined) {
-            let AllItems:any = [];
+            let AllItems: any = [];
             let breadCrumData1WithSubRow = await globalCommon?.getBreadCrumbHierarchyAllData(tempTask, AllListId, AllItems);
             console.log(breadCrumData1WithSubRow?.flatdata);
-            let breadCrumData1 = breadCrumData1WithSubRow?.flatdata.reverse();            
+            let breadCrumData1 = breadCrumData1WithSubRow?.flatdata.reverse();
             setState((prevState: any) => ({
                 ...prevState,
                 Result: tempTask,
@@ -668,15 +668,15 @@ const CopyTaskProfile = (props: any) => {
             })
             return BasicImageInfo
         }
-    }     
-    const showOnHoldReason = () => {    
+    }
+    const showOnHoldReason = () => {
         setState((prevState: any) => ({
             ...prevState,
             showOnHoldComment: true,
         }))
     };
 
-    const hideOnHoldReason = () => {        
+    const hideOnHoldReason = () => {
         setState((prevState: any) => ({
             ...prevState,
             showOnHoldComment: false,
@@ -708,7 +708,7 @@ const CopyTaskProfile = (props: any) => {
             item.ImageUrl = item?.Url;
         }
 
-        e.preventDefault();        
+        e.preventDefault();
         setState((prevState: any) => ({
             ...prevState,
             isModalOpen: true,
@@ -718,7 +718,7 @@ const CopyTaskProfile = (props: any) => {
     }
 
     const CloseModal = (e: any) => {
-        e.preventDefault();        
+        e.preventDefault();
         setState((prevState: any) => ({
             ...prevState,
             isModalOpen: false,
@@ -739,12 +739,12 @@ const CopyTaskProfile = (props: any) => {
 
             showPopup: 'none'
         }))
-        
+
     }
     const showhideComposition = () => {
         if (showComposition) {
             setshowComposition(false)
-        
+
         } else {
             setshowComposition(true)
         }
@@ -781,11 +781,11 @@ const CopyTaskProfile = (props: any) => {
         }))
 
     }
-  
-    const OpenEditPopUp = () => {      
+
+    const OpenEditPopUp = () => {
         setState((prevState: any) => ({
             ...prevState,
-            isOpenEditPopup: true           
+            isOpenEditPopup: true
         }))
     }
 
@@ -806,29 +806,29 @@ const CopyTaskProfile = (props: any) => {
                 GetResult();
             }, 1000);
         }
-        if (FunctionType == "Delete") {           
+        if (FunctionType == "Delete") {
             setState((prevState: any) => ({
                 ...prevState,
                 isOpenEditPopup: false,
                 TaskDeletedStatus: true,
-            }))    
+            }))
             window.location.href = `${propsValue?.siteUrl}/SitePages/TaskDashboard.aspx`;;
         }
-        if (FunctionType == "Close") {           
+        if (FunctionType == "Close") {
             setState((prevState: any) => ({
                 ...prevState,
                 isOpenEditPopup: false,
                 EditSiteCompositionStatus: false,
-            }))    
+            }))
         }
     }
 
-    const approvalcallback = async () => {       
+    const approvalcallback = async () => {
         setState((prevState: any) => ({
             ...prevState,
             sendMail: false,
             emailStatus: ""
-        }))    
+        }))
         GetResult();
     }
 
@@ -849,10 +849,10 @@ const CopyTaskProfile = (props: any) => {
                 AssignedTo: []
             }
             ChangeApprovalMember(changeData).then((data: any) => {
-                var data = state?.Result;                              
+                var data = state?.Result;
             }).catch((error) => {
                 console.log(error)
-            });            
+            });
         }
         else {
 
@@ -867,7 +867,7 @@ const CopyTaskProfile = (props: any) => {
 
 
             ChangeApprovalMember(changeData).then((data: any) => {
-                var data = state?.Result;                                
+                var data = state?.Result;
             }).catch((error) => {
                 console.log(error)
             });
@@ -878,11 +878,11 @@ const CopyTaskProfile = (props: any) => {
             Result: data,
             emailStatus: item,
             sendMail: true,
-        }))    
+        }))
 
     }
 
-    const checkforMail = async(allfeedback: any, item: any, tempData: any) => {
+    const checkforMail = async (allfeedback: any, item: any, tempData: any) => {
         var countApprove = 0;
         var countreject = 0;
         console.log(allfeedback);
@@ -935,12 +935,12 @@ const CopyTaskProfile = (props: any) => {
 
             if (isShowLight > NotisShowLight) {
                 if (RejectCount == 1 && item == "Reject") {
-                    countemailbutton = 0;                    
+                    countemailbutton = 0;
                     setState((prevState: any) => ({
                         ...prevState,
                         emailcomponentopen: true,
                         emailComponentstatus: item
-                    }))  
+                    }))
                 }
                 if (countApprove == 0) {
                     let TeamMembers: any = []
@@ -973,18 +973,18 @@ const CopyTaskProfile = (props: any) => {
 
                 }
                 if (ApproveCount == 1 && item == "Approve") {
-                    countemailbutton = 0;                    
+                    countemailbutton = 0;
                     setState((prevState: any) => ({
                         ...prevState,
                         emailcomponentopen: true,
                         emailComponentstatus: item
-                    }))  
+                    }))
                 } else {
-                    countemailbutton = 1;                  
+                    countemailbutton = 1;
                     setState((prevState: any) => ({
                         ...prevState,
                         emailcomponentopen: false,
-                    }))  
+                    }))
 
                 }
 
@@ -1021,14 +1021,14 @@ const CopyTaskProfile = (props: any) => {
     }
 
     //========================= mail functionality End ============== 
-    
-    const handleUpdateComment = (e: any)=> {       
+
+    const handleUpdateComment = (e: any) => {
         setState((prevState: any) => ({
             ...prevState,
             CommenttoUpdate: e.target.value
         }))
     }
-    const updateComment = ()=> {
+    const updateComment = () => {
         let txtComment = state.CommenttoUpdate
 
         if (txtComment != '') {
@@ -1065,7 +1065,7 @@ const CopyTaskProfile = (props: any) => {
                 }
             }
             onPost();
-        }       
+        }
         setState((prevState: any) => ({
             ...prevState,
             isEditModalOpen: false,
@@ -1130,14 +1130,14 @@ const CopyTaskProfile = (props: any) => {
                 subchildcomment: null,
                 subchildParentIndex: null
             }))
-            onPost();           
+            onPost();
         } else {
             alert('Please input some text.')
         }
 
     }
     const showhideCommentBoxOfSubText = (j: any, parentIndex: any) => {
-        if (state.showcomment_subtext == 'none') {            
+        if (state.showcomment_subtext == 'none') {
             setState((prevState: any) => ({
                 ...prevState,
                 showcomment_subtext: 'block',
@@ -1147,7 +1147,7 @@ const CopyTaskProfile = (props: any) => {
                 showhideCommentBoxIndex: null
             }))
         }
-        else {           
+        else {
             setState((prevState: any) => ({
                 ...prevState,
                 showcomment_subtext: 'block',
@@ -1209,7 +1209,7 @@ const CopyTaskProfile = (props: any) => {
         }
     }
 
-    const changeTrafficLigthsubtext =  async (parentindex: any, subchileindex: any, status: any) => {
+    const changeTrafficLigthsubtext = async (parentindex: any, subchileindex: any, status: any) => {
         console.log(parentindex);
         console.log(subchileindex);
         console.log(status);
@@ -1257,7 +1257,7 @@ const CopyTaskProfile = (props: any) => {
         }
     }
     //===============traffic light function End ==================
-    
+
     //================percentage changes ==========================
     const changepercentageStatus = async (percentageStatus: any, pervious: any, countApprove: any) => {
         console.log(percentageStatus)
@@ -1305,11 +1305,11 @@ const CopyTaskProfile = (props: any) => {
             });
     }
     //================percentage changes End ==========================
-    
-    
+
+
     // ========approval history popup and callback =================
     const ShowApprovalHistory = (items: any, parentIndex: any, subChildIndex: any) => {
-        console.log("currentUser is a Approval function cxall ", items)       
+        console.log("currentUser is a Approval function cxall ", items)
         setState((prevState: any) => ({
             ...prevState,
             ApprovalHistoryPopup: true,
@@ -1319,7 +1319,7 @@ const CopyTaskProfile = (props: any) => {
         }))
 
     }
-    const ApprovalHistoryPopupCallBack = () => {       
+    const ApprovalHistoryPopupCallBack = () => {
         setState((prevState: any) => ({
             ...prevState,
             ApprovalHistoryPopup: false,
@@ -1332,21 +1332,21 @@ const CopyTaskProfile = (props: any) => {
 
     /// ==============reply comment function ====================
     const updateReplyMessagesFunction = (e: any) => {
-        console.log(e.target.value)       
+        console.log(e.target.value)
         setState((prevState: any) => ({
             ...prevState,
             replyTextComment: e.target.value
         }))
 
     }
-    const openReplycommentPopup = (i: any, k: any) => {       
+    const openReplycommentPopup = (i: any, k: any) => {
         setState((prevState: any) => ({
             ...prevState,
             currentDataIndex: i + "" + k,
             isCalloutVisible: true
         }))
     }
-    const openReplySubcommentPopup = (i: any, j: any, k: any) => {       
+    const openReplySubcommentPopup = (i: any, j: any, k: any) => {
         setState((prevState: any) => ({
             ...prevState,
             currentDataIndex: +i + '' + j + k,
@@ -1400,7 +1400,7 @@ const CopyTaskProfile = (props: any) => {
             }
             console.log(temp)
             onPost();
-            
+
             setState((prevState: any) => ({
                 ...prevState,
                 isCalloutVisible: false,
@@ -1429,7 +1429,7 @@ const CopyTaskProfile = (props: any) => {
 
     //===========EditReplyComment===============
 
-    const EditReplyComment = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any, parentIndex: any, replyIndex: any) => {       
+    const EditReplyComment = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any, parentIndex: any, replyIndex: any) => {
         setState((prevState: any) => ({
             ...prevState,
             isEditReplyModalOpen: true,
@@ -1457,7 +1457,7 @@ const CopyTaskProfile = (props: any) => {
         );
     };
     const contextCall = (data: any, path: any, releventKey: any) => {
-        if (data != null && path != null) {           
+        if (data != null && path != null) {
             setState((prevState: any) => ({
                 ...prevState,
                 keydoc: data,
@@ -1472,7 +1472,7 @@ const CopyTaskProfile = (props: any) => {
             relevantDocRef?.current?.loadAllSitesDocuments()
         }
     };
-    
+
     //****** remove extra space in folora editor  */
 
     const cleanHTML = (html: any, folora: any, index: any) => {
@@ -1497,7 +1497,7 @@ const CopyTaskProfile = (props: any) => {
     };
 
     //******* End ****************************/
-    const callbackTotalTime = ((Time: any) => {       
+    const callbackTotalTime = ((Time: any) => {
         setState((prevState: any) => ({
             ...prevState,
             TotalTimeEntry: Time
@@ -1508,7 +1508,7 @@ const CopyTaskProfile = (props: any) => {
     const handleFieldChange = (fieldName: any) => (e: any) => {
         let Priority: any;
 
-        setState((prevState:any) => ({
+        setState((prevState: any) => ({
             Result: {
                 ...prevState.Result,
                 [fieldName]: fieldName == "ItemRank" ? e : e.target.value,
@@ -1522,7 +1522,7 @@ const CopyTaskProfile = (props: any) => {
         resultData.PriorityRank = Number(priorityValue);
         resultData.SmartPriority = ""
 
-        setState((prevState:any) => ({
+        setState((prevState: any) => ({
             Result: {
                 ...prevState.Result,
                 PriorityRank: Number(priorityValue),
@@ -1537,7 +1537,7 @@ const CopyTaskProfile = (props: any) => {
         resultData.Categories = item?.Categories;
         resultData.SmartPriority = ""
         resultData.TaskCategories = item?.TaskCategories
-        setState((prevState:any) => ({
+        setState((prevState: any) => ({
             Result: {
                 ...prevState.Result,
                 Categories: item?.Categories,
@@ -1549,9 +1549,9 @@ const CopyTaskProfile = (props: any) => {
     }
 
     const openPortfolioPopupFunction = (change: any) => {
-        if (change == "Portfolio") {           
+        if (change == "Portfolio") {
             setisopencomonentservicepopup(true)
-        } else {          
+        } else {
             setisopenProjectpopup(true)
         }
     }
@@ -1564,7 +1564,7 @@ const CopyTaskProfile = (props: any) => {
                 .filter(`(Portfolios/Id eq ${Documents?.ID})`)
                 .getAll()
                 .then((Data: any[]) => {
-                    var tagdoc: any = Data.filter((item: any) => item.DocumentType === "Concept Paper")                                     
+                    var tagdoc: any = Data.filter((item: any) => item.DocumentType === "Concept Paper")
                     setTagConceptPaper(tagdoc)
                 })
 
@@ -1653,20 +1653,20 @@ const CopyTaskProfile = (props: any) => {
                             AssignedToId.push(assignData.Id)
                         })
                     }
-                        if (portfolio?.ResponsibleTeam?.length > 0) {
-                            portfolio?.ResponsibleTeam?.map((resp: any) => {
-                                ResponsibleTeamId.push(resp.Id)
-                            })
-                        }
-                        if (portfolio?.TeamMembers?.length > 0) {
-                            portfolio?.TeamMembers?.map((teamMemb: any) => {
-                                TeamMembersId.push(teamMemb.Id)
-                            })
-                        }
-                    
+                    if (portfolio?.ResponsibleTeam?.length > 0) {
+                        portfolio?.ResponsibleTeam?.map((resp: any) => {
+                            ResponsibleTeamId.push(resp.Id)
+                        })
+                    }
+                    if (portfolio?.TeamMembers?.length > 0) {
+                        portfolio?.TeamMembers?.map((teamMemb: any) => {
+                            TeamMembersId.push(teamMemb.Id)
+                        })
+                    }
+
                 })
 
-                setState((prevState:any) => ({
+                setState((prevState: any) => ({
                     Result: {
                         ...prevState.Result,
                         Portfolio: DataItem[0],
@@ -1706,7 +1706,7 @@ const CopyTaskProfile = (props: any) => {
                     dataUpdate = {
                         ProjectId: DataItem[0]?.Id
                     }
-                    setState((prevState:any) => ({
+                    setState((prevState: any) => ({
                         Result: {
                             ...prevState.Result,
                             ["SmartPriority"]: globalCommon?.calculateSmartPriority(resultData),
@@ -1718,9 +1718,9 @@ const CopyTaskProfile = (props: any) => {
                     if (state.Result?.TaskType?.Title != "Task") {
                         await globalCommon?.AwtGroupingAndUpdatePrarticularColumn(state.Result, allDataOfTask, dataUpdate)
                     }
-                    
+
                 }
-                else {                    
+                else {
                     dataUpdate = {
                         ProjectId: null
                     }
@@ -1772,7 +1772,7 @@ const CopyTaskProfile = (props: any) => {
 
 
     return (
-        <>           
+        <>
             <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc: state.keydoc, FileDirRef: state.FileDirRef, user: taskUsers, ColorCode: state?.Result?.Portfolio?.PortfolioType?.Color }}>
                 <div className='taskprofilesection'>
                     <section className='ContentSection'> {state.breadCrumData != undefined &&
@@ -1785,8 +1785,6 @@ const CopyTaskProfile = (props: any) => {
                                             <li >
                                                 <a target="_blank" data-interception="off" href={`${state?.Result?.siteUrl}/SitePages/Dashboard.aspx`}> <span>Dashboard</span> </a> <span><SlArrowRight /></span>
                                             </li>
-
-
                                             <li>
                                                 <a  >
                                                     <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
@@ -1814,7 +1812,6 @@ const CopyTaskProfile = (props: any) => {
                                                         <span><SlArrowRight /></span>
                                                     </li>}
                                                     {breadcrumbitem?.siteType !== "Master Tasks" && <li>
-
                                                         <a target="_blank" data-interception="off" href={`${state?.Result?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
                                                         <span></span>
                                                     </li>}
@@ -1834,7 +1831,8 @@ const CopyTaskProfile = (props: any) => {
                                                     }
                                                 </>
                                             })
-                                            }</>}
+                                            }
+                                        </>}
                                 </ul>
                             </div>
                         </div>}
@@ -1999,7 +1997,7 @@ const CopyTaskProfile = (props: any) => {
                                                         <dt className='bg-Fa'>Working Today</dt>
                                                         <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{state?.Result?.IsTodaysTask ? "Yes" : "No"} </span>
                                                         </dd>
-                                                    </dl>                                                  
+                                                    </dl>
                                                     <dl>
                                                         <dt className='bg-Fa'>Priority</dt>
                                                         <dd className='bg-Ff'>
@@ -2276,7 +2274,7 @@ const CopyTaskProfile = (props: any) => {
                                                                 <span className="arrowicons" onClick={() => showhideComposition()}>{showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
                                                                 <div className="d-flex justify-content-between full-width">
                                                                     <p className="pb-0 mb-0">Site Composition</p>
-                                                                    <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => setState({...state, EditSiteCompositionStatus: true })}>
+                                                                    <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => setState({ ...state, EditSiteCompositionStatus: true })}>
                                                                         <span className="svg__iconbox svg__icon--editBox"></span>
                                                                     </p>
                                                                 </div>
@@ -2404,9 +2402,9 @@ const CopyTaskProfile = (props: any) => {
                                                         })}
                                                     </div>}
                                                 {/*feedback comment section code */}
-                                                {state?.Result?.Categories?.includes('UX-New' )? <Uxdescriptions Item={state?.Result} currentUser={currentUser} siteUrl={propsValue?.siteUrl} listName={listName} itemID={itemID} ApprovalStatus={ApprovalStatus} AllListId={AllListId} taskUsers={taskUsers} call={GetResult} userDisplayName={props?.userDisplayName} />
-                                                : <TaskDescriptions Item={state?.Result} currentUser={currentUser} siteUrl={propsValue?.siteUrl} listName={listName} itemID={itemID} ApprovalStatus={ApprovalStatus} AllListId={AllListId} taskUsers={taskUsers} call={GetResult} />
-                                                    }     
+                                                {state?.Result?.Categories?.includes('UX-New') ? <Uxdescriptions Item={state?.Result} currentUser={currentUser} siteUrl={propsValue?.siteUrl} listName={listName} itemID={itemID} ApprovalStatus={ApprovalStatus} AllListId={AllListId} taskUsers={taskUsers} call={GetResult} userDisplayName={props?.userDisplayName} />
+                                                    : <TaskDescriptions Item={state?.Result} currentUser={currentUser} siteUrl={propsValue?.siteUrl} listName={listName} itemID={itemID} ApprovalStatus={ApprovalStatus} AllListId={AllListId} taskUsers={taskUsers} call={GetResult} />
+                                                }
                                             </div>
                                         </div>
 
@@ -2533,7 +2531,8 @@ const CopyTaskProfile = (props: any) => {
 
                             gapSpace={0}
                             target={`#${buttonId}-${state.currentDataIndex}`}
-                            onDismiss={() => setState({...state,
+                            onDismiss={() => setState({
+                                ...state,
                                 isCalloutVisible: false
                             })}
                             setInitialFocus
@@ -2555,7 +2554,8 @@ const CopyTaskProfile = (props: any) => {
                                     gap={8} horizontal>
 
                                     <button className='btn btn-default'
-                                        onClick={() => setState({...state,
+                                        onClick={() => setState({
+                                            ...state,
                                             isCalloutVisible: false
                                         })}
                                     >Cancel</button>
@@ -2619,7 +2619,7 @@ const CopyTaskProfile = (props: any) => {
                         : null}
 
                 </div>
-            </myContextValue.Provider>    
+            </myContextValue.Provider>
         </>
     );
 };
