@@ -488,9 +488,13 @@ const CopyTaskProfile = (props: any) => {
             }
 
         })
-        setState({
+        setState((prevState: any) => ({
+            ...prevState,
             Result: taskDeatails,
-        })
+        }))
+        // setState({
+        //     Result: taskDeatails,
+        // })
         copytaskuser = taskUsers
         setTaskUsers(taskUsers) ;
 
@@ -748,13 +752,15 @@ const CopyTaskProfile = (props: any) => {
     }
     const showhideEstimatedTime = () => {
         if (state.ShowEstimatedTimeDescription) {
-            setState({
+            setState((prevState: any) => ({
+                ...prevState,
                 ShowEstimatedTimeDescription: false
-            });
+            }))
         } else {
-            setState({
+            setState((prevState: any) => ({
+                ...prevState,
                 ShowEstimatedTimeDescription: true
-            });
+            }))
         }
 
     }
@@ -775,11 +781,7 @@ const CopyTaskProfile = (props: any) => {
         }))
 
     }
-    const openVersionHistory = () => {
-        setState({
-            isopenversionHistory: true
-        })
-    }
+  
     const OpenEditPopUp = () => {      
         setState((prevState: any) => ({
             ...prevState,
@@ -2274,7 +2276,7 @@ const CopyTaskProfile = (props: any) => {
                                                                 <span className="arrowicons" onClick={() => showhideComposition()}>{showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
                                                                 <div className="d-flex justify-content-between full-width">
                                                                     <p className="pb-0 mb-0">Site Composition</p>
-                                                                    <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => setState({ EditSiteCompositionStatus: true })}>
+                                                                    <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => setState({...state, EditSiteCompositionStatus: true })}>
                                                                         <span className="svg__iconbox svg__icon--editBox"></span>
                                                                     </p>
                                                                 </div>
@@ -2309,12 +2311,12 @@ const CopyTaskProfile = (props: any) => {
                                                     <dl className="Sitecomposition my-2">
                                                         <div className='dropdown'>
                                                             <a className="sitebutton bg-fxdark d-flex">
-                                                                <span className="arrowicons" onClick={() => showhideEstimatedTime()}>{state.ShowEstimatedTimeDescription ? <SlArrowDown /> : <SlArrowRight />}</span>
+                                                                <span className="arrowicons" onClick={() => showhideEstimatedTime()}>{state?.ShowEstimatedTimeDescription ? <SlArrowDown /> : <SlArrowRight />}</span>
                                                                 <div className="d-flex justify-content-between full-width">
                                                                     <p className="pb-0 mb-0 ">Estimated Task Time Details</p>
                                                                 </div>
                                                             </a>
-                                                            <div className="spxdropdown-menu" style={{ display: state.ShowEstimatedTimeDescription ? 'block' : 'none' }}>
+                                                            <div className="spxdropdown-menu" style={{ display: state?.ShowEstimatedTimeDescription ? 'block' : 'none' }}>
                                                                 <div className="col-12" style={{ fontSize: "14px" }}>
                                                                     {state?.Result?.EstimatedTimeDescriptionArray != null && state?.Result?.EstimatedTimeDescriptionArray?.length > 0 ?
                                                                         <div>
@@ -2341,7 +2343,8 @@ const CopyTaskProfile = (props: any) => {
                                                                 </div>
                                                             </div>
                                                             <div className="spxdropdown-menu ps-2 py-1 " style={{ zIndex: 0 }}>
-                                                                <span>Total Estimated Time : </span><span className="mx-1">{state?.Result?.TotalEstimatedTime > 1 ? state?.Result?.TotalEstimatedTime + " hours" : state?.Result?.TotalEstimatedTime + " hour"} </span>
+                                                                <span>Total Estimated Time : </span>
+                                                                <span className="mx-1">{state?.Result?.TotalEstimatedTime > 1 ? state?.Result?.TotalEstimatedTime + " hours" : state?.Result?.TotalEstimatedTime + " hour"} </span>
                                                             </div>
                                                         </div>
                                                     </dl>
@@ -2401,8 +2404,9 @@ const CopyTaskProfile = (props: any) => {
                                                         })}
                                                     </div>}
                                                 {/*feedback comment section code */}
-                                                {state?.Result?.Categories !== 'UX-New' ? <TaskDescriptions Item={state?.Result} currentUser={currentUser} siteUrl={propsValue?.siteUrl} listName={listName} itemID={itemID} ApprovalStatus={ApprovalStatus} AllListId={AllListId} taskUsers={taskUsers} call={GetResult} />
-                                                    : <Uxdescriptions Item={state?.Result} currentUser={currentUser} siteUrl={propsValue?.siteUrl} listName={listName} itemID={itemID} ApprovalStatus={ApprovalStatus} AllListId={AllListId} taskUsers={taskUsers} call={GetResult} userDisplayName={props?.userDisplayName} />}                                                 
+                                                {state?.Result?.Categories?.includes('UX-New' )? <Uxdescriptions Item={state?.Result} currentUser={currentUser} siteUrl={propsValue?.siteUrl} listName={listName} itemID={itemID} ApprovalStatus={ApprovalStatus} AllListId={AllListId} taskUsers={taskUsers} call={GetResult} userDisplayName={props?.userDisplayName} />
+                                                : <TaskDescriptions Item={state?.Result} currentUser={currentUser} siteUrl={propsValue?.siteUrl} listName={listName} itemID={itemID} ApprovalStatus={ApprovalStatus} AllListId={AllListId} taskUsers={taskUsers} call={GetResult} />
+                                                    }     
                                             </div>
                                         </div>
 
@@ -2529,7 +2533,7 @@ const CopyTaskProfile = (props: any) => {
 
                             gapSpace={0}
                             target={`#${buttonId}-${state.currentDataIndex}`}
-                            onDismiss={() => setState({
+                            onDismiss={() => setState({...state,
                                 isCalloutVisible: false
                             })}
                             setInitialFocus
@@ -2551,7 +2555,7 @@ const CopyTaskProfile = (props: any) => {
                                     gap={8} horizontal>
 
                                     <button className='btn btn-default'
-                                        onClick={() => setState({
+                                        onClick={() => setState({...state,
                                             isCalloutVisible: false
                                         })}
                                     >Cancel</button>
