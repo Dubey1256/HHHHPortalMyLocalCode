@@ -1927,14 +1927,34 @@ function reverseArray(arr: any) {
     NewCategoryId = newdata.data.CategoryId;
     EditData(item.props);
   };
-
+  
+  
+  const fetchTotalTimeWithRetries = async (listId: any, itemId: any, maxRetries = 3, retryDelay = 1000) => {
+    let attempts = 0;
+    while (attempts < maxRetries) {
+      try {
+        const web = new Web(`${siteUrl}`);
+        const datas = await web.lists.getById(listId).items.select('TotalTime').filter(`Id eq ${itemId}`).get();
+        if (datas.length > 0 && datas[0].TotalTime !== null) {
+          return datas[0].TotalTime;
+        }
+      } catch (error) {
+        console.error(`Attempt ${attempts + 1} failed: ${error.message}`);
+      }
+      attempts += 1;
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
+    throw new Error('Failed to fetch TotalTime after multiple attempts');
+  };
   //-----------------------------------------------Create Add Timesheet--------------------------------------------------------------------------------------
   const AddTaskTime = async (child: any, Type: any) => {
-    if(item.props?.TotalTime != null){
-      let web = new Web(`${siteUrl}`);
-      const datas = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item.props.Id}`).get();
-      let Time = datas[0].TotalTime;
-      item.props.TotalTime = Time 
+    if (item.props?.TotalTime != null) {
+      try {
+        item.props.TotalTime = await fetchTotalTimeWithRetries(item?.props?.listId, item?.props?.Id);
+      } catch (error) {
+        console.error('Unable to fetch TotalTime:', error.message);
+        return;
+      }
     }
     setbuttonDisable(true);
 
