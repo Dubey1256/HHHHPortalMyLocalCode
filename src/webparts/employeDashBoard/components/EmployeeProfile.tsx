@@ -543,63 +543,19 @@ const EmployeProfile = (props: any) => {
           config.LoadDefaultFilter = false;
           if (config?.DataSource == 'Tasks') {
             if (Array.isArray(array) && array.length > 0) {
-              if (config['selectUserFilterType'] && !config['FilterType']) {
+              if (config['selectUserFilterType']) {
                 array.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
                   if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id == currentUserData?.AssingedToUser?.Id)) {
                     config.Tasks.push(task);
                   }
                 });
               }
-              if (!config['selectUserFilterType'] && !config['FilterType']) {
+              if (!config['selectUserFilterType']) {
                 config.Tasks = array.filter((item: any) => item?.PercentComplete == config?.Status);
-              }
-              if (config['FilterType']) {
-                if (config['FilterType'] == 'Priority') {
-                  config.Tasks = array.filter((item: any) => item?.PriorityRank == config?.Status);
-                }
-                if (config['FilterType'] == 'Sites') {
-                  config.Tasks = array.filter((item: any) => item?.siteType == config?.Status);
-                }
-                if (config['FilterType'] == 'Actions') {
-                  if (Array.isArray(array) && array.length) {
-                    array.forEach((task: any) => {
-                      if (task?.WorkingAction?.length) {
-                        task?.WorkingAction?.forEach((Action: any) => {
-                          if (Action?.Title != undefined && config?.Status != undefined && Action?.Title == config?.Status) {
-                            if ((config?.UserId == undefined || config?.UserId == '') && !isTaskItemExists(config.Tasks, task))
-                              config.Tasks.push(task);
-                            if (config?.UserId != undefined && config?.UserId != '' && Action?.InformationData?.length) {
-                              Action?.InformationData?.map((UserInfo: any) => {
-                                if (UserInfo?.TaggedUsers?.AssingedToUserId != undefined && config?.UserId == UserInfo?.TaggedUsers?.AssingedToUserId && !isTaskItemExists(config.Tasks, task)) {
-                                  config.Tasks.push(task);
-                                }
-                              })
-                            }
-                          }
-                        });
-                      }
-                    });
-                  }
-                }
-                if (config['FilterType'] == 'Categories') {
-                  if (config?.Status && Array.isArray(array) && array.length) {
-                    config.Status.forEach((FilterCat: any) => {
-                      array.forEach((task: any) => {
-                        if (task?.TaskCategories?.length) {
-                          task.TaskCategories.forEach((category: any) => {
-                            if (category?.Id && FilterCat?.Id && category.Id == FilterCat.Id && !isTaskItemExists(config.Tasks, task)) {
-                              config.Tasks.push(task);
-                            }
-                          });
-                        }
-                      });
-                    });
-                  }
-                }
               }
             }
           }
-          if (config?.DataSource == 'Project') {
+          else if (config?.DataSource == 'Project') {
             if (Array.isArray(AllMasterTasks) && AllMasterTasks.length > 0) {
               let filteredProject = AllMasterTasks.filter((item: any) => item.Item_x0020_Type == 'Project');
               filteredProject.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
@@ -615,17 +571,14 @@ const EmployeProfile = (props: any) => {
         }
       }
       else if (config.DataSource === 'TaskUsers') {
-        if (config.selectFilterType !== 'custom') {
-          config.LoadDefaultFilter = false;
-          config.Tasks = GroupByUsers.filter((User: any) => User?.Id === config.smartFevId);
-        }
-        else if (config?.selectFilterType == 'custom') {
-          config.LoadDefaultFilter = false;
-
-          if (!isTaskUserExist(AllUsers, currentUserData))
-            AllUsers.unshift(currentUserData)
-          if (AllUsers != undefined && AllUsers?.length > 0) {
-            AllUsers.map((User: any) => {
+        config.LoadDefaultFilter = false;
+        if (config.selectFilterType === 'custom') {
+          if (!isTaskUserExist(AllUsers, currentUserData)) {
+            AllUsers.unshift(currentUserData);
+          }
+          if (AllUsers && AllUsers.length > 0) {
+            const currentDate = CurrentMatchableDate.getTime();
+            for (let User of AllUsers) {
               User.TotalTask = 0;
               User.TotalEstimatedTime = 0;
               User.dates = JSON.parse(JSON.stringify(dates));
@@ -639,91 +592,67 @@ const EmployeProfile = (props: any) => {
                   Date.Tasks = [];
                 Date.TotalTask = 0;
                 Date.TotalEstimatedTime = 0
-                array.map((Task: any) => {
-                  Task.WorkingDate = ''
-                  let IsUnAssigedTask: any = true;
-                  if (Task?.WorkingAction != undefined && Task?.WorkingAction != '' && Task?.WorkingAction?.length > 0) {
-                    Task?.WorkingAction?.map((workingMember: any) => {
-                      if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
-                        workingMember?.InformationData?.map((workingDetails: any) => {
-                          let WorkingDate: any = Moment(workingDetails.WorkingDate, 'DD/MM/YYYY');
-                          WorkingDate?._d.setHours(0, 0, 0, 0)
-                          if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
-                            workingDetails?.WorkingMember?.forEach((workingUser: any) => {
-                              if (Task?.AssignedTo != undefined && Task?.AssignedTo?.length > 0) {
-                                Task?.AssignedTo?.forEach((assign: any) => {
-                                  if (assign.Id != undefined && User.AssingedToUserId != undefined && assign.Id == User.AssingedToUserId && assign.Id == workingUser?.Id && WorkingDate?._d.getTime() >= CurrentMatchableDate?.getTime()) {
-                                    IsUnAssigedTask = false
-                                  }
-
-                                })
-                              }
-                              if (User.AssingedToUserId != undefined && workingUser?.Id == User.AssingedToUserId) {
-                                Task.WorkingDate += workingDetails?.WorkingDate + ' | '
-                              }
-                            })
+              })
+              for (let Task of array) {
+                let taskAssigned = false;
+                if (Task.AssignedTo && Task.AssignedTo.some((assign: any) => assign.Id === User.AssingedToUserId)) {
+                  for (let workingMember of Task.WorkingAction || []) {
+                    if (workingMember.Title === 'WorkingDetails' && workingMember.InformationData) {
+                      for (let workingDetails of workingMember.InformationData) {
+                        let WorkingDate: any = Moment(workingDetails.WorkingDate, 'DD/MM/YYYY');
+                        WorkingDate?._d.setHours(0, 0, 0, 0)
+                        if (workingDetails.WorkingMember) {
+                          for (let workingUser of workingDetails.WorkingMember) {
+                            if (workingUser.Id === User.AssingedToUserId && WorkingDate?._d.getTime() >= currentDate) {
+                              taskAssigned = true;
+                            }
                           }
-                        })
-                        let CopyTask = { ...Task }
-                        workingMember?.InformationData?.map((workingDetails: any) => {
-                          if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
-                            let WorkingDate: any = Moment(workingDetails.WorkingDate, 'DD/MM/YYYY');
-                            WorkingDate?._d.setHours(0, 0, 0, 0)
-                            workingDetails?.WorkingMember?.forEach((workingUser: any) => {
-                              if (User.AssingedToUserId != undefined && workingUser?.Id == User.AssingedToUserId && Date.ServerDate?.getTime() == WorkingDate?._d.getTime() && !isTaskItemExists(Date.Tasks, Task)) {
-                                Date.Tasks.push(CopyTask)
-                                Date.TotalTask += 1;
-                                Date.TotalEstimatedTime += Task?.EstimatedTime;
-                              }
-                              if (User.AssingedToUserId != undefined && workingUser?.Id == User.AssingedToUserId && Date.ServerDate?.getTime() == WorkingDate?._d.getTime() && !isTaskItemExists(User.Tasks, Task)) {
-                                if (User?.Tasks == undefined)
-                                  User.Tasks = [];
-                                User.Tasks.push(CopyTask)
-                                User.TotalTask += 1;
-                                User.TotalEstimatedTime += Task?.EstimatedTime;
-                              }
-                            })
-                          }
-                        })
-                      }
-                    })
-                  }
-                  if (IsUnAssigedTask == true && Date?.DisplayDate == 'Un-Assigned') {
-                    if (Task?.AssignedTo != undefined && Task?.AssignedTo?.length > 0) {
-                      Task?.AssignedTo?.forEach((assign: any) => {
-                        if (assign.Id != undefined && User.AssingedToUserId != undefined && assign.Id == User.AssingedToUserId && !isTaskItemExists(User?.Tasks, Task)) {
-                          let CopyTask = { ...Task }
-                          CopyTask.WorkingDate = '';
-                          Date.Tasks.push(CopyTask)
-                          Date.TotalTask += 1;
-                          Date.TotalEstimatedTime += Task?.EstimatedTime;
                         }
-                      })
+                      }
                     }
                   }
-                })
-              })
-            })
+                }
+
+                if (!taskAssigned && User.AssingedToUserId && Task.AssignedTo) {
+                  for (let assign of Task.AssignedTo) {
+                    if (assign.Id === User.AssingedToUserId && !isTaskItemExists(User.Tasks, Task)) {
+                      let CopyTask = { ...Task, WorkingDate: '' };
+                      User.dates.forEach((date: any) => {
+                        if (date.DisplayDate === 'Un-Assigned') {
+                          date.Tasks.push(CopyTask);
+                          date.TotalTask += 1;
+                          date.TotalEstimatedTime += Task.EstimatedTime;
+                        }
+                      });
+                    }
+                  }
+                }
+              }
+            }
           }
-          AllUsers?.map((item: any) => {
-            if (item[config['Status']] != undefined && Array.isArray(item[config['Status']]) && item[config['Status']]?.length > 0) {
-              item[config['Status']].forEach((teamMember: any) => {
-                if (teamMember?.Id == currentUserId && !isTaskUserExist(LoginUserTeamMembers, item) && item?.ItemType != 'Group')
-                  LoginUserTeamMembers.push(item)
-              })
+
+          for (let item of AllUsers) {
+            if (item[config.Status]) {
+              if (Array.isArray(item[config.Status])) {
+                for (let teamMember of item[config.Status]) {
+                  if (teamMember.Id === currentUserId && !isTaskUserExist(LoginUserTeamMembers, item) && item.ItemType !== 'Group') {
+                    LoginUserTeamMembers.push(item);
+                  }
+                }
+              } else if (typeof item[config.Status] === 'object' && item[config.Status] !== null) {
+                if ((item[config.Status].Id === currentUserId || item[config.Status].Id === currentUserData.Id) && !isTaskUserExist(LoginUserTeamMembers, item) && item.ItemType !== 'Group') {
+                  LoginUserTeamMembers.push(item);
+                }
+              }
             }
-            else if (item[config['Status']] != undefined && typeof item[config['Status']] == 'object' && item[config['Status']] !== null) {
-              if ((item[config['Status']]?.Id == currentUserId || item[config['Status']]?.Id == currentUserData?.Id) && !isTaskUserExist(LoginUserTeamMembers, item) && item?.ItemType != 'Group')
-                LoginUserTeamMembers.push(item)
-            }
-          })
-          let loggedInUser: any = AllUsers?.filter((user: any) => user?.AssingedToUserId != undefined && user?.AssingedToUserId != '' && user?.AssingedToUserId == currentUserData?.AssingedToUser?.Id)[0];
-          // let loggedInUser: any = AllUsers?.filter((user: any) => { user?.AssingedToUserId != undefined && user?.AssingedToUserId == currentUserData?.AssingedToUser?.Id })[0]
-          if (!isTaskUserExist(LoginUserTeamMembers, loggedInUser))
-            LoginUserTeamMembers.unshift(loggedInUser)
+          }
+          let loggedInUser = AllUsers.find((user: any) => user.AssingedToUserId && user.AssingedToUserId === currentUserData.AssingedToUser.Id);
+          if (loggedInUser && !isTaskUserExist(LoginUserTeamMembers, loggedInUser)) {
+            LoginUserTeamMembers.unshift(loggedInUser);
+          }
           config.Tasks = LoginUserTeamMembers;
           config.BackupTask = LoginUserTeamMembers;
-          config.AllUserTask = AllUsers
+          config.AllUserTask = AllUsers;
         }
         if (!filteredConfig) {
           setIsCallContext(true);
@@ -865,94 +794,83 @@ const EmployeProfile = (props: any) => {
     const currentDate = todayDate;
     currentDate.setDate(today.getDate());
     currentDate.setHours(0, 0, 0, 0);
-    array?.forEach((items: any) => {
-      DashboardConfig?.forEach((config: any) => {
-        if (config?.Tasks == undefined)
-          config.Tasks = []
-        if (config?.LoadDefaultFilter != false) {
-          if (config?.IsDraftTask != undefined && items.Categories?.toLowerCase().indexOf(config?.IsDraftTask.toLowerCase()) > -1 && items.Author?.Id == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
-            config?.Tasks.push(items);
+    if (DashboardId == 1) {
+      for (const items of array ?? []) {
+        for (const config of DashboardConfig ?? []) {
+          if (config?.Tasks == undefined) {
+            config.Tasks = [];
           }
-          if (items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
-            items?.WorkingAction?.map((workingDetails: any) => {
-              if (config?.IsBottleneckTask != undefined && workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title == config?.IsBottleneckTask && workingDetails?.InformationData.length > 0) {
-                workingDetails?.InformationData?.map((botteleckInfo: any) => {
-                  if (botteleckInfo?.TaggedUsers != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
-                    config?.Tasks.push(items);
+          if (config?.LoadDefaultFilter !== false) {
+            if (config?.IsDraftTask != undefined && items.Categories?.toLowerCase().includes(config?.IsDraftTask.toLowerCase()) > -1 && items.Author?.Id == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
+              config?.Tasks.push(items);
+            }
+            if (items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
+              for (const workingDetails of items.WorkingAction ?? []) {
+                if (config?.IsBottleneckTask != undefined && workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title == config?.IsBottleneckTask && workingDetails?.InformationData.length > 0) {
+                  for (const botteleckInfo of workingDetails?.InformationData ?? []) {
+                    if (botteleckInfo?.TaggedUsers != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
+                      config?.Tasks.push(items);
+                    }
                   }
-                })
-              }
-              if (config?.IsTodaysTask != undefined && workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title == "WorkingDetails" && workingDetails?.InformationData.length > 0) {
-                workingDetails?.InformationData?.map((workingTask: any) => {
-                  if (workingTask?.WorkingMember != undefined && workingTask?.WorkingMember?.length > 0) {
-                    workingTask?.WorkingMember?.map((assign: any) => {
-                      let WorkingDate: any = Moment(workingTask?.WorkingDate, 'DD/MM/YYYY');
-                      WorkingDate?._d.setHours(0, 0, 0, 0)
-
-                      if (assign != undefined && assign?.Id == currentUserData?.AssingedToUser?.Id && WorkingDate?._d.getTime() == currentDate?.getTime() && !isTaskItemExists(config?.Tasks, items)) {
-                        items.WorkingDate = workingTask?.WorkingDate;
-                        config?.Tasks.push(items);
-                      }
-                    })
-                  }
-                })
-              }
-            })
-          }
-          items.AssignedTo?.forEach((assign: any) => {
-            if (assign && assign.Id == currentUserData?.AssingedToUser?.Id) {
-              if (config?.IsImmediateTask != undefined && items.Categories?.toLowerCase().indexOf(config?.IsImmediateTask.toLowerCase()) > -1 && items?.PercentComplete != undefined && items?.PercentComplete < 80 && !isTaskItemExists(config?.Tasks, items)) {
-                config?.Tasks.push(items);
-              }
-              else if (config?.IsApprovalTask != undefined && items.percentage == config?.IsApprovalTask && !isTaskItemExists(config?.Tasks, items)) {
-                config?.Tasks.push(items);
-              }
-              else if (config?.IsWorkingWeekTask != undefined && items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
-                items?.WorkingAction?.map((workingDetails: any) => {
-                  if (workingDetails?.InformationData?.length > 0) {
-                    workingDetails?.InformationData?.map((objDetails: any) => {
-                      if (objDetails?.WorkingDate != undefined) {
-                        const givenDate = Moment(objDetails?.WorkingDate, "DD/MM/YYYY"); // Assuming this correctly parses to a Moment object
-                        const todayDate = new Date();
-                        // Convert Moment object to JavaScript Date object
-                        const givenDateAsDate = givenDate.toDate();
-                        // Check if the given date is greater than today
-                        const greaterThanToday = givenDateAsDate > todayDate;
-                        // Find the start and end of the current week
-                        const startOfWeek = new Date(todayDate.getTime());
-                        startOfWeek.setDate(todayDate.getDate() - todayDate.getDay());
-                        const endOfWeek = new Date(startOfWeek.getTime());
-                        endOfWeek.setDate(startOfWeek.getDate() + 6);
-                        // Check if the given date is within the current week
-                        const inCurrentWeek = givenDateAsDate >= startOfWeek && givenDateAsDate <= endOfWeek;
-                        // Assuming 'config' and 'items' are defined somewhere
-                        if (greaterThanToday && inCurrentWeek) {
-                          objDetails?.WorkingMember?.forEach((user: any) => {
-                            if (user?.Id === currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items))
-                              config?.Tasks.push(items);
-                          })
+                }
+                if (config?.IsTodaysTask != undefined && workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title == "WorkingDetails" && workingDetails?.InformationData.length > 0) {
+                  for (const workingTask of workingDetails?.InformationData ?? []) {
+                    if (workingTask?.WorkingMember != undefined && workingTask?.WorkingMember?.length > 0) {
+                      for (const assign of workingTask?.WorkingMember ?? []) {
+                        let WorkingDate: any = Moment(workingTask?.WorkingDate, 'DD/MM/YYYY');
+                        WorkingDate?._d.setHours(0, 0, 0, 0);
+                        if (assign != undefined && assign?.Id == currentUserData?.AssingedToUser?.Id && WorkingDate?._d.getTime() == currentDate?.getTime() && !isTaskItemExists(config?.Tasks, items)) {
+                          items.WorkingDate = workingTask?.WorkingDate;
+                          config?.Tasks.push(items);
                         }
                       }
-                    })
+                    }
                   }
-
-                })
+                }
               }
-              if (config.TileName == 'AssignedTask' && !isTaskItemExists(config?.Tasks, items))
-                config?.Tasks.push(items);
             }
-          })
+            for (const assign of items.AssignedTo ?? []) {
+              if (assign && assign.Id == currentUserData?.AssingedToUser?.Id) {
+                if (config?.IsImmediateTask != undefined && items.Categories?.toLowerCase().includes(config?.IsImmediateTask.toLowerCase()) > -1 && items?.PercentComplete != undefined && items?.PercentComplete < 80 && !isTaskItemExists(config?.Tasks, items)) {
+                  config?.Tasks.push(items);
+                }
+                else if (config?.IsApprovalTask != undefined && items.percentage == config?.IsApprovalTask && !isTaskItemExists(config?.Tasks, items)) {
+                  config?.Tasks.push(items);
+                }
+                else if (config?.IsWorkingWeekTask != undefined && items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
+                  for (const workingDetails of items?.WorkingAction ?? []) {
+                    if (workingDetails?.InformationData?.length > 0) {
+                      for (const objDetails of workingDetails?.InformationData ?? []) {
+                        if (objDetails?.WorkingDate != undefined) {
+                          const givenDate = Moment(objDetails?.WorkingDate, "DD/MM/YYYY");
+                          const givenDateAsDate = givenDate.toDate();
+                          const greaterThanToday = givenDateAsDate > new Date();
+                          const startOfWeek: any = new Date();
+                          startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+                          const endOfWeek = new Date(startOfWeek);
+                          endOfWeek.setDate(startOfWeek.getDate() + 6);
+                          const inCurrentWeek = givenDateAsDate >= startOfWeek && givenDateAsDate <= endOfWeek;
+                          if (greaterThanToday && inCurrentWeek) {
+                            for (const user of objDetails?.WorkingMember ?? []) {
+                              if (user?.Id === currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items))
+                                config?.Tasks.push(items);
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                if (config.TileName == 'AssignedTask' && !isTaskItemExists(config?.Tasks, items))
+                  config?.Tasks.push(items);
+              }
+            }
+          }
         }
-      });
-    });
-    DashboardConfig?.forEach((items: any) => {
-      if (items.GroupByView != undefined && items.GroupByView == true) {
-        items.Tasks = groupView(items?.Tasks)
       }
-    });
+    }
     setprogressBar(false);
   };
-
   const smartTimeUseLocalStorage = () => {
     let timeEntryDataLocalStorage: any = localStorage.getItem('timeEntryIndex')
     if (timeEntryDataLocalStorage?.length > 0) {
@@ -1246,163 +1164,163 @@ const EmployeProfile = (props: any) => {
   const updatedCheckTeamMembers = (data: any, teamMembers: any, Config: any) => {
     try {
       if (teamMembers.length === 0) {
-          if (Config?.configurationData[0]?.isWorkingDate === true) {
-              try {
-                  if (data?.WorkingAction) {
-                      const workingActionValue:any = [...data?.WorkingAction];
-                      const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
-                      if (workingDetails?.InformationData) {
-                          const isWithinDateRange = (date: any) => {
-                              let startDates = Config?.configurationData[0]?.startDate.setHours(0, 0, 0, 0);
-                              let endDates = Config?.configurationData[0]?.endDate.setHours(0, 0, 0, 0);
-                              const workingDate = new Date(Moment(date, 'DD/MM/YYYY').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (z)')).setHours(0, 0, 0, 0)
-                              return workingDate >= startDates && workingDate <= endDates;
-                          };
-                          const result = workingDetails?.InformationData?.some((infoData: any) =>
-                              isWithinDateRange(infoData?.WorkingDate) && infoData?.WorkingMember?.length > 0
-                          );
-                          if (result) {
-                              return true;
-                          }
-                      }
-                  }
-              } catch (error) {
-                  console.error("An error occurred:", error);
+        if (Config?.configurationData[0]?.isWorkingDate === true) {
+          try {
+            if (data?.WorkingAction) {
+              const workingActionValue: any = [...data?.WorkingAction];
+              const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
+              if (workingDetails?.InformationData) {
+                const isWithinDateRange = (date: any) => {
+                  let startDates = Config?.configurationData[0]?.startDate.setHours(0, 0, 0, 0);
+                  let endDates = Config?.configurationData[0]?.endDate.setHours(0, 0, 0, 0);
+                  const workingDate = new Date(Moment(date, 'DD/MM/YYYY').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (z)')).setHours(0, 0, 0, 0)
+                  return workingDate >= startDates && workingDate <= endDates;
+                };
+                const result = workingDetails?.InformationData?.some((infoData: any) =>
+                  isWithinDateRange(infoData?.WorkingDate) && infoData?.WorkingMember?.length > 0
+                );
+                if (result) {
+                  return true;
+                }
               }
+            }
+          } catch (error) {
+            console.error("An error occurred:", error);
           }
-          if (Config?.configurationData[0]?.isPhone === true) {
-              if (data?.workingDetailsPhone?.InformationData?.length > 0) {
-                  const result = data?.workingDetailsPhone?.InformationData?.length > 0 ? true : false
-                  if (result) {
-                      return true
-                  }
-              }
+        }
+        if (Config?.configurationData[0]?.isPhone === true) {
+          if (data?.workingDetailsPhone?.InformationData?.length > 0) {
+            const result = data?.workingDetailsPhone?.InformationData?.length > 0 ? true : false
+            if (result) {
+              return true
+            }
           }
-          if (Config?.configurationData[0]?.isBottleneck === true) {
-              if (data?.workingDetailsBottleneck?.InformationData?.length > 0) {
-                  const result = data?.workingDetailsBottleneck?.InformationData?.length > 0 ? true : false
-                  if (result) {
-                      return true
-                  }
-              }
+        }
+        if (Config?.configurationData[0]?.isBottleneck === true) {
+          if (data?.workingDetailsBottleneck?.InformationData?.length > 0) {
+            const result = data?.workingDetailsBottleneck?.InformationData?.length > 0 ? true : false
+            if (result) {
+              return true
+            }
           }
-          if (Config?.configurationData[0]?.isAttention === true) {
-              if (data?.workingDetailsAttention?.InformationData?.length > 0) {
-                  const result = data?.workingDetailsAttention?.InformationData?.length > 0 ? true : false
-                  if (result) {
-                      return true
-                  }
-              }
+        }
+        if (Config?.configurationData[0]?.isAttention === true) {
+          if (data?.workingDetailsAttention?.InformationData?.length > 0) {
+            const result = data?.workingDetailsAttention?.InformationData?.length > 0 ? true : false
+            if (result) {
+              return true
+            }
           }
-          if (Config?.configurationData[0]?.isWorkingDate === true || Config?.configurationData[0]?.isAttention === true || Config?.configurationData[0]?.isBottleneck === true || Config?.configurationData[0]?.isPhone === true) {
-              return false
-          }
-          return true;
+        }
+        if (Config?.configurationData[0]?.isWorkingDate === true || Config?.configurationData[0]?.isAttention === true || Config?.configurationData[0]?.isBottleneck === true || Config?.configurationData[0]?.isPhone === true) {
+          return false
+        }
+        return true;
       }
       if (Config?.configurationData[0]?.isCreatedBy === true) {
-          // let result = teamMembers.some((member: any) => member.Title === data?.Author?.Title?.replace(/\s+/g, ' '));
-          let result = teamMembers.some((member: any) => member.Id === data?.Author?.Id);
-          if (result === true) {
-              return true;
-          }
+        // let result = teamMembers.some((member: any) => member.Title === data?.Author?.Title?.replace(/\s+/g, ' '));
+        let result = teamMembers.some((member: any) => member.Id === data?.Author?.Id);
+        if (result === true) {
+          return true;
+        }
       }
       if (Config?.configurationData[0]?.isModifiedby === true) {
-          // let result = teamMembers.some((member: any) => member.Title === data?.Editor?.Title?.replace(/\s+/g, ' '));
-          let result = teamMembers.some((member: any) => member.Id === data?.Editor?.Id);
-          if (result === true) {
-              return true;
-          }
+        // let result = teamMembers.some((member: any) => member.Title === data?.Editor?.Title?.replace(/\s+/g, ' '));
+        let result = teamMembers.some((member: any) => member.Id === data?.Editor?.Id);
+        if (result === true) {
+          return true;
+        }
       }
       if (Config?.configurationData[0]?.isAssignedto === true) {
-          if (data?.AssignedTo?.length > 0) {
-              // let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
-              let result = data?.AssignedTo?.some((elem0: any) => teamMembers.some((filter: any) => filter?.Id === elem0?.Id));
-              if (result === true) {
-                  return true;
-              }
+        if (data?.AssignedTo?.length > 0) {
+          // let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+          let result = data?.AssignedTo?.some((elem0: any) => teamMembers.some((filter: any) => filter?.Id === elem0?.Id));
+          if (result === true) {
+            return true;
           }
+        }
       }
       if (Config?.configurationData[0]?.isTeamLead === true) {
-          if (data?.ResponsibleTeam.length > 0) {
-              // let result = data?.ResponsibleTeam?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
-              let result = data?.ResponsibleTeam?.some((elem: any) => teamMembers.some((filter: any) => filter?.Id === elem?.Id));
+        if (data?.ResponsibleTeam.length > 0) {
+          // let result = data?.ResponsibleTeam?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+          let result = data?.ResponsibleTeam?.some((elem: any) => teamMembers.some((filter: any) => filter?.Id === elem?.Id));
 
-              if (result === true) {
-                  return true;
-              }
+          if (result === true) {
+            return true;
           }
+        }
       }
       if (Config?.configurationData[0]?.isTeamMember === true) {
-          if (data?.TeamMembers?.length > 0) {
-              // let result = data?.TeamMembers?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
-              let result = data?.TeamMembers?.some((elem1: any) => teamMembers.some((filter: any) => filter?.Id === elem1?.Id));
-              if (result === true) {
-                  return true;
-              }
+        if (data?.TeamMembers?.length > 0) {
+          // let result = data?.TeamMembers?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+          let result = data?.TeamMembers?.some((elem1: any) => teamMembers.some((filter: any) => filter?.Id === elem1?.Id));
+          if (result === true) {
+            return true;
           }
+        }
       }
       if (Config?.configurationData[0]?.isWorkingDate === true) {
-          try {
-              if (data?.WorkingAction) {
-                const workingActionValue:any = [...data?.WorkingAction];
-                  const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
-                  if (workingDetails) {
-                      const isWithinDateRange = (date: any) => {
-                          let startDates = Config?.configurationData[0]?.startDate.setHours(0, 0, 0, 0);
-                          let endDates = Config?.configurationData[0]?.endDate.setHours(0, 0, 0, 0);
-                          const workingDate = new Date(Moment(date, 'DD/MM/YYYY').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (z)')).setHours(0, 0, 0, 0)
-                          return workingDate >= startDates && workingDate <= endDates;
-                      };
-                      const result = workingDetails?.InformationData?.some((infoData: any) =>
-                          infoData?.WorkingMember?.some((workingMember: any) =>
-                              teamMembers?.some((teamMember: any) =>
-                                  isWithinDateRange(infoData?.WorkingDate) && teamMember?.Id === workingMember?.Id
-                              )
-                          )
-                      );
-                      if (result) {
-                          return true;
-                      }
-                  }
+        try {
+          if (data?.WorkingAction) {
+            const workingActionValue: any = [...data?.WorkingAction];
+            const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
+            if (workingDetails) {
+              const isWithinDateRange = (date: any) => {
+                let startDates = Config?.configurationData[0]?.startDate.setHours(0, 0, 0, 0);
+                let endDates = Config?.configurationData[0]?.endDate.setHours(0, 0, 0, 0);
+                const workingDate = new Date(Moment(date, 'DD/MM/YYYY').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (z)')).setHours(0, 0, 0, 0)
+                return workingDate >= startDates && workingDate <= endDates;
+              };
+              const result = workingDetails?.InformationData?.some((infoData: any) =>
+                infoData?.WorkingMember?.some((workingMember: any) =>
+                  teamMembers?.some((teamMember: any) =>
+                    isWithinDateRange(infoData?.WorkingDate) && teamMember?.Id === workingMember?.Id
+                  )
+                )
+              );
+              if (result) {
+                return true;
               }
-          } catch (error) {
-              console.error("An error occurred:", error);
+            }
           }
+        } catch (error) {
+          console.error("An error occurred:", error);
+        }
       }
       if (Config?.configurationData[0]?.isPhone === true) {
-          if (data?.workingDetailsPhone?.InformationData?.length > 0) {
-              let result = data?.workingDetailsPhone?.InformationData?.some((elem0: any) => teamMembers?.some((filter: any) => filter?.Id === elem0?.TaggedUsers?.AssingedToUserId));
-              if (result === true) {
-                  return true;
-              }
+        if (data?.workingDetailsPhone?.InformationData?.length > 0) {
+          let result = data?.workingDetailsPhone?.InformationData?.some((elem0: any) => teamMembers?.some((filter: any) => filter?.Id === elem0?.TaggedUsers?.AssingedToUserId));
+          if (result === true) {
+            return true;
           }
+        }
       }
       if (Config?.configurationData[0]?.isBottleneck === true) {
-          if (data?.workingDetailsBottleneck?.InformationData?.length > 0) {
-              let result = data?.workingDetailsBottleneck?.InformationData?.some((elem0: any) => teamMembers?.some((filter: any) => filter?.Id === elem0?.TaggedUsers?.AssingedToUserId));
-              if (result === true) {
-                  return true;
-              }
+        if (data?.workingDetailsBottleneck?.InformationData?.length > 0) {
+          let result = data?.workingDetailsBottleneck?.InformationData?.some((elem0: any) => teamMembers?.some((filter: any) => filter?.Id === elem0?.TaggedUsers?.AssingedToUserId));
+          if (result === true) {
+            return true;
           }
+        }
       }
       if (Config?.configurationData[0]?.isAttention === true) {
-          if (data?.workingDetailsAttention?.InformationData?.length > 0) {
-              let result = data?.workingDetailsAttention?.InformationData?.some((elem0: any) => teamMembers?.some((filter: any) => filter?.Id === elem0?.TaggedUsers?.AssingedToUserId));
-              if (result === true) {
-                  return true;
-              }
+        if (data?.workingDetailsAttention?.InformationData?.length > 0) {
+          let result = data?.workingDetailsAttention?.InformationData?.some((elem0: any) => teamMembers?.some((filter: any) => filter?.Id === elem0?.TaggedUsers?.AssingedToUserId));
+          if (result === true) {
+            return true;
           }
+        }
       }
       if (Config?.configurationData[0]?.isCreatedBy === false && Config?.configurationData[0]?.isModifiedby === false && Config?.configurationData[0]?.isAssignedto === false && Config?.configurationData[0]?.isTeamMember === false && Config?.configurationData[0]?.isTeamLead === false && Config?.configurationData[0]?.isWorkingDate === false && Config?.configurationData[0]?.isPhone === false && Config?.configurationData[0]?.sBottleneck === false && Config?.configurationData[0]?.isAttention === false) {
-          let result = data?.TeamLeaderUser?.some((elem3: any) => teamMembers.some((filter: any) => filter?.Id === elem3?.Id));
-          if (result === true) {
-              return true;
-          }
+        let result = data?.TeamLeaderUser?.some((elem3: any) => teamMembers.some((filter: any) => filter?.Id === elem3?.Id));
+        if (result === true) {
+          return true;
+        }
       }
       return false;
-  } catch (error) {
+    } catch (error) {
       return false;
-  }
+    }
   };
   const updatedCheckTaskType = (data: any, type: any) => {
     try {
