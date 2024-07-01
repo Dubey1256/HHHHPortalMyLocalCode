@@ -139,7 +139,7 @@ const EditConfiguration = (props: any) => {
                 draggedItemContent = _.cloneDeep(draggedItemContent123);
             }
             let filterGroups = [...ExistingWeparts];
-            let ExistingWepartsNew = filterGroups.filter((obj: any) => obj.WebpartTitle != draggedItemContent.WebpartTitle)
+            let ExistingWepartsNew = filterGroups.filter((obj: any) => obj.WebpartId != draggedItemContent.WebpartId)
             //  ExistingWeparts.splice(index, 1);
             // rerender();
 
@@ -147,8 +147,11 @@ const EditConfiguration = (props: any) => {
             //  updatedItems[index].ArrayValue.splice(targetIndex, 0, draggedItemContent);
             updatedItems[dragOverItem?.CurrentIndex].ArrayValue.splice(targetIndex, 0, draggedItemContent);
             // Clear the drag indices
-
+            let itemsArray: any = [];
             updatedItems?.forEach((item: any, index: any) => {
+                item?.ArrayValue?.forEach((obj: any) => {
+                    itemsArray.push(obj);
+                })
                 if (dragOverItem.CurrentIndex === index)
                     item?.ArrayValue?.forEach((subChild: any, indexChild: any) => {
                         if (subChild?.WebpartPosition != undefined) {
@@ -159,6 +162,7 @@ const EditConfiguration = (props: any) => {
                     })
 
             })
+            setItems(itemsArray);
             console.log('ExistingWeparts before update:', ExistingWeparts);
             console.log('ExistingWepartsNew:', ExistingWepartsNew);
             setExistingWeparts(ExistingWepartsNew);
@@ -420,9 +424,9 @@ const EditConfiguration = (props: any) => {
         updatedItems?.forEach((item: any, index: any) => {
             if (index === arrayIndex)
                 item?.ArrayValue?.forEach((subChild: any, indexChild: any) => {
-                    if (itemValue.WebpartTitle === subChild?.WebpartTitle) {
+                    if (itemValue.WebpartId === subChild?.WebpartId) {
                         let findItem: any = [];
-                        findItem = ExistingWepartsBackup?.filter((filt: any) => filt.WebpartTitle === subChild.WebpartTitle)
+                        findItem = ExistingWepartsBackup?.filter((filt: any) => filt.WebpartId === subChild.WebpartId)
                         if (findItem?.length > 0) {
                             let arrayItems: any = [];
                             const ExistingItems = [...ExistingWeparts];
@@ -433,6 +437,13 @@ const EditConfiguration = (props: any) => {
                     }
                 })
         })
+        let itemsArray: any = [];
+        updatedItems?.forEach((item: any, index: any) => {
+            item?.ArrayValue?.forEach((obj: any) => {
+                itemsArray.push(obj);
+            })
+        })
+        setItems(itemsArray);
         setNewItem(updatedItems);
     }
     const changetabs = (selectedtab: any) => {
@@ -465,7 +476,7 @@ const EditConfiguration = (props: any) => {
                 if (webpart?.Configurations != undefined) {
                     let ConfigItem: any = JSON.parse(webpart?.Configurations);
                     backupaaray.push(ConfigItem);
-                    let items = TempBackup?.filter((obj: any) => obj.Id === ConfigItem.Id);
+                    let items = TempBackup?.filter((obj: any) => obj.WebpartId === ConfigItem.WebpartId);
                     if (items?.length === 0) {
                         ConfigItem.Title = ConfigItem.WebpartTitle != undefined ? ConfigItem.WebpartTitle : ConfigItem.Title
                         aaray.push(ConfigItem)
@@ -498,7 +509,7 @@ const EditConfiguration = (props: any) => {
                 type={PanelType.large}>
                 <div className='modal-body'>
                     {progressBar && <PageLoader />}
-                  
+
                     <div className="mb-2">
                         <label className='form-label full-width'>Dashboard Title</label>
                         <input className='form-control' type='text' placeholder="Dashboard Title" value={DashboardTitle} onChange={(e) => setDashboardTitle(e.target.value)} />
@@ -516,7 +527,7 @@ const EditConfiguration = (props: any) => {
                                                 <div className={item.ClassValues}>
                                                     <div className="fw-semibold text-center mb-2" style={{ borderBottom: '1px solid var(--SiteBlue)' }}>{item.ColumnTitle}</div>
                                                     {item != undefined && item?.ArrayValue?.length > 0 ? item?.ArrayValue?.map((subitem: any, indexNew: any) => {
-                                                        const showDeleteIcon = ExistingWepartsBackup?.filter((obj: any) => obj.WebpartTitle === subitem.WebpartTitle);
+                                                        const showDeleteIcon = ExistingWepartsBackup?.filter((obj: any) => obj.WebpartId === subitem.WebpartId);
                                                         return (
                                                             <>
                                                                 <div className="alignCenter bg-siteColor justify-content-center mb-2 w-100" style={{ height: '50px' }}
@@ -644,7 +655,7 @@ const EditConfiguration = (props: any) => {
                 {IsManageConfigPopup && <AddConfiguration DashboardConfigBackUp={Items} SingleWebpart={true} props={props.props} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}
             </span> */}
             <span>
-                {IsManageConfigPopup && <AddEditWebpartTemplate props={props?.props} SingleWebpart={true} EditItem={SelectedItem} IsOpenPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />}
+                {IsManageConfigPopup && <AddEditWebpartTemplate props={props?.props} DashboardPage={true} DashboardConfigBackUp={Items} SingleWebpart={true} EditItem={SelectedItem} IsOpenPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />}
             </span>
             <span>
                 {IsOpenPopup && <AddEditWebpartTemplate props={props?.props} SingleWebpart={true} EditItem={""} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseIsConfigPopup} />}

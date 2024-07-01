@@ -1379,13 +1379,14 @@ const TeamSmartFilter = (item: any) => {
                 }
             }
             if (isCreatedDateSelected === false && isModifiedDateSelected === false && isDueDateSelected === false) {
-                if (data?.serverDueDate != undefined || data.serverModifiedDate != undefined || data.serverCreatedDate != undefined) {
-                    let result = ((data?.serverDueDate && data.serverDueDate >= startDate && data.serverDueDate <= endDate) || (data?.serverModifiedDate && data.serverModifiedDate >= startDate && data.serverModifiedDate <= endDate)
-                        || (data?.serverCreatedDate && data.serverCreatedDate >= startDate && data.serverCreatedDate <= endDate));
-                    if (result === true) {
-                        return true;
-                    }
-                }
+                return true;
+                // if (data?.serverDueDate != undefined || data.serverModifiedDate != undefined || data.serverCreatedDate != undefined) {
+                //     let result = ((data?.serverDueDate && data.serverDueDate >= startDate && data.serverDueDate <= endDate) || (data?.serverModifiedDate && data.serverModifiedDate >= startDate && data.serverModifiedDate <= endDate)
+                //         || (data?.serverCreatedDate && data.serverCreatedDate >= startDate && data.serverCreatedDate <= endDate));
+                //     if (result === true) {
+                //         return true;
+                //     }
+                // }
             }
             return false;
         } catch (error) {
