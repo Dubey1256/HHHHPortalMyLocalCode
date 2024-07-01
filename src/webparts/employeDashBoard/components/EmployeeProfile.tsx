@@ -594,6 +594,7 @@ const EmployeProfile = (props: any) => {
                 Date.TotalEstimatedTime = 0
               })
               for (let Task of array) {
+                Task.WorkingDate = ''
                 let taskAssigned = false;
                 if (Task.AssignedTo && Task.AssignedTo.some((assign: any) => assign.Id === User.AssingedToUserId)) {
                   for (let workingMember of Task.WorkingAction || []) {
@@ -606,13 +607,30 @@ const EmployeProfile = (props: any) => {
                             if (workingUser.Id === User.AssingedToUserId && WorkingDate?._d.getTime() >= currentDate) {
                               taskAssigned = true;
                             }
+                            if (User.AssingedToUserId != undefined && workingUser?.Id == User.AssingedToUserId) {
+                              Task.WorkingDate += workingDetails?.WorkingDate + ' | '
+                            }
+                            let CopyTask = { ...Task };
+                            for (let Date of User?.dates) {
+                              if (User.AssingedToUserId != undefined && workingUser?.Id == User.AssingedToUserId && Date.ServerDate?.getTime() == WorkingDate?._d.getTime() && !isTaskItemExists(Date.Tasks, Task)) {
+                                Date.Tasks.push(CopyTask)
+                                Date.TotalTask += 1;
+                                Date.TotalEstimatedTime += Task?.EstimatedTime;
+                              }
+                              if (User.AssingedToUserId != undefined && workingUser?.Id == User.AssingedToUserId && Date.ServerDate?.getTime() == WorkingDate?._d.getTime() && !isTaskItemExists(User.Tasks, Task)) {
+                                if (User?.Tasks == undefined)
+                                  User.Tasks = [];
+                                User.Tasks.push(CopyTask)
+                                User.TotalTask += 1;
+                                User.TotalEstimatedTime += Task?.EstimatedTime;
+                              }
+                            };
                           }
                         }
                       }
                     }
                   }
                 }
-
                 if (!taskAssigned && User.AssingedToUserId && Task.AssignedTo) {
                   for (let assign of Task.AssignedTo) {
                     if (assign.Id === User.AssingedToUserId && !isTaskItemExists(User.Tasks, Task)) {
@@ -635,18 +653,18 @@ const EmployeProfile = (props: any) => {
             if (item[config.Status]) {
               if (Array.isArray(item[config.Status])) {
                 for (let teamMember of item[config.Status]) {
-                  if (teamMember.Id === currentUserId && !isTaskUserExist(LoginUserTeamMembers, item) && item.ItemType !== 'Group') {
+                  if (teamMember.Id == currentUserId && !isTaskUserExist(LoginUserTeamMembers, item) && item.ItemType !== 'Group') {
                     LoginUserTeamMembers.push(item);
                   }
                 }
               } else if (typeof item[config.Status] === 'object' && item[config.Status] !== null) {
-                if ((item[config.Status].Id === currentUserId || item[config.Status].Id === currentUserData.Id) && !isTaskUserExist(LoginUserTeamMembers, item) && item.ItemType !== 'Group') {
+                if ((item[config.Status].Id == currentUserId || item[config.Status].Id == currentUserData.Id) && !isTaskUserExist(LoginUserTeamMembers, item) && item.ItemType !== 'Group') {
                   LoginUserTeamMembers.push(item);
                 }
               }
             }
           }
-          let loggedInUser = AllUsers.find((user: any) => user.AssingedToUserId && user.AssingedToUserId === currentUserData.AssingedToUser.Id);
+          let loggedInUser = AllUsers.find((user: any) => user.AssingedToUserId && user.AssingedToUserId == currentUserData.AssingedToUser.Id);
           if (loggedInUser && !isTaskUserExist(LoginUserTeamMembers, loggedInUser)) {
             LoginUserTeamMembers.unshift(loggedInUser);
           }
@@ -852,7 +870,7 @@ const EmployeProfile = (props: any) => {
                           const inCurrentWeek = givenDateAsDate >= startOfWeek && givenDateAsDate <= endOfWeek;
                           if (greaterThanToday && inCurrentWeek) {
                             for (const user of objDetails?.WorkingMember ?? []) {
-                              if (user?.Id === currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items))
+                              if (user?.Id == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items))
                                 config?.Tasks.push(items);
                             }
                           }
@@ -1350,28 +1368,102 @@ const EmployeProfile = (props: any) => {
       return false;
     }
   };
-  const updatedCheckDateSection = (data: any, startDate: any, endDate: any, Config: any) => {
+  const updatedCheckDateSection = (data: any, startDate: any, endDate: any, Config: any, selectedFilter: any) => {
+    let startdt = new Date(),
+      enddt = new Date(),
+      tempdt = new Date();
+    let diff: number, lastday: number;
+    let MatchstartDate: any = startDate;
+    let MatchendDate: any = endDate;
     try {
-      if (startDate == null && endDate == null) {
+      if (MatchstartDate == null && MatchendDate == null) {
         return true;
       }
-      startDate = startDate.setHours(0, 0, 0, 0);
-      endDate = endDate.setHours(0, 0, 0, 0);
+      MatchstartDate = MatchstartDate.setHours(0, 0, 0, 0);
+      MatchendDate = MatchendDate.setHours(0, 0, 0, 0);
+      if (selectedFilter) {
+        switch (selectedFilter) {
+          case "today":
+            MatchstartDate = startdt.setHours(0, 0, 0, 0);
+            MatchendDate = enddt.setHours(0, 0, 0, 0);
+            break;
+          case "yesterday":
+            MatchstartDate = startdt.setDate(startdt.getDate() - 1);
+            MatchendDate = enddt.setDate(enddt.getDate() - 1);
+            break;
+          case "thisweek":
+            diff = startdt.getDate() - startdt.getDay() + (startdt.getDay() === 0 ? -6 : 1);
+            MatchstartDate = new Date(startdt.setDate(diff));
+            lastday = enddt.getDate() - (enddt.getDay() - 1) + 6;
+            MatchendDate = new Date(enddt.setDate(lastday));
+            break;
+          case "last7days":
+            tempdt = new Date();
+            tempdt = new Date(tempdt.getFullYear(), tempdt.getMonth(), tempdt.getDate() - 7);
+            diff = tempdt.getDate() - tempdt.getDay() + (tempdt.getDay() === 0 ? -6 : 1);
+            MatchstartDate = new Date(tempdt.setDate(diff));
+            lastday = tempdt.getDate() - (tempdt.getDay() - 1) + 6;
+            MatchendDate = new Date(tempdt.setDate(lastday));
+            break;
+          case "thismonth":
+            MatchstartDate = new Date(startdt.getFullYear(), startdt.getMonth(), 1);
+            MatchendDate = new Date(enddt.getFullYear(), enddt.getMonth() + 1, 0);
+            break;
+          case "last30days":
+            MatchstartDate = new Date(startdt.getFullYear(), startdt.getMonth() - 1);
+            MatchendDate = new Date(enddt.getFullYear(), enddt.getMonth(), 0);
+            break;
+          case "last3months":
+            startdt.setMonth(startdt.getMonth() - 3);
+            startdt.setDate(1);
+            MatchstartDate = startdt;
+            MatchendDate = new Date(enddt.getFullYear(), enddt.getMonth(), 0);
+            break;
+          case "thisyear":
+            MatchstartDate = new Date(new Date().getFullYear(), 0, 1);
+            MatchendDate = new Date(new Date().getFullYear(), 11, 31);
+            break;
+          case "lastyear":
+            MatchstartDate = new Date(new Date().getFullYear() - 1, 0, 1);
+            MatchendDate = new Date(new Date().getFullYear() - 1, 11, 31);
+            break;
+          case "Pre-set":
+            let storedDataStartDate: any
+            let storedDataEndDate: any
+            try {
+              storedDataStartDate = JSON.parse(localStorage.getItem('startDate'));
+              storedDataEndDate = JSON.parse(localStorage.getItem('endDate'))
+            } catch (error) { }
+            if (storedDataStartDate && storedDataStartDate != null && storedDataStartDate != "Invalid Date" && storedDataEndDate && storedDataEndDate != null && storedDataEndDate != "Invalid Date") {
+              MatchstartDate = new Date(storedDataStartDate);
+              MatchendDate = new Date(storedDataEndDate);
+            }
+            break;
+          case "custom":
+            MatchstartDate = startDate;
+            MatchendDate = endDate;
+            break;
+          default:
+            MatchstartDate = null;
+            MatchendDate = null;
+            break;
+        }
+      }
       if (Config?.configurationData[0]?.isCreatedDateSelected == true) {
-        let result = (data?.serverCreatedDate && data.serverCreatedDate >= startDate && data.serverCreatedDate <= endDate);
+        let result = (data?.serverCreatedDate && data.serverCreatedDate >= MatchstartDate && data.serverCreatedDate <= MatchendDate);
         if (result == true) {
           return true;
         }
       }
       if (Config?.configurationData[0]?.isModifiedDateSelected == true) {
-        let result = (data?.serverModifiedDate && data.serverModifiedDate >= startDate && data.serverModifiedDate <= endDate);
+        let result = (data?.serverModifiedDate && data.serverModifiedDate >= MatchstartDate && data.serverModifiedDate <= MatchendDate);
         if (result == true) {
           return true;
         }
       }
       if (Config?.configurationData[0]?.isDueDateSelected == true) {
         if (data?.serverDueDate != undefined) {
-          let result = (data?.serverDueDate && data.serverDueDate >= startDate && data.serverDueDate <= endDate);
+          let result = (data?.serverDueDate && data.serverDueDate >= MatchstartDate && data.serverDueDate <= MatchendDate);
           if (result == true) {
             return true;
           }
@@ -1379,8 +1471,8 @@ const EmployeProfile = (props: any) => {
       }
       if (Config?.configurationData[0]?.isCreatedDateSelected == false && Config?.configurationData[0]?.isModifiedDateSelected == false && Config?.configurationData[0]?.isDueDateSelected == false) {
         if (data?.serverDueDate != undefined || data.serverModifiedDate != undefined || data.serverCreatedDate != undefined) {
-          let result = ((data?.serverDueDate && data.serverDueDate >= startDate && data.serverDueDate <= endDate) || (data?.serverModifiedDate && data.serverModifiedDate >= startDate && data.serverModifiedDate <= endDate)
-            || (data?.serverCreatedDate && data.serverCreatedDate >= startDate && data.serverCreatedDate <= endDate));
+          let result = ((data?.serverDueDate && data.serverDueDate >= MatchstartDate && data.serverDueDate <= MatchendDate) || (data?.serverModifiedDate && data.serverModifiedDate >= MatchstartDate && data.serverModifiedDate <= MatchendDate)
+            || (data?.serverCreatedDate && data.serverCreatedDate >= MatchstartDate && data.serverCreatedDate <= MatchendDate));
           if (result == true) {
             return true;
           }
@@ -1456,7 +1548,7 @@ const EmployeProfile = (props: any) => {
         updatedCheckMatch(data, 'Item_x0020_Type', 'Title', portFolio) &&
         updatedCheckClintCategoryMatch(data, clientCategory) &&
         updatedCheckTeamMembers(data, teamMember, Config) &&
-        updatedCheckDateSection(data, Config?.configurationData[0]?.startDate, Config?.configurationData[0]?.endDate, Config)
+        updatedCheckDateSection(data, Config?.configurationData[0]?.startDate, Config?.configurationData[0]?.endDate, Config, Config?.configurationData[0]?.selectedFilter)
       );
     }
     let filteredTaskData: any = [];
@@ -1469,7 +1561,7 @@ const EmployeProfile = (props: any) => {
         updatedCheckClintCategoryMatch(data, clientCategory) &&
         updatedCheckCategoryMatch(data, Categories) &&
         updatedCheckTeamMembers(data, teamMember, Config) &&
-        updatedCheckDateSection(data, Config?.configurationData[0]?.startDate, Config?.configurationData[0]?.endDate, Config) &&
+        updatedCheckDateSection(data, Config?.configurationData[0]?.startDate, Config?.configurationData[0]?.endDate, Config, Config?.configurationData[0]?.selectedFilter) &&
         updatedCheckPriority(data, priorityType)
       );
     }
