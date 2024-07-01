@@ -189,7 +189,7 @@ const CopyTaskProfile = (props: any) => {
     const GetResult = async () => {
         await getsmartmetadataIcon();
 
-        let isShowTimeEntry;
+     
         try {
             isShowTimeEntry = propsValue?.TimeEntry !== "" ? JSON.parse(propsValue?.TimeEntry) : "";
             setisShowSiteCompostion(propsValue?.SiteCompostion !== "" ? JSON.parse(propsValue?.SiteCompostion) : "");
