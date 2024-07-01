@@ -2046,12 +2046,12 @@ export default function ProjectOverview(props: any) {
             {trueRestructuring == true ?
                 <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} findPage={"ProjectOverView"} restructureItem={childRef.current.table.getSelectedRowModel().flatRows} />
                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>}
-            <label className="switch me-2" htmlFor="checkbox">
-                <input checked={showAllAWTGrouped} onChange={() => { changeToggleAWT(); }} type="checkbox" id="checkbox" />
-                {showAllAWTGrouped === true ? <div className="slider round" title="Switch To Project/Sprints Only"></div> : <div title='Swtich to Show All AWT Items' className="slider round"></div>}
-            </label> <label className="switch me-2" htmlFor="checkbox1">
+             <span style={{marginLeft:'16px'}}>AWT View</span><label className="switch me-2" htmlFor="checkbox" style={{marginLeft:'4px'}}>
+                <input checked={showAllAWTGrouped} onChange={() => { changeToggleAWT(); }} type="checkbox" id="checkbox" /> 
+                {showAllAWTGrouped === true ?  <div className="slider round" title="Switch To Project/Sprints Only"></div>:<>  <div title='Swtich to Show All AWT Items' className="slider round"></div></> }
+            </label><span style={{marginLeft:'16px'}}>Working Today’s Projects</span> <label className="switch me-2" htmlFor="checkbox1" style={{marginLeft:'4px'}}>
                 <input checked={workingTodayFiltered} onChange={() => { changeToggleWorkingToday(); }} type="checkbox" id="checkbox1" />
-                {workingTodayFiltered === true ? <div className="slider round" title='Swtich to Show All Items'></div> : <div title="Switch To Working Today's" className="slider round"></div>}
+                {workingTodayFiltered === true ? <div className="slider round" title='Swtich to Show All Items'></div> : <><div title="Switch To Working Today's" className="slider round"></div></>}
             </label>
 
             {(ActiveCompareToolButton) ?
