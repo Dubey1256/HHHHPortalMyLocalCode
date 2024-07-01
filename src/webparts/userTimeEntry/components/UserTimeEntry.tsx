@@ -4431,7 +4431,7 @@ export default class UserTimeEntry extends React.Component<
                                             <tr>
                                               <td><b>Total</b></td>
                                               <td>{(DesignCount + DevCount + QACount + ManagementCount).toFixed(2)}</td>
-                                              <td>{(DesignMembers + DevelopmentMembers + QAMembers).toFixed(2)}</td>
+                                              <td>{(DesignMembers + DevelopmentMembers + QAMembers)}</td>
                                               <td>{TotlaTime.toFixed(2)}</td>
                                               <td>{TotalleaveHours}</td>
                                             </tr>
