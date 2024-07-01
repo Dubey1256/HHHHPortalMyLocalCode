@@ -1247,7 +1247,7 @@ const SmartInformation = (props: any, ref: any) => {
     setSmartInformation(array);
   };
 
-  const sortByAscEnlarge = (type:any) => {
+  const sortByAscEnlarge = (type: any) => {
     let array = [...showenlargeSmartInfo];
     let sortarray1: any = [];
     if (type === "asc") {
@@ -1666,15 +1666,16 @@ const SmartInformation = (props: any, ref: any) => {
                 <p className='full-width floar-end'>
                   Document
                 </p>
-
-                <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_LibraryBooks.png" title="Documents" data-themekey="#" />
+                <span className="svg__iconbox svg__icon--document" title="Documents"></span>
+                {/* <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_LibraryBooks.png" title="Documents" data-themekey="#" /> */}
 
               </a>
               <a className={SelectedTilesTitle == "UploadEmail" ? "docbox  BoxShadow" : "docbox"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('UploadEmail')}>
                 <p className='full-width floar-end'>
                   Email
                 </p>
-                <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_MailPlus.png" title="Mail" data-themekey="#" />
+                <span className="svg__iconbox svg__icon--Email" title="Mail"></span>
+                {/* <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_MailPlus.png" title="Mail" data-themekey="#" /> */}
 
 
               </a>
@@ -1682,7 +1683,8 @@ const SmartInformation = (props: any, ref: any) => {
                 <p className='full-width floar-end'>
                   Link
                 </p>
-                <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Links.png" title="Links" data-themekey="#" />
+                <span className="svg__iconbox svg__icon--smlink" title="Links"></span>
+                {/* <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Links.png" title="Links" data-themekey="#" /> */}
 
 
               </a>
@@ -1690,7 +1692,8 @@ const SmartInformation = (props: any, ref: any) => {
                 <p className='full-width floar-end'>
                   Task
                 </p>
-                <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Task.png" title="Tasks" data-themekey="#" />
+                <span className="svg__iconbox svg__icon--smtask" title="Tasks"></span>
+                {/* <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Task.png" title="Tasks" data-themekey="#" /> */}
               </a>}
 
             </div>

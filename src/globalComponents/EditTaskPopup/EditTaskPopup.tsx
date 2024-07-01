@@ -1688,14 +1688,14 @@ const EditTaskPopup = (Items: any) => {
                         let updatedItem: any = {
                             ...EditDataBackup,
                             FeedBackBackup: RestructureData.FeedBackBackup,
-                            FeedBackArray:designTemplates,
+                            FeedBackArray: designTemplates,
                             FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
                         };
                         setEditData(updatedItem);
-                        updateFeedbackArray[0].FeedBackDescriptions=designTemplates
+                        updateFeedbackArray[0].FeedBackDescriptions = designTemplates
                         EditDataBackup = updatedItem;
                     }
-                   
+
                     setDesignNewTemplates(true)
                 }
             })
@@ -1730,14 +1730,14 @@ const EditTaskPopup = (Items: any) => {
                         let updatedItem: any = {
                             ...EditDataBackup,
                             FeedBackBackup: RestructureData.FeedBackBackup,
-                            FeedBackArray:designTemplates,
+                            FeedBackArray: designTemplates,
                             FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
                         };
                         setEditData(updatedItem);
-                        updateFeedbackArray[0].FeedBackDescriptions=designTemplates
+                        updateFeedbackArray[0].FeedBackDescriptions = designTemplates
                         EditDataBackup = updatedItem;
                     }
-                   
+
                     setDesignNewTemplates(true)
                 }
             });
@@ -4584,8 +4584,8 @@ const EditTaskPopup = (Items: any) => {
         let UpdatedJSON = {
             EstimatedTimeDescription: FunctionsType == 'Copy-Task' ? null : EditData.EstimatedTimeDescription,
             Comments: FunctionsType == 'Copy-Task' ? null : EditData.Comments,
-            DueDate: FunctionsType == 'Copy-Task' ? null : Moment(EditData.DueDate).format("MM-DD-YYYY"),
-            StartDate: FunctionsType == 'Copy-Task' ? null : Moment(EditData.StartDate).format("MM-DD-YYYY"),
+            DueDate: FunctionsType == 'Copy-Task' ? null : (EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null),
+            StartDate: FunctionsType == 'Copy-Task' ? null : (EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null),
             Status: FunctionsType == 'Copy-Task' ? null : EditData.Status,
             PercentComplete: FunctionsType == 'Move-Task' ? (EditData.PercentComplete / 100) : 0,
             TotalTime: FunctionsType == 'Copy-Task' ? 0 : EditData?.TotalTime,
@@ -10127,12 +10127,12 @@ const EditTaskPopup = (Items: any) => {
                                                                                         </span>
                                                                                     </span>
                                                                                     {WAItemData?.InformationData?.length === 1 && (
-                                                                                         <span className="hover-text alignCenter">
-                                                                                         <span onClick={() => openBottleneckPopup("Bottleneck")} className="svg__iconbox svg__icon--Plus"></span>
-                                                                                         <span className="tooltip-text pop-left">
-                                                                                             Add User
-                                                                                         </span>
-                                                                                     </span>
+                                                                                        <span className="hover-text alignCenter">
+                                                                                            <span onClick={() => openBottleneckPopup("Bottleneck")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                Add User
+                                                                                            </span>
+                                                                                        </span>
                                                                                     )}
                                                                                 </div>
                                                                             </div>
@@ -10292,11 +10292,11 @@ const EditTaskPopup = (Items: any) => {
                                                                                     </span>
                                                                                     {WAItemData?.InformationData?.length === 1 ? (
                                                                                         <span className="hover-text alignCenter">
-                                                                                        <span onClick={() => openBottleneckPopup("Attention")} className="svg__iconbox svg__icon--Plus"></span>
-                                                                                        <span className="tooltip-text pop-left">
-                                                                                            Add User
+                                                                                            <span onClick={() => openBottleneckPopup("Attention")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                Add User
+                                                                                            </span>
                                                                                         </span>
-                                                                                    </span>
                                                                                     ) : null}
                                                                                 </div>
                                                                             </div>
@@ -10416,11 +10416,11 @@ const EditTaskPopup = (Items: any) => {
                                                                                     </span>
                                                                                     {WAItemData?.InformationData?.length === 1 ? (
                                                                                         <span className="hover-text alignCenter">
-                                                                                        <span onClick={() => openBottleneckPopup("Phone")} className="svg__iconbox svg__icon--Plus"></span>
-                                                                                        <span className="tooltip-text pop-left">
-                                                                                            Add User
+                                                                                            <span onClick={() => openBottleneckPopup("Phone")} className="svg__iconbox svg__icon--Plus"></span>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                Add User
+                                                                                            </span>
                                                                                         </span>
-                                                                                    </span> 
                                                                                     ) : null}
                                                                                 </div>
                                                                             </div>
@@ -10927,7 +10927,7 @@ const EditTaskPopup = (Items: any) => {
                 onDismiss={closeApproverPopup}
                 isBlocking={ApproverPopupStatus}
                 type={PanelType.medium}
-                >
+            >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
                     <div className="">
                         <div className="col-sm-12 categScroll" style={{ height: "auto" }}>

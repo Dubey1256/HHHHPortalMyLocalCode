@@ -402,14 +402,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       //   placeholder: "Task ID",
       //   header: "",
       //   resetColumnFilters: false,
-    //   size: 120,
+      //   size: 120,
       //   id: "TaskID",
       // }, 
       {
-        accessorFn: (row: any) => row?.TaskTitle,
-        cell: ({ row }: any) => (
-          <dd className='bg-Ff position-relative'>
-            <ReactPopperTooltipSingleLevel CMSToolId={row.original?.TaskID} row={row.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={this?.state?.AllTimeEntryItem} AllListId={AllListId} />
+        accessorFn: (row: any) => row?.TaskID,
+        cell: ({ row,getValue }: any) => (
+          <dd className='position-relative'>
+            <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={this?.state?.AllTimeEntryItem} AllListId={AllListId} />
 
           </dd>
         ),
@@ -425,7 +425,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <div className="alignCenter">
             <span className="columnFixedTitle">
               <a className="text-content hreflink" title={row?.original?.TaskTitle} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
-                href={this.props.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.TaskItemID + "&Site=" + row?.original?.siteType === 'OffshoreTasks' ? 'Offshore Tasks' : row?.original?.siteType} >
+                href={this.props.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + row?.original?.TaskItemID + '&Site=' + (row?.original?.siteType === 'OffshoreTasks' ? 'Offshore%20Tasks' : row?.original?.siteType)} >
                 {row?.original?.TaskTitle}
                 {/* <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /> */}
               </a>
@@ -433,7 +433,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             </span>
           </div>
         ),
-        accessorKey: "TaskTitle",
         placeholder: "Title",
         header: "",
         resetColumnFilters: false,
@@ -1894,6 +1893,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             filterItem.PercentComplete = getItem.PercentComplete;
             filterItem.Priority_x0020_Rank = getItem.Priority_x0020_Rank;
             filterItem.TaskID = getItem.TaskID;
+            filterItem.TaskId = getItem.TaskID;
             filterItem.Portfolio_x0020_Type = getItem.Portfolio_x0020_Type;
             filterItem.Created = getItem.Created;
             filterItem.Id = getItem.Id;
@@ -2189,6 +2189,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           let selectedDate = Moment(NotUndefineddate);
           weekStart = selectedDate.clone().startOf('week').format('MM/DD/YYYY');
         }
+        this.AllYearMonth =[];
         this.groupby_accordingTo_dateNew(commonItemsbackup, NotUndefineddate);
       }
 
@@ -2796,9 +2797,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
 
   private ClearFilters() {
+    this.GetTaskUsers();
     this.setState({
-      checked: []
+      checked: [],
+      SelectGroupName:[]
     })
+   
   }
   private GetCheckedObject = (arr: any, checked: any, isCheckedValue: any) => {
     let checkObj: any = [];

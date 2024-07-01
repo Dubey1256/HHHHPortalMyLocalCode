@@ -1956,13 +1956,23 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                               </label>
                             </summary>
                             <div className="border border-top-0 p-2">
-                              {AllQuestion.map((item) => (
-                                <p
-                                  className="m-0"
-                                  dangerouslySetInnerHTML={{
-                                    __html: item?.Body,
-                                  }}
-                                ></p>
+                            {AllQuestion?.map((item) => (
+                                <details>
+                                  <summary className="alignCenter">
+                                    <label className="toggler full_width">
+                                      <span>{item?.Title}</span>
+                                    </label>
+                                  </summary>
+                                  <div className="border border-top-0 p-2">
+                                    <p
+                                      className="m-0"
+                                      dangerouslySetInnerHTML={{
+                                        __html:
+                                          item?.Body
+                                      }}
+                                    ></p>
+                                  </div>
+                                </details>
                               ))}
                             </div>
                           </details>
@@ -1978,12 +1988,23 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                             </summary>
                             <div className="border border-top-0 p-2">
 
-                              {AllHelp.map((item) => (
-                                <p className="m-0"
-                                  dangerouslySetInnerHTML={{
-                                    __html: item?.Body,
-                                  }}
-                                ></p>
+                            {AllHelp?.map((item) => (
+                                <details>
+                                  <summary className="alignCenter">
+                                    <label className="toggler full_width">
+                                      <span>{item?.Title}</span>
+                                    </label>
+                                  </summary>
+                                  <div className="border border-top-0 p-2">
+                                    <p
+                                      className="m-0"
+                                      dangerouslySetInnerHTML={{
+                                        __html:
+                                          item?.Body
+                                      }}
+                                    ></p>
+                                  </div>
+                                </details>
                               ))}
                             </div>
                           </details>
