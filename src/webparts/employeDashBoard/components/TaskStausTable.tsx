@@ -1757,7 +1757,9 @@ const TaskStatusTbl = (Tile: any) => {
                   <>
                     <div className="alignCenter empAllSec justify-content-between">
                       <span className="fw-bold">
-                        {config?.Status == "My TimSheet" && <>{`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}</>}
+                        {/* {config?.Status == "My TimSheet" && */}
+                         <>{`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}</>
+                         {/* } */}
                       </span>
                       <span className="alignCenter">
                         <span className="empCol me-1 mt-2 hreflink"><br /></span>
@@ -1823,10 +1825,7 @@ const TaskStatusTbl = (Tile: any) => {
         <span>
           {EditCompPopup && <EditProjectPopup props={CompResult} AllListId={AllListId} Call={() => { CallBack() }} />}
         </span>
-        <span>
-          {/* {IsManageConfigPopup && <ManageConfigPopup DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} props={ContextData?.propsValue} SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />} */}
-          {/* {IsManageConfigPopup && <AddConfiguration DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} props={ContextData?.propsValue} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />} */}
-
+        <span>         
           {IsManageConfigPopup && <AddEditWebpartTemplate props={ContextData?.propsValue} DashboardPage={true} DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}
         </span>
       </div>

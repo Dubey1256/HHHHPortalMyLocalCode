@@ -15,7 +15,7 @@ import { IManageWebpartTemplateProps } from './components/IManageWebpartTemplate
 export interface IManageWebpartTemplateWebPartProps {
   description: string;
   AdminConfigurationListId: string;
-  TaskUserListId: string;
+  TaskUserListID: string;
   Context: string;
   SmartMetadataListID: any
 }
@@ -37,7 +37,7 @@ export default class ManageWebpartTemplateWebPart extends BaseClientSideWebPart<
         Context: this.context,
         AdminConfigurationListId: this.properties.AdminConfigurationListId,
         SmartMetadataListID: this.properties.SmartMetadataListID,
-        TaskUserListId: this.properties.TaskUserListId,
+        TaskUserListID: this.properties.TaskUserListID,
       }
     );
 
@@ -101,8 +101,8 @@ export default class ManageWebpartTemplateWebPart extends BaseClientSideWebPart<
                 PropertyPaneTextField("AdminConfigurationListId", {
                   label: "AdminConfigurationListId"
                 }),
-                PropertyPaneTextField("TaskUserListId", {
-                  label: "TaskUserListId"
+                PropertyPaneTextField("TaskUserListID", {
+                  label: "TaskUserListID"
                 }),
                 PropertyPaneTextField('SmartMetadataListID', {
                   label: "SmartMetadataListID"

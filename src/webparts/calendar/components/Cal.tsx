@@ -21,6 +21,7 @@ import "./style.css";
 import 'core-js/es/object/values';
 import "@pnp/sp/sputilities";
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
+import * as GlobalCommon from '../../../globalComponents/globalCommon';
 moment.locale("en-GB");
 let createdBY: any,
   modofiedBy: any,
@@ -47,9 +48,16 @@ let userData: any = []
 const localizer = momentLocalizer(moment);
 const today: Date = new Date();
 const minDate: Date = today;
+let queryevent: any;
+let userEmail: any;
+let ApproveruserEmail: any;
+let backuprecurringarr: any = [];
+let leaveapproved = false;
+let leaverejected = false;
+
 const leaveTypes = [
   { key: "Sick", text: "Sick" },
-  { key: "Planned Leave", text: "Planned Leave" },
+  { key: "Planned Leave", text: "Planned" },
   { key: "Un-Planned", text: "Un-Planned" },
   { key: "Restricted Holiday", text: "Restricted Holiday" },
   { key: "LWP", text: "LWP" },
@@ -88,6 +96,7 @@ const Apps = (props: any) => {
   const [isFirstHalfDChecked, setIsFirstHalfDChecked] = React.useState(false);
   const [isSecondtHalfDChecked, setisSecondtHalfDChecked] = React.useState(false);
   const [EmailReciptents, setEmailReciptents] = React.useState([]);
+  const [ApplyEmailReciptents, setApplyEmailReciptents] = React.useState([]);
   const [inputValueName, setInputValueName] = React.useState("");
   const [inputValueReason, setInputValueReason] = React.useState("");
   const [vId, setVId] = React.useState();
@@ -119,6 +128,38 @@ const Apps = (props: any) => {
   const [details, setDetails]: any = React.useState([]);
   const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] =
     React.useState(false);
+  const [showTextarea, setShowTextarea] = useState(false);
+  const [comment, setComment] = useState("");
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [hasDeletePermission, setHasDeletePermission]: any = React.useState(false);
+  // For get query data from the querystring 
+  const queryString = window.location.search;
+  const params = new URLSearchParams(queryString);
+  const id = params.get('Id');
+
+
+  // Generic funtion to send email
+  const SendEmailMessage = (body: any, subject: any, to: any, Text: any) => {
+    let sp = spfi().using(spSPFx(props?.props?.context));
+    sp.utility
+      .sendEmail({
+        Body: body,
+        Subject: subject,
+        To: to,
+        AdditionalHeaders: {
+          "content-type": "text/html"
+        },
+      })
+      .then(() => {
+        console.log("Email Sent!");
+        alert(`${Text} Sent Successfully!`);
+      })
+      .catch((error) => {
+        console.error("Error sending email:", error);
+        alert("Error sending email. Please try again.");
+      });
+  }
+  // Generic funtion to send email is end here
   const deCodeHtmlEntities = async (string: string) => {
     const HtmlEntitiesMap = {
       "'": "&#39;",
@@ -383,7 +424,8 @@ const Apps = (props: any) => {
     if (pageInfo?.WebFullUrl) {
       let web = new Web(pageInfo.WebFullUrl);
 
-      web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').filter(`Title eq 'CalendarNotification'`).expand('Author,Editor,Recipients ,PortfolioType').get().then((result: any) => {
+      web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').expand('Author,Editor,Recipients ,PortfolioType').get().then((result: any) => {
+        //  let Notificationdata =  result?.filter((item:any)=>item?.Title == 'CalendarNotification' && item?.Title == 'ApplyLeaveNotification' )
         result?.map((data: any) => {
           data.showUsers = ""
           data.DisplayModifiedDate = moment(data.Modified).format("DD/MM/YYYY");
@@ -394,9 +436,12 @@ const Apps = (props: any) => {
           if (data.DisplayCreatedDate == "Invalid date" || "") {
             data.DisplayCreatedDate = data.DisplayCreatedDate.replaceAll("Invalid date", "");
           }
-          if (data?.Recipients?.length > 0) {
+          if (data?.Recipients?.length > 0 && data?.Title == 'CalendarNotification') {
             let copyRecipients = AllTaskUser.filter((user: any) => data.Recipients.find((data2: any) => user.AssingedToUserId == data2.Id))
             setEmailReciptents(copyRecipients)
+          } if (data?.Recipients?.length > 0 && data?.Title == 'ApplyLeaveNotification') {
+            let copyRecipients = AllTaskUser.filter((user: any) => data.Recipients.find((data2: any) => user.AssingedToUserId == data2.Id))
+            setApplyEmailReciptents(copyRecipients)
           }
         })
 
@@ -424,12 +469,15 @@ const Apps = (props: any) => {
   };
   useEffect(() => {
     getTaskUser()
+    deletePermission()
     LoadAllNotificationConfigrations()
     getEvents();
   }, []);
-  function parseRecurrence(recurrenceData: any) {
+
+  function parseRecurrence(recurrenceData: any): any[] {
     const dates: any[] = [];
-    const AllEvents: any = []
+    const AllEvents: any[] = [];
+
     try {
       parseString(recurrenceData?.RecurrenceData, (err: any, result: any) => {
         if (err || !result || !result.recurrence) {
@@ -440,52 +488,18 @@ const Apps = (props: any) => {
         const { recurrence } = result;
         const rule = recurrence?.rule?.[0];
         const firstDayOfWeek = rule?.firstDayOfWeek || 'su';
-        function resetTime(dateString: any) {
-          let date = new Date(dateString);
-          date.setHours(0, 0, 0, 0);
-          return date; // Return the date object
-        }
-        const myeventdate: any = resetTime(recurrenceData?.EventDate);
-        const startDate = new Date(myeventdate);
+        const startDate = new Date(recurrenceData?.EventDate);
         let repeatInstance = 0;
-        let windowEndDate: any;
 
-        const myeventdateitem: any = resetTime(recurrenceData?.EndDate)
-        let RecurreEndDate = new Date(myeventdateitem);
-        if (rule?.repeatForever != undefined && rule?.repeatForever[0] === 'FALSE') {
-          RecurreEndDate.setFullYear(startDate.getFullYear() + 4);
-          const formattedEndDate = RecurreEndDate.toISOString();
-          windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(formattedEndDate).setHours(0, 0, 0, 0);
-        } else if (rule?.repeatInstances && rule?.repeatInstances[0] > 0) {
+        if (rule?.repeatInstances && rule.repeatInstances[0] > 0) {
           repeatInstance = Number(rule.repeatInstances[0]);
-          const newrepeatance = repeatInstance - 1;
-          // repeatInstance -1;
-          // let myenddateOccur= endDate.setDate(startDate.getDate() + repeatInstance);
-          let myenddateOccur = RecurreEndDate.setDate(startDate.getDate() + newrepeatance);
-          windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(myenddateOccur).setHours(0, 0, 0, 0);
         }
-        else {
-          windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(recurrenceData?.EndDate).setHours(0, 0, 0, 0);
-        }
-        // if (rule?.repeatInstances && rule?.repeatInstances[0] > 0) {
-        //   repeatInstance = Number(rule.repeatInstances[0]);
-        // }
-        let useCount = false;
-        if (recurrenceData?.RecurrenceData?.includes('daily')) {
-          useCount = true;
-        }
+
+        const windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(recurrenceData?.EndDate).setHours(0, 0, 0, 0);
         let count = 0;
 
-        // Adjusting start date for daily recurrence
-        if (useCount) {
-          startDate.setDate(startDate.getDate() - 1); // Exclude the start date for daily recurrence
-        }
-        // if (windowEndDate !== undefined) {
-        //   windowEndDate = new Date(windowEndDate).setDate(new Date(windowEndDate).getDate() - 1);
-        // }
-        const repeat = repeatInstance !== 0 ? repeatInstance - 1 : repeatInstance;
-        while (dates.length < repeat || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
-          if ((repeat !== 0 ? count > repeat : new Date(dates[dates.length - 1]).setHours(0, 0, 0, 0) > windowEndDate) && useCount) {
+        while (dates.length < repeatInstance || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) <= windowEndDate) {
+          if ((repeatInstance !== 0 && count >= repeatInstance) || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) >= windowEndDate) {
             break;
           }
           count++;
@@ -493,28 +507,27 @@ const Apps = (props: any) => {
             break;
           }
         }
-        if (AllEvents?.length > 0) {
+
+        if (AllEvents.length > 0) {
           const { repeat } = rule;
           const repeatType = Object.keys(repeat[0])[0];
-          let currentDate: any = new Date(dates[0])
+          let currentDate: any = new Date(dates[0]);
           let event: any = {};
-          switch (repeatType) {
 
+          switch (repeatType) {
             case 'yearly':
               currentDate.setFullYear(currentDate.getFullYear() - 1);
-              event = eventDataForBinding(recurrenceData, currentDate)
-              AllEvents?.push(event)
+              event = eventDataForBinding(recurrenceData, currentDate);
+              AllEvents.push(event);
               dates.push(new Date(currentDate));
               break;
             case 'monthly':
               let MonthToBeIncreased = currentDate.getMonth() - 1;
-              currentDate = currentDate.setMonth(MonthToBeIncreased);
+              currentDate.setMonth(MonthToBeIncreased);
               event = eventDataForBinding(recurrenceData, currentDate);
-              AllEvents?.push(event);
+              AllEvents.push(event);
               dates.push(new Date(currentDate));
               break;
-
-
             default:
               return 'break';
           }
@@ -526,18 +539,19 @@ const Apps = (props: any) => {
 
     return AllEvents;
   }
-  function getKeyWithValueTrue(obj: { [key: string]: string }): [] | undefined {
-    let results: any = []
+
+  function getKeyWithValueTrue(obj: { [key: string]: string }): string[] | undefined {
+    const results: string[] = [];
     for (const key in obj) {
       if (obj[key] === "TRUE") {
-        results?.push(key);
+        results.push(key);
       }
     }
     return results;
   }
+
   const eventDataForBinding = (eventDetails: any, currentDate: any) => {
-    let event: any = {};
-    event = {
+    return {
       ...eventDetails,
       EndDate: new Date(currentDate).toISOString(),
       EventDate: new Date(currentDate).toISOString(),
@@ -545,53 +559,56 @@ const Apps = (props: any) => {
       start: new Date(currentDate),
       end: new Date(currentDate)
     };
-    return event;
   }
 
   function handleDailyRecurrence(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any, repeatInstance: any) {
     const dayFrequency = parseInt(frequency.dayFrequency);
-    const nextDate = new Date(currentDate);
-    nextDate.setDate(nextDate.getDate() + 1);
-    currentDate.setHours(0, 0, 0, 0);
     let count = 0;
-    let result = '';
-    if (frequency?.weekday == 'TRUE') {
-      let AllWeekDaysOfWeek = getWeekDays(nextDate)
-      AllWeekDaysOfWeek?.map((DayOfWeek: any) => {
 
-        const endDate = new Date(windowEndDate);
-        if (new Date(eventDetails?.EventDate).setHours(0, 0, 0, 0) <= new Date(DayOfWeek).setHours(0, 0, 0, 0) && new Date(DayOfWeek).setHours(0, 0, 0, 0) < endDate.setDate(endDate.getDate() + 1)) {
-          const event = eventDataForBinding(eventDetails, DayOfWeek);
-          AllEvents.push(event);
-          dates.push(new Date(DayOfWeek));
-        } else if (new Date(DayOfWeek).setHours(0, 0, 0, 0) >= new Date(windowEndDate).setHours(0, 0, 0, 0)) {
-          result = 'break';
+    if (frequency?.weekday === 'TRUE') {
+        // Function to get the next weekday date
+        const getNextWeekday = (date: Date) => {
+            const mydate:any = date;
+            let nextDate = new Date(mydate);
+            nextDate.setDate(date.getDate() + 1);
+            while (nextDate.getDay() === 0 || nextDate.getDay() === 6) { // Skip Sunday (0) and Saturday (6)
+                nextDate.setDate(nextDate.getDate() + 1);
+            }
+            return nextDate;
+        };
+
+        while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
+            currentDate = getNextWeekday(currentDate);
+            if (new Date(currentDate).setHours(0, 0, 0, 0) >= windowEndDate) break;
+
+            const event = eventDataForBinding(eventDetails, currentDate);
+            AllEvents.push(event);
+            dates.push(new Date(currentDate));
+            count++;
         }
-      })
-
     } else {
-      while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
-        currentDate.setDate(currentDate.getDate() + dayFrequency);
-        const event = eventDataForBinding(eventDetails, currentDate);
-        AllEvents.push(event);
-        dates.push(new Date(currentDate));
-        count++;
-      }
+        while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
+            currentDate.setDate(currentDate.getDate() + dayFrequency);
+            if (new Date(currentDate).setHours(0, 0, 0, 0) >= windowEndDate) break;
+
+            const event = eventDataForBinding(eventDetails, currentDate);
+            AllEvents.push(event);
+            dates.push(new Date(currentDate));
+            count++;
+        }
     }
-    return result;
-  }
+    return '';
+}
+
   function getWeekDays(today: any) {
     const currentDay = today.getDay();
     const monday = new Date(today);
     const dates = [];
-    let diff;
 
     if (currentDay >= 1 && currentDay <= 4) { // Monday to Thursday
-      diff = today.getDate() - currentDay + 1;
-      monday.setDate(monday.getDate() - (currentDay - 1));
+      monday.setDate(today.getDate() - currentDay + 1);
     } else { // Friday to Sunday
-      diff = 8 - currentDay; // Next Monday
-      monday.setDate(monday.getDate() + diff);
+      monday.setDate(today.getDate() + (8 - currentDay)); // Next Monday
     }
 
     for (let i = 0; i < 5; i++) {
@@ -601,30 +618,129 @@ const Apps = (props: any) => {
     return dates;
   }
 
+  function handleWeeklyRecurrence(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any) {
+    const { weekFrequency } = frequency;
+    const daysOfWeekIndex = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
 
-  function handleWeeklyRecurrence(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any, repeatInstance: any) {
-    let { weekFrequency } = frequency;
-    let days = getKeyWithValueTrue(frequency);
-    const daysOfWeek = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
+    // Get the days of the week that are marked as TRUE
+    const daysOfWeek = daysOfWeekIndex.filter(day => frequency[day] === "TRUE");
 
-    days?.forEach(day => {
-      const targetDayIndex = daysOfWeek.indexOf(day);
-      let daysToAdd = targetDayIndex - currentDate.getDay();
-      if (daysToAdd < 0) {
-      daysToAdd += 7;
+    while (true) {
+        let added = false;
+        for (const day of daysOfWeek) {
+            let targetDayIndex = daysOfWeekIndex.indexOf(day);
+            let daysToAdd = targetDayIndex - currentDate.getDay();
+            if (daysToAdd < 0) daysToAdd += 7;
+
+            let targetDate: any = new Date(currentDate);
+            targetDate.setDate(currentDate.getDate() + daysToAdd);
+
+            if (targetDate.setHours(0, 0, 0, 0) > windowEndDate) {
+                if (!added) {
+                    dates.push(new Date(targetDate));
+                    added = true;
+                }
+                return;
+            }
+
+            const event = eventDataForBinding(eventDetails, targetDate);
+            AllEvents.push(event);
+            dates.push(new Date(targetDate));
+        }
+
+        currentDate.setDate(currentDate.getDate() + (weekFrequency * 7));
+    }
+}
+  function handleMonthlyByDay(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any) {
+    const { monthFrequency, weekdayOfMonth } = frequency;
+    const daysOfWeekIndex = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
+    const weekMap: any = { first: 1, second: 2, third: 3, fourth: 4, last: 5 };
+
+    // Find the day of the week that is set to "TRUE"
+    let day = '';
+    for (let i = 0; i < daysOfWeekIndex.length; i++) {
+        const key = daysOfWeekIndex[i];
+        if (frequency[key] === "TRUE") {
+            day = key;
+            break;
+        }
+    }
+
+    if (!day) {
+        throw new Error("No valid day specified in frequency.");
+    }
+
+    while (true) {
+        const targetDayIndex = daysOfWeekIndex.indexOf(day);
+        const targetDate: any = getNthWeekdayOfMonth(currentDate.getFullYear(), currentDate.getMonth(), targetDayIndex, weekMap[weekdayOfMonth]);
+
+        if (targetDate.setHours(0, 0, 0, 0) > windowEndDate) {
+            // Push the last date greater than the windowEndDate
+            dates.push(new Date(targetDate));
+            break;
+        }
+
+        const event = eventDataForBinding(eventDetails, targetDate);
+        AllEvents.push(event);
+        dates.push(new Date(targetDate));
+
+        currentDate.setMonth(currentDate.getMonth() + Number(monthFrequency));
+    }
+}
+
+// Helper function to get the nth weekday of a given month
+function getNthWeekdayOfMonth(year: number, month: number, dayOfWeek: number, nth: number): Date {
+    let firstDay = new Date(year, month, 1).getDay();
+    let day = (dayOfWeek - firstDay + 7) % 7 + 1;
+    let date = day + (nth - 1) * 7;
+
+    // If nth is 'last', adjust the date to the last occurrence of the day
+    if (nth === 5) {
+        let lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+        while (date + 7 <= lastDayOfMonth) {
+            date += 7;
+        }
+    }
+
+    return new Date(year, month, date);
+}
+function handleYearlyByDay(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any) {
+  const { yearFrequency, weekdayOfMonth, month } = frequency;
+  const daysOfWeekIndex = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
+  const weekMap: any = { first: 1, second: 2, third: 3, fourth: 4, last: 5 };
+
+  // Find the day of the week that is set to "TRUE"
+  let day = '';
+  for (let i = 0; i < daysOfWeekIndex.length; i++) {
+      const key = daysOfWeekIndex[i];
+      if (frequency[key] === "TRUE") {
+          day = key;
+          break;
       }
+  }
 
-      let targetDate: any = new Date(currentDate.getTime());
-      targetDate.setDate(currentDate.getDate() + daysToAdd);
+  if (!day) {
+      throw new Error("No valid day specified in frequency.");
+  }
+
+  while (true) {
+      const targetDayIndex = daysOfWeekIndex.indexOf(day);
+      const targetDate: any = getNthWeekdayOfMonth(currentDate.getFullYear(), Number(month) - 1, targetDayIndex, weekMap[weekdayOfMonth]);
+
+      if (targetDate.setHours(0, 0, 0, 0) > windowEndDate) {
+          // Push the last date greater than the windowEndDate
+          dates.push(new Date(targetDate));
+          break;
+      }
 
       const event = eventDataForBinding(eventDetails, targetDate);
       AllEvents.push(event);
       dates.push(new Date(targetDate));
-      currentDate.setDate(currentDate.getDate() + (weekFrequency * 7));
-    });
 
-
+      currentDate.setFullYear(currentDate.getFullYear() + Number(yearFrequency));
   }
+}
+
 
   function calculateNextDate(rule: any, firstDayOfWeek: string, currentDate: any, dates: Date[], endDate?: any, AllEvents?: any, eventDetails?: any): string {
     try {
@@ -632,21 +748,15 @@ const Apps = (props: any) => {
       const repeatType = Object.keys(repeat[0])[0];
       const frequency = repeat[0][repeatType][0].$;
       let event: any = {};
+
       switch (repeatType) {
         case 'daily':
-          const { dayFrequency } = frequency;
-          const repeatInstance = rule.repeatInstances ? parseInt(rule.repeatInstances[0]) : 1000;
-          if (handleDailyRecurrence(frequency, currentDate, dates, AllEvents, eventDetails, endDate, repeatInstance) == 'break')
+          if (handleDailyRecurrence(frequency, currentDate, dates, AllEvents, eventDetails, endDate, rule.repeatInstances ? parseInt(rule.repeatInstances[0]) : 1000) === 'break') {
             return 'break';
+          }
           break;
-        case 'yearly':
-          const { yearFrequency, month, day } = frequency;
-          currentDate.setMonth(Number(month) - 1);
-          currentDate.setDate(Number(day));
-          currentDate.setFullYear(currentDate.getFullYear() + Number(yearFrequency));
-          event = eventDataForBinding(eventDetails, currentDate)
-          AllEvents?.push(event)
-          dates.push(new Date(currentDate));
+        case 'weekly':
+          handleWeeklyRecurrence(frequency, currentDate, dates, AllEvents, eventDetails, endDate);
           break;
         case 'monthly':
           let { monthFrequency, dayOfMonth } = frequency;
@@ -660,11 +770,21 @@ const Apps = (props: any) => {
           AllEvents?.push(event);
           dates.push(new Date(currentDate));
           break;
+        case 'monthlyByDay':
+          handleMonthlyByDay(frequency, currentDate, dates, AllEvents, eventDetails, endDate);
+          break;
+        case 'yearlyByDay':
+          handleYearlyByDay(frequency, currentDate, dates, AllEvents, eventDetails, endDate);
+          break;
 
-        case 'weekly':
-          // Handle weekly recurrence
-          const { weekFrequency, days } = frequency;
-          handleWeeklyRecurrence(frequency, currentDate, dates, AllEvents, eventDetails, endDate, weekFrequency);
+        case 'yearly':
+          const { yearFrequency, month, day } = frequency;
+          currentDate.setMonth(Number(month) - 1);
+          currentDate.setDate(Number(day));
+          currentDate.setFullYear(currentDate.getFullYear() + Number(yearFrequency));
+          event = eventDataForBinding(eventDetails, currentDate)
+          AllEvents?.push(event)
+          dates.push(new Date(currentDate));
           break;
         default:
           return 'break';
@@ -713,7 +833,7 @@ const Apps = (props: any) => {
     const web = new Web(props.props.siteUrl);
     const regionalSettings = await web.regionalSettings.get(); console.log(regionalSettings);
     const query =
-      "RecurrenceData,Duration,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Designation,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color,Created,Modified";
+      "RecurrenceData,Duration,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Designation,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color,Created,Modified,Approved,Rejected";
     try {
       const results = await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
@@ -777,6 +897,17 @@ const Apps = (props: any) => {
         localArr = processDataArray(filteredData);
         setChkName(localArr)
         setRecurringEvents(filteredData);
+        backuprecurringarr = filteredData;
+        if (filteredData?.length > 0 && id != null) {
+          queryevent = filteredData.find((item: any) => item?.Id == id);
+          userEmail = AllTaskUser.find((Employee: any) => (Employee?.AssingedToUserId === queryevent?.Employee?.Id))
+          ApproveruserEmail = AllTaskUser.find((item: any) => item?.AssingedToUserId == userEmail?.ApproverId[0]);
+
+          leaveapproved = queryevent?.Approved;
+          leaverejected = queryevent?.Rejected;
+          handleDateClick(queryevent)
+
+        }
       }
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -793,7 +924,7 @@ const Apps = (props: any) => {
 
   const getLocalDateTime = async (date: string | Date): Promise<string> => {
     try {
-      const web = new Web(props.props.siteUrl);
+      const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/GmBH");
       const localTime = await web.regionalSettings.timeZone.utcToLocalTime(
         date
       );
@@ -833,6 +964,7 @@ const Apps = (props: any) => {
           "Duration",
           "Category",
           "UID",
+          "Approved",
           "HalfDay",
           "HalfDayTwo",
           "Color",
@@ -901,7 +1033,6 @@ const Apps = (props: any) => {
       year: "numeric"
     });
     setDt(formattedDate);
-    // handleSelectSlot(slotinfo2);
 
     console.log("clicked", event, date);
     setShowM(event);
@@ -910,7 +1041,7 @@ const Apps = (props: any) => {
   // Handle Select Slot
   const handleSelectSlot = (slotInfo: any) => {
     let yname; // Not sure what this variable is used for, you may need to initialize it with some value or remove it if not needed
-    processPeople(yname); // Unclear what this function does and what is expected here
+    people(yname); // Unclear what this function does and what is expected here
     setLocation("");
     setType("Un-Planned");
     setPeoplePickerShow(true);
@@ -925,12 +1056,6 @@ const Apps = (props: any) => {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
-    // If you want to check if the selected date is in the past, you can uncomment this code
-    // if (date.getTime() < today.getTime()) {
-    //   alert("Cannot add event in the past");
-    // }
-    // else {
     let IsOpenAddPopup = true;
     const { start, end } = slotInfo;
     const eventsInSlot = events.filter((event: any) => event.start >= start && event.end <= end);
@@ -966,18 +1091,23 @@ const Apps = (props: any) => {
     setIsOpen(false);
   };
   // Handle
-  const handleDateClick = async (event: any) => {
+
+  async function handleDateClick(event: any) {
+    // queryevent = event;
+
+    queryevent = backuprecurringarr.find((item: any) => item?.Id == event?.Id);
+    userEmail = AllTaskUser.find((Employee: any) => (Employee?.AssingedToUserId === queryevent?.Employee?.Id))
+    ApproveruserEmail = AllTaskUser.find((item: any) => item?.AssingedToUserId == userEmail?.ApproverId[0]);
+
+    leaveapproved = queryevent?.Approved;
+    leaverejected = queryevent?.Rejected;
     console.log(event);
-    setInputValueName(event.Title);
+    setInputValueName(event?.Title);
     setshowRecurrence(false);
     setPeoplePickerShow(false);
     setShowRecurrenceSeriesInfo(false);
     setEditRecurrenceEvent(false);
-    let baseType = event.Event_x002d_Type;
-    if (baseType.startsWith("Half Day ")) {
-      baseType = baseType.replace("Half Day ", "");
-    }
-    setType(baseType);
+    setType(event?.Event_x002d_Type);
 
     if (event?.eventType === "Company Holiday" || event?.eventType === "National Holiday") {
       setIsDisableField(true);
@@ -993,7 +1123,6 @@ const Apps = (props: any) => {
       setIsChecked(event.alldayevent);
       setIsFirstHalfDChecked(event.HalfDay);
       setisSecondtHalfDChecked(event.HalfDayTwo);
-      setRecurrenceData(event.RecurrenceData);
 
       if (event.alldayevent || event.HalfDay || event.HalfDayTwo) {
         setDisableTime(true);
@@ -1019,7 +1148,7 @@ const Apps = (props: any) => {
       setSelectedTime(`${startHour}:${startMin}`);
       setEndDate(endDate);
       setSelectedTimeEnd(`${endHour}:${endMin}`);
-      // setRecurrenceData(eventItem.RecurrenceData);
+      setRecurrenceData(eventItem.RecurrenceData);
       setShowRecurrenceSeriesInfo(true);
       setEditRecurrenceEvent(true);
 
@@ -1060,11 +1189,11 @@ const Apps = (props: any) => {
 
         setSelectedTime(moment(item.start).tz("Asia/Kolkata").format("HH:mm"));
         setSelectedTimeEnd(moment(item.end).tz("Asia/Kolkata").format("HH:mm"));
-        //if (item.alldayevent && (!item.HalfDay && !item.HalfDayTwo)) {
-        //setType(item.eventType);
-        // } else if (!item.alldayevent && (item.HalfDay || item.HalfDayTwo)) {
-        //   setType('Half Day');
-        // }
+        if (item.alldayevent && (!item.HalfDay && !item.HalfDayTwo)) {
+          setType(item.eventType);
+        } else if (!item.alldayevent && (item.HalfDay || item.HalfDayTwo)) {
+          setType('Half Day');
+        }
         sedType(item.Designation);
         setInputValueReason(item.desc);
         setRecurrenceData(item.RecurrenceData);
@@ -1086,21 +1215,23 @@ const Apps = (props: any) => {
     );
     if (confirmed) {
       let web = new Web(props.props.siteUrl);
-
       await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
         .items.getById(eventids)
-        .delete()
-
+        .recycle()
         .then((i: any) => {
-          //console.log(i);
-          // void getData();
+          setIsDisabled(false);
           closem(undefined);
           closeModal();
           void getEvents();
         });
     }
   };
+
+  const deletePermission = async () => {
+    let permission = await globalCommon.verifyComponentPermission("DeleteLeavePermissionCalendar")
+    setHasDeletePermission(permission)
+  }
 
   const onRenderCustomHeader = () => {
     return (
@@ -1142,7 +1273,7 @@ const Apps = (props: any) => {
     allDay = "false";
     HalfDaye = "false";
     HalfDayT = "false";
-
+    setIsDisabled(false);
   };
   const returnRecurrenceInfo = (startDate: Date, endDate: Date, recurrenceData: string) => {
     const returnedRecurrenceInfo = {
@@ -1182,12 +1313,15 @@ const Apps = (props: any) => {
     try {
       const web = new Web(props.props.siteUrl);
 
-      const mycolors =
+
       (newEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
         ((newEvent.Event_x002d_Type === "Company Holiday") || (newEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
-
+      let mytitle = newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
+      if (newEvent != undefined && (newEvent?.type == "National Holiday" || newEvent?.type == "Company Holiday")) {
+        mytitle = newEvent.type + "-" + newEvent.title;
+      }
       const addEventItem = {
-        Title: newEvent.Title,
+        Title: mytitle,
         Description: newEvent.Description,
         EventDate: await getUtcTime(newEvent.EventDate),
         Event_x002d_Type: newEvent.Event_x002d_Type,
@@ -1197,7 +1331,7 @@ const Apps = (props: any) => {
         fAllDayEvent: newEvent.fAllDayEvent,
         fRecurrence: newEvent.fRecurrence,
         EventType: newEvent.EventType,
-        Color: mycolors,
+        // Color: mycolors,
         UID: newEvent.UID,
         HalfDay: HalfDaye,
         HalfDayTwo: HalfDayT,
@@ -1207,8 +1341,6 @@ const Apps = (props: any) => {
       };
 
       const results = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.add(addEventItem);
-
-      getEvents();
       return results;
     } catch (error) {
       return Promise.reject(error);
@@ -1218,7 +1350,7 @@ const Apps = (props: any) => {
     try {
       const web = new Web(props.props.siteUrl);
       const mytitle = `${editedEvent.name}-${editedEvent.type}-${editedEvent.title}`;
-      const mycolors =
+      const mycolors = (HalfDaye || HalfDayT) ? "#6d36c5" :
         (editedEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
           ((editedEvent.Event_x002d_Type === "Company Holiday") || (editedEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
 
@@ -1237,6 +1369,8 @@ const Apps = (props: any) => {
         HalfDay: editedEvent.HalfDay,
         HalfDayTwo: editedEvent.HalfDayTwo,
         Color: mycolors,
+        Approved: leaveapproved,
+        Rejected: leaverejected,
         RecurrenceData: editedEvent.RecurrenceData ? await deCodeHtmlEntities(editedEvent.RecurrenceData) : "",
         MasterSeriesItemID: editedEvent.MasterSeriesItemID,
         RecurrenceID: editedEvent.RecurrenceID ? editedEvent.RecurrenceID : undefined
@@ -1245,8 +1379,6 @@ const Apps = (props: any) => {
       const results = await web.lists.getById(props.props.SmalsusLeaveCalendar)
         .items.getById(eventPass.Id)
         .update(editedEventItem);
-
-      getEvents();
       return results;
     } catch (error) {
       return Promise.reject(error);
@@ -1266,18 +1398,9 @@ const Apps = (props: any) => {
       const endTime = selectedTimeEnd;
       const endDateTime = `${_endDate} ${endTime}`;
       const end = moment(endDateTime, "YYYY/MM/DD HH:mm").toLocaleString();
-      let mytitle;
-      let inputValues: any = inputValueName
-      if (inputValueName.indexOf(peopleName + "-" + type) !== -1) {
-        mytitle = inputValueName;
-      } else if (inputValues.includes(peopleName)) {
-        let inputData = inputValues.split('-')
-        mytitle = peopleName + "-" + type + "-" + inputData[inputData?.length - 1];
-      }
-      else {
-        mytitle = peopleName + "-" + type + "-" + inputValueName;
-      }
-      //let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : type === "Work From Home" ? "#e0a209" : (type === "Company Holiday" || type === "National Holiday") ? "#228B22" : "";
+
+      let mytitle = peopleName + "-" + type + "-" + inputValueName;
+      let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : type === "Work From Home" ? "#e0a209" : (type === "Company Holiday" || type === "National Holiday") ? "#228B22" : "";
 
       if (!editRecurrenceEvent) {
         const newEventData: any = {
@@ -1290,7 +1413,7 @@ const Apps = (props: any) => {
           Description: '',
           HalfDay: HalfDaye,
           HalfDayTwo: HalfDayT,
-          // Color: mycolors,
+          Color: mycolors,
           EventDate: new Date(start),
           EndDate: new Date(end),
           fAllDayEvent: allDay,
@@ -1302,9 +1425,8 @@ const Apps = (props: any) => {
       } else if (editRecurrenceEvent) {
         const editEventData: any = {
           EventType: "1",
+          EmployeeId: title_Id,
           Title: mytitle,
-          Event_x002d_Type: type,
-          Designation: dType,
           EventDate: new Date(start),
           EndDate: new Date(end),
           fRecurrence: true,
@@ -1339,30 +1461,43 @@ const Apps = (props: any) => {
     }
     return userInfoArray;
   };
-  const processPeople = async (people: any[]) => {
-    let userId: string[] = [];
-    let userTitle: string[] = [];
-    let userSuffix: string[] = [];
+  const people = async (people: any) => {
+    let userId: any = [];
+    let userTitle: any = [];
+    let userSuffix: any = [];
 
     if (people?.length > 0) {
-      let userMail: string[] = [];
-      people.forEach((item: any) => {
-        if (item?.id !== undefined) {
-          userMail.push(item.id.split("|")[2]);
+      let userMail: any = []
+      people.map((item: any) => {
+        if (item?.id != undefined) {
+          userMail?.push(item?.id.split("|")[2])
         }
-      });
+      })
       let userInfo = await getUserInfo(userMail);
       userData = userInfo
-      userInfo.forEach((item: any) => {
-        if (item?.Title !== undefined) {
-          userTitle.push(item.Title);
-          userId.push(item.Id);
+      userInfo.map((item: any) => {
+        // userId = item.Id
+        if (item?.Title != undefined) {
+          userTitle.push(item.Title)
+          userId.push(item.Id)
         }
-      });
+      })
       title_Id = userId;
       title_people = userTitle;
       setPeopleName(userTitle);
-      setPeopleId(userId);
+      setPeopleId(userId)
+    } else {
+      let userInfo = await getUserInfo(
+        props.props.context._pageContext._legacyPageContext.userPrincipalName
+      );
+      userInfo.map((item: any) => {
+        userId = item.Id
+        userTitle = item.Title
+      })
+      title_Id = userId;
+      title_people = userTitle;
+      setPeopleName(userTitle);
+      setPeopleId(title_Id)
     }
   };
 
@@ -1446,7 +1581,8 @@ const Apps = (props: any) => {
       month: 'short',
       day: 'numeric',
     });
-
+    let sendAppliedEmail = ApplyEmailReciptents?.map((user: any) => { return user?.Email })
+    sendAppliedEmail = sendAppliedEmail?.filter((user: any) => user != undefined)
     let sp = spfi().using(spSPFx(props?.props?.context));
 
     let BindHtmlBody = `<div>
@@ -1455,29 +1591,16 @@ const Apps = (props: any) => {
     I am writing to request ${daysDifference} day of leave from ${formattedstartDate} to ${formattedendDate} due to ${EventData?.title}.<br><br>
     I have ensured that my tasks are up to date and arranged coverage during my absence. Your understanding and approval would be greatly appreciated.<br><br>
     Best regards,<br>
-    ${EventData?.name}
+    ${EventData?.name} <br> <a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx?Id=${EventData?.Id}"></a>
   </div>
 </div>`;
 
-    let SendEmailMessage =
-      sp.utility
-        .sendEmail({
-          Body: BindHtmlBody,
-          Subject: "Leave Request - " + formattedstartDate + "-" + EventData?.Designation + "-" + EventData?.type + "-" + EventData?.title, // Modified subject
-          To: ["ranu.trivedi@hochhuth-consulting.de", "juli.kumari@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"],
-          AdditionalHeaders: {
-            "content-type": "text/html",
-          },
-        })
-        .then(() => {
-          console.log("Email Sent!");
-          alert("Email Sent Successfully!");
-        })
-        .catch((error) => {
-          console.error("Error sending email:", error); // Log the error
-          alert("Error sending email. Please try again."); // Alert user about the error
-        });
+    let Body = BindHtmlBody
+    let Subject = "Leave Request - " + formattedstartDate + "-" + EventData?.Designation + "-" + EventData?.type + "-" + EventData?.title
+    let To = sendAppliedEmail?.length > 0 ? sendAppliedEmail : ["anubhav.shukla@hochhuth-consulting.de"]
+    SendEmailMessage(Body, Subject, To, "Email")
   };
+
 
   // Email End 
 
@@ -1515,7 +1638,7 @@ const Apps = (props: any) => {
               start: startDate,
               end: endDate,
               reason: inputValueReason,
-              type: HalfDaye === true ? `Half Day ${type}` : HalfDayT === true ? `Half Day ${type}` : type,
+              type: HalfDaye == true ? "Half Day" : HalfDayT == true ? "Half Day" : type,
               loc: location,
               Designation: dType,
             };
@@ -1544,16 +1667,22 @@ const Apps = (props: any) => {
             };
 
             let web = new Web(props.props.siteUrl);
-
             web.lists
               .getById(props.props.SmalsusLeaveCalendar)
               .items.add(eventData)
-              .then(() => {
+              .then((response) => {
+                const newItemId = response.data.Id; // Get the ID of the newly created item
+                console.log("New item ID:", newItemId);
+                newEvent.Id = response.data.Id;
                 if (newEvent.type !== "Work From Home") {
-                  SendEmail(newEvent, eventData)
+                  SendEmail(newEvent, eventData);
                 }
                 getEvents();
               })
+              .catch((error) => {
+                console.error("Error adding item:", error);
+                alert("Error adding item. Please try again.");
+              });
           });
           closem(undefined);
           setIsChecked(false);
@@ -1590,7 +1719,6 @@ const Apps = (props: any) => {
     setInputValueReason(value);
   };
   const updateElement = async () => {
-    let normalizedNewType: string
     if (editRecurrenceEvent) {
       await saveRecurrenceEvent();
       void getEvents();
@@ -1602,60 +1730,35 @@ const Apps = (props: any) => {
       setSelectedTimeEnd(selectedTimeEnd);
       return;
     }
-    const replaceType = (input: any, newType: any, isFirstHalfDChecked: any, isSecondtHalfDChecked: any, isChecked: any) => {
-      const replacements = [
-          "Half Day Un-Planned",
-          "Half Day Planned Leave",
-          "Un-Planned",
-          "Sick",
-          "Planned Leave",
-          "Restricted Holiday",
-          "Work From Home",
-          "fulldayevent",
-          "LWP"
+
+    const updateTitle = (inputValueName: any, type: any, leaveApproveded: any, leaverejected: any) => {
+      const leaveTypes = [
+        "Un-Planned",
+        "Sick",
+        "Planned Leave",
+        "Restricted Holiday",
+        "Work From Home",
+        "Half Day",
+        "fulldayevent",
+        "LWP"
       ];
-      const normalize = (text: any) => text.toLowerCase().replace(/[-\s]+/g, '');
-  
-      let result = input;
-      let normalizedNewType = normalize(newType);
 
-      // Determine if "Half Day" should be added
-      const shouldAddHalfDay = isFirstHalfDChecked || isSecondtHalfDChecked;
-      const hasHalfDay = result.includes("Half Day");
+      const regex = new RegExp(leaveTypes.join("|"), "g");
+      let updatedTitle = inputValueName.replace(regex, type);
 
-      if ((shouldAddHalfDay && !hasHalfDay) || (shouldAddHalfDay && hasHalfDay)) {
-        newType = "Half Day " + newType;
-        normalizedNewType = normalize(newType);
+     if (leaveApproveded && !isLeaveApproved) {
+          updatedTitle += " Approved";
+      } else if (leaverejected) {
+          updatedTitle += " Rejected";
       }
-      
-      replacements.forEach(replacement => {
-          const normalizedReplacement = normalize(replacement);
-        const regex = new RegExp(replacement, 'gi');
-  
-        if (normalize(result).indexOf(normalizedReplacement) !== -1) {
-                      result = result.replace(regex, newType);
-                  }
 
-      });
-      
-      // Remove the "Half Day" prefix if neither condition is true
-      if (shouldAddHalfDay) {
-          const halfDayRegex = /Half Day\s*/gi;
-        const hyphenIndex = result.indexOf('-');
-        result = result.replace(halfDayRegex, '').trim();
-        if (hyphenIndex >= 0) {
-          result = result.slice(0, hyphenIndex + 1) + " Half Day" + result.slice(hyphenIndex + 1);
-        }
-      } else {
-        const halfDayRegex = /Half Day\s*/gi;
-        result = result.replace(halfDayRegex, '').trim();
-      }
-      
-      return result;
-  };
+
+      return updatedTitle;
+    };
+
     const web = new Web(props.props.siteUrl);
     const newEvent = {
-      title: replaceType(inputValueName, type, isFirstHalfDChecked, isSecondtHalfDChecked, isChecked),
+      title: updateTitle(inputValueName, type, leaveapproved, leaverejected),
       name: peopleName,
       start: startDate,
       end: endDate,
@@ -1676,9 +1779,11 @@ const Apps = (props: any) => {
       newEvent.loc = "";
     }
 
-    const mycolors = (newEvent.halfdayevent || newEvent.halfdayeventT) ? "#6d36c5" :
-      (newEvent.type === "Work From Home") ? "#e0a209" :
-        ((newEvent.type === "Company Holiday") || (newEvent.type === "National Holiday")) ? "#228B22" : "";
+    const mycolors = leaverejected ? "#fe2e2e" :
+      (newEvent.halfdayevent || newEvent.halfdayeventT) ? "#6d36c5" :
+        (newEvent.type === "Work From Home") ? "#e0a209" :
+          ((newEvent.type === "Company Holiday") || (newEvent.type === "National Holiday")) ? "#228B22" :
+            (leaveapproved && newEvent.type !== "Work From Home" && !newEvent.halfdayevent && !newEvent.halfdayeventT) ? "#178c1f" : "#fe2e2e";
 
     await web.lists.getById(props.props.SmalsusLeaveCalendar)
       .items.getById(eventPass.Id)
@@ -1692,6 +1797,8 @@ const Apps = (props: any) => {
         EventDate: ConvertLocalTOServerDateToSave(startDate, selectedTime) + " " + (selectedTime + "" + ":00"),
         HalfDay: newEvent.halfdayevent,
         HalfDayTwo: newEvent.halfdayeventT,
+        Approved: leaveapproved,
+        Rejected: leaverejected,
         Color: mycolors,
         fAllDayEvent: newEvent.fulldayevent
       })
@@ -1703,34 +1810,15 @@ const Apps = (props: any) => {
       });
   };
 
+
   const emailComp = () => {
     const currentDate = new Date();
-    let currentDayEvents: any = [];
-
+    const currentDayEvents: any = [];
     chkName.map((item: any) => {
       if (item.start.setHours(0, 0, 0, 0) <= currentDate.setHours(0, 0, 0, 0) && currentDate.setHours(0, 0, 0, 0) <= item.end.setHours(0, 0, 0, 0)) {
         currentDayEvents.push(item);
       }
     });
-
-    if (currentDayEvents?.length > 0) {
-      currentDayEvents = currentDayEvents.reduce(function (
-        previous: any,
-        current: any
-      ) {
-        var alredyExists =
-          previous.filter(function (item: any) {
-            return item.Name === current.Name && item.end.getTime() <= currentDate.getTime();
-          }).length > 0;
-        if (!alredyExists) {
-          previous.push(current);
-        }
-        return previous;
-      },
-        []);
-    }
-
-    console.log(currentDayEvents);
     setTodayEvent(currentDayEvents);
     setEmail(true);
   };
@@ -1738,8 +1826,6 @@ const Apps = (props: any) => {
   const emailCallback = React.useCallback(() => {
     getEvents();
   }, []);
-
-
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const checked = event.target.checked;
@@ -1755,7 +1841,6 @@ const Apps = (props: any) => {
       allDay = true;
       HalfDaye = false;
       HalfDayT = false;
-      // setType(type.replace(/^Half Day\s*/, ""));
       setIsFirstHalfDChecked(false);
       setisSecondtHalfDChecked(false);
     } else {
@@ -1780,8 +1865,8 @@ const Apps = (props: any) => {
       allDay = false;
       HalfDayT = false;
       HalfDaye = true;
-      setisSecondtHalfDChecked(false);
-      // setType(`Half Day ${type}`);
+      setisSecondtHalfDChecked(false)
+      setType('Half Day')
       setIsChecked(false);
     } else {
       maxD = new Date(8640000000000000);
@@ -1790,9 +1875,8 @@ const Apps = (props: any) => {
       console.log("HalfDay", HalfDaye);
     }
   };
-  
   const handleHalfDayCheckboxChangeSecond = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const checked = event.target.checked;
+    const checked = event.target.checked
     setisSecondtHalfDChecked(checked);
     if (checked) {
       startTime = "10:00";
@@ -1805,23 +1889,16 @@ const Apps = (props: any) => {
       allDay = false;
       HalfDaye = false;
       HalfDayT = true;
-      setIsFirstHalfDChecked(false);
+      setIsFirstHalfDChecked(false)
+      setType('Half Day')
       setIsChecked(false);
-      //setType(`Half Day ${type}`);
     } else {
       maxD = new Date(8640000000000000);
       setDisableTime(false);
       HalfDayT = false;
       console.log("HalfDayTwo", HalfDayT);
     }
-  };
-  
-
-  const handleInputChangeLocation = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setLocation((event.target as HTMLInputElement).value);
-  };
+  }
   const HandledLeaveType = (option: any) => {
     if (option == "Company Holiday" || option == "National Holiday") {
       setIsChecked(true);
@@ -1837,11 +1914,113 @@ const Apps = (props: any) => {
     }
     setType(option)
   }
-
-
   const openModal = () => {
     setIsOpen(true);
   };
+
+  // Leave approve and Reject Functionality implemention 
+
+  const sendLeaveNotification = async (type: any) => {
+    const mention_To = [userEmail?.Email];
+    const employeeName = queryevent?.Employee?.Title;
+    const context = props?.props?.context;
+    const allListId = props?.props;
+
+    // Extracted function for date formatting
+    const formatDate = (date: any) => {
+      return date.toLocaleDateString('en-GB', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    };
+
+    const startDate = new Date(queryevent?.start);
+    const endDate = new Date(queryevent?.end);
+    const eventDate = formatDate(startDate);
+    const eventEndDate = formatDate(endDate);
+
+    let subject, txtComment;
+    if (type === "approve") {
+      subject = "Leave Request approved";
+      txtComment = `
+        <div>
+          <p>Hi ${employeeName},</p><br>
+          <p>Your applied leave for ${eventDate} to ${eventEndDate} has been approved.</p><br>
+          <p>Regards,<br>Manager</p>
+        </div>
+      `;
+    } else if (type === "reject") {
+      const comment = "Reason for rejection"; // Replace with actual comment source
+      subject = "Leave Request rejected";
+      txtComment = `
+        <div>
+          <p>Hi ${employeeName},</p><br>
+          <p>Your applied leave for ${eventDate} to ${eventEndDate} has been rejected due to ${comment}.</p><br>
+          <p>Regards,<br>Manager</p>
+        </div>
+      `;
+    }
+
+    try {
+      // Send notification via MS Teams
+      await GlobalCommon.SendTeamMessage(mention_To, txtComment, context, allListId);
+      console.log("MS Teams Notification sent");
+
+      // Send notification via Email
+      const To = [userEmail?.Email, ApproveruserEmail?.Email, "deepak@hochhuth-consulting.de", "ranu.trivedi@hochhuth-consulting.de", "juli.kumari@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"];
+      const emailSubject = subject;
+      SendEmailMessage(txtComment, emailSubject, To, "Notification");
+
+      // Update logic based on approval or rejection
+      if (type === "approve") {
+        console.log("Your leave is approved");
+        leaveapproved = true;
+        updateElement(); // Assuming this function handles updating the UI or data
+      } else if (type === "reject") {
+        leaverejected = true;
+        updateElement();
+        console.log("Your leave is rejected");
+      }
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      // Handle error appropriately, possibly notify admin or retry mechanism
+    }
+  };
+
+
+  const LeaveApprove = async () => {
+    await sendLeaveNotification("approve");
+  };
+
+  const LeaveReject = async () => {
+    await sendLeaveNotification("reject");
+  };
+
+
+  const handleReject = () => {
+    setShowTextarea(true);
+    setIsDisabled(true); // Disable both buttons when reject is clicked
+  };
+
+  const handleSubmitReject = () => {
+    LeaveReject();
+    setShowTextarea(false); // Optionally hide textarea after submission
+    setIsDisabled(true); // Disable both buttons after submission
+  };
+
+  const handleApprove = () => {
+    LeaveApprove();
+    setIsDisabled(true); // Disable both buttons after approval
+  };
+
+  const allowedUserIds = [242, 36, 234, 192];
+  const userId = props?.props?.context?.pageContext?.legacyPageContext?.userId;
+  const isAllowedUser = allowedUserIds.indexOf(userId) !== -1;
+
+  const result = isAllowedUser && !disabl && (!leaveapproved || !leaverejected);
+  const isLeaveApproved = inputValueName.indexOf("Approved") >= 0;
   return (
 
     <div>
@@ -1924,7 +2103,6 @@ const Apps = (props: any) => {
                 return (
                   <tr>
                     <td>{item.title}</td>
-
                     <td>{moment(item.end).format("DD/MM/YYYY")}</td>
                     <td>
                       <a href="#" onClick={() => handleDateClick(item)}>
@@ -1962,7 +2140,7 @@ const Apps = (props: any) => {
                 personSelectionLimit={10}
                 titleText="Select People"
                 resolveDelay={1000}
-                onChange={processPeople}
+                onChange={people}
                 showtooltip={true}
                 required={true}
                 disabled={IsDisableField}
@@ -1989,13 +2167,10 @@ const Apps = (props: any) => {
                 hidden={showRecurrenceSeriesInfo}
                 disabled={IsDisableField}
               />
-
             </div>
           )}
-
           {showRecurrenceSeriesInfo != true && (
             <div className="col-md-6">
-
               <DatePicker
                 label="End Date"
                 value={endDate}
@@ -2006,7 +2181,6 @@ const Apps = (props: any) => {
               />
             </div>
           )}
-
           <div>
             <label className="SpfxCheckRadio alignCenter">
               <input
@@ -2042,45 +2216,41 @@ const Apps = (props: any) => {
                   disabled={IsDisableField}
                 /> Second HalfDay
               </label>
-
-
             </div>
           </div>
-          {
-            <div>
-              {showRecurrence && (
-                <div
-                  className="bdr-radius"
-                  style={{
-                    display: "inline-block",
-                    verticalAlign: "top",
-                    width: "200px"
-                  }}
-                >
-                  <Toggle
-                    className="rounded-pill"
-                    defaultChecked={false}
-                    checked={showRecurrenceSeriesInfo}
-                    inlineLabel
-                    label="Recurrence ?"
-                    onChange={handleRecurrenceCheck}
-                    disabled={IsDisableField}
-                  />
-                </div>
-              )}
-              {showRecurrenceSeriesInfo && (
-                <EventRecurrenceInfo
-                  context={props.props.context}
-                  display={true}
-                  recurrenceData={recurrenceData}
-                  startDate={startDate}
-                  siteUrl={props.props.siteUrl}
-                  returnRecurrenceData={returnRecurrenceInfo} selectedKey={undefined} selectedRecurrenceRule={undefined}
-                ></EventRecurrenceInfo>
-              )}
-            </div>
+          {<div>
+            {showRecurrence && (
+              <div
+                className="bdr-radius"
+                style={{
+                  display: "inline-block",
+                  verticalAlign: "top",
+                  width: "200px"
+                }}
+              >
+                <Toggle
+                  className="rounded-pill"
+                  defaultChecked={false}
+                  checked={showRecurrenceSeriesInfo}
+                  inlineLabel
+                  label="Recurrence ?"
+                  onChange={handleRecurrenceCheck}
+                  disabled={IsDisableField}
+                />
+              </div>
+            )}
+            {showRecurrenceSeriesInfo && (
+              <EventRecurrenceInfo
+                context={props.props.context}
+                display={true}
+                recurrenceData={recurrenceData}
+                startDate={startDate}
+                siteUrl={props.props.siteUrl}
+                returnRecurrenceData={returnRecurrenceInfo} selectedKey={undefined} selectedRecurrenceRule={undefined}
+              ></EventRecurrenceInfo>
+            )}
+          </div>
           }
-
           <Dropdown
             label="Leave Type"
             options={leaveTypes}
@@ -2089,8 +2259,6 @@ const Apps = (props: any) => {
             required
             errorMessage={type ? "" : "Please select a leave type"}
           />
-
-
           <Dropdown
             label="Team"
             options={Designation}
@@ -2106,12 +2274,28 @@ const Apps = (props: any) => {
               readOnly={IsDisableField}
             />
           </div>
+          {result &&
+            <div className="container mt-4">
+              <div className="row">
+                <div className="col">
+                  <button type="button" className="btn btn-success me-2" onClick={handleApprove} disabled={isDisabled}>Approve</button>
+                  <button type="button" className="btn btn-danger" onClick={handleSubmitReject} disabled={isDisabled}>Reject </button>
+                </div>
+              </div>
+              {showTextarea && (
+                <div className="row mt-3">
+                  <div className="col">
+                    <textarea className="form-control" placeholder="Enter reason for rejection" value={comment} onChange={(e) => setComment(e.target.value)}></textarea>
+                    <button type="button" className="btn btn-primary mt-2" onClick={handleSubmitReject}>
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          }
         </form>
-
         <br />
-
-
-
         {!disabl ? (
           <footer>
             <div className="align-items-center d-flex justify-content-between">
@@ -2123,10 +2307,12 @@ const Apps = (props: any) => {
                   Last Modified {MDate} {MTime} by {modofiedBy}
                 </div>
                 <div>
+                {hasDeletePermission && (
                   <a href="#" onClick={() => deleteElement(vId)}>
                     <span className="svg__iconbox svg__icon--trash"></span>{" "}
                     Delete this Item
                   </a>
+                )}
                   <VersionHistoryPopup
                     taskId={vId}
                     listId={props.props.SmalsusLeaveCalendar}

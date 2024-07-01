@@ -103,11 +103,6 @@ const DashboardConfiguration = (props: any) => {
                                 {" "}
                                 <span className="svg__iconbox svg__icon--editBox" onClick={(e) => EditDashboard(row?.original)} ></span>
                             </a>
-
-                            <a data-bs-toggle="tooltip" data-bs-placement="auto" title={'Edit ' + `${row.original.Title}`}  >
-                                {" "}
-                                <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditConfig(row?.original)} ></span>
-                            </a>
                         </div>
                     </>
                 ),
@@ -118,24 +113,6 @@ const DashboardConfiguration = (props: any) => {
                 size: 25,
                 isColumnVisible: true,
             },
-            // {
-            //     cell: ({ row }) => (
-            //         <>
-            //             <div className='text-end'>
-            //                 <a data-bs-toggle="tooltip" data-bs-placement="auto" title={'Edit ' + `${row.original.Title}`}  >
-            //                     {" "}
-            //                     <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditConfig(row?.original)} ></span>
-            //                 </a>
-            //             </div>
-            //         </>
-            //     ),
-            //     id: "row?.original.Id",
-            //     canSort: false,
-            //     placeholder: "",
-            //     header: "",
-            //     size: 25,
-            //     isColumnVisible: true,
-            // },
         ],
         [WebpartConfig]
     );
@@ -174,7 +151,8 @@ const DashboardConfiguration = (props: any) => {
                         <GlobalCommanTable columnSettingIcon={true} tableId="DashboardConfigID" AllListId={AllListId} hideOpenNewTableIcon={true} hideTeamIcon={true} showHeader={true} portfolioColor={'#000066'} columns={columns} data={WebpartConfig} callBackData={callBackData} />
                     )}
                 </div>
-                {IsOpenPopup && <AddConfiguration props={props?.props} EditItem={EditItem} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseConfigPopup} />}
+                {/* {IsOpenPopup && <AddConfiguration props={props?.props} EditItem={EditItem} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseConfigPopup} />} */}
+                {IsOpenPopup && <EditConfiguration props={props?.props} EditItem={EditItem} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseConfigPopup} />}
                 {IsOpenEditDashboardPopup && <EditConfiguration props={props?.props} EditItem={EditItem} IsOpenPopup={IsOpenEditDashboardPopup} CloseConfigPopup={CloseEditConfiguration} />}
             </div>
 

@@ -69,7 +69,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private AllUsers: any = [];
     private getDatesInfo() {
         let datesInfo: any = [];
-        let currentDate = moment();
+        let currentDate:any = moment();
         let workingActionTest: any = [];
         let startdate: any;
         try {
@@ -133,7 +133,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         let CustomUserDate: any = []
         if (workingAction !== undefined) {
             customDateStore = workingAction.filter((pickupCustomDate: any) => {
-                let useDate:any  = moment(pickupCustomDate.WorkingDate, 'DD/MM/YYYY')
+                let useDate:any = moment(pickupCustomDate.WorkingDate, 'DD/MM/YYYY')
                 let workingActionDate = new Date(useDate);
                 return workingActionDate > pickupLastDate;
             });
@@ -576,19 +576,44 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
 
         }
         else {
-            let userExistsWorkingDates = this.state.datesInfo.some((item: any) =>
-            item?.userInformation.some((user: any) =>
-                user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id
-            )
-        );
-            if (!userExistsWorkingDates) {
-        this.state.taskUsers.forEach(function (child: any) {
-            if (child.ID == $data.UserGroupId) {
-                if (!self.isItemExists(child.childs, $data.Id))
-                    child.childs.push($data);
-            }
+            if (dragItem.userType == "Assigned User") {
+                this.state.datesInfo.map((item: any) => {
+                    item?.userInformation.map((user: any, index: any) => {
+                        if (user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id) {
+                            item?.userInformation.splice(index, 1)
+                        }
+                    })
                 })
-            }   
+            }
+            let userExistsWorkingDates = this.state.datesInfo.some((item: any) =>
+                item?.userInformation.some((user: any) =>
+                    user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id
+                )
+            );
+            let userExistsTeamMembers = this.state.TeamMemberUsers.some((user: any) => {
+                if (user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+            let userExistsLeads = this.state.ResponsibleTeam.some((user: any) => {
+                if (user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+
+
+            if (userExistsWorkingDates != true && userExistsLeads != true && userExistsTeamMembers != true ) {
+                this.state.taskUsers.forEach(function (child: any) {
+                    if (child.ID == $data.UserGroupId) {
+                        if (!self.isItemExists(child.childs, $data.Id))
+                            child.childs.push($data);
+                    }
+                })
+            }
         }
         this.dropSuccessHandler(true, '');
     }
@@ -847,33 +872,69 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
 
                                 <div className='col-sm-3'>
                                     <h6 className='mb-1'>Working Members</h6>
-                                    <div className="col">
-                                        <div className="d-flex  working-box" style={{ padding: "8px 0px 7px 0px" }} >
-                                            <div className='flex-wrap' data-placeholder="Working Members">
-                                                {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
-                                                    {
-                                                        return image?.Item_x0020_Cover != undefined && image?.AssingedToUser != undefined ? (<img
-                                                            draggable onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
-                                                            onDragOver={(e) => e.preventDefault()}
-                                                        className="ProirityAssignedUserPhoto"
-                                                            src={image.userImage != null ? image.userImage : image?.Item_x0020_Cover?.Url}
-                                                        title={image.Title}
-                                                        />) : (
-                                                            <span
+                                    {(this.props?.ItemInfo?.Item_x0020_Type !== "Project" && this.props?.ItemInfo?.Item_x0020_Type !== "Sprint") ?
+                                        <div className="col"
+                                        >
+                                            <div className="d-flex  working-box" style={{ padding: "8px 0px 7px 0px" }} >
+                                                <div className='flex-wrap' data-placeholder="Working Members">
+                                                    {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
+                                                        {
+                                                            return image?.Item_x0020_Cover != undefined && image?.AssingedToUser != undefined ? (<img
                                                                 draggable onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
                                                                 onDragOver={(e) => e.preventDefault()}
-                                                                title={image.Title} className='suffix_Usericon showSuffixIcon'>{image.Suffix}</span>
-                                                        )
+                                                                className="ProirityAssignedUserPhoto"
+                                                                src={image.userImage != null ? image.userImage : image?.Item_x0020_Cover?.Url}
+                                                                title={image.Title}
+                                                            />) : (
+                                                                <span
+                                                                    draggable onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
+                                                                    onDragOver={(e) => e.preventDefault()}
+                                                                    title={image.Title} className='suffix_Usericon showSuffixIcon'>{image.Suffix}</span>
+                                                            )
+                                                        }
+
+
+                                                    })
                                                     }
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                        :
+                                        <div className="col"
+                                        onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers, 'Assigned User')}
+                                        onDragOver={(e) => e.preventDefault()}
+                                        >
+                                            <div className="d-flex  working-box" style={{ padding: "8px 0px 7px 0px" }} >
+                                                <div className='flex-wrap' data-placeholder="Working Members">
+                                                    {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
+                                                        {
+                                                            return image?.Item_x0020_Cover != undefined && image?.AssingedToUser != undefined ? (<img
+                                                                draggable onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
+                                                                onDragOver={(e) => e.preventDefault()}
+                                                                className="ProirityAssignedUserPhoto"
+                                                                src={image.userImage != null ? image.userImage : image?.Item_x0020_Cover?.Url}
+                                                                title={image.Title}
+                                                            />) : (
+                                                                <span
+                                                                    draggable onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
+                                                                    onDragOver={(e) => e.preventDefault()}
+                                                                    title={image.Title} className='suffix_Usericon showSuffixIcon'>{image.Suffix}</span>
+                                                            )
+                                                        }
 
 
-                                                })
-                                                }
+                                                    })
+                                                    }
+                                                </div>
+
                                             </div>
 
                                         </div>
 
-                                    </div>
+                                    }
+
                                 </div>
                                 <div className="col-sm-2">
                                     <div className="dustbin bg-siteColor" onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
@@ -882,56 +943,59 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     </div>
 
                                 </div>
-                                
-                            
+
+
                             </div>
                             {/* Coment test end */}
                             {/* Working days */}
-                            <div className='mt-3'>
-                                <h6> Working Days</h6>
-                                <div className="team w-75">
-                                    {
-                                        this.state.datesInfo != null && this.state.datesInfo.length > 0 && this.state.datesInfo.map((date: any) => {
-                                            return (
-                                                <div className="width20 top-assign pe-1" onDragOver={(e) => e.preventDefault()} onDrop={(e) => this.onDropWorkingDays(e, date, this.state.taskUsers, 'UserWorkingDays')}> <label className="BdrBtm mb-0">{date.displayDate}</label>
-                                                    <div className='border p-1 w-100' style={{ minHeight: '34.6px' }}>
-                                                    {date?.userInformation?.length > 0 && date?.userInformation?.map((userInfo: any, index: any) =>
-                                                        <span className='me-1'>
-                                                                {userInfo?.Item_x0020_Cover != undefined && userInfo?.AssingedToUser != undefined ?
-                                                            <img
-                                                                className="ProirityAssignedUserPhoto"
-                                                                src={userInfo?.Item_x0020_Cover?.Url}
-                                                                // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
-                                                                title={userInfo?.Title}
-                                                                draggable
-                                                                onDragStart={(e) => this.dragStart(e, index, userInfo, 'UserWorkingDays')}
-                                                                onDragOver={(e) => e.preventDefault()} />
-                                                                    : <span draggable onDragStart={(e) => this.dragStart(e, index, userInfo, 'UserWorkingDays')}
-                                                                        onDragOver={(e) => e.preventDefault()}
-                                                                        title={userInfo.Title} className='suffix_Usericon showSuffixIcon'>{userInfo.Suffix}</span>}
-                                                        </span>
-                                                    )
+                            {(this?.props?.ItemInfo?.Item_x0020_Type != "Project" && this?.props?.ItemInfo?.Item_x0020_Type != "Sprint") &&
+                                <div className='mt-3'>
+                                    <h6> Working Days</h6>
+                                    <div className="team w-75">
+                                        {
+                                            this.state.datesInfo != null && this.state.datesInfo.length > 0 && this.state.datesInfo.map((date: any) => {
+                                                return (
+                                                    <div className="width20 top-assign pe-1" onDragOver={(e) => e.preventDefault()} onDrop={(e) => this.onDropWorkingDays(e, date, this.state.taskUsers, 'UserWorkingDays')}> <label className="BdrBtm mb-0">{date.displayDate}</label>
+                                                        <div className='border p-1 w-100' style={{ minHeight: '34.6px' }}>
+                                                            {date?.userInformation?.length > 0 && date?.userInformation?.map((userInfo: any, index: any) =>
+                                                                <span className='me-1'>
+                                                                    {userInfo?.Item_x0020_Cover != undefined && userInfo?.AssingedToUser != undefined ?
+                                                                        <img
+                                                                            className="ProirityAssignedUserPhoto"
+                                                                            src={userInfo?.Item_x0020_Cover?.Url}
+                                                                            // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
+                                                                            title={userInfo?.Title}
+                                                                            draggable
+                                                                            onDragStart={(e) => this.dragStart(e, index, userInfo, 'UserWorkingDays')}
+                                                                            onDragOver={(e) => e.preventDefault()} />
+                                                                        : <span draggable onDragStart={(e) => this.dragStart(e, index, userInfo, 'UserWorkingDays')}
+                                                                            onDragOver={(e) => e.preventDefault()}
+                                                                            title={userInfo.Title} className='suffix_Usericon showSuffixIcon'>{userInfo.Suffix}</span>}
+                                                                </span>
+                                                            )
 
-                                                    }</div>
-                                                </div>
+                                                            }</div>
+                                                    </div>
 
+                                                )
+                                            }
                                             )
                                         }
-                                        )
-                                    }
 
-                                    <div className="width20 top-assign pe-1">
-                                        <label className="BdrBtm mb-0">Select Date</label>
-                                        <div className="input-group" >   
-                                            <input type="date" id="start"  className="full-width"  name="trip-start" value={this.state.pickerDate} min={this.state.startDate}
-                                             onChange={(e) => this.pickupCustomDate(e.target.value)}     
-                                            />
+                                        <div className="width20 top-assign pe-1">
+                                            <label className="BdrBtm mb-0">Select Date</label>
+                                            <div className="input-group" >
+                                                <input type="date" id="start" className="full-width" name="trip-start" value={this.state.pickerDate} min={this.state.startDate}
+                                                    onChange={(e) => this.pickupCustomDate(e.target.value)}
+                                                />
+                                            </div>
                                         </div>
+
+
                                     </div>
-
-
                                 </div>
-                            </div>
+                            }
+
                         </div>
                         : null}
 

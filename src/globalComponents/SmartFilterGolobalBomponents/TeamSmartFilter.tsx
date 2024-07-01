@@ -25,7 +25,9 @@ import "react-popper-tooltip/dist/styles.css";
 import TeamSmartFavoritesCopy from './Smart Favrorites/TeamSmartFavoritesCopy';
 import { GlobalConstants } from '../LocalCommon';
 import { myContextValue } from '../globalCommon';
+import * as Moment from "moment";
 import ServiceComponentPortfolioPopup from '../EditTaskPopup/ServiceComponentPortfolioPopup';
+import SmartfilterSettingTypePanel from './SmartfilterSettingTypePanel';
 
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
@@ -78,6 +80,7 @@ const TeamSmartFilter = (item: any) => {
     const [isDateExpendShow, setIsDateExpendShow] = React.useState(false);
     const [isEveryOneShow, setIsEveryOneShow] = React.useState(false);
     const [isOnlyMeShow, setIsOnlyMeShow] = React.useState(false);
+    const [isActionsExpendShow, setIsActionsExpendShow] = React.useState(false);
 
     const [collapseAll, setcollapseAll] = React.useState(true);
     const [iconIndex, setIconIndex] = React.useState(0);
@@ -104,6 +107,8 @@ const TeamSmartFilter = (item: any) => {
     const [isCreatedDateSelected, setIsCreatedDateSelected] = React.useState(false);
     const [isModifiedDateSelected, setIsModifiedDateSelected] = React.useState(false);
     const [isDueDateSelected, setIsDueDateSelected] = React.useState(false);
+    const [isWorkingDate, setIsWorkingDate] = React.useState(false);
+    const [changeInDatePicker, setChangeDatePicker] = React.useState(false)
     // const [preSet, setPreSet] = React.useState(false);
     //*******************************************************Date Section End********************************************************************/
 
@@ -115,7 +120,9 @@ const TeamSmartFilter = (item: any) => {
     const [isTeamMember, setIsTeamMember] = React.useState(false);
     const [isTodaysTask, setIsTodaysTask] = React.useState(false);
     const [isSelectAll, setIsSelectAll] = React.useState(false);
-    // const [isWorkingThisWeek, setIsWorkingThisWeek] = React.useState(false);
+    const [isPhone, setIsPhone] = React.useState(false);
+    const [isBottleneck, setIsBottleneck] = React.useState(false);
+    const [isAttention, setIsAttention] = React.useState(false);
     //*******************************************************Teams Section End********************************************************************/
 
     //*******************************************************Key Word Section********************************************************************/
@@ -126,10 +133,7 @@ const TeamSmartFilter = (item: any) => {
     //*************************************************** Portfolio Items & Task Items selected ***************************************************************** */
     const [isPortfolioItems, setIsPortfolioItems] = React.useState(true);
     const [isTaskItems, setIsTaskItems] = React.useState(true);
-    const [controlledVisible, setControlledVisible] = React.useState(false);
-    const [feedbackArray, setfeedbackArray] = React.useState([]);
-    const [showHoverTitle, setshowHoverTitle] = React.useState<any>();
-    const [action, setAction] = React.useState("");
+    const [smartFilterTypePannel, setSmartFilterTypePannel] = React.useState(false)
     //*************************************************** Portfolio Items & Task Items End ***************************************************************** */
     const [selectedFilterPanelIsOpen, setSelectedFilterPanelIsOpen] = React.useState(false);
     const [selectedFilterPanelIsOpenUpdate, setSelectedFilterPanelIsOpenUpdate] = React.useState(false);
@@ -313,6 +317,10 @@ const TeamSmartFilter = (item: any) => {
             setIsTeamLead((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isTeamLead);
             setIsTeamMember((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isTeamMember);
             setIsTodaysTask((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isTodaysTask);
+            setIsPhone((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isPhone);
+            setIsBottleneck((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isBottleneck);
+            setIsAttention((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isAttention);
+            setIsWorkingDate((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isWorkingDate);
             setSelectedFilter((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.selectedFilter);
             setIsCreatedDateSelected((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isCreatedDateSelected);
             setIsModifiedDateSelected((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isModifiedDateSelected);
@@ -714,7 +722,7 @@ const TeamSmartFilter = (item: any) => {
         setprojectCountInfo(projectCount)
         setclientCategoryCountInfo(clientCategoryCount)
         setteamMembersCountInfo(teamMembersCount)
-        setdateCountInfo(dateCount)
+        setdateCountInfo(dateCount);
     })
     React.useEffect(() => {
         headerCountData()
@@ -773,7 +781,7 @@ const TeamSmartFilter = (item: any) => {
                 filterGroups[index].selectAllChecked = childrenLength === checked?.length;
             }
             // ///end///
-            handleTeamsFilterCreatedModifiAssign(event);
+            // handleTeamsFilterCreatedModifiAssign(event);
             setTaskUsersData(filterGroups);
             rerender();
 
@@ -793,26 +801,26 @@ const TeamSmartFilter = (item: any) => {
         rerender()
         headerCountData();
     }
-    const handleTeamsFilterCreatedModifiAssign = (event: any) => {
-        if (
-            !isCreatedBy &&
-            !isModifiedby &&
-            !isAssignedto
-        ) {
-            switch (event) {
-                case "FilterTeamMembers":
-                    setIsCreatedBy(true);
-                    setIsModifiedby(true);
-                    setIsAssignedto(true);
-                    break;
-                default:
-                    setIsCreatedBy(false);
-                    setIsModifiedby(false);
-                    setIsAssignedto(false);
-                    break;
-            }
-        }
-    };
+    // const handleTeamsFilterCreatedModifiAssign = (event: any) => {
+    //     if (
+    //         !isCreatedBy &&
+    //         !isModifiedby &&
+    //         !isAssignedto
+    //     ) {
+    //         switch (event) {
+    //             case "FilterTeamMembers":
+    //                 setIsCreatedBy(true);
+    //                 setIsModifiedby(true);
+    //                 setIsAssignedto(true);
+    //                 break;
+    //             default:
+    //                 setIsCreatedBy(false);
+    //                 setIsModifiedby(false);
+    //                 setIsAssignedto(false);
+    //                 break;
+    //         }
+    //     }
+    // };
     const handleSelectAllChangeTeamSection = () => {
         setIsSelectAll(!isSelectAll);
         setIsCreatedBy(!isSelectAll);
@@ -1128,6 +1136,57 @@ const TeamSmartFilter = (item: any) => {
     const updatedCheckTeamMembers = (data: any, teamMembers: any) => {
         try {
             if (teamMembers.length === 0) {
+                if (isWorkingDate === true) {
+                    try {
+                        if (data?.WorkingAction) {
+                            const workingActionValue = JSON.parse(data?.WorkingAction);
+                            const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
+                            if (workingDetails?.InformationData) {
+                                const isWithinDateRange = (date: any) => {
+                                    let startDates = startDate.setHours(0, 0, 0, 0);
+                                    let endDates = endDate.setHours(0, 0, 0, 0);
+                                    const workingDate = new Date(Moment(date, 'DD/MM/YYYY').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (z)')).setHours(0, 0, 0, 0)
+                                    return workingDate >= startDates && workingDate <= endDates;
+                                };
+                                const result = workingDetails?.InformationData?.some((infoData: any) =>
+                                    isWithinDateRange(infoData?.WorkingDate) && infoData?.WorkingMember?.length > 0
+                                );
+                                if (result) {
+                                    return true;
+                                }
+                            }
+                        }
+                    } catch (error) {
+                        console.error("An error occurred:", error);
+                    }
+                }
+                if (isPhone === true) {
+                    if (data?.workingDetailsPhone?.InformationData?.length > 0) {
+                        const result = data?.workingDetailsPhone?.InformationData?.length > 0 ? true : false
+                        if (result) {
+                            return true
+                        }
+                    }
+                }
+                if (isBottleneck === true) {
+                    if (data?.workingDetailsBottleneck?.InformationData?.length > 0) {
+                        const result = data?.workingDetailsBottleneck?.InformationData?.length > 0 ? true : false
+                        if (result) {
+                            return true
+                        }
+                    }
+                }
+                if (isAttention === true) {
+                    if (data?.workingDetailsAttention?.InformationData?.length > 0) {
+                        const result = data?.workingDetailsAttention?.InformationData?.length > 0 ? true : false
+                        if (result) {
+                            return true
+                        }
+                    }
+                }
+                if (isWorkingDate === true || isAttention === true || isBottleneck === true || isPhone === true) {
+                    return false
+                }
                 return true;
             }
             if (isCreatedBy === true) {
@@ -1144,15 +1203,14 @@ const TeamSmartFilter = (item: any) => {
                     return true;
                 }
             }
-            if (isAssignedto === true && isTodaysTask === false) {
-                if (data?.AssignedTo.length > 0) {
+            if (isAssignedto === true) {
+                if (data?.AssignedTo?.length > 0) {
                     // let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
                     let result = data?.AssignedTo?.some((elem0: any) => teamMembers.some((filter: any) => filter?.Id === elem0?.Id));
                     if (result === true) {
                         return true;
                     }
                 }
-
             }
             if (isTeamLead === true) {
                 if (data?.ResponsibleTeam.length > 0) {
@@ -1173,16 +1231,59 @@ const TeamSmartFilter = (item: any) => {
                     }
                 }
             }
-            if (isTodaysTask === true && isAssignedto === true || isTodaysTask === true && isAssignedto === false) {
-                if (data?.IsTodaysTask === true) {
-                    // let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ') && data?.IsTodaysTask === true));
-                    let result = data?.AssignedTo?.some((elem2: any) => teamMembers.some((filter: any) => filter?.Id === elem2?.Id && data?.IsTodaysTask === true));
+            if (isWorkingDate === true) {
+                try {
+                    if (data?.WorkingAction) {
+                        const workingActionValue = JSON.parse(data?.WorkingAction);
+                        const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
+                        if (workingDetails) {
+                            const isWithinDateRange = (date: any) => {
+                                let startDates = startDate.setHours(0, 0, 0, 0);
+                                let endDates = endDate.setHours(0, 0, 0, 0);
+                                const workingDate = new Date(Moment(date, 'DD/MM/YYYY').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (z)')).setHours(0, 0, 0, 0)
+                                return workingDate >= startDates && workingDate <= endDates;
+                            };
+                            const result = workingDetails?.InformationData?.some((infoData: any) =>
+                                infoData?.WorkingMember?.some((workingMember: any) =>
+                                    teamMembers?.some((teamMember: any) =>
+                                        isWithinDateRange(infoData?.WorkingDate) && teamMember?.Id === workingMember?.Id
+                                    )
+                                )
+                            );
+                            if (result) {
+                                return true;
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error("An error occurred:", error);
+                }
+            }
+            if (isPhone === true) {
+                if (data?.workingDetailsPhone?.InformationData?.length > 0) {
+                    let result = data?.workingDetailsPhone?.InformationData?.some((elem0: any) => teamMembers?.some((filter: any) => filter?.Id === elem0?.TaggedUsers?.AssingedToUserId));
                     if (result === true) {
                         return true;
                     }
                 }
             }
-            if (isCreatedBy === false && isModifiedby === false && isAssignedto === false && isTeamMember === false && isTeamLead === false && isTodaysTask === false) {
+            if (isBottleneck === true) {
+                if (data?.workingDetailsBottleneck?.InformationData?.length > 0) {
+                    let result = data?.workingDetailsBottleneck?.InformationData?.some((elem0: any) => teamMembers?.some((filter: any) => filter?.Id === elem0?.TaggedUsers?.AssingedToUserId));
+                    if (result === true) {
+                        return true;
+                    }
+                }
+            }
+            if (isAttention === true) {
+                if (data?.workingDetailsAttention?.InformationData?.length > 0) {
+                    let result = data?.workingDetailsAttention?.InformationData?.some((elem0: any) => teamMembers?.some((filter: any) => filter?.Id === elem0?.TaggedUsers?.AssingedToUserId));
+                    if (result === true) {
+                        return true;
+                    }
+                }
+            }
+            if (isCreatedBy === false && isModifiedby === false && isAssignedto === false && isTeamMember === false && isTeamLead === false && isWorkingDate === false && isPhone === false && isBottleneck === false && isAttention === false) {
                 let result = data?.TeamLeaderUser?.some((elem3: any) => teamMembers.some((filter: any) => filter?.Id === elem3?.Id));
                 if (result === true) {
                     return true;
@@ -1193,7 +1294,6 @@ const TeamSmartFilter = (item: any) => {
             return false;
         }
     };
-
     const updatedCheckTaskType = (data: any, type: any) => {
         try {
             if (type?.length === 0) {
@@ -1317,6 +1417,7 @@ const TeamSmartFilter = (item: any) => {
             setIsCreatedDateSelected(false)
             setIsModifiedDateSelected(false)
             setIsDueDateSelected(false)
+            setIsWorkingDate(false)
             GetfilterGroups();
             setUpdatedSmartFilter(false);
             setFinalArray([]);
@@ -1324,6 +1425,9 @@ const TeamSmartFilter = (item: any) => {
             setIsTeamLead(false);
             setIsTeamMember(false);
             setIsTodaysTask(false);
+            setIsPhone(false)
+            setIsBottleneck(false)
+            setIsAttention(false)
             setcollapseAll(true);
             setIconIndex(0)
             setIsSitesExpendShow(false);
@@ -1332,6 +1436,7 @@ const TeamSmartFilter = (item: any) => {
             setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
+            setIsActionsExpendShow(false)
             setIsDateExpendShow(false);
             setIsSmartfilter(false);
             item?.setSmartFabBasedColumnsSetting([]);
@@ -1347,6 +1452,7 @@ const TeamSmartFilter = (item: any) => {
             setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
+            setIsActionsExpendShow(false);
             setIsDateExpendShow(false);
             setIsSmartfilter(false);
             // setItemsQueryBasedCall(false);
@@ -1396,6 +1502,10 @@ const TeamSmartFilter = (item: any) => {
                 isModifiedDateSelected: isModifiedDateSelected,
                 isDueDateSelected: isDueDateSelected,
                 TaskUsersData: TaskUsersData,
+                isPhone: isPhone,
+                isBottleneck: isBottleneck,
+                isAttention: isAttention,
+                isWorkingDate: isWorkingDate,
                 smartFabBasedColumnsSetting: MyContextdata?.allContextValueData?.smartFabBasedColumnsSetting ? MyContextdata?.allContextValueData?.smartFabBasedColumnsSetting : {},
             }
             smartFiltercallBackData(Favorite);
@@ -1457,7 +1567,15 @@ const TeamSmartFilter = (item: any) => {
                 setIsTeamMembersExpendShow(true)
 
             }
+        }
+        if (value == "isActionsExpendShow") {
+            if (isActionsExpendShow == true) {
+                setIsActionsExpendShow(false)
 
+            } else {
+                setIsActionsExpendShow(true)
+
+            }
         }
         if (value == "isDateExpendShow") {
             if (isDateExpendShow == true) {
@@ -1490,6 +1608,7 @@ const TeamSmartFilter = (item: any) => {
             setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
+            setIsActionsExpendShow(false)
             setIsDateExpendShow(false);
             setIsSmartfilter(false);
         } else if (iconIndex == 1) {
@@ -1500,6 +1619,7 @@ const TeamSmartFilter = (item: any) => {
             setIsKeywordsExpendShow(true)
             setIscategoriesAndStatusExpendShow(true);
             setIsTeamMembersExpendShow(true);
+            setIsActionsExpendShow(true)
             setIsDateExpendShow(true);
             setIsSmartfilter(true);
         } else if (iconIndex == 2) {
@@ -1510,6 +1630,7 @@ const TeamSmartFilter = (item: any) => {
             setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
+            setIsActionsExpendShow(false)
             setIsDateExpendShow(false);
             setIsSmartfilter(false);
 
@@ -1521,6 +1642,7 @@ const TeamSmartFilter = (item: any) => {
             setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
+            setIsActionsExpendShow(true)
             setIsDateExpendShow(false);
             setIsSmartfilter(false);
         }
@@ -1693,36 +1815,69 @@ const TeamSmartFilter = (item: any) => {
                     setEndDate(new Date(storedDataEndDate));
                 }
                 break;
+            case "custom":
+                if (changeInDatePicker != true) {
+                    setStartDate(null);
+                    setEndDate(null);
+                }
+                break;
             default:
                 setStartDate(null);
                 setEndDate(null);
                 break;
         }
     }, [selectedFilter]);
+    const selectingStartDate = (date: any) => {
+        setStartDate(date)
+        const currentDate: any = new Date();
+        if (currentDate.getDate() != date.getDate() && endDate.getDate() != date.getDate()) {
+            setChangeDatePicker(true)
+            setSelectedFilter("custom")
+        }
+        else if (currentDate.getDate() == date.getDate() && endDate.getDate() == date.getDate()) {
+            setSelectedFilter("today")
+        }
+        else if (currentDate.getDate() - 1 == date.getDate() && endDate.getDate() == date.getDate()) {
+            setSelectedFilter("yesterday")
+        }
+    }
+    const selectingEndDate = (date: any) => {
+        setEndDate(date);
+        const currentDate: any = new Date();
+        if (currentDate.getDate() != date.getDate() && startDate.getDate() != date.getDate()) {
+            setChangeDatePicker(true)
+            setSelectedFilter("custom")
+        }
+        else if (currentDate.getDate() == date.getDate() && startDate.getDate() == date.getDate()) {
+            setSelectedFilter("today")
+        }
+        else if (currentDate.getDate() - 1 == date.getDate() && startDate.getDate() == date.getDate()) {
+            setSelectedFilter("yesterday")
+        }
 
+    }
     const handleDateFilterChange = (event: any) => {
         setSelectedFilter(event.target.value);
-        // setPreSet(false);
-        // rerender();
-        if (
-            !isCreatedDateSelected &&
-            !isModifiedDateSelected &&
-            !isDueDateSelected
-        ) {
-            switch (event.target.value) {
-                case "today": case "yesterday": case "thisweek": case "last7days":
-                case "thismonth": case "last30days": case "last3months": case "thisyear": case "lastyear": case "Pre-set":
-                    setIsCreatedDateSelected(true);
-                    setIsModifiedDateSelected(true);
-                    setIsDueDateSelected(true);
-                    break;
-                default:
-                    setIsCreatedDateSelected(false);
-                    setIsModifiedDateSelected(false);
-                    setIsDueDateSelected(false);
-                    break;
-            }
-        }
+        setChangeDatePicker(false)
+        // if (
+        //     !isCreatedDateSelected &&
+        //     !isModifiedDateSelected &&
+        //     !isDueDateSelected
+        // ) {
+        //     switch (event.target.value) {
+        //         case "today": case "yesterday": case "thisweek": case "last7days":
+        //         case "thismonth": case "last30days": case "last3months": case "thisyear": case "lastyear": case "Pre-set":
+        //             setIsCreatedDateSelected(true);
+        //             setIsModifiedDateSelected(true);
+        //             setIsDueDateSelected(true);
+        //             break;
+        //         default:
+        //             setIsCreatedDateSelected(false);
+        //             setIsModifiedDateSelected(false);
+        //             setIsDueDateSelected(false);
+        //             break;
+        //     }
+        // }
     };
 
     const clearDateFilters = () => {
@@ -1732,6 +1887,7 @@ const TeamSmartFilter = (item: any) => {
         setIsCreatedDateSelected(false);
         setIsModifiedDateSelected(false);
         setIsDueDateSelected(false);
+        setIsWorkingDate(false)
     };
 
     const ExampleCustomInput = React.forwardRef(({ value, onClick }: any, ref: any) => (
@@ -1840,7 +1996,10 @@ const TeamSmartFilter = (item: any) => {
         if (preSetEndDate != undefined) {
             setEndDate(preSetEndDate);
         }
-        setSelectedFilter("Pre-set");
+        if (preSetStartDate != undefined || preSetEndDate != undefined) {
+            setSelectedFilter("Pre-set");
+        }
+
         setPreSetPanelIsOpen(false)
     }, []);
     const handleSwitchToggle = () => {
@@ -1897,14 +2056,6 @@ const TeamSmartFilter = (item: any) => {
     React.useEffect(() => {
         checkBoxColor();
     }, [iscategoriesAndStatusExpendShow, isClientCategory]);
-
-    const { getArrowProps, getTooltipProps, setTooltipRef, setTriggerRef, visible, } = usePopperTooltip({ trigger: null, interactive: true, closeOnOutsideClick: false, placement: "auto", visible: controlledVisible, onVisibleChange: setControlledVisible, });
-    const handlAction = (newAction: any) => {
-        if (action === "click" && newAction === "hover") return;
-        setAction(newAction); setControlledVisible(true);
-    };
-    const handleMouseLeave = () => { if (action === "click") return; setAction(""); setControlledVisible(!controlledVisible); };
-    const handleCloseClick = () => { setAction(""); setControlledVisible(!controlledVisible); };
     const selectAllFromAbove = (selectedItem: any, event: any) => {
         let allSmartOptions = JSON.parse(JSON.stringify(filterGroupsData));
         allSmartOptions?.map((MainGroup: any, index: any) => {
@@ -2079,37 +2230,6 @@ const TeamSmartFilter = (item: any) => {
 
 
     ///////////////////////////////+++++++++++++++++++++ team User Selection + ///////////////////////////////////////////////////
-    const handleUserClick = (user: any) => {
-        let found = false;
-        for (let i = 0; i < selectedUsers.length; i++) { if (selectedUsers[i].Id === user.Id) { found = true; break; } }
-        if (!found) {
-            setSelectedUsers([...selectedUsers, user]);
-        } else {
-            const updatedUsers = selectedUsers?.filter((selectedUser: any) => selectedUser.Id !== user.Id);
-            setSelectedUsers(updatedUsers);
-        }
-    };
-    const handleGroupClick = (group: any) => {
-        const groupUsers: any = group.values;
-        let allSelected = true;
-        for (let i = 0; i < groupUsers.length; i++) {
-            let userFound = false;
-            for (let j = 0; j < selectedUsers.length; j++) {
-                if (selectedUsers[j].Id === groupUsers[i].Id) {
-                    userFound = true;
-                    break;
-                }
-            } if (!userFound) { allSelected = false; break; }
-        }
-        if (allSelected) {
-            const updatedUsers = selectedUsers?.filter((user: any) => !groupUsers.some((groupUser: any) => groupUser.Id === user.Id));
-            setSelectedUsers(updatedUsers);
-        } else {
-            const updatedUsers = [...selectedUsers, ...groupUsers?.filter((user: any) => !selectedUsers.some((selectedUser: any) => selectedUser.Id === user.Id))];
-            setSelectedUsers(updatedUsers);
-        }
-    };
-
     const handleTeamMemberClick = async (user: any, groupIndex: number) => {
         const isChecked = !user.checked;
         const eventId = "FilterTeamMembers";
@@ -2128,19 +2248,15 @@ const TeamSmartFilter = (item: any) => {
         await onCheck(checkedIds, groupIndex, eventId);
         setTaskUsersData(updatedTaskUsersData);
     }
-
-
-
+    const isGroupChecked = (MainGroup: any, Group: any) => {
+        const mainGroupChecked = MainGroup?.checked ?? []; const groupChildren = Group?.children ?? [];
+        const filteredChecked = mainGroupChecked?.filter((checkedItem: any) => groupChildren?.some((child: any) => child.Id == checkedItem && child?.ParentID !== "0"));
+        let val = false; let countk = 0;
+        groupChildren.forEach((el: any, index: any) => { let found: any = filteredChecked?.map((e: any) => { return e == el.Id ? true : false }); if (found) { countk = countk + 1; } }); if (countk === filteredChecked.length) { val = true; } return val == true ? true : false;
+    };
     ///////////////////////////////+++++++++++++++++++++ team User Selection end + ///////////////////////////////////////////////////
     return (
         <>
-            {/* {isSmartFevShowHide === true && <div className='row text-end' >
-                <a onClick={() => OpenSmartfavorites('goToSmartFilter')}>All Filters</a>
-            </div>} */}
-            {/* {isSmartFevShowHide === false && <div className='row text-end' >
-                <a onClick={() => OpenSmartfavorites('goToSmartFavorites')}>Add Smart Favorite</a>
-            </div>} */}
-            {/* <a className="mx-3" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a> */}
             {item?.webPartTemplateSmartFilter != true && <div className='justify-content-end d-flex'>
                 {isSmartFevShowHide === true && <div>
                     <a className='hreflink' onClick={() => OpenSmartfavorites('goToSmartFilter')}>Go to Smart Filter</a>
@@ -2163,66 +2279,13 @@ const TeamSmartFilter = (item: any) => {
                                     </div>
                                     <div className='alignCenter col-sm-4'>
                                         <div className='ml-auto alignCenter'>
-                                            {item?.webPartTemplateSmartFilter != true && <>
-                                                <div className="svg__iconbox svg__icon--setting hreflink me-2" style={{ backgroundColor: `${portfolioColor}` }} ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()}></div>
-                                                {action === "click" && visible && (
-                                                    <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container m-0 p-0" })}>
-                                                        {/* <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button> */}
-                                                        <div className='d-flex settingTooltip'>
-                                                            {filterGroupsData != null && filterGroupsData.length > 0 &&
-                                                                filterGroupsData?.map((MainGroup: any, index: any) => {
-                                                                    if (MainGroup?.Title == "Type") {
-                                                                        return (
-                                                                            <>
-                                                                                {MainGroup?.values?.map((Group: any) => {
-                                                                                    return (
-                                                                                        <div className='dataSec'>
-                                                                                            <div className="alignCenter dataSecParentSec">
-                                                                                                <input className={"form-check-input cursor-pointer mt-0"}
-                                                                                                    style={Group?.values?.length === MainGroup?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
-                                                                                                    type="checkbox"
-                                                                                                    checked={MainGroup?.checked?.some((datachecked: any) => datachecked == Group?.Id && Group.selectAllChecked === true) || Group.children?.every((child: any) => MainGroup?.checked.includes(child.Id)) ? true : false}
-                                                                                                    onChange={(e: any) => selectAllFromAbove(Group, e.target.checked)}
-                                                                                                    ref={(input) => {
-                                                                                                        if (input) {
-                                                                                                            const isIndeterminate = !(MainGroup?.checked?.some((datachecked: any) => datachecked == Group?.Id)) && !Group.children?.every((child: any) => MainGroup?.checked.includes(child.Id));
-                                                                                                            input.indeterminate = isIndeterminate;
-                                                                                                            if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
-                                                                                                        }
-                                                                                                    }}
-                                                                                                />
-                                                                                                <div className="fw-semibold ms-8 f-16 text-dark">{Group.Title}</div>
-                                                                                            </div>
-                                                                                            <div className='dataSecChild'>
-                                                                                                {Group?.values?.sort((a: any, b: any) => a.SortOrder - b.SortOrder)?.map((insideCheckBox: any) => {
-                                                                                                    return (
-                                                                                                        <label className='alignCenter f-16 dataSecChildSec'>
-                                                                                                            <input type="checkbox" className={"form-check-input cursor-pointer mt-0"} checked={MainGroup?.checked?.some((datachecked: any) => datachecked == insideCheckBox?.Id)} onChange={() => selectChild(insideCheckBox)} />
-                                                                                                            <div className='ms-8'>{insideCheckBox?.Title}</div>
-                                                                                                        </label>
-                                                                                                    )
-                                                                                                })}
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    )
-                                                                                })}
-                                                                            </>
-                                                                        )
-                                                                    }
-                                                                })
-                                                            }
-                                                            <div className='crossSec text-end'><span onClick={handleCloseClick} className='svg__iconbox svg__icon--cross ml-auto hreflink dark'></span></div>
-                                                        </div>
-                                                        <div {...getArrowProps({ className: "tooltip-arrow" })} />
-                                                    </div>
-                                                )}
-                                                <span style={{ color: `${portfolioColor}` }} className='me-1'>Flat View</span>
-                                                <label className="switch me-2" htmlFor="checkbox">
-                                                    <input checked={flatView} onChange={handleSwitchToggle} type="checkbox" id="checkbox" />
-                                                    {flatView === true ? <div className="slider round" title='Switch to Groupby View' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div title='Switch to Flat-View' className="slider round"></div>}
-                                                </label>
-                                                <div className="ml-auto" ><a className="hreflink" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a></div>
-                                            </>}
+                                            <a className="hreflink" onClick={() => setSmartFilterTypePannel(true)}><div className="svg__iconbox svg__icon--setting hreflink me-2"></div></a>
+                                            <span style={{ color: `${portfolioColor}` }} className='me-1'>Flat View</span>
+                                            <label className="switch me-2" htmlFor="checkbox">
+                                                <input checked={flatView} onChange={handleSwitchToggle} type="checkbox" id="checkbox" />
+                                                {flatView === true ? <div className="slider round" title='Switch to Groupby View' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div title='Switch to Flat-View' className="slider round"></div>}
+                                            </label>
+                                            <div className="ml-auto" ><a className="hreflink" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a></div>
                                             <div className="ms-1">
                                                 <Tooltip ComponentId={1651} />
                                             </div>
@@ -2589,6 +2652,40 @@ const TeamSmartFilter = (item: any) => {
                         </div>
                     </section> : ''}
 
+
+                    {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
+                        <div className="px-2">
+                            <div className="togglebox">
+                                <label className="toggler full_width active">
+                                    <span className='full_width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isActionsExpendShow")}>
+                                        <div className='alignCenter'>
+                                            {isActionsExpendShow === true ?
+                                                <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
+                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Actions</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{(isPhone || isBottleneck || isAttention) ? `Working Action: (${(isPhone && isBottleneck && isAttention) ? "All" : [isPhone ? "Phone" : "", isBottleneck ? "Bottleneck" : "", isAttention ? "Attention" : ""].filter(Boolean).join(', ')})` : ""}</div>
+                                        </div>
+
+                                    </span>
+                                </label>
+                                {isActionsExpendShow === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
+                                    <Col className='mb-2 '>
+                                        <div>
+                                            <label className='me-3'>
+                                                <input className='form-check-input' type="checkbox" value="isPhone" checked={isPhone} onChange={() => setIsPhone(!isPhone)} /> Phone
+                                            </label>
+                                            <label className='me-3'>
+                                                <input className='form-check-input' type="checkbox" value="isBottleneck" checked={isBottleneck} onChange={() => setIsBottleneck(!isBottleneck)} /> Bottleneck
+                                            </label>
+                                            <label className='me-3'>
+                                                <input className='form-check-input' type="checkbox" value="isAttention" checked={isAttention} onChange={() => setIsAttention(!isAttention)} /> Attention
+                                            </label>
+                                        </div>
+                                    </Col>
+                                </div> : ""}
+                            </div>
+                        </div >
+                    </section> : ''}
+
+
                     {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
                         <div className="px-2">
                             <div className="togglebox">
@@ -2622,73 +2719,7 @@ const TeamSmartFilter = (item: any) => {
                                         <label className='me-3'>
                                             <input className='form-check-input' type="checkbox" value="isTeamMember" checked={isTeamMember} onChange={() => setIsTeamMember(!isTeamMember)} /> Team Member
                                         </label>
-                                        <label className='me-3'>
-                                            <input className='form-check-input' type="checkbox" value="isTodaysTask" checked={isTodaysTask} onChange={() => setIsTodaysTask(!isTodaysTask)} /> Working Today
-                                        </label>
                                     </Col>
-                                    {/* <div className="col-sm-12 pad0">
-                                        <div className="togglecontent mt-1">
-                                            <table width="100%" className="indicator_search">
-                                                <tr className=''>
-                                                    <td valign="top" className='parentFilterSec w-100'>
-                                                        {TaskUsersData != null && TaskUsersData.length > 0 &&
-                                                            TaskUsersData?.map((Group: any, index: any) => {
-                                                                return (
-                                                                    <div className='filterContentSec'>
-                                                                        <fieldset className='smartFilterStyle'>
-                                                                            <legend className='SmartFilterHead'>
-                                                                                <span className="mparent d-flex pb-1" style={{ borderBottom: "1.5px solid #BDBDBD", color: portfolioColor }}>
-                                                                                    <input className={"form-check-input cursor-pointer"}
-                                                                                        style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
-                                                                                        type="checkbox"
-                                                                                        checked={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
-                                                                                        onChange={(e) => handleSelectAll(index, e.target.checked, "FilterTeamMembers")}
-                                                                                        ref={(input) => {
-                                                                                            if (input) {
-                                                                                                const isIndeterminate = Group?.checked?.length > 0 && Group?.checked?.length !== Group?.values?.length;
-                                                                                                input.indeterminate = isIndeterminate;
-                                                                                                if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
-                                                                                            }
-                                                                                        }}
-                                                                                    />
-                                                                                    <div className="fw-semibold fw-medium mx-1 text-dark">{Group.Title}</div>
-                                                                                </span>
-                                                                            </legend>
-                                                                            <div className="custom-checkbox-tree">
-                                                                                <CheckboxTree
-                                                                                    nodes={Group.values}
-                                                                                    checked={Group.checked}
-                                                                                    expanded={expanded}
-                                                                                    onCheck={checked => onCheck(checked, index, 'FilterTeamMembers')}
-                                                                                    onExpand={expanded => setExpanded(expanded)}
-                                                                                    nativeCheckboxes={false}
-                                                                                    showNodeIcon={false}
-                                                                                    checkModel={'all'}
-                                                                                    icons={{
-                                                                                        check: (<div dangerouslySetInnerHTML={{ __html: checkIcons }} />),
-                                                                                        uncheck: (<div dangerouslySetInnerHTML={{ __html: checkBoxIcon }} />),
-                                                                                        halfCheck: (<div dangerouslySetInnerHTML={{ __html: halfCheckBoxIcons }} />),
-                                                                                        // expandOpen: <SlArrowDown style={{ color: `${portfolioColor}` }} />,
-                                                                                        // expandClose: <SlArrowRight style={{ color: `${portfolioColor}` }} />,
-                                                                                        expandOpen: <SlArrowDown style={{ color: `#999999` }} />,
-                                                                                        expandClose: <SlArrowRight style={{ color: `#999999` }} />,
-                                                                                        parentClose: null,
-                                                                                        parentOpen: null,
-                                                                                        leaf: null,
-                                                                                    }}
-                                                                                />
-                                                                            </div>
-                                                                        </fieldset>
-                                                                    </div>
-                                                                )
-                                                            })
-                                                        }
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </div> */}
-
                                     <div className="col-sm-12 pad0">
                                         <div className="togglecontent mt-1">
                                             <table width="100%" className="indicator_search">
@@ -2725,10 +2756,10 @@ const TeamSmartFilter = (item: any) => {
                                                                                         return (
                                                                                             <>
                                                                                                 {
-                                                                                                    user?.Item_x0020_Cover != undefined && user?.Item_x0020_Cover?.Url != undefined && user?.AssingedToUser != undefined ? <div key={user.Id} style={{ marginRight: "4px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "3px solid var(--SiteBlue)" : "3px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)}>
+                                                                                                    user?.Item_x0020_Cover != undefined && user?.Item_x0020_Cover?.Url != undefined && user?.AssingedToUser != undefined ? <div key={user.Id} style={{ marginRight: "2px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "3px solid var(--SiteBlue)" : "3px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)}>
                                                                                                         <img src={user?.Item_x0020_Cover?.Url} title={user.Title} alt={user.Title} style={{ width: "24px", height: "24px", borderRadius: "50%" }} />
                                                                                                     </div> :
-                                                                                                        <div key={user.Id} style={{ marginRight: "4px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "3px solid var(--SiteBlue)" : "3px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)} >
+                                                                                                        <div key={user.Id} style={{ marginRight: "2px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "3px solid var(--SiteBlue)" : "3px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)} >
                                                                                                             <span title={user.Title} className='suffix_Usericon showSuffixIcon'>{user.Suffix}</span>
                                                                                                         </div>
                                                                                                 }
@@ -2780,6 +2811,10 @@ const TeamSmartFilter = (item: any) => {
                                             <label className="me-3">
                                                 <input className="form-check-input" type="checkbox" value="isDueDate" checked={isDueDateSelected} onChange={() => setIsDueDateSelected(!isDueDateSelected)} />{" "}
                                                 Due Date
+                                            </label>
+                                            <label className="me-3">
+                                                <input className="form-check-input" type="checkbox" value="isWorkingDate" checked={isWorkingDate} onChange={() => setIsWorkingDate(!isWorkingDate)} />{" "}
+                                                Working Date
                                             </label>
                                         </Col>
                                         <Col className='my-2'>
@@ -2836,7 +2871,7 @@ const TeamSmartFilter = (item: any) => {
                                                 <div className="col-2 dateformate ps-0" style={{ width: "160px" }}>
                                                     <div className="input-group">
                                                         <label className='mb-1 form-label full-width'>Start Date</label>
-                                                        <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                                                        <DatePicker selected={startDate} onChange={(date) => selectingStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                                                             className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
                                                             maxDate={endDate}
                                                             renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
@@ -2853,7 +2888,7 @@ const TeamSmartFilter = (item: any) => {
                                                 <div className="col-2 dateformate" style={{ width: "160px" }}>
                                                     <div className="input-group">
                                                         <label className='mb-1 form-label full-width'>End Date</label>
-                                                        <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                                                        <DatePicker selected={endDate} onChange={(date) => selectingEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                                                             className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
                                                             minDate={startDate}
                                                             renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
@@ -2986,6 +3021,10 @@ const TeamSmartFilter = (item: any) => {
                 isTeamLead={isTeamLead}
                 isTeamMember={isTeamMember}
                 isTodaysTask={isTodaysTask}
+                isPhone={isPhone}
+                isBottleneck={isBottleneck}
+                isAttention={isAttention}
+                isWorkingDate={isWorkingDate}
                 selectedFilter={selectedFilter}
                 isCreatedDateSelected={isCreatedDateSelected}
                 isModifiedDateSelected={isModifiedDateSelected}
@@ -3003,6 +3042,7 @@ const TeamSmartFilter = (item: any) => {
                 ContextValue={ContextValue}
                 AllUsers={AllUsers}
             />}
+            {smartFilterTypePannel && <SmartfilterSettingTypePanel isGroupChecked={isGroupChecked} isOpen={smartFilterTypePannel} filterGroupsData={filterGroupsData} portfolioColor={portfolioColor} selectAllFromAbove={selectAllFromAbove} selectChild={selectChild} setSmartFilterTypePannel={setSmartFilterTypePannel} />}
         </>
     )
 }
