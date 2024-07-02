@@ -1574,32 +1574,38 @@ const EditTaskPopup = (Items: any) => {
 
                 if (selectedData?.Title == "UX-New") {
                     let firstIndexData: any = []
-                    const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
-                    if (RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length > 0) {
-                        console.log(EditData)
-                        firstIndexData = RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
-                        let imageData = RestructureData?.BasicImageInfo != null ? JSON.parse(RestructureData?.BasicImageInfo) : []
-                        RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
-                        let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
-
-                        let designTemplates: any = [firstIndexData, {
-                            setTitle: "SET1",
-                            setImagesInfo: imageData?.length > 0 ? imageData : [],
-                            TemplatesArray: setDataFeedback
-                        }]
-                        RestructureData.FeedBackBackup[0].FeedBackDescriptions = designTemplates
-                        let updatedItem: any = {
-                            ...EditDataBackup,
-                            FeedBackBackup: RestructureData.FeedBackBackup,
-                            FeedBackArray: designTemplates,
-                            FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
-                        };
-                        setEditData(updatedItem);
-                        updateFeedbackArray[0].FeedBackDescriptions = designTemplates
-                        EditDataBackup = updatedItem;
+                    if (EditDataBackup?.Categories?.includes('UX-New')) {
+                        setDesignNewTemplates(true)
                     }
+               else{
+                const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
+                if (RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length > 0) {
+                    console.log(EditData)
+                    firstIndexData = RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
+                    let imageData = RestructureData?.BasicImageInfo != null ? JSON.parse(RestructureData?.BasicImageInfo) : []
+                    RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
+                    let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
 
-                    setDesignNewTemplates(true)
+                    let designTemplates: any = [firstIndexData, {
+                        setTitle: "SET1",
+                        setImagesInfo: imageData?.length > 0 ? imageData : [],
+                        TemplatesArray: setDataFeedback
+                    }]
+                    RestructureData.FeedBackBackup[0].FeedBackDescriptions = designTemplates
+                    let updatedItem: any = {
+                        ...EditDataBackup,
+                        FeedBackBackup: RestructureData.FeedBackBackup,
+                        FeedBackArray: designTemplates,
+                        FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
+                    };
+                    setEditData(updatedItem);
+                    updateFeedbackArray[0].FeedBackDescriptions = designTemplates
+                    EditDataBackup = updatedItem;
+                }
+
+                setDesignNewTemplates(true)
+               }
+                  
                 }
             })
             BackupTaskCategoriesData = TempArray;
@@ -1616,32 +1622,37 @@ const EditTaskPopup = (Items: any) => {
 
                 if (existingData?.Title == "UX-New") {
                     let firstIndexData: any = []
-                    const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
-                    if (RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length > 0) {
-                        console.log(EditData)
-                        firstIndexData = RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
-                        let imageData = RestructureData?.BasicImageInfo != null ? JSON.parse(RestructureData?.BasicImageInfo) : []
-                        RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
-                        let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
-
-                        let designTemplates: any = [firstIndexData, {
-                            setTitle: "SET1",
-                            setImagesInfo: imageData?.length > 0 ? imageData : [],
-                            TemplatesArray: setDataFeedback
-                        }]
-                        RestructureData.FeedBackBackup[0].FeedBackDescriptions = designTemplates
-                        let updatedItem: any = {
-                            ...EditDataBackup,
-                            FeedBackBackup: RestructureData.FeedBackBackup,
-                            FeedBackArray: designTemplates,
-                            FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
-                        };
-                        setEditData(updatedItem);
-                        updateFeedbackArray[0].FeedBackDescriptions = designTemplates
-                        EditDataBackup = updatedItem;
+                    if (EditDataBackup?.Categories?.includes('UX-New')) {
+                        setDesignNewTemplates(true)
+                    }else{
+                        const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
+                        if (RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length > 0) {
+                            console.log(EditData)
+                            firstIndexData = RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
+                            let imageData = RestructureData?.BasicImageInfo != null ? JSON.parse(RestructureData?.BasicImageInfo) : []
+                            RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
+                            let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
+    
+                            let designTemplates: any = [firstIndexData, {
+                                setTitle: "SET1",
+                                setImagesInfo: imageData?.length > 0 ? imageData : [],
+                                TemplatesArray: setDataFeedback
+                            }]
+                            RestructureData.FeedBackBackup[0].FeedBackDescriptions = designTemplates
+                            let updatedItem: any = {
+                                ...EditDataBackup,
+                                FeedBackBackup: RestructureData.FeedBackBackup,
+                                FeedBackArray: designTemplates,
+                                FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
+                            };
+                            setEditData(updatedItem);
+                            updateFeedbackArray[0].FeedBackDescriptions = designTemplates
+                            EditDataBackup = updatedItem;
+                        }
+    
+                        setDesignNewTemplates(true)
                     }
-
-                    setDesignNewTemplates(true)
+                    
                 }
             });
         }
