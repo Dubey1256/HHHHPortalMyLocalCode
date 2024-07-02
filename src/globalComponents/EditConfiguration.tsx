@@ -1,10 +1,9 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Dropdown, Panel, PanelType } from 'office-ui-fabric-react';
+import React, { useContext, useEffect, useState } from "react";
+import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
 import Tooltip from "./Tooltip";
 import { myContextValue } from "./globalCommon";
 import PageLoader from '../globalComponents/pageLoader';
-import AddConfiguration from "./AddConfiguration";
 import _ from "lodash";
 import AddEditWebpartTemplate from "./AddEditWebpartTemplate";
 
@@ -140,11 +139,6 @@ const EditConfiguration = (props: any) => {
             }
             let filterGroups = [...ExistingWeparts];
             let ExistingWepartsNew = filterGroups.filter((obj: any) => obj.WebpartId != draggedItemContent.WebpartId)
-            //  ExistingWeparts.splice(index, 1);
-            // rerender();
-
-            // Insert the dragged item at the new position
-            //  updatedItems[index].ArrayValue.splice(targetIndex, 0, draggedItemContent);
             updatedItems[dragOverItem?.CurrentIndex].ArrayValue.splice(targetIndex, 0, draggedItemContent);
             // Clear the drag indices
             let itemsArray: any = [];
@@ -420,7 +414,6 @@ const EditConfiguration = (props: any) => {
     }
     const deleteExistingTemplate = async (itemValue: any, arrayIndex: number) => {
         const updatedItems = [...NewItem];
-        // Remove the dragged item from its original position
         updatedItems?.forEach((item: any, index: any) => {
             if (index === arrayIndex)
                 item?.ArrayValue?.forEach((subChild: any, indexChild: any) => {
@@ -446,24 +439,23 @@ const EditConfiguration = (props: any) => {
         setItems(itemsArray);
         setNewItem(updatedItems);
     }
-    const changetabs = (selectedtab: any) => {
-
+    const deleteColumn = async (itemValue: any, arrayIndex: number) => {
         const updatedItems = [...NewItem];
-        // Remove the dragged item from its original position
-        updatedItems?.forEach((item: any) => {
-            item?.ArrayValue?.forEach((subChild: any) => {
-                if (type?.Id === subChild?.Id) {
-                    subChild.DataSource = type?.DataSource;
-                    subChild.smartFevId = type.smartFevId === undefined ? "" : type.smartFevId;
-                }
+        let findSameItems = updatedItems?.filter((obj: any) => obj.ColumnTitle === itemValue?.ColumnTitle);
+        let findItems = updatedItems?.filter((obj: any) => obj.ColumnTitle != itemValue?.ColumnTitle);
+        const ExistingItems = [...ExistingWeparts];
+        let arrayItems = ExistingItems.concat(findSameItems[0]);
+        setExistingWeparts(arrayItems);
+        let itemsArray: any = [];
+        findItems?.forEach((item: any, index: any) => {
+            item?.ArrayValue?.forEach((obj: any) => {
+                itemsArray.push(obj);
             })
         })
-
-        setNewItem(updatedItems);
-
-        setType(selectedtab)
-
+        setItems(itemsArray);
+        setNewItem(findItems);
     }
+
     const CreateNewWebPart = () => {
         setIsOpenPopup(true);
     }
@@ -495,7 +487,6 @@ const EditConfiguration = (props: any) => {
 
     const CloseIsConfigPopup = (Item: any) => {
         if (Item === true) {
-            // ExistingWepartsBackup = [];
             LoadCallbackExistingWebparts()
         }
         setIsOpenPopup(false);
@@ -525,15 +516,14 @@ const EditConfiguration = (props: any) => {
                                             <>
                                                 {/* <div className="row"> */}
                                                 <div className={item.ClassValues}>
-                                                    <div className="fw-semibold text-center mb-2" style={{ borderBottom: '1px solid var(--SiteBlue)' }}>{item.ColumnTitle}</div>
+                                                    <div className="fw-semibold text-center mb-2 alignCenter justify-content-center" style={{ borderBottom: '1px solid var(--SiteBlue)' }}>{item.ColumnTitle}
+                                                        {NewItem?.length > 1 && <span title="Delete" className="dark ml-12  svg__icon--cross svg__iconbox" onClick={(e) => deleteColumn(item, index)} ></span>}</div>
                                                     {item != undefined && item?.ArrayValue?.length > 0 ? item?.ArrayValue?.map((subitem: any, indexNew: any) => {
-                                                        const showDeleteIcon = ExistingWepartsBackup?.filter((obj: any) => obj.WebpartId === subitem.WebpartId);
                                                         return (
                                                             <>
-                                                                <div className="alignCenter bg-siteColor justify-content-center mb-2 w-100" style={{ height: '50px' }}
+                                                                <div className="alignCenter bg-siteColor justify-content-center mb-1 w-100" style={{ height: '30px' }}
                                                                     onDragStart={(e) => dragStart(e, indexNew, index)}
                                                                     onDragEnter={(e) => dragEnd(e, indexNew, index)}
-                                                                    // onDragEnd={(e) => drop(e, index, "sameArray")}
                                                                     onDragEnd={(e) => drop(e, indexNew, index, "sameArray")}
                                                                     key={index}
                                                                     draggable
@@ -541,7 +531,7 @@ const EditConfiguration = (props: any) => {
 
                                                                     {" "}
                                                                     <span title="Edit" className="light ml-12 svg__icon--editBox svg__iconbox" onClick={(e) => OpenConfigPopup(subitem)} ></span>
-                                                                    {showDeleteIcon?.length > 0 && <span title="Edit" className="light ml-12  svg__icon--cross svg__iconbox" onClick={(e) => deleteExistingTemplate(subitem, index)} ></span>}
+                                                                    <span title="Delete" className="light ml-12  svg__icon--cross svg__iconbox" onClick={(e) => deleteExistingTemplate(subitem, index)} ></span>
                                                                 </div>
                                                             </>
                                                         )
@@ -549,7 +539,6 @@ const EditConfiguration = (props: any) => {
                                                         <div className="alignCenter justify-content-center mb-2 w-100" style={{ height: '200px', width: "150px" }}
                                                             onDragStart={(e) => dragStart(e, 0, index)}
                                                             onDragEnter={(e) => dragEnd(e, 0, index)}
-                                                            // onDragEnd={(e) => drop(e, index, "sameArray")}
                                                             onDragEnd={(e) => drop(e, 0, index, "sameArray")}
                                                             key={index}
                                                             draggable
@@ -572,7 +561,7 @@ const EditConfiguration = (props: any) => {
                                         {IsWebPartPopup && ExistingWeparts?.length > 0 && ExistingWeparts?.map((item: any, index: any) => {
                                             return (
                                                 <>
-                                                    <div className="alignCenter bg-siteColor justify-content-center mb-2 w-100" style={{ height: '50px' }} onDragStart={(e) => dragStart(e, index, index)}
+                                                    <div className="alignCenter bg-siteColor justify-content-center mb-1 w-100" style={{ height: '30px' }} onDragStart={(e) => dragStart(e, index, index)}
                                                         onDragEnter={(e) => dragEnd(e, index, index)}
                                                         onDragEnd={(e) => drop(item, index, index, "DifferentArray")}
                                                         key={index}
@@ -588,61 +577,7 @@ const EditConfiguration = (props: any) => {
 
                         </div>
                     </div>
-                    {/* <div className="Metadatapannel lastmodify mb-2">
-                        <>
-                            <div className="border nav nav-tabs" id="nav-tab" role="tablist" style={{ display: "inline-flex" }}>
-                                {
-                                    Items?.length && Items.map((siteValue: any) =>
-                                        <>
-                                            <button onClick={() => { changetabs(siteValue) }} className={`nav-link ${siteValue.Id == Items[0].Id ? 'active' : ''}`} id={`nav-${siteValue.Id}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.Id}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true">
-                                                <div className={`${siteValue.Id}` + "text-capitalize"}  >{siteValue.WebpartTitle}</div></button>
-                                        </>
-                                    )
-                                }
-                            </div>
 
-                            <div className={Items?.some((e: any) => e.Id === type?.Id ? " tab-pane fade active show border mt-2 p-2" : " tab-pane fade border mt-2 p-2")} id={`nav-${type?.Id}`} role="tabpanel" aria-labelledby={`nav-${type.Id}-tab`}>
-                                <div className="border p-2 mt-2">
-                                    <label className='form-label full-width fw-semibold'>Data Source</label>
-                                    {DataSource &&
-                                        <>
-                                            {
-                                                DataSource?.length && DataSource.map((item: any) =>
-                                                    <>
-                                                        <div className="SpfxCheckRadio">
-                                                            <input className="radio" name="ApprovalLevel" type="radio" checked={type.DataSource === item.Title ? true : false} onChange={() => setType({ ...type, DataSource: item.Title })} />
-                                                            {item.Title}
-                                                        </div>
-                                                    </>
-                                                )
-                                            }
-                                        </>
-
-                                    }
-                                </div>
-                                <div className="Metadatapannel my-2">
-                                    <>
-                                        <div className="border p-2">
-                                            <label className='form-label fw-semibold full-width'>Select Filter</label>
-                                            <div className="row">
-                                                {
-                                                    SmartFav?.length && SmartFav.map((item: any) =>
-                                                        <div className="col-sm-6 pl-0">
-                                                            <label className="SpfxCheckRadio">     <input className="radio" name="ApprovalLevelnew" type="radio" checked={type?.smartFevId === item?.UpdatedId ? true : false} onChange={() => setType({ ...type, smartFevId: item.UpdatedId })} />
-                                                                {item.Title}
-                                                            </label>
-                                                        </div>
-                                                    )
-                                                }
-
-                                            </div>
-                                        </div>
-                                    </>
-                                </div>
-                            </div>
-                        </>
-
-                    </div> */}
 
                 </div>
 
@@ -651,15 +586,12 @@ const EditConfiguration = (props: any) => {
                     <button className='btn btn-default ms-1' onClick={CloseConfiguationPopup}>Cancel</button>
                 </div>
             </Panel >
-            {/* <span>
-                {IsManageConfigPopup && <AddConfiguration DashboardConfigBackUp={Items} SingleWebpart={true} props={props.props} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}
-            </span> */}
             <span>
                 {IsManageConfigPopup && <AddEditWebpartTemplate props={props?.props} DashboardPage={true} DashboardConfigBackUp={Items} SingleWebpart={true} EditItem={SelectedItem} IsOpenPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />}
             </span>
             <span>
                 {IsOpenPopup && <AddEditWebpartTemplate props={props?.props} SingleWebpart={true} EditItem={""} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseIsConfigPopup} />}
-                {/* {IsWebPartPopup && <WebPartDisplay DashboardConfigBackUp={props.props} props={props.props} IsWebPartPopup={IsWebPartPopup} CloseWebpartPopup={CloseWebpartPopup} />} */}
+
             </span>
 
         </>

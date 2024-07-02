@@ -1036,7 +1036,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
     return (
       <>
         <div className="subheading">Add Question</div>
-        <Tooltip ComponentId="1000" />
+        <Tooltip ComponentId="1586" />
       </>
     );
   };
@@ -1044,7 +1044,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
     return (
       <>
         <div className="subheading">Add Help</div>
-        <Tooltip ComponentId="1000" />
+        <Tooltip ComponentId="2010" />
       </>
     );
   };
@@ -2789,7 +2789,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
           Permission: choice ? choice : dataUpdate?.choice,
           Body: questionDescription
             ? questionDescription || EditData?.PostQuestionDescription || ""
-            : dataUpdate?.Body,
+            : dataUpdate?.Body  !== 'null'? dataUpdate?.Body:'',
         })
         .then(async (i: any) => {
           console.log(i);
@@ -2827,7 +2827,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
           Permission: choice ? choice : helpDataUpdate?.choice,
           Body: questionDescription
             ? questionDescription || EditData?.PostQuestionDescription || ""
-            : helpDataUpdate?.Body,
+            : helpDataUpdate?.Body !== 'null'?helpDataUpdate?.Body:'',
         })
         .then(async (i: any) => {
           console.log(i);

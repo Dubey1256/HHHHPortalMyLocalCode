@@ -5311,8 +5311,9 @@ const EditTaskPopup = (Items: any) => {
         if (usedFor == "Remove") {
             let CopyWorkingActionData: any = [...WorkingAction];
             let TempWorkingActionData: any = removeDataFromInformationData(CopyWorkingActionData, ActionType, Index);
+            EditData.WorkingAction=[...TempWorkingActionData]
             console.log("Updated Data after removing User:", TempWorkingActionData);
-            setWorkingAction([...TempWorkingActionData])
+            setWorkingAction([...EditData.WorkingAction])
         }
     }
 
