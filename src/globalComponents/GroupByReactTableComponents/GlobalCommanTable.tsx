@@ -126,9 +126,9 @@ export function Filter({
     return (
  
             <>
-            <input style={{ width: "100%", paddingRight: "10px" }} className="m-1" title={placeholder?.placeholder} type="search" value={(columnFilterValue ?? "") as string}
+            <input style={{ width: "100%", paddingRight: "10px" }} className="m-1" type="search" value={(columnFilterValue ?? "") as string}
                        onChange={(e) => column.setFilterValue(e.target.value)} placeholder={`${placeholder?.placeholder}`} />
-                       {columnFilterValue && <span className='searchClear' onClick={(e:any)=>column.setFilterValue("")}></span>}
+                       {columnFilterValue && <span className='searchClear' onClick={(e:any)=>column.setFilterValue("")}></span>}<span className='tooltip-text pop-right fw-light'>{placeholder?.placeholder}</span>
            </>
 
         );
@@ -1551,7 +1551,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                         return (
                                             <th key={header.id} colSpan={header.colSpan} style={header.column.columnDef.size != undefined && header.column.columnDef.size != 150 ? { width: header.column.columnDef.size + "px", maxWidth: header.column.columnDef.size + "px", minWidth: header.column.columnDef.size + "px" } : {}}>
                                                 {header.isPlaceholder ? null : (
-                                                    <div className='position-relative' style={{ display: "flex" }}>
+                                                    <div className='position-relative hover-textToolTip' style={{ display: "flex" }}>
                                                         {flexRender(
                                                             header.column.columnDef.header,
                                                             header.getContext()

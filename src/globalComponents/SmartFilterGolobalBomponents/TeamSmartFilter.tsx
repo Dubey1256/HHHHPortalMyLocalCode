@@ -2749,40 +2749,6 @@ const TeamSmartFilter = (item: any) => {
                         </div>
                     </section> : ''}
 
-
-                    {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
-                        <div className="px-2">
-                            <div className="togglebox">
-                                <label className="toggler full_width active">
-                                    <span className='full_width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isActionsExpendShow")}>
-                                        <div className='alignCenter'>
-                                            {isActionsExpendShow === true ?
-                                                <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
-                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Actions</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{(isPhone || isBottleneck || isAttention) ? `Working Action: (${(isPhone && isBottleneck && isAttention) ? "All" : [isPhone ? "Phone" : "", isBottleneck ? "Bottleneck" : "", isAttention ? "Attention" : ""].filter(Boolean).join(', ')})` : ""}</div>
-                                        </div>
-
-                                    </span>
-                                </label>
-                                {isActionsExpendShow === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
-                                    <Col className='mb-2 '>
-                                        <div>
-                                            <label className='me-3'>
-                                                <input className='form-check-input' type="checkbox" value="isPhone" checked={isPhone} onChange={() => setIsPhone(!isPhone)} /> Phone
-                                            </label>
-                                            <label className='me-3'>
-                                                <input className='form-check-input' type="checkbox" value="isBottleneck" checked={isBottleneck} onChange={() => setIsBottleneck(!isBottleneck)} /> Bottleneck
-                                            </label>
-                                            <label className='me-3'>
-                                                <input className='form-check-input' type="checkbox" value="isAttention" checked={isAttention} onChange={() => setIsAttention(!isAttention)} /> Attention
-                                            </label>
-                                        </div>
-                                    </Col>
-                                </div> : ""}
-                            </div>
-                        </div >
-                    </section> : ''}
-
-
                     {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
                         <div className="px-2">
                             <div className="togglebox">
@@ -2883,7 +2849,37 @@ const TeamSmartFilter = (item: any) => {
 
 
 
+                    {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
+                        <div className="px-2">
+                            <div className="togglebox">
+                                <label className="toggler full_width active">
+                                    <span className='full_width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isActionsExpendShow")}>
+                                        <div className='alignCenter'>
+                                            {isActionsExpendShow === true ?
+                                                <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
+                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Actions</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{(isPhone || isBottleneck || isAttention) ? `Working Action: (${(isPhone && isBottleneck && isAttention) ? "All" : [isPhone ? "Phone" : "", isBottleneck ? "Bottleneck" : "", isAttention ? "Attention" : ""].filter(Boolean).join(', ')})` : ""}</div>
+                                        </div>
 
+                                    </span>
+                                </label>
+                                {isActionsExpendShow === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
+                                    <Col className='mb-2 '>
+                                        <div>
+                                            <label className='me-3'>
+                                                <input className='form-check-input' type="checkbox" value="isPhone" checked={isPhone} onChange={() => setIsPhone(!isPhone)} /> Phone
+                                            </label>
+                                            <label className='me-3'>
+                                                <input className='form-check-input' type="checkbox" value="isBottleneck" checked={isBottleneck} onChange={() => setIsBottleneck(!isBottleneck)} /> Bottleneck
+                                            </label>
+                                            <label className='me-3'>
+                                                <input className='form-check-input' type="checkbox" value="isAttention" checked={isAttention} onChange={() => setIsAttention(!isAttention)} /> Attention
+                                            </label>
+                                        </div>
+                                    </Col>
+                                </div> : ""}
+                            </div>
+                        </div >
+                    </section> : ''}
 
                     {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
                         <div className="px-2">
@@ -2893,7 +2889,7 @@ const TeamSmartFilter = (item: any) => {
                                         <div className='alignCenter'>
                                             {isDateExpendShowWorkingAction === true ?
                                                 <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
-                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Working Actions</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{dateCountInfo ? '- ' + dateCountInfo : ''}</div>
+                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Working Date</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{dateCountInfo ? '- ' + dateCountInfo : ''}</div>
                                         </div>
                                     </span>
                                 </label>
@@ -3015,48 +3011,48 @@ const TeamSmartFilter = (item: any) => {
                                         </Col>
                                         <Col className='my-2'>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" className='radio' value="today" checked={selectedFilter === "today"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter1" className='radio' value="today" checked={selectedFilter === "today"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>Today</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="yesterday" className='radio' checked={selectedFilter === "yesterday"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter2" value="yesterday" className='radio' checked={selectedFilter === "yesterday"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>Yesterday</label>
                                             </span >
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="thisweek" className='radio' checked={selectedFilter === "thisweek"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter3" value="thisweek" className='radio' checked={selectedFilter === "thisweek"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>This Week</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="last7days" className='radio' checked={selectedFilter === "last7days"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter4" value="last7days" className='radio' checked={selectedFilter === "last7days"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>Last 7 Days</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="thismonth" className='radio' checked={selectedFilter === "thismonth"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter5" value="thismonth" className='radio' checked={selectedFilter === "thismonth"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>This Month</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="last30days" className='radio' checked={selectedFilter === "last30days"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter6" value="last30days" className='radio' checked={selectedFilter === "last30days"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>Last 30 Days</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="last3months" className='radio' checked={selectedFilter === "last3months"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter7" value="last3months" className='radio' checked={selectedFilter === "last3months"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>Last 3 Months</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="thisyear" className='radio' checked={selectedFilter === "thisyear"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter8" value="thisyear" className='radio' checked={selectedFilter === "thisyear"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>This Year</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="lastyear" className='radio' checked={selectedFilter === "lastyear"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter9" value="lastyear" className='radio' checked={selectedFilter === "lastyear"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>Last Year</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="custom" className='radio' onChange={handleDateFilterChange}
+                                                <input type="radio" name="dateFilter10" value="custom" className='radio' onChange={handleDateFilterChange}
                                                     checked={selectedFilter === "custom" || (startDate !== null && endDate !== null && !selectedFilter)} />
                                                 <label className='ms-1'>Custom</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="Pre-set" className='radio' onChange={handleDateFilterChange}
+                                                <input type="radio" name="dateFilter11" value="Pre-set" className='radio' onChange={handleDateFilterChange}
                                                     checked={selectedFilter === "Pre-set"} />
                                                 <label className='ms-1'>Pre-set <span style={{ backgroundColor: `${portfolioColor}` }} onClick={() => preSetIconClick()} className="svg__iconbox svg__icon--editBox alignIcon hreflink"></span></label>
                                             </span>
@@ -3108,7 +3104,9 @@ const TeamSmartFilter = (item: any) => {
 
                             </div>
                         </div >
-                        {item?.webPartTemplateSmartFilter != true ? <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'><button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Update Filter</button>
+                        {item?.webPartTemplateSmartFilter != true ? <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'>
+                            <a className="hreflink mx-1" data-interception="off" target="_blank" href={item?.ContextValue?.siteUrl + "/SitePages/UserTimeEntry.aspx"}>User-Time-Entry</a>
+                            <button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Update Filter</button>
                             <button className='btn  btn-default px-3 py-1' onClick={ClearFilter}> Clear Filters</button></div> : <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'><button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Save Filter</button></div>}
                     </section> : ''}
 
