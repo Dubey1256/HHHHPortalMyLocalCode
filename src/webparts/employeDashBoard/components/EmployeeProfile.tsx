@@ -819,7 +819,7 @@ const EmployeProfile = (props: any) => {
             config.Tasks = [];
           }
           if (config?.LoadDefaultFilter !== false) {
-            if (config?.IsDraftTask != undefined && items.Categories?.toLowerCase().includes(config?.IsDraftTask.toLowerCase()) > -1 && items.Author?.Id == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
+            if (config?.IsDraftTask != undefined && items.Categories?.toLowerCase().includes(config?.IsDraftTask.toLowerCase()) && items.Author?.Id == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
               config?.Tasks.push(items);
             }
             if (items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
@@ -849,7 +849,7 @@ const EmployeProfile = (props: any) => {
             }
             for (const assign of items.AssignedTo ?? []) {
               if (assign && assign.Id == currentUserData?.AssingedToUser?.Id) {
-                if (config?.IsImmediateTask != undefined && items.Categories?.toLowerCase().includes(config?.IsImmediateTask.toLowerCase()) > -1 && items?.PercentComplete != undefined && items?.PercentComplete < 80 && !isTaskItemExists(config?.Tasks, items)) {
+                if (config?.IsImmediateTask != undefined && items.Categories?.toLowerCase().includes(config?.IsImmediateTask.toLowerCase()) && items?.PercentComplete != undefined && items?.PercentComplete < 80 && !isTaskItemExists(config?.Tasks, items)) {
                   config?.Tasks.push(items);
                 }
                 else if (config?.IsApprovalTask != undefined && items.percentage == config?.IsApprovalTask && !isTaskItemExists(config?.Tasks, items)) {
@@ -924,10 +924,9 @@ const EmployeProfile = (props: any) => {
     AllTaskTimeEntries = [];
     todaysDrafTimeEntry = [];
     if (TimeSheetLists?.length > 0) {
-      let timesheetLists: any = [];
       let startDate = getStartingDate('This Week').toISOString();
-      if (timesheetLists?.length > 0) {
-        const fetchPromises = timesheetLists.map(async (list: any) => {
+      if (TimeSheetLists?.length > 0) {
+        const fetchPromises = TimeSheetLists.map(async (list: any) => {
           let web = new Web(list?.siteUrl);
           try {
             let todayDateToCheck = new Date().setHours(0, 0, 0, 0,)

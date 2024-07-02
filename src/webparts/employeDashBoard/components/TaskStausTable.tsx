@@ -1556,7 +1556,7 @@ const TaskStatusTbl = (Tile: any) => {
         </a>}
         {config?.WebpartTitle == 'Draft Tasks' && <a className="empCol hreflink me-3">Approve</a>}
         {config?.WebpartTitle == 'Waiting for Approval' && <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>}
-        {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks, config)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
+        {ContextData?.DashboardId == 1 && <span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks, config)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
       </span>
     )
   }
@@ -1758,8 +1758,8 @@ const TaskStatusTbl = (Tile: any) => {
                     <div className="alignCenter empAllSec justify-content-between">
                       <span className="fw-bold">
                         {/* {config?.Status == "My TimSheet" && */}
-                         <>{`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}</>
-                         {/* } */}
+                        <>{`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}</>
+                        {/* } */}
                       </span>
                       <span className="alignCenter">
                         <span className="empCol me-1 mt-2 hreflink"><br /></span>
@@ -1825,7 +1825,7 @@ const TaskStatusTbl = (Tile: any) => {
         <span>
           {EditCompPopup && <EditProjectPopup props={CompResult} AllListId={AllListId} Call={() => { CallBack() }} />}
         </span>
-        <span>         
+        <span>
           {IsManageConfigPopup && <AddEditWebpartTemplate props={ContextData?.propsValue} DashboardPage={true} DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}
         </span>
       </div>
