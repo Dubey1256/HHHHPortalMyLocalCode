@@ -1907,7 +1907,7 @@ const Apps = (props: any) => {
         <a
           target="_blank"
           data-interception="off"
-          href={`${props.props.siteUrl}/SitePages/TeamCalendar.aspx`}
+          href={`${props.props.siteUrl}/SitePages/TeamCalendar-Old.aspx`}
         >
           {" "}
           Old Leave Calendar
