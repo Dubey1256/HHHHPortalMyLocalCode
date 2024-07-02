@@ -1597,6 +1597,8 @@ const EditTaskPopup = (Items: any) => {
 
                         } else {
                             setTaggedPortfolioData(DataItem);
+                            setTaskResponsibleTeam( DataItem[0].ResponsibleTeam)
+                            setTaskTeamMembers(DataItem[0].TeamMembers)
                             let ComponentType: any = DataItem[0].PortfolioType.Title;
                             getLookUpColumnListId(
                                 siteUrls,
