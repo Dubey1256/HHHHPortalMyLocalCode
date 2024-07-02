@@ -114,10 +114,7 @@ const EditPage = (props: any) => {
 
   return (
     <>
-      <div className="alignCenter">
-         <span onClick={() => openEditPopup()} title="Edit" className="svg__iconbox svg__icon--edit"></span>
-         </div>
-
+      <span onClick={() => openEditPopup()} title="Edit" className="alignIcon ms-1 svg__icon--edit svg__iconbox"></span>
       <Panel
         onRenderHeader={onRenderCustomCalculateSC}
         type={PanelType.medium}
