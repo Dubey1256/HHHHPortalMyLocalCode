@@ -1181,6 +1181,58 @@ const EmployeProfile = (props: any) => {
   };
   const updatedCheckTeamMembers = (data: any, teamMembers: any, Config: any) => {
     try {
+      const currentDate: any = new Date();
+      switch (Config?.configurationData[0]?.selectedFilterWorkingAction) {
+        case "today":
+          Config.configurationData[0].startDateWorkingAction = currentDate;
+          Config.configurationData[0].endDateWorkingAction = currentDate;
+          break;
+        case "tomorrow":
+          const tomorrow = new Date(currentDate);
+          tomorrow.setDate(currentDate.getDate() + 1);
+          Config.configurationData[0].startDateWorkingAction = tomorrow;
+          Config.configurationData[0].endDateWorkingAction = tomorrow;
+          break;
+        case "thisweek":
+          const dayOfWeek: any = currentDate.getDay();
+          const startOfWeek: any = new Date(currentDate);
+          const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+          startOfWeek.setDate(currentDate.getDate() - daysToSubtract);
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 6);
+          Config.configurationData[0].startDateWorkingAction = startOfWeek;
+          Config.configurationData[0].endDateWorkingAction = endOfWeek;
+          break;
+        case "nextweek":
+          const dayOfWeeks: any = currentDate.getDay();
+          const startOfNextWeek: any = new Date(currentDate);
+          startOfNextWeek.setDate(currentDate.getDate() + (7 - dayOfWeeks + 1));
+          const endOfNextWeek = new Date(startOfNextWeek);
+          endOfNextWeek.setDate(startOfNextWeek.getDate() + 6);
+          Config.configurationData[0].startDateWorkingAction = startOfNextWeek;
+          Config.configurationData[0].endDateWorkingAction = endOfNextWeek;
+          break;
+        case "thismonth":
+          const monthStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+          const monthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+          Config.configurationData[0].startDateWorkingAction = monthStartDate;
+          Config.configurationData[0].endDateWorkingAction = monthEndDate;
+          break;
+        case "nextmonth":
+          const nextMonthStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+          const nextMonthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0);
+          Config.configurationData[0].startDateWorkingAction = nextMonthStartDate;
+          Config.configurationData[0].endDateWorkingAction = nextMonthEndDate;
+          break;
+        case "custom":
+          Config.configurationData[0].startDateWorkingAction = Config?.configurationData[0]?.startDateWorkingAction;
+          Config.configurationData[0].endDateWorkingAction = Config?.configurationData[0]?.endDateWorkingAction;
+          break;
+        default:
+          Config.configurationData[0].startDateWorkingAction = null;
+          Config.configurationData[0].endDateWorkingAction = null;
+          break;
+      }
       if (teamMembers.length === 0) {
         if (Config?.configurationData[0]?.isWorkingDate === true) {
           try {
@@ -1189,10 +1241,16 @@ const EmployeProfile = (props: any) => {
               const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
               if (workingDetails?.InformationData) {
                 const isWithinDateRange = (date: any) => {
-                  let startDates = Config?.configurationData[0]?.startDate.setHours(0, 0, 0, 0);
-                  let endDates = Config?.configurationData[0]?.endDate.setHours(0, 0, 0, 0);
-                  const workingDate = new Date(Moment(date, 'DD/MM/YYYY').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (z)')).setHours(0, 0, 0, 0)
-                  return workingDate >= startDates && workingDate <= endDates;
+                  if (Config?.configurationData[0]?.startDateWorkingAction && Config?.configurationData[0]?.endDateWorkingAction) {
+                    let startDates = Config?.configurationData[0]?.startDateWorkingAction?.setHours(0, 0, 0, 0);
+                    let endDates = Config?.configurationData[0]?.endDateWorkingAction?.setHours(0, 0, 0, 0);
+                    const workingDate = new Date(Moment(date, 'DD/MM/YYYY').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (z)')).setHours(0, 0, 0, 0)
+                    return workingDate >= startDates && workingDate <= endDates;
+                  } else {
+                    let DefultDate = new Date().setHours(0, 0, 0, 0);
+                    const workingDate = new Date(Moment(date, 'DD/MM/YYYY').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (z)')).setHours(0, 0, 0, 0)
+                    return workingDate >= DefultDate;
+                  }
                 };
                 const result = workingDetails?.InformationData?.some((infoData: any) =>
                   isWithinDateRange(infoData?.WorkingDate) && infoData?.WorkingMember?.length > 0
@@ -1284,8 +1342,8 @@ const EmployeProfile = (props: any) => {
             const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
             if (workingDetails) {
               const isWithinDateRange = (date: any) => {
-                let startDates = Config?.configurationData[0]?.startDate.setHours(0, 0, 0, 0);
-                let endDates = Config?.configurationData[0]?.endDate.setHours(0, 0, 0, 0);
+                let startDates = Config?.configurationData[0]?.startDateWorkingAction?.setHours(0, 0, 0, 0);
+                let endDates = Config?.configurationData[0]?.endDateWorkingAction?.setHours(0, 0, 0, 0);
                 const workingDate = new Date(Moment(date, 'DD/MM/YYYY').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (z)')).setHours(0, 0, 0, 0)
                 return workingDate >= startDates && workingDate <= endDates;
               };
@@ -1470,13 +1528,14 @@ const EmployeProfile = (props: any) => {
         }
       }
       if (Config?.configurationData[0]?.isCreatedDateSelected == false && Config?.configurationData[0]?.isModifiedDateSelected == false && Config?.configurationData[0]?.isDueDateSelected == false) {
-        if (data?.serverDueDate != undefined || data.serverModifiedDate != undefined || data.serverCreatedDate != undefined) {
-          let result = ((data?.serverDueDate && data.serverDueDate >= MatchstartDate && data.serverDueDate <= MatchendDate) || (data?.serverModifiedDate && data.serverModifiedDate >= MatchstartDate && data.serverModifiedDate <= MatchendDate)
-            || (data?.serverCreatedDate && data.serverCreatedDate >= MatchstartDate && data.serverCreatedDate <= MatchendDate));
-          if (result == true) {
-            return true;
-          }
-        }
+        return true;
+        // if (data?.serverDueDate != undefined || data.serverModifiedDate != undefined || data.serverCreatedDate != undefined) {
+        //   let result = ((data?.serverDueDate && data.serverDueDate >= MatchstartDate && data.serverDueDate <= MatchendDate) || (data?.serverModifiedDate && data.serverModifiedDate >= MatchstartDate && data.serverModifiedDate <= MatchendDate)
+        //     || (data?.serverCreatedDate && data.serverCreatedDate >= MatchstartDate && data.serverCreatedDate <= MatchendDate));
+        //   if (result == true) {
+        //     return true;
+        //   }
+        // }
       }
       return false;
     } catch (error) {
