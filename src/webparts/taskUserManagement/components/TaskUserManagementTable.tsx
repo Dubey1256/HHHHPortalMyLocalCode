@@ -1126,6 +1126,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                     <span style={{ marginLeft: '-4px' }} className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>{" "}
                                     Delete This Item
                                 </a>
+                                <span> | </span>
                                 <span>
                                     {" "}
                                     {memberToUpdate?.ID ? (
