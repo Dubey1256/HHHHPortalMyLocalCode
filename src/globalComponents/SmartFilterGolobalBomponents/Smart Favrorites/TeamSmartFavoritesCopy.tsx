@@ -1184,36 +1184,6 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                         <label className="toggler full_width active">
                                             <span className='full_width'>
                                                 <div className='alignCenter'>
-                                                    <span className='f-15 fw-semibold'>Actions</span>
-                                                </div>
-
-                                            </span>
-                                        </label>
-                                        <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
-                                            <Col className='mb-2 '>
-                                                <div>
-                                                    <label className='me-3'>
-                                                        <input className='form-check-input' type="checkbox" value="isPhone" checked={isPhone} onChange={() => setIsPhone(!isPhone)} /> Phone
-                                                    </label>
-                                                    <label className='me-3'>
-                                                        <input className='form-check-input' type="checkbox" value="isBottleneck" checked={isBottleneck} onChange={() => setIsBottleneck(!isBottleneck)} /> Bottleneck
-                                                    </label>
-                                                    <label className='me-3'>
-                                                        <input className='form-check-input' type="checkbox" value="isAttention" checked={isAttention} onChange={() => setIsAttention(!isAttention)} /> Attention
-                                                    </label>
-                                                </div>
-                                            </Col>
-                                        </div>
-                                    </div>
-                                </div >
-                            </section>
-
-                            <section className="smartFilterSection p-0 mb-1">
-                                <div className="px-2">
-                                    <div className="togglebox">
-                                        <label className="toggler full_width active">
-                                            <span className='full_width'>
-                                                <div className='alignCenter'>
                                                     <span className='f-15 fw-semibold'>Team Members</span>
                                                 </div>
                                             </span>
@@ -1311,6 +1281,36 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                 <div className="px-2">
                                     <div className="togglebox">
                                         <label className="toggler full_width active">
+                                            <span className='full_width'>
+                                                <div className='alignCenter'>
+                                                    <span className='f-15 fw-semibold'>Actions</span>
+                                                </div>
+
+                                            </span>
+                                        </label>
+                                        <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
+                                            <Col className='mb-2 '>
+                                                <div>
+                                                    <label className='me-3'>
+                                                        <input className='form-check-input' type="checkbox" value="isPhone" checked={isPhone} onChange={() => setIsPhone(!isPhone)} /> Phone
+                                                    </label>
+                                                    <label className='me-3'>
+                                                        <input className='form-check-input' type="checkbox" value="isBottleneck" checked={isBottleneck} onChange={() => setIsBottleneck(!isBottleneck)} /> Bottleneck
+                                                    </label>
+                                                    <label className='me-3'>
+                                                        <input className='form-check-input' type="checkbox" value="isAttention" checked={isAttention} onChange={() => setIsAttention(!isAttention)} /> Attention
+                                                    </label>
+                                                </div>
+                                            </Col>
+                                        </div>
+                                    </div>
+                                </div >
+                            </section>
+
+                            <section className="smartFilterSection p-0 mb-1">
+                                <div className="px-2">
+                                    <div className="togglebox">
+                                        <label className="toggler full_width active">
                                             <span className="full-width">
                                                 <div className='alignCenter'>
                                                     <span className='f-15 fw-semibold'>Working Actions</span>
@@ -1327,31 +1327,31 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                 </Col>
                                                 <Col className='my-2'>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" className='radio' value="today" checked={selectedFilterWorkingAction === "today"} onChange={handleDateFilterChangeWorkingAction} />
+                                                        <input type="radio" name="dateFiltertt" className='radio' value="today" checked={selectedFilterWorkingAction === "today"} onChange={handleDateFilterChangeWorkingAction} />
                                                         <label className='ms-1'>Today</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="tomorrow" className='radio' checked={selectedFilterWorkingAction === "tomorrow"} onChange={handleDateFilterChangeWorkingAction} />
+                                                        <input type="radio" name="dateFiltereee" value="tomorrow" className='radio' checked={selectedFilterWorkingAction === "tomorrow"} onChange={handleDateFilterChangeWorkingAction} />
                                                         <label className='ms-1'>Tomorrow</label>
                                                     </span >
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="thisweek" className='radio' checked={selectedFilterWorkingAction === "thisweek"} onChange={handleDateFilterChangeWorkingAction} />
+                                                        <input type="radio" name="dateFilterrrr" value="thisweek" className='radio' checked={selectedFilterWorkingAction === "thisweek"} onChange={handleDateFilterChangeWorkingAction} />
                                                         <label className='ms-1'>This Week</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="nextweek" className='radio' checked={selectedFilterWorkingAction === "nextweek"} onChange={handleDateFilterChangeWorkingAction} />
+                                                        <input type="radio" name="dateFiltertyu" value="nextweek" className='radio' checked={selectedFilterWorkingAction === "nextweek"} onChange={handleDateFilterChangeWorkingAction} />
                                                         <label className='ms-1'>Next week</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="thismonth" className='radio' checked={selectedFilterWorkingAction === "thismonth"} onChange={handleDateFilterChangeWorkingAction} />
+                                                        <input type="radio" name="dateFilteriop" value="thismonth" className='radio' checked={selectedFilterWorkingAction === "thismonth"} onChange={handleDateFilterChangeWorkingAction} />
                                                         <label className='ms-1'>This Month</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="nextmonth" className='radio' checked={selectedFilterWorkingAction === "nextmonth"} onChange={handleDateFilterChangeWorkingAction} />
+                                                        <input type="radio" name="dateFilteroiuy" value="nextmonth" className='radio' checked={selectedFilterWorkingAction === "nextmonth"} onChange={handleDateFilterChangeWorkingAction} />
                                                         <label className='ms-1'> Next month</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="custom" className='radio' onChange={handleDateFilterChangeWorkingAction}
+                                                        <input type="radio" name="dateFiltertrew" value="custom" className='radio' onChange={handleDateFilterChangeWorkingAction}
                                                             checked={selectedFilterWorkingAction === "custom" || (startDateWorkingAction !== null && endDateWorkingAction !== null && !selectedFilterWorkingAction)} />
                                                         <label className='ms-1'>Custom</label>
                                                     </span>
@@ -1433,48 +1433,48 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                 </Col>
                                                 <Col className='my-3'>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" className='radio' value="today" checked={selectedFilter === "today"} onChange={handleDateFilterChange} />
+                                                        <input type="radio" name="dateFilter11" className='radio' value="today" checked={selectedFilter === "today"} onChange={handleDateFilterChange} />
                                                         <label className='ms-1'>Today</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="yesterday" className='radio' checked={selectedFilter === "yesterday"} onChange={handleDateFilterChange} />
+                                                        <input type="radio" name="dateFilter111" value="yesterday" className='radio' checked={selectedFilter === "yesterday"} onChange={handleDateFilterChange} />
                                                         <label className='ms-1'>Yesterday</label>
                                                     </span >
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="thisweek" className='radio' checked={selectedFilter === "thisweek"} onChange={handleDateFilterChange} />
+                                                        <input type="radio" name="dateFilter1111" value="thisweek" className='radio' checked={selectedFilter === "thisweek"} onChange={handleDateFilterChange} />
                                                         <label className='ms-1'>This Week</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="last7days" className='radio' checked={selectedFilter === "last7days"} onChange={handleDateFilterChange} />
+                                                        <input type="radio" name="dateFilter11111" value="last7days" className='radio' checked={selectedFilter === "last7days"} onChange={handleDateFilterChange} />
                                                         <label className='ms-1'>Last 7 Days</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="thismonth" className='radio' checked={selectedFilter === "thismonth"} onChange={handleDateFilterChange} />
+                                                        <input type="radio" name="dateFilter1121" value="thismonth" className='radio' checked={selectedFilter === "thismonth"} onChange={handleDateFilterChange} />
                                                         <label className='ms-1'>This Month</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="last30days" className='radio' checked={selectedFilter === "last30days"} onChange={handleDateFilterChange} />
+                                                        <input type="radio" name="dateFilter12121" value="last30days" className='radio' checked={selectedFilter === "last30days"} onChange={handleDateFilterChange} />
                                                         <label className='ms-1'>Last 30 Days</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="last3months" className='radio' checked={selectedFilter === "last3months"} onChange={handleDateFilterChange} />
+                                                        <input type="radio" name="dateFilter12345" value="last3months" className='radio' checked={selectedFilter === "last3months"} onChange={handleDateFilterChange} />
                                                         <label className='ms-1'>Last 3 Months</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="thisyear" className='radio' checked={selectedFilter === "thisyear"} onChange={handleDateFilterChange} />
+                                                        <input type="radio" name="dateFilter24567" value="thisyear" className='radio' checked={selectedFilter === "thisyear"} onChange={handleDateFilterChange} />
                                                         <label className='ms-1'>This Year</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="lastyear" className='radio' checked={selectedFilter === "lastyear"} onChange={handleDateFilterChange} />
+                                                        <input type="radio" name="dateFilter54356" value="lastyear" className='radio' checked={selectedFilter === "lastyear"} onChange={handleDateFilterChange} />
                                                         <label className='ms-1'>Last Year</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="custom" className='radio' onChange={handleDateFilterChange}
+                                                        <input type="radio" name="dateFilter45686" value="custom" className='radio' onChange={handleDateFilterChange}
                                                             checked={selectedFilter === "custom" || (startDate !== null && endDate !== null && !selectedFilter)} />
                                                         <label className='ms-1'>Custom</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
-                                                        <input type="radio" name="dateFilter" value="Pre-set" className='radio' onChange={handleDateFilterChange}
+                                                        <input type="radio" name="dateFilter98695" value="Pre-set" className='radio' onChange={handleDateFilterChange}
                                                             checked={selectedFilter === "Pre-set"} />
                                                         <label className='ms-1'>Pre-set <span style={{ backgroundColor: `${portfolioColor}` }} onClick={() => preSetIconClick()} className="svg__iconbox svg__icon--editBox alignIcon hreflink"></span></label>
                                                     </span>
