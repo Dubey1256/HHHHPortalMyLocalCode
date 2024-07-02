@@ -869,7 +869,6 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         </div>
                                     </div>
                                 </div>
-
                                 <div className='col-sm-3'>
                                     <h6 className='mb-1'>Working Members</h6>
                                     <div className="col">
