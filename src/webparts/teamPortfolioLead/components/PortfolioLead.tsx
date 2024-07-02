@@ -35,7 +35,7 @@ let renderData: any = [];
 type MyRowData = {
   Items: string | null;
   original: {
-      Items: string | null;
+    Items: string | null;
   };
 };
 const GroupByDashboard = (SelectedProp: any) => {
@@ -78,7 +78,7 @@ const GroupByDashboard = (SelectedProp: any) => {
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [SharewebTask, setSharewebTask] = React.useState("");
   const [checkedList1, setCheckedList1] = React.useState([]);
-  const [projectArrayMasterTask ,setprojectArrayMasterTask] : any = React.useState([]);
+  const [projectArrayMasterTask, setprojectArrayMasterTask]: any = React.useState([]);
   const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
   const [precentComplete, setPrecentComplete] = React.useState([])
   const [openCompareToolPopup, setOpenCompareToolPopup] = React.useState(false);
@@ -89,8 +89,8 @@ const GroupByDashboard = (SelectedProp: any) => {
   type GroupedDataItem = {
     AssignedTo: string;
     Items: any[];
-   // TeamMembers : any[];
-};
+    TeamMembers: any[];
+  };
   let props = undefined;
 
 
@@ -106,13 +106,15 @@ const GroupByDashboard = (SelectedProp: any) => {
         "Title",
         "Item_x0020_Cover",
         "AssingedToUser/Title",
+        "Approver/Title",
+        "Approver/Id",
         "AssingedToUser/EMail",
         "AssingedToUser/Id",
         "AssingedToUser/Name",
         "UserGroup/Id",
         "ItemType"
       )
-      .expand("AssingedToUser", "UserGroup")
+      .expand("AssingedToUser", "UserGroup", "Approver")
       .get();
     Response = taskUsers;
     TaskUsers = Response;
@@ -253,16 +255,15 @@ const GroupByDashboard = (SelectedProp: any) => {
     componentDetails = await globalCommon.GetServiceAndComponentAllData(SelectedProp);
     console.log(componentDetails);
 
-    componentDetails?.AllPathGeneratedData?.forEach((result: any) => {
-      if (result.HelpInformationVerified == null || result.HelpInformationVerified == undefined) {
+    componentDetails?.AllData?.forEach((result: any) => {
+      if (result.HelpInformationVerified == null || result.HelpInformationVerified == undefined)
         result.HelpInformationVerified = false;
-      }
-      portfolioTypeDataItem?.forEach((type: any) => {
-        if (result?.Item_x0020_Type === type.Title && result.PortfolioType !== undefined) {
+      portfolioTypeDataItem?.map((type: any) => {
+        if (result?.Item_x0020_Type === type.Title && result.PortfolioType != undefined) {
           type[type.Title + 'number'] += 1;
           type[type.Title + 'filterNumber'] += 1;
         }
-      });
+      })
     });
 
     try {
@@ -272,69 +273,80 @@ const GroupByDashboard = (SelectedProp: any) => {
     }
 
     const groupedData = groupByAssignedTo(componentDetails?.GetAllMasterTaskData, AllUsers);
-    let copySiticonedata =componentDetails?.GetAllMasterTaskData;
+    let copySiticonedata = componentDetails?.GetAllMasterTaskData;
     const projectArrayMasterTask = copySiticonedata.filter((item: any) => item.Item_x0020_Type === 'Project');
-    copySiticonedata = copySiticonedata.filter((item : any ) => item.Item_x0020_Type !== 'Project');
+    copySiticonedata = copySiticonedata.filter((item: any) => item.Item_x0020_Type !== 'Project');
     console.log(projectArrayMasterTask);
 
-    copySiticonedata.map((item: any)=>{
-      item.Project =[];
-      projectArrayMasterTask.map((data : any)=>{
-        if(data.Portfolios.length>0)
-        data.Portfolios.map((portfolioitem : any)=>{
-          if(item.Id=== portfolioitem.Id ){
-        
-            item.Project.push(data);
+    copySiticonedata.map((item: any) => {
+      item.Project = [];
+      projectArrayMasterTask.map((data: any) => {
+        if (data.Portfolios.length > 0)
+          data.Portfolios.map((portfolioitem: any) => {
+            if (item.Id === portfolioitem.Id) {
 
-          }
+              item.Project.push(data);
 
-        })
-        
+            }
+
+          })
+
 
       })
 
     })
-   
-   copySiticonedata.map((item :any )=>{
-    if(item.Item_x0020_Type!= undefined){
-      item.SiteIconTitle = item.Item_x0020_Type?.charAt(0);
-    }
 
-   });
-   
+    copySiticonedata.map((item: any) => {
+      if (item.Item_x0020_Type != undefined) {
+        item.SiteIconTitle = item.Item_x0020_Type?.charAt(0);
+      }
+
+    });
+
     setAllMasterTasks(copySiticonedata);
     backupAllMaster = componentDetails?.GetAllMasterTaskData;
     let groupedDatacopy = sortGroupedData(groupedData);
-    // groupedData?.map((item: any) => {
-    //   if (item.subRows.length > 1) {
-    //     item.subRows.map((data: any) => {
-    //       data?.TeamMembers?.map((dataz: any) => {
-    //         if (!item.TeamMembers.some((member: any) => member.Id === dataz.Id)) {
-    //           item.TeamMembers.push(dataz);
-    //         }
-            
-    //       });
-    //     });
-    //   }
-    // });
-    
+    groupedDatacopy?.map((item: any) => {
+      AllUsers?.map((data: any) => {
+        if (data?.Approver && data.Approver[0]?.Title) {
+          if (data.Approver[0].Title === 'Sameer  Gupta') {
+            data.Approver[0].Title = 'Sameer Gupta';
+          }
+          if (data.Approver[0].Title === 'Anshu  Mishra') {
+            data.Approver[0].Title = 'Anshu Mishra';
+          }
+        }
+        
+        if (data?.Approver?.length > 0 && item?.AssignedTo === data?.Approver[0].Title) {
+          if (!item.TeamMembers) {
+            item.TeamMembers = [];
+          }
+          if (!item.TeamMembers.some((member: any) => member.ID === data.ID)) {
+            item.TeamMembers.push(data);
+          }
+        }
+      });
+    });
+
+
+
     setData(groupedDatacopy); // Set the grouped data
     setLoaded(true);
   };
   const sortGroupedData = (groupedData: GroupedDataItem[]): GroupedDataItem[] => {
     return groupedData.sort((a, b) => {
-        const assignedToA = a.AssignedTo.toLowerCase();
-        const assignedToB = b.AssignedTo.toLowerCase();
+      const assignedToA = a.AssignedTo.toLowerCase();
+      const assignedToB = b.AssignedTo.toLowerCase();
 
-        if (assignedToA < assignedToB) {
-            return -1;
-        }
-        if (assignedToA > assignedToB) {
-            return 1;
-        }
-        return 0;
+      if (assignedToA < assignedToB) {
+        return -1;
+      }
+      if (assignedToA > assignedToB) {
+        return 1;
+      }
+      return 0;
     });
-};
+  };
   // Function to group data by 'AssignedTo' and handle hierarchy
   const groupByAssignedTo = (data: any[], allUsers: any[]) => {
     let groupedData: any[] = [];
@@ -343,47 +355,42 @@ const GroupByDashboard = (SelectedProp: any) => {
     const filteredUsers = allUsers.filter(user => user.UserGroup && user.UserGroup.Id === 9);
 
     filteredUsers.forEach(user => {
-        groupedData.push({
-            AssignedTo: user.Title,
-            Items: [],
-            // TeamMembers: [
-            //   {
-            //     Id: "role", 
-            //     Title: []
-            //   }
-            // ]
-        });
+      groupedData.push({
+        AssignedTo: user.Title,
+        Items: [],
+        TeamMembers: []
+      });
     });
 
-    data.forEach(item => {
-        if (item.AssignedTo) {
-            item.AssignedTo.forEach((user: { Title: string }) => {
-                for (let i = 0; i < groupedData.length; i++) {
-                    if(user.Title == 'Sameer  Gupta'){
-                     user.Title= 'Sameer Gupta' ;
-                  }
-                  if(user.Title == 'Anshu  Mishra'){
-                    user.Title= 'Anshu Mishra' ;
-                 }
-                    if (groupedData[i].AssignedTo == user.Title) {
-                        groupedData[i].Items.push(item);
-                        break;
-                    }
-                }
-            });
-        }
+    data?.forEach(item => {
+      if (item?.AssignedTo) {
+        item?.AssignedTo?.forEach((user: { Title: string }) => {
+          for (let i = 0; i < groupedData.length; i++) {
+            if (user.Title == 'Sameer  Gupta') {
+              user.Title = 'Sameer Gupta';
+            }
+            if (user.Title == 'Anshu  Mishra') {
+              user.Title = 'Anshu Mishra';
+            }
+            if (groupedData[i].AssignedTo == user.Title) {
+              groupedData[i].Items.push(item);
+              break;
+            }
+          }
+        });
+      }
     });
 
     groupedData = groupedData.filter(group => group.Items.length > 0);
     groupedData.forEach(item => {
-        if (item.AssignedTo) {
-            item.subRows = getFlattenedSubRows(item.Items);
-            item.Items = item.AssignedTo;
-        }
+      if (item.AssignedTo) {
+        item.subRows = getFlattenedSubRows(item.Items);
+        item.Items = item.AssignedTo;
+      }
     });
 
     return groupedData;
-};
+  };
 
 
   // Function to recursively get all items from nested subRows
@@ -428,25 +435,38 @@ const GroupByDashboard = (SelectedProp: any) => {
     }
   }, [AllMetadata.length > 0 && portfolioTypeData.length > 0])
 
+  // const findUserByName = (name: any) => {
+  //   const user = AllUsers.filter(
+  //     (itm: any) => itm?.ID === name
+  //   );
+  //   let Image: any;
+  //   if (user[0]?.Item_x0020_Cover != undefined) {
+  //     Image = user[0].Item_x0020_Cover.Url;
+  //   } else { Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; }
+  //   return user ? Image : null;
+  // };
   const findUserByName = (name: any) => {
-    const user = AllUsers.filter(
-      (user: any) => user?.AssingedToUser?.Id === name
-    );
+    const users = AllUsers.filter((itm: any) => itm?.ID === name || itm?.AssingedToUser?.Id == name);
     let Image: any;
-    if (user[0]?.Item_x0020_Cover != undefined) {
-      Image = user[0].Item_x0020_Cover.Url;
-    } else { Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; }
-    return user ? Image : null;
+
+    if (users.length > 0 && users[0]?.Item_x0020_Cover) {
+      Image = users[0].Item_x0020_Cover.Url;
+    } else {
+      Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg";
+    }
+
+    return users.length > 0 ? Image : null;
   };
+
   const mySortType = (
     rowA: Row<MyRowData>,
     rowB: Row<MyRowData>,
     columnId: string
-) => {
+  ) => {
     const a = rowA.original?.Items ?? "";
     const b = rowB.original?.Items ?? "";
     return a.localeCompare(b);
-};
+  };
   const inlineCallBack = React.useCallback((item: any) => {
     let ComponentsData: any = [];
     let AllMasterItem = backupAllMaster;
@@ -482,25 +502,7 @@ const GroupByDashboard = (SelectedProp: any) => {
         size: 55,
         id: 'Id',
       },
-    //   {
-    //     accessorFn: (row: MyRowData) => row?.Items,
-    //     cell: ({ row, getValue }) => (
-    //         <>
-    //             {row?.original?.Items && (
-    //                 <span className='text-content'>
-    //                     {row?.original?.Items}
-    //                 </span>
-    //             )}
-    //         </>
-    //     ),
-    //     id: "Items",
-    //     placeholder: "Portfolio Leads",
-        
-    //     resetColumnFilters: false,
-    //     size: 180,
-    //     isColumnVisible: true,
-    //     sortingFn: mySortType,
-    // },
+      
       {
         accessorFn: (row) => row?.Items,
         cell: ({ row, getValue }) => (
@@ -516,7 +518,7 @@ const GroupByDashboard = (SelectedProp: any) => {
         placeholder: "Portfolio Leads",
 
         resetColumnFilters: false,
-        size: 180,
+        size: 100,
         isColumnVisible: true
       },
       {
@@ -533,7 +535,7 @@ const GroupByDashboard = (SelectedProp: any) => {
               </div>
             ) : (
               <>
-             {/* <div className={
+                {/* <div className={
   row?.original?.subRows?.some((subRow: any) => subRow?.Item_x0020_Type === "SubComponent") ? "ml-12 Dyicons" :
   row?.original?.subRows?.some((subRow: any) => subRow?.Item_x0020_Type === "Feature") ? "ml-24 Dyicons" :
   row?.original?.subRows?.some((subRow: any) => subRow?.TaskType?.Title === "Task") ? "ml-60 Dyicons" :
@@ -541,25 +543,25 @@ const GroupByDashboard = (SelectedProp: any) => {
 }>
   {row?.original?.subRows?.find((iteam: any) => iteam?.SiteIconTitle)?.SiteIconTitle || row?.original?.SiteIconTitle}
 </div> */}
- {row?.original?.Title != "Others" ? (
-                                    <div
-                                    title={row?.original?.Item_x0020_Type}
-                                    className={
-                                        row?.original?.SiteIconTitle === undefined ? '' : (
-                                            row?.original?.Item_x0020_Type === "SubComponent" ? "ml-12 Dyicons" :
-                                            row?.original?.Item_x0020_Type === "Feature" ? "ml-24 Dyicons" :
-                                            row?.original?.TaskType?.Title === "Activities" ? "ml-36 Dyicons" :
-                                            row?.original?.TaskType?.Title === "Workstream" ? "ml-48 Dyicons" :
-                                            row?.original?.TaskType?.Title === "Task" ? "ml-60 Dyicons" :
-                                            "Dyicons"
-                                        )
-                                    }
-                                >
-                                        {row?.original?.SiteIconTitle}
-                                    </div>
-                                ) : (
-                                    ""
-                                )}
+                {row?.original?.Title != "Others" ? (
+                  <div
+                    title={row?.original?.Item_x0020_Type}
+                    className={
+                      row?.original?.SiteIconTitle === undefined ? '' : (
+                        row?.original?.Item_x0020_Type === "SubComponent" ? "ml-12 Dyicons" :
+                          row?.original?.Item_x0020_Type === "Feature" ? "ml-24 Dyicons" :
+                            row?.original?.TaskType?.Title === "Activities" ? "ml-36 Dyicons" :
+                              row?.original?.TaskType?.Title === "Workstream" ? "ml-48 Dyicons" :
+                                row?.original?.TaskType?.Title === "Task" ? "ml-60 Dyicons" :
+                                  "Dyicons"
+                      )
+                    }
+                  >
+                    {row?.original?.SiteIconTitle}
+                  </div>
+                ) : (
+                  ""
+                )}
 
 
               </>
@@ -570,23 +572,10 @@ const GroupByDashboard = (SelectedProp: any) => {
         placeholder: "Type",
         header: "",
         resetColumnFilters: false,
-        size: 70,
+        size: 30,
         isColumnVisible: true
       },
-      // {
-      //   accessorFn: (row) => row?.TaskID,
-      //   cell: ({ row, getValue }) => (
-      //     <>
-      //       <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={[]} />
-      //     </>
-      //   ),
-      //   id: "TaskID",
-      //   placeholder: "ID",
-      //   header: "",
-      //   resetColumnFilters: false,
-      //   size: 95,
-      //   isColumnVisible: true
-      // },
+      
       {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
@@ -600,7 +589,7 @@ const GroupByDashboard = (SelectedProp: any) => {
               )}
               {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
                 <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
-                  href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID } >
+                  href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
                   <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
                 </a>
               )}
@@ -616,7 +605,7 @@ const GroupByDashboard = (SelectedProp: any) => {
           </div>
         ),
         id: "Title",
-        placeholder :"Title",
+        placeholder: "Title",
         header: "",
         resetColumnFilters: false,
         size: 250,
@@ -625,32 +614,32 @@ const GroupByDashboard = (SelectedProp: any) => {
       {
         accessorFn: (row) => row?.Project?.map((subRow: any) => subRow).join(", ") || '',
         cell: ({ row, getValue }) => (
-            <>
-                {row?.original?.Project?.map((subRow: any, index: number) => (
-                    <span key={index} className='text-content'>
-                        <a 
-                            className="text-content hreflink"  
-                            data-interception="off" 
-                            target="_blank"  
-                            style={row?.original?.fontColorTask 
-                                ? { color: row.original.fontColorTask } 
-                                : { color: row.original?.PortfolioType?.Color }}
-                            href={`${ContextValue.siteUrl}/SitePages//PX-Profile.aspx?ProjectId=${subRow.ID}`}
-                        >
-                            {subRow.PortfolioStructureID}
-                        </a>
-                    </span>
-                )) || null}
-            </>
+          <>
+            {row?.original?.Project?.map((subRow: any, index: number) => (
+              <span key={index} className='text-content'>
+                <a
+                  className="text-content hreflink"
+                  data-interception="off"
+                  target="_blank"
+                  style={row?.original?.fontColorTask
+                    ? { color: row.original.fontColorTask }
+                    : { color: row.original?.PortfolioType?.Color }}
+                  href={`${ContextValue.siteUrl}/SitePages//PX-Profile.aspx?ProjectId=${subRow.ID}`}
+                >
+                  {subRow.PortfolioStructureID}
+                </a>
+              </span>
+            )) || null}
+          </>
         ),
         id: "Items",
         placeholder: "Projects",
         resetColumnFilters: false,
         size: 180,
         isColumnVisible: true
-    },
-    
-    
+      },
+
+
 
       {
         accessorFn: (row) => row?.TeamMembers,
@@ -694,31 +683,7 @@ const GroupByDashboard = (SelectedProp: any) => {
       },
 
 
-      // {
-      //   accessorFn: (row) => row?.Items,
-      //   cell: ({ row, getValue }) => (
-      //     <>
-      //       {row?.original?.Items && row?.original?.Items.length > 0 && (
-      //         <div className="nestedItems">
-      //           {row?.original?.Items.map((item: any, index: number) => (
-      //             <div key={index} className="nestedItem">
-      //               {/* Display nested item details */}
-      //               <div>{item.Title}</div>
-      //               {/* Add more fields as necessary */}
-      //             </div>
-      //           ))}
-      //         </div>
-      //       )}
-      //     </>
-      //   ),
-      //   id: "Items",
-      //   placeholder: "Items",
-      //   header: "Items",
-      //   resetColumnFilters: false,
-      //   size: 250,
-      //   isColumnVisible: true
-      // },
-      // Add more columns as necessary
+     
     ],
     [ContextValue, allMasterTaskDataFlatLoadeViewBackup, SelectedProp, portfolioTypeData, isUpdated, setAllMasterTasks]
   );
@@ -878,7 +843,7 @@ const GroupByDashboard = (SelectedProp: any) => {
         obj.data.flag = true;
         obj.data.TitleNew = obj.data.Title;
         obj.data.siteType = "Master Tasks";
-       // obj.data.SiteIconTitle = obj?.data?.Item_x0020_Type?.charAt(0);
+        // obj.data.SiteIconTitle = obj?.data?.Item_x0020_Type?.charAt(0);
         obj.data["TaskID"] = obj.data.PortfolioStructureID;
         obj.data.Author = { Id: obj.data.AuthorId }
         obj.data.Parent = { Id: obj?.data?.ParentId }
@@ -957,7 +922,7 @@ const GroupByDashboard = (SelectedProp: any) => {
             item.data.PortfolioType = obj;
         })
       }
-    //  item.data.SiteIconTitle = item?.data?.Item_x0020_Type?.charAt(0);
+      //  item.data.SiteIconTitle = item?.data?.Item_x0020_Type?.charAt(0);
       item.data["TaskID"] = item.data.PortfolioStructureID;
 
       copyDtaArray.unshift(item.data);

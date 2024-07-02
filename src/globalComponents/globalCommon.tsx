@@ -1924,6 +1924,9 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
     let AllPathGeneratedProjectdata: any = [];
     // let TaskUsers: any = [];
     let AllMasterTaskData: any = [];
+    const deepCopy = (obj: any) => {
+      return JSON.parse(JSON.stringify(obj));
+    };
     try {
         let ProjectData: any = [];
         let web = new Web(Props.siteUrl);
@@ -1937,6 +1940,8 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
                 "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "FeatureType/Title", "FeatureType/Id", "Portfolios/Id", "Portfolios/Title", "Editor/Id", "Modified", "Editor/Title")
             .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "FeatureType", "ResponsibleTeam", "Editor", "Portfolios").filter(filter != null ? filter : '')
             .getAll();
+
+        const AllMasterTaskDataCopy = deepCopy(AllMasterTaskData);
 
         // console.log("all Service and Coponent data form global Call=======", AllMasterTaskData);
         // TaskUsers = await AllTaskUsers(Props.siteUrl, Props.TaskUserListId);
@@ -2166,6 +2171,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
         );
 
         let dataObject = {
+          GetAllMasterTaskData: AllMasterTaskDataCopy,
             GroupByData: ComponentsData,
             AllData: AllPathGeneratedData,
             ProjectData: ProjectData,
