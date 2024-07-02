@@ -1556,7 +1556,7 @@ const TaskStatusTbl = (Tile: any) => {
         </a>}
         {config?.WebpartTitle == 'Draft Tasks' && <a className="empCol hreflink me-3">Approve</a>}
         {config?.WebpartTitle == 'Waiting for Approval' && <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>}
-        {ContextData?.DashboardId == 1 && <span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks, config)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
+        {(ContextData?.DashboardId == 1 || ContextData?.DashboardId == undefined || ContextData?.DashboardId == '') && <span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks, config)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
       </span>
     )
   }
