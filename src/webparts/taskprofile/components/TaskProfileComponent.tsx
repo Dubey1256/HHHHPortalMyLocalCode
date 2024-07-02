@@ -73,8 +73,7 @@ const CopyTaskProfile = (props: any) => {
     const [isopenProjectpopup, setisopenProjectpopup] = useState(false);
     const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
     const [isShowSiteCompostion, setisShowSiteCompostion] = useState<any>('')
-    const [showComposition, setshowComposition] = useState(false);
-    const [SiteIcon, setSiteIcon] = useState('');
+    const [showComposition, setshowComposition] = useState(false);   
     const [OffshoreImageUrl, setOffshoreImageUrl] = useState([]);
     const [ApprovalStatus, setApprovalStatus] = useState(false);
 
@@ -335,9 +334,9 @@ const CopyTaskProfile = (props: any) => {
                     }
                 })
             }
-            let siteicon = GetSiteIcon(listName)
-            setSiteIcon(siteicon)
+            let siteicon = GetSiteIcon(listName)           
             let tempTask = {
+                SiteIcon: siteicon,
                 sitePage: propsValue.Context?._pageContext?._web?.title,
                 Comments: comments != null && comments != undefined ? comments : "",
                 Id: taskDetails["ID"],
@@ -623,7 +622,7 @@ const CopyTaskProfile = (props: any) => {
         for (let index = 0; index < results.length; index++) {
             let item = results[index];
             item.siteType = listName;
-            item.SiteIcon = SiteIcon;
+            item.SiteIcon = state?.Result?.SiteIcon;
             item.isLastNode = false;
             allDataOfTask.push(item);
 
@@ -1839,8 +1838,8 @@ const CopyTaskProfile = (props: any) => {
                         <section className='row m-0'>
                             <h2 className="heading d-flex p-0 justify-content-between align-items-center task-title">
                                 <span className='alignCenter'>
-                                    {SiteIcon != "" && <img className="imgWid29 pe-1 " title={state?.Result?.siteType} src={SiteIcon} />}
-                                    {SiteIcon === "" && <img className="imgWid29 pe-1 " src="" />}
+                                    {state?.Result?.SiteIcon != "" && <img className="imgWid29 pe-1 " title={state?.Result?.siteType} src={state?.Result?.SiteIcon} />}
+                                    {state?.Result?.SiteIcon === "" && <img className="imgWid29 pe-1 " src="" />}
                                     <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                         <span >{truncatedTitle?.length > 0 ? truncatedTitle : state?.Result?.Title}</span>
                                         {truncatedTitle?.length > 0 && <span className="f-13 popover__content" >
