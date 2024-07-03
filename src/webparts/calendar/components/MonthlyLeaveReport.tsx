@@ -568,8 +568,11 @@ export const MonthlyLeaveReport = (props: any) => {
     if (preSetEndDate != undefined) {
       setEndDate(preSetEndDate);
     }
+     if(preSetStartDate != undefined||preSetEndDate != undefined){
+      settypes("Pre-set");
+    }
     // setselectedType(true)
-    settypes("Pre-set");
+
     setPreSetPanelIsOpen(false)
   }, []);
   const preSetIconClick = () => {

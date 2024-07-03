@@ -10,6 +10,7 @@ let CreatedSmartFavId: any;
 let SmartFavDashboardTitle: any = undefined;
 let UpdatedItem: any = [];
 let BackupNewItem: any = [];
+let IsShowTileCopy: any = false;
 const AddEditWebpartTemplate = (props: any) => {
     props.props.siteUrl = props?.props?.Context?._pageContext?._web?.absoluteUrl;
     props.props.AdminconfigrationID = props?.props?.AdminConfigurationListId;
@@ -46,16 +47,17 @@ const AddEditWebpartTemplate = (props: any) => {
                         newArray = BackupNewItem;
                     newArray?.forEach((item: any, Itemindex: any) => {
                         item.WebpartTitle = SmartFavDashboardTitle;
+                        item.IsShowTile = IsShowTileCopy;
                         if (item?.IsShowTile === true)
                             item.TileName = item.WebpartTitle.replaceAll(" ", "")
                         else if (item?.IsShowTile != true)
                             item.TileName = '';
-                        delete item.IsShowTile;
                         if (props?.EditItem == undefined || props?.EditItem == '') {
                             item.WebpartId = 'WP-' + formatId(result)
                         }
                         if (CreatedSmartFavId)
                             item.smartFevId = CreatedSmartFavId;
+                        delete item.IsShowTile;
                     })
                     setNewItem(newArray);
                     if (props?.EditItem != undefined && props?.EditItem != '') {
@@ -99,6 +101,12 @@ const AddEditWebpartTemplate = (props: any) => {
                                 Object.keys(UpdatedItem[0]).forEach((key) => {
                                     if (key in item) {
                                         item[key] = UpdatedItem[0][key];
+                                        if (key == 'TileName') {
+                                            if (IsShowTileCopy === true)
+                                                item.TileName = item.WebpartTitle.replaceAll(" ", "")
+                                            else if (IsShowTileCopy != true)
+                                                item.TileName = '';
+                                        }
                                         if (key == 'smartFevId') {
                                             if (CreatedSmartFavId && item?.IsDashboardFav != true) {
                                                 item[key] = CreatedSmartFavId;
@@ -178,8 +186,10 @@ const AddEditWebpartTemplate = (props: any) => {
                 if (item.AdditonalHeader === true) {
                     item.IsDefaultTile = true;
                 }
-                if (item.TileName != undefined && item.TileName != '')
-                    item.IsShowTile = true
+                if (item.TileName != undefined && item.TileName != '') {
+                    item.IsShowTile = true;
+                    IsShowTileCopy = true;
+                }
                 if (item?.smartFevId != undefined && item?.smartFevId != '')
                     item.smartFevId = parseInt(item?.smartFevId)
             })
@@ -274,6 +284,27 @@ const AddEditWebpartTemplate = (props: any) => {
                                                                 const updatedItems = [...NewItem]; updatedItems[index] = { ...items, WebpartTitle: e.target.value };
                                                                 setNewItem(updatedItems); handleDashTitle(e.target.value);
                                                             }} />
+                                                    </div>
+                                                </Col>
+                                                {/* <Col sm="3" md="3" lg="3">
+                                                    <div> Show WebPart</div>
+                                                    <label className="switch me-2" htmlFor={`ShowWebpartCheckbox${index}`}>
+                                                        <input checked={items?.ShowWebpart} onChange={(e: any) => {
+                                                            const isChecked = e.target.checked;
+                                                            const updatedItems = [...NewItem]; ShowWebpartCopy = isChecked; updatedItems[index] = { ...items, ShowWebpart: isChecked };
+                                                            setNewItem(updatedItems);
+                                                            if (!isChecked) { alert('Webpart will not be show when toggle is Deactive!'); }
+                                                        }} type="checkbox" id={`ShowWebpartCheckbox${index}`} />
+                                                        {items?.ShowWebpart === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
+                                                    </label>
+                                                </Col> */}
+                                                <Col sm="4" md="4" lg="4">
+                                                    <div className="form-check form-check-inline m-4">
+                                                        <input type="checkbox" checked={items?.IsShowTile} className="form-check-input me-1" onChange={(e: any) => {
+                                                            const updatedItems = [...NewItem]; IsShowTileCopy = e.target.checked; updatedItems[index] = { ...items, IsShowTile: e.target.checked, };
+                                                            setNewItem(updatedItems);
+                                                        }} />
+                                                        <label className="form-check-label">Show Tile</label>
                                                     </div>
                                                 </Col>
                                             </Row>

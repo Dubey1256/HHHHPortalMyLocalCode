@@ -131,6 +131,7 @@ const Apps = (props: any) => {
   const [showTextarea, setShowTextarea] = useState(false);
   const [comment, setComment] = useState("");
   const [isDisabled, setIsDisabled] = useState(false);
+  const [hasDeletePermission, setHasDeletePermission]: any = React.useState(false);
   // For get query data from the querystring 
   const queryString = window.location.search;
   const params = new URLSearchParams(queryString);
@@ -468,6 +469,7 @@ const Apps = (props: any) => {
   };
   useEffect(() => {
     getTaskUser()
+    deletePermission()
     LoadAllNotificationConfigrations()
     getEvents();
   }, []);
@@ -1225,6 +1227,11 @@ function handleYearlyByDay(frequency: any, currentDate: any, dates: any, AllEven
         });
     }
   };
+
+  const deletePermission = async () => {
+    let permission = await globalCommon.verifyComponentPermission("DeleteLeavePermissionCalendar")
+    setHasDeletePermission(permission)
+  }
 
   const onRenderCustomHeader = () => {
     return (
@@ -2300,10 +2307,12 @@ function handleYearlyByDay(frequency: any, currentDate: any, dates: any, AllEven
                   Last Modified {MDate} {MTime} by {modofiedBy}
                 </div>
                 <div>
+                {hasDeletePermission && (
                   <a href="#" onClick={() => deleteElement(vId)}>
                     <span className="svg__iconbox svg__icon--trash"></span>{" "}
                     Delete this Item
                   </a>
+                )}
                   <VersionHistoryPopup
                     taskId={vId}
                     listId={props.props.SmalsusLeaveCalendar}

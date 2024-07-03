@@ -531,9 +531,14 @@ const ProjectManagementMain = (props: any) => {
         refreshData();
       }
       GetMasterData(false)
+    }else{
+      if(type == "UpdatedData"){
+        setpassdata(item);
+      }
+      LoadAllSiteTasks();
+      setisOpenEditPopup(false);
     }
 
-    setisOpenEditPopup(false);
     setIsTaggedCompTask(false);
   }, []);
 
@@ -1654,9 +1659,9 @@ const ProjectManagementMain = (props: any) => {
         accessorFn: (row) => row?.workingActionTitle,
         cell: ({ row }) => (
             <div className="alignCenter">
-                {row?.original?.workingActionValue?.map((elem: any) => {
+            {Array.isArray(row?.original?.workingActionValue) && row.original.workingActionValue.map((elem: any) => {
                     const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
-                    return relevantTitles?.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
+              return relevantTitles.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
                         <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
                     );
                 })}
@@ -2351,7 +2356,7 @@ const ProjectManagementMain = (props: any) => {
                                   masterTaskData={MasterListData}
                                   PortfolioFeature={Masterdata?.Item_x0020_Type == "Sprint" ? 'Feature' : ''}
                                   AllSitesTaskData={AllSitesAllTasks}
-                                  MasterdataItem={Masterdata}
+                                  MasterdataItem={Masterdata ? Masterdata: projectData}
                                   columns={column2} data={ProjectTableData} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
