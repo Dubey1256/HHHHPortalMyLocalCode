@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Panel, PanelType } from 'office-ui-fabric-react';
+import { Panel, PanelType,Modal  } from 'office-ui-fabric-react';
 import Tooltip from '../../../globalComponents/Tooltip'; 
-import GlobalTooltip from '../../../globalComponents/Tooltip'; 
 import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
 import "@pnp/sp/webs";
@@ -12,6 +11,7 @@ import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import ImageInformation from '../../EditPopupFiles/ImageInformation';
 import ReadyMadeTable from '../../../globalComponents/RadimadeTable';
+import { SendTeamMessage } from '../../../globalComponents/globalCommon';
 let mastertaskdetails: any = []
 let copyEditData: any = {}
 let mydataa: any = [];
@@ -19,9 +19,11 @@ let myTaskData: any = []
 let count = 0;
 let componentDetailsDaata: any = [];
 let tempmetadata: any = [];
+let TeamsMessage:any='';
 var tempArray: any = [];
 var selectedTasks: any = [];
 var AllListId: any;
+
 
 
 const EditDocumentpanel = (props: any) => {
@@ -45,6 +47,8 @@ const EditDocumentpanel = (props: any) => {
   const [searchedTaskData, setSearchedTaskData] = React.useState([]);
   const [TaggedSitesTask, setTaggedSitesTask] = React.useState<any>([]);
   const [isOpenComponentServicePopup, setIsOpenComponentServicePopup] = React.useState(false);
+const [ShowConfirmation, setShowConfirmation]: any = React.useState(false);
+  const [Email,setEmail]:any=React.useState('')
 
   let ItemRank = [
     { rankTitle: 'Select Item Rank', rank: null },
@@ -82,7 +86,14 @@ const EditDocumentpanel = (props: any) => {
     LoadSmartmetadata()
   }, [props?.editData != undefined])
 
+const cancelConfirmationPopup = () => {
+    setShowConfirmation(false);
+}
 
+const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
+    await SendTeamMessage([name], TeamsMessage, props.Context, props?.AllListId)
+    setShowConfirmation(false);
+  }
   const LoadSmartmetadata = async () => {
     let siteConfigSites: any = [];
     let web = new Web(props?.AllListId?.siteUrl);
@@ -423,7 +434,16 @@ const EditDocumentpanel = (props: any) => {
           const user = await sp.web.getFolderByServerRelativePath(EditdocumentsData?.FileDirRef).files.getByUrl(EditdocumentsData?.FileLeafRef).getLockedByUser();
           let name = user?.Title + ' - (' + user?.Email + ')'
           console.log(user)
-          alert(`Document you are trying to update/tag is locked by ${name}. Please ask them to close it and try again.`)
+          setEmail(user?.Email)
+          TeamsMessage=`<div>Hi ${user?.Title}, <br/> I am trying to make changes in <a href='${EditdocumentsData?.EncodedAbsUrl}?web=1'>${EditdocumentsData?.Title}</a> , but this is currently open in your system.<br/>
+          Can you please close the document so that I can move forward with my changes.
+          <br/>
+          Thanks,
+          <br/>
+          ${ props?.Context?.pageContext?.user?.displayName} </div> `
+          setShowConfirmation(true);
+          
+         
         }
       })
   }
@@ -808,17 +828,7 @@ const EditDocumentpanel = (props: any) => {
     setTaggedSitesTask(selectedTasks);
   }
 
-  const customRadimadeTable = () => {
-    return (
-      <>
-        <div className='subheading' >
-          Select Task
-        </div>
-        <GlobalTooltip ComponentId='843' />
-      </>
-    )
-  }
-
+  
   /////////folara editor function start//////////
   const HtmlEditorCallBack = (items: any) => {
     console.log(items);
@@ -1364,9 +1374,33 @@ const EditDocumentpanel = (props: any) => {
         />
       }
 
-      <Panel isOpen={isopenTaskpopup} isBlocking={false} onDismiss={() => setisopenTaskpopup(false)} type={PanelType.large} onRenderHeader={customRadimadeTable} >
+      <Panel isOpen={isopenTaskpopup} isBlocking={false} onDismiss={() => setisopenTaskpopup(false)} type={PanelType.large} >
         <ReadyMadeTable AllListId={AllListId} configration={"AllAwt"} TaskFilter={"PercentComplete lt '0.90'"} usedFor={'editdocument'} callBack={TaskCallback} closepopup={() => setisopenTaskpopup(false)} />
       </Panel>
+      <Modal titleAriaId={`UploadConfirmation`} isOpen={ShowConfirmation} onDismiss={cancelConfirmationPopup}>
+    <div className="modal-content border-0 rounded-0" style={{ width: '681px' }}>
+        <div className="modal-header">
+            <h5 className="modal-title">Alert</h5>
+            <span className="svg__iconbox svg__icon--cross" aria-label="Close" onClick={cancelConfirmationPopup}>
+               
+            </span>
+        </div>
+        <div className="modal-body">
+            <div className='clearfix mx-2'>
+                <Col className='Alltable mt-2'>
+                    <div>
+                        {`Document you are trying to update/tag is locked by ${Email}.`}
+                    </div>
+                </Col>
+            </div>
+        </div>
+        <footer className='text-end p-2'>
+            {/* <button className="btn btn-primary" onClick={() => cancelConfirmationPopup()} disabled>Forcefully Close</button> */}
+            <button className="btn btn-primary" onClick={() => SendTeamMessages(Email,TeamsMessage)}>Ask To Close</button>
+            <button className="btn btn-primary" onClick={() => cancelConfirmationPopup()}>Cancel</button>
+        </footer>
+    </div>
+</Modal>
 
     </>
   )
