@@ -1597,6 +1597,8 @@ const EditTaskPopup = (Items: any) => {
 
                         } else {
                             setTaggedPortfolioData(DataItem);
+                            setTaskResponsibleTeam(DataItem[0].ResponsibleTeam)
+                            setTaskTeamMembers(DataItem[0].TeamMembers)
                             let ComponentType: any = DataItem[0].PortfolioType.Title;
                             getLookUpColumnListId(
                                 siteUrls,
@@ -1674,35 +1676,35 @@ const EditTaskPopup = (Items: any) => {
                     if (EditDataBackup?.Categories?.includes('UX-New')) {
                         setDesignNewTemplates(true)
                     }
-               else{
-                const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
-                if (RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length > 0) {
-                    console.log(EditData)
-                    firstIndexData = RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
-                    let imageData = RestructureData?.BasicImageInfo != null ? JSON.parse(RestructureData?.BasicImageInfo) : []
-                    RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
-                    let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
+                    else {
+                        const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
+                        if (RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length > 0) {
+                            console.log(EditData)
+                            firstIndexData = RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
+                            let imageData = RestructureData?.BasicImageInfo != null ? JSON.parse(RestructureData?.BasicImageInfo) : []
+                            RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
+                            let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
 
-                    let designTemplates: any = [firstIndexData, {
-                        setTitle: "SET1",
-                        setImagesInfo: imageData?.length > 0 ? imageData : [],
-                        TemplatesArray: setDataFeedback
-                    }]
-                    RestructureData.FeedBackBackup[0].FeedBackDescriptions = designTemplates
-                    let updatedItem: any = {
-                        ...EditDataBackup,
-                        FeedBackBackup: RestructureData.FeedBackBackup,
-                        FeedBackArray: designTemplates,
-                        FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
-                    };
-                    setEditData(updatedItem);
-                    updateFeedbackArray[0].FeedBackDescriptions = designTemplates
-                    EditDataBackup = updatedItem;
-                }
+                            let designTemplates: any = [firstIndexData, {
+                                setTitle: "SET1",
+                                setImagesInfo: imageData?.length > 0 ? imageData : [],
+                                TemplatesArray: setDataFeedback
+                            }]
+                            RestructureData.FeedBackBackup[0].FeedBackDescriptions = designTemplates
+                            let updatedItem: any = {
+                                ...EditDataBackup,
+                                FeedBackBackup: RestructureData.FeedBackBackup,
+                                FeedBackArray: designTemplates,
+                                FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
+                            };
+                            setEditData(updatedItem);
+                            updateFeedbackArray[0].FeedBackDescriptions = designTemplates
+                            EditDataBackup = updatedItem;
+                        }
 
-                setDesignNewTemplates(true)
-               }
-                  
+                        setDesignNewTemplates(true)
+                    }
+
                 }
             })
             BackupTaskCategoriesData = TempArrya;
@@ -1721,7 +1723,7 @@ const EditTaskPopup = (Items: any) => {
                     let firstIndexData: any = []
                     if (EditDataBackup?.Categories?.includes('UX-New')) {
                         setDesignNewTemplates(true)
-                    }else{
+                    } else {
                         const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
                         if (RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length > 0) {
                             console.log(EditData)
@@ -1729,7 +1731,7 @@ const EditTaskPopup = (Items: any) => {
                             let imageData = RestructureData?.BasicImageInfo != null ? JSON.parse(RestructureData?.BasicImageInfo) : []
                             RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
                             let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
-    
+
                             let designTemplates: any = [firstIndexData, {
                                 setTitle: "SET1",
                                 setImagesInfo: imageData?.length > 0 ? imageData : [],
@@ -1746,10 +1748,10 @@ const EditTaskPopup = (Items: any) => {
                             updateFeedbackArray[0].FeedBackDescriptions = designTemplates
                             EditDataBackup = updatedItem;
                         }
-    
+
                         setDesignNewTemplates(true)
                     }
-                    
+
                 }
             });
         }
@@ -4826,6 +4828,9 @@ const EditTaskPopup = (Items: any) => {
         });
         var count = 0;
         timesheetData?.forEach(async (val: any) => {
+            if (SelectedSite == 'Offshore Tasks') {
+                SelectedSite = 'OffshoreTasks'
+            }
             var siteType: any = "Task" + SelectedSite + "Id";
             var SiteId = "Task" + Items.Items.siteType;
             var Data = await web.lists
@@ -5311,7 +5316,7 @@ const EditTaskPopup = (Items: any) => {
         if (usedFor == "Remove") {
             let CopyWorkingActionData: any = [...WorkingAction];
             let TempWorkingActionData: any = removeDataFromInformationData(CopyWorkingActionData, ActionType, Index);
-            EditData.WorkingAction=[...TempWorkingActionData]
+            EditData.WorkingAction = [...TempWorkingActionData]
             console.log("Updated Data after removing User:", TempWorkingActionData);
             setWorkingAction([...EditData.WorkingAction])
         }

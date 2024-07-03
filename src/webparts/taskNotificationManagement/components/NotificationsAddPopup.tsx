@@ -7,7 +7,9 @@ import Button from 'react-bootstrap/Button';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import { Card, CardHeader, CardPreview } from "@fluentui/react-components";
 import AddTaskConfigPopup from './AddTaskConfigPopup';
-import Tooltip from '../../../globalComponents/Tooltip';
+import GlobalTooltip from '../../../globalComponents/Tooltip';
+import { Tooltip } from "@fluentui/react-components";
+import VersionHistory from '../../../globalComponents/VersionHistroy/VersionHistory'
 let users: any = []
 let PortFolioType: any = [];
 let SelectedPortfolio: any
@@ -55,14 +57,13 @@ export const NotificationsAddPopup = (props: any) => {
                 <div className='subheading'>
                     {props?.SelectedEditItem?.Id != undefined ? `Edit Configuration - ${props?.SelectedEditItem?.Title}` : 'Add Configuration'}
                 </div>
-                <Tooltip ComponentId={'6755'} />
+                <GlobalTooltip ComponentId={'6755'} />
             </>
         );
     };
 
     const closePopup = (type?: any | undefined) => {
         props.callBack(type);
-
 
     }
     const loadusersAndGroups = async () => {
@@ -326,17 +327,10 @@ export const NotificationsAddPopup = (props: any) => {
                                 <label className="form-label full-width">
                                     Select Portfolio Type
                                 </label>
-                                <select
-                                    className="form-select"
-                                    onChange={(e) => { showTaskStatus(e?.target?.value) }}
-                                >
+                                <select className="form-select" onChange={(e) => { showTaskStatus(e?.target?.value) }}>
                                     {PortFolioType.map(function (portfolioData: any, i: any) {
                                         return (
-                                            <option
-                                                key={i}
-
-                                                value={portfolioData.Title}
-                                            >
+                                            <option key={i} value={portfolioData.Title} >
                                                 {portfolioData.Title}
                                             </option>
                                         );
@@ -349,9 +343,13 @@ export const NotificationsAddPopup = (props: any) => {
                                     {TaskStatus?.map((StatusData: any) => {
                                         return (
                                             <>
-                                                <div className={`${percentageComplete == StatusData?.value ? 'alignCenter border p-2 activeCategory' : 'alignCenter border p-2 hoverCategory'}`}>
+                                                <div onClick={() => setPercentageComplete(StatusData?.value)} className={`${percentageComplete == StatusData?.value ? 'alignCenter border p-1 activeCategory' : 'alignCenter border p-1 hoverCategory'}`}>
                                                     <a> {StatusData?.status}</a>
-                                                    <span className="hreflink ml-auto svg__icon--Plus wid30 svg__iconbox" onClick={() => setPercentageComplete(StatusData?.value)}></span>
+                                                    <Tooltip withArrow content={'Add Configuration'} relationship="label" positioning="below">
+                                                        <div className='alignCenter ml-auto hover-text'>
+                                                            <span className="hreflink ml-auto svg__icon--Plus wid30 svg__iconbox"></span>
+                                                        </div>
+                                                    </Tooltip>
                                                 </div>
                                             </>
                                         )
@@ -381,15 +379,32 @@ export const NotificationsAddPopup = (props: any) => {
                                                                 </span>
                                                             </div>
 
+                                                            {config?.NotificationType == "Email" && <div className='alignCenter'>
+                                                                <label className='form-label'>Subject :</label>
+                                                                <span className='ms-2'>
+                                                                    {config?.subject}
+                                                                </span>
+                                                            </div>}
+
+                                                            {(config?.NotificationType == "Team" || config?.NotificationType == "Email") && <div className='alignCenter'>
+                                                                <label className='form-label'>Notify Content :</label>
+                                                                <span className='ms-2'>
+                                                                    {config?.notifyContent}
+                                                                </span>
+                                                            </div>}
+
                                                             <div>
-                                                                <label className='form-label'>Avoid ItSelf :</label>
+                                                                <label className='form-label'>Avoid Itself :</label>
                                                                 <span className='SpfxCheckRadio ms-2'>
                                                                     <input type="checkbox" className='form-check-input' checked={config?.avoidItself == "true"} />
                                                                 </span>
                                                             </div>
                                                             <div>
                                                                 <label className='form-label'>Category :</label>
-                                                                <span className='ms-2'>{config?.Category?.length > 1 ? config?.Category?.join(',') : config?.Category} </span>
+                                                                <span className='ms-2'>
+                                                                    {Array.isArray(config?.Category) ?
+                                                                        config.Category.map((item: any) => (typeof item === 'object' ? item.Title : item)).join(', ') :
+                                                                        config.Category}</span>
                                                             </div>
                                                             <div>
                                                                 <label className='form-label'>Exception Category :</label>
@@ -429,9 +444,19 @@ export const NotificationsAddPopup = (props: any) => {
                                 {console.log("footerdiv")}
                                 <div><span className='pe-2'>Created</span><span className='pe-2'>{props?.SelectedEditItem?.Created !== null ? props?.SelectedEditItem?.Created : ""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Author?.Title}</a></span></div>
                                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{props?.SelectedEditItem?.Modified !== null ? props?.SelectedEditItem?.Modified : ""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Editor?.Title}</a></span></div>
-                                <div
-                                    onClick={() => deleteDocumentsData(props?.SelectedEditItem?.Id)}
-                                    className="hreflink"><span style={{ marginLeft: '-4px' }} className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item</div>
+                                <div>
+                                    <a onClick={() => deleteDocumentsData(props?.SelectedEditItem?.Id)} className="hreflink"><span style={{ marginLeft: '-4px' }} className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item
+                                    </a>
+                                    |
+                                    <span>
+                                        <VersionHistory
+                                            taskId={props?.SelectedEditItem.Id}
+                                            listId={props?.AllListId?.NotificationsConfigrationListID}
+                                            siteUrls={props?.AllListId?.siteUrl}
+                                            RequiredListIds={props?.AllListId}
+                                        />
+                                    </span>
+                                </div>
                             </div>}
                         </div>
 
