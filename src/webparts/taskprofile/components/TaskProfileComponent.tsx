@@ -169,7 +169,7 @@ const CopyTaskProfile = (props: any) => {
             MasterTaskListID: propsValue.MasterTaskListID,
             siteUrl: propsValue?.siteUrl,
             ComponentType: ComponentType,
-            TaskUserListID: propsValue.TaskUserListID,
+            TaskUserListID: propsValue?.TaskUserListID,
         };
 
         let CallBackData = await globalCommon.GetServiceAndComponentAllData(PropsObject);
