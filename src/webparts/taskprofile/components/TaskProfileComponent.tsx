@@ -73,7 +73,7 @@ const CopyTaskProfile = (props: any) => {
     const [isopenProjectpopup, setisopenProjectpopup] = useState(false);
     const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
     const [isShowSiteCompostion, setisShowSiteCompostion] = useState<any>('')
-    const [showComposition, setshowComposition] = useState(true);   
+    const [showComposition, setshowComposition] = useState(false);
     const [OffshoreImageUrl, setOffshoreImageUrl] = useState([]);
     const [ApprovalStatus, setApprovalStatus] = useState(false);
 
@@ -169,7 +169,7 @@ const CopyTaskProfile = (props: any) => {
             MasterTaskListID: propsValue.MasterTaskListID,
             siteUrl: propsValue?.siteUrl,
             ComponentType: ComponentType,
-            TaskUserListID: propsValue?.TaskUserListID,
+            TaskUserListID: propsValue.TaskUserListID,
         };
 
         let CallBackData = await globalCommon.GetServiceAndComponentAllData(PropsObject);
@@ -334,7 +334,7 @@ const CopyTaskProfile = (props: any) => {
                     }
                 })
             }
-            let siteicon = GetSiteIcon(listName)           
+            let siteicon = GetSiteIcon(listName)
             let tempTask = {
                 SiteIcon: siteicon,
                 sitePage: propsValue.Context?._pageContext?._web?.title,
@@ -1812,7 +1812,7 @@ const CopyTaskProfile = (props: any) => {
                                                     </li>}
                                                     {breadcrumbitem?.siteType !== "Master Tasks" && <li>
                                                         <a target="_blank" data-interception="off" href={`${state?.Result?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
-                                                        <span></span>
+                                                        {breadcrumbitem?.Id != itemID && <span> <SlArrowRight /></span>}
                                                     </li>}
                                                     {state.breadCrumData.length == index &&
                                                         <li>
