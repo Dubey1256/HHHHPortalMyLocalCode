@@ -1517,6 +1517,8 @@ const EditTaskPopup = (Items: any) => {
 
                         } else {
                             setTaggedPortfolioData(DataItem);
+                            setTaskResponsibleTeam( DataItem[0].ResponsibleTeam)
+                            setTaskTeamMembers(DataItem[0].TeamMembers)
                             let ComponentType: any = DataItem[0].PortfolioType.Title;
                             getLookUpColumnListId(
                                 siteUrls,
@@ -4422,6 +4424,9 @@ const EditTaskPopup = (Items: any) => {
         });
         let count = 0;
         timeSheetData?.forEach(async (val: any) => {
+            if(SelectedSite=='Offshore Tasks'){
+                SelectedSite='OffshoreTasks'
+            }
             let siteType: any = "Task" + SelectedSite + "Id";
             let SiteId = "Task" + Items.Items.siteType;
             let Data = await web.lists
