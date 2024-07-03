@@ -4110,7 +4110,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     return (
       <div>
         <div className="col-sm-12 padL-0">
-          <h2 className="heading">Timesheet <a className="f-13 pull-right" data-interception="off" target="_blank" href='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CategoriesWeeklyMultipleReportDetails-Old.aspx'>Old Categories Weekly Multiple Report Details</a></h2>
+          <h2 className="heading">Timesheet
+          </h2>
         </div>
 
         <div className="smartFilter bg-light border mb-3">

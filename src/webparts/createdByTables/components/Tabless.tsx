@@ -659,7 +659,7 @@ const Tabless = (props: any) => {
         <div className='col alignCenter justify-content-end'>
           <input className='form-check-input me-1 mt-0' type="checkbox" value={'Component'} onChange={(e: any) => filterCom(e)} /> Component
           <input className='form-check-input me-1 mt-0 ms-2' type="checkbox" value={'Service'} onChange={(e: any) => filterCom(e)} /> Service
-          <a
+          {/* <a
             target='_blank'
             href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`}
             rel='noopener noreferrer'
@@ -667,7 +667,7 @@ const Tabless = (props: any) => {
             className="siteColor list-unstyled fw-bold ms-2"
           >
             Old Task View
-          </a>
+          </a> */}
 
         </div></div>
       </section>

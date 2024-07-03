@@ -1854,11 +1854,11 @@ const CopyTaskProfile = (props: any) => {
                                     }
                                     {currentUser != undefined && state.sendMail && state.emailStatus != "" && <EmailComponenet approvalcallback={() => { approvalcallback() }} Context={propsValue.Context} emailStatus={state.emailStatus} currentUser={currentUser} items={state.Result} />}
                                 </span>
-                                {(state?.Result?.siteUrl?.includes('SP')) ? (
+                                {/* {(state?.Result?.siteUrl?.includes('SP')) ? (
                                     <span className="text-end fs-6">
                                         <a className='oldtitle' target='_blank' data-interception="off" href={oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a>
                                     </span>
-                                ) : null}
+                                ) : null} */}
 
                             </h2>
                         </section>

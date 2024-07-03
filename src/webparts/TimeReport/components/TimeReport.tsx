@@ -1489,9 +1489,9 @@ const TimeReport = (props: any) => {
                         <EditPage context={props?.ContextData} changeHeader={changeHeader} />
                     </div>
                     <div className='col-sm-9 pe-0'>
-                        <h6 className='pull-right'><b><a data-interception="off"
+                        {/* <h6 className='pull-right'><b><a data-interception="off"
                             target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport-old.aspx">Old Time Report</a></b>
-                        </h6>
+                        </h6> */}
                     </div>
                 </div>
                 <div className='row' style={{ padding: "0px 2px" }}>

@@ -305,6 +305,8 @@ const GroupByDashboard = (SelectedProp: any) => {
 
     setAllMasterTasks(copySiticonedata);
     backupAllMaster = componentDetails?.GetAllMasterTaskData;
+    backupAllMaster = backupAllMaster.filter((item: any) => item.Item_x0020_Type !== 'Project');
+
     let groupedDatacopy = sortGroupedData(groupedData);
     groupedDatacopy?.map((item: any) => {
       AllUsers?.map((data: any) => {
@@ -363,7 +365,7 @@ const GroupByDashboard = (SelectedProp: any) => {
     });
 
     data?.forEach(item => {
-      if (item?.AssignedTo) {
+      if (item?.AssignedTo && item?.Item_x0020_Type !== 'Project') {
         item?.AssignedTo?.forEach((user: { Title: string }) => {
           for (let i = 0; i < groupedData.length; i++) {
             if (user.Title == 'Sameer  Gupta') {
@@ -972,7 +974,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                   <div className="col-sm-12 p-0 smart">
                     <div>
                       <div>
-                        <GlobalCommanTable hideAddActivityBtn={true} hideShowingTaskCountToolTip={true} showRestructureButton={true}
+                        <GlobalCommanTable hideAddActivityBtn={true} hideShowingTaskCountToolTip={true} 
                           masterTaskData={allMasterTaskDataFlatLoadeViewBackup} precentComplete={precentComplete} AllMasterTasksData={AllMasterTasksData}
                           ref={childRef} callChildFunction={callChildFunction} columns={columns}
                           data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem}

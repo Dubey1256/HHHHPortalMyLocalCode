@@ -1879,7 +1879,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
   );
   const HelpInformationHtmlEditorCallBack = React.useCallback(
     (Editorvalue: any) => {
-      let message: any = Editorvalue;
+      let message: any = Editorvalue != '<p>null</p>\n'?Editorvalue:'';
       EditData.Help_x0020_Information = message;
       PostHelp_x0020_Information = EditData?.Help_x0020_Information;
       console.log("Editor Data call back ====", Editorvalue);
@@ -1888,7 +1888,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
   );
   const QuestionDescriptionEditorCallBack = React.useCallback(
     (Editorvalue: any) => {
-      let message: any = Editorvalue;
+      let message: any = Editorvalue != '<p>null</p>\n'?Editorvalue:'';
       EditData.QuestionDescription = message;
       PostQuestionDescription = EditData?.QuestionDescription;
       console.log("Editor Data call back ====", Editorvalue);
@@ -5064,7 +5064,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                 editorValue={
                   EditData.QuestionDescription != undefined
                     ? EditData.QuestionDescription
-                    : dataUpdate?.Body
+                    :  dataUpdate?.Body !== 'null'?dataUpdate?.Body:''
                 }
                 HtmlEditorStateChange={QuestionDescriptionEditorCallBack}
               ></HtmlEditorCard>
@@ -5212,7 +5212,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                 editorValue={
                   EditData.QuestionDescription != undefined
                     ? EditData.QuestionDescription
-                    : helpDataUpdate?.Body
+                    : helpDataUpdate?.Body !== 'null'?helpDataUpdate?.Body:''
                 }
                 HtmlEditorStateChange={QuestionDescriptionEditorCallBack}
               ></HtmlEditorCard>
