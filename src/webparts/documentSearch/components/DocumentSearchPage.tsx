@@ -501,11 +501,11 @@ export default function DocumentSearchPage(Props: any) {
                 <h2 className="d-flex justify-content-between heading align-items-center siteColor serviceColor_Active">
                     <div>Document Search
                     </div>
-                    {!CurrentSiteCheck &&
+                    {/* {!CurrentSiteCheck &&
                         <div className="text-end fs-6">
                             <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/document-search-old.aspx">Old Document Search</a>
                         </div>
-                    }
+                    } */}
                 </h2>
             </div>
             {AllDocs && <div>

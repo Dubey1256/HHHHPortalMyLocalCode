@@ -562,11 +562,11 @@ export default function ManageSmartMetadata(selectedProps: any) {
                             :
                             <h3 className="heading">Manage Smart MetaData</h3>
                         }
-                        <span>
+                        {/* <span>
                             <a data-interception="off" target="_blank" href={`${selectedProps?.AllList?.SPSitesListUrl}/SitePages/managesmartmetadata-old.aspx`} >
                                 Old ManageSmartMetadata
                             </a>
-                        </span>
+                        </span> */}
                     </div>
                     <div>
                         <span>

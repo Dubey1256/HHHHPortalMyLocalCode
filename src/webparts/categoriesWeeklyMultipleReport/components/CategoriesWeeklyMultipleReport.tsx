@@ -383,7 +383,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         cell: ({ row }: any) => (
           <div className="alignCenter">
             {row?.original?.siteImage != undefined && (
-              <div className="alignCenter" title="Show All Child">
+              <div className="alignCenter" title={row?.original?.TaskType?.Title}>
                 <img className='workmember' title={row?.original?.TaskType?.Title}
                   src={row?.original?.siteImage}>
                 </img>
@@ -1661,19 +1661,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         filterItemTimeTab.push(objgre);
       }
     }
-
-    // let filterarray: any = [];
-    // if (this?.state?.filterItems?.length > 0) {
-    //   let roesItem = this.state?.filterItems?.filter((obj: any) => obj?.IsParent === true);
-    //   if (roesItem?.length > 0) {
-    //     filterItemTimeTab?.forEach((filter: any) => {
-    //       roesItem.forEach((smart: any) => {
-    //         if (smart?.Title === filter?.ListName)
-    //           filterarray.push(filter);
-    //       })
-    //     })
-    //   }
-    // }
 
 
     console.log(filterItemTimeTab);
@@ -4123,7 +4110,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     return (
       <div>
         <div className="col-sm-12 padL-0">
-          <h2 className="heading">Timesheet <a className="f-13 pull-right" data-interception="off" target="_blank" href='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CategoriesWeeklyMultipleReportDetails-Old.aspx'>Old Categories Weekly Multiple Report Details</a></h2>
+          <h2 className="heading">Timesheet
+          </h2>
         </div>
 
         <div className="smartFilter bg-light border mb-3">
@@ -4418,7 +4406,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           onDismiss={this.cancelsmarttablePopup}
           isBlocking={false}
         >
-          <div>
+          <div >
             <div className="modal-body">
               <div className="col-sm-12">
                 <div className="Alltable mb-10">

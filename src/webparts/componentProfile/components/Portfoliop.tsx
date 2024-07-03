@@ -1372,7 +1372,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                             </>
                           )}
                       </span>
-                      {SelectedProp?.Context?._pageContext?._web?.title ===
+                      {/* {SelectedProp?.Context?._pageContext?._web?.title ===
                         "SP" && (
                           <span className="text-end fs-6">
                             <a
@@ -1387,7 +1387,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                               Old Portfolio profile page
                             </a>
                           </span>
-                        )}
+                        )} */}
                     </h2>
                   </>
                 ))}

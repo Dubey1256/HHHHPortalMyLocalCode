@@ -620,13 +620,13 @@ const TopNavigation = (dynamicData: any) => {
           <div className="siteColor headign">Update TopNavigation - ({CurrentSite})</div>
           <div className="text-end fs-6">
           <span className="hyperlink me-3" onClick={() => sortItem(root)} >Change Sort Order</span>
-              <a
+              {/* <a
                 data-interception="off"
                 target="_blank"
                 href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/UpdateTopNavigation-old.aspx"
               >
                 Old Update TopNavigation
-              </a>
+              </a> */}
           </div>
           
           </h2>
