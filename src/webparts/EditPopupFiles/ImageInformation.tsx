@@ -531,7 +531,7 @@ const ImagetabFunction = (props: any) => {
 
                                                     {loadedImages.map((img) => (<img src={img?.ServerRelativeUrl} onClick={() => ExistingImageUpload(img)} />))}
                                                 </div>
-                                                {chooseExistingFile?.ChooseExistingImages1.length > 18 && <button onClick={() => loadMore()} type='button'>Load More</button>}
+                                                {chooseExistingFile?.ChooseExistingImages1.length > 18 && <button onClick={() => loadMore()} type='button' className='btn btn-primary'>Load More</button>}
                                             </div>
                                         </Tab>
                                     </Tabs>
