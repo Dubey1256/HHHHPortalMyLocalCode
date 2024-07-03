@@ -2072,6 +2072,9 @@ const EditTaskPopup = (Items: any) => {
                         EditData.TeamMembers?.length > 0
                     ) {
                         setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
+
+                        EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "QA")
+                        setWorkingAction(EditData?.WorkingAction)
                     } else {
                         setWorkingMember(143);
                     }
@@ -2152,6 +2155,16 @@ const EditTaskPopup = (Items: any) => {
     };
 
     //  ###################### This is Common Function for Change The Team Members According to Change Status ######################
+
+    const removeWorkingMembers = (workingActionValue: any, FilterType: any) => {
+        workingActionValue.map((workingActions: any,index:any) => {
+            if (workingActions?.Title == "WorkingDetails") {
+                workingActionValue.splice(index,1)
+            }
+        })
+        return workingActionValue
+    }
+
 
     const setWorkingMemberFromTeam = (
         filterArray: any,
