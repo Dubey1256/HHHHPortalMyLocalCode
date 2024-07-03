@@ -2356,7 +2356,7 @@ const ProjectManagementMain = (props: any) => {
                                   masterTaskData={MasterListData}
                                   PortfolioFeature={Masterdata?.Item_x0020_Type == "Sprint" ? 'Feature' : ''}
                                   AllSitesTaskData={AllSitesAllTasks}
-                                  MasterdataItem={Masterdata}
+                                  MasterdataItem={Masterdata ? Masterdata: projectData}
                                   columns={column2} data={ProjectTableData} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}

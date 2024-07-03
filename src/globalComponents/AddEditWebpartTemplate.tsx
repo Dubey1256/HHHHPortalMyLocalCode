@@ -101,6 +101,12 @@ const AddEditWebpartTemplate = (props: any) => {
                                 Object.keys(UpdatedItem[0]).forEach((key) => {
                                     if (key in item) {
                                         item[key] = UpdatedItem[0][key];
+                                        if (key == 'TileName') {
+                                            if (IsShowTileCopy === true)
+                                                item.TileName = item.WebpartTitle.replaceAll(" ", "")
+                                            else if (IsShowTileCopy != true)
+                                                item.TileName = '';
+                                        }
                                         if (key == 'smartFevId') {
                                             if (CreatedSmartFavId && item?.IsDashboardFav != true) {
                                                 item[key] = CreatedSmartFavId;
