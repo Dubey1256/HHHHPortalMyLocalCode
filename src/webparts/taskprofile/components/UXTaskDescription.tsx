@@ -84,11 +84,16 @@ const uxdescriptions = (props: any) => {
 
 
     //===============traffic light function ==================
-    const changeTrafficLigth = async (index: any, item: any) => {
+    const changeTrafficLigth = async (index: any, item: any,obj:any) => {
         console.log(index);
         console.log(item);
         if ((Result?.Approver?.AssingedToUser?.Id == props?.currentUser[0]?.Id) || (Result?.Approver?.Approver[0]?.Id == props?.currentUser[0]?.Id)) {
-            let tempData: any = TaskFeedbackData[index];
+            if (obj === 'objective') {                
+                var tempData: any = TaskFeedbackData[index];
+            }
+            else {
+                var tempData: any = TaskFeedbackData?.[CurrentActiveTab].TemplatesArray?.[index];
+            }
             var approvalDataHistory = {
                 ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
                 Id: props?.currentUser[0].Id,
@@ -126,18 +131,28 @@ const uxdescriptions = (props: any) => {
             console.log(TaskFeedbackData);
             await onPost();
             if (Result?.FeedBack != undefined) {
-                await checkforMail(Result?.FeedBack[0].FeedBackDescriptions, item, tempData);
+                if (obj === 'objective') {                    
+                    await checkforMail(TaskFeedbackData, item, tempData);
+                }
+                else {
+                    await checkforMail(TaskFeedbackData[CurrentActiveTab].TemplatesArray, item, tempData);                  
+                }
 
             }
         }
     }
 
-    const changeTrafficLigthsubtext = async (parentindex: any, subchileindex: any, status: any) => {
+    const changeTrafficLigthsubtext = async (parentindex: any, subchileindex: any, status: any,obj:any) => {
         console.log(parentindex);
         console.log(subchileindex);
         console.log(status);
         if ((Result?.Approver?.AssingedToUser?.Id == props?.currentUser[0]?.Id) || (Result?.Approver?.Approver[0]?.Id == props?.currentUser[0]?.Id)) {
-            let tempData: any = TaskFeedbackData[parentindex];
+            if (obj === 'objective') {
+                var tempData: any = TaskFeedbackData[parentindex];
+            }
+            else {
+                var tempData: any = TaskFeedbackData?.[CurrentActiveTab].TemplatesArray?.[parentindex];
+            }
             var approvalDataHistory = {
                 ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
                 Id: props?.currentUser[0].Id,
@@ -175,7 +190,13 @@ const uxdescriptions = (props: any) => {
             await onPost();
 
             if (Result?.FeedBack != undefined) {
-                await checkforMail(TaskFeedbackData, status, tempData?.Subtext[subchileindex]);
+                if (obj === 'objective') {
+                    await checkforMail(TaskFeedbackData, status, tempData?.Subtext[subchileindex]);
+                }
+                else {
+                    await checkforMail(TaskFeedbackData[CurrentActiveTab].TemplatesArray, status, tempData?.Subtext[subchileindex]);                 
+                }
+                
             }
         }
     }
@@ -907,16 +928,16 @@ const uxdescriptions = (props: any) => {
                                                             {props?.ApprovalStatus ?
                                                                 <span className="alignCenter">
                                                                     <span title="Rejected"
-                                                                        onClick={() => changeTrafficLigth(i, "Reject")}
+                                                                        onClick={() => changeTrafficLigth(i, "Reject",'objective')}
                                                                         className={fbData['isShowLight'] == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
                                                                     >
                                                                     </span>
                                                                     <span
-                                                                        onClick={() => changeTrafficLigth(i, "Maybe")}
+                                                                        onClick={() => changeTrafficLigth(i, "Maybe",'objective')}
                                                                         title="Maybe" className={fbData['isShowLight'] == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
                                                                     </span>
                                                                     <span title="Approved"
-                                                                        onClick={() => changeTrafficLigth(i, "Approve")}
+                                                                        onClick={() => changeTrafficLigth(i, "Approve",'objective')}
                                                                         className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                                     </span>
@@ -1070,16 +1091,16 @@ const uxdescriptions = (props: any) => {
                                                                 {props?.ApprovalStatus ?
                                                                     <span className="alignCenter">
                                                                         <span title="Rejected"
-                                                                            onClick={() => changeTrafficLigthsubtext(i, j, "Reject")}
+                                                                            onClick={() => changeTrafficLigthsubtext(i, j, "Reject",'objective')}
                                                                             className={fbSubData.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
                                                                         >
                                                                         </span>
                                                                         <span title="Maybe"
-                                                                            onClick={() => changeTrafficLigthsubtext(i, j, "Maybe")}
+                                                                            onClick={() => changeTrafficLigthsubtext(i, j, "Maybe",'objective')}
                                                                             className={fbSubData?.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
                                                                         </span>
                                                                         <span title="Approved"
-                                                                            onClick={() => changeTrafficLigthsubtext(i, j, "Approve")}
+                                                                            onClick={() => changeTrafficLigthsubtext(i, j, "Approve",'objective')}
                                                                             className={fbSubData?.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                                         </span>
@@ -1337,16 +1358,16 @@ const uxdescriptions = (props: any) => {
                                                                         {props?.ApprovalStatus ?
                                                                             <span className="alignCenter">
                                                                                 <span title="Rejected"
-                                                                                    onClick={() => changeTrafficLigth(i, "Reject")}
+                                                                                    onClick={() => changeTrafficLigth(i, "Reject",'tab')}
                                                                                     className={fbData['isShowLight'] == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
                                                                                 >
                                                                                 </span>
                                                                                 <span
-                                                                                    onClick={() => changeTrafficLigth(i, "Maybe")}
+                                                                                    onClick={() => changeTrafficLigth(i, "Maybe",'tab')}
                                                                                     title="Maybe" className={fbData['isShowLight'] == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
                                                                                 </span>
                                                                                 <span title="Approved"
-                                                                                    onClick={() => changeTrafficLigth(i, "Approve")}
+                                                                                    onClick={() => changeTrafficLigth(i, "Approve",'tab')}
                                                                                     className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                                                 </span>
@@ -1503,16 +1524,16 @@ const uxdescriptions = (props: any) => {
                                                                             {props?.ApprovalStatus ?
                                                                                 <span className="alignCenter">
                                                                                     <span title="Rejected"
-                                                                                        onClick={() => changeTrafficLigthsubtext(i, j, "Reject")}
+                                                                                        onClick={() => changeTrafficLigthsubtext(i, j, "Reject",'tab')}
                                                                                         className={fbSubData.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
                                                                                     >
                                                                                     </span>
                                                                                     <span title="Maybe"
-                                                                                        onClick={() => changeTrafficLigthsubtext(i, j, "Maybe")}
+                                                                                        onClick={() => changeTrafficLigthsubtext(i, j, "Maybe",'tab')}
                                                                                         className={fbSubData?.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
                                                                                     </span>
                                                                                     <span title="Approved"
-                                                                                        onClick={() => changeTrafficLigthsubtext(i, j, "Approve")}
+                                                                                        onClick={() => changeTrafficLigthsubtext(i, j, "Approve",'tab')}
                                                                                         className={fbSubData?.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                                                     </span>

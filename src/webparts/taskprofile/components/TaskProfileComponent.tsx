@@ -73,8 +73,7 @@ const CopyTaskProfile = (props: any) => {
     const [isopenProjectpopup, setisopenProjectpopup] = useState(false);
     const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
     const [isShowSiteCompostion, setisShowSiteCompostion] = useState<any>('')
-    const [showComposition, setshowComposition] = useState(false);
-    const [SiteIcon, setSiteIcon] = useState('');
+    const [showComposition, setshowComposition] = useState(true);
     const [OffshoreImageUrl, setOffshoreImageUrl] = useState([]);
     const [ApprovalStatus, setApprovalStatus] = useState(false);
 
@@ -336,8 +335,8 @@ const CopyTaskProfile = (props: any) => {
                 })
             }
             let siteicon = GetSiteIcon(listName)
-            setSiteIcon(siteicon)
             let tempTask = {
+                SiteIcon: siteicon,
                 sitePage: propsValue.Context?._pageContext?._web?.title,
                 Comments: comments != null && comments != undefined ? comments : "",
                 Id: taskDetails["ID"],
@@ -623,7 +622,7 @@ const CopyTaskProfile = (props: any) => {
         for (let index = 0; index < results.length; index++) {
             let item = results[index];
             item.siteType = listName;
-            item.SiteIcon = SiteIcon;
+            item.SiteIcon = state?.Result?.SiteIcon;
             item.isLastNode = false;
             allDataOfTask.push(item);
 
@@ -1813,7 +1812,7 @@ const CopyTaskProfile = (props: any) => {
                                                     </li>}
                                                     {breadcrumbitem?.siteType !== "Master Tasks" && <li>
                                                         <a target="_blank" data-interception="off" href={`${state?.Result?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
-                                                        <span></span>
+                                                        {breadcrumbitem?.Id != itemID && <span> <SlArrowRight /></span>}
                                                     </li>}
                                                     {state.breadCrumData.length == index &&
                                                         <li>
@@ -1839,8 +1838,8 @@ const CopyTaskProfile = (props: any) => {
                         <section className='row m-0'>
                             <h2 className="heading d-flex p-0 justify-content-between align-items-center task-title">
                                 <span className='alignCenter'>
-                                    {SiteIcon != "" && <img className="imgWid29 pe-1 " title={state?.Result?.siteType} src={SiteIcon} />}
-                                    {SiteIcon === "" && <img className="imgWid29 pe-1 " src="" />}
+                                    {state?.Result?.SiteIcon != "" && <img className="imgWid29 pe-1 " title={state?.Result?.siteType} src={state?.Result?.SiteIcon} />}
+                                    {state?.Result?.SiteIcon === "" && <img className="imgWid29 pe-1 " src="" />}
                                     <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                         <span >{truncatedTitle?.length > 0 ? truncatedTitle : state?.Result?.Title}</span>
                                         {truncatedTitle?.length > 0 && <span className="f-13 popover__content" >
@@ -1855,11 +1854,11 @@ const CopyTaskProfile = (props: any) => {
                                     }
                                     {currentUser != undefined && state.sendMail && state.emailStatus != "" && <EmailComponenet approvalcallback={() => { approvalcallback() }} Context={propsValue.Context} emailStatus={state.emailStatus} currentUser={currentUser} items={state.Result} />}
                                 </span>
-                                {(state?.Result?.siteUrl?.includes('SP')) ? (
+                                {/* {(state?.Result?.siteUrl?.includes('SP')) ? (
                                     <span className="text-end fs-6">
                                         <a className='oldtitle' target='_blank' data-interception="off" href={oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a>
                                     </span>
-                                ) : null}
+                                ) : null} */}
 
                             </h2>
                         </section>
