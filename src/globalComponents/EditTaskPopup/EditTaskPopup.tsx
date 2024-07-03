@@ -1517,6 +1517,8 @@ const EditTaskPopup = (Items: any) => {
 
                         } else {
                             setTaggedPortfolioData(DataItem);
+                            setTaskResponsibleTeam( DataItem[0].ResponsibleTeam)
+                            setTaskTeamMembers(DataItem[0].TeamMembers)
                             let ComponentType: any = DataItem[0].PortfolioType.Title;
                             getLookUpColumnListId(
                                 siteUrls,
@@ -2081,6 +2083,9 @@ const EditTaskPopup = (Items: any) => {
                         EditData.TeamMembers?.length > 0
                     ) {
                         setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
+
+                        EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "QA")
+                        setWorkingAction(EditData?.WorkingAction)
                     } else {
                         setWorkingMember(143);
                     }
@@ -2161,6 +2166,16 @@ const EditTaskPopup = (Items: any) => {
     };
 
     //  ###################### This is Common Function for Change The Team Members According to Change Status ######################
+
+    const removeWorkingMembers = (workingActionValue: any, FilterType: any) => {
+        workingActionValue.map((workingActions: any,index:any) => {
+            if (workingActions?.Title == "WorkingDetails") {
+                workingActionValue.splice(index,1)
+            }
+        })
+        return workingActionValue
+    }
+
 
     const setWorkingMemberFromTeam = (
         filterArray: any,
@@ -4433,6 +4448,9 @@ const EditTaskPopup = (Items: any) => {
         });
         let count = 0;
         timeSheetData?.forEach(async (val: any) => {
+            if(SelectedSite=='Offshore Tasks'){
+                SelectedSite='OffshoreTasks'
+            }
             let siteType: any = "Task" + SelectedSite + "Id";
             let SiteId = "Task" + Items.Items.siteType;
             let Data = await web.lists
