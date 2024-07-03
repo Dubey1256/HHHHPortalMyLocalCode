@@ -73,7 +73,7 @@ const CopyTaskProfile = (props: any) => {
     const [isopenProjectpopup, setisopenProjectpopup] = useState(false);
     const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
     const [isShowSiteCompostion, setisShowSiteCompostion] = useState<any>('')
-    const [showComposition, setshowComposition] = useState(false);   
+    const [showComposition, setshowComposition] = useState(true);   
     const [OffshoreImageUrl, setOffshoreImageUrl] = useState([]);
     const [ApprovalStatus, setApprovalStatus] = useState(false);
 
