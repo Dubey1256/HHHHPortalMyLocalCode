@@ -66,7 +66,8 @@ const AddProject = (props: any) => {
                     .get().then(async (res: any) => {
 
                         if (res?.length > 0) {
-                            portfolioLevel = res?.length + 1
+                            const maxPortfolioLevel = Math.max(...res.map((itm: any) => itm.PortfolioLevel));
+                            portfolioLevel = maxPortfolioLevel + 1
                         }
                         let portfolioStructureId = ''
                         if (portfolioLevel >= 1) {
