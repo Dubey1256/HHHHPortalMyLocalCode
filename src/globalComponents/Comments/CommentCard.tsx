@@ -356,11 +356,20 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       console.log(this.state.Result);
       (document.getElementById(txtCommentControlId) as HTMLTextAreaElement).value = '';
       let web = new Web(this.props.siteUrl);
-      const i = await web.lists.getByTitle(this.state.listName)
+      if(this.state.listName != null ) {
+        await web.lists.getByTitle(this.state.listName)
         .items
         .getById(this.state.itemID).update({
           Comments: JSON.stringify(this.state.Result["Comments"])
         });
+      }
+      else {
+        await web.lists.getById(this.state.listId)
+        .items
+        .getById(this.state.itemID).update({
+          Comments: JSON.stringify(this.state.Result["Comments"])
+        });
+      }
 
       if (isPushOnRoot != false)
         this.setState({ updateComment: true }, () => this.GetEmailObjects(txtComment, this.state.mentionValue));

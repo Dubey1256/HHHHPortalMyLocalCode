@@ -539,7 +539,7 @@ const CentralizedSiteComposition = (Props: any) => {
     }
 
     const GetIndividualSiteAllData = async () => {
-        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/PortfolioStructureID,workingThisWeek,SiteCompositionSettings,Sitestagging,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/PortfolioStructureID,workingThisWeek,SiteCompositionSettings,Sitestagging,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
         try {
             const data = await web.lists.getById(ItemDetails?.listId).items.select(query).getAll();
             data?.map((task: any) => {
@@ -904,6 +904,7 @@ const CentralizedSiteComposition = (Props: any) => {
                             listId={ItemDetails?.listId}
                             RequiredListIds={RequiredListIds}
                             siteUrls={siteUrl}
+                            listName='Master Tasks'
                         />
                         : ""}
                 </div>
@@ -2009,7 +2010,7 @@ const CentralizedSiteComposition = (Props: any) => {
         let Suffix: string = '';
         if (StringValueSplitData.length > 1) {
             Suffix = StringValueSplitData[0].slice(0, 1) + StringValueSplitData[1].slice(0, 1)
-        } else if(StringValueSplitData.length  == 1) {
+        } else if (StringValueSplitData.length == 1) {
             Suffix = StringValueSplitData[0].slice(0, 2)
         }
         return Suffix.toUpperCase();
@@ -2029,7 +2030,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 type={PanelType.large}
 
             >
-                <section className="mb-5 modal-body clearfix">
+                <section className="mb-5 modal-body">
                     <div className="Site-composition-and-client-category d-flex full-width">
                         <div className="site-settings-and-site-composition-distributions full-width">
                             <div className="siteColor border p-1 alignCenter">
@@ -2191,25 +2192,11 @@ const CentralizedSiteComposition = (Props: any) => {
                                             </tbody>
                                             : null}
                                     </table>
-                                    <div className="alignCenter justify-content-end border mt-1 pe-1 py-1 siteColor">
+                                    <div className="alignCenter justify-content-end border siteColor">
                                         {usedFor == "CSF" ?
-                                            <div className="alignCenter">
-                                                <div className="alignCenter border" style={{ padding: '2.5px 20px' }}>
-                                                    <span className="fw-semibold">SCD</span>
-                                                    <span className="hover-text alignCenter">
-                                                        <span className="svg__iconbox svg__icon--info dark"></span>
-                                                        <span className="tooltip-text pop-right">
-                                                            {"Site composition distribution percentage"}
-                                                        </span>
-                                                    </span>
-                                                </div>
-                                                <span className="border" style={{ padding: '5px 20px' }}>
-                                                    {IsSCManual ? `${TotalPercent} %` : "100 %"}
-                                                </span>
-                                            </div> :
-                                            <>
-                                                <div className="alignCenter">
-                                                    <div className="alignCenter border" style={{ padding: '2.5px 20px' }}>
+                                            <div className="w-100">
+                                                <div className="alignCenter" style={{ width: '60%' }}>
+                                                    <div className="alignCenter" style={{ padding: '2.5px 20px', width: '78%' }}>
                                                         <span className="fw-semibold">SCD</span>
                                                         <span className="hover-text alignCenter">
                                                             <span className="svg__iconbox svg__icon--info dark"></span>
@@ -2218,12 +2205,32 @@ const CentralizedSiteComposition = (Props: any) => {
                                                             </span>
                                                         </span>
                                                     </div>
-                                                    <span className="border" style={{ padding: '5px 20px' }}>
+                                                    <span className="border-end border-start text-center" style={{ padding: '5px 20px', width: '23%' }}>
+                                                        {IsSCManual ? `${TotalPercent} %` : "100 %"}
+                                                    </span>
+                                                </div>
+                                                <div style={{ width: '40%' }}></div>
+                                            </div> :
+                                            <>
+                                                <div className="alignCenter" style={{ width: '53%' }}>
+                                                    <div className="alignCenter" style={{ padding: '2.5px 20px', width: '78%' }}>
+                                                        <span className="fw-semibold">SCD</span>
+                                                        <span className="hover-text alignCenter">
+                                                            <span className="svg__iconbox svg__icon--info dark"></span>
+                                                            <span className="tooltip-text pop-right">
+                                                                {"Site composition distribution percentage"}
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    <span className="border-end border-start text-center" style={{ padding: '5px 0px', width: '23%' }}>
                                                         {IsSCManual ? `${TotalPercent} %` : "100%"}
                                                     </span>
                                                 </div>
-                                                <div className="alignCenter">
-                                                    <div className="alignCenter border" style={{ padding: '2.5px 20px' }}>
+                                                <div className="alignCenter text-center" style={{ width: '47%' }}>
+                                                    <span className="border-end" style={{ padding: '5px 0px', width: '25%' }}>
+                                                        {TaskTotalTime > 0 ? Number(TaskTotalTime).toFixed(2) : 0} h
+                                                    </span>
+                                                    <div className="alignCenter" style={{ padding: '2.5px 20px' }}>
                                                         <span className="fw-semibold">ST</span>
                                                         <span className="hover-text alignCenter">
                                                             <span className="svg__iconbox svg__icon--clock dark"></span>
@@ -2232,9 +2239,6 @@ const CentralizedSiteComposition = (Props: any) => {
                                                             </span>
                                                         </span>
                                                     </div>
-                                                    <span className="border" style={{ padding: '5px 20px' }}>
-                                                        {TaskTotalTime > 0 ? Number(TaskTotalTime).toFixed(2) : 0} h
-                                                    </span>
                                                 </div>
                                             </>
                                         }
@@ -2292,7 +2296,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                             value={CCDetails.Title == SelectedSiteName ? searchedKey : ""}
                                                                             onChange={(e: any) => CCAutoSuggestionsMain(e, CCDetails.Title)}
                                                                             defaultValue={CCDetails.Title == SelectedSiteName ? searchedKey : ""}
-                                                                        />
+                                                                        /> 
                                                                         <span className="bg-white hreflink border"
                                                                             onClick={() => openClientCategoryModel(CCDetails.Title, CCDetails.ClientCategories)}
                                                                         >
@@ -2380,7 +2384,6 @@ const CentralizedSiteComposition = (Props: any) => {
                             </div>
                             <div className="tagged-child-items-table Alltable">
                                 <GlobalCommonTable
-                                    portfolioColor={Props?.portfolioColor}
                                     setLoaded={setLoaded}
                                     AllListId={RequiredListIds}
                                     columns={columns}

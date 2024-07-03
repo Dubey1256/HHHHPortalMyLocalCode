@@ -17,7 +17,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
         console.log(e);
     }
     let AllListId: any = {
-        TaskUserListID: props?.AdminConfigurationListId,
+        TaskUserListID: props?.props?.TaskUserListID,
         siteUrl: props?.props?.Context?._pageContext?._web?.absoluteUrl,
         Context: props?.props?.Context
     };
@@ -46,7 +46,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
             console.log(err);
         })
     }
-    const CloseConfigPopup = (IsLoad: any) => {
+    const CloseConfigPopup = (IsLoad: any, Type: any) => {
         setEditItem(undefined)
         setIsOpenPopup(false);
         if (IsLoad === true)
@@ -54,7 +54,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
 
     }
     const EditTemplate = (item: any) => {
-        setEditItem(item)
+        setEditItem(item);
         setIsOpenPopup(true);
     }
     const OpenAddTemplatePopup = () => {
@@ -125,30 +125,10 @@ const ManageWebpartTemplateConfig = (props: any) => {
                 isColumnVisible: true,
             },
             {
-                accessorFn: (row: any) => row?.selectFilterType,
-                cell: ({ row }: any) => (
-                    <div className="alignCenter">
-                        <span className="alignIcon  mt--5 ">
-                            {row?.original?.selectFilterType}
-                            {/* <span className=" svg__iconbox svg__icon--info dark"></span> */}
-                        </span>
-                    </div>
-                ),
-                id: "Filter",
-                placeholder: "Filter",
-                resetColumnFilters: false,
-                header: "",
-                size: 80,
-                isColumnVisible: true,
-            },
-            {
                 cell: ({ row }) => (
                     <>
                         <div className='text-end'>
-                            <a data-bs-toggle="tooltip" data-bs-placement="auto" title={'Edit ' + `${row?.original?.WebpartTitle}`}  >
-                                {" "}
-                                <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditTemplate(row?.original)} ></span>
-                            </a>
+
                         </div>
                     </>
                 ),
@@ -162,7 +142,11 @@ const ManageWebpartTemplateConfig = (props: any) => {
             {
                 cell: ({ row }) => (
                     <>
-                        <div className='text-end'>
+                        <div className='d-flex pull-right text-end'>
+                            <a className="me-1" data-bs-toggle="tooltip" data-bs-placement="auto" title={'Edit ' + `${row?.original?.WebpartTitle}`}  >
+                                {" "}
+                                <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditTemplate(row?.original)} ></span>
+                            </a>
                             <a data-bs-toggle="tooltip" data-bs-placement="auto" title={'Delete ' + `${row?.original?.WebpartTitle}`}  >
                                 {" "}
                                 <span className="hreflink ml-auto svg__icon--cross svg__iconbox" onClick={(e) => DeleteTemplate(row?.original)} ></span>
@@ -191,7 +175,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
     }, []);
     return (
         <>
-            <h3 className="heading mb-3">Manage Webpart Template
+            <h3 className="heading mb-3">Manage Webpart Gallery
             </h3>
             <div className='TableSection'>
                 <div className="Alltable">

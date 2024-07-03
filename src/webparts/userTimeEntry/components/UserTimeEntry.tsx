@@ -99,7 +99,6 @@ export interface IUserTimeEntryState {
   IsCheckedComponent: boolean;
   IsCheckedService: boolean;
   selectedRadio: any;
-  showChart:boolean;
   IsTimeEntry: boolean;
   showShareTimesheet: boolean;
   disableProperty: boolean;
@@ -127,7 +126,6 @@ export default class UserTimeEntry extends React.Component<
       DateType: "",
       IsOpenTimeSheetPopup: false,
       IsShareTimeEntry: false,
-      showChart: false,
       showShareTimesheet: false,
       disableProperty: true,
       checked: [],
@@ -1840,10 +1838,11 @@ export default class UserTimeEntry extends React.Component<
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(18, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(29, "days").format();
       var b = new Date(change);
       formattedDate = b;
-    } else if (startDateOf == "Last Week") {
+    }
+     else if (startDateOf == "Last Week") {
       const lastWeek = new Date(
         startingDate.getFullYear(),
         startingDate.getMonth(),
@@ -1865,7 +1864,6 @@ export default class UserTimeEntry extends React.Component<
     let arraycount = 0;
     this.setState({
       loaded: true,
-      showChart:true,
     });
     if (
       DateType == "Today" ||
@@ -1969,6 +1967,8 @@ export default class UserTimeEntry extends React.Component<
       }
     }
   }
+ 
+    
   private reRender = () => {
     this.setState({
       loaded: true,
@@ -2147,6 +2147,7 @@ export default class UserTimeEntry extends React.Component<
                   addtime.DispEffort = addtime.Effort;
                   addtime.Effort = parseFloat(addtime.Effort);
                   addtime.TimeEntryDate = addtime.TaskDate;
+                  addtime.TimeStatus = addtime?.Status
                   addtime.NewTimeEntryDate = TaskDate;
                   let datesplite = addtime.TaskDate.split("/");
                   addtime.TimeEntrykDateNew = new Date(
@@ -2190,6 +2191,7 @@ export default class UserTimeEntry extends React.Component<
         }
       }
     }
+  
     getAllTimeEntry?.forEach(function (item: any, index: any) {
       item.TimeEntryId = index;
     });
@@ -2599,6 +2601,7 @@ export default class UserTimeEntry extends React.Component<
         resultSummary,
       });
     }
+   
     this.ShareTimeSheetMultiUser(this.state.AllTimeEntry,
       AllTaskUser,
       this?.props?.Context,
@@ -2864,11 +2867,18 @@ export default class UserTimeEntry extends React.Component<
           RoundAdjustedTime += parseFloat(element.RoundAdjustedTime);
         }
       }
+      
       resultSummary = {
         totalTime: this.TotalTimeEntry,
         totalDays: this.TotalDays,
         totalEntries: this.AllTimeEntry.length,
       };
+      const sortedTimeEntries:any = [...this.state.AllTimeEntry].sort((a, b) => {
+        const dateA:any = new Date(a.TimeEntryDate.split('/').reverse().join('/'));
+        const dateB:any = new Date(b.TimeEntryDate.split('/').reverse().join('/'));
+        return dateB - dateA;
+      })
+      this.setState({AllTimeEntry:sortedTimeEntries})
       this.setState(
         {
           AllTimeEntry: this.AllTimeEntry,
@@ -2901,19 +2911,26 @@ export default class UserTimeEntry extends React.Component<
           RoundAdjustedTime += parseFloat(element.RoundAdjustedTime);
         }
       }
+     
       resultSummary = {
         totalTime: this.TotalTimeEntry,
         totalDays: this.TotalDays,
         totalEntries: this.AllTimeEntry.length,
       };
+    const allTimeEntry=  this.AllTimeEntry.sort((a: any, b: any) => {
+        const dateA: any = new Date(a.TimeEntryDate.split('/').reverse().join('/'));
+        const dateB: any = new Date(b.TimeEntryDate.split('/').reverse().join('/'));
+        return dateB - dateA;
+    }); 
       this.setState(
         {
-          AllTimeEntry: this.AllTimeEntry,
+          AllTimeEntry: allTimeEntry,
           resultSummary,
         },
         () => this.createTableColumns()
       );
     }
+   
     this.setState(
       {
         loaded: false,
@@ -2921,6 +2938,7 @@ export default class UserTimeEntry extends React.Component<
       () => this.createTableColumns()
     );
   }
+  
   private issmartExistsIds(
     array: any[],
     Ids: { TaskItemID: any; ID: any; TimeEntryId: any }
@@ -2998,6 +3016,7 @@ export default class UserTimeEntry extends React.Component<
         });
     }
   }
+  
   private isItemExistsItems(arr: any, title: any, titname: any) {
     let isExists = false;
     arr.forEach(function (item: any) {
@@ -3055,6 +3074,25 @@ export default class UserTimeEntry extends React.Component<
       () => this.createTableColumns()
     );
   }
+ 
+  private ShowDraftTime=()=>{
+    if(this.state.AllTimeEntry?.length == 0){
+      alert('Please click on Update filter')
+    }
+    else{
+      let MyData:any=[]
+      this.state.AllTimeEntry?.forEach((items:any)=>{
+        if(items.TimeStatus == 'Draft'){
+          MyData.push(items)
+        }
+        
+      })
+      this.setState({
+        AllTimeEntry:MyData
+      })
+    }
+    
+  }
   private getAllSubChildenCount(item: any) {
     let count = 1;
     if (item.children != undefined && item.children.length > 0) {
@@ -3076,14 +3114,17 @@ export default class UserTimeEntry extends React.Component<
     }
     return count;
   }
-  private customTableHeaderButtons = () => (
-    <a className={
-      this.state.showChart ? "barChart" :
-      "barChart Disabled-Link"} 
-      title="Open Bar Graphs" onClick={this.showGraph}>
-      <BsBarChartLine style={{ color: this.state.showChart ? "#000066" : "#808080" }} />
+  private customTableHeaderButtons = (
+    <>
+    <span>
+      <button type='button' className="btnCol btn btn-primary me-1" onClick={()=>this.ShowDraftTime()}>Show Draft Timesheet</button>
+      </span>
+    <a className="barChart" title="Open Bar Graph" onClick={this.showGraph}>
+      <BsBarChartLine />
     </a>
-);
+   
+    </>
+  );
   private onCheck(checked: any) {
     debugger;
     this.setState({ checked }, () => {
@@ -3189,13 +3230,6 @@ export default class UserTimeEntry extends React.Component<
             </span>
           </>
         ),
-      },
-      {
-        accessorKey: "ProjectID",
-        id: "ProjectID",
-        placeholder: "ProjectID",
-        header: "",
-        size: 60,
       },
       {
         accessorKey: "TaskTitle",
@@ -3398,7 +3432,7 @@ export default class UserTimeEntry extends React.Component<
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Time Entry",
-        isColumnDefultSortingDesc: true,
+        isColumnDefultSortingDesc: false,
         header: "",
         size: 104,
       },
@@ -3784,6 +3818,7 @@ export default class UserTimeEntry extends React.Component<
       }
     }
   };
+ 
   public render(): React.ReactElement<IUserTimeEntryProps> {
     const {
       description,
@@ -3864,7 +3899,7 @@ export default class UserTimeEntry extends React.Component<
                       <label>Select All </label>
                     </span>
                     <summary>
-                      <span className="fw-semibold f-15 fw-semibold siteColor">
+                      <span className="fw-semibold f-15 fw-semibold">
                         Team members
                       </span>
                     </summary>
@@ -3968,7 +4003,7 @@ export default class UserTimeEntry extends React.Component<
                   </details>
                   <details className="m-0" open>
                     <summary>
-                      <span className="fw-semibold f-15 fw-semibold siteColor">
+                      <span className="fw-semibold f-15 fw-semibold">
                         {" "}
                         Date
                       </span>{" "}
@@ -4140,7 +4175,7 @@ export default class UserTimeEntry extends React.Component<
                     <Row className="ps-30 mb-2">
                       <div className="col-2">
                         <div className="input-group">
-                          <label className="full-width mb-1">Start Date</label>
+                          <label className="full-width">Start Date</label>
                           <span>
                             <DatePicker
                               selected={this.state.startdate}
@@ -4156,7 +4191,7 @@ export default class UserTimeEntry extends React.Component<
                       </div>
                       <div className="col-2">
                         <div className="input-group">
-                          <label className="full-width mb-1">End Date</label>
+                          <label className="full-width">End Date</label>
                           <span>
                             <DatePicker
                               selected={this.state.enddate}
@@ -4203,7 +4238,7 @@ export default class UserTimeEntry extends React.Component<
                     <div className="togglebox">
                       <details open>
                         <summary>
-                          <span className="fw-semibold f-15 fw-semibold siteColor">
+                          <span className="fw-semibold f-15 fw-semibold">
                             {" "}
                             SmartSearch – Filters
                           </span>
@@ -4396,7 +4431,7 @@ export default class UserTimeEntry extends React.Component<
                                             <tr>
                                               <td><b>Total</b></td>
                                               <td>{(DesignCount + DevCount + QACount + ManagementCount).toFixed(2)}</td>
-                                              <td>{(DesignMembers + DevelopmentMembers + QAMembers).toFixed(2)}</td>
+                                              <td>{(DesignMembers + DevelopmentMembers + QAMembers)}</td>
                                               <td>{TotlaTime.toFixed(2)}</td>
                                               <td>{TotalleaveHours}</td>
                                             </tr>
@@ -4417,14 +4452,14 @@ export default class UserTimeEntry extends React.Component<
                   <div className="col text-end mb-2">
                     <button
                       type="button"
-                      className="btnCol btn btn-primary me-2"
+                      className="btnCol btn btn-primary me-1"
                       onClick={(e) => this.LoadAllTimeSheetaData()}
                     >
                       Update Filters
                     </button>
                     <button
                       type="button"
-                      className="btn btn-default me-2"
+                      className="btn btn-default me-1"
                       onClick={() => this.ClearFilters()}
                     >
                       Clear Filters

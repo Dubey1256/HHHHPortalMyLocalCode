@@ -191,8 +191,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private pickupCustomDate = (date: any) => {
         let previousMonth=new Date(this.state.pickerDate)
         let pickUpMonth=new Date(date);
+
   if(date!=""&& previousMonth.getMonth()== pickUpMonth.getMonth()){
-    let pickupDateValue = moment(date);
+    let pickupDateValue:any = moment(date);
         pickupDateValue._d.setHours(0, 0, 0, 0)
         let dateValue: any = {}
         let workingDaysValue = this.state.datesInfo
@@ -590,9 +591,8 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                     return false;
                 }
             })
+            if (userExistsWorkingDates != true && userExistsLeads != true && userExistsTeamMembers != true ) {
 
-
-            if (userExistsWorkingDates != true && userExistsLeads != true && userExistsTeamMembers != true) {
                 this.state.taskUsers.forEach(function (child: any) {
                     if (child.ID == $data.UserGroupId) {
                         if (!self.isItemExists(child.childs, $data.Id))

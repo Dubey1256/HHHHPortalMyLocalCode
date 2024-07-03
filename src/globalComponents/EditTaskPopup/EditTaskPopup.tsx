@@ -2072,6 +2072,7 @@ const EditTaskPopup = (Items: any) => {
                         EditData.TeamMembers?.length > 0
                     ) {
                         setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
+
                         EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "QA")
                         setWorkingAction(EditData?.WorkingAction)
                     } else {
@@ -2086,12 +2087,8 @@ const EditTaskPopup = (Items: any) => {
                             EditData.TeamMembers?.length > 0) && (EditData.TeamMembers?.length != EditData?.AssignedTo?.length)
                     ) {
                         setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
-                        EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "Development")
-                        setWorkingAction(EditData?.WorkingAction)
                     } else if (EditData.ResponsibleTeam?.length > 0) {
                         setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
-                        EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "Development")
-                        setWorkingAction(EditData?.WorkingAction)
                     }
                     else {
                         setWorkingMember(0);
@@ -2132,24 +2129,16 @@ const EditTaskPopup = (Items: any) => {
                             setTaskStatus(item.taskStatusComment);
                         }
                     });
-                    EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "HHHHTEAM")
-                    setWorkingAction(EditData?.WorkingAction)
                 }
                 if (StatusData.value == 90) {
                     EditData.IsTodaysTask = false;
                     EditData.workingThisWeek = false;
                     if (EditData.siteType == "Offshore%20Tasks") {
                         setWorkingMember(36);
-                        EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "HHHHTEAM")
-                        setWorkingAction(EditData?.WorkingAction)
                     } else if (DesignStatus) {
                         setWorkingMember(301);
-                        EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "HHHHTEAM")
-                        setWorkingAction(EditData?.WorkingAction)
                     } else {
                         setWorkingMember(42);
-                        EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "HHHHTEAM")
-                        setWorkingAction(EditData?.WorkingAction)
                     }
                     EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY");
                     StatusOptions?.map((item: any) => {

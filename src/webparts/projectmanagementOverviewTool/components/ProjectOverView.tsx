@@ -674,7 +674,8 @@ export default function ProjectOverview(props: any) {
                 size: 80,
                 cell: ({ row }) => (
                     <>
-                        <span className='ms-1'>{row?.original?.TaskID}</span>
+                    
+                    <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} AllListId={AllListId} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
 
 
                     </>
