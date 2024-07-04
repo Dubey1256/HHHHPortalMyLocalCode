@@ -1944,7 +1944,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
                   }
                   {this.currentUser != undefined && this.state.sendMail && this.state.emailStatus != "" && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props.Context} emailStatus={this.state.emailStatus} currentUser={this.currentUser} items={this.state.Result} />}
                 </span>
-                <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>
+                {/* <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span> */}
 
               </h2>
             </section>

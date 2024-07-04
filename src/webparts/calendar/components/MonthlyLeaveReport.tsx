@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Web } from 'sp-pnp-js';
 import DatePicker from "react-datepicker";
@@ -6,7 +7,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import Tooltip from '../../../globalComponents/Tooltip';
 import PreSetDatePikerPannel from '../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePiker';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
-import { Avatar } from "@fluentui/react-components";
 // @ts-ignore
 import * as html2pdf from 'html2pdf.js';
 import * as XLSX from 'xlsx';
@@ -39,8 +39,6 @@ export const MonthlyLeaveReport = (props: any) => {
   const [endDate, setendDate] = useState(new Date())
   const [selectedType, setselectedType] = useState(false)
   const [selectgroupName, setSelectGroupName] = useState("")
-  let dropSuccessHandler: any
-
   useEffect(() => {
     if (selectedDate || selectendDate) {
       setdisabled(true)
@@ -87,7 +85,7 @@ export const MonthlyLeaveReport = (props: any) => {
       const results: any = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.select(
         "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,Created,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type,Approved,Rejected"
       ).expand("Author,Editor,Employee").getAll();
-      const FilterRejectedData = results.filter((item: any) => item.Rejected !== true)
+      const FilterRejectedData = results.filter((item:any)=> item.Rejected !== true)
       setLeaveData(FilterRejectedData);
     } catch (err) {
       console.log(err);
@@ -318,7 +316,9 @@ export const MonthlyLeaveReport = (props: any) => {
     setendDate(dt)
   }
 
+
   const selectDate = (types: string) => {
+
     let startdt = new Date(), enddt = new Date(), tempdt = new Date();
     let diff: number, lastday: number;
     switch (types) {
@@ -392,30 +392,31 @@ export const MonthlyLeaveReport = (props: any) => {
         enddt = new Date();
         settypes('AllTime')
         break;
-      case 'Pre-set':
-        let storedDataStartDate: string | null = localStorage.getItem('startDate');
-        let storedDataEndDate: string | null = localStorage.getItem('endDate');
-        try {
-          if (storedDataStartDate && storedDataEndDate) {
-            const parsedStartDate = new Date(JSON.parse(storedDataStartDate));
-            const parsedEndDate = new Date(JSON.parse(storedDataEndDate));
 
-            if (!isNaN(parsedStartDate.getTime()) && !isNaN(parsedEndDate.getTime())) {
-              startdt = parsedStartDate;
-              enddt = parsedEndDate;
-              settypes('Pre-set')
-              break;
-            }
-          }
+    case 'Pre-set':
+      let storedDataStartDate: string | null = localStorage.getItem('startDate');
+      let storedDataEndDate: string | null = localStorage.getItem('endDate');
+      try {
+        if (storedDataStartDate && storedDataEndDate) {
+          const parsedStartDate = new Date(JSON.parse(storedDataStartDate));
+          const parsedEndDate = new Date(JSON.parse(storedDataEndDate));
 
-        } catch (error) {
-          console.error("Failed to parse dates from localStorage", error);
-        }
-        // If parsing fails, fall through to the default case
-        startdt = null;
-        enddt = null;
-        //settypes('Pre-set')
+          if (!isNaN(parsedStartDate.getTime()) && !isNaN(parsedEndDate.getTime())) {
+            startdt = parsedStartDate;
+            enddt = parsedEndDate;
+            settypes('Pre-set')
         break;
+          }
+        }
+        
+      } catch (error) {
+        console.error("Failed to parse dates from localStorage", error);
+      }
+      // If parsing fails, fall through to the default case
+      startdt = null;
+      enddt = null;
+      //settypes('Pre-set')
+      break;
       default:
     }
 
@@ -566,24 +567,26 @@ export const MonthlyLeaveReport = (props: any) => {
   };
   const PreSetPikerCallBack = React.useCallback((preSetStartDate: any, preSetEndDate) => {
     if (preSetStartDate != undefined) {
-      setStartDate(preSetStartDate);
+
+        setStartDate(preSetStartDate);
     }
     if (preSetEndDate != undefined) {
-      setEndDate(preSetEndDate);
+        setEndDate(preSetEndDate);
     }
-     if(preSetStartDate != undefined||preSetEndDate != undefined){
+    if(preSetStartDate != undefined||preSetEndDate != undefined){
       settypes("Pre-set");
     }
     // setselectedType(true)
-
+    
     setPreSetPanelIsOpen(false)
-  }, []);
+}, []);
   const preSetIconClick = () => {
     // setPreSet(true);
     setPreSetPanelIsOpen(true);
+   
+    
+}
 
-
-  }
   const isWeekend = (startDate: Date, endDate: Date) => {
     const startDay = startDate.getDay();
     const endDay = endDate.getDay();
@@ -808,15 +811,9 @@ export const MonthlyLeaveReport = (props: any) => {
             <details className='p-0 m-0' open>
               <summary className='hyperlink'><a className="hreflink pull-left mr-5">All Filters - <span>Task User :</span> </a>
                 {ImageSelectedUsers != null && ImageSelectedUsers.length > 0 && ImageSelectedUsers.map((user: any, i: number) => {
-                  return( <span className="ng-scope">
-                    <Avatar
-                      className="AssignUserPhoto me-1"
-                      title={user?.AssingedToUser?.Title}
-                      image={{ src: user?.Item_x0020_Cover?.Url }}
-                      initials={user?.Item_x0020_Cover?.Url ? undefined : user?.AssingedToUser?.Suffix}
-                    />
+                  return <span className="ng-scope">
+                    <img className="AssignUserPhoto me-1" title={user?.AssingedToUser?.Title} src={user?.Item_x0020_Cover?.Url} />
                   </span>
-                  )
                 })
                 }
                 <span className="">
@@ -850,26 +847,16 @@ export const MonthlyLeaveReport = (props: any) => {
                             <div className='d-flex'>
                               {users?.childs?.length > 0 && users?.childs.map((item: any, i: number) => {
                                 return <div className="alignCenter">
-                                  {item.Item_x0020_Cover != undefined ? (
-                                    <Avatar
-                                      id={"UserImg" + item?.Id}
-                                      className={item?.AssingedToUserId == users?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'}
-                                      onClick={(e: any) => SelectUserImage(e, item)}
-                                      draggable="true"
-                                      onDrop={(e: any) => dropSuccessHandler(e, item, users.childs)}
+                                  {item.Item_x0020_Cover != undefined ?
+                                    <span>
+                                      <img id={"UserImg" + item?.Id} className={item?.AssingedToUserId == users?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                        title={item?.Title}
+                                        src={item?.Item_x0020_Cover?.Url} />
+                                    </span> :
+                                    <span className={item?.AssingedToUserId == users?.Id ? 'activeimg suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
                                       title={item?.Title}
-                                      image={{ src: item?.Item_x0020_Cover?.Url }}
-                                    />
-                                  ) : (
-                                    <Avatar
-                                      className={item?.AssingedToUserId == users?.Id ? 'activeimg suffix_Usericon' : 'suffix_Usericon'}
-                                      onClick={(e: any) => SelectUserImage(e, item)}
-                                      draggable="true"
-                                      onDrop={(e) => dropSuccessHandler(e, item, users.childs)}
-                                      title={item?.Title}
-                                      initials={item?.Suffix}
-                                    />
-                                  )}
+                                    >{item?.Suffix}</span>
+                                  }
                                 </div>
                               })}
                             </div>
@@ -924,7 +911,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           <label>Last Month</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => selectDate('Last3Month')} checked={types === "Last3Month"} className="radio" />
+                          <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => selectDate('Last3Month')}  checked={types === "Last3Month"} className="radio" />
                           <label>Last 3 Months</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>

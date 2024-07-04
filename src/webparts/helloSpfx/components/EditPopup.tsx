@@ -1,3 +1,4 @@
+
 import { Panel, PrimaryButton, TextField, Dropdown, PanelType } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { Item, sp, Web } from 'sp-pnp-js';
@@ -267,8 +268,9 @@ const EditPopup = (props: any) => {
         const uploadTasks: any[] = [];
         for (const section of fileSections) {
             for (const file of section.selectedFiles) {
+                let fileExtension = "." + file.name.split(".")[1]
                 try {
-                    const fileName = section.renamedFileName?.length > 0 ? section.renamedFileName : file.name;
+                    const fileName = section.renamedFileName?.length > 0 ? section.renamedFileName + fileExtension : file.name;
                     const reader = new FileReader();
                     const fileContent = await new Promise<ArrayBuffer>((resolve) => {
                         reader.onloadend = () => resolve(reader.result as ArrayBuffer);

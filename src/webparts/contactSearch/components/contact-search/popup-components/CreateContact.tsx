@@ -18,6 +18,7 @@ const CreateContactComponent = (props: any) => {
     const [searchedNameData, setSearchedDataName] = useState(props?.data)
     const [isUserExist, setUserExits] = useState(true);
     const [newContact, setNewContact] = useState(false);
+    const [disable, setdisable]= useState(false);
     const [newInstitution, setNewInstitution] = useState(false);
    
 
@@ -267,6 +268,7 @@ const CreateContactComponent = (props: any) => {
                     }).then((newData) => {
                         console.log("local institution also done")
                         setInstitutionData(newData?.data)
+                        setdisable(true);
                     }).catch((error: any) => {
                     console.log(error)
                     })
@@ -294,6 +296,10 @@ const CreateContactComponent = (props: any) => {
         props.callBack();
         setContactdata(8);
     }, []);
+
+    const disableSaveButton = () => {
+        setdisable(true)
+    }
     const onRenderCustomHeadersmartinfo = () => {
         return (
             <>
@@ -336,7 +342,7 @@ const CreateContactComponent = (props: any) => {
                 </div>
                 </div>
             <footer className="mt-2 pull-right">
-                <button className="btn btn-primary mx-1" onClick={saveDataFunction} disabled={isUserExist}>Save</button>
+                <button className="btn btn-primary mx-1" onClick={() => {saveDataFunction(); disableSaveButton()}} disabled={isUserExist || disable}>Save</button>
                 <button onClick={() => props.callBack()} className="btn btn-default">Cancel</button>
             </footer>
 

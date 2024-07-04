@@ -13,6 +13,7 @@ import { spfi, SPFx as spSPFx } from "@pnp/sp";
 import { ImReply } from 'react-icons/im';
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
 import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Stack, Text, } from '@fluentui/react';
+import { Avatar } from "@fluentui/react-components";
 import ReactDOM from "react-dom";
 let color: any = false;
 let Title: any = "";
@@ -249,10 +250,23 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       return userDeatails;
     }
   }
+
+  private async commentCardNotificationConfig() {
+    try{
+      let recipientData: any = await globalCommon.LoadAllNotificationConfigrations("CommentCardNotification", this.props.AllListId)
+      return recipientData;
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
+
   private async GetTaskUsers() {
     console.log("this is GetTaskUsers function")
     let web = new Web(this.props.siteUrl);
     let currentUser = await web.currentUser?.get();
+    let emailRecipients = await this.commentCardNotificationConfig()
+    
     //.then((r: any) => {  
     // console.log("Cuurent User Name - " + r['Title']);  
     //}); 
@@ -260,12 +274,28 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     taskUsers = await web.lists.getById(this.props?.AllListId?.TaskUserListID).items.select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'UserGroup/Id', 'UserGroup/Title').filter("ItemType eq 'User'").expand('AssingedToUser', 'UserGroup').get();
     taskUsers = taskUsers?.filter((User: any) => User?.UserGroup == undefined || User?.UserGroup?.Title != "Ex Staff")
     this.taskUsers = taskUsers;
-    if (this.taskUsers != undefined && this.taskUsers.length > 0) {
+    if (emailRecipients != undefined && emailRecipients.length > 0) {
+      emailRecipients.forEach((recipient: any) => {
+        this.taskUsers.forEach((user: any) => {
+        if (recipient.Id == user.AssingedToUserId) {
+          recipient.Item_x0020_Cover = user.Item_x0020_Cover
+        }
+        })
+        return recipient;
+      })
+      for (let index = 0; index < emailRecipients.length; index++) {
+        this.topCommenters.push({
+          id: emailRecipients[index].Title + "{" + emailRecipients[index]?.Email + "}",
+          display: emailRecipients[index].Title,
+          Title: emailRecipients[index].Title,
+          ItemCoverURL: (emailRecipients[index].Item_x0020_Cover != undefined) ?
+          emailRecipients[index].Item_x0020_Cover?.Url :
+          null
+        })
+      }  
+    }
+    else {
       for (let index = 0; index < this.taskUsers.length; index++) {
-        this.mentionUsers.push({
-          id: this.taskUsers[index].Title + "{" + this.taskUsers[index]?.AssingedToUser?.EMail + "}",
-          display: this.taskUsers[index].Title
-        });
         if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn" || this.taskUsers[index].Title == "Prashant Kumar") {
           this.topCommenters.push({
             id: this.taskUsers[index].Title + "{" + this.taskUsers[index]?.AssingedToUser?.EMail + "}",
@@ -273,9 +303,18 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             Title: this.taskUsers[index].Title,
             ItemCoverURL: (this.taskUsers[index].Item_x0020_Cover != undefined) ?
               this.taskUsers[index].Item_x0020_Cover.Url :
-              "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+              null
           })
         }
+      }
+    }
+
+    if (this.taskUsers != undefined && this.taskUsers.length > 0) { 
+      for (let index = 0; index < this.taskUsers.length; index++) {
+        this.mentionUsers.push({
+          id: this.taskUsers[index].Title + "{" + this.taskUsers[index]?.AssingedToUser?.EMail + "}",
+          display: this.taskUsers[index].Title
+        });
         if (this.taskUsers[index].AssingedToUser != null && this.taskUsers[index].AssingedToUser.Title == currentUser['Title'])
           this.currentUser = this.taskUsers[index];
       }
@@ -655,6 +694,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       ChildLevel: false,
     }, () => { console.log(this.state.mentionValue) })
   }
+  private isDecimal = (value: any) => {
+    return /^\d*\.?\d+$/.test(value);
+  }
   private async GetEmailObjects(txtComment: any, MentionedValue: any) {
     if (MentionedValue != '') {
       //Get All To's
@@ -709,7 +751,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           //   MsgURL = `${this.props.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${this.state.itemID}`
           //   MsgTitle = `${this.state?.Result?.Title}`
           // }
-          this.state.Result["CommentsArray"] = this.state?.Result?.Comments
+          this.state.Result["CommentsArray"] = this.state?.Result?.Comments;
+          if (this.isDecimal(this.state?.Result?.PercentComplete))
+            this.state.Result.PercentComplete = this.state?.Result?.PercentComplete * 100;
           const TaskInformation = await GlobalFunctionForUpdateItems.GenerateMSTeamsNotification(this.state?.Result)
           const containerDiv = document.createElement('div');
           const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
@@ -951,8 +995,22 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 {this.topCommenters != null && this.topCommenters.length > 0 && this.topCommenters?.map((topCmnt: any, i: any) => {
                   return <span>
                     <a target="_blank">
-                      <img onClick={(e) => this.topCommentersClick(e)} className="circularImage rounded-circle " title={topCmnt?.Title}
-                        id={topCmnt?.id} src={topCmnt?.ItemCoverURL} />
+                      {topCmnt?.ItemCoverURL != null || topCmnt?.Suffix != null? <Avatar
+                        onClick={(e) => this.topCommentersClick(e)}
+                        className="UserImage workmember"
+                        title={topCmnt?.Title}
+                        name={topCmnt?.Title}
+                        image={topCmnt?.ItemCoverURL != undefined ? {
+                          src: topCmnt?.ItemCoverURL,
+                        } : undefined}
+                        initials={topCmnt?.ItemCoverURL == undefined ? topCmnt?.Suffix : undefined}
+                      /> : <Avatar
+                        onClick={(e) => this.topCommentersClick(e)}
+                        className="UserImage"
+                        title={topCmnt?.Title}
+                        name={topCmnt?.Title}
+                      />
+                      }
                     </a>
                   </span>
                 })}
@@ -971,7 +1029,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               </span>
             </div>
             <div>
-              <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" style={{padding:'5px'}} className='form-control' ></textarea>
+              <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" style={{ padding: '5px' }} className='form-control' ></textarea>
               {this.state.postButtonHide ?
                 <button disabled onClick={() => this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
                   Post
@@ -1138,7 +1196,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <div className="col-sm-12">
                   <div className="row d-flex mb-2">
                     <div>
-                      <textarea id="txtCommentModal" onChange={(e) => this.handleInputChange(e)} className="form-control p-1 ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" style={{padding:'5px'}} placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>
+                      <textarea id="txtCommentModal" onChange={(e) => this.handleInputChange(e)} className="form-control p-1 ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" style={{ padding: '5px' }} placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>
                       <span role="status" aria-live="polite" className="ui-helper-hidden-accessible"></span>
                     </div>
                     <div className='text-end mt-1'> <span className='btn btn-primary hreflink' onClick={() => this.PostComment('txtCommentModal')} >Post</span></div>

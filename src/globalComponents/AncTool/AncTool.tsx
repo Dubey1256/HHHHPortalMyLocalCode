@@ -1,5 +1,8 @@
 import React, { useRef } from 'react'
 import { SlArrowRight, SlArrowDown } from "react-icons/sl";
+import { spfi, SPFx as spSPFx } from "@pnp/sp";
+import "@pnp/sp/webs";
+import "@pnp/sp/files";
 import { CardBody, CardTitle, Col, Row, Table } from "reactstrap";
 import "react-popper-tooltip/dist/styles.css";
 import Tooltip from '../Tooltip';
@@ -721,12 +724,16 @@ const AncTool = (props: any) => {
                     props?.callBack()
                     alert(`The file '${file?.Title}' has been successfully tagged to the ${itemType} '${props?.item?.TaskId}'.`);
                     return file;
-                }).catch((err: any) => {
+                }).catch(async (err: any) => {
                     console.log(err)
                     if (err.message.includes('423')) {
-                        alert("Document you are trying to Update/Tag is open somewhere else. Please close the Document and try again")
+                      const sp = spfi().using(spSPFx(props?.Context));;
+                      const user = await sp.web.getFolderByServerRelativePath(file?.FileDirRef).files.getByUrl(file?.FileLeafRef).getLockedByUser();
+                      let name = user?.Title + ' - (' + user?.Email + ')'
+                      console.log(user)
+                      alert(`Document you are trying to update/tag is locked by ${name}. Please ask them to close it and try again.`)
                     }
-                })
+                  })
 
 
         } else if (AllReadytagged?.some((doc: any) => file.Id == doc.Id) && resultArray.some((taskID: any) => taskID == props?.item?.Id)) {
@@ -757,12 +764,16 @@ const AncTool = (props: any) => {
                     props?.callBack()
                     alert(`The file '${file?.Title}' has been successfully untagged from the ${itemType} '${props?.item?.TaskId}'.`);
                     return file;
-                }).catch((err: any) => {
+                }).catch(async (err: any) => {
                     console.log(err)
                     if (err.message.includes('423')) {
-                        alert("Document you are trying to Update/Tag is open somewhere else. Please close the Document and try again")
+                      const sp = spfi().using(spSPFx(props?.Context));;
+                      const user = await sp.web.getFolderByServerRelativePath(file?.FileDirRef).files.getByUrl(file?.FileLeafRef).getLockedByUser();
+                      let name = user?.Title + ' - (' + user?.Email + ')'
+                      console.log(user)
+                      alert(`Document you are trying to update/tag is locked by ${name}. Please ask them to close it and try again.`)
                     }
-                })
+                  })
 
 
         }

@@ -64,13 +64,13 @@ function ReadyMadeTable(SelectedProp: any) {
 
     }
     try {
-        if (SelectedProp?.SelectedProp != undefined) {
-            SelectedProp.SelectedProp.isShowTimeEntry = JSON.parse(
-                SelectedProp?.SelectedProp?.TimeEntry
+        if (SelectedProp.AllListId!= undefined) {
+            SelectedProp.AllListId.isShowTimeEntry = JSON.parse(
+                SelectedProp.AllListId.TimeEntry
             );
 
-            SelectedProp.SelectedProp.isShowSiteCompostion = JSON.parse(
-                SelectedProp?.SelectedProp?.SiteCompostion
+            SelectedProp.isShowSiteCompostion = JSON.parse(
+                SelectedProp?.AllListId?.SiteCompostion
             );
         }
     } catch (e) {

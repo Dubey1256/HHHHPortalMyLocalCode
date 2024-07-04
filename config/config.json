@@ -466,14 +466,6 @@
         }
       ]
     },
-    "manage-dashboard-template-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/manageDashboardTemplate/ManageDashboardTemplateWebPart.js",
-          "manifest": "./src/webparts/manageDashboardTemplate/ManageDashboardTemplateWebPart.manifest.json"
-        }
-      ]
-    },
     "last-modified-web-part": {
       "components": [
         {
@@ -530,6 +522,14 @@
         }
       ]
     },
+    "team-portfolio-lead-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/teamPortfolioLead/TeamPortfolioLeadWebPart.js",
+          "manifest": "./src/webparts/teamPortfolioLead/TeamPortfolioLeadWebPart.manifest.json"
+        }
+      ]
+    },
     "event-management-web-part": {
       "components": [
         {
@@ -551,6 +551,14 @@
         {
           "entrypoint": "./lib/webparts/contentEditingDocuments/ContentEditingDocumentsWebPart.js",
           "manifest": "./src/webparts/contentEditingDocuments/ContentEditingDocumentsWebPart.manifest.json"
+        }
+      ]
+    },
+    "manage-dashboard-template-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/manageDashboardTemplate/ManageDashboardTemplateWebPart.js",
+          "manifest": "./src/webparts/manageDashboardTemplate/ManageDashboardTemplateWebPart.manifest.json"
         }
       ]
     },
@@ -582,6 +590,7 @@
     }
   },
   "localizedResources": {
+    "TeamPortfolioLeadWebPartStrings": "lib/webparts/teamPortfolioLead/loc/{locale}.js",
     "EventManagementWebPartStrings": "lib/webparts/eventManagement/loc/{locale}.js",
     "EventDetailWebPartStrings": "lib/webparts/eventDetail/loc/{locale}.js",
     "LivingDocsSyncToolWebPartStrings": "lib/webparts/livingDocsSyncTool/loc/{locale}.js",
@@ -647,12 +656,12 @@
     "HhhhProfileWebPartStrings": "lib/webparts/hhhhProfile/loc/{locale}.js",
     "HhhcontactWebPartStrings": "lib/webparts/hhhcontact/loc/{locale}.js",
     "HhhhcontactprofileWebPartStrings": "lib/webparts/hhhhcontactprofile/loc/{locale}.js",
-    "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js",
     "LastModifiedWebPartStrings": "lib/webparts/lastModified/loc/{locale}.js",
     "LivingdocsapiWebPartStrings": "lib/webparts/livingdocsapi/loc/{locale}.js",
     "ContentEditingEventsWebPartStrings": "lib/webparts/contentEditingEvents/loc/{locale}.js",
     "ContentEditingNewsWebPartStrings": "lib/webparts/contentEditingNews/loc/{locale}.js",
     "ContentEditingDocumentsWebPartStrings": "lib/webparts/contentEditingDocuments/loc/{locale}.js",
-    "ManageWebpartTemplateWebPartStrings": "lib/webparts/manageWebpartTemplate/loc/{locale}.js"
+    "ManageWebpartTemplateWebPartStrings": "lib/webparts/manageWebpartTemplate/loc/{locale}.js",
+    "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js"
   }
 }

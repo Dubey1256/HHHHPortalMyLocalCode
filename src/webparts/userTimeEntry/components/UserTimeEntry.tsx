@@ -1838,7 +1838,7 @@ export default class UserTimeEntry extends React.Component<
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(29, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(22, "days").format();
       var b = new Date(change);
       formattedDate = b;
     }
@@ -2873,12 +2873,7 @@ export default class UserTimeEntry extends React.Component<
         totalDays: this.TotalDays,
         totalEntries: this.AllTimeEntry.length,
       };
-      const sortedTimeEntries:any = [...this.state.AllTimeEntry].sort((a, b) => {
-        const dateA:any = new Date(a.TimeEntryDate.split('/').reverse().join('/'));
-        const dateB:any = new Date(b.TimeEntryDate.split('/').reverse().join('/'));
-        return dateB - dateA;
-      })
-      this.setState({AllTimeEntry:sortedTimeEntries})
+    
       this.setState(
         {
           AllTimeEntry: this.AllTimeEntry,
@@ -3074,7 +3069,6 @@ export default class UserTimeEntry extends React.Component<
       () => this.createTableColumns()
     );
   }
- 
   private ShowDraftTime=()=>{
     if(this.state.AllTimeEntry?.length == 0){
       alert('Please click on Update filter')

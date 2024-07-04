@@ -30,6 +30,72 @@ import KeyDocuments from "../../taskprofile/components/KeyDocument";
 import RadimadeTable from "../../../globalComponents/RadimadeTable";
 const sp = spfi();
 let AllClientCategoryDataBackup: any = [];
+// Specially for the Custome Calendar 
+import { useState, useRef, useEffect } from 'react';
+import { FaCalendarAlt } from 'react-icons/fa';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import moment from "moment";
+const CalendarPicker = ({ fieldValue, handleInputChange, type }:any) => {
+  const [startDate, setStartDate] = useState(null);
+  const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+   const myDate:any = Moment(fieldValue, 'DD/MM/YYYY').toDate();
+   const Dates = new Date(myDate)
+   if (fieldValue) {
+      setStartDate(Dates);
+    }
+  }, [fieldValue]);
+
+  const handleIconClick = () => {
+    setOpen(!open);
+  };
+
+  const handleChange = (date:any) => {
+    const myDate= new Date(date);
+    setStartDate(myDate);
+    handleInputChange({ target: { value: date, type } });
+    setOpen(false);
+  };
+  const handleClear = () => {
+    setStartDate(null);
+    handleInputChange({ target: { value: '', type } });
+    setOpen(false);
+  };
+  const CustomCalendarContainer = ({ children }:any) => {
+    return (
+      <div>
+        {children}
+        <div className="custom-clear-button text-end">
+          <a className="hyperlink pe-3" onClick={handleClear}>Clear</a>
+        </div>
+      </div>
+    );
+  };
+  return (
+    <div className="calendar-picker">
+      <span className="svg__iconbox svg__icon--calendar" onClick={handleIconClick}></span>
+      {open && (
+        <div className="react-datepicker">
+        <DatePicker
+          selected={startDate}
+          onChange={handleChange}
+          withPortal
+          inline
+          calendarContainer={CustomCalendarContainer}
+        />
+      </div>
+        
+      )}
+    </div>
+  );
+};
+
+
+
+
+
 // Work the Inline Editing
 interface EditableFieldProps {
   listName: string;
@@ -183,6 +249,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFieldValue(event.target.value);
   };
+  
 
   if (fieldName == "PercentComplete") {
     const [myfieldValue, setmyFieldValue] = React.useState(value);
@@ -254,64 +321,51 @@ export const EditableField: React.FC<EditableFieldProps> = ({
       </div>
     );
   }
-
-  if (type == "Date") {
-    const handleSave = async () => {
+  if (type === "Date") {
+    const handleInputChangeDate = (event: { target: { value: any; type: any } }) => {
+      setFieldValue(event.target.value);
+      handleSaveDate(event.target.value);
+    };
+  
+    const handleSaveDate = async (dateValue: any) => {
       try {
-        setFieldValue((prevValue: any) => fieldValue ? Moment(fieldValue).format("DD/MM/YYYY") : '');
+        const formattedValue = dateValue ? new Date(dateValue).toISOString() : null;
         let webs = new Web(web);
         await webs.lists
           .getByTitle(listName)
           .items.getById(itemId)
           .update({
-            [fieldName]: fieldValue != '' ? fieldValue : null,
+            [fieldName]: formattedValue,
           });
-
+  
         setEditing(false);
         setKey((prevKey) => prevKey + 1);
       } catch (error) {
         console.log(error);
       }
     };
-
     if (editing) {
       return (
-        <div className="editcolumn ">
-          <span>
-            {" "}
-            <input
-              type={type}
-              defaultValue={
-                fieldValue !== undefined
-                  ? Moment(fieldValue, "DD/MM/YYYY").format("YYYY-MM-DD")
-                  : ""
-              }
-              min={Moment(new Date()).format("YYYY-MM-DD")}
-              style={{ fontSize: "11px" }}
-              onChange={handleInputChange}
-            />
-          </span>
-          <span>
-            <a onClick={handleSave}>
-              <span className="svg__iconbox svg__icon--Save "></span>
-            </a>
-            <a onClick={handleCancel}>
-              <span className="svg__iconbox svg__icon--cross "></span>
-            </a>
-          </span>
-        </div>
-      );
+    <div className="editcolumn">
+    <CalendarPicker
+      fieldValue={fieldValue}
+      handleInputChange={handleInputChangeDate}
+      type="date"
+    />
+  </div>)
     }
-
+    // const formattedDate = fieldValue ? new Date(fieldValue).toLocaleDateString() : "";
+    const formattedDate = moment(fieldValue, 'DD/MM/YYYY').format('DD/MM/YYYY');
     return (
       <div>
-        <span title={fieldValue}>{fieldValue}</span>
-        <a className="pancil-icons" onClick={handleEdit}>
-          <span className="svg__iconbox svg__icon--editBox"></span>
+        <span title={formattedDate != 'Invalid date'?formattedDate:''}>{formattedDate != 'Invalid date'?formattedDate:''}</span>
+        <a className="alignIcon ms-1 pencil-icons pull-right" onClick={handleEdit}>
+          <span className="svg__iconbox svg__icon--calendar"></span>
         </a>
       </div>
     );
   }
+
   const handleSave = async () => {
     try {
       setFieldValue((prevValue: any) => fieldValue);
@@ -1318,7 +1372,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                             </>
                           )}
                       </span>
-                      {SelectedProp?.Context?._pageContext?._web?.title ===
+                      {/* {SelectedProp?.Context?._pageContext?._web?.title ===
                         "SP" && (
                           <span className="text-end fs-6">
                             <a
@@ -1333,7 +1387,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                               Old Portfolio profile page
                             </a>
                           </span>
-                        )}
+                        )} */}
                     </h2>
                   </>
                 ))}
@@ -1403,20 +1457,29 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                           </dt>
                           <dd className="bg-light">
                             {data.map((item: any, index: any) => (
-                              <EditableField
-                                key={index}
-                                listName="Master Tasks"
-                                itemId={item.Id}
-                                fieldName="PercentComplete"
-                                value={
-                                  item?.PercentComplete != undefined
-                                    ? (item?.PercentComplete * 100).toFixed(0)
-                                    : ""
-                                }
-                                TaskProfilePriorityCallback={null}
-                                onChange={handleFieldChange("PercentComplete")}
-                                type={item.Status}
-                                web={ContextValue?.siteUrl}
+                              // <EditableField
+                              //   key={index}
+                              //   listName="Master Tasks"
+                              //   itemId={item.Id}
+                              //   fieldName="PercentComplete"
+                              //   value={
+                              //     item?.PercentComplete != undefined
+                              //       ? (item?.PercentComplete * 100).toFixed(0)
+                              //       : ""
+                              //   }
+                              //   TaskProfilePriorityCallback={null}
+                              //   onChange={handleFieldChange("PercentComplete")}
+                              //   type={item.Status}
+                              //   web={ContextValue?.siteUrl}
+                              // />
+                              <InlineEditingcolumns
+                              portfolioColor={portfolioColor}
+                                AllListId={ContextValue}
+                                callBack={inlineCallBack}
+                                columnName="PercentComplete"
+                                item={data[0]}
+                                TaskUsers={AllTaskuser}
+                                pageName={"portfolioprofile"}
                               />
                             ))}
                           </dd>
@@ -1553,20 +1616,29 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                           </dt>
                           <dd className="bg-light">
                             {data.map((item: any, index: any) => (
-                              <EditableField
-                                key={index}
-                                listName="Master Tasks"
-                                itemId={item?.Id}
-                                fieldName="ItemRank"
-                                value={
-                                  item?.ItemRank != undefined
-                                    ? item?.ItemRank
-                                    : ""
-                                }
-                                TaskProfilePriorityCallback={null}
-                                onChange={handleFieldChange("ItemRank")}
-                                type=""
-                                web={ContextValue?.siteUrl}
+                              // <EditableField
+                              //   key={index}
+                              //   listName="Master Tasks"
+                              //   itemId={item?.Id}
+                              //   fieldName="ItemRank"
+                              //   value={
+                              //     item?.ItemRank != undefined
+                              //       ? item?.ItemRank
+                              //       : ""
+                              //   }
+                              //   TaskProfilePriorityCallback={null}
+                              //   onChange={handleFieldChange("ItemRank")}
+                              //   type=""
+                              //   web={ContextValue?.siteUrl}
+                              // />
+                              <InlineEditingcolumns
+                              portfolioColor={portfolioColor}
+                                AllListId={ContextValue}
+                                callBack={inlineCallBack}
+                                columnName="ItemRank"
+                                item={data[0]}
+                                TaskUsers={AllTaskuser}
+                                pageName={"portfolioprofile"}
                               />
                             ))}
                           </dd>
@@ -1656,21 +1728,30 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                       </dt>
                       <dd className="bg-light">
                         {data.map((item: any, index: any) => (
-                          <EditableField
-                            key={index}
-                            listName="Master Tasks"
-                            itemId={item?.Id}
-                            fieldName="Priority"
-                            value={
-                              item?.PriorityRank != undefined
-                                ? item?.PriorityRank
-                                : ""
-                            }
-                            TaskProfilePriorityCallback={null}
-                            onChange={handleFieldChange("Priority")}
-                            type=""
-                            web={ContextValue?.siteUrl}
-                          />
+                           <InlineEditingcolumns
+                           portfolioColor={portfolioColor}
+                             AllListId={ContextValue}
+                             callBack={inlineCallBack}
+                             columnName="Priority"
+                             item={data[0]}
+                             TaskUsers={AllTaskuser}
+                             pageName={"portfolioprofile"}
+                           />
+                          // <EditableField
+                          //   key={index}
+                          //   listName="Master Tasks"
+                          //   itemId={item?.Id}
+                          //   fieldName="Priority"
+                          //   value={
+                          //     item?.PriorityRank != undefined
+                          //       ? item?.PriorityRank
+                          //       : ""
+                          //   }
+                          //   TaskProfilePriorityCallback={null}
+                          //   onChange={handleFieldChange("Priority")}
+                          //   type=""
+                          //   web={ContextValue?.siteUrl}
+                          // />
                         ))}
                       </dd>
                     </dl>
@@ -1875,13 +1956,23 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                               </label>
                             </summary>
                             <div className="border border-top-0 p-2">
-                              {AllQuestion.map((item) => (
-                                <p
-                                  className="m-0"
-                                  dangerouslySetInnerHTML={{
-                                    __html: item?.Body,
-                                  }}
-                                ></p>
+                            {AllQuestion?.map((item) => (
+                                <details>
+                                  <summary className="alignCenter">
+                                    <label className="toggler full_width">
+                                      <span>{item?.Title}</span>
+                                    </label>
+                                  </summary>
+                                  <div className="border border-top-0 p-2">
+                                    <p
+                                      className="m-0"
+                                      dangerouslySetInnerHTML={{
+                                        __html:
+                                          item?.Body
+                                      }}
+                                    ></p>
+                                  </div>
+                                </details>
                               ))}
                             </div>
                           </details>
@@ -1897,12 +1988,23 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                             </summary>
                             <div className="border border-top-0 p-2">
 
-                              {AllHelp.map((item) => (
-                                <p className="m-0"
-                                  dangerouslySetInnerHTML={{
-                                    __html: item?.Body,
-                                  }}
-                                ></p>
+                            {AllHelp?.map((item) => (
+                                <details>
+                                  <summary className="alignCenter">
+                                    <label className="toggler full_width">
+                                      <span>{item?.Title}</span>
+                                    </label>
+                                  </summary>
+                                  <div className="border border-top-0 p-2">
+                                    <p
+                                      className="m-0"
+                                      dangerouslySetInnerHTML={{
+                                        __html:
+                                          item?.Body
+                                      }}
+                                    ></p>
+                                  </div>
+                                </details>
                               ))}
                             </div>
                           </details>
