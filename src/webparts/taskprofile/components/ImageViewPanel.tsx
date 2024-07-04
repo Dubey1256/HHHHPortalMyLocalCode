@@ -643,7 +643,7 @@ const ImageViewPanel = (props: any) => {
                                                                                     <span className='svg__iconbox svg__icon--edit'></span>
                                                                                 </a>
                                                                                 <a title='Delete'
-                                                                                    onClick={() => clearComment(slide, fbComment, index, "ReplyComment")}
+                                                                                    onClick={() => clearComment(slide, k, index, "ReplyComment")}
                                                                                 >
                                                                                     <span className='svg__iconbox svg__icon--trash'></span></a>
                                                                             </span>
