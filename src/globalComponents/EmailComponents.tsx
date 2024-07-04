@@ -303,6 +303,18 @@ const EmailComponent = (props: any) => {
                                 <div style={{ marginBottom: '3.75pt' }}>
                                   <span>{fbComment.AuthorName} - {fbComment.Created}</span>
                                 </div>
+                                {fbComment?.ReplyMessages?.length > 0 && fbComment?.ReplyMessages?.map((replyData: any) => {
+                                return (
+                                  <div style={{ padding: '7.0pt 7.0pt 7.0pt 7.0pt', background: '#fff', marginTop: '3.75pt' }}>
+                                    <div style={{ marginBottom: "3.75pt" }}>
+                                      <p style={{ margin: '0px' }}>
+                                        <span style={{ color: 'black'}}>{replyData.AuthorName} - {replyData.Created}</span></p>
+                                    </div>
+                                    <p style={{ marginBottom: '1.25pt' }}>
+                                      <span style={{ color: 'black' }}>{replyData.Title}</span></p>
+                                  </div>
+                                )
+                              })}
                                 <div><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span></span></div>
                               </div>
                             })}
@@ -323,6 +335,19 @@ const EmailComponent = (props: any) => {
                                   return <div style={{ backgroundColor: '#f5f5f5', padding: '7.0pt 7.0pt 7.0pt 7.0pt', margin: '5px 0px' }}>
                                     <div style={{ marginBottom: '3.75pt' }}>
                                       <span>{fbSubComment.AuthorName} - {fbSubComment.Created}</span>
+
+                                      {fbSubComment?.ReplyMessages?.length > 0 && fbSubComment?.ReplyMessages?.map((replyData: any) => {
+                                return (
+                                  <div style={{ padding: '7.0pt 7.0pt 7.0pt 7.0pt', background: '#fff', marginTop: '3.75pt' }}>
+                                    <div style={{ marginBottom: "3.75pt" }}>
+                                      <p style={{ margin: '0px' }}>
+                                        <span style={{ color: 'black'}}>{replyData.AuthorName} - {replyData.Created}</span></p>
+                                    </div>
+                                    <p style={{ marginBottom: '1.25pt' }}>
+                                      <span style={{ color: 'black' }}>{replyData.Title}</span></p>
+                                  </div>
+                                )
+                              })}
                                     </div>
                                     <div><span><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span></span></div>
                                   </div>
