@@ -1626,11 +1626,11 @@ const Apps = (props: any) => {
         const regex = new RegExp(leaveTypes.join("|"), "g");
         let updatedTitle = inputValueName.replace(regex, type);
 
-        if (leaveApproveded) {
-            updatedTitle += " Approved";
-        } else if (leaverejected) {
-            updatedTitle += " Rejected";
-        }
+        if (leaveApproveded && !isLeaveApproved) {
+          updatedTitle += " Approved";
+      } else if (leaverejected) {
+          updatedTitle += " Rejected";
+      }
 
         return updatedTitle;
     };
@@ -1899,20 +1899,20 @@ const Apps = (props: any) => {
   const isAllowedUser = allowedUserIds.indexOf(userId) !== -1;
 
   const result = isAllowedUser && !disabl && (!leaveapproved || !leaverejected);
-
+  const isLeaveApproved = inputValueName.indexOf("Approved") >= 0;
   return (
 
     <div>
-      <div className="w-100 text-end">
+      {/* <div className="w-100 text-end">
         <a
           target="_blank"
           data-interception="off"
-          href={`${props.props.siteUrl}/SitePages/TeamCalendar.aspx`}
+          href={`${props.props.siteUrl}/SitePages/TeamCalendar-Old.aspx`}
         >
           {" "}
           Old Leave Calendar
         </a>
-      </div>
+      </div> */}
       <div className="w-100 text-end">
         <a href="#" onClick={DownloadLeaveReport}>
           <span>Generate Monthly Report  | </span>
@@ -2158,7 +2158,7 @@ const Apps = (props: any) => {
               <div className="row">
                 <div className="col">
                   <button type="button" className="btn btn-success me-2" onClick={handleApprove} disabled={isDisabled}>Approve</button>
-                  <button type="button" className="btn btn-danger" onClick={handleSubmitReject} disabled={isDisabled}>Reject </button>
+                  <button type="button" className="btn btn-danger" onClick={handleReject} disabled={isDisabled}>Reject </button>
                 </div>
               </div>
               {showTextarea && (

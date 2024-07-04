@@ -7,7 +7,9 @@ import Button from 'react-bootstrap/Button';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import { Card, CardHeader, CardPreview } from "@fluentui/react-components";
 import AddTaskConfigPopup from './AddTaskConfigPopup';
-import Tooltip from '../../../globalComponents/Tooltip';
+import GlobalTooltip from '../../../globalComponents/Tooltip';
+import { Tooltip } from "@fluentui/react-components";
+import VersionHistory from '../../../globalComponents/VersionHistroy/VersionHistory'
 let users: any = []
 let PortFolioType: any = [];
 let SelectedPortfolio: any
@@ -55,14 +57,13 @@ export const NotificationsAddPopup = (props: any) => {
                 <div className='subheading'>
                     {props?.SelectedEditItem?.Id != undefined ? `Edit Configuration - ${props?.SelectedEditItem?.Title}` : 'Add Configuration'}
                 </div>
-                <Tooltip ComponentId={'6755'} />
+                <GlobalTooltip ComponentId={'6755'} />
             </>
         );
     };
 
     const closePopup = (type?: any | undefined) => {
         props.callBack(type);
-
 
     }
     const loadusersAndGroups = async () => {
@@ -210,6 +211,16 @@ export const NotificationsAddPopup = (props: any) => {
         setEditTaskconfigData(selectedData)
         setOpenEditConfigPopup(true)
     }
+    const DeleteTaskNotificationPopup = (selectedData: any, index: any) => {
+        const copyallTaskStatusToConfigure = allTaskStatusToConfigure?.filter((item: any, indx: any) => {
+            return index !== indx;
+        });
+
+        setAllTaskStatusToConfigure(copyallTaskStatusToConfigure)
+        // selectedData.index = index
+        // setEditTaskconfigData(selectedData)
+        // setOpenEditConfigPopup(true)
+    }
     const deleteDocumentsData = async (DeletItemId: any) => {
         console.log(DeletItemId);
         const web = new Web(props?.AllListId?.siteUrl);
@@ -316,17 +327,10 @@ export const NotificationsAddPopup = (props: any) => {
                                 <label className="form-label full-width">
                                     Select Portfolio Type
                                 </label>
-                                <select
-                                    className="form-select"
-                                    onChange={(e) => { showTaskStatus(e?.target?.value) }}
-                                >
+                                <select className="form-select" onChange={(e) => { showTaskStatus(e?.target?.value) }}>
                                     {PortFolioType.map(function (portfolioData: any, i: any) {
                                         return (
-                                            <option
-                                                key={i}
-
-                                                value={portfolioData.Title}
-                                            >
+                                            <option key={i} value={portfolioData.Title} >
                                                 {portfolioData.Title}
                                             </option>
                                         );
@@ -335,12 +339,18 @@ export const NotificationsAddPopup = (props: any) => {
                             </div>
 
                             <div className='row mt-4'>
-                                <div className='col-sm-3'>
+                                <div className='col-sm-3 '>
                                     {TaskStatus?.map((StatusData: any) => {
                                         return (
                                             <>
-
-                                                <div><a onClick={() => setPercentageComplete(StatusData?.value)}> {StatusData?.status}</a></div>
+                                                <div onClick={() => setPercentageComplete(StatusData?.value)} className={`${percentageComplete == StatusData?.value ? 'alignCenter border p-1 activeCategory' : 'alignCenter border p-1 hoverCategory'}`}>
+                                                    <a> {StatusData?.status}</a>
+                                                    <Tooltip withArrow content={'Add Configuration'} relationship="label" positioning="below">
+                                                        <div className='alignCenter ml-auto hover-text'>
+                                                            <span className="hreflink ml-auto svg__icon--Plus wid30 svg__iconbox"></span>
+                                                        </div>
+                                                    </Tooltip>
+                                                </div>
                                             </>
                                         )
 
@@ -352,34 +362,52 @@ export const NotificationsAddPopup = (props: any) => {
                                         return (
                                             <>
                                                 {config?.percentComplete == percentageComplete &&
-                                                    <section>
+                                                    <section className='mb-2'>
                                                         <Card>
 
                                                             <div className='alignCenter'>
                                                                 {config?.NotificationType == "Email" ? <span className='svg__iconbox svg__icon--mail hreflink'></span> :
                                                                     <span className='svg__iconbox svg__icon--team hreflink'></span>}
                                                                 <span className='ms-2'>{config?.Notifier[0]?.text}</span>
-                                                                <span className='svg__iconbox svg__icon--edit hreflink ml-auto' onClick={() => EditTaskNotificationPopup(config, index)}></span>
+                                                                <span className='svg__iconbox svg__icon--edit ml-auto' onClick={() => EditTaskNotificationPopup(config, index)}></span>
+                                                                <span className='svg__iconbox svg__icon--trash' onClick={() => DeleteTaskNotificationPopup(config, index)}></span>
                                                             </div>
                                                             <div className='alignCenter'>
-                                                                <label className='form-label'>Task Status:</label>
+                                                                <label className='form-label'>Task Status :</label>
                                                                 <span className='ms-2'>
                                                                     {`${config?.percentComplete} %`}
                                                                 </span>
                                                             </div>
 
+                                                            {config?.NotificationType == "Email" && <div className='alignCenter'>
+                                                                <label className='form-label'>Subject :</label>
+                                                                <span className='ms-2'>
+                                                                    {config?.subject}
+                                                                </span>
+                                                            </div>}
+
+                                                            {(config?.NotificationType == "Team" || config?.NotificationType == "Email") && <div className='alignCenter'>
+                                                                <label className='form-label'>Notify Content :</label>
+                                                                <span className='ms-2'>
+                                                                    {config?.notifyContent}
+                                                                </span>
+                                                            </div>}
+
                                                             <div>
-                                                                <label className='form-label'>Avoid ItSelf:</label>
+                                                                <label className='form-label'>Avoid Itself :</label>
                                                                 <span className='SpfxCheckRadio ms-2'>
                                                                     <input type="checkbox" className='form-check-input' checked={config?.avoidItself == "true"} />
                                                                 </span>
                                                             </div>
                                                             <div>
-                                                                <label className='form-label'>Category:</label>
-                                                                <span className='ms-2'>{config?.Category} </span>
+                                                                <label className='form-label'>Category :</label>
+                                                                <span className='ms-2'>
+                                                                    {Array.isArray(config?.Category) ?
+                                                                        config.Category.map((item: any) => (typeof item === 'object' ? item.Title : item)).join(', ') :
+                                                                        config.Category}</span>
                                                             </div>
                                                             <div>
-                                                                <label className='form-label'>Exception Category:</label>
+                                                                <label className='form-label'>Exception Category :</label>
                                                                 <span className='ms-2'>{config?.ExceptionCategory[0]} </span>
                                                             </div>
                                                         </Card>
@@ -391,15 +419,14 @@ export const NotificationsAddPopup = (props: any) => {
 
                                     }) :
 
-                                        <>
+                                        <div className='border p-2 text-center'>
                                             "No Configuration Available"
-
-                                        </>}
-                                    <span className='ms-3 mt-2'>
-                                        <button type="button" className='me-1 btn btn-primary'
+                                        </div>}
+                                    <div className='ms-3 mt-2 text-end'>
+                                        <button type="button" className='btnCol btn btn-primary '
                                             onClick={() => setOpenAddConfigPopup(true)}
                                         >Add Config </button>
-                                    </span >
+                                    </div>
                                 </div>}
 
                             </div>
@@ -417,9 +444,19 @@ export const NotificationsAddPopup = (props: any) => {
                                 {console.log("footerdiv")}
                                 <div><span className='pe-2'>Created</span><span className='pe-2'>{props?.SelectedEditItem?.Created !== null ? props?.SelectedEditItem?.Created : ""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Author?.Title}</a></span></div>
                                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{props?.SelectedEditItem?.Modified !== null ? props?.SelectedEditItem?.Modified : ""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Editor?.Title}</a></span></div>
-                                <div
-                                    onClick={() => deleteDocumentsData(props?.SelectedEditItem?.Id)}
-                                    className="hreflink"><span style={{ marginLeft: '-4px' }} className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item</div>
+                                <div>
+                                    <a onClick={() => deleteDocumentsData(props?.SelectedEditItem?.Id)} className="hreflink"><span style={{ marginLeft: '-4px' }} className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item
+                                    </a>
+                                    |
+                                    <span>
+                                        <VersionHistory
+                                            taskId={props?.SelectedEditItem.Id}
+                                            listId={props?.AllListId?.NotificationsConfigrationListID}
+                                            siteUrls={props?.AllListId?.siteUrl}
+                                            RequiredListIds={props?.AllListId}
+                                        />
+                                    </span>
+                                </div>
                             </div>}
                         </div>
 
@@ -432,7 +469,7 @@ export const NotificationsAddPopup = (props: any) => {
                     </div>
                 </footer>
 
-               
+
             </Panel>
             {openAddConfigPopup && <AddTaskConfigPopup TaskconfigCallback={TaskconfigCallback} percentageComplete={percentageComplete} AllListId={props?.AllListId} setAllTaskStatusToConfigure={setAllTaskStatusToConfigure} allTaskStatusToConfigure={allTaskStatusToConfigure} ></AddTaskConfigPopup>}
             {openEditConfigPopup && <AddTaskConfigPopup TaskconfigCallback={TaskconfigCallback} editTaskconfigData={editTaskconfigData} percentageComplete={percentageComplete} AllListId={props?.AllListId} setAllTaskStatusToConfigure={setAllTaskStatusToConfigure} allTaskStatusToConfigure={allTaskStatusToConfigure} />}

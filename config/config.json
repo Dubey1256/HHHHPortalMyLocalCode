@@ -514,6 +514,14 @@
         }
       ]
     },
+    "team-portfolio-lead-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/teamPortfolioLead/TeamPortfolioLeadWebPart.js",
+          "manifest": "./src/webparts/teamPortfolioLead/TeamPortfolioLeadWebPart.manifest.json"
+        }
+      ]
+    },
     "event-management-web-part": {
       "components": [
         {
@@ -574,6 +582,7 @@
     }
   },
   "localizedResources": {
+    "TeamPortfolioLeadWebPartStrings": "lib/webparts/teamPortfolioLead/loc/{locale}.js",
     "EventManagementWebPartStrings": "lib/webparts/eventManagement/loc/{locale}.js",
     "EventDetailWebPartStrings": "lib/webparts/eventDetail/loc/{locale}.js",
     "LivingDocsSyncToolWebPartStrings": "lib/webparts/livingDocsSyncTool/loc/{locale}.js",

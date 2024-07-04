@@ -359,7 +359,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
     return (
       <div>
         <span title={formattedDate != 'Invalid date'?formattedDate:''}>{formattedDate != 'Invalid date'?formattedDate:''}</span>
-        <a className="alignIcon ms-1 pencil-icons" onClick={handleEdit}>
+        <a className="alignIcon ms-1 pencil-icons pull-right" onClick={handleEdit}>
           <span className="svg__iconbox svg__icon--calendar"></span>
         </a>
       </div>
@@ -1372,7 +1372,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                             </>
                           )}
                       </span>
-                      {SelectedProp?.Context?._pageContext?._web?.title ===
+                      {/* {SelectedProp?.Context?._pageContext?._web?.title ===
                         "SP" && (
                           <span className="text-end fs-6">
                             <a
@@ -1387,7 +1387,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                               Old Portfolio profile page
                             </a>
                           </span>
-                        )}
+                        )} */}
                     </h2>
                   </>
                 ))}
@@ -1428,7 +1428,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                           </dt>
                           <dd className="bg-light">
                             {data.map((item: any, index: any) => (
-                              <a  className="ml-auto pancil-icons">
+                              <a>
                                 <EditableField
                                   key={index}
                                   listName="Master Tasks"
@@ -1587,7 +1587,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                           <dd className="bg-light">
                             <span>
                               {data.map((item: any, index: any) => (
-                                <a  className="ml-auto pancil-icons">
+                                <a>
                                   <EditableField
                                     key={index}
                                     listName="Master Tasks"
@@ -1761,7 +1761,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                       </dt>
                       <dd className="bg-light">
                         {data.map((item: any, index: any) => (
-                          <a className="ml-auto pancil-icons">
+                          <a>
                             <EditableField
                               key={index}
                               listName="Master Tasks"
@@ -1956,13 +1956,23 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                               </label>
                             </summary>
                             <div className="border border-top-0 p-2">
-                              {AllQuestion.map((item) => (
-                                <p
-                                  className="m-0"
-                                  dangerouslySetInnerHTML={{
-                                    __html: item?.Body,
-                                  }}
-                                ></p>
+                            {AllQuestion?.map((item) => (
+                                <details>
+                                  <summary className="alignCenter">
+                                    <label className="toggler full_width">
+                                      <span>{item?.Title}</span>
+                                    </label>
+                                  </summary>
+                                  <div className="border border-top-0 p-2">
+                                    <p
+                                      className="m-0"
+                                      dangerouslySetInnerHTML={{
+                                        __html:
+                                          item?.Body
+                                      }}
+                                    ></p>
+                                  </div>
+                                </details>
                               ))}
                             </div>
                           </details>
@@ -1978,12 +1988,23 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                             </summary>
                             <div className="border border-top-0 p-2">
 
-                              {AllHelp.map((item) => (
-                                <p className="m-0"
-                                  dangerouslySetInnerHTML={{
-                                    __html: item?.Body,
-                                  }}
-                                ></p>
+                            {AllHelp?.map((item) => (
+                                <details>
+                                  <summary className="alignCenter">
+                                    <label className="toggler full_width">
+                                      <span>{item?.Title}</span>
+                                    </label>
+                                  </summary>
+                                  <div className="border border-top-0 p-2">
+                                    <p
+                                      className="m-0"
+                                      dangerouslySetInnerHTML={{
+                                        __html:
+                                          item?.Body
+                                      }}
+                                    ></p>
+                                  </div>
+                                </details>
                               ))}
                             </div>
                           </details>

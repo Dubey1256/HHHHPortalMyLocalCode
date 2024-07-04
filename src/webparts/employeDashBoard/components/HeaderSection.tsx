@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useReducer, useState } from 'react'
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import WorldClock from './WorldClock';
 import TaskStatusTbl from './TaskStausTable';
 import EmployeePieChart from './EmployeePieChart';
-import { Web } from 'sp-pnp-js';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { GrNext, GrPrevious } from "react-icons/gr";
 import Slider from "react-slick";
@@ -13,21 +12,16 @@ let Count: any = 0
 const Header = () => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
-  const ContextData: any = React.useContext(myContextValue)
+  const ContextData: any = useContext(myContextValue)
   let userName: any = ContextData?.currentUserData;
-  let DashboardTitle = ContextData?.DashboardTitle
-  const currentTime: any = ContextData?.currentTime;
-  let annouceMents: any = ContextData?.annouceMents;
-  const [activeTile, setActiveTile] = useState(ContextData?.ActiveTile);
+  const [activeTile, setActiveTile] = useState(undefined);
   const [IsOpenTimeSheetPopup, setIsOpenTimeSheetPopup] = useState(false);
-  const [IsAnnouncement, setIsAnnouncement] = React.useState(false);
-  const [IsPortfolioLeads, setIsPortfolioLeads] = React.useState(false);
-  const [newAnnouncement, setNewAnnouncement] = React.useState('');
-  const [, rerender] = React.useReducer(() => ({}), {});
-  const [IsShowConfigBtn, setIsShowConfigBtn] = React.useState(false);
-  const [AllPortfolioLeads, setAllPortfolioLeads] = React.useState([]);
-  const [SelectedLead, setSelectedLead] = React.useState(undefined);
-  let UserGroup: any = ContextData?.AllTaskUser?.filter((x: any) => x.AssingedToUser?.Id === ContextData?.propsValue?.Context._pageContext._legacyPageContext.userId)
+  const [IsPortfolioLeads, setIsPortfolioLeads] = useState(false);
+  const [, rerender] = useReducer(() => ({}), {});
+  const [IsShowConfigBtn, setIsShowConfigBtn] = useState(false);
+  const [AllPortfolioLeads, setAllPortfolioLeads] = useState([]);
+  const [IsRestoreDefault, setIsRestoreDefault] = useState(false);
+  const [SelectedLead, setSelectedLead] = useState(undefined);
   if (ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
     DashboardConfig = JSON.parse(JSON.stringify(ContextData?.DashboardConfig));
     DashboardConfig.sort((a: any, b: any) => a.Id - b.Id);
@@ -42,7 +36,8 @@ const Header = () => {
       }
       Count++;
     }
-  }, [ContextData?.currentUserData?.AssingedToUserId]);
+    setActiveTile(ContextData?.ActiveTile)
+  }, [ContextData?.currentUserData?.AssingedToUserId && ContextData?.ActiveTile]);
 
   let numSlides = ContextData?.DashboardConfig?.filter((e: { TileName: string; }) => e.TileName != undefined && e.TileName != '');
   let settings = {
@@ -80,43 +75,8 @@ const Header = () => {
       setActiveTile(tileName);
     }
   };
-  const openAnnouncementPopup = (event: any) => {
-    setIsAnnouncement(true);
-  }
-  const deleteAnnouncement = (deleteitem: any) => {
-    const web = new Web(ContextData?.propsValue?.siteUrl);
-    web.lists.getById(ContextData?.propsValue?.Announcements).items.getById(deleteitem.Id).update({
-      Title: deleteitem.Title,
-      Body: deleteitem.Body,
-      isShow: false
-    })
-      .then((updatedItem: any) => {
-        annouceMents.map((itm: any, index: any) => {
-          if (deleteitem.Id === itm.Id) {
-            itm.isShow = false;
-            annouceMents.splice(index, 1)
-          }
-        })
-        rerender();
-      }).catch((err: any) => {
-        console.log(err)
-      })
-  };
-  const closeAnnouncementpopup = () => {
-    setIsAnnouncement(false)
-  }
-  const onRenderCustomHeaderAnnouncement = () => {
-    return (
-      <>
-        <div className='siteColor subheading'>
-          Add New Announcement
-        </div>
-      </>
-    );
-  };
   const openPortfolioLeadsPopup = () => {
     let SelectedUser = ContextData?.AllTaskUser?.filter((user: any) => user?.AssingedToUserId != undefined && user?.AssingedToUserId != undefined && user?.AssingedToUserId != '' && user?.AssingedToUserId == ContextData?.currentUserData?.AssingedToUserId)[0];
-
     setSelectedLead(SelectedUser)
     setIsPortfolioLeads(true)
   }
@@ -126,16 +86,19 @@ const Header = () => {
     setSelectedLead(undefined)
   }
   const savePortfolioLeads = () => {
-    if (SelectedLead?.AssingedToUserId == undefined || SelectedLead?.AssingedToUserId == '') {
+    if ((SelectedLead?.AssingedToUserId == undefined || SelectedLead?.AssingedToUserId == '') && IsRestoreDefault == false) {
       alert('Please select any portfolio Lead')
     }
     else {
-      localStorage.setItem('CurrentUserId', SelectedLead?.AssingedToUserId);
+      if (!IsRestoreDefault) {
+        localStorage.setItem('CurrentUserId', SelectedLead?.AssingedToUserId);
+      }
+      else if (IsRestoreDefault) {
+        localStorage.setItem('CurrentUserId', '');
+      }
       setIsPortfolioLeads(false)
       location.reload();
-      // ContextData?.LoadPortfolioLeads(SelectedLead)
     }
-
   }
   const onRenderCustomHeaderPortfolioLeads = () => {
     return (
@@ -146,31 +109,11 @@ const Header = () => {
       </>
     );
   };
-  const handleInputChange = (e: any) => {
-    const value = e.target.value;
-    setNewAnnouncement(value);
-  };
-  const saveAnnounceMents = () => {
-    const web = new Web(ContextData?.propsValue?.siteUrl);
-    web.lists.getById(ContextData?.propsValue?.Announcements).items.add(
-      {
-        Title: newAnnouncement,
-        isShow: true
-      })
-      .then((result: any) => {
-        annouceMents.push(result.data);
-        closeAnnouncementpopup();
-        setNewAnnouncement('');
-        rerender();
-      })
-      .catch((error) => {
-        console.error('Error adding announcement:', error);
-      });
-  }
   const CallBack = () => {
     setIsOpenTimeSheetPopup(false)
   }
   const SelectedUser = (User: any) => {
+    setIsRestoreDefault(false);
     if (User.IsSelcetdUser == undefined)
       User.IsSelcetdUser = false;
     if (SelectedLead?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && SelectedLead?.AssingedToUserId == User?.AssingedToUserId) {
@@ -180,6 +123,10 @@ const Header = () => {
       setSelectedLead(User)
     }
     rerender();
+  }
+  const RestoreDefault = () => {
+    setIsRestoreDefault(true);
+    setSelectedLead(undefined)
   }
   useEffect(() => {
     handleTileClick(ContextData?.ActiveTile, undefined)
@@ -283,49 +230,43 @@ const Header = () => {
                 <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z" />
               </svg>
             </span>
-            <WorldClock />
+            {activeTile != undefined &&<WorldClock />}
             <img className="rounded-circle" title={userName?.Title} width={30} height={30} src={userName?.Item_x0020_Cover?.Url} alt={userName?.Title} />
             {DashboardId == '5' && <span title='Open leads popup' className="svg__iconbox svg__icon--editBox" onClick={(e) => openPortfolioLeadsPopup()} ></span>}
           </div>
         </div>
-        {DashboardConfig?.length > 0 && <div><TaskStatusTbl activeTile={activeTile} smartFavTableConfig={smartFavTableConfig} /></div>}
+        {DashboardConfig?.length > 0 && activeTile != undefined && <div><TaskStatusTbl activeTile={activeTile} smartFavTableConfig={smartFavTableConfig} /></div>}
       </section>
       <span>
         {IsOpenTimeSheetPopup == true && <EmployeePieChart IsOpenTimeSheetPopup={IsOpenTimeSheetPopup} Call={() => { CallBack() }} />}
       </span>
-      <Panel onRenderHeader={onRenderCustomHeaderAnnouncement}
-        isOpen={IsAnnouncement}
-        onDismiss={closeAnnouncementpopup}
-        type={PanelType.medium}>
-        <div className='modal-body'>
-          <div className='input-group'>
-            <label className='form-label full-width'>Title</label>
-            <textarea className="form-control" defaultValue={newAnnouncement} onChange={handleInputChange} />
-          </div>
-        </div>
-        <div className='modal-footer mt-2'>
-          <button className="btn btn-primary ms-1" onClick={saveAnnounceMents}>Save</button>
-          <button className='btn btn-default ms-1' onClick={closeAnnouncementpopup}>Cancel</button>
-        </div>
-      </Panel>
       <Panel onRenderHeader={onRenderCustomHeaderPortfolioLeads}
         isOpen={IsPortfolioLeads}
         onDismiss={ClosePortfolioLeadPopup}
         type={PanelType.medium}>
         <div className='modal-body'>
-          <div className='input-group'>
-            {AllPortfolioLeads?.length && AllPortfolioLeads?.map((user: any, index: number) => (
-              <>
-                <div className="top-assign mb-3">
-                  {user.Item_x0020_Cover != undefined && user.AssingedToUser != undefined &&
-                    <span onClick={() => SelectedUser(user)}>
-                      <img className={SelectedLead?.AssingedToUserId == user?.AssingedToUserId == true ? 'large_teamsimgCustom me-2 activeimg' : 'large_teamsimgCustom me-2'} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
-                    </span>
-                  }
-                </div>
-              </>
-            ))}
+          <div className='row'>
+            <div className='col-9'>
+              <div className='input-group'>
+                {AllPortfolioLeads?.length && AllPortfolioLeads?.map((user: any, index: number) => (
+                  <>
+                    <div className="top-assign mb-3">
+                      {user.Item_x0020_Cover != undefined && user.AssingedToUser != undefined &&
+                        <span onClick={() => SelectedUser(user)}>
+                          <img className={SelectedLead?.AssingedToUserId == user?.AssingedToUserId == true ? 'large_teamsimgCustom me-2 activeimg' : 'large_teamsimgCustom me-2'} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
+                        </span>
+                      }
+                    </div>
+                  </>
+                ))}
+              </div>
+            </div>
+            <div className='col-3 pull-right'>
+              <a className='hreflink' onClick={(e) => { RestoreDefault() }} >+Restore Default</a>
+            </div>
+
           </div>
+
         </div>
         <div className='modal-footer mt-2'>
           <button className="btn btn-primary ms-1" onClick={savePortfolioLeads}>Save</button>

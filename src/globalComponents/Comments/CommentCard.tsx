@@ -250,10 +250,23 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       return userDeatails;
     }
   }
+
+  private async commentCardNotificationConfig() {
+    try{
+      let recipientData: any = await globalCommon.LoadAllNotificationConfigrations("CommentCardNotification", this.props.AllListId)
+      return recipientData;
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
+
   private async GetTaskUsers() {
     console.log("this is GetTaskUsers function")
     let web = new Web(this.props.siteUrl);
     let currentUser = await web.currentUser?.get();
+    let emailRecipients = await this.commentCardNotificationConfig()
+    
     //.then((r: any) => {  
     // console.log("Cuurent User Name - " + r['Title']);  
     //}); 
@@ -261,12 +274,28 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     taskUsers = await web.lists.getById(this.props?.AllListId?.TaskUserListID).items.select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'UserGroup/Id', 'UserGroup/Title').filter("ItemType eq 'User'").expand('AssingedToUser', 'UserGroup').get();
     taskUsers = taskUsers?.filter((User: any) => User?.UserGroup == undefined || User?.UserGroup?.Title != "Ex Staff")
     this.taskUsers = taskUsers;
-    if (this.taskUsers != undefined && this.taskUsers.length > 0) {
+    if (emailRecipients != undefined && emailRecipients.length > 0) {
+      emailRecipients.forEach((recipient: any) => {
+        this.taskUsers.forEach((user: any) => {
+        if (recipient.Id == user.AssingedToUserId) {
+          recipient.Item_x0020_Cover = user.Item_x0020_Cover
+        }
+        })
+        return recipient;
+      })
+      for (let index = 0; index < emailRecipients.length; index++) {
+        this.topCommenters.push({
+          id: emailRecipients[index].Title + "{" + emailRecipients[index]?.Email + "}",
+          display: emailRecipients[index].Title,
+          Title: emailRecipients[index].Title,
+          ItemCoverURL: (emailRecipients[index].Item_x0020_Cover != undefined) ?
+          emailRecipients[index].Item_x0020_Cover?.Url :
+          null
+        })
+      }  
+    }
+    else {
       for (let index = 0; index < this.taskUsers.length; index++) {
-        this.mentionUsers.push({
-          id: this.taskUsers[index].Title + "{" + this.taskUsers[index]?.AssingedToUser?.EMail + "}",
-          display: this.taskUsers[index].Title
-        });
         if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn" || this.taskUsers[index].Title == "Prashant Kumar") {
           this.topCommenters.push({
             id: this.taskUsers[index].Title + "{" + this.taskUsers[index]?.AssingedToUser?.EMail + "}",
@@ -274,10 +303,18 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             Title: this.taskUsers[index].Title,
             ItemCoverURL: (this.taskUsers[index].Item_x0020_Cover != undefined) ?
               this.taskUsers[index].Item_x0020_Cover.Url :
-              null,
-            Suffix: (this.taskUsers[index].Suffix) != undefined ? this.taskUsers[index].Suffix : null,
+              null
           })
         }
+      }
+    }
+
+    if (this.taskUsers != undefined && this.taskUsers.length > 0) { 
+      for (let index = 0; index < this.taskUsers.length; index++) {
+        this.mentionUsers.push({
+          id: this.taskUsers[index].Title + "{" + this.taskUsers[index]?.AssingedToUser?.EMail + "}",
+          display: this.taskUsers[index].Title
+        });
         if (this.taskUsers[index].AssingedToUser != null && this.taskUsers[index].AssingedToUser.Title == currentUser['Title'])
           this.currentUser = this.taskUsers[index];
       }
@@ -358,11 +395,20 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       console.log(this.state.Result);
       (document.getElementById(txtCommentControlId) as HTMLTextAreaElement).value = '';
       let web = new Web(this.props.siteUrl);
-      const i = await web.lists.getByTitle(this.state.listName)
+      if(this.state.listName != null ) {
+        await web.lists.getByTitle(this.state.listName)
         .items
         .getById(this.state.itemID).update({
           Comments: JSON.stringify(this.state.Result["Comments"])
         });
+      }
+      else {
+        await web.lists.getById(this.state.listId)
+        .items
+        .getById(this.state.itemID).update({
+          Comments: JSON.stringify(this.state.Result["Comments"])
+        });
+      }
 
       if (isPushOnRoot != false)
         this.setState({ updateComment: true }, () => this.GetEmailObjects(txtComment, this.state.mentionValue));

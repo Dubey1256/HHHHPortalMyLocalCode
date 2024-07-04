@@ -592,7 +592,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         AllSiteTasksDataBackGroundLoad.push(result)
                     });
                     smartTimeUseLocalStorage(AllSiteTasksDataBackGroundLoad)
-                    tasksDataLoadUpdate = tasksDataLoadUpdate.concat(allTaskDataFlatLoadeViewBackup);
+                    // tasksDataLoadUpdate = tasksDataLoadUpdate.concat(allTaskDataFlatLoadeViewBackup);
                     tasksDataLoadUpdate = tasksDataLoadUpdate.concat(AllSiteTasksDataBackGroundLoad);
                     setAllSiteTasksDataLoadAll(tasksDataLoadUpdate);
                     let taskBackup: any = []
@@ -3698,19 +3698,19 @@ function TeamPortlioTable(SelectedProp: any) {
                             {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("service") > -1 && (
                                 <div style={{ color: `${portfolioColor}` }}>{IsUpdated} Portfolio</div>
                             )}
-                            {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("service") > -1 && (
+                            {/* {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("service") > -1 && (
                                 <div className="text-end fs-6">
                                     <a data-interception="off" style={{ color: `${portfolioColor}` }} target="_blank" className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Service-Portfolio-Old.aspx"}>Old Service Portfolio</a>
                                 </div>
-                            )}
+                            )} */}
                             {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("event") > -1 && (
                                 <div style={{ color: `${portfolioColor}` }}>{IsUpdated} Portfolio</div>
                             )}
-                            {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("event") > -1 && (
+                            {/* {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("event") > -1 && (
                                 <div className="text-end fs-6">
                                     <a data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Event-Portfolio-Old.aspx"}>Old Event Portfolio</a>
                                 </div>
-                            )}
+                            )} */}
                             {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("component") > -1 && (
                                 <div style={{ color: `${portfolioColor}` }}>{IsUpdated} Portfolio</div>
                             )}
@@ -3719,11 +3719,11 @@ function TeamPortlioTable(SelectedProp: any) {
                             )}
                             {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("component") > -1 && (
                                 <div className="text-end fs-6">
-                                    {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='text-end fs-6'>
+                                    {/* {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='text-end fs-6'>
                                         {(ContextValue?.siteUrl?.toLowerCase().indexOf('ksl') > -1 || ContextValue?.siteUrl?.toLowerCase().indexOf('gmbh') > -1) ? (
                                             <a data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Team-Portfolio-Old.aspx"} >Old Team Portfolio</a>
                                         ) : <a data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Component-Portfolio-Old.aspx"} >Old Component Portfolio</a>
-                                        } </div>}
+                                        } </div>} */}
                                 </div>
                             )}
                         </h2>

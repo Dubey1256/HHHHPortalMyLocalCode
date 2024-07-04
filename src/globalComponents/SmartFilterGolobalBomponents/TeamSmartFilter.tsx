@@ -78,8 +78,10 @@ const TeamSmartFilter = (item: any) => {
     const [iscategoriesAndStatusExpendShow, setIscategoriesAndStatusExpendShow] = React.useState(false);
     const [isTeamMembersExpendShow, setIsTeamMembersExpendShow] = React.useState(false);
     const [isDateExpendShow, setIsDateExpendShow] = React.useState(false);
+    const [isDateExpendShowWorkingAction, setIsDateExpendShowWorkingAction] = React.useState(false);
     const [isEveryOneShow, setIsEveryOneShow] = React.useState(false);
     const [isOnlyMeShow, setIsOnlyMeShow] = React.useState(false);
+    const [isActionsExpendShow, setIsActionsExpendShow] = React.useState(false);
 
     const [collapseAll, setcollapseAll] = React.useState(true);
     const [iconIndex, setIconIndex] = React.useState(0);
@@ -107,7 +109,15 @@ const TeamSmartFilter = (item: any) => {
     const [isModifiedDateSelected, setIsModifiedDateSelected] = React.useState(false);
     const [isDueDateSelected, setIsDueDateSelected] = React.useState(false);
     // const [preSet, setPreSet] = React.useState(false);
+    //*******************************************************Working Action Section********************************************************************/
+    const [selectedFilterWorkingAction, setSelectedFilterWorkingAction] = React.useState("");
+    const [startDateWorkingAction, setStartDateWorkingAction] = React.useState<any>(null);
+    const [endDateWorkingAction, setEndDateWorkingAction] = React.useState<any>(null);
+    const [isWorkingDate, setIsWorkingDate] = React.useState(false);
+    const [changeInDatePicker, setChangeDatePicker] = React.useState(false)
+    //*******************************************************Working Action Section End********************************************************************/
     //*******************************************************Date Section End********************************************************************/
+
 
     //*******************************************************Teams Section********************************************************************/
     const [isCreatedBy, setIsCreatedBy] = React.useState(false);
@@ -120,7 +130,6 @@ const TeamSmartFilter = (item: any) => {
     const [isPhone, setIsPhone] = React.useState(false);
     const [isBottleneck, setIsBottleneck] = React.useState(false);
     const [isAttention, setIsAttention] = React.useState(false);
-    // const [isWorkingThisWeek, setIsWorkingThisWeek] = React.useState(false);
     //*******************************************************Teams Section End********************************************************************/
 
     //*******************************************************Key Word Section********************************************************************/
@@ -263,6 +272,12 @@ const TeamSmartFilter = (item: any) => {
                         if (elem.endDate != null && elem.endDate != undefined && elem.endDate != "") {
                             elem.endDate = new Date(elem.endDate);
                         }
+                        if (elem.startDateWorkingAction != null && elem.startDateWorkingAction != undefined && elem.startDateWorkingAction != "") {
+                            elem.startDateWorkingAction = new Date(elem.startDateWorkingAction);
+                        }
+                        if (elem.endDateWorkingAction != null && elem.endDateWorkingAction != undefined && elem.endDateWorkingAction != "") {
+                            elem.endDateWorkingAction = new Date(elem.endDateWorkingAction);
+                        }
                     })
                 }
             });
@@ -309,13 +324,20 @@ const TeamSmartFilter = (item: any) => {
             setSelectedProject((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.selectedProject);
             setStartDate((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.startDate);
             setEndDate((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.endDate);
+            setStartDateWorkingAction((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.startDateWorkingAction);
+            setEndDateWorkingAction((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.endDateWorkingAction);
             setIsCreatedBy((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isCreatedBy);
             setIsModifiedby((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isModifiedby);
             setIsAssignedto((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isAssignedto);
             setIsTeamLead((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isTeamLead);
             setIsTeamMember((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isTeamMember);
             setIsTodaysTask((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isTodaysTask);
+            setIsPhone((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isPhone);
+            setIsBottleneck((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isBottleneck);
+            setIsAttention((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isAttention);
+            setIsWorkingDate((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isWorkingDate);
             setSelectedFilter((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.selectedFilter);
+            setSelectedFilterWorkingAction((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.selectedFilterWorkingAction)
             setIsCreatedDateSelected((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isCreatedDateSelected);
             setIsModifiedDateSelected((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isModifiedDateSelected);
             setIsDueDateSelected((prev: any) => SmartFavoritesItemsQueryStringBased[0]?.isDueDateSelected);
@@ -716,7 +738,7 @@ const TeamSmartFilter = (item: any) => {
         setprojectCountInfo(projectCount)
         setclientCategoryCountInfo(clientCategoryCount)
         setteamMembersCountInfo(teamMembersCount)
-        setdateCountInfo(dateCount)
+        setdateCountInfo(dateCount);
     })
     React.useEffect(() => {
         headerCountData()
@@ -775,7 +797,7 @@ const TeamSmartFilter = (item: any) => {
                 filterGroups[index].selectAllChecked = childrenLength === checked?.length;
             }
             // ///end///
-            handleTeamsFilterCreatedModifiAssign(event);
+            // handleTeamsFilterCreatedModifiAssign(event);
             setTaskUsersData(filterGroups);
             rerender();
 
@@ -795,26 +817,26 @@ const TeamSmartFilter = (item: any) => {
         rerender()
         headerCountData();
     }
-    const handleTeamsFilterCreatedModifiAssign = (event: any) => {
-        if (
-            !isCreatedBy &&
-            !isModifiedby &&
-            !isAssignedto
-        ) {
-            switch (event) {
-                case "FilterTeamMembers":
-                    setIsCreatedBy(true);
-                    setIsModifiedby(true);
-                    setIsAssignedto(true);
-                    break;
-                default:
-                    setIsCreatedBy(false);
-                    setIsModifiedby(false);
-                    setIsAssignedto(false);
-                    break;
-            }
-        }
-    };
+    // const handleTeamsFilterCreatedModifiAssign = (event: any) => {
+    //     if (
+    //         !isCreatedBy &&
+    //         !isModifiedby &&
+    //         !isAssignedto
+    //     ) {
+    //         switch (event) {
+    //             case "FilterTeamMembers":
+    //                 setIsCreatedBy(true);
+    //                 setIsModifiedby(true);
+    //                 setIsAssignedto(true);
+    //                 break;
+    //             default:
+    //                 setIsCreatedBy(false);
+    //                 setIsModifiedby(false);
+    //                 setIsAssignedto(false);
+    //                 break;
+    //         }
+    //     }
+    // };
     const handleSelectAllChangeTeamSection = () => {
         setIsSelectAll(!isSelectAll);
         setIsCreatedBy(!isSelectAll);
@@ -1129,14 +1151,63 @@ const TeamSmartFilter = (item: any) => {
     };
     const updatedCheckTeamMembers = (data: any, teamMembers: any) => {
         try {
-            if (teamMembers.length === 0) {
-                if (isTodaysTask) {
-                    if (data?.workingTodayUsers?.length > 0) {
-                        let todayStr = Moment().format('DD/MM/YYYY');
-                        return data.workingTodayUsers[0].WorkingDate === todayStr;
-                    } else {
-                        return false;
+            if (teamMembers?.length === 0) {
+                if (isWorkingDate === true) {
+                    try {
+                        if (data?.WorkingAction) {
+                            const workingActionValue = JSON.parse(data?.WorkingAction);
+                            const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
+                            if (workingDetails?.InformationData) {
+                                const isWithinDateRange = (date: any) => {
+                                    if (startDateWorkingAction && endDateWorkingAction) {
+                                        let startDates = startDateWorkingAction?.setHours(0, 0, 0, 0);
+                                        let endDates = endDateWorkingAction?.setHours(0, 0, 0, 0);
+                                        const workingDate = new Date(Moment(date, 'DD/MM/YYYY').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (z)')).setHours(0, 0, 0, 0)
+                                        return workingDate >= startDates && workingDate <= endDates;
+                                    } else {
+                                        let DefultDate = new Date().setHours(0, 0, 0, 0);
+                                        const workingDate = new Date(Moment(date, 'DD/MM/YYYY').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (z)')).setHours(0, 0, 0, 0)
+                                        return workingDate >= DefultDate;
+                                    }
+                                };
+                                const result = workingDetails?.InformationData?.some((infoData: any) =>
+                                    isWithinDateRange(infoData?.WorkingDate) && infoData?.WorkingMember?.length > 0
+                                );
+                                if (result) {
+                                    return true;
+                                }
+                            }
+                        }
+                    } catch (error) {
+                        console.error("An error occurred:", error);
                     }
+                }
+                if (isPhone === true) {
+                    if (data?.workingDetailsPhone?.InformationData?.length > 0) {
+                        const result = data?.workingDetailsPhone?.InformationData?.length > 0 ? true : false
+                        if (result) {
+                            return true
+                        }
+                    }
+                }
+                if (isBottleneck === true) {
+                    if (data?.workingDetailsBottleneck?.InformationData?.length > 0) {
+                        const result = data?.workingDetailsBottleneck?.InformationData?.length > 0 ? true : false
+                        if (result) {
+                            return true
+                        }
+                    }
+                }
+                if (isAttention === true) {
+                    if (data?.workingDetailsAttention?.InformationData?.length > 0) {
+                        const result = data?.workingDetailsAttention?.InformationData?.length > 0 ? true : false
+                        if (result) {
+                            return true
+                        }
+                    }
+                }
+                if (isWorkingDate === true || isAttention === true || isBottleneck === true || isPhone === true) {
+                    return false
                 }
                 return true;
             }
@@ -1182,12 +1253,32 @@ const TeamSmartFilter = (item: any) => {
                     }
                 }
             }
-            if (isTodaysTask === true) {
-                if (data?.workingTodayUsers?.length > 0) {
-                    let result = data?.workingTodayUsers[0]?.WorkingMember?.some((elem2: any) => teamMembers.some((filter: any) => filter?.Id === elem2?.Id));
-                    if (result === true) {
-                        return true;
+            if (isWorkingDate === true) {
+                try {
+                    if (data?.WorkingAction) {
+                        const workingActionValue = JSON.parse(data?.WorkingAction);
+                        const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
+                        if (workingDetails) {
+                            const isWithinDateRange = (date: any) => {
+                                let startDates = startDateWorkingAction?.setHours(0, 0, 0, 0);
+                                let endDates = endDateWorkingAction?.setHours(0, 0, 0, 0);
+                                const workingDate = new Date(Moment(date, 'DD/MM/YYYY').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (z)')).setHours(0, 0, 0, 0)
+                                return workingDate >= startDates && workingDate <= endDates;
+                            };
+                            const result = workingDetails?.InformationData?.some((infoData: any) =>
+                                infoData?.WorkingMember?.some((workingMember: any) =>
+                                    teamMembers?.some((teamMember: any) =>
+                                        isWithinDateRange(infoData?.WorkingDate) && teamMember?.Id === workingMember?.Id
+                                    )
+                                )
+                            );
+                            if (result) {
+                                return true;
+                            }
+                        }
                     }
+                } catch (error) {
+                    console.error("An error occurred:", error);
                 }
             }
             if (isPhone === true) {
@@ -1214,7 +1305,7 @@ const TeamSmartFilter = (item: any) => {
                     }
                 }
             }
-            if (isCreatedBy === false && isModifiedby === false && isAssignedto === false && isTeamMember === false && isTeamLead === false && isTodaysTask === false && isPhone === false && isBottleneck === false && isAttention === false) {
+            if (isCreatedBy === false && isModifiedby === false && isAssignedto === false && isTeamMember === false && isTeamLead === false && isWorkingDate === false && isPhone === false && isBottleneck === false && isAttention === false) {
                 let result = data?.TeamLeaderUser?.some((elem3: any) => teamMembers.some((filter: any) => filter?.Id === elem3?.Id));
                 if (result === true) {
                     return true;
@@ -1310,13 +1401,14 @@ const TeamSmartFilter = (item: any) => {
                 }
             }
             if (isCreatedDateSelected === false && isModifiedDateSelected === false && isDueDateSelected === false) {
-                if (data?.serverDueDate != undefined || data.serverModifiedDate != undefined || data.serverCreatedDate != undefined) {
-                    let result = ((data?.serverDueDate && data.serverDueDate >= startDate && data.serverDueDate <= endDate) || (data?.serverModifiedDate && data.serverModifiedDate >= startDate && data.serverModifiedDate <= endDate)
-                        || (data?.serverCreatedDate && data.serverCreatedDate >= startDate && data.serverCreatedDate <= endDate));
-                    if (result === true) {
-                        return true;
-                    }
-                }
+                return true;
+                // if (data?.serverDueDate != undefined || data.serverModifiedDate != undefined || data.serverCreatedDate != undefined) {
+                //     let result = ((data?.serverDueDate && data.serverDueDate >= startDate && data.serverDueDate <= endDate) || (data?.serverModifiedDate && data.serverModifiedDate >= startDate && data.serverModifiedDate <= endDate)
+                //         || (data?.serverCreatedDate && data.serverCreatedDate >= startDate && data.serverCreatedDate <= endDate));
+                //     if (result === true) {
+                //         return true;
+                //     }
+                // }
             }
             return false;
         } catch (error) {
@@ -1343,11 +1435,15 @@ const TeamSmartFilter = (item: any) => {
             setIsModifiedby(false)
             setIsAssignedto(false)
             setSelectedFilter("")
+            setSelectedFilterWorkingAction("")
             setStartDate(null)
             setEndDate(null)
+            setStartDateWorkingAction(null);
+            setEndDateWorkingAction(null);
             setIsCreatedDateSelected(false)
             setIsModifiedDateSelected(false)
             setIsDueDateSelected(false)
+            setIsWorkingDate(false)
             GetfilterGroups();
             setUpdatedSmartFilter(false);
             setFinalArray([]);
@@ -1366,7 +1462,9 @@ const TeamSmartFilter = (item: any) => {
             setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
+            setIsActionsExpendShow(false)
             setIsDateExpendShow(false);
+            setIsDateExpendShowWorkingAction(false)
             setIsSmartfilter(false);
             item?.setSmartFabBasedColumnsSetting([]);
             // setPreSet(false);
@@ -1381,7 +1479,9 @@ const TeamSmartFilter = (item: any) => {
             setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
+            setIsActionsExpendShow(false);
             setIsDateExpendShow(false);
+            setIsDateExpendShowWorkingAction(false)
             setIsSmartfilter(false);
             // setItemsQueryBasedCall(false);
             loadAdminConfigurationsId(item?.IsSmartfavoriteId);
@@ -1419,6 +1519,8 @@ const TeamSmartFilter = (item: any) => {
                 selectedProject: selectedProject,
                 startDate: startDate,
                 endDate: endDate,
+                startDateWorkingAction: startDateWorkingAction,
+                endDateWorkingAction: endDateWorkingAction,
                 isCreatedBy: isCreatedBy,
                 isModifiedby: isModifiedby,
                 isAssignedto: isAssignedto,
@@ -1426,11 +1528,16 @@ const TeamSmartFilter = (item: any) => {
                 isTeamMember: isTeamMember,
                 isTodaysTask: isTodaysTask,
                 selectedFilter: selectedFilter,
+                selectedFilterWorkingAction: selectedFilterWorkingAction,
                 isCreatedDateSelected: isCreatedDateSelected,
                 isModifiedDateSelected: isModifiedDateSelected,
                 isDueDateSelected: isDueDateSelected,
                 TaskUsersData: TaskUsersData,
                 smartFabBasedColumnsSetting: MyContextdata?.allContextValueData?.smartFabBasedColumnsSetting ? MyContextdata?.allContextValueData?.smartFabBasedColumnsSetting : {},
+                isPhone: isPhone,
+                isBottleneck: isBottleneck,
+                isAttention: isAttention,
+                isWorkingDate: isWorkingDate,
             }
             smartFiltercallBackData(Favorite);
         }
@@ -1491,13 +1598,28 @@ const TeamSmartFilter = (item: any) => {
                 setIsTeamMembersExpendShow(true)
 
             }
+        }
+        if (value == "isActionsExpendShow") {
+            if (isActionsExpendShow == true) {
+                setIsActionsExpendShow(false)
 
+            } else {
+                setIsActionsExpendShow(true)
+
+            }
         }
         if (value == "isDateExpendShow") {
             if (isDateExpendShow == true) {
                 setIsDateExpendShow(false)
             } else {
                 setIsDateExpendShow(true)
+            }
+        }
+        if (value == "isDateExpendShowWorkingAction") {
+            if (isDateExpendShowWorkingAction == true) {
+                setIsDateExpendShowWorkingAction(false)
+            } else {
+                setIsDateExpendShowWorkingAction(true)
             }
         }
         if (value == "isEveryOneShow") {
@@ -1524,7 +1646,9 @@ const TeamSmartFilter = (item: any) => {
             setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
+            setIsActionsExpendShow(false)
             setIsDateExpendShow(false);
+            setIsDateExpendShowWorkingAction(false)
             setIsSmartfilter(false);
         } else if (iconIndex == 1) {
             setcollapseAll(false);
@@ -1534,7 +1658,9 @@ const TeamSmartFilter = (item: any) => {
             setIsKeywordsExpendShow(true)
             setIscategoriesAndStatusExpendShow(true);
             setIsTeamMembersExpendShow(true);
+            setIsActionsExpendShow(true)
             setIsDateExpendShow(true);
+            setIsDateExpendShowWorkingAction(true)
             setIsSmartfilter(true);
         } else if (iconIndex == 2) {
             setcollapseAll(false);
@@ -1544,7 +1670,9 @@ const TeamSmartFilter = (item: any) => {
             setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
+            setIsActionsExpendShow(false)
             setIsDateExpendShow(false);
+            setIsDateExpendShowWorkingAction(false)
             setIsSmartfilter(false);
 
         } else {
@@ -1555,7 +1683,9 @@ const TeamSmartFilter = (item: any) => {
             setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
+            setIsActionsExpendShow(true)
             setIsDateExpendShow(false);
+            setIsDateExpendShowWorkingAction(false)
             setIsSmartfilter(false);
         }
     };
@@ -1727,38 +1857,51 @@ const TeamSmartFilter = (item: any) => {
                     setEndDate(new Date(storedDataEndDate));
                 }
                 break;
+            case "custom":
+                if (changeInDatePicker != true) {
+                    setStartDate(null);
+                    setEndDate(null);
+                }
+                break;
             default:
                 setStartDate(null);
                 setEndDate(null);
                 break;
         }
     }, [selectedFilter]);
+    const selectingStartDate = (date: any) => {
+        setStartDate(date)
+        const currentDate: any = new Date();
+        if (currentDate.getDate() != date.getDate() && endDate.getDate() != date.getDate()) {
+            setChangeDatePicker(true)
+            setSelectedFilter("custom")
+        }
+        else if (currentDate.getDate() == date.getDate() && endDate.getDate() == date.getDate()) {
+            setSelectedFilter("today")
+        }
+        else if (currentDate.getDate() - 1 == date.getDate() && endDate.getDate() == date.getDate()) {
+            setSelectedFilter("yesterday")
+        }
+    }
+    const selectingEndDate = (date: any) => {
+        setEndDate(date);
+        const currentDate: any = new Date();
+        if (currentDate.getDate() != date.getDate() && startDate.getDate() != date.getDate()) {
+            setChangeDatePicker(true)
+            setSelectedFilter("custom")
+        }
+        else if (currentDate.getDate() == date.getDate() && startDate.getDate() == date.getDate()) {
+            setSelectedFilter("today")
+        }
+        else if (currentDate.getDate() - 1 == date.getDate() && startDate.getDate() == date.getDate()) {
+            setSelectedFilter("yesterday")
+        }
 
+    }
     const handleDateFilterChange = (event: any) => {
         setSelectedFilter(event.target.value);
-        // setPreSet(false);
-        // rerender();
-        if (
-            !isCreatedDateSelected &&
-            !isModifiedDateSelected &&
-            !isDueDateSelected
-        ) {
-            switch (event.target.value) {
-                case "today": case "yesterday": case "thisweek": case "last7days":
-                case "thismonth": case "last30days": case "last3months": case "thisyear": case "lastyear": case "Pre-set":
-                    setIsCreatedDateSelected(true);
-                    setIsModifiedDateSelected(true);
-                    setIsDueDateSelected(true);
-                    break;
-                default:
-                    setIsCreatedDateSelected(false);
-                    setIsModifiedDateSelected(false);
-                    setIsDueDateSelected(false);
-                    break;
-            }
-        }
+        setChangeDatePicker(false)
     };
-
     const clearDateFilters = () => {
         setSelectedFilter("");
         setStartDate(null);
@@ -1766,6 +1909,71 @@ const TeamSmartFilter = (item: any) => {
         setIsCreatedDateSelected(false);
         setIsModifiedDateSelected(false);
         setIsDueDateSelected(false);
+    };
+
+
+    React.useEffect(() => {
+        const currentDate: any = new Date();
+        switch (selectedFilterWorkingAction) {
+            case "today":
+                setStartDateWorkingAction(currentDate);
+                setEndDateWorkingAction(currentDate);
+                break;
+            case "tomorrow":
+                const tomorrow = new Date(currentDate);
+                tomorrow.setDate(currentDate.getDate() + 1);
+                setStartDateWorkingAction(tomorrow);
+                setEndDateWorkingAction(tomorrow);
+                break;
+            case "thisweek":
+                const dayOfWeek: any = currentDate.getDay();
+                const startOfWeek: any = new Date(currentDate);
+                const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                startOfWeek.setDate(currentDate.getDate() - daysToSubtract);
+                const endOfWeek = new Date(startOfWeek);
+                endOfWeek.setDate(startOfWeek.getDate() + 6);
+                setStartDateWorkingAction(startOfWeek);
+                setEndDateWorkingAction(endOfWeek);
+                break;
+            case "nextweek":
+                const dayOfWeeks: any = currentDate.getDay();
+                const startOfNextWeek: any = new Date(currentDate);
+                startOfNextWeek.setDate(currentDate.getDate() + (7 - dayOfWeeks + 1));
+                const endOfNextWeek = new Date(startOfNextWeek);
+                endOfNextWeek.setDate(startOfNextWeek.getDate() + 6);
+                setStartDateWorkingAction(startOfNextWeek);
+                setEndDateWorkingAction(endOfNextWeek);
+                break;
+            case "thismonth":
+                const monthStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+                const monthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+                setStartDateWorkingAction(monthStartDate);
+                setEndDateWorkingAction(monthEndDate);
+                break;
+            case "nextmonth":
+                const nextMonthStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+                const nextMonthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0);
+                setStartDateWorkingAction(nextMonthStartDate);
+                setEndDateWorkingAction(nextMonthEndDate);
+                break;
+            case "custom":
+                setStartDateWorkingAction(null);
+                setEndDateWorkingAction(null);
+                break;
+            default:
+                setStartDateWorkingAction(null);
+                setEndDateWorkingAction(null);
+                break;
+        }
+    }, [selectedFilterWorkingAction]);
+    const handleDateFilterChangeWorkingAction = (event: any) => {
+        setSelectedFilterWorkingAction(event.target.value);
+    };
+    const clearDateFiltersWorkingAction = () => {
+        setSelectedFilterWorkingAction("");
+        setStartDateWorkingAction(null);
+        setEndDateWorkingAction(null);
+        setIsWorkingDate(false);
     };
 
     const ExampleCustomInput = React.forwardRef(({ value, onClick }: any, ref: any) => (
@@ -1874,10 +2082,10 @@ const TeamSmartFilter = (item: any) => {
         if (preSetEndDate != undefined) {
             setEndDate(preSetEndDate);
         }
-        if(preSetStartDate!=undefined ||preSetEndDate != undefined ){
+        if (preSetStartDate != undefined || preSetEndDate != undefined) {
             setSelectedFilter("Pre-set");
         }
-       
+
         setPreSetPanelIsOpen(false)
     }, []);
     const handleSwitchToggle = () => {
@@ -2048,6 +2256,12 @@ const TeamSmartFilter = (item: any) => {
                                 if (config.endDate != null && config.endDate != undefined && config.endDate != "") {
                                     config.endDate = new Date(config.endDate);
                                 }
+                                if (config.startDateWorkingAction != null && config.startDateWorkingAction != undefined && config.startDateWorkingAction != "") {
+                                    config.startDateWorkingAction = new Date(config.startDateWorkingAction);
+                                }
+                                if (config.endDateWorkingAction != null && config.endDateWorkingAction != undefined && config.endDateWorkingAction != "") {
+                                    config.endDateWorkingAction = new Date(config.endDateWorkingAction);
+                                }
                                 copyCreateMeSmartFavorites.push(config);
                             }
                         })
@@ -2088,6 +2302,11 @@ const TeamSmartFilter = (item: any) => {
             editData.startDate = new Date(editData.startDate)
         } if (editData?.endDate) {
             editData.endDate = new Date(editData.endDate)
+        }
+        if (editData?.startDateWorkingAction) {
+            editData.startDateWorkingAction = new Date(editData.startDateWorkingAction)
+        } if (editData?.endDateWorkingAction) {
+            editData.endDateWorkingAction = new Date(editData.endDateWorkingAction)
         }
         setUpdatedEditData(editData)
         setSelectedFilterPanelIsOpenUpdate(true);
@@ -2135,13 +2354,6 @@ const TeamSmartFilter = (item: any) => {
     ///////////////////////////////+++++++++++++++++++++ team User Selection end + ///////////////////////////////////////////////////
     return (
         <>
-            {/* {isSmartFevShowHide === true && <div className='row text-end' >
-                <a onClick={() => OpenSmartfavorites('goToSmartFilter')}>All Filters</a>
-            </div>} */}
-            {/* {isSmartFevShowHide === false && <div className='row text-end' >
-                <a onClick={() => OpenSmartfavorites('goToSmartFavorites')}>Add Smart Favorite</a>
-            </div>} */}
-            {/* <a className="mx-3" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a> */}
             {item?.webPartTemplateSmartFilter != true && <div className='justify-content-end d-flex'>
                 {isSmartFevShowHide === true && <div>
                     <a className='hreflink' onClick={() => OpenSmartfavorites('goToSmartFilter')}>Go to Smart Filter</a>
@@ -2570,84 +2782,7 @@ const TeamSmartFilter = (item: any) => {
                                         <label className='me-3'>
                                             <input className='form-check-input' type="checkbox" value="isTeamMember" checked={isTeamMember} onChange={() => setIsTeamMember(!isTeamMember)} /> Team Member
                                         </label>
-                                        <label className='me-3'>
-                                            <input className='form-check-input' type="checkbox" value="isTodaysTask" checked={isTodaysTask} onChange={() => setIsTodaysTask(!isTodaysTask)} /> Working Today
-                                        </label>
-
-                                        <label className='me-3'>
-                                            <input className='form-check-input' type="checkbox" value="isPhone" checked={isPhone} onChange={() => setIsPhone(!isPhone)} /> Phone
-                                        </label>
-                                        <label className='me-3'>
-                                            <input className='form-check-input' type="checkbox" value="isBottleneck" checked={isBottleneck} onChange={() => setIsBottleneck(!isBottleneck)} /> Bottleneck
-                                        </label>
-                                        <label className='me-3'>
-                                            <input className='form-check-input' type="checkbox" value="isAttention" checked={isAttention} onChange={() => setIsAttention(!isAttention)} /> Attention
-                                        </label>
-
                                     </Col>
-                                    {/* <div className="col-sm-12 pad0">
-                                        <div className="togglecontent mt-1">
-                                            <table width="100%" className="indicator_search">
-                                                <tr className=''>
-                                                    <td valign="top" className='parentFilterSec w-100'>
-                                                        {TaskUsersData != null && TaskUsersData.length > 0 &&
-                                                            TaskUsersData?.map((Group: any, index: any) => {
-                                                                return (
-                                                                    <div className='filterContentSec'>
-                                                                        <fieldset className='smartFilterStyle'>
-                                                                            <legend className='SmartFilterHead'>
-                                                                                <span className="mparent d-flex pb-1" style={{ borderBottom: "1.5px solid #BDBDBD", color: portfolioColor }}>
-                                                                                    <input className={"form-check-input cursor-pointer"}
-                                                                                        style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
-                                                                                        type="checkbox"
-                                                                                        checked={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
-                                                                                        onChange={(e) => handleSelectAll(index, e.target.checked, "FilterTeamMembers")}
-                                                                                        ref={(input) => {
-                                                                                            if (input) {
-                                                                                                const isIndeterminate = Group?.checked?.length > 0 && Group?.checked?.length !== Group?.values?.length;
-                                                                                                input.indeterminate = isIndeterminate;
-                                                                                                if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
-                                                                                            }
-                                                                                        }}
-                                                                                    />
-                                                                                    <div className="fw-semibold fw-medium mx-1 text-dark">{Group.Title}</div>
-                                                                                </span>
-                                                                            </legend>
-                                                                            <div className="custom-checkbox-tree">
-                                                                                <CheckboxTree
-                                                                                    nodes={Group.values}
-                                                                                    checked={Group.checked}
-                                                                                    expanded={expanded}
-                                                                                    onCheck={checked => onCheck(checked, index, 'FilterTeamMembers')}
-                                                                                    onExpand={expanded => setExpanded(expanded)}
-                                                                                    nativeCheckboxes={false}
-                                                                                    showNodeIcon={false}
-                                                                                    checkModel={'all'}
-                                                                                    icons={{
-                                                                                        check: (<div dangerouslySetInnerHTML={{ __html: checkIcons }} />),
-                                                                                        uncheck: (<div dangerouslySetInnerHTML={{ __html: checkBoxIcon }} />),
-                                                                                        halfCheck: (<div dangerouslySetInnerHTML={{ __html: halfCheckBoxIcons }} />),
-                                                                                        // expandOpen: <SlArrowDown style={{ color: `${portfolioColor}` }} />,
-                                                                                        // expandClose: <SlArrowRight style={{ color: `${portfolioColor}` }} />,
-                                                                                        expandOpen: <SlArrowDown style={{ color: `#999999` }} />,
-                                                                                        expandClose: <SlArrowRight style={{ color: `#999999` }} />,
-                                                                                        parentClose: null,
-                                                                                        parentOpen: null,
-                                                                                        leaf: null,
-                                                                                    }}
-                                                                                />
-                                                                            </div>
-                                                                        </fieldset>
-                                                                    </div>
-                                                                )
-                                                            })
-                                                        }
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </div> */}
-
                                     <div className="col-sm-12 pad0">
                                         <div className="togglecontent mt-1">
                                             <table width="100%" className="indicator_search">
@@ -2712,6 +2847,139 @@ const TeamSmartFilter = (item: any) => {
                         </div >
                     </section> : ''}
 
+
+
+                    {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
+                        <div className="px-2">
+                            <div className="togglebox">
+                                <label className="toggler full_width active">
+                                    <span className='full_width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isActionsExpendShow")}>
+                                        <div className='alignCenter'>
+                                            {isActionsExpendShow === true ?
+                                                <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
+                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Actions</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{(isPhone || isBottleneck || isAttention) ? `Working Action: (${(isPhone && isBottleneck && isAttention) ? "All" : [isPhone ? "Phone" : "", isBottleneck ? "Bottleneck" : "", isAttention ? "Attention" : ""].filter(Boolean).join(', ')})` : ""}</div>
+                                        </div>
+
+                                    </span>
+                                </label>
+                                {isActionsExpendShow === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
+                                    <Col className='mb-2 '>
+                                        <div>
+                                            <label className='me-3'>
+                                                <input className='form-check-input' type="checkbox" value="isPhone" checked={isPhone} onChange={() => setIsPhone(!isPhone)} /> Phone
+                                            </label>
+                                            <label className='me-3'>
+                                                <input className='form-check-input' type="checkbox" value="isBottleneck" checked={isBottleneck} onChange={() => setIsBottleneck(!isBottleneck)} /> Bottleneck
+                                            </label>
+                                            <label className='me-3'>
+                                                <input className='form-check-input' type="checkbox" value="isAttention" checked={isAttention} onChange={() => setIsAttention(!isAttention)} /> Attention
+                                            </label>
+                                        </div>
+                                    </Col>
+                                </div> : ""}
+                            </div>
+                        </div >
+                    </section> : ''}
+
+                    {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
+                        <div className="px-2">
+                            <div className="togglebox">
+                                <label className="toggler full_width active">
+                                    <span className="full-width" style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isDateExpendShowWorkingAction")}>
+                                        <div className='alignCenter'>
+                                            {isDateExpendShowWorkingAction === true ?
+                                                <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
+                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Working Date</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{dateCountInfo ? '- ' + dateCountInfo : ''}</div>
+                                        </div>
+                                    </span>
+                                </label>
+                                {isDateExpendShowWorkingAction === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
+                                    <div className="col-sm-12">
+                                        <Col className='mb-2'>
+                                            <label className="me-3">
+                                                <input className="form-check-input" type="checkbox" value="isWorkingDate" checked={isWorkingDate} onChange={() => setIsWorkingDate(!isWorkingDate)} />{" "}
+                                                Working Date
+                                            </label>
+                                        </Col>
+                                        <Col className='my-2'>
+                                            <span className='SpfxCheckRadio  me-3'>
+                                                <input type="radio" name="dateFilter" className='radio' value="today" checked={selectedFilterWorkingAction === "today"} onChange={handleDateFilterChangeWorkingAction} />
+                                                <label className='ms-1'>Today</label>
+                                            </span>
+                                            <span className='SpfxCheckRadio  me-3'>
+                                                <input type="radio" name="dateFilter" value="tomorrow" className='radio' checked={selectedFilterWorkingAction === "tomorrow"} onChange={handleDateFilterChangeWorkingAction} />
+                                                <label className='ms-1'>Tomorrow</label>
+                                            </span >
+                                            <span className='SpfxCheckRadio  me-3'>
+                                                <input type="radio" name="dateFilter" value="thisweek" className='radio' checked={selectedFilterWorkingAction === "thisweek"} onChange={handleDateFilterChangeWorkingAction} />
+                                                <label className='ms-1'>This Week</label>
+                                            </span>
+                                            <span className='SpfxCheckRadio  me-3'>
+                                                <input type="radio" name="dateFilter" value="nextweek" className='radio' checked={selectedFilterWorkingAction === "nextweek"} onChange={handleDateFilterChangeWorkingAction} />
+                                                <label className='ms-1'>Next week</label>
+                                            </span>
+                                            <span className='SpfxCheckRadio  me-3'>
+                                                <input type="radio" name="dateFilter" value="thismonth" className='radio' checked={selectedFilterWorkingAction === "thismonth"} onChange={handleDateFilterChangeWorkingAction} />
+                                                <label className='ms-1'>This Month</label>
+                                            </span>
+                                            <span className='SpfxCheckRadio  me-3'>
+                                                <input type="radio" name="dateFilter" value="nextmonth" className='radio' checked={selectedFilterWorkingAction === "nextmonth"} onChange={handleDateFilterChangeWorkingAction} />
+                                                <label className='ms-1'> Next month</label>
+                                            </span>
+                                            <span className='SpfxCheckRadio  me-3'>
+                                                <input type="radio" name="dateFilter" value="custom" className='radio' onChange={handleDateFilterChangeWorkingAction}
+                                                    checked={selectedFilterWorkingAction === "custom" || (startDateWorkingAction !== null && endDateWorkingAction !== null && !selectedFilterWorkingAction)} />
+                                                <label className='ms-1'>Custom</label>
+                                            </span>
+                                        </Col>
+                                        <div>
+                                            <div className='alignCenter gap-4'>
+                                                <div className="col-2 dateformate ps-0" style={{ width: "160px" }}>
+                                                    <div className="input-group">
+                                                        <label className='mb-1 form-label full-width'>Start Date</label>
+                                                        <DatePicker selected={startDateWorkingAction} onChange={(date) => setStartDateWorkingAction(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                                                            className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
+                                                            maxDate={endDateWorkingAction}
+                                                            renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
+                                                            }) => (<div style={{ margin: 10, display: "flex", justifyContent: "center" }}>
+                                                                <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>{"<"}</button>
+                                                                <select value={date.getFullYear()} onChange={({ target: { value } }: any) => changeYear(value)}>{years.map((option) => (<option key={option} value={option}>{option}</option>))}</select>
+                                                                <select value={months[date.getMonth()]} onChange={({ target: { value } }) => changeMonth(months.indexOf(value))}>{months.map((option) => (<option key={option} value={option}>{option} </option>))}</select>
+                                                                <button onClick={increaseMonth} disabled={nextMonthButtonDisabled} >{">"}</button>
+                                                            </div>
+                                                            )}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-2 dateformate" style={{ width: "160px" }}>
+                                                    <div className="input-group">
+                                                        <label className='mb-1 form-label full-width'>End Date</label>
+                                                        <DatePicker selected={endDateWorkingAction} onChange={(date) => setEndDateWorkingAction(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                                                            className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
+                                                            minDate={startDateWorkingAction}
+                                                            renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
+                                                            }) => (<div style={{ margin: 10, display: "flex", justifyContent: "center" }}>
+                                                                <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>{"<"}</button>
+                                                                <select value={date.getFullYear()} onChange={({ target: { value } }: any) => changeYear(value)}>{years.map((option) => (<option key={option} value={option}>{option}</option>))}</select>
+                                                                <select value={months[date.getMonth()]} onChange={({ target: { value } }) => changeMonth(months.indexOf(value))}>{months.map((option) => (<option key={option} value={option}>{option} </option>))}</select>
+                                                                <button onClick={increaseMonth} disabled={nextMonthButtonDisabled} >{">"}</button>
+                                                            </div>
+                                                            )}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-2 mt-2 m-0 pull-left">
+                                                    <label className="hreflink pt-3" title="Clear Date Filters" onClick={clearDateFiltersWorkingAction} ><strong style={{ color: `${portfolioColor}` }} >Clear</strong></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> : ""}
+
+                            </div>
+                        </div >
+                    </section> : ''}
+
                     {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
                         <div className="px-2">
                             <div className="togglebox">
@@ -2743,48 +3011,48 @@ const TeamSmartFilter = (item: any) => {
                                         </Col>
                                         <Col className='my-2'>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" className='radio' value="today" checked={selectedFilter === "today"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter1" className='radio' value="today" checked={selectedFilter === "today"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>Today</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="yesterday" className='radio' checked={selectedFilter === "yesterday"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter2" value="yesterday" className='radio' checked={selectedFilter === "yesterday"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>Yesterday</label>
                                             </span >
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="thisweek" className='radio' checked={selectedFilter === "thisweek"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter3" value="thisweek" className='radio' checked={selectedFilter === "thisweek"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>This Week</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="last7days" className='radio' checked={selectedFilter === "last7days"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter4" value="last7days" className='radio' checked={selectedFilter === "last7days"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>Last 7 Days</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="thismonth" className='radio' checked={selectedFilter === "thismonth"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter5" value="thismonth" className='radio' checked={selectedFilter === "thismonth"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>This Month</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="last30days" className='radio' checked={selectedFilter === "last30days"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter6" value="last30days" className='radio' checked={selectedFilter === "last30days"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>Last 30 Days</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="last3months" className='radio' checked={selectedFilter === "last3months"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter7" value="last3months" className='radio' checked={selectedFilter === "last3months"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>Last 3 Months</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="thisyear" className='radio' checked={selectedFilter === "thisyear"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter8" value="thisyear" className='radio' checked={selectedFilter === "thisyear"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>This Year</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="lastyear" className='radio' checked={selectedFilter === "lastyear"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter9" value="lastyear" className='radio' checked={selectedFilter === "lastyear"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>Last Year</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="custom" className='radio' onChange={handleDateFilterChange}
+                                                <input type="radio" name="dateFilter10" value="custom" className='radio' onChange={handleDateFilterChange}
                                                     checked={selectedFilter === "custom" || (startDate !== null && endDate !== null && !selectedFilter)} />
                                                 <label className='ms-1'>Custom</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
-                                                <input type="radio" name="dateFilter" value="Pre-set" className='radio' onChange={handleDateFilterChange}
+                                                <input type="radio" name="dateFilter11" value="Pre-set" className='radio' onChange={handleDateFilterChange}
                                                     checked={selectedFilter === "Pre-set"} />
                                                 <label className='ms-1'>Pre-set <span style={{ backgroundColor: `${portfolioColor}` }} onClick={() => preSetIconClick()} className="svg__iconbox svg__icon--editBox alignIcon hreflink"></span></label>
                                             </span>
@@ -2795,7 +3063,7 @@ const TeamSmartFilter = (item: any) => {
                                                 <div className="col-2 dateformate ps-0" style={{ width: "160px" }}>
                                                     <div className="input-group">
                                                         <label className='mb-1 form-label full-width'>Start Date</label>
-                                                        <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                                                        <DatePicker selected={startDate} onChange={(date) => selectingStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                                                             className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
                                                             maxDate={endDate}
                                                             renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
@@ -2812,7 +3080,7 @@ const TeamSmartFilter = (item: any) => {
                                                 <div className="col-2 dateformate" style={{ width: "160px" }}>
                                                     <div className="input-group">
                                                         <label className='mb-1 form-label full-width'>End Date</label>
-                                                        <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                                                        <DatePicker selected={endDate} onChange={(date) => selectingEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                                                             className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
                                                             minDate={startDate}
                                                             renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
@@ -2836,7 +3104,9 @@ const TeamSmartFilter = (item: any) => {
 
                             </div>
                         </div >
-                        {item?.webPartTemplateSmartFilter != true ? <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'><button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Update Filter</button>
+                        {item?.webPartTemplateSmartFilter != true ? <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'>
+                            <a className="hreflink mx-1" data-interception="off" target="_blank" href={item?.ContextValue?.siteUrl + "/SitePages/UserTimeEntry.aspx"}>User-Time-Entry</a>
+                            <button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Update Filter</button>
                             <button className='btn  btn-default px-3 py-1' onClick={ClearFilter}> Clear Filters</button></div> : <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'><button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Save Filter</button></div>}
                     </section> : ''}
 
@@ -2939,13 +3209,20 @@ const TeamSmartFilter = (item: any) => {
                 selectedProject={selectedProject}
                 startDate={startDate}
                 endDate={endDate}
+                startDateWorkingAction={startDateWorkingAction}
+                endDateWorkingAction={endDateWorkingAction}
                 isCreatedBy={isCreatedBy}
                 isModifiedby={isModifiedby}
                 isAssignedto={isAssignedto}
                 isTeamLead={isTeamLead}
                 isTeamMember={isTeamMember}
                 isTodaysTask={isTodaysTask}
+                isPhone={isPhone}
+                isBottleneck={isBottleneck}
+                isAttention={isAttention}
+                isWorkingDate={isWorkingDate}
                 selectedFilter={selectedFilter}
+                selectedFilterWorkingAction={selectedFilterWorkingAction}
                 isCreatedDateSelected={isCreatedDateSelected}
                 isModifiedDateSelected={isModifiedDateSelected}
                 isDueDateSelected={isDueDateSelected}
@@ -2962,7 +3239,7 @@ const TeamSmartFilter = (item: any) => {
                 ContextValue={ContextValue}
                 AllUsers={AllUsers}
             />}
-             {smartFilterTypePannel && <SmartfilterSettingTypePanel isGroupChecked={isGroupChecked} isOpen={smartFilterTypePannel} filterGroupsData={filterGroupsData} portfolioColor={portfolioColor} selectAllFromAbove={selectAllFromAbove} selectChild={selectChild} setSmartFilterTypePannel={setSmartFilterTypePannel}/>}
+            {smartFilterTypePannel && <SmartfilterSettingTypePanel isGroupChecked={isGroupChecked} isOpen={smartFilterTypePannel} filterGroupsData={filterGroupsData} portfolioColor={portfolioColor} selectAllFromAbove={selectAllFromAbove} selectChild={selectChild} setSmartFilterTypePannel={setSmartFilterTypePannel} />}
         </>
     )
 }
