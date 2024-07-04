@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Tooltip from '../../../globalComponents/Tooltip';
 import PreSetDatePikerPannel from '../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePiker';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
+import { Avatar } from "@fluentui/react-components";
 // @ts-ignore
 import * as html2pdf from 'html2pdf.js';
 import * as XLSX from 'xlsx';
@@ -38,6 +39,8 @@ export const MonthlyLeaveReport = (props: any) => {
   const [endDate, setendDate] = useState(new Date())
   const [selectedType, setselectedType] = useState(false)
   const [selectgroupName, setSelectGroupName] = useState("")
+  let dropSuccessHandler: any
+
   useEffect(() => {
     if (selectedDate || selectendDate) {
       setdisabled(true)
@@ -84,7 +87,7 @@ export const MonthlyLeaveReport = (props: any) => {
       const results: any = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.select(
         "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,Created,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type,Approved,Rejected"
       ).expand("Author,Editor,Employee").getAll();
-      const FilterRejectedData = results.filter((item:any)=> item.Rejected !== true)
+      const FilterRejectedData = results.filter((item: any) => item.Rejected !== true)
       setLeaveData(FilterRejectedData);
     } catch (err) {
       console.log(err);
@@ -805,9 +808,15 @@ export const MonthlyLeaveReport = (props: any) => {
             <details className='p-0 m-0' open>
               <summary className='hyperlink'><a className="hreflink pull-left mr-5">All Filters - <span>Task User :</span> </a>
                 {ImageSelectedUsers != null && ImageSelectedUsers.length > 0 && ImageSelectedUsers.map((user: any, i: number) => {
-                  return <span className="ng-scope">
-                    <img className="AssignUserPhoto me-1" title={user?.AssingedToUser?.Title} src={user?.Item_x0020_Cover?.Url} />
+                  return( <span className="ng-scope">
+                    <Avatar
+                      className="AssignUserPhoto me-1"
+                      title={user?.AssingedToUser?.Title}
+                      image={{ src: user?.Item_x0020_Cover?.Url }}
+                      initials={user?.Item_x0020_Cover?.Url ? undefined : user?.AssingedToUser?.Suffix}
+                    />
                   </span>
+                  )
                 })
                 }
                 <span className="">
@@ -841,16 +850,26 @@ export const MonthlyLeaveReport = (props: any) => {
                             <div className='d-flex'>
                               {users?.childs?.length > 0 && users?.childs.map((item: any, i: number) => {
                                 return <div className="alignCenter">
-                                  {item.Item_x0020_Cover != undefined ?
-                                    <span>
-                                      <img id={"UserImg" + item?.Id} className={item?.AssingedToUserId == users?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                        title={item?.Title}
-                                        src={item?.Item_x0020_Cover?.Url} />
-                                    </span> :
-                                    <span className={item?.AssingedToUserId == users?.Id ? 'activeimg suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                  {item.Item_x0020_Cover != undefined ? (
+                                    <Avatar
+                                      id={"UserImg" + item?.Id}
+                                      className={item?.AssingedToUserId == users?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'}
+                                      onClick={(e: any) => SelectUserImage(e, item)}
+                                      draggable="true"
+                                      onDrop={(e: any) => dropSuccessHandler(e, item, users.childs)}
                                       title={item?.Title}
-                                    >{item?.Suffix}</span>
-                                  }
+                                      image={{ src: item?.Item_x0020_Cover?.Url }}
+                                    />
+                                  ) : (
+                                    <Avatar
+                                      className={item?.AssingedToUserId == users?.Id ? 'activeimg suffix_Usericon' : 'suffix_Usericon'}
+                                      onClick={(e: any) => SelectUserImage(e, item)}
+                                      draggable="true"
+                                      onDrop={(e) => dropSuccessHandler(e, item, users.childs)}
+                                      title={item?.Title}
+                                      initials={item?.Suffix}
+                                    />
+                                  )}
                                 </div>
                               })}
                             </div>
