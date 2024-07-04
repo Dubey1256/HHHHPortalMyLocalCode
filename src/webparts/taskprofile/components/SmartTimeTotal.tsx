@@ -9,13 +9,13 @@ let AllAvailableTitle: any = [];
 let allTaskUsers: any;
 const SmartTimeTotalFunction = (item: any) => {
     let TimeData = item?.props?.TotalTime
-    let TotalTime = TimeData / 60
     var TaskTimeSheetCategoriesGrouping: any = [];
     const [isTimeEntry, setisTimeEntry] = React.useState(false);
     const [timeEntry, setTimeEntry] = React.useState(null);
     const [smartTimeTotal, setsmartTimeTotal] = React.useState(0);
     const [additionalTime, setAdditionalTime] = React.useState([]);
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
+    const [TotalTime,setTotalTime]=React.useState(TimeData / 60);
 
 
 
@@ -98,11 +98,13 @@ const SmartTimeTotalFunction = (item: any) => {
 
 
 
-    const getStructureData = function () {
+    const getStructureData =async function () {
 
         // Smart total time code   get code
-        var TotalTime = 0.0;
-
+        var TotalTimes = 0.0;
+        let web = new Web(`${item?.props?.siteUrl}`);
+        const datas = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item.props.Id}`).get();
+         console.log("MyData",datas)
         console.log(timeEntry);
         let newArray: any = [];
         let hoversmartArray: any = [];
@@ -217,7 +219,7 @@ const SmartTimeTotalFunction = (item: any) => {
                                 }
                             }
                         }
-                        TotalTime = TotalTimeData;
+                        TotalTimes = TotalTimeData;
                         hoverTime = hoverTime;
                         //tempItem.hoverTime = (hoverTime / 60) ;
                         // hoverTime = hoverTime + parseFloat(tempItem.TaskTime);
@@ -230,9 +232,8 @@ const SmartTimeTotalFunction = (item: any) => {
                 if (TotalTimeData > 0) {
                     FinalTotalTime = (TotalTimeData / 60);
                 }
-                TotalTime = FinalTotalTime;
-
-
+                setTotalTime((datas[0].TotalTime)/60);
+                
             })
         }
         setsmartTimeTotal(TotalTime)
@@ -269,7 +270,7 @@ const SmartTimeTotalFunction = (item: any) => {
             {console.log(AllAvailableTitle)}
             {console.log(additionalTime)}
             {/* {smartTimeTotal.toFixed(1)} */}
-            {TotalTime?.toFixed(1)}
+            {TotalTime != null && TotalTime >= 0 ? TotalTime.toFixed(1) : 0.0}
             <span className='openhoverpopup hoverimg'>
                 <span className="svg__iconbox svg__icon--clock dark" onClick={OpenTimeEntry}></span>
                 <div className='hoverpopup overlay'>

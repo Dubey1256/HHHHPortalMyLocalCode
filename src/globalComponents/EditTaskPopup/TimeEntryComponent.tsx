@@ -1446,24 +1446,29 @@ const TimeEntryPopup = (item: any) => {
 
   const deleteTaskTime = async (childinew: any) => {
     let web = new Web(`${CurrentSiteUrl}`);
-    let TimeForTask = 0;
-    if (item.props?.TotalTime != null) {
-      let web = new Web(`${siteUrl}`);
-      const datas = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item?.props.Id}`).get();
-      let Time = datas[0].TotalTime;
-      item.props.TotalTime = Time - childinew.TaskTimeInMin;
-    }
-
-    if (item.props?.TotalTime > 0) {
-      await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
-        TotalTime: item.props?.TotalTime
-      }).then((res: any) => {
-        console.log(res);
-      });
-    }
     var UpdatedData: any = [];
     var deleteConfirmation = confirm("Are you sure, you want to delete this?");
     if (deleteConfirmation) {
+      let TimeForTask = 0;
+      if (item.props?.TotalTime != null) {
+        let web = new Web(`${siteUrl}`);
+        const datas = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item?.props.Id}`).get();
+        TimeForTask = datas[0].TotalTime;
+      }
+
+
+      try {
+        await web.lists
+          .getById(item.props.listId)
+          .items
+          .getById(item.props.Id)
+          .update({ TotalTime: Math.max(0, TimeForTask - childinew.TaskTimeInMin) });
+        console.log("TotalTime updated successfully");
+      } catch (err) {
+        console.error("Error updating TotalTime:", err);
+      }
+
+
       $.each(TaskCate, function (index: any, subItem: any) {
         if (subItem.Id == childinew.ParentID) {
           if (
@@ -1606,6 +1611,7 @@ const TimeEntryPopup = (item: any) => {
 
   const saveOldUserTask = async (UpdatedData: any) => {
 
+    let Time: any;
     var Available = false;
     var TimeInHours: any = changeTime / 60;
     TimeInHours = TimeInHours.toFixed(2);
@@ -1638,20 +1644,27 @@ const TimeEntryPopup = (item: any) => {
     console.log("UP DATA", UpdatedData);
     let web = new Web(`${CurrentSiteUrl}`);
 
-    if (item.props?.TotalTime != null) {
-      const datas = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item.props.Id}`).get();
-      let Time = datas[0].TotalTime;
-      item.props.TotalTime = Time + TimeInMinutes;
+    if (item.props?.TotalTime !== null) {
+      try {
+        const datas = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item.props.Id}`).get();
+        Time = datas[0]?.TotalTime;
+        Time = (Time ?? 0) + TimeInMinutes;
+      } catch (error) {
+        console.error('Failed to update TotalTime:', error.message);
+      }
+
     }
     else {
-      item.props.TotalTime = TimeInMinutes;
+      Time = TimeInMinutes;
     }
 
-    if (item.props.TotalTime > 0) {
+    if (Time > 0) {
       await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
-        TotalTime: item.props.TotalTime
+        TotalTime: Time
       }).then((res: any) => {
-        console.log(res);
+        console.log("Result TT", res);
+      }).catch((err: any) => {
+        console.log("Test", err);
       });
     }
 
@@ -1947,12 +1960,13 @@ const TimeEntryPopup = (item: any) => {
   };
   //-----------------------------------------------Create Add Timesheet--------------------------------------------------------------------------------------
   const AddTaskTime = async (child: any, Type: any) => {
-    if (item.props?.TotalTime != null) {
+    let taskTime: any;
+    if (item.props?.TotalTime !== null) {
       try {
-        item.props.TotalTime = await fetchTotalTimeWithRetries(item?.props?.listId, item?.props?.Id);
+        const updatedTotalTime = await fetchTotalTimeWithRetries(item.props.listId, item.props.Id);
+        taskTime = updatedTotalTime;
       } catch (error) {
-        console.error('Unable to fetch TotalTime:', error.message);
-        return;
+        console.error('Failed to update TotalTime:', error.message);
       }
     }
     setbuttonDisable(true);
@@ -1971,27 +1985,27 @@ const TimeEntryPopup = (item: any) => {
       var UpdatedData: any = [];
       let web = new Web(`${siteUrl}`);
 
-      if (item.props?.TotalTime != null) {
+      if (taskTime != null || taskTime != undefined) {
         if (child.TaskTimeInMin > TimeInMinutes) {
           if (TimeInMinutes != 0) {
             let time = child.TaskTimeInMin - TimeInMinutes;
-            item.props.TotalTime = item.props?.TotalTime - time;
+            taskTime = taskTime - time;
           }
 
         }
         else {
 
           let time = TimeInMinutes - child.TaskTimeInMin;
-          item.props.TotalTime = item.props?.TotalTime + time;
+          taskTime = taskTime + time;
         }
 
       }
       else {
-        item.props.TotalTime = TimeInMinutes;
+        taskTime = TimeInMinutes;
       }
-      if (item.props.TotalTime > 0) {
+      if (taskTime > 0) {
         await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
-          TotalTime: item.props.TotalTime
+          TotalTime: taskTime
         }).then((res: any) => {
           console.log(res);
         });
@@ -2055,7 +2069,7 @@ const TimeEntryPopup = (item: any) => {
           });
       }
     }
-    else if (Type == "CopyTime") {
+    if (Type == "CopyTime") {
       var CurrentUser: any = {};
       let web = new Web(`${CurrentSiteUrl}`);
       var counts = 0;
@@ -2065,30 +2079,30 @@ const TimeEntryPopup = (item: any) => {
       var AddParent: any = "";
       var AddMainParent: any = "";
 
-      if (item.props?.TotalTime != null) {
+      if (taskTime != null) {
         if (child.TaskTimeInMin > TimeInMinutes) {
           if (TimeInMinutes == 0) {
-            item.props.TotalTime = item.props?.TotalTime + child.TaskTimeInMin;
+            taskTime = taskTime + child.TaskTimeInMin;
           }
           else {
             let time = TimeInMinutes;
-            item.props.TotalTime = item.props?.TotalTime + time;
+            taskTime = taskTime + time;
           }
 
         }
         else {
 
           let time = TimeInMinutes;
-          item.props.TotalTime = item.props?.TotalTime + time;
+          taskTime = taskTime + time;
         }
 
       }
       else {
-        item.props.TotalTime = TimeInMinutes;
+        taskTime = TimeInMinutes;
       }
-      if (item.props.TotalTime > 0) {
+      if (taskTime > 0) {
         await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
-          TotalTime: item.props.TotalTime
+          TotalTime: taskTime
         }).then((res: any) => {
           console.log(res);
         });
@@ -2206,7 +2220,7 @@ const TimeEntryPopup = (item: any) => {
         });
       }
     }
-    else if (Type == "AddTime") {
+    if (Type == "AddTime") {
       var UpdatedData: any = [];
       var CurrentUser: any = {};
       var update: any = {};
@@ -2222,18 +2236,14 @@ const TimeEntryPopup = (item: any) => {
       var AddParentId: any = "";
 
       let web = new Web(`${CurrentSiteUrl}`);
-      if (item.props?.TotalTime != null) {
-        item.props.TotalTime = item.props?.TotalTime + TimeInMinutes;
-      }
-      else {
-        item.props.TotalTime = TimeInMinutes;
-      }
-      if (item.props.TotalTime > 0) {
-        await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
-          TotalTime: item.props.TotalTime
-        }).then((res: any) => {
-          console.log(res);
+
+      try {
+        const result = await web.lists.getById(item?.props?.listId).items.getById(item?.props?.Id).update({
+          TotalTime: ((taskTime ?? 0) + TimeInMinutes),
         });
+        console.log("Total Time Updated Successfully:", result);
+      } catch (err) {
+        console.error("Error updating Total Time:", err);
       }
 
       var TimeInMinute: any = changeTime / 60;
@@ -2577,20 +2587,42 @@ const TimeEntryPopup = (item: any) => {
   };
 
   //---------------------------------------------------Delete category------------------------------------------------------------------------------------------
+  // const deleteCategory = async (val: any) => {
+  //   var deleteConfirmation = confirm("Are you sure, you want to delete this?");
+  //   var ListId = TimeSheetlistId;
+  //   if (deleteConfirmation) {
+  //     let web = new Web(`${CurrentSiteUrl}`);
+  //     await web.lists.getById(ListId).items.getById(val.Id).delete();
+  //     TaskCate?.forEach(async (item: any) => {
+  //       if (item.TimesheetTitle.Id == val.Id) {
+  //         await web.lists.getById(ListId).items.getById(item.Id).delete();
+  //         setupdateData(updateData + 1);
+  //       }
+  //     }); 
+  //   }
+  // };
   const deleteCategory = async (val: any) => {
-    var deleteConfirmation = confirm("Are you sure, you want to delete this?");
+    const deleteConfirmation = window.confirm("Are you sure you want to delete this?");
     var ListId = TimeSheetlistId;
     if (deleteConfirmation) {
-      let web = new Web(`${CurrentSiteUrl}`);
-      await web.lists.getById(ListId).items.getById(val.Id).delete();
-      TaskCate?.forEach(async (item: any) => {
-        if (item.TimesheetTitle.Id == val.Id) {
+      const web = new Web(`${CurrentSiteUrl}`);
+      try {
+        await web.lists.getById(ListId).items.getById(val.Id).delete();
+        const taskItemsToDelete = TaskCate.filter(
+          (item: any) => item.TimesheetTitle?.Id === val.Id
+        );
+
+        await Promise.all(taskItemsToDelete.map(async (item: any) => {
           await web.lists.getById(ListId).items.getById(item.Id).delete();
-          setupdateData(updateData + 1);
-        }
-      });
+        }));
+        setupdateData(updateData + 1);
+      } catch (error) {
+        console.error("Error deleting category and tasks:", error);
+
+      }
     }
   };
+
 
   var isTrue = false;
 
@@ -3870,20 +3902,18 @@ const TimeEntryPopup = (item: any) => {
               </div>
             </footer>
           </div>
-          <div className="row">
-            <div className="col-sm-6">
-              <div className="header">Fill Quick Timesheet</div>
-              <ul>
-                {QuickTimesheetData?.map((val: any) => {
-                  return (
-                    <div> <span><input type='radio' className="radio"
-                      onChange={(e) => selectQuickTime(val)}
-                      name="category"></input></span>{val?.Title}</div>
-                  )
+          <div className="mt-3">
+            <div className="boldClable header">Fill Quick Timesheet</div>
+            <ul className='p-0'>
+              {QuickTimesheetData?.map((val: any) => {
+                return (
+                  <div className='SpfxCheckRadio'><input type='radio' className="radio"
+                    onChange={(e) => selectQuickTime(val)}
+                    name="category"></input> {val?.Title}</div>
+                )
 
-                })}
-              </ul>
-            </div>
+              })}
+            </ul>
           </div>
         </div>
       </Panel>
