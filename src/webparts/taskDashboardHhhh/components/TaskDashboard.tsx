@@ -196,7 +196,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(18, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(22, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -1016,7 +1016,7 @@ const TaskDashboard = (props: any) => {
                                     <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
                                 </a>
                             </>
-                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
+                            : <span title={row?.original?.Author?.Title} className="alignIcon grey ms-1 svg__icon--defaultUser svg__iconbox "></span>}
                     </span>
                 ),
                 id: "CreateDate",
@@ -1213,7 +1213,7 @@ const TaskDashboard = (props: any) => {
                                     <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
                                 </a>
                             </>
-                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
+                            : <span title={row?.original?.Author?.Title} className="alignIcon grey ms-1 svg__icon--defaultUser svg__iconbox "></span>}
                     </span>
                 ),
                 id: "CreateDate",
@@ -2003,6 +2003,7 @@ const TaskDashboard = (props: any) => {
                                 tasksCopy?.map((item: any) => {
                                     taskCount += 1;
                                     let teamUsers: any = [];
+                                    let siteNameOPen= item?.siteType == "Offshore Tasks" ? "Offshore%20Tasks" : item?.siteType;
                                     item?.AssignedTo?.map((item1: any) => {
                                         teamUsers.push(item1?.Title)
                                     });
@@ -2025,7 +2026,9 @@ const TaskDashboard = (props: any) => {
                                             } catch (e) {
 
                                             }
-                                            if (entryDetails?.length > 0 && value[`Task${item?.siteType}`] != undefined && value[`Task${item?.siteType}`].Id == item?.Id) {
+                                            let siteTypeCheck = item?.siteType == "Offshore Tasks" ? "OffshoreTasks" : item?.siteType;
+                                         
+                                            if (entryDetails?.length > 0 && value[`Task${siteTypeCheck}`] != undefined && value[`Task${siteTypeCheck}`].Id == item?.Id) {
                                                 entryDetails?.map((timeEntry: any) => {
                                                     let parts = timeEntry?.TaskDate?.split('/');
                                                     let timeEntryDate: any = new Date(parts[2], parts[1] - 1, parts[0]);
@@ -2047,7 +2050,7 @@ const TaskDashboard = (props: any) => {
                                         text = `<tr>
                                         <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
                                         <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
-                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
+                                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${siteNameOPen}> ${item?.Title} </a></p></td>
                                         <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
                                         <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.PercentComplete} </td>
                                         <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
@@ -2500,7 +2503,7 @@ const TaskDashboard = (props: any) => {
                                 <div className='AccordionContent'>
                                     {(value && value?.length > 0) ?
 
-                                        <div className='Alltable dashboardTable float-none'>
+                                        <div className='Alltable border-0 dashboardTable float-none'>
                                             <>
                                                 <GlobalCommanTable AllListId={AllListId} showPagination={true} columns={columnsName} data={value} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                                             </>
