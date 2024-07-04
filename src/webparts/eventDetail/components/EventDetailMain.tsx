@@ -115,7 +115,7 @@ const EventDetailmain = (props: any) => {
                             </div>
                             <div className="entry-content clearfix">
                                 {Item?.Item_x0020_Cover == undefined && <div className="col-sm-12 pad0">
-                                    <div dangerouslySetInnerHTML={{ __html: Item?.Description }}></div>
+                                        <div dangerouslySetInnerHTML={{ __html: Item?.Description }}></div>
                                 </div>}
                                 {Item?.Item_x0020_Cover != undefined && <div className="col-sm-12 pad0">
                                     <div className="col-sm-2" id="imagedetail">

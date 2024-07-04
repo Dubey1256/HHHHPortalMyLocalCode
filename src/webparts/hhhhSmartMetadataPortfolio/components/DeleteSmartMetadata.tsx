@@ -52,7 +52,7 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
 
     }
     const deleteSmartMetadata = async (item: any) => {
-        var flag = confirm(`Are you sure, you want to delete this Item?`)
+        var flag = confirm(`Are you sure, you want to delete this item?`)
         if (flag === true) {
             let web = new Web(props?.AllList?.SPSitesListUrl);
             web.lists.getById(props?.AllList?.SmartMetadataListID).items.getById(item.Id).recycle().then((response: any) => {

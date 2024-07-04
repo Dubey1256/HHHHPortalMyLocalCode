@@ -383,7 +383,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         cell: ({ row }: any) => (
           <div className="alignCenter">
             {row?.original?.siteImage != undefined && (
-              <div className="alignCenter" title="Show All Child">
+              <div className="alignCenter" title={row?.original?.TaskType?.Title}>
                 <img className='workmember' title={row?.original?.TaskType?.Title}
                   src={row?.original?.siteImage}>
                 </img>
@@ -402,14 +402,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       //   placeholder: "Task ID",
       //   header: "",
       //   resetColumnFilters: false,
-    //   size: 120,
+      //   size: 120,
       //   id: "TaskID",
       // }, 
       {
-        accessorFn: (row: any) => row?.TaskTitle,
-        cell: ({ row }: any) => (
-          <dd className='bg-Ff position-relative'>
-            <ReactPopperTooltipSingleLevel CMSToolId={row.original?.TaskID} row={row.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={this?.state?.AllTimeEntryItem} AllListId={AllListId} />
+        accessorFn: (row: any) => row?.TaskID,
+        cell: ({ row,getValue }: any) => (
+          <dd className='position-relative'>
+            <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={this?.state?.AllTimeEntryItem} AllListId={AllListId} />
 
           </dd>
         ),
@@ -425,7 +425,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <div className="alignCenter">
             <span className="columnFixedTitle">
               <a className="text-content hreflink" title={row?.original?.TaskTitle} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
-                href={this.props.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.TaskItemID + "&Site=" + row?.original?.siteType === 'OffshoreTasks' ? 'Offshore Tasks' : row?.original?.siteType} >
+                href={this.props.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + row?.original?.TaskItemID + '&Site=' + (row?.original?.siteType === 'OffshoreTasks' ? 'Offshore%20Tasks' : row?.original?.siteType)} >
                 {row?.original?.TaskTitle}
                 {/* <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /> */}
               </a>
@@ -433,7 +433,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             </span>
           </div>
         ),
-        accessorKey: "TaskTitle",
         placeholder: "Title",
         header: "",
         resetColumnFilters: false,
@@ -1663,19 +1662,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       }
     }
 
-    // let filterarray: any = [];
-    // if (this?.state?.filterItems?.length > 0) {
-    //   let roesItem = this.state?.filterItems?.filter((obj: any) => obj?.IsParent === true);
-    //   if (roesItem?.length > 0) {
-    //     filterItemTimeTab?.forEach((filter: any) => {
-    //       roesItem.forEach((smart: any) => {
-    //         if (smart?.Title === filter?.ListName)
-    //           filterarray.push(filter);
-    //       })
-    //     })
-    //   }
-    // }
-
 
     console.log(filterItemTimeTab);
     this.GetAllSiteTaskData(filterItemTimeTab, getAllTimeEntry);
@@ -1894,6 +1880,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             filterItem.PercentComplete = getItem.PercentComplete;
             filterItem.Priority_x0020_Rank = getItem.Priority_x0020_Rank;
             filterItem.TaskID = getItem.TaskID;
+            filterItem.TaskId = getItem.TaskID;
             filterItem.Portfolio_x0020_Type = getItem.Portfolio_x0020_Type;
             filterItem.Created = getItem.Created;
             filterItem.Id = getItem.Id;
@@ -2189,6 +2176,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           let selectedDate = Moment(NotUndefineddate);
           weekStart = selectedDate.clone().startOf('week').format('MM/DD/YYYY');
         }
+        this.AllYearMonth =[];
         this.groupby_accordingTo_dateNew(commonItemsbackup, NotUndefineddate);
       }
 
@@ -2796,9 +2784,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
 
   private ClearFilters() {
+    this.GetTaskUsers();
     this.setState({
-      checked: []
+      checked: [],
+      SelectGroupName:[]
     })
+   
   }
   private GetCheckedObject = (arr: any, checked: any, isCheckedValue: any) => {
     let checkObj: any = [];
@@ -4119,7 +4110,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     return (
       <div>
         <div className="col-sm-12 padL-0">
-          <h2 className="heading">Timesheet <a className="f-13 pull-right" data-interception="off" target="_blank" href='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CategoriesWeeklyMultipleReportDetails-Old.aspx'>Old Categories Weekly Multiple Report Details</a></h2>
+          <h2 className="heading">Timesheet
+          </h2>
         </div>
 
         <div className="smartFilter bg-light border mb-3">
@@ -4414,7 +4406,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           onDismiss={this.cancelsmarttablePopup}
           isBlocking={false}
         >
-          <div>
+          <div >
             <div className="modal-body">
               <div className="col-sm-12">
                 <div className="Alltable mb-10">

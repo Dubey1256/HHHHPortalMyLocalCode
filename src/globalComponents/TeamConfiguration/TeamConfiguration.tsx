@@ -69,7 +69,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private AllUsers: any = [];
     private getDatesInfo() {
         let datesInfo: any = [];
-        let currentDate: any = moment();
+        let currentDate:any = moment();
         let workingActionTest: any = [];
         let startdate: any;
         try {
@@ -85,7 +85,13 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
             })
         }
+   
+        let oldJson: any = []
+        try {
+            oldJson = JSON.parse(JSON.stringify(workingAction));
+        } catch (error) {
 
+        }
         let count = 0;
 
         while (datesInfo.length < 5) {
@@ -127,7 +133,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         let CustomUserDate: any = []
         if (workingAction !== undefined) {
             customDateStore = workingAction.filter((pickupCustomDate: any) => {
-                let useDate: any = moment(pickupCustomDate.WorkingDate, 'DD/MM/YYYY')
+                let useDate:any = moment(pickupCustomDate.WorkingDate, 'DD/MM/YYYY')
                 let workingActionDate = new Date(useDate);
                 return workingActionDate > pickupLastDate;
             });
@@ -144,7 +150,13 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             })
         }
         datesInfo = datesInfo.concat(CustomUserDate)
-        startdate = moment(currentDate).format('YYYY-MM-DD'); 
+        startdate = moment(currentDate).format('YYYY-MM-DD');
+        if (oldJson != undefined || oldJson != null) {
+            oldJson = oldJson.filter((oldDate: any) => {
+                return !datesInfo.some((newDate: any) => oldDate.WorkingDate == newDate.originalDate);
+            });
+        }
+
         datesInfo?.map((dates: any) => {
             dates.userInformation = [];
             workingAction?.map((workActionData: any) => {
@@ -181,6 +193,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
 
         this.setState({
             datesInfo: datesInfo,
+            oldWorkingDaysInfo: oldJson,
             startDate: startdate,
             pickerDate: startdate
         })
@@ -495,7 +508,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         return users;
     }
 
-
+    
 
     private dragStart = (e: any, position: any, user: any, team: any) => {
         dragItem.current = position;
@@ -591,8 +604,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                     return false;
                 }
             })
-            if (userExistsWorkingDates != true && userExistsLeads != true && userExistsTeamMembers != true ) {
 
+
+            if (userExistsWorkingDates != true && userExistsLeads != true && userExistsTeamMembers != true ) {
                 this.state.taskUsers.forEach(function (child: any) {
                     if (child.ID == $data.UserGroupId) {
                         if (!self.isItemExists(child.childs, $data.Id))

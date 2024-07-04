@@ -1036,7 +1036,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
     return (
       <>
         <div className="subheading">Add Question</div>
-        <Tooltip ComponentId="1000" />
+        <Tooltip ComponentId="1586" />
       </>
     );
   };
@@ -1044,7 +1044,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
     return (
       <>
         <div className="subheading">Add Help</div>
-        <Tooltip ComponentId="1000" />
+        <Tooltip ComponentId="2010" />
       </>
     );
   };
@@ -1879,7 +1879,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
   );
   const HelpInformationHtmlEditorCallBack = React.useCallback(
     (Editorvalue: any) => {
-      let message: any = Editorvalue;
+      let message: any = Editorvalue != '<p>null</p>\n'?Editorvalue:'';
       EditData.Help_x0020_Information = message;
       PostHelp_x0020_Information = EditData?.Help_x0020_Information;
       console.log("Editor Data call back ====", Editorvalue);
@@ -1888,7 +1888,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
   );
   const QuestionDescriptionEditorCallBack = React.useCallback(
     (Editorvalue: any) => {
-      let message: any = Editorvalue;
+      let message: any = Editorvalue != '<p>null</p>\n'?Editorvalue:'';
       EditData.QuestionDescription = message;
       PostQuestionDescription = EditData?.QuestionDescription;
       console.log("Editor Data call back ====", Editorvalue);
@@ -2789,7 +2789,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
           Permission: choice ? choice : dataUpdate?.choice,
           Body: questionDescription
             ? questionDescription || EditData?.PostQuestionDescription || ""
-            : dataUpdate?.Body,
+            : dataUpdate?.Body  !== 'null'? dataUpdate?.Body:'',
         })
         .then(async (i: any) => {
           console.log(i);
@@ -2827,7 +2827,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
           Permission: choice ? choice : helpDataUpdate?.choice,
           Body: questionDescription
             ? questionDescription || EditData?.PostQuestionDescription || ""
-            : helpDataUpdate?.Body,
+            : helpDataUpdate?.Body !== 'null'?helpDataUpdate?.Body:'',
         })
         .then(async (i: any) => {
           console.log(i);
@@ -5064,7 +5064,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                 editorValue={
                   EditData.QuestionDescription != undefined
                     ? EditData.QuestionDescription
-                    : dataUpdate?.Body
+                    :  dataUpdate?.Body !== 'null'?dataUpdate?.Body:''
                 }
                 HtmlEditorStateChange={QuestionDescriptionEditorCallBack}
               ></HtmlEditorCard>
@@ -5212,7 +5212,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                 editorValue={
                   EditData.QuestionDescription != undefined
                     ? EditData.QuestionDescription
-                    : helpDataUpdate?.Body
+                    : helpDataUpdate?.Body !== 'null'?helpDataUpdate?.Body:''
                 }
                 HtmlEditorStateChange={QuestionDescriptionEditorCallBack}
               ></HtmlEditorCard>

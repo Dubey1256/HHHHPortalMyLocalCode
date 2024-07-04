@@ -821,8 +821,7 @@ const CompareTool = (props: any) => {
                     Compare {data?.length > 0 && data[0]?.TaskType?.Id != undefined ? 'Tasks' : ((data[0]?.Item_x0020_Type === "Project" || data[0]?.Item_x0020_Type === "Sprint" )? "Px" : 'Components')}
 
                 </div>
-                {data?.length > 0 && data[0]?.TaskType?.Id != undefined ? <Tooltip ComponentId={1723} /> : <Tooltip ComponentId={611} />}
-            </>
+                {data?.length > 0 && data[0]?.TaskType?.Id != undefined ? <Tooltip ComponentId={1723} /> : ((data[0]?.Item_x0020_Type === "Project" || data[0]?.Item_x0020_Type === "Sprint") ? <Tooltip ComponentId={2032} /> : <Tooltip ComponentId={611} />)}</>
         );
     };
 
