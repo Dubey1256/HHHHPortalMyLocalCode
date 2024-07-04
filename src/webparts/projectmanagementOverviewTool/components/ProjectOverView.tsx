@@ -1,7 +1,9 @@
+
 import * as React from 'react';
 import PageLoader from '../../../globalComponents/pageLoader';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import { Avatar } from "@fluentui/react-components";
 import {
     ColumnDef,
 } from "@tanstack/react-table";
@@ -620,21 +622,21 @@ export default function ProjectOverview(props: any) {
                             ""
                         ) : (
                             <>
-                                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
-
-                                {row?.original?.Author != undefined ? (
-                                    <>
-                                        <a
-                                            href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
-                                            target="_blank"
-                                            data-interception="off"
-                                        >{row?.original?.createdImg != undefined ?
-                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} /> :
-                                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
-                                            }
-
-                                        </a>
-                                    </>
+                                <span className='ms-1'>{row?.original?.DisplayCreateDate}</span>
+                                {row?.original?.Author ? (
+                                    <a
+                                        href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        data-interception="off"
+                                    >
+                                        <Avatar
+                                            title={row?.original?.Author?.Title}
+                                            className="workmember ms-1"
+                                            image={{ src: findUserByName(row?.original?.Author?.Id) }}
+                                            name={row?.original?.Author?.Title}
+                                        />
+                                    </a>
                                 ) : (
                                     <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                                 )}
@@ -918,22 +920,27 @@ export default function ProjectOverview(props: any) {
                             ""
                         ) : (
                             <>
-                                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
-
-                                {row?.original?.Author != undefined ? (
-                                    <>
-                                        <a
-                                            href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
-                                            target="_blank"
-                                            data-interception="off"
-                                        >{row?.original?.createdImg != undefined ?
-                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} /> :
-                                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
-                                            }
-                                        </a>
-                                    </>
+                                <span className='ms-1'>{row?.original?.DisplayCreateDate}</span>
+                                {row?.original?.Author ? (
+                                    <a
+                                        href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        data-interception="off"
+                                    >
+                                        <Avatar
+                                            title={row?.original?.Author?.Title}
+                                            className="workmember ms-1"
+                                            image={{ src: findUserByName(row?.original?.Author?.Id) }}
+                                            name={row?.original?.Author?.Title}
+                                        />
+                                    </a>
                                 ) : (
-                                    <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                                    <Avatar
+                                        className='svg__iconbox svg__icon--defaultUser grey'
+                                        title={row?.original?.Author?.Title}
+                                        name={row?.original?.Author?.Title}
+                                    />
                                 )}
                             </>
                         )}
