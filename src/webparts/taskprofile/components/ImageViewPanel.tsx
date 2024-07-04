@@ -406,7 +406,7 @@ const ImageViewPanel = (props: any) => {
                                                                             <div className='d-flex justify-content-between align-items-center'>
                                                                                 {fbComment?.AuthorName} - {fbComment?.Created}
                                                                                 <span className='d-flex'>
-                                                                                    <Popover withArrow open={isPopoverOpen} onOpenChange={(e, data) => setIsPopoverOpen(data.open)}>
+                                                                                    <Popover withArrow >
                                                                                         <PopoverTrigger disableButtonEnhancement>
                                                                                             <span className="svg__iconbox svg__icon--reply"></span>
                                                                                         </PopoverTrigger>
@@ -589,7 +589,7 @@ const ImageViewPanel = (props: any) => {
                                                                 {fbComment?.AuthorName} - {fbComment?.Created}
                                                              
                                                                 <span className='d-flex'>
-                                                                    <Popover withArrow open={isPopoverOpen} onOpenChange={(e, data) => setIsPopoverOpen(data.open)}>
+                                                                    <Popover withArrow >
                                                                         <PopoverTrigger disableButtonEnhancement>
                                                                             <span className="svg__iconbox svg__icon--reply"></span>
                                                                         </PopoverTrigger>
