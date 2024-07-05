@@ -125,12 +125,12 @@ const inlineEditingcolumns = (props: any) => {
 
   React.useEffect(() => {
     setTimeout(() => {
-      const panelMain: any = document.querySelector('.ms-Panel-main');
-      if (panelMain && props.portfolioColor) {
-        $('.ms-Panel-main').css('--SiteBlue', props?.portfolioColor); // Set the desired color value here
-      }
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && props.portfolioColor) {
+            $('.ms-Panel-main').css('--SiteBlue', props?.portfolioColor); // Set the desired color value here
+        }
     }, 1500)
-  }, [taskCategoriesPopup]);
+}, [taskCategoriesPopup]);
 
   const updateItemValues = () => {
     selectedCatTitleVal = [];
@@ -147,7 +147,7 @@ const inlineEditingcolumns = (props: any) => {
       a = JSON.parse(a)
       a = a.filter((item: any) => item.Title != 'Bottleneck')
       localStorage.setItem('taskCategoryType', JSON.stringify(a))
-
+      
     }
     catch (e) {
       console.error("JSON cannot be parsed")
@@ -426,15 +426,15 @@ const inlineEditingcolumns = (props: any) => {
       });
       if (instantCat != null && instantCat != undefined) {
         instantCat?.forEach((instCat: any) => {
-          if (props?.item?.TaskCategories.length > 0){
+          if (props?.item?.TaskCategories?.length > 0){
             props?.item?.TaskCategories?.forEach((cat: any) => {
               if (instCat.Id === cat.Id) {
                 instCat.ActiveTile = true;
               }
             });
           }
-          else if (props?.item?.TaskCategories?.results.length > 0) {
-            props?.item?.TaskCategories?.results.forEach((cat: any) => {
+          else if (props?.item?.TaskCategories?.results?.length > 0) {
+            props?.item?.TaskCategories?.results?.forEach((cat: any) => {
               if (instCat.Id === cat.Id) {
                 instCat.ActiveTile = true;
               }
@@ -946,6 +946,7 @@ const inlineEditingcolumns = (props: any) => {
       ...UpdateTaskInfo,
       PercentCompleteStatus: StatusData.value,
     });
+    setPercentCompleteStatus(StatusData.status);
     setPercentCompleteCheck(false);
     StatusValue = StatusData.value
     if (StatusData.value == 1) {
@@ -1102,11 +1103,12 @@ const inlineEditingcolumns = (props: any) => {
         }
       });
     }
-  };
-
-  const closeTaskStatusUpdatePopup = () => {
+    UpdateTaskStatus();
     setTaskStatusPopup(false);
   };
+  // const closeTaskStatusUpdatePopup = () => {
+  //   setTaskStatusPopup(false);
+  // };
   const handleCategoryChange = (event: any, CategoryId: any, Category: any) => {
     if (event.target.checked) {
       setSelectedCatId((prevSelectedCatId: any) => [...prevSelectedCatId, CategoryId]);
@@ -1356,7 +1358,7 @@ const inlineEditingcolumns = (props: any) => {
                 </div>
               ) : null
             )}
-            {props?.item?.TaskCategories?.length > 0 && props?.item?.TaskCategories?.map((category: any) => {
+            {props?.mypriority === true && props?.item?.TaskCategories?.length > 0 && props?.item?.TaskCategories?.map((category: any) => {
               if (category?.Title == "Immediate") {
                 return (
                   <a title="Immediate">
@@ -1544,7 +1546,7 @@ const inlineEditingcolumns = (props: any) => {
           )}
         </span>
       ) : (
-        ''
+       ''
       )}
 
       {/* Panel to edit due-date */}
@@ -1756,34 +1758,40 @@ const inlineEditingcolumns = (props: any) => {
         onRenderHeader={() => onRenderCustomHeader("Status")}
         isOpen={TaskStatusPopup}
         customWidth="500px"
-        onDismiss={closeTaskStatusUpdatePopup}
+        onDismiss={() => { setTaskStatusPopup(false) }}
         isBlocking={TaskStatusPopup}
       >
+        {/* ------Status Update---- */}
+        <div>
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
           <div className="modal-body">
-            <div>
-              <ul className="list-none">
+            <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
+              <tbody>
                 {StatusArray?.map((item: any, index) => {
                   return (
-                    <li key={index}>
-                      <div className="SpfxCheckRadio">
-                        <input
-                          className="radio"
-                          type="radio"
-                          checked={StatusValue == item?.value}
-                          onClick={() => PercentCompleted(item)}
-                        />
-                        <label className="form-check-label">
-                          {item?.status}
-                        </label>
-                      </div>
-                    </li>
-                  );
+                    <tr key={index}>
+                      <td>
+                        <div className="form-check l-radio">
+                          <input className="form-check-input"
+                            type="radio" 
+                            checked={
+                              (PercentCompleteCheck
+                                  ? EditData.PercentComplete
+                                  : UpdateTaskInfo.PercentCompleteStatus) ==
+                              item.value
+                          }
+                            // checked={StatusValue == item?.value}
+                            onClick={() => PercentCompleted(item)}/>
+                          <label className="form-check-label mx-2">{item?.status}</label>
+                        </div>
+                      </td>
+                    </tr>
+                  )
                 })}
-              </ul>
-            </div>
+              </tbody>
+            </table>
           </div>
-          <footer className="float-end">
+          {/* <footer className="float-end">
             <button
               type="button"
               className="btn btn-primary px-3"
@@ -1791,8 +1799,14 @@ const inlineEditingcolumns = (props: any) => {
             >
               Save
             </button>
-          </footer>
+          </footer> */}
+          </div>
+
+
         </div>
+
+
+    
       </Panel>
       {/* Pannel To select Priority */}
       <Panel
@@ -1999,7 +2013,7 @@ const inlineEditingcolumns = (props: any) => {
           onClick={() => setTaskCategoriesPopup(true)}
           style={{ display: "flex", width: "100%", height: "100%" }}
         >
-
+         
           {props?.item?.Categories}  &nbsp;
           {showEditPencil && (
             <a className="pancil-icons ml-auto">
