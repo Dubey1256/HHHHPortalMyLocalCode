@@ -643,7 +643,7 @@ const ImageViewPanel = (props: any) => {
                                                                                     <span className='svg__iconbox svg__icon--edit'></span>
                                                                                 </a>
                                                                                 <a title='Delete'
-                                                                                    onClick={() => clearComment(slide, fbComment, index, "ReplyComment")}
+                                                                                    onClick={() => clearComment(slide, k, index, "ReplyComment")}
                                                                                 >
                                                                                     <span className='svg__iconbox svg__icon--trash'></span></a>
                                                                             </span>
@@ -807,7 +807,7 @@ const ImageViewPanel = (props: any) => {
 
 
                     </div>
-                    <div className="UXImageRightSection">
+                    <div className="UXImageRightSection" style={{width:hideLeftSection?"100%":""}}>
                         {openImageRightSection && <div className='bg-white p-0 mb-3'>
                            
                             <div className='alignCenter justify-content-between'>
@@ -838,10 +838,10 @@ const ImageViewPanel = (props: any) => {
                                             </label>
                                    
                                 </div>
-                                <div className='playpausebutton'>
+                               {iconSeleted != "compareSeveral" && <div className='playpausebutton'>
                                     <span onClick={previous} className='svg__icon--arrowLeft hreflink svg__iconbox'></span>
                                     <span className="svg__icon--arrowRight hreflink svg__iconbox" onClick={next}></span>
-                                </div>
+                                </div>}
                             </div>
                             {iconSeleted == "fullScreen" && imageSlider(allImageData)}
                             {iconSeleted == "compare2" && <div className='CompareSection col-sm-12 row'>
