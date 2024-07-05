@@ -334,9 +334,12 @@ const CopyTaskProfile = (props: any) => {
                         Action?.InformationData?.map((isworkingToday: any) => {
                             if (isworkingToday?.WorkingDate == currentDate && isworkingToday?.WorkingMember?.length > 0) {
                                 taskDetails["IsTodaysTask"] = true
+                                isworkingToday?.WorkingMember?.map((itm: any) => {
+                                    taskDetails['workingTodayUser'] = copytaskuser.filter((x: any) => x.AssingedToUser?.Id == itm?.Id)
+                                })
                             }
                         })
-                    }
+                    }  
                 })
             }
             let siteicon = GetSiteIcon(listName)
@@ -365,7 +368,7 @@ const CopyTaskProfile = (props: any) => {
                 ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
                 OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
                 OffshoreImageUrl: taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
-
+                workingTodayUser: taskDetails['workingTodayUser'],
                 ClientCategory: taskDetails["ClientCategory"],
                 siteType: taskDetails["siteType"],
                 listName: taskDetails["listName"],
@@ -2015,7 +2018,11 @@ const CopyTaskProfile = (props: any) => {
                                                     </dl>
                                                     <dl>
                                                         <dt className='bg-Fa'>Working Today</dt>
-                                                        <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{state?.Result?.IsTodaysTask ? "Yes" : "No"} </span>
+                                                        <dd className='bg-Ff position-relative' >{state?.Result?.workingTodayUser != undefined && state?.Result?.workingTodayUser?.map((user: any) => {
+                                                            return (
+                                                                <span className='tooltipbox'><img className='workmember' title={user?.Title} src={user?.Item_x0020_Cover?.Url} /></span>
+                                                            )
+                                                        })}
                                                         </dd>
                                                     </dl>
                                                     <dl>
