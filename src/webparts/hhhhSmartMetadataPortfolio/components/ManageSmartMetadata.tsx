@@ -83,7 +83,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         setSmartMetadataCount(Count);
     }
     //...........................................................End Filter SmartMetadata Items counts....................................................
-    const GetAdminConfig = async () => {
+    const GetAdminConfig = async (Tab:any) => {
         try {
             let web = new Web(selectedProps.AllList.SPSitesListUrl);
             const Config = await web.lists.getById(selectedProps.AllList.SPSiteConfigListID).items.select("ID,Title,OrderBy,WebpartId,DisplayColumns,Columns,QueryType,FilterItems&$filter=WebpartId eq 'AllManageSmartMetadataPortfolioTabs'").getAll();
@@ -92,12 +92,12 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 setTabs(JSON.parse(Config[0].DisplayColumns));
                 console.log(Tabs);
             }
-            LoadSmartMetadata();
+            LoadSmartMetadata(Tab);
         } catch (error) {
             console.error(error);
         }
     };
-    const LoadSmartMetadata = async () => {
+    const LoadSmartMetadata = async (Tab:any) => {
         try {
             let web = new Web(selectedProps?.AllList?.SPSitesListUrl);
             const AllMetaDataItems = await web.lists.getById(selectedProps?.AllList?.SmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title&$filter=isDeleted ne 1").getAll();
@@ -116,7 +116,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
                         if (siteName === 'SP' || siteName === 'ILF')
                             ShowingTabsData("Categories");
                         if (siteName === 'GmbH')
-                            ShowingTabsData("Topics");
+                            if(Tab !== '' && Tab !== undefined)
+                                ShowingTabsData(Tab);
+                            else
+                                ShowingTabsData("Topics");
                     }
                 })
             }
@@ -214,7 +217,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         setSmartMetadataDeletePopupOpen(true);
     };
     useEffect(() => {
-        GetAdminConfig();
+        GetAdminConfig('');
     }, [0]);
     const columns = useMemo<ColumnDef<any, unknown>[]>(() => [
         {
@@ -448,12 +451,11 @@ export default function ManageSmartMetadata(selectedProps: any) {
         }
         if (Taxtype) {
             setSmartmetadataAdd(false)
-
             SmartmetadataItems = [];
             Array = {};
             setRestructureIcon(false)
             setSelectedItem({});
-            GetAdminConfig();
+            GetAdminConfig(Taxtype);
         }
     }, []);
     const callChildFunction = (items: any) => {
@@ -560,11 +562,11 @@ export default function ManageSmartMetadata(selectedProps: any) {
                             :
                             <h3 className="heading">Manage Smart MetaData</h3>
                         }
-                        <span>
+                        {/* <span>
                             <a data-interception="off" target="_blank" href={`${selectedProps?.AllList?.SPSitesListUrl}/SitePages/managesmartmetadata-old.aspx`} >
                                 Old ManageSmartMetadata
                             </a>
-                        </span>
+                        </span> */}
                     </div>
                     <div>
                         <span>

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Web } from 'sp-pnp-js';
 import DatePicker from "react-datepicker";
@@ -315,7 +316,9 @@ export const MonthlyLeaveReport = (props: any) => {
     setendDate(dt)
   }
 
+
   const selectDate = (types: string) => {
+
     let startdt = new Date(), enddt = new Date(), tempdt = new Date();
     let diff: number, lastday: number;
     switch (types) {
@@ -389,30 +392,31 @@ export const MonthlyLeaveReport = (props: any) => {
         enddt = new Date();
         settypes('AllTime')
         break;
-      case 'Pre-set':
-        let storedDataStartDate: string | null = localStorage.getItem('startDate');
-        let storedDataEndDate: string | null = localStorage.getItem('endDate');
-        try {
-          if (storedDataStartDate && storedDataEndDate) {
-            const parsedStartDate = new Date(JSON.parse(storedDataStartDate));
-            const parsedEndDate = new Date(JSON.parse(storedDataEndDate));
 
-            if (!isNaN(parsedStartDate.getTime()) && !isNaN(parsedEndDate.getTime())) {
-              startdt = parsedStartDate;
-              enddt = parsedEndDate;
-              settypes('Pre-set')
-              break;
-            }
-          }
+    case 'Pre-set':
+      let storedDataStartDate: string | null = localStorage.getItem('startDate');
+      let storedDataEndDate: string | null = localStorage.getItem('endDate');
+      try {
+        if (storedDataStartDate && storedDataEndDate) {
+          const parsedStartDate = new Date(JSON.parse(storedDataStartDate));
+          const parsedEndDate = new Date(JSON.parse(storedDataEndDate));
 
-        } catch (error) {
-          console.error("Failed to parse dates from localStorage", error);
-        }
-        // If parsing fails, fall through to the default case
-        startdt = null;
-        enddt = null;
-        //settypes('Pre-set')
+          if (!isNaN(parsedStartDate.getTime()) && !isNaN(parsedEndDate.getTime())) {
+            startdt = parsedStartDate;
+            enddt = parsedEndDate;
+            settypes('Pre-set')
         break;
+          }
+        }
+        
+      } catch (error) {
+        console.error("Failed to parse dates from localStorage", error);
+      }
+      // If parsing fails, fall through to the default case
+      startdt = null;
+      enddt = null;
+      //settypes('Pre-set')
+      break;
       default:
     }
 
@@ -563,24 +567,26 @@ export const MonthlyLeaveReport = (props: any) => {
   };
   const PreSetPikerCallBack = React.useCallback((preSetStartDate: any, preSetEndDate) => {
     if (preSetStartDate != undefined) {
-      setStartDate(preSetStartDate);
+
+        setStartDate(preSetStartDate);
     }
     if (preSetEndDate != undefined) {
-      setEndDate(preSetEndDate);
+        setEndDate(preSetEndDate);
     }
-     if(preSetStartDate != undefined||preSetEndDate != undefined){
+    if(preSetStartDate != undefined||preSetEndDate != undefined){
       settypes("Pre-set");
     }
     // setselectedType(true)
-
+    
     setPreSetPanelIsOpen(false)
-  }, []);
+}, []);
   const preSetIconClick = () => {
     // setPreSet(true);
     setPreSetPanelIsOpen(true);
+   
+    
+}
 
-
-  }
   const isWeekend = (startDate: Date, endDate: Date) => {
     const startDay = startDate.getDay();
     const endDay = endDate.getDay();
@@ -905,7 +911,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           <label>Last Month</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => selectDate('Last3Month')} checked={types === "Last3Month"} className="radio" />
+                          <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => selectDate('Last3Month')}  checked={types === "Last3Month"} className="radio" />
                           <label>Last 3 Months</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>

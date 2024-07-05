@@ -75,7 +75,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         try {
             workingActionTest = JSON.parse(this?.state?.taskDetails?.WorkingAction)
         } catch (error) {
-
+            console.log(error)
         }
         let workingAction: any
         if (workingActionTest?.length > 0) {
@@ -109,7 +109,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                     dateFullInfo.serverDate = moment(dateFullInfo?.originalDate, 'DD/MM/YYYY');
                     dateFullInfo.serverDate._d.setHours(0, 0, 0, 0)
                     dateFullInfo.displayDate = "Tomorrow"
-                    
+
                 }
                 else {
                     dateFullInfo.originalDate = currentDate.format('DD/MM/YYYY')
@@ -820,12 +820,12 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                             {
                                                                 return image?.Item_x0020_Cover != undefined && image?.AssingedToUser != undefined ? (
                                                                     <img
-                                                                className="ProirityAssignedUserPhoto"
+                                                                        className="ProirityAssignedUserPhoto"
                                                                         src={image?.userImage != null ? image.userImage : image?.Item_x0020_Cover?.Url}
-                                                                // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
-                                                                title={image.Title} draggable
-                                                                onDragStart={(e) => this.dragStart(e, index, image, 'ResponsibleTeam')}
-                                                                onDragOver={(e) => e.preventDefault()}
+                                                                        // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
+                                                                        title={image.Title} draggable
+                                                                        onDragStart={(e) => this.dragStart(e, index, image, 'ResponsibleTeam')}
+                                                                        onDragOver={(e) => e.preventDefault()}
                                                                     />) : (<span draggable
                                                                         onDragStart={(e) => this.dragStart(e, index, image, 'ResponsibleTeam')}
                                                                         onDragOver={(e) => e.preventDefault()}
@@ -849,11 +849,11 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                             {
                                                                 return image?.Item_x0020_Cover != undefined && image?.AssingedToUser != undefined ?
                                                                     (<img className="ProirityAssignedUserPhoto ms-1"
-                                                                // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
-                                                                title={image.Title}
+                                                                        // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
+                                                                        title={image.Title}
                                                                         src={image.userImage != null ? image?.userImage : image?.Item_x0020_Cover?.Url}
-                                                                draggable
-                                                                onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}
+                                                                        draggable
+                                                                        onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}
                                                                         onDragOver={(e) => e.preventDefault()} />) :
                                                                     (<span draggable onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}
                                                                         onDragOver={(e) => e.preventDefault()}

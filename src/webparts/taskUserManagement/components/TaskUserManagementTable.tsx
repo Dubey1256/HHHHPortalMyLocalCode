@@ -371,7 +371,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         accessorFn: (row) => row?.SortOrder,
         header: "",
         id: "SortOrder",
-        placeholder: "SortOrder",
+        placeholder: "Sort Order",
         size: 42,  
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.SortOrder == filterValue;
@@ -438,7 +438,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             {
                 accessorKey: "SortOrder",
                 header: "",
-                placeholder: "SortOrder",
+                placeholder: "Sort Order",
                 id: "SortOrder",
                 isColumnDefultSortingDesc: true,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
@@ -1126,6 +1126,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                     <span style={{ marginLeft: '-4px' }} className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>{" "}
                                     Delete This Item
                                 </a>
+                                <span> | </span>
                                 <span>
                                     {" "}
                                     {memberToUpdate?.ID ? (

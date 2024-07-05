@@ -5,6 +5,7 @@ import GlobalCommanTable from '../../../globalComponents/GroupByReactTableCompon
 import { ColumnDef } from '@tanstack/react-table';
 import PageLoader from "../../../globalComponents/pageLoader";
 import moment from 'moment';
+import { Avatar } from "@fluentui/react-components";
 import ContentPermissionPopup from './ContentPermissionPopup';
 
 export const ComponentPermissionSearch = (props: any) => {
@@ -132,10 +133,16 @@ export const ComponentPermissionSearch = (props: any) => {
                                             href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
                                             target="_blank"
                                             data-interception="off"
-                                        >{row?.original?.modifiedImg != undefined ?
-                                            <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.modifiedImg} /> :
-                                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Editor?.Title}></span>
-                                            }
+                                        >{row?.original?.modifiedImg || row?.original?.Editor?.suffix ? <Avatar
+                                            className="UserImage"
+                                            title={row?.original?.Editor?.Title}
+                                            name={row?.original?.Editor?.Title}
+                                            image={{ src: row?.original?.modifiedImg }}
+                                            initials={row?.original?.modifiedImg == undefined ? row.original?.Editor?.suffix : undefined}
+
+                                        /> :
+                                            <Avatar title={row?.original?.Editor?.Title}
+                                                name={row?.original?.Editor?.Title} className="UserImage" />}
 
                                         </a>
                                     </>
@@ -168,11 +175,16 @@ export const ComponentPermissionSearch = (props: any) => {
                                             href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
                                             target="_blank"
                                             data-interception="off"
-                                        >{row?.original?.createdImg != undefined ?
-                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} /> :
-                                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
-                                            }
+                                        > {row?.original?.createdImg || row?.original?.Author?.suffix ? <Avatar
+                                            className="UserImage"
+                                            title={row?.original?.Author?.Title}
+                                            name={row?.original?.Author?.Title}
+                                            image={{ src: row?.original?.createdImg }}
+                                            initials={row?.original?.createdImg == undefined ? row.original?.Author?.suffix : undefined}
 
+                                        /> :
+                                            <Avatar title={row?.original?.Author?.Title}
+                                                name={row?.original?.Author?.Title} className="UserImage" />}
                                         </a>
                                     </>
                                 ) : (

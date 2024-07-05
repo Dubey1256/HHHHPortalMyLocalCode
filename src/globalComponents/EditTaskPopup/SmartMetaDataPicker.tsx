@@ -329,7 +329,7 @@ const Picker = (item: any) => {
 
             >
                 <div id="SmartTaxonomyPopup" className={(item?.props?.Portfolio_x0020_Type != undefined && item?.props?.Portfolio_x0020_Type == "Service") ? "serviepannelgreena" : ""}>
-                    <div className={isServiceTask ? "modal-body serviepannelgreena" : "modal-body"}>
+                    <div className={isServiceTask ? "modal-body clearfix mb-5 serviepannelgreena" : "modal-body clearfix mb-5"}>
 
                         <div className="mb-2">
                             <div className="mb-2 col-sm-5 p-0" style={{width:"42.5%"}}>

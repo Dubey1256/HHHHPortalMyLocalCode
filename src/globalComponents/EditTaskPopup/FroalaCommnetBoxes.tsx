@@ -545,7 +545,6 @@ export default function FroalaCommnetBoxes(textItems: any) {
             </div>
         )
     }
-
     return (
         <div className="col mt-2">
             {State.length ? null : <button className="btn btn-primary" onClick={addMainRow}>Add New Box</button>}

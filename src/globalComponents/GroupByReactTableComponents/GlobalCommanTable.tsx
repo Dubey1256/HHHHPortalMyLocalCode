@@ -89,7 +89,7 @@ function DebouncedInput({
         setValue(initialValue);
     }, [initialValue]);
 
-    
+
 
     React.useEffect(() => {
         const timeout = setTimeout(() => {
@@ -124,12 +124,12 @@ export function Filter({
 }): any {
     const columnFilterValue = column.getFilterValue();
     return (
- 
-            <>
-            <input style={{ width: "100%", paddingRight: "10px" }} className="m-1" title={placeholder?.placeholder} type="search" value={(columnFilterValue ?? "") as string}
-            onChange={(e) => column.setFilterValue(e.target.value)} placeholder={`${placeholder?.placeholder}`} />
-                       {columnFilterValue && <span className='searchClear' onClick={(e:any)=>column.setFilterValue("")}></span>}
-           </>
+
+        <>
+            <input style={{ width: "100%", paddingRight: "10px" }} className="m-1" type="search" value={(columnFilterValue ?? "") as string}
+                onChange={(e) => column.setFilterValue(e.target.value)} placeholder={`${placeholder?.placeholder}`} />
+            {columnFilterValue && <span className='searchClear' onClick={(e: any) => column.setFilterValue("")}></span>}<span className='tooltip-text pop-right fw-light'>{placeholder?.placeholder}</span>
+        </>
 
     );
 }
@@ -317,7 +317,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [showPaginationSetting, setShowPaginationSetting] = React.useState(false);
     const [tableSettingPageSize, setTableSettingPageSize] = React.useState(items?.pageSize ? items?.pageSize : 0);
     const [smartFabBasedColumnsSettingToggle, setSmartFabBasedColumnsSettingToggle] = React.useState(false);
-    const [smartFabBasedColumnsSetting, setSmartFabBasedColumnsSetting] = React.useState(items?.smartFavTableConfig != undefined && items?.smartFavTableConfig?.length > 0 ? items?.smartFavTableConfig : []);
+    let [smartFabBasedColumnsSetting, setSmartFabBasedColumnsSetting] = React.useState(items?.smartFavTableConfig != undefined && items?.smartFavTableConfig?.length > 0 ? items?.smartFavTableConfig : []);
     const [showProgress, setShowProgress] = React.useState(false);
     // const [settingConfrigrationData, setSettingConfrigrationData] = React.useState([]);
     let MyContextdata: any = React.useContext(myContextValue)
@@ -341,7 +341,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 $('.ms-Panel-main').css('--SiteBlue', items?.portfolioColor); // Set the desired color value here
             }
         }, 1500)
-    }, [columnSettingPopup, coustomButtonMenuPopup, selectedFilterPanelIsOpen,bulkEditingSettingPopup]);
+    }, [columnSettingPopup, coustomButtonMenuPopup, selectedFilterPanelIsOpen, bulkEditingSettingPopup]);
 
     const customGlobalSearch = (row: any, id: any, query: any) => {
         query = query.replace(/\s+/g, " ").trim().toLowerCase();
@@ -486,6 +486,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const fetchSettingConfrigrationData = async (event: any) => {
         try {
             settingConfrigrationData = [];
+            try {
+                if (smartFabBasedColumnsSetting != undefined && smartFabBasedColumnsSetting != '' && Object.keys(smartFabBasedColumnsSetting).length == 1 && Object.keys(smartFabBasedColumnsSetting[0])?.[0] == 'tableId') {
+                    setSmartFabBasedColumnsSetting(smartFabBasedColumnsSetting);
+                    smartFabBasedColumnsSetting = [];
+                }
+            } catch (e) { }
             if (smartFabBasedColumnsSetting?.length === 0) {
                 let configurationData: any = [];
                 settingConfrigrationData = [];
@@ -994,16 +1000,16 @@ const GlobalCommanTable = (items: any, ref: any) => {
     }
     const exportCallBack = React.useCallback((columnChecked: any) => {
         if (columnChecked != 'close') {
-            let headerColur="0a1c3e"
-            let currentUrl:any=window.location.href;
-           
+            let headerColur = "0a1c3e"
+            let currentUrl: any = window.location.href;
+
             let match = currentUrl.match(/\/([^/]+\.aspx)(\?.*)?$/);
 
-            let FileSaveName = match[1].replace('.aspx','');
+            let FileSaveName = match[1].replace('.aspx', '');
 
 
-            if(currentUrl.toString().includes('PortfolioType=Service')){
-                headerColur= '#228B22'
+            if (currentUrl.toString().includes('PortfolioType=Service')) {
+                headerColur = '#228B22'
             }
             let allHeaderColoumns = columnChecked.filter((column: any) => {
                 return (column?.displayChecked == true);
@@ -1115,10 +1121,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     }
 
-    const clearAll=()=>{
-        setGlobalFilter(''); 
-        setColumnFilters([]); 
-        setRowSelection({}); 
+    const clearAll = () => {
+        setGlobalFilter('');
+        setColumnFilters([]);
+        setRowSelection({});
     }
 
     ///////////////// code with neha /////////////////////
@@ -1139,7 +1145,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     };
     React.useImperativeHandle(ref, () => ({
-        callChildFunction, trueTopIcon, setRowSelection, globalFilter, projectTopIcon, setColumnFilters, setGlobalFilter, coustomFilterColumns, table, openTableSettingPopup, setSmartFabBasedColumnsSetting,clearAll
+        callChildFunction, trueTopIcon, setRowSelection, globalFilter, projectTopIcon, setColumnFilters, setGlobalFilter, coustomFilterColumns, table, openTableSettingPopup, setSmartFabBasedColumnsSetting, clearAll
     }));
 
     const restructureFunct = (items: any) => {
@@ -1405,14 +1411,14 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </div> :
                         <span style={{ color: "#333333", flex: "none" }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
                     <span className="mx-1">{items?.showDateTime}</span>
-            <span className="SearchInput-container">
-                    <DebouncedInput
-                        value={globalFilter ?? ""}
-                        onChange={(value) => setGlobalFilter(String(value))}
-                        placeholder="Search All..."
-                        portfolioColor={portfolioColor}
-                    />
-                    {globalFilter && <span className='searchClear' onClick={()=>setGlobalFilter('')}></span>}
+                    <span className="SearchInput-container">
+                        <DebouncedInput
+                            value={globalFilter ?? ""}
+                            onChange={(value) => setGlobalFilter(String(value))}
+                            placeholder="Search All..."
+                            portfolioColor={portfolioColor}
+                        />
+                        {globalFilter && <span className='searchClear' onClick={() => setGlobalFilter('')}></span>}
                     </span>
 
 
@@ -1421,7 +1427,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             <span className="svg__iconbox svg__icon--setting hreflink" style={selectedFilterCount?.selectedFilterCount == 'All content' ? { backgroundColor: "var(--SiteBlue)" } : { backgroundColor: 'rgb(68 114 199)' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>}
                     </div>
                     <span className='custom-select mx-1'>
-                        <select style={{ height: "30px"}}
+                        <select style={{ height: "30px" }}
                             className="w-100 siteColor"
                             aria-label="Default select example"
                             value={globalSearchType}
@@ -1551,7 +1557,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                         return (
                                             <th key={header.id} colSpan={header.colSpan} style={header.column.columnDef.size != undefined && header.column.columnDef.size != 150 ? { width: header.column.columnDef.size + "px", maxWidth: header.column.columnDef.size + "px", minWidth: header.column.columnDef.size + "px" } : {}}>
                                                 {header.isPlaceholder ? null : (
-                                                    <div className='position-relative' style={{ display: "flex" }}>
+                                                    <div className='position-relative hover-textToolTip' style={{ display: "flex" }}>
                                                         {flexRender(
                                                             header.column.columnDef.header,
                                                             header.getContext()
@@ -1738,7 +1744,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
             {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} bulkEditingCongration={bulkEditingCongration} />}
             {columnSettingPopup && <ColumnsSetting showProgres={showProgress} ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} wrapperHeight={wrapperHeight} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility}
-                smartFabBasedColumnsSettingToggle={smartFabBasedColumnsSettingToggle} setSmartFabBasedColumnsSettingToggle={setSmartFabBasedColumnsSettingToggle} data={items?.data} setData={items?.setData} portfolioColor={portfolioColor}/>}
+                smartFabBasedColumnsSettingToggle={smartFabBasedColumnsSettingToggle} setSmartFabBasedColumnsSettingToggle={setSmartFabBasedColumnsSettingToggle} data={items?.data} setData={items?.setData} portfolioColor={portfolioColor} />}
 
             {coustomButtonMenuPopup && <HeaderButtonMenuPopup isOpen={coustomButtonMenuPopup} coustomButtonMenuToolBoxCallback={coustomButtonMenuToolBoxCallback} setCoustomButtonMenuPopup={setCoustomButtonMenuPopup}
                 selectedRow={table?.getSelectedRowModel()?.flatRows} ShowTeamFunc={ShowTeamFunc} portfolioColor={portfolioColor}
@@ -1753,7 +1759,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 columnSettingIcon={items?.columnSettingIcon} setColumnSettingPopup={setColumnSettingPopup}
             />}
 
-{exportColumnOpen && <ExportColumnSelect isOpen={exportColumnOpen} AllColumns={columns} NotVisbleColumns={exportVisibility} exportCallBack={exportCallBack} />}
+            {exportColumnOpen && <ExportColumnSelect isOpen={exportColumnOpen} AllColumns={columns} NotVisbleColumns={exportVisibility} exportCallBack={exportCallBack} />}
             {/* {showTilesView && <TileBasedTasks ContextValue={items?.AllListId} AllUsers={items?.TaskUsers} tableData={data} />} */}
         </>
     )

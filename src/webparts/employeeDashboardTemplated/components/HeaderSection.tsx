@@ -138,8 +138,10 @@ const Header = () => {
             {DashboardId != undefined && DashboardId != '' ? <a data-interception="off" target="_blank" className="empCol hreflink" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx?DashBoardId=" + DashboardId} >Manage Dashboard</a>
               : <a data-interception="off" target="_blank" className="empCol hreflink" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx"} >Manage Dashboard</a>}
 
-          </span> <span> | </span>
-          <b><a data-interception="off" target="_blank" href={`${ContextData?.propsValue?.Context?.pageContext?._web.absoluteUrl}/SitePages/Dashboard-Old.aspx`}>Old Dashboard</a></b></h6></div></div>
+          </span> 
+          {/* <b>
+            <a data-interception="off" target="_blank" href={`${ContextData?.propsValue?.Context?.pageContext?._web.absoluteUrl}/SitePages/Dashboard-Old.aspx`}>Old Dashboard</a></b> */}
+            </h6></div></div>
         {/* <div className="d-flex shadow-sm p-3 mb-3 bg-white">
           <div className="col fw-bold f-18 alignCenter">
              Welcome, 
