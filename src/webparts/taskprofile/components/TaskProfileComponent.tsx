@@ -45,6 +45,7 @@ import { IoHandRightOutline } from 'react-icons/io5';
 import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
 import * as GlobalFunctionForUpdateItems from '../../../globalComponents/GlobalFunctionForUpdateItems'
 import SmartPriorityHover from '../../../globalComponents/EditTaskPopup/SmartPriorityHover'; // Import your global common module
+import ImageViewPanel from './ImageViewPanel';
 
 var ClientTimeArray: any = [];
 
@@ -74,8 +75,11 @@ const CopyTaskProfile = (props: any) => {
     const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
     const [isShowSiteCompostion, setisShowSiteCompostion] = useState<any>('')
     const [showComposition, setshowComposition] = useState(true);
+    const [SiteIcon, setSiteIcon] = useState('');
     const [OffshoreImageUrl, setOffshoreImageUrl] = useState([]);
     const [ApprovalStatus, setApprovalStatus] = useState(false);
+    const [checkedImageData, SetCheckedImageData]: any = useState([])
+    const [openComparePopup, SetOpenComparePopup]: any = useState(false)
 
     const [state, setState] = useState<any>({
         Result: {},
@@ -222,6 +226,7 @@ const CopyTaskProfile = (props: any) => {
                 TaskTypeID: propsValue.TaskTypeID,
                 isShowTimeEntry: isShowTimeEntry,
                 isShowSiteCompostion: isShowSiteCompostion,
+                listName:listName
             };
 
             taskDetails["listName"] = listName;
@@ -491,9 +496,6 @@ const CopyTaskProfile = (props: any) => {
             ...prevState,
             Result: taskDeatails,
         }))
-        // setState({
-        //     Result: taskDeatails,
-        // })
         copytaskuser = taskUsers
         setTaskUsers(taskUsers);
 
@@ -1769,7 +1771,24 @@ const CopyTaskProfile = (props: any) => {
 
     //********** */ Inline editing End************
 
+    const CheckImageData = (value: boolean, imgeData: any) => {
+        console.log(value)
 
+        let copyCheckedImageData = checkedImageData
+        if (value) {
+            copyCheckedImageData.push(imgeData)
+        }
+        else {
+            copyCheckedImageData=copyCheckedImageData?.filter((data: any) => data.ImageName != imgeData.ImageName)
+        }
+
+        SetCheckedImageData([...copyCheckedImageData])
+    }
+
+    const openImageCompare = () => {
+        SetOpenComparePopup(true)
+
+    }
     return (
         <>
             <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc: state.keydoc, FileDirRef: state.FileDirRef, user: taskUsers, ColorCode: state?.Result?.Portfolio?.PortfolioType?.Color }}>
@@ -1784,6 +1803,8 @@ const CopyTaskProfile = (props: any) => {
                                             <li >
                                                 <a target="_blank" data-interception="off" href={`${state?.Result?.siteUrl}/SitePages/Dashboard.aspx`}> <span>Dashboard</span> </a> <span><SlArrowRight /></span>
                                             </li>
+
+
                                             <li>
                                                 <a  >
                                                     <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
@@ -1986,7 +2007,7 @@ const CopyTaskProfile = (props: any) => {
                                                     <dl>
                                                         <dt className='bg-Fa'>Status</dt>
                                                         <dd className='bg-Ff'>{state?.Result?.PercentComplete != undefined ? state?.Result?.PercentComplete?.toFixed(0) : 0} <span className='me-2'>%</span> {state?.Result?.Status}<br></br>
-                                                            {state?.Result?.ApproverHistory != undefined && state?.Result?.ApproverHistory.length > 1 && state?.Result?.Categories.includes("Approval") ?
+                                                            {state?.Result?.ApproverHistory != undefined && state?.Result?.ApproverHistory.length > 1 && state?.Result?.Categories?.includes("Approval") ?
                                                                 <span style={{ fontSize: "smaller" }}>Approved by
                                                                     <img className="workmember" title={state?.Result?.ApproverHistory[state.Result?.ApproverHistory.length - 2]?.ApproverName} src={(state.Result?.ApproverHistory[state.Result?.ApproverHistory?.length - 2]?.ApproverImage != null) ? (state.Result.ApproverHistory[state.Result.ApproverHistory.length - 2]?.ApproverImage) : (state.Result?.ApproverHistory[state.Result.ApproverHistory.length - 2]?.ApproverSuffix)}></img></span>
 
@@ -2359,9 +2380,45 @@ const CopyTaskProfile = (props: any) => {
                                                 {state?.Result?.BasicImageInfo != null && state?.Result?.BasicImageInfo?.length > 0 &&
                                                     <div className="bg-white col-sm-4 mt-2 p-0 boxshadow mb-3">
                                                         <label className='form-label full-width fw-semibold titleheading'>Images</label>
+                                                        <div className='alignCenter'>
+                                                            <div className='alignCenter ml-auto pt-1 gap-1 px-3'>
+                                                                <Tooltip
+                                                                    withArrow
+                                                                    content="Full-Screen View"
+                                                                    relationship="label" positioning="below"
+                                                                >
+                                                                    <span onClick={() => openImageCompare()} className={`svg__iconbox svg__icon--fullScreen ${checkedImageData?.length <= 1 ? 'siteColor' : ""}`}></span>
+                                                                </Tooltip>
+                                                                <Tooltip
+                                                                    withArrow
+                                                                    content="Compare 2 Images"
+                                                                    relationship="label"
+                                                                    positioning="below"
+                                                                >
+                                                                    <span onClick={() => openImageCompare()} className={`svg__iconbox svg__icon--compare2 ${checkedImageData?.length == 2 ? 'siteColor' : ""}`}></span>
+                                                                </Tooltip>
+                                                                <Tooltip
+                                                                    withArrow
+                                                                    content="Compare Several Images"
+                                                                    relationship="label" positioning="below"
+                                                                >
+                                                                    <span onClick={() => openImageCompare()} className={`svg__iconbox svg__icon--compareSeveral ${(checkedImageData?.length == 3 || checkedImageData?.length == 4) ? 'siteColor' : ""}`}></span>
+                                                                </Tooltip>
+                                                                <Tooltip
+                                                                    withArrow
+                                                                    content="View All"
+                                                                    relationship="label" positioning="below"
+                                                                >
+                                                                    <span onClick={() => openImageCompare()} className={`svg__iconbox svg__icon--viewAll ${(checkedImageData?.length > 4) ? 'siteColor' : ""}`}></span>
+                                                                </Tooltip>
+
+
+
+                                                            </div>
+                                                        </div>
                                                         {state?.Result?.BasicImageInfo != null && state?.Result?.BasicImageInfo?.map((imgData: any, i: any) => {
                                                             return <div className="taskimage  mb-3">
-
+                                                                <div className='input-group'><input type="checkbox" className='form-check-input me-1' onChange={(e) => CheckImageData(e.target.checked, imgData)} /> {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}</div>
 
                                                                 <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
                                                                     <img alt={imgData?.ImageName} src={imgData?.ImageUrl}
@@ -2616,6 +2673,7 @@ const CopyTaskProfile = (props: any) => {
                         callBack={() => ApprovalHistoryPopupCallBack()}
                     />
                         : null}
+                        {openComparePopup &&<ImageViewPanel currentUser={currentUser} checkedImageData={checkedImageData} SetOpenComparePopup={SetOpenComparePopup} AllImageData={state?.Result?.BasicImageInfo}AllListId={AllListId}taskUsers={taskUsers}taskData={state?.Result}/>}
 
                 </div>
             </myContextValue.Provider>

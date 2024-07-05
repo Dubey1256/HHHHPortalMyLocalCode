@@ -101,7 +101,7 @@ const SmartTimeTotalFunction = (item: any) => {
     const getStructureData = function () {
 
         // Smart total time code   get code
-        var TotalTime = 0.0;
+        var TotalTimes = 0.0;
 
         console.log(timeEntry);
         let newArray: any = [];
@@ -217,7 +217,7 @@ const SmartTimeTotalFunction = (item: any) => {
                                 }
                             }
                         }
-                        TotalTime = TotalTimeData;
+                        TotalTimes = TotalTimeData;
                         hoverTime = hoverTime;
                         //tempItem.hoverTime = (hoverTime / 60) ;
                         // hoverTime = hoverTime + parseFloat(tempItem.TaskTime);
@@ -230,16 +230,16 @@ const SmartTimeTotalFunction = (item: any) => {
                 if (TotalTimeData > 0) {
                     FinalTotalTime = (TotalTimeData / 60);
                 }
-                TotalTime = FinalTotalTime;
+                TotalTimes = FinalTotalTime;
 
 
             })
         }
-        setsmartTimeTotal(TotalTime)
+        setsmartTimeTotal(TotalTimes)
 
         item?.callbackTotalTime(TotalTime)
         newArray?.map((items: any) => {
-             items?.additionaltime2?.sort((a: any, b: any) => {
+            items?.additionaltime2?.sort((a: any, b: any) => {
                 const dateA: any = new Date(a?.TaskDate.split('/').reverse().join('/'));
                 const dateB: any = new Date(b?.TaskDate.split('/').reverse().join('/'));
                 return dateB - dateA;
@@ -269,7 +269,7 @@ const SmartTimeTotalFunction = (item: any) => {
             {console.log(AllAvailableTitle)}
             {console.log(additionalTime)}
             {/* {smartTimeTotal.toFixed(1)} */}
-            {TotalTime?.toFixed(1)}
+            {TotalTime != null && TotalTime >= 0 ? TotalTime.toFixed(1) : 0.0}
             <span className='openhoverpopup hoverimg'>
                 <span className="svg__iconbox svg__icon--clock dark" onClick={OpenTimeEntry}></span>
                 <div className='hoverpopup overlay'>
