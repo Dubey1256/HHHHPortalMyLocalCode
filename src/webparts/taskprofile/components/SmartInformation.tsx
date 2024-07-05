@@ -34,7 +34,13 @@ const SmartInformation = (props: any, ref: any) => {
   const [popupEdit, setpopupEdit] = useState(false);
   const [smartInformationArrow, setsmartInformationArrow]: any = useState();
   const [enlargeInformationArrow, setenlargeInformationArrow]: any = useState();
-  const [copySmartInfo, setcopySmartInfo] = useState([])
+  const [copySmartInfo, setcopySmartInfo] = useState([]);
+  if (props?.Context?._pageContext?._web?.absoluteUrl?.indexOf('washington') > -1) {
+    var baseurl = props?.Context?._pageContext?._web?.absoluteUrl?.replace(/\/Team/i, '/Public') + '/SitePages/Smartmetadataportfolio.aspx';
+  }
+  else {
+    var baseurl = props?.Context?._pageContext?._web?.absoluteUrl + '/SitePages/ManageSmartMetaData.aspx'
+  }
   const [allValue, setallSetValue] = useState({
     Title: "", Id: 1021, URL: "", Acronym: "", Description: "", InfoType: "Information Note", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
   })
@@ -1630,7 +1636,7 @@ const SmartInformation = (props: any, ref: any) => {
               <footer className={popupEdit ? 'col-sm-8 mt-2 p-0' : "mt-2 p-0"}>
                 {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
                 <span className='me-2'><a className="ForAll hreflink" target="_blank" data-interception="off"
-                  href={`${props?.Context?._pageContext?._web?.absoluteUrl}/SitePages/ManageSmartMetaData.aspx`}>
+                  href={baseurl}>
                   Manage Information
                 </a></span>
                 <span className='mx-2'>|</span>

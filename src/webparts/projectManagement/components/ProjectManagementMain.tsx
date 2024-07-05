@@ -123,7 +123,7 @@ const ProjectManagementMain = (props: any) => {
   const [editSmartInfo, setEditSmartInfo] = React.useState(false)
   const [suggestedItems, setSuggestedItems] = React.useState('')
   const [suggestedPortfolio, setSuggestedPortfolio] = React.useState("")
-  const [searchedKeyPortfolios, setSearchedkeyPortfolios] = React.useState([])
+    const [searchedKeyPortfolios, setSearchedkeyPortfolios] = React.useState([])
   const [ActivityPopup, setActivityPopup] = React.useState(false);
   const [activeTile, setActiveTile] = React.useState("")
   const [keyRelevantPortfolios, setKeyRelevantPortfolios] = React.useState(false)
@@ -488,10 +488,10 @@ const ProjectManagementMain = (props: any) => {
     if (elem?.TaskType != undefined) {
       setCheckedList(elem);
     }
-    else if (elem?.TaskType == undefined) {
-      selectedItem = elem
-    }
-    else {
+      else if (elem?.TaskType == undefined) {
+        selectedItem = elem
+      }
+       else {
       setCheckedList({});
     }
   }, []);
@@ -530,9 +530,14 @@ const ProjectManagementMain = (props: any) => {
         refreshData();
       }
       GetMasterData(false)
+    }else{
+      if(type == "UpdatedData"){
+        setpassdata(item);
+      }
+      LoadAllSiteTasks();
+      setisOpenEditPopup(false);
     }
 
-    setisOpenEditPopup(false);
     setIsTaggedCompTask(false);
   }, []);
 
@@ -770,7 +775,7 @@ const ProjectManagementMain = (props: any) => {
               }
             });
           });
-        }
+      }
       
         items.TaskID = globalCommon.GetTaskId(items);
 
@@ -1071,8 +1076,8 @@ const ProjectManagementMain = (props: any) => {
   const CreateActivityPopup = (type: any) => {
     setActiveTile(type)
     if (checkedList?.TaskType === undefined) {
-      checkedList.NoteCall = type;
-      selectedItem.NoteCall = type;
+        checkedList.NoteCall = type;
+        selectedItem.NoteCall = type;
     }
     if (checkedList?.TaskType?.Id == 1) {
       checkedList.NoteCall = type;
@@ -1120,7 +1125,7 @@ const ProjectManagementMain = (props: any) => {
     }
     setSearchedkeyPortfolios([])
     setSuggestedPortfolio("")
-  };
+      };
   const Call = (propsItems: any, type: any) => {
     if (propsItems?.Id != undefined) {
       if (propsItems?.DueDate != undefined) {
@@ -1648,14 +1653,14 @@ const ProjectManagementMain = (props: any) => {
       {
         accessorFn: (row) => row?.workingActionTitle,
         cell: ({ row }) => (
-          <div className="alignCenter">
+            <div className="alignCenter">
             {Array.isArray(row?.original?.workingActionValue) && row.original.workingActionValue.map((elem: any) => {
-              const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+                    const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
               return relevantTitles.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
-                <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
-              );
-            })}
-          </div>
+                        <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
+                    );
+                })}
+            </div>
         ),
         placeholder: "Working Actions",
         header: "",
@@ -2138,17 +2143,17 @@ const ProjectManagementMain = (props: any) => {
                                   >
                                     {Masterdata?.Item_x0020_Type !== "Sprint"
                                       ? `${Masterdata?.Item_x0020_Type?.charAt(
-                                        0
-                                      )}`
+                                          0
+                                        )}`
                                       : "X"}
                                   </div>
-
-                                  {`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`}
-                                  <span
-                                    onClick={() => EditComponentPopup(Masterdata)}
-                                    className="mx-1 svg__iconbox svg__icon--edit hreflink" style={{ width: '24px', height: '24px' }}
-                                    title="Edit Project"
-                                  ></span>
+                                  
+                                    {`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`}
+                                    <span
+                                      onClick={() => EditComponentPopup(Masterdata)}
+                                      className="mx-1 svg__iconbox svg__icon--edit hreflink" style={{width:'24px', height:'24px'}}
+                                      title="Edit Project"
+                                    ></span>
 
                                 </h2>
                                 <div>
@@ -2198,7 +2203,7 @@ const ProjectManagementMain = (props: any) => {
                                         <dt className="bg-fxdark">Priority</dt>
                                         <dd className="bg-light">
                                           <InlineEditingcolumns
-                                            mypriority={true}
+                                            // mypriority={true}
                                             AllListId={AllListId}
                                             callBack={inlineCallBackMasterTask}
                                             columnName='Priority'
@@ -2457,53 +2462,53 @@ const ProjectManagementMain = (props: any) => {
                       </div>
                     ) : (
                       <>
-                      <div className="mt-4 clearfix">
-                        <h4 className="titleBorder "> Type</h4>
-                        <div className="col p-0 taskcatgoryPannel">
+                        <div className="mt-4 clearfix">
+                          <h4 className="titleBorder "> Type</h4>
+                          <div className="col p-0 taskcatgoryPannel">
                           <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Activities")} className={activeTile == "Activities" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                            <span className="tasks-label">Activity</span>
-                          </a>
+                              <span className="tasks-label">Activity</span>
+                            </a>
                           <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                            <span className="tasks-label">Task</span>
-                          </a>
-                        </div>
+                              <span className="tasks-label">Task</span>
+                            </a>
+                          </div>
                        
-                      </div>
-                       <div className="clearfix col-12 mt-3 position-relative">
+                        </div>
+                        <div className="clearfix col-12 mt-3 position-relative">
                        <h4 className="titleBorder">Key/Relevant Portfolios</h4>
-                       <div className="clearfix col-12">
+                          <div className="clearfix col-12">
                        <input type="text" className="form-control"
-                         value={suggestedPortfolio}
-                         onChange={(e) => searchSuggestedPortfolio2(e)}
+                                value={suggestedPortfolio}
+                                onChange={(e) => searchSuggestedPortfolio2(e)}
                          placeholder="Search Portfolio Items"
-                       />
-                       <span className="input-group-text">
-                         <span
+                              />
+                            <span className="input-group-text">
+                              <span
                            onClick={() => EditKeyRelevantPortfolio(checkedList)}
-                           title="Edit Portfolios"
-                           className="hreflink svg__iconbox svg__icon--editBox mt-15"
-                         ></span>
-                       </span>
-                       </div>
-                       {searchedKeyPortfolios?.length > 0 ? (
-                         <div className="SmartTableOnTaskPopup p-0 position-static">
-                           <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                             {searchedKeyPortfolios.map((Item: any) => {
-                               return (
-                                 <li
-                                   className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                   key={Item.id}
-                                   onClick={() =>
-                                     setTaggedPortfolioItem(Item)
-                                   }
-                                 >
-                                   <a>{Item.Path}</a>
-                                 </li>
-                               );
-                             })}
-                           </ul>
-                         </div>
-                       ) : null}
+                                title="Edit Portfolios"
+                                className="hreflink svg__iconbox svg__icon--editBox mt-15"
+                              ></span>
+                            </span>
+                          </div>
+                          {searchedKeyPortfolios?.length > 0 ? (
+                            <div className="SmartTableOnTaskPopup p-0 position-static">
+                              <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                {searchedKeyPortfolios.map((Item: any) => {
+                                  return (
+                                    <li
+                                      className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                      key={Item.id}
+                                      onClick={() =>
+                                        setTaggedPortfolioItem(Item)
+                                      }
+                                    >
+                                      <a>{Item.Path}</a>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+                          ) : null}
                      </div></>
                     )}
                   </div>
