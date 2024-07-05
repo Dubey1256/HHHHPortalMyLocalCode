@@ -1,4 +1,4 @@
-
+import * as $ from "jquery";
 import PageLoader from '../../../globalComponents/pageLoader';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import moment from 'moment';
@@ -22,7 +22,6 @@ let baseUrl: any
 let editLists:any
 export const Modified = (props: any) => {
   let columns: any = [];
-  let portfolioColor: any = '#008939';
   const [gmbhSite, setGmbhSite] = useState(false);
   const [sites, setSites] = useState<any>([])
   const [allSiteData, setallSiteData] = useState<any>([])
@@ -59,6 +58,7 @@ export const Modified = (props: any) => {
   const storeEditList = () => {
     const editListsAll = {
       TaskUsertListID: props?.props?.TaskUsertListID,
+      TaskUserListID: props?.props?.TaskUsertListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
       MasterTaskListID: props?.props.MasterTaskListID,
       TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -570,7 +570,7 @@ export const Modified = (props: any) => {
           accessorKey: "Title", placeholder: "Title", header: "",
           cell: ({ row }) =>
             <div className="alignCenter">
-              {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
+              {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a  className="alignCenter" data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
               <a data-interception="off" target='_blank' href={row.original.EncodedAbsUrl}>{row.original.FileLeafRef}</a>
             </div>
         },
@@ -596,6 +596,7 @@ export const Modified = (props: any) => {
           size: 145,
         }
         , {
+
           accessorKey: "Created",
           cell: ({ row }) =>
             <>
@@ -614,15 +615,18 @@ export const Modified = (props: any) => {
           resetSorting: false,
           placeholder: "Created",
           header: "",
-          size: 125,
+          size: 145,
         },
         {
           id: 'editWebPage', size: 25,
           cell: ({ row }) =>
             <>
               {type == 'WEB PAGES' ?
-                <>
-                  <EditPage context={editLists} Title={row.original.FileLeafRef} changeHeader={changes} updatedWebpages={updatedWebpages} /> </>
+                
+                    <div className="alignCenter">
+                  <EditPage context={editLists} Title={row.original.FileLeafRef} changeHeader={changes} updatedWebpages={updatedWebpages} /> 
+                  </div>
+                
                 : undefined}
             </>
 
@@ -632,9 +636,10 @@ export const Modified = (props: any) => {
           cell: ({ row }) =>
             <>
               {type == 'WEB PAGES' ?
-                <>
-                  <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
-                </>
+                <div className="alignCenter">
+                 <span onClick={() => deleteData(row.original)} title="Delete" className="svg__iconbox svg__icon--trash"></span>
+                 </div>
+              
                 : undefined}
             </>
 
@@ -701,17 +706,16 @@ export const Modified = (props: any) => {
           resetSorting: false,
           placeholder: "Created",
           header: "",
-          size: 125,
+          size: 145,
         },
         {
           id: 'updateDoc', size: 25,
           cell: ({ row }) =>
             <>
               {type == 'DOCUMENTS' || type == 'WEB PAGES' ?
-                <>
-                  <div className="mt--2" onClick={() => editDocOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-                </>
-                : undefined}
+              <div className="alignCenter">
+         <span onClick={() => editDocOpen(row.original)} title="Edit" className="svg__iconbox svg__icon--edit"></span>
+         </div> : undefined}
             </>
 
         }
@@ -720,10 +724,9 @@ export const Modified = (props: any) => {
           cell: ({ row }) =>
             <>
               {type == 'DOCUMENTS' || type == 'WEB PAGES' ?
-                <>
-                  <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
-                </>
-                : undefined}
+               <div className="alignCenter">
+              <span onClick={() => deleteData(row.original)} title="Delete" className="svg__iconbox svg__icon--trash"></span>
+              </div> : undefined}
             </>
 
         }
@@ -804,7 +807,7 @@ export const Modified = (props: any) => {
           resetSorting: false,
           placeholder: "Created",
           header: "",
-          size: 125,
+          size: 145,
         }        // , {
         //   id: 'updateSmartPages',
         //   cell: ({ row }) =>
@@ -817,10 +820,9 @@ export const Modified = (props: any) => {
         , {
           id: 'delteSmartPages',
           cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
-            </>
-
+            <div className="alignCenter">
+            <span onClick={() => deleteData(row.original)} title="Delete" className="svg__iconbox svg__icon--trash"></span>
+            </div>
         }
 
       ], [allSiteData])
@@ -892,7 +894,7 @@ export const Modified = (props: any) => {
           resetSorting: false,
           placeholder: "Created",
           header: "",
-          size: 125,
+          size: 145,
         }
         // , 
         // {
@@ -907,9 +909,9 @@ export const Modified = (props: any) => {
         , {
           id: 'delteSmartMetaData', size: 25,
           cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
-            </>
+            <div className="alignCenter">
+              <span onClick={() => deleteData(row.original)} title="Delete" className="svg__iconbox svg__icon--trash"></span>
+            </div>
 
         }
 
@@ -988,7 +990,7 @@ export const Modified = (props: any) => {
           resetSorting: false,
           placeholder: "Created",
           header: "",
-          size: 125,
+          size: 145,
         },
         // {
 
@@ -1002,9 +1004,9 @@ export const Modified = (props: any) => {
         {
           id: 'deleteContact',
           cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
-            </>
+            <div className="alignCenter">
+              <span onClick={() => deleteData(row.original)} title="Delete" className="svg__iconbox svg__icon--trash"></span>
+            </div>
 
         }
       ], [allSiteData])
@@ -1086,7 +1088,7 @@ export const Modified = (props: any) => {
           resetSorting: false,
           placeholder: "Created",
           header: "",
-          size: 125,
+          size: 145,
         },
         // {
 
@@ -1100,9 +1102,9 @@ export const Modified = (props: any) => {
         {
           id: 'deleteEvents',
           cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
-            </>
+            <div className="alignCenter">
+             <span onClick={() => deleteData(row.original)} title="Delete" className="svg__iconbox svg__icon--trash"></span>
+            </div>
 
         }
       ], [allSiteData])
@@ -1185,7 +1187,7 @@ export const Modified = (props: any) => {
           resetSorting: false,
           placeholder: "Created",
           header: "",
-          size: 125,
+          size: 145,
         },
         // {
 
@@ -1199,10 +1201,9 @@ export const Modified = (props: any) => {
         {
           id: 'deleteNews',
           cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
-            </>
-
+            <div className="alignCenter">
+            <span onClick={() => deleteData(row.original)} title="Delete" className="svg__iconbox svg__icon--trash"></span>
+        </div>
         }
       ], [allSiteData])
   }
@@ -1219,11 +1220,11 @@ export const Modified = (props: any) => {
         }, {
           accessorKey: 'PortfolioStructureID', placeholder: 'ID', header: "", id: 'PortfolioStructureID',
           cell: ({ row }) =>
-            <>
+            <div className="alignCenter">
               <span className='Dyicons mx-1 '>{row?.original?.ItemType?.toUpperCase()?.charAt(0)}
                                 </span>
               <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '' }}>{row.original.PortfolioStructureID}</span>
-            </>
+              </div>
         },
         {
           accessorKey: "Title", placeholder: "Component Name", header: "", id: "Title",
@@ -1318,23 +1319,23 @@ export const Modified = (props: any) => {
           resetSorting: false,
           placeholder: "Created",
           header: "",
-          size: 125,
+          size: 145,
         }, {
 
           id: 'updateComponent',
           cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>
+          
+            <div className="alignCenter">
+             <span onClick={() => editComponentPopUp(row.original)} title="Edit" className="svg__iconbox svg__icon--edit"></span>
+              </div>
 
         },
         {
           id: 'deleteComponent',
           cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
-            </>
-
+            <div className="alignCenter">
+            <span onClick={() => deleteData(row.original)} title="Delete" className="svg__iconbox svg__icon--trash"></span>
+        </div>
         },
       ], [allSiteData])
   }
@@ -1350,10 +1351,10 @@ export const Modified = (props: any) => {
         }, {
           accessorFn: (row) => row?.TaskID,
           cell: ({ row, getValue }) => (
-            <>
+               <div className="alignCenter">
                <img className='me-1 workmember' src={`${row?.original?.SiteIcon}`}></img> 
               <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
-            </>
+              </div>
           ),
           id: "TaskID",
           placeholder: "ID",
@@ -1476,64 +1477,61 @@ export const Modified = (props: any) => {
           resetSorting: false,
           placeholder: "Created",
           header: "",
-          size: 125,
+          size: 145,
         }, {
           id: 'updateTask',
           cell: ({ row }) =>
-
-            <>
-              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>,
+            <div className="alignCenter">
+              <span onClick={() => editPopUp(row.original)} title="Edit" className="svg__iconbox svg__icon--edit"></span>
+           </div>
+          
 
         }
         , {
           id: 'delteTask',
           cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
-            </>
-
+            <div className="alignCenter">
+            <span onClick={() => deleteData(row.original)} title="Delete" className="svg__iconbox svg__icon--trash"></span>
+            </div>
         }
 
       ], [allSiteData])
   }
   return (
     <>
-  <div className="p-0  d-flex justify-content-between align-items-center " style={{ verticalAlign: "top" }}>
-        <h2 className="heading ">
-          <span>Last Modified Views</span></h2>      
-      </div>
-      <nav className="lastmodify">
-        <div className="nav nav-tabs" id="nav-tab" role="tablist">
+    <div className="section container">
+    <header className="page-header text-center"><h1 className="page-title">Last Modified Views</h1></header>
+      {/* <nav className="lastmodify"> */}
+        <ul className="nav nav-tabs" id="nav-tab" role="tablist">
           {
             sites && sites.map((siteValue: any) =>
                <>
-                <button disabled={!isButtonDisabled} onClick={() => { getCurrentData(siteValue); }} className={`nav-link ${siteValue.TabName == sites[0].TabName ? 'active' : ''}`} id={`nav-${siteValue.TabName}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.TabName}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true"><div className={`${siteValue.TabName}`} style={{ color: type == siteValue.TabName ? siteValue?.SiteColur != undefined ? siteValue?.SiteColur : 'DefaultColour' : '' }}>{siteValue.DisplaySiteName}</div></button>
+                <button disabled={!isButtonDisabled} onClick={() => { getCurrentData(siteValue); }} className={`nav-link ${siteValue.TabName == sites[0].TabName ? 'active' : ''}`} id={`nav-${siteValue.TabName}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.TabName}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true">{siteValue.DisplaySiteName}</button>
               </>
             )
           }
           {/* <button style={{ position: 'relative', left: '180px', }} onClick={() => multipleDeleteFunction(multipleDelete)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></button> */}
-        </div>
-      </nav>
+        </ul>
+      {/* </nav> */}
 
 
       <div className="tab-content lastmodifylist px-2 clearfix" id="nav-tabContent">
         <div className="tab-pane fade show active" id={`nav-${type}`} role="tabpanel" aria-labelledby={`nav-${type}-tab`}>
           {allSiteData &&
             <div className="TableSection">
-              <div className="container p-0">
                 <div className="Alltable mt-2">
                   <div className="col-md-12 p-0 smart">
                     <div className="wrapper">
-                      <GlobalCommanTable hideOpenNewTableIcon={true} hideTeamIcon={true} columns={columns} ref={childRef} data={allSiteData} showHeader={true} callBackData={callBackData} multiSelect={true}  TaskUsers={allUsers} portfolioColor={portfolioColor} AllListId={editLists} />
+                      <GlobalCommanTable hideOpenNewTableIcon={true} hideTeamIcon={true} columns={columns} ref={childRef} data={allSiteData} showHeader={true} callBackData={callBackData} multiSelect={true}  TaskUsers={allUsers}  AllListId={editLists} />
                     </div>
                   </div>
                 </div>
-              </div>
+              
               {/* <div className="clearfix"></div> */}
             </div>
           }
         </div>
+      </div>
       </div>
       {!loader && <PageLoader />}
       {editTaskPopUpOpen ? <EditTaskPopup Items={editValue} context={context} AllListId={editLists} pageName={"TaskFooterTable"} Call={(Type: any) => { editTaskCallBack(Type) }} /> : ''}

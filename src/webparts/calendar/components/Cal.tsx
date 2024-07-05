@@ -131,7 +131,6 @@ const Apps = (props: any) => {
   const [showTextarea, setShowTextarea] = useState(false);
   const [comment, setComment] = useState("");
   const [isDisabled, setIsDisabled] = useState(false);
-  const [hasDeletePermission, setHasDeletePermission]: any = React.useState(false);
   // For get query data from the querystring 
   const queryString = window.location.search;
   const params = new URLSearchParams(queryString);
@@ -469,7 +468,6 @@ const Apps = (props: any) => {
   };
   useEffect(() => {
     getTaskUser()
-    deletePermission()
     LoadAllNotificationConfigrations()
     getEvents();
   }, []);
@@ -566,39 +564,53 @@ const Apps = (props: any) => {
     let count = 0;
 
     if (frequency?.weekday === 'TRUE') {
-        // Function to get the next weekday date
-        const getNextWeekday = (date: Date) => {
-            const mydate:any = date;
-            let nextDate = new Date(mydate);
-            nextDate.setDate(date.getDate() + 1);
-            while (nextDate.getDay() === 0 || nextDate.getDay() === 6) { // Skip Sunday (0) and Saturday (6)
-                nextDate.setDate(nextDate.getDate() + 1);
-            }
-            return nextDate;
-        };
-
-        while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
-            currentDate = getNextWeekday(currentDate);
-            if (new Date(currentDate).setHours(0, 0, 0, 0) >= windowEndDate) break;
-
-            const event = eventDataForBinding(eventDetails, currentDate);
-            AllEvents.push(event);
-            dates.push(new Date(currentDate));
-            count++;
+      // Function to get the next weekday date
+      const getNextWeekday = (date: any) => {
+        let nextDate = new Date(date);
+        nextDate.setDate(date.getDate() + 1);
+        while (nextDate.getDay() === 0 || nextDate.getDay() === 6) { // Skip Sunday (0) and Saturday (6)
+          nextDate.setDate(nextDate.getDate() + 1);
         }
+        return nextDate;
+      };
+
+      while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
+        currentDate = getNextWeekday(currentDate);
+        if (new Date(currentDate).setHours(0, 0, 0, 0) >= windowEndDate) break;
+
+        const event = eventDataForBinding(eventDetails, currentDate);
+        AllEvents.push(event);
+        dates.push(new Date(currentDate));
+        count++;
+      }
+
+      // Add the next date after windowEndDate
+      let nextDate: any = currentDate;
+      nextDate.setDate(nextDate.getDate() + dayFrequency);
+      const event = eventDataForBinding(eventDetails, nextDate);
+      AllEvents.push(event);
+      dates.push(new Date(nextDate));
     } else {
-        while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
-            currentDate.setDate(currentDate.getDate() + dayFrequency);
-            if (new Date(currentDate).setHours(0, 0, 0, 0) >= windowEndDate) break;
+      while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
+        currentDate.setDate(currentDate.getDate() + dayFrequency);
+        if (new Date(currentDate).setHours(0, 0, 0, 0) >= windowEndDate) break;
 
-            const event = eventDataForBinding(eventDetails, currentDate);
-            AllEvents.push(event);
-            dates.push(new Date(currentDate));
-            count++;
-        }
+        const event = eventDataForBinding(eventDetails, currentDate);
+        AllEvents.push(event);
+        dates.push(new Date(currentDate));
+        count++;
+      }
+
+      // Add the next date after windowEndDate
+      let nextDate: any = new Date(currentDate);
+      nextDate.setDate(nextDate.getDate() + dayFrequency);
+      const event = eventDataForBinding(eventDetails, nextDate);
+      AllEvents.push(event);
+      dates.push(new Date(nextDate));
     }
     return '';
-}
+  }
+
 
   function getWeekDays(today: any) {
     const currentDay = today.getDay();
@@ -626,31 +638,31 @@ const Apps = (props: any) => {
     const daysOfWeek = daysOfWeekIndex.filter(day => frequency[day] === "TRUE");
 
     while (true) {
-        let added = false;
-        for (const day of daysOfWeek) {
-            let targetDayIndex = daysOfWeekIndex.indexOf(day);
-            let daysToAdd = targetDayIndex - currentDate.getDay();
-            if (daysToAdd < 0) daysToAdd += 7;
+      let added = false;
+      for (const day of daysOfWeek) {
+        let targetDayIndex = daysOfWeekIndex.indexOf(day);
+        let daysToAdd = targetDayIndex - currentDate.getDay();
+        if (daysToAdd < 0) daysToAdd += 7;
 
-            let targetDate: any = new Date(currentDate);
-            targetDate.setDate(currentDate.getDate() + daysToAdd);
+        let targetDate: any = new Date(currentDate);
+        targetDate.setDate(currentDate.getDate() + daysToAdd);
 
-            if (targetDate.setHours(0, 0, 0, 0) > windowEndDate) {
-                if (!added) {
-                    dates.push(new Date(targetDate));
-                    added = true;
-                }
-                return;
-            }
-
-            const event = eventDataForBinding(eventDetails, targetDate);
-            AllEvents.push(event);
+        if (targetDate.setHours(0, 0, 0, 0) > windowEndDate) {
+          if (!added) {
             dates.push(new Date(targetDate));
+            added = true;
+          }
+          return;
         }
 
-        currentDate.setDate(currentDate.getDate() + (weekFrequency * 7));
+        const event = eventDataForBinding(eventDetails, targetDate);
+        AllEvents.push(event);
+        dates.push(new Date(targetDate));
+      }
+
+      currentDate.setDate(currentDate.getDate() + (weekFrequency * 7));
     }
-}
+  }
   function handleMonthlyByDay(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any) {
     const { monthFrequency, weekdayOfMonth } = frequency;
     const daysOfWeekIndex = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
@@ -659,78 +671,78 @@ const Apps = (props: any) => {
     // Find the day of the week that is set to "TRUE"
     let day = '';
     for (let i = 0; i < daysOfWeekIndex.length; i++) {
-        const key = daysOfWeekIndex[i];
-        if (frequency[key] === "TRUE") {
-            day = key;
-            break;
-        }
+      const key = daysOfWeekIndex[i];
+      if (frequency[key] === "TRUE") {
+        day = key;
+        break;
+      }
     }
 
     if (!day) {
-        throw new Error("No valid day specified in frequency.");
+      throw new Error("No valid day specified in frequency.");
     }
 
     while (true) {
-        const targetDayIndex = daysOfWeekIndex.indexOf(day);
-        const targetDate: any = getNthWeekdayOfMonth(currentDate.getFullYear(), currentDate.getMonth(), targetDayIndex, weekMap[weekdayOfMonth]);
+      const targetDayIndex = daysOfWeekIndex.indexOf(day);
+      const targetDate: any = getNthWeekdayOfMonth(currentDate.getFullYear(), currentDate.getMonth(), targetDayIndex, weekMap[weekdayOfMonth]);
 
-        if (targetDate.setHours(0, 0, 0, 0) > windowEndDate) {
-            // Push the last date greater than the windowEndDate
-            dates.push(new Date(targetDate));
-            break;
-        }
-
-        const event = eventDataForBinding(eventDetails, targetDate);
-        AllEvents.push(event);
+      if (targetDate.setHours(0, 0, 0, 0) > windowEndDate) {
+        // Push the last date greater than the windowEndDate
         dates.push(new Date(targetDate));
+        break;
+      }
 
-        currentDate.setMonth(currentDate.getMonth() + Number(monthFrequency));
+      const event = eventDataForBinding(eventDetails, targetDate);
+      AllEvents.push(event);
+      dates.push(new Date(targetDate));
+
+      currentDate.setMonth(currentDate.getMonth() + Number(monthFrequency));
     }
-}
+  }
 
-// Helper function to get the nth weekday of a given month
-function getNthWeekdayOfMonth(year: number, month: number, dayOfWeek: number, nth: number): Date {
+  // Helper function to get the nth weekday of a given month
+  function getNthWeekdayOfMonth(year: number, month: number, dayOfWeek: number, nth: number): Date {
     let firstDay = new Date(year, month, 1).getDay();
     let day = (dayOfWeek - firstDay + 7) % 7 + 1;
     let date = day + (nth - 1) * 7;
 
     // If nth is 'last', adjust the date to the last occurrence of the day
     if (nth === 5) {
-        let lastDayOfMonth = new Date(year, month + 1, 0).getDate();
-        while (date + 7 <= lastDayOfMonth) {
-            date += 7;
-        }
+      let lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+      while (date + 7 <= lastDayOfMonth) {
+        date += 7;
+      }
     }
 
     return new Date(year, month, date);
-}
-function handleYearlyByDay(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any) {
-  const { yearFrequency, weekdayOfMonth, month } = frequency;
-  const daysOfWeekIndex = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
-  const weekMap: any = { first: 1, second: 2, third: 3, fourth: 4, last: 5 };
+  }
+  function handleYearlyByDay(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any) {
+    const { yearFrequency, weekdayOfMonth, month } = frequency;
+    const daysOfWeekIndex = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
+    const weekMap: any = { first: 1, second: 2, third: 3, fourth: 4, last: 5 };
 
-  // Find the day of the week that is set to "TRUE"
-  let day = '';
-  for (let i = 0; i < daysOfWeekIndex.length; i++) {
+    // Find the day of the week that is set to "TRUE"
+    let day = '';
+    for (let i = 0; i < daysOfWeekIndex.length; i++) {
       const key = daysOfWeekIndex[i];
       if (frequency[key] === "TRUE") {
-          day = key;
-          break;
+        day = key;
+        break;
       }
-  }
+    }
 
-  if (!day) {
+    if (!day) {
       throw new Error("No valid day specified in frequency.");
-  }
+    }
 
-  while (true) {
+    while (true) {
       const targetDayIndex = daysOfWeekIndex.indexOf(day);
       const targetDate: any = getNthWeekdayOfMonth(currentDate.getFullYear(), Number(month) - 1, targetDayIndex, weekMap[weekdayOfMonth]);
 
       if (targetDate.setHours(0, 0, 0, 0) > windowEndDate) {
-          // Push the last date greater than the windowEndDate
-          dates.push(new Date(targetDate));
-          break;
+        // Push the last date greater than the windowEndDate
+        dates.push(new Date(targetDate));
+        break;
       }
 
       const event = eventDataForBinding(eventDetails, targetDate);
@@ -738,9 +750,9 @@ function handleYearlyByDay(frequency: any, currentDate: any, dates: any, AllEven
       dates.push(new Date(targetDate));
 
       currentDate.setFullYear(currentDate.getFullYear() + Number(yearFrequency));
+    }
   }
-}
-
+ 
 
   function calculateNextDate(rule: any, firstDayOfWeek: string, currentDate: any, dates: Date[], endDate?: any, AllEvents?: any, eventDetails?: any): string {
     try {
@@ -1227,11 +1239,6 @@ function handleYearlyByDay(frequency: any, currentDate: any, dates: any, AllEven
         });
     }
   };
-
-  const deletePermission = async () => {
-    let permission = await globalCommon.verifyComponentPermission("DeleteLeavePermissionCalendar")
-    setHasDeletePermission(permission)
-  }
 
   const onRenderCustomHeader = () => {
     return (
@@ -1746,12 +1753,11 @@ function handleYearlyByDay(frequency: any, currentDate: any, dates: any, AllEven
       const regex = new RegExp(leaveTypes.join("|"), "g");
       let updatedTitle = inputValueName.replace(regex, type);
 
-     if (leaveApproveded && !isLeaveApproved) {
-          updatedTitle += " Approved";
+      if (leaveApproveded) {
+        updatedTitle += " Approved";
       } else if (leaverejected) {
-          updatedTitle += " Rejected";
+        updatedTitle += " Rejected";
       }
-
 
       return updatedTitle;
     };
@@ -2020,7 +2026,7 @@ function handleYearlyByDay(frequency: any, currentDate: any, dates: any, AllEven
   const isAllowedUser = allowedUserIds.indexOf(userId) !== -1;
 
   const result = isAllowedUser && !disabl && (!leaveapproved || !leaverejected);
-  const isLeaveApproved = inputValueName.indexOf("Approved") >= 0;
+
   return (
 
     <div>
@@ -2307,12 +2313,10 @@ function handleYearlyByDay(frequency: any, currentDate: any, dates: any, AllEven
                   Last Modified {MDate} {MTime} by {modofiedBy}
                 </div>
                 <div>
-                {hasDeletePermission && (
                   <a href="#" onClick={() => deleteElement(vId)}>
                     <span className="svg__iconbox svg__icon--trash"></span>{" "}
                     Delete this Item
                   </a>
-                )}
                   <VersionHistoryPopup
                     taskId={vId}
                     listId={props.props.SmalsusLeaveCalendar}

@@ -1,7 +1,9 @@
+
 import * as React from 'react';
 import PageLoader from '../../../globalComponents/pageLoader';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import { Avatar } from "@fluentui/react-components";
 import {
     ColumnDef,
 } from "@tanstack/react-table";
@@ -251,6 +253,68 @@ export default function ProjectOverview(props: any) {
         }
         return user ? Image : null;
     };
+
+    const loadAllTimeEntry = async () => {
+        if (timeSheetConfig) {
+            let startDate = getStartingDate('Last Week').toISOString();
+            let timesheetLists = JSON.parse(timeSheetConfig?.Configurations);
+    
+            if (timesheetLists?.length > 0) {
+                let todayDateToCheck = new Date().setHours(0, 0, 0, 0);
+    
+                const fetchPromises = timesheetLists.map(async (list: any) => {
+                    let web = new Web(list?.siteUrl);
+                    try {
+                        const timeEntrydata = await web.lists
+                            .getById(list?.listId)
+                            .items.select(list?.query)
+                            .filter(`(Modified ge '${startDate}') and (TimesheetTitle/Id ne null)`)
+                            .getAll();
+    
+                        AllTimeEntries.push(
+                            ...timeEntrydata.filter((item: any) => {
+                                let entryDate = new Date(item?.Modified).setHours(0, 0, 0, 0);
+                                return entryDate === todayDateToCheck;
+                            })
+                        );
+                    } catch (error) {
+                        console.log(error, 'HHHH Time');
+                    }
+                });
+    
+                await Promise.all(fetchPromises);
+            }
+        }
+    };
+
+    function getStartingDate(startDateOf: any) {
+        const startingDate = new Date();
+        let formattedDate = startingDate;
+        if (startDateOf == 'This Week') {
+            startingDate.setDate(startingDate.getDate() - startingDate.getDay());
+            formattedDate = startingDate;
+        } else if (startDateOf == 'Today') {
+            formattedDate = startingDate;
+        } else if (startDateOf == 'Yesterday') {
+            startingDate.setDate(startingDate.getDate() - 1);
+            formattedDate = startingDate;
+        } else if (startDateOf == 'This Month') {
+            startingDate.setDate(1);
+            formattedDate = startingDate;
+        } else if (startDateOf == 'Last Month') {
+            const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
+            const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
+            var change = (Moment(startingDateOfLastMonth).add(30, 'days').format())
+            var b = new Date(change)
+            formattedDate = b;
+        } else if (startDateOf == 'Last Week') {
+            const lastWeek = new Date(startingDate.getFullYear(), startingDate.getMonth(), startingDate.getDate() - 7);
+            const startingDateOfLastWeek = new Date(lastWeek.getFullYear(), lastWeek.getMonth(), lastWeek.getDate() - lastWeek.getDay() + 1);
+            formattedDate = startingDateOfLastWeek;
+        }
+
+        return formattedDate;
+    }
 
 
 
@@ -558,21 +622,21 @@ export default function ProjectOverview(props: any) {
                             ""
                         ) : (
                             <>
-                                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
-
-                                {row?.original?.Author != undefined ? (
-                                    <>
-                                        <a
-                                            href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
-                                            target="_blank"
-                                            data-interception="off"
-                                        >{row?.original?.createdImg != undefined ?
-                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} /> :
-                                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
-                                            }
-
-                                        </a>
-                                    </>
+                                <span className='ms-1'>{row?.original?.DisplayCreateDate}</span>
+                                {row?.original?.Author ? (
+                                    <a
+                                        href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        data-interception="off"
+                                    >
+                                        <Avatar
+                                            title={row?.original?.Author?.Title}
+                                            className="workmember ms-1"
+                                            image={{ src: findUserByName(row?.original?.Author?.Id) }}
+                                            name={row?.original?.Author?.Title}
+                                        />
+                                    </a>
                                 ) : (
                                     <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                                 )}
@@ -856,22 +920,27 @@ export default function ProjectOverview(props: any) {
                             ""
                         ) : (
                             <>
-                                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
-
-                                {row?.original?.Author != undefined ? (
-                                    <>
-                                        <a
-                                            href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
-                                            target="_blank"
-                                            data-interception="off"
-                                        >{row?.original?.createdImg != undefined ?
-                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} /> :
-                                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
-                                            }
-                                        </a>
-                                    </>
+                                <span className='ms-1'>{row?.original?.DisplayCreateDate}</span>
+                                {row?.original?.Author ? (
+                                    <a
+                                        href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        data-interception="off"
+                                    >
+                                        <Avatar
+                                            title={row?.original?.Author?.Title}
+                                            className="workmember ms-1"
+                                            image={{ src: findUserByName(row?.original?.Author?.Id) }}
+                                            name={row?.original?.Author?.Title}
+                                        />
+                                    </a>
                                 ) : (
-                                    <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                                    <Avatar
+                                        className='svg__iconbox svg__icon--defaultUser grey'
+                                        title={row?.original?.Author?.Title}
+                                        name={row?.original?.Author?.Title}
+                                    />
                                 )}
                             </>
                         )}
@@ -953,31 +1022,26 @@ export default function ProjectOverview(props: any) {
     }
 
     const sendAllWorkingTodayTasks = async () => {
+        
+        let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
+        
+        if (confirmation) {
         setPageLoader(true);
-        AllTimeEntries = [];
-        if (timeSheetConfig?.Id != undefined) {
-            AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
-        }
-
+        await loadAllTimeEntry()
         let emailRecipients = await workingEmailRecipients();
         let workingTodayEmails = emailRecipients.map((recipient: any) => {return recipient?.Email });
         workingTodayEmails = workingTodayEmails.filter((user:any)=>user != undefined);
 
         let to: any = workingTodayEmails;
 
-
-        // let to: any = ["abhishek.tiwari@hochhuth-consulting.de", "ranu.trivedi@hochhuth-consulting.de"];
-        // let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let groupedData = data;
         let body: any = '';
-        let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
-        if (confirmation) {
             var subject = "Today's Working Tasks Under Projects";
-            const GroupedPromises = await groupedData?.map(async (group: any) => {
+            await Promise.all(groupedData?.map(async (group: any) => {
                 body += projectEmailContent(group, false)
-            })
+            }))
 
             let sendAllTasks =
                 `<div style="margin-bottom: 20px;">
@@ -1048,9 +1112,11 @@ export default function ProjectOverview(props: any) {
                         item.showDesc = '';
                         item.EstimatedTimeEntryDesc = ''
                         item.EstimatedTimeEntry = 0
+                        let siteNameOPen= item?.siteType == "Offshore Tasks" ? "Offshore%20Tasks" : item?.siteType;
+                        let siteTypeCheck = item?.siteType == "Offshore Tasks" ? "OffshoreTasks" : item?.siteType;
                         try {
                             AllTimeEntries?.map((entry: any) => {
-                                if (entry[`Task${item?.siteType}`] != undefined && entry[`Task${item?.siteType}`].Id == item.Id) {
+                                if (entry[`Task${siteTypeCheck}`] != undefined && entry[`Task${siteTypeCheck}`].Id == item.Id) {
                                     let AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
                                     AdditionalTimeEntry?.map((time: any) => {
                                         item.smartTime += parseFloat(time?.TaskTime);
@@ -1114,7 +1180,7 @@ export default function ProjectOverview(props: any) {
                                 taskCount++;
                                 text +=
                                     `<tr>
-                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;border-left: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;">${item?.siteType} </td>
+                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;border-left: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;">${siteNameOPen} </td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.TaskID} </td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"><p style="margin:0px; color:#333;"><a href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
@@ -1987,12 +2053,12 @@ export default function ProjectOverview(props: any) {
             {trueRestructuring == true ?
                 <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} findPage={"ProjectOverView"} restructureItem={childRef.current.table.getSelectedRowModel().flatRows} />
                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>}
-            <label className="switch me-2" htmlFor="checkbox">
-                <input checked={showAllAWTGrouped} onChange={() => { changeToggleAWT(); }} type="checkbox" id="checkbox" />
-                {showAllAWTGrouped === true ? <div className="slider round" title="Switch To Project/Sprints Only"></div> : <div title='Swtich to Show All AWT Items' className="slider round"></div>}
-            </label> <label className="switch me-2" htmlFor="checkbox1">
+             <span style={{marginLeft:'16px'}}>AWT View</span><label className="switch me-2" htmlFor="checkbox" style={{marginLeft:'4px'}}>
+                <input checked={showAllAWTGrouped} onChange={() => { changeToggleAWT(); }} type="checkbox" id="checkbox" /> 
+                {showAllAWTGrouped === true ?  <div className="slider round" title="Switch To Project/Sprints Only"></div>:<>  <div title='Swtich to Show All AWT Items' className="slider round"></div></> }
+            </label><span style={{marginLeft:'16px'}}>Working Today’s Projects</span> <label className="switch me-2" htmlFor="checkbox1" style={{marginLeft:'4px'}}>
                 <input checked={workingTodayFiltered} onChange={() => { changeToggleWorkingToday(); }} type="checkbox" id="checkbox1" />
-                {workingTodayFiltered === true ? <div className="slider round" title='Swtich to Show All Items'></div> : <div title="Switch To Working Today's" className="slider round"></div>}
+                {workingTodayFiltered === true ? <div className="slider round" title='Swtich to Show All Items'></div> : <><div title="Switch To Working Today's" className="slider round"></div></>}
             </label>
 
             {(ActiveCompareToolButton) ?
