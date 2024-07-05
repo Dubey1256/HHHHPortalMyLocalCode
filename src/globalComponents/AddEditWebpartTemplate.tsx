@@ -5,13 +5,32 @@ import { Col, Row } from "react-bootstrap";
 import Tooltip from "./Tooltip";
 import { myContextValue } from "./globalCommon";
 import TeamSmartFilter from "./SmartFilterGolobalBomponents/TeamSmartFilter";
+import Picker from "./EditTaskPopup/SmartMetaDataPicker";
+import { PeoplePicker, PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "react-datepicker/dist/react-datepicker-cssmodules.css";
+import * as Moment from "moment";
 let portfolioColor: any = '#2F5596';
 let CreatedSmartFavId: any;
+let BackupTaskCategoriesData: any = [];
 let SmartFavDashboardTitle: any = undefined;
 let UpdatedItem: any = [];
 let BackupNewItem: any = [];
 let IsShowTileCopy: any = false;
+let onDropAction: any = [];
+let AutoCompleteItemsArray: any = [];
+let AllTaskUsers: any = [];
 const AddEditWebpartTemplate = (props: any) => {
+    const [FilterColumn, setFilterColumn] = React.useState<any>([{ "Column0": "", "Id": 0, "DataSource": '' }]);
+    const [SelectedColumn, setSelectedColumn] = React.useState<any>([{ "key": "Status", "text": "Status" }, { "key": "WorkingMember", "text": "WorkingMember" }, { "key": "TeamLeader", "text": "TeamLeader" }, { "key": "TeamMember", "text": "TeamMember" }, { "key": "Categories", "text": "Categories" },
+    { "key": "WorkingDate", "text": "WorkingDate" }, { "key": "DueDate", "text": "DueDate" }, { "key": "Priority", "text": "Priority" }]);
+    let [StatusOptions, setStatusOptions] = useState([]);
+    let [PriorityOptions, setPriorityOptions] = useState([])
+    const [categorySearchKey, setCategorySearchKey] = useState<any>("");
+    const [SearchedCategoryData, setSearchedCategoryData] = useState<any>([]);
+    const [TaskCategoriesData, setTaskCategoriesData] = useState<any>([]);
+    const [IsComponentPicker, setIsComponentPicker] = useState<any>(false);
     props.props.siteUrl = props?.props?.Context?._pageContext?._web?.absoluteUrl;
     props.props.AdminconfigrationID = props?.props?.AdminConfigurationListId;
     const params = new URLSearchParams(window.location.search);
@@ -59,6 +78,8 @@ const AddEditWebpartTemplate = (props: any) => {
                             item.smartFevId = CreatedSmartFavId;
                         delete item.IsShowTile;
                     })
+                    if (onDropAction)
+                        newArray[0].onDropAction = onDropAction;
                     setNewItem(newArray);
                     if (props?.EditItem != undefined && props?.EditItem != '') {
                         await web.lists.getById(props?.props?.AdminConfigurationListId).items.getById(props?.EditItem?.UpdatedId).update({ Title: SmartFavDashboardTitle, Configurations: BackupNewItem != undefined && BackupNewItem?.length > 0 ? JSON.stringify(newArray[0]) : JSON.stringify(NewItem[0]) })
@@ -114,6 +135,8 @@ const AddEditWebpartTemplate = (props: any) => {
                                             }
                                             item['WebpartTitle'] = SmartFavDashboardTitle
                                         }
+                                        if (key == 'onDropAction')
+                                            item['onDropAction'] = onDropAction
                                     }
                                 });
                             }
@@ -169,8 +192,152 @@ const AddEditWebpartTemplate = (props: any) => {
             }
         });
     };
+    var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
+        var Items: any = [];
+        metadataItems.map((taxItem: any) => {
+            if (taxItem.TaxType === taxType) Items.push(taxItem);
+        });
+        Items.sort((a: any, b: any) => {
+            return a.SortOrder - b.SortOrder;
+        });
+        return Items;
+    };
+    var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any, SmartTaxonomy: any) => {
+        var TaxonomyItems: any = [];
+        var uniqueNames: any = [];
+        $.each(AllTaxonomyItems, function (index: any, item: any) {
+            if (item.ParentID == 0 && SmartTaxonomy == item.TaxType) {
+                TaxonomyItems.push(item);
+                getChildsCate(item, AllTaxonomyItems);
+                if (item.childs != undefined && item.childs.length > 0) {
+                    TaxonomyItems.push(item);
+                }
+                uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
+                    return array?.indexOf(val) == id;
+                });
+            }
+        });
+        return uniqueNames;
+    };
+    const SmartMetaDataListInformations = async () => {
+        let AllSmartDataListData: any = [];
+        let AllCategoriesData: any = [];
+        let CategoriesGroupByData: any = [];
+        let PriorityRank: any = [];
+        let PercentComplete: any = [];
+        try {
+            let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
+            AllSmartDataListData = await web.lists.getById(props?.props?.SmartMetadataListID)
+                .items.select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail").expand("Author,Editor,IsSendAttentionEmail").getAll();
+            AllCategoriesData = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Categories");
+            PercentComplete = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Percent Complete");
+            PriorityRank = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Priority Rank");
+            PriorityRank = PriorityRank.toReversed()
+            PercentComplete = PercentComplete.filter((percentComplete: any) => percentComplete?.ParentId != undefined && percentComplete?.ParentId != '');
+            PercentComplete = PercentComplete.sort((a: any, b: any) => { return a.SortOrder - b.SortOrder; });
+            AllSmartDataListData?.map((SmartItemData: any, index: any) => {
+                SmartItemData.newTitle = SmartItemData.Title;
+            })
+            PercentComplete?.map((percentComplete: any) => {
+                percentComplete.value = parseFloat(percentComplete?.Title?.split('%')[0])
+                percentComplete.status = percentComplete?.Title
+            });
+            setStatusOptions(PercentComplete)
+            PriorityRank?.map((priorityrank: any) => {
+                priorityrank.value = parseInt(priorityrank?.Title)
+                priorityrank.status = priorityrank?.Title
+            });
+            setPriorityOptions(PriorityRank)
+            if (AllCategoriesData?.length > 0) {
+                CategoriesGroupByData = loadSmartTaxonomyPortfolioPopup(AllCategoriesData, "Categories");
+                if (CategoriesGroupByData?.length > 0) {
+                    CategoriesGroupByData?.map((item: any) => {
+                        if (item.newTitle != undefined) {
+                            item["Newlabel"] = item.newTitle;
+                            AutoCompleteItemsArray.push(item);
+                            if (
+                                item.childs != null &&
+                                item.childs != undefined &&
+                                item.childs.length > 0
+                            ) {
+                                item.childs.map((childitem: any) => {
+                                    if (childitem.newTitle != undefined) {
+                                        childitem["Newlabel"] =
+                                            item["Newlabel"] + " > " + childitem.Title;
+                                        AutoCompleteItemsArray.push(childitem);
+                                    }
+                                    if (childitem.childs.length > 0) {
+                                        childitem.childs.map((subchilditem: any) => {
+                                            if (subchilditem.newTitle != undefined) {
+                                                subchilditem["Newlabel"] =
+                                                    childitem["Newlabel"] + " > " + subchilditem.Title;
+                                                AutoCompleteItemsArray.push(subchilditem);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+                if (AutoCompleteItemsArray?.length > 0) {
+                    AutoCompleteItemsArray = AutoCompleteItemsArray.reduce(function (previous: any, current: any) {
+                        var alredyExists =
+                            previous.filter(function (item: any) { return item.Title === current.Title; }).length > 0;
+                        if (!alredyExists) {
+                            previous.push(current);
+                        }
+                        return previous;
+                    },
+                        []);
+                }
+            }
+        } catch (error) {
+            console.log("Error : ", error.message);
+        }
+    };
+    const loadTaskUsers = async () => {
+        const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
+        AllTaskUsers = await web.lists
+            .getById(props?.props?.TaskUserListID).items.select('Id', 'IsActive', 'UserGroupId', 'Suffix', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
+            .filter('IsActive eq 1').expand('AssingedToUser').orderBy('SortOrder', true).orderBy("Title", true).get();
+    }
     useEffect(() => {
+        loadTaskUsers()
+        SmartMetaDataListInformations()
+        let filetrColumn: any = []
         if (props?.EditItem != undefined && props?.EditItem != '') {
+            if (props?.EditItem?.onDropAction != undefined && props?.EditItem?.onDropAction?.length) {
+                onDropAction = [...props?.EditItem?.onDropAction]
+                props?.EditItem?.onDropAction?.map((filterColumn: any) => {
+                    let obj: any = {}
+                    obj["Column" + filterColumn?.Id] = '';
+                    obj["Id"] = filterColumn?.Id;
+                    obj["DataSource"] = filterColumn?.SelectedField;
+                    obj["SelectedField"] = filterColumn?.SelectedField;
+                    if (filterColumn?.SelectedField == 'WorkingDate' || filterColumn?.SelectedField == 'DueDate') {
+                        let SplitDate: any = filterColumn?.SelectedValue.split('/')
+                        let serverDate: any = Moment(SplitDate[1] + '/' + SplitDate[0] + '/' + SplitDate[2])
+                        obj["SelectedValue"] = serverDate._d.setHours(0, 0, 0, 0);
+                    }
+                    else if (filterColumn?.SelectedField == 'TeamLeader' || filterColumn?.SelectedField == 'TeamMember' || filterColumn?.SelectedField == 'WorkingMember') {
+                        let mail: any = [];
+                        filterColumn?.SelectedValue?.map((User: any) => {
+                            mail.push(User?.email)
+                        })
+                        obj["SelectedValue"] = mail;
+                    }
+                    else if (filterColumn?.SelectedField == "Categories") {
+                        setTaskCategoriesData(filterColumn?.SelectedValue)
+                    }
+                    else {
+                        obj["SelectedValue"] = filterColumn?.SelectedValue;
+                    }
+                    filetrColumn?.push(obj);
+
+                });
+                setFilterColumn(filetrColumn)
+            }
             if (props?.EditItem?.WebpartTitle)
                 SmartFavDashboardTitle = props?.EditItem?.WebpartTitle;
             let newArray: any = []
@@ -260,6 +427,318 @@ const AddEditWebpartTemplate = (props: any) => {
         }
 
     }, []);
+    const handleDataSourceChange = (event: any, index: any, column: any) => {
+        let isPush = true
+        let object: any = {}
+        object['SelectedField'] = event;
+        object['SelectedValue'] = '';
+        object['Id'] = index;
+        if (onDropAction != undefined && onDropAction?.length) {
+            onDropAction?.forEach((column: any) => {
+                if (column?.Id == index) {
+                    column['SelectedField'] = event;
+                    column['SelectedValue'] = '';
+                    isPush = false;
+                }
+            })
+        }
+        if (isPush)
+            onDropAction.push(object)
+
+        let updatedItems = [...FilterColumn]
+        updatedItems[index] = { ...column, DataSource: event, SelectedField: event };
+        setFilterColumn(updatedItems);
+    };
+    const StatusFilterChange = (event: any, index: any, column: any) => {
+        let isPush = true
+        let object: any = {}
+        object['SelectedValue'] = event;
+        object['Id'] = index;
+        if (onDropAction != undefined && onDropAction?.length) {
+            onDropAction?.forEach((column: any) => {
+                if (column?.Id == index) {
+                    column['SelectedValue'] = event;
+                    isPush = false;
+                }
+            })
+        }
+        if (isPush)
+            onDropAction.push(object)
+        let updatedItems = [...FilterColumn]
+        updatedItems[index] = { ...column, SelectedValue: event };
+        setFilterColumn(updatedItems);
+    };
+    const PriorityFilterChange = (event: any, index: any, column: any) => {
+        let isPush = true
+        let object: any = {}
+        object['SelectedValue'] = event;
+        object['Id'] = index;
+        if (onDropAction != undefined && onDropAction?.length) {
+            onDropAction?.forEach((column: any) => {
+                if (column?.Id == index) {
+                    column['SelectedValue'] = event;
+                    isPush = false;
+                }
+            })
+        }
+        if (isPush)
+            onDropAction.push(object)
+        let updatedItems = [...FilterColumn]
+        updatedItems[index] = { ...column, SelectedValue: event };
+        setFilterColumn(updatedItems);
+    };
+
+    const AddMoreFilter = (column: any) => {
+        let updatedItems = [...FilterColumn]
+        let obj: any = {};
+        let Title = column?.Id + 1
+        obj["Column" + Title] = '';
+        obj["Id"] = column?.Id + 1;
+        obj.SelectedColumn = SelectedColumn
+        updatedItems.push(obj)
+        setFilterColumn(updatedItems);
+    };
+    const RemoveFilter = (item: any) => {
+        let updatedItems = [...FilterColumn];
+        let array: any = []
+        updatedItems?.forEach((obj: any) => {
+            if (obj?.Id != item?.Id) {
+                array.push(obj)
+            }
+        })
+        //  updatedItems = updatedItems.filter((e: any) => e?.Id != item?.Id)
+        setFilterColumn([...array]);
+        onDropAction = onDropAction.filter((e: any) => e?.SelectedField != item?.SelectedField)
+    };
+    const autoSuggestionsForCategory = (e: any) => {
+        let searchedKey: any = e.target.value;
+        setCategorySearchKey(e.target.value);
+        let tempArray: any = [];
+        if (searchedKey?.length > 0) {
+            AutoCompleteItemsArray?.map((itemData: any) => {
+                if (
+                    itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())
+                ) {
+                    tempArray.push(itemData);
+                }
+            });
+            setSearchedCategoryData(tempArray);
+        } else {
+            setSearchedCategoryData([]);
+        }
+    };
+    const removeCategoryItem = (TypeCategory: any) => {
+        let tempString: any;
+        let tempArray2: any = [];
+        BackupTaskCategoriesData = [];
+        TaskCategoriesData?.map((dataType: any) => {
+            if (dataType.Title != TypeCategory) {
+                tempArray2.push(dataType);
+                BackupTaskCategoriesData.push(dataType);
+            }
+        });
+        if (tempArray2 != undefined && tempArray2.length > 0) {
+            tempArray2.map((itemData: any) => {
+                tempString =
+                    tempString != undefined
+                        ? tempString + ";" + itemData.Title
+                        : itemData.Title;
+            });
+        }
+        setTaskCategoriesData(tempArray2);
+        let SelectCategories: any = []
+        BackupTaskCategoriesData?.map((cate: any) => {
+            SelectCategories?.push({ Id: cate?.Id, Title: cate?.Title != undefined ? cate?.Title : cate?.newTitle })
+        })
+        if (onDropAction != undefined && onDropAction?.length) {
+            onDropAction?.forEach((column: any) => {
+                if (column?.SelectedField == 'Categories') {
+                    column['SelectedValue'] = SelectCategories;
+                }
+            })
+        }
+    };
+    const EditComponentPicker = (item: any, usedFor: any) => {
+        setIsComponentPicker(true);
+    };
+    const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
+        setIsComponentPicker(false);
+        let uniqueIds: any = {};
+        selectCategoryData.forEach((existingData: any) => {
+            BackupTaskCategoriesData.push(existingData);
+        });
+        const result: any = BackupTaskCategoriesData.filter((item: any) => {
+            if (!uniqueIds[item.Id]) {
+                uniqueIds[item.Id] = true;
+                return true;
+            }
+            return false;
+        });
+        BackupTaskCategoriesData = result;
+        setTaskCategoriesData(result);
+        setSearchedCategoryData([]);
+        setCategorySearchKey("");
+        let SelectCategories: any = []
+        BackupTaskCategoriesData?.map((cate: any) => {
+            SelectCategories?.push({ Id: cate?.Id, Title: cate?.Title != undefined ? cate?.Title : cate?.newTitle })
+        })
+        if (onDropAction != undefined && onDropAction?.length) {
+            onDropAction?.forEach((column: any) => {
+                if (column?.SelectedField == 'Categories') {
+                    column['SelectedValue'] = SelectCategories;
+                }
+            })
+        }
+    };
+    const SelectCategoryCallBack = useCallback(
+        (selectCategoryDataCallBack: any) => {
+            setSelectedCategoryData(selectCategoryDataCallBack, "For-Panel");
+        },
+        []
+    );
+    const smartCategoryPopup = useCallback(() => {
+        setIsComponentPicker(false);
+    }, []);
+    const AssignedToUser = (item: any, columnFilter: any, columnIndex: any) => {
+        let MailArray: any = []
+        if (item.length > 0) {
+            const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
+            const member = AllTaskUsers.filter((elem: any) => elem?.AssingedToUser?.EMail === email)
+            let SelectedUser: any = [];
+            member?.map((user: any) => {
+                SelectedUser?.push({ Id: user?.Id, Title: user?.Title, email: user?.AssingedToUser?.EMail, AssingedToUserId: user?.AssingedToUser?.Id })
+                MailArray.push(user?.AssingedToUser?.EMail)
+            })
+            if (onDropAction != undefined && onDropAction?.length) {
+                onDropAction?.forEach((column: any) => {
+                    if (column?.SelectedField == columnFilter?.SelectedField) {
+                        column['SelectedValue'] = SelectedUser;
+                    }
+                })
+            }
+        }
+        else {
+            if (onDropAction != undefined && onDropAction?.length) {
+                onDropAction?.forEach((column: any) => {
+                    if (column?.SelectedField == columnFilter?.SelectedField) {
+                        column['SelectedValue'] = [];
+                    }
+                })
+            }
+        }
+        let updatedItems = [...FilterColumn]
+        updatedItems[columnIndex] = { ...columnFilter, SelectedValue: MailArray };
+        setFilterColumn(updatedItems);
+    }
+    const TeamLeader = (item: any, columnFilter: any, columnIndex: any) => {
+        let MailArray: any = []
+        if (item.length > 0) {
+            const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
+            const member = AllTaskUsers.filter((elem: any) => elem?.AssingedToUser?.EMail === email)
+            let SelectedUser: any = [];
+            member?.map((user: any) => {
+                SelectedUser?.push({ Id: user?.Id, Title: user?.Title, email: user?.AssingedToUser?.EMail, AssingedToUserId: user?.AssingedToUser?.Id })
+                MailArray.push(user?.AssingedToUser?.EMail)
+            })
+            if (onDropAction != undefined && onDropAction?.length) {
+                onDropAction?.forEach((column: any) => {
+                    if (column?.SelectedField == columnFilter?.SelectedField) {
+                        column['SelectedValue'] = SelectedUser;
+                    }
+                })
+            }
+        }
+        else {
+            if (onDropAction != undefined && onDropAction?.length) {
+                onDropAction?.forEach((column: any) => {
+                    if (column?.SelectedField == columnFilter?.SelectedField) {
+                        column['SelectedValue'] = [];
+                    }
+                })
+            }
+        }
+        let updatedItems = [...FilterColumn]
+        updatedItems[columnIndex] = { ...columnFilter, SelectedValue: MailArray };
+        setFilterColumn(updatedItems);
+    }
+    const TeamMember = (item: any, columnFilter: any, columnIndex: any) => {
+        let MailArray: any = []
+        if (item.length > 0) {
+            const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
+            const member = AllTaskUsers.filter((elem: any) => elem?.AssingedToUser?.EMail === email)
+            let SelectedUser: any = [];
+            member?.map((user: any) => {
+                SelectedUser?.push({ Id: user?.Id, Title: user?.Title, email: user?.AssingedToUser?.EMail, AssingedToUserId: user?.AssingedToUser?.Id })
+                MailArray.push(user?.AssingedToUser?.EMail)
+            })
+            if (onDropAction != undefined && onDropAction?.length) {
+                onDropAction?.forEach((column: any) => {
+                    if (column?.SelectedField == columnFilter?.SelectedField) {
+                        column['SelectedValue'] = SelectedUser;
+                    }
+                })
+            }
+        }
+        else {
+            if (onDropAction != undefined && onDropAction?.length) {
+                onDropAction?.forEach((column: any) => {
+                    if (column?.SelectedField == columnFilter?.SelectedField) {
+                        column['SelectedValue'] = [];
+                    }
+                })
+            }
+        }
+        let updatedItems = [...FilterColumn]
+        updatedItems[columnIndex] = { ...columnFilter, SelectedValue: MailArray };
+        setFilterColumn(updatedItems);
+    }
+    const WorkingDate = (columnFilter: any, dt: any, ColumnIndex: any) => {
+        let SelectedValue = Moment(dt).format("DD/MM/YYYY");
+        if (onDropAction != undefined && onDropAction?.length) {
+            onDropAction?.forEach((column: any) => {
+                if (column?.SelectedField == columnFilter?.SelectedField) {
+                    column['SelectedValue'] = SelectedValue;
+                }
+            })
+        }
+        let updatedItems = [...FilterColumn]
+        updatedItems[ColumnIndex] = { ...columnFilter, SelectedValue: dt };
+        setFilterColumn(updatedItems);
+    }
+    const ExampleCustomInputWorkingDate = React.forwardRef(
+        ({ value, onClick }: any, ref: any) => (
+            <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
+                <input type="text" id="Startdatepicker" autoComplete="off" data-input-type="Working Date" className="form-control date-picker ps-2" placeholder="DD/MM/YYYY" value={value} />
+                <span style={{ position: "absolute", top: "50%", right: "7px", transform: "translateY(-50%)", cursor: "pointer", }} >
+                    <span className="svg__iconbox svg__icon--calendar"></span>
+                </span>
+            </div>
+        )
+    );
+    const DueDate = (columnFilter: any, dt: any, ColumnIndex: any) => {
+        let SelectedValue = Moment(dt).format("DD/MM/YYYY");
+        if (onDropAction != undefined && onDropAction?.length) {
+            onDropAction?.forEach((column: any) => {
+                if (column?.SelectedField == columnFilter?.SelectedField) {
+                    column['SelectedValue'] = SelectedValue;
+                }
+            })
+        }
+        let updatedItems = [...FilterColumn]
+        updatedItems[ColumnIndex] = { ...columnFilter, SelectedValue: dt };
+        setFilterColumn(updatedItems);
+    }
+    const ExampleCustomInputDueDate = React.forwardRef(
+        ({ value, onClick }: any, ref: any) => (
+            <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
+                <input type="text" id="DueDatedatepicker" autoComplete="off" data-input-type="Due Date" className="form-control date-picker ps-2" placeholder="DD/MM/YYYY" value={value} />
+                <span style={{ position: "absolute", top: "50%", right: "7px", transform: "translateY(-50%)", cursor: "pointer", }} >
+                    <span className="svg__iconbox svg__icon--calendar"></span>
+                </span>
+            </div>
+        )
+    );
+
     return (
         <>
             <Panel onRenderHeader={CustomHeaderConfiguration}
@@ -274,7 +753,7 @@ const AddEditWebpartTemplate = (props: any) => {
                             {NewItem != undefined && NewItem?.length > 0 && NewItem.map((items: any, index: any) => {
                                 return (
                                     <>
-                                        <div key={index} className={`${items?.IsEditable != false ? 'p-2 mb-2' : 'p-2 mb-2'}`}>
+                                        <div className={`${items?.IsEditable != false ? 'p-2 mb-2' : 'p-2 mb-2'}`}>
                                             <Row className="Metadatapannel mb-2">
                                                 <Col sm="4" md="4" lg="4">
                                                     <div className="input-group">
@@ -286,18 +765,6 @@ const AddEditWebpartTemplate = (props: any) => {
                                                             }} />
                                                     </div>
                                                 </Col>
-                                                {/* <Col sm="3" md="3" lg="3">
-                                                    <div> Show WebPart</div>
-                                                    <label className="switch me-2" htmlFor={`ShowWebpartCheckbox${index}`}>
-                                                        <input checked={items?.ShowWebpart} onChange={(e: any) => {
-                                                            const isChecked = e.target.checked;
-                                                            const updatedItems = [...NewItem]; ShowWebpartCopy = isChecked; updatedItems[index] = { ...items, ShowWebpart: isChecked };
-                                                            setNewItem(updatedItems);
-                                                            if (!isChecked) { alert('Webpart will not be show when toggle is Deactive!'); }
-                                                        }} type="checkbox" id={`ShowWebpartCheckbox${index}`} />
-                                                        {items?.ShowWebpart === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
-                                                    </label>
-                                                </Col> */}
                                                 <Col sm="4" md="4" lg="4">
                                                     <div className="form-check form-check-inline m-4">
                                                         <input type="checkbox" checked={items?.IsShowTile} className="form-check-input me-1" onChange={(e: any) => {
@@ -305,6 +772,115 @@ const AddEditWebpartTemplate = (props: any) => {
                                                             setNewItem(updatedItems);
                                                         }} />
                                                         <label className="form-check-label">Show Tile</label>
+                                                    </div>
+                                                </Col>
+                                            </Row>
+                                            <Row className="Metadatapannel">
+                                                <Col sm="12" md="12" lg="12">
+                                                    <div className="togglecontent mt-1">
+                                                        <label className='form-label full-width'>On-Drop Action</label>
+                                                        <section className="border px-2 py-2">
+                                                            <label className='form-label full-width'>Filter</label>
+                                                            <section className="border px-2 py-2">
+                                                                {FilterColumn != undefined && FilterColumn?.length > 0 && FilterColumn.map((column: any, ColumnIndex: any) => {
+                                                                    return (
+                                                                        <>
+                                                                            <Row>
+                                                                                <Col sm="4" md="4" lg="4">
+                                                                                    <Dropdown id={`FiltersCustomdropdown`} className={ColumnIndex % 2 == 0 ? "mb-2 kkp" : "mb-2 lls"} options={[{ key: '', text: '' }, ...(SelectedColumn?.map((item: any) => ({ key: item?.key, text: item?.text })) || [])]} defaultSelectedKey={column?.SelectedField} selectedKey={column?.SelectedField}
+                                                                                        onChange={(e, option) => handleDataSourceChange(option?.key, ColumnIndex, column)}
+                                                                                        styles={{ dropdown: { width: '100%' } }}
+                                                                                    />
+                                                                                </Col>
+                                                                                <Col sm="4" md="4" lg="4">
+                                                                                    <>
+                                                                                        {column?.DataSource == "Status" && <Dropdown id="FiltersCustom" options={[{ key: '', text: '' }, ...(StatusOptions?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={column?.SelectedValue}
+                                                                                            onChange={(e, option) => StatusFilterChange(option?.key, ColumnIndex, column)}
+                                                                                            styles={{ dropdown: { width: '100%' } }} />}
+
+                                                                                        {column?.DataSource == "Priority" && < Dropdown id="FiltersPriority" options={[{ key: '', text: '' }, ...(PriorityOptions?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={column?.SelectedValue}
+                                                                                            onChange={(e, option) => PriorityFilterChange(option?.key, ColumnIndex, column)}
+                                                                                            styles={{ dropdown: { width: '100%' } }} />}
+                                                                                        {column?.DataSource == "WorkingMember" && <>
+                                                                                            <PeoplePicker context={props?.props?.Context} titleText="" personSelectionLimit={10} principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => AssignedToUser(items, column, ColumnIndex)}
+                                                                                                defaultSelectedUsers={column?.SelectedValue ? column?.SelectedValue : []} />
+                                                                                        </>}
+                                                                                        {column?.DataSource == "TeamLeader" && <>
+                                                                                            <PeoplePicker context={props?.props?.Context} titleText="" personSelectionLimit={10} principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => TeamLeader(items, column, ColumnIndex)}
+                                                                                                defaultSelectedUsers={column?.SelectedValue ? column?.SelectedValue : []} />
+                                                                                        </>}
+                                                                                        {column?.DataSource == "TeamMember" && <>
+                                                                                            <PeoplePicker context={props?.props?.Context} titleText="" personSelectionLimit={10} principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => TeamMember(items, column, ColumnIndex)}
+                                                                                                defaultSelectedUsers={column?.SelectedValue ? column?.SelectedValue : []} />
+                                                                                        </>}
+                                                                                        {column?.DataSource == "Categories" && <>
+                                                                                            <div className="input-group mb-2">
+                                                                                                <>
+                                                                                                    <input type="text" className="form-control" id="txtCategories" placeholder="Search Category Here"
+                                                                                                        value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)}
+                                                                                                    />
+                                                                                                    {SearchedCategoryData?.length > 0 ? (
+                                                                                                        <div className="SmartTableOnTaskPopup">
+                                                                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                                                                {SearchedCategoryData.map((item: any) => {
+                                                                                                                    return (
+                                                                                                                        <li
+                                                                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                                                                            key={item.id}
+                                                                                                                            onClick={() => setSelectedCategoryData([item], "For-Auto-Search")}  >
+                                                                                                                            <a>{item.Newlabel}</a>
+                                                                                                                        </li>
+                                                                                                                    );
+                                                                                                                })}
+                                                                                                            </ul>
+                                                                                                        </div>
+                                                                                                    ) : null}
+                                                                                                    {TaskCategoriesData?.map(
+                                                                                                        (type: any, index: number) => {
+                                                                                                            return (
+                                                                                                                <div className="block w-100">
+                                                                                                                    <a style={{ color: "#fff !important" }} className="textDotted"   >
+                                                                                                                        {type.Title}
+                                                                                                                    </a>
+                                                                                                                    <span onClick={() => removeCategoryItem(type.Title)} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"  ></span>
+                                                                                                                </div>
+                                                                                                            );
+                                                                                                        }
+                                                                                                    )}
+                                                                                                </>
+                                                                                                <span
+                                                                                                    className="input-group-text" title="Smart Category Popup" onClick={(e) => EditComponentPicker('', "Categories")}   >
+                                                                                                    <span className="svg__iconbox svg__icon--editBox" style={{ marginTop: '-21px' }}></span>
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </>}
+                                                                                        {column?.DataSource == "WorkingDate" && <>
+                                                                                            <DatePicker
+                                                                                                selected={column?.SelectedValue} data-input-type="First" onChange={(date: any) => WorkingDate(column, date, ColumnIndex)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                                                                                                className="form-control date-picker p-1" popperPlacement="bottom-start" customInput={<ExampleCustomInputWorkingDate />}
+                                                                                            />
+                                                                                        </>}
+                                                                                        {column?.DataSource == "DueDate" && <>
+                                                                                            <DatePicker
+                                                                                                selected={column?.SelectedValue} data-input-type="First" onChange={(date: any) => DueDate(column, date, ColumnIndex)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                                                                                                className="form-control date-picker p-1" popperPlacement="bottom-start" customInput={<ExampleCustomInputDueDate />}
+                                                                                            />
+                                                                                        </>}
+                                                                                    </>
+                                                                                </Col>
+                                                                                <Col sm="1" md="1" lg="1">
+                                                                                    {(FilterColumn?.length == ColumnIndex + 1 && ColumnIndex < SelectedColumn?.length - 1) && <a className="pull-right hreflink" title="Add More Filter" onClick={(e) => AddMoreFilter(column)}><h4>+</h4></a>}
+                                                                                </Col>
+                                                                                <Col sm="1" md="1" lg="1">
+                                                                                    {ColumnIndex != 0 && <a className="pull-right hreflink" title="Remove Filter" onClick={(e) => RemoveFilter(column)}><span className="svg__iconbox svg__icon--cross mt-2"></span></a>}
+                                                                                </Col>
+                                                                            </Row>
+                                                                        </>
+
+                                                                    )
+                                                                })}
+                                                            </section>
+                                                        </section>
                                                     </div>
                                                 </Col>
                                             </Row>
@@ -324,6 +900,18 @@ const AddEditWebpartTemplate = (props: any) => {
                     </Row>
                 </div>
             </Panel >
+            {IsComponentPicker && (
+                <Picker
+                    props={{}}
+                    selectedCategoryData={TaskCategoriesData}
+                    usedFor="DashboardLandingPage"
+                    siteUrls={props?.props?.Context?._pageContext?._web?.absoluteUrl}
+                    AllListId={props?.props}
+                    CallBack={SelectCategoryCallBack}
+                    isServiceTask={false}
+                    closePopupCallBack={smartCategoryPopup}
+                />
+            )}
         </>
     );
 };
