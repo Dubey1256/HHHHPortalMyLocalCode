@@ -1,62 +1,74 @@
-import React, { useState, useRef, useMemo } from 'react';
-import JoditEditor from 'jodit-react';
+import * as React from 'react';
+import 'setimmediate'; 
+import { Editor } from "react-draft-wysiwyg";
+import { EditorState, convertToRaw, Modifier, ContentState, convertFromHTML } from 'draft-js';  
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import draftToHtml from 'draftjs-to-html'; 
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import Collapse from "bootstrap/js/dist/collapse";
+export interface IHtmlEditorProps {
+    editorValue : any;
+    HtmlEditorStateChange: (editorChangeValue:any) => void;   
+  }
+  
+  export interface IHtmlEditorState {  
+    editorState : EditorState;
+  }
 
-export default function FroalaEditorComponentJodIt(Props: any) {
-    const callBack = Props?.HtmlEditorStateChange;
-    const editor = useRef(null);
-    const [content, setContent] = useState(Props?.editorValue);
+  export class HtmlEditorCard extends React.Component<IHtmlEditorProps, IHtmlEditorState> {
+    constructor(props:IHtmlEditorProps){
+      super(props);      
+      this.state ={        
+        editorState : EditorState.createWithContent(
+            ContentState.createFromBlockArray(
+              convertFromHTML('<p>'+this.props.editorValue+'</p>').contentBlocks
+            )
+          ),
+      }     
+    }
 
-    const config = useMemo(() => ({
-        readonly: false,
-        placeholder: Props?.placeholder || 'Start typing...',
-        uploader: {
-            insertImageAsBase64URI: true
-        },
-        extraButtons: [
-            {
-                name: 'insertAccordion',
-                iconURL: 'https://cdn0.iconfinder.com/data/icons/leading-international-corporate-website-app-collec/16/Expand_menu-512.png',
-                tooltip: 'Insert Accordion',
-                exec: (editor: any) => {
-                    const id = `accordionExample-${Date.now()}`;
-                    const accordionHTML = `
-                        <details>
-                            <summary>
-                              <a> <span>Accordion Title</span> </a>
-                            </summary>
-                            <div class="expand-AccordionContent border clearfix">
-                              Fill Accordion Content Here...
-                            </div>
-                        </details>
-                    `;
-                    editor.s.insertHTML(accordionHTML);
-                }
-            }
-        ]
-    }), [Props?.placeholder]);
+    private onEditorStateChange = (editorState:EditorState):void => { 
+        //console.log('set as HTML:', draftToHtml(convertToRaw(editorState.getCurrentContent()))); 
+        let value:any = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+        this.props.HtmlEditorStateChange(value);
+        this.setState({  
+          editorState,  
+        });  
+      }
+    
+      public render(): React.ReactElement<IHtmlEditorProps> {
+        const { editorState } = this.state;
+        return (
+                <Editor
+                      editorState={editorState}
+                      onEditorStateChange={this.onEditorStateChange}                     
+                      toolbarClassName="toolbarClassName"
+                      wrapperClassName="wrapperClassName"
+                      editorClassName="editorClassName"
+                      wrapperStyle={{ width: '100%', border: "1px solid #ccc"}}
+                      toolbar={{
+                        link: 
+                        {
+                          defaultTargetOption: '_blank',
+                        },
+                        remove:{title:"Remove Formatting"}
+                      }}
+                  />
+                );
+        }
+  }
 
-    const handleModelChange = (model: any) => {
-        setContent(model);
-        onModelChange(model);
-    };
+    export default HtmlEditorCard;
 
-    const onModelChange = (model: any) => {
-        callBack(model);
-    };
 
-    return (
-        <div className="jodit-container" style={{ width: '100%' }}>
-            <JoditEditor
-                ref={editor}
-                value={content}
-                config={config}
-                onBlur={(newContent) => setContent(newContent)}
-                onChange={(newContent) => handleModelChange(newContent)}
-            />
-        </div>
-    );
-}
+
+// How to use this component and required parameters
+
+// step-1 : import this component where you need to use 
+// step-2 : call this component and pass some parameters follow step:2A and step:2B
+
+// step-2A :
+  //  editorValue ==== {message data}
+  //  HtmlEditorStateChange ===== CallBackFunction 
+
+// step-2B :
+//  <HtmlEditorCard editorValue={EditData.Body} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard>

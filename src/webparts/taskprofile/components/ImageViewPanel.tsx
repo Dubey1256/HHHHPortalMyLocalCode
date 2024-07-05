@@ -9,11 +9,12 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { BsHeart, BsFillHeartFill } from "react-icons/bs";
+import { CiFilter } from "react-icons/ci";
 import Rating from 'react-rating';
 import { Web } from 'sp-pnp-js';
 import {makeStyles,Button,Popover,PopoverTrigger,PopoverSurface,} from "@fluentui/react-components";
 import { MdOutlineStarBorder, MdOutlineStar  } from 'react-icons/Md';
-
+ let checkDataImage:any=[];
 const ImageViewPanel = (props: any) => {
 
     //===================slider functiona start=========================
@@ -34,8 +35,6 @@ const ImageViewPanel = (props: any) => {
         sliderRef.slickNext();
     };
     //===================slider functiona End=========================
-
-
     const [allImageData, setAllImageData]: any = useState([])
     const [checked, setChecked] = useState(true);
     const [commentData, setCommentData] = useState("");
@@ -48,12 +47,14 @@ const ImageViewPanel = (props: any) => {
     const [hideLeftSection, SetHideLeftSection]: any = useState(false)
     const [rightSectionImage, SetRightSectionImage]: any = useState([])
     const [replyCommentData, setReplyCommentData] = useState("");
-    const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+    const [isPopoverFilterOpen, setIsPopoverFilterOpen] = useState(false);
+    const [isPopoverShortByOpen, setIsPopoverShortByOpen] = useState(false);
     
 
        //============= Open image right side function Start=============
     const openImageSection = (selectedTitle: any) => {
         SetRightSectionImage([...checkedImageData])
+        checkDataImage=checkedImageData
         SetIconSeleted(selectedTitle)
         SetopenImageRightSection(true)
     }
@@ -67,6 +68,7 @@ const ImageViewPanel = (props: any) => {
                 SetRightSectionImage(JSON.parse(JSON.stringify(props?.checkedImageData)))
                 if(props?.checkedImageData?.length==1){
                      SetRightSectionImage(props?.checkedImageData)
+                     checkDataImage=props?.checkedImageData
                       SetIconSeleted("fullScreen")
                       SetopenImageRightSection(true)
                 }
@@ -77,6 +79,7 @@ const ImageViewPanel = (props: any) => {
                 }
                 else if(props?.checkedImageData?.length>2){
                SetRightSectionImage(props?.checkedImageData)
+               checkDataImage=props?.checkedImageData
                     SetIconSeleted("compareSeveral")
                     SetopenImageRightSection(true)
                 }
@@ -102,6 +105,12 @@ const ImageViewPanel = (props: any) => {
         else if (label == 'fillHeart') {
             selectedData.fillHeart = !selectedData.fillHeart;
         }
+        else if (label == 'Exclude') {
+            selectedData.Exclude =true;
+        }
+        else if (label == 'Restore') {
+            selectedData.Exclude =false;
+        }
 
         let selectedIndex = CopyAllImageData.findIndex((item: any) => item.ImageName === selectedData?.ImageName);
         let rightSectionIndex = rightSectionImage?.findIndex((item: any) => item.ImageName === selectedData?.ImageName)
@@ -111,6 +120,7 @@ const ImageViewPanel = (props: any) => {
         if (rightSectionIndex != undefined) {
             RightImageSection[rightSectionIndex] = selectedData
             SetRightSectionImage(RightImageSection)
+            checkDataImage=RightImageSection
         }
         setAllImageData(CopyAllImageData)
     }
@@ -119,7 +129,6 @@ const ImageViewPanel = (props: any) => {
     //================Star Rating ,Notes,Pros,Cons,fillHeart,function End=================
 
   
-
     const onRenderCustomAddMoreImageHeader = () => {
         return (
             <div className="d-flex full-width pb-1">
@@ -208,6 +217,7 @@ const ImageViewPanel = (props: any) => {
             if (rightSectionIndex != undefined) {
                 RightImageSection[rightSectionIndex] = selectedData
                 SetRightSectionImage(RightImageSection)
+                checkDataImage=RightImageSection
             }
             if (selectedIndex != undefined) {
                 CopyAllImageData[selectedIndex] = selectedData
@@ -243,6 +253,7 @@ const ImageViewPanel = (props: any) => {
             if (rightSectionIndex != undefined) {
                 RightImageSection[rightSectionIndex] = selectedData
                 SetRightSectionImage(RightImageSection)
+                checkDataImage=RightImageSection
             }
             if (selectedIndex != undefined) {
                 CopyAllImageData[selectedIndex] = selectedData
@@ -272,6 +283,7 @@ const ImageViewPanel = (props: any) => {
             if (rightSectionIndex != undefined) {
                 RightImageSection[rightSectionIndex].Comments[updateComment?.CommentIndex]= temp
                 SetRightSectionImage(RightImageSection)
+                checkDataImage=RightImageSection
             }
             if (selectedIndex != undefined) {
                 CopyAllImageData[selectedIndex].Comments[updateComment?.CommentIndex]= temp
@@ -283,12 +295,13 @@ const ImageViewPanel = (props: any) => {
     const clearComment=(selectedData:any,index:any,replyindex:any,useFor:any)=>{
         let CopyAllImageData: any = [...allImageData]
         let RightImageSection: any = [...rightSectionImage]
-        let selectedIndex = CopyAllImageData.findIndex((item: any) => item.ImageName === selectedData?.ImageName);
+        // let selectedIndex = CopyAllImageData.findIndex((item: any) => item.ImageName === selectedData?.ImageName);
         let rightSectionIndex = rightSectionImage?.findIndex((item: any) => item.ImageName === selectedData?.ImageName)
         if(useFor=="Comment"){
             if (rightSectionIndex != undefined) {
                RightImageSection[rightSectionIndex].Comments.splice(index, 1,);
                 SetRightSectionImage(RightImageSection)
+                checkDataImage=RightImageSection
             }
             // if (selectedIndex != undefined) {
             // CopyAllImageData[selectedIndex].Comments= CopyAllImageData[selectedIndex]?.Comments.splice(index, 1,);
@@ -297,6 +310,7 @@ const ImageViewPanel = (props: any) => {
             if (rightSectionIndex != undefined) {
             RightImageSection[rightSectionIndex].Comments[index].ReplyMessages.splice(replyindex, 1,);
                 SetRightSectionImage(RightImageSection)
+                checkDataImage=RightImageSection
             }
             // if (selectedIndex != undefined) {
             // CopyAllImageData[selectedIndex].Comments[index].ReplyMessages.splice(replyindex, 1,);
@@ -306,12 +320,47 @@ const ImageViewPanel = (props: any) => {
         setAllImageData(CopyAllImageData);
         closeEditPopup()
     }
-    const ReplyPopupClose = () => {
-        setIsPopoverOpen(false); // Close the popover
-    };
+ 
 
  //===============All  Comment Functionality End ==================
 
+   //========================== shorting and Filter Functionality Start =======================
+
+     const shortByFunction=(selectedShortBy:any)=>{
+        let CopyAllImageData: any = [...allImageData] 
+     let RightImageSection: any = [...rightSectionImage]
+        if(selectedShortBy=="Rating(L-H)"){
+            RightImageSection.sort((a:any, b:any) => a.ImageRating - b.ImageRating);
+        }
+        else if(selectedShortBy=="Rating(H-L)"){
+            RightImageSection.sort((a:any, b:any) => b.ImageRating - a.ImageRating);   
+        }
+        else if(selectedShortBy=="Date(Old-New)"){
+            RightImageSection.sort((a:any, b:any) => new Date(a.UploadeDate).getTime() - new Date(b.UploadeDate).getTime());
+           
+        }
+        else if(selectedShortBy=="Date(New-Old)"){
+            RightImageSection.sort((a:any, b:any) => new Date(b.UploadeDate).getTime() - new Date(a.UploadeDate).getTime()); 
+        }
+        else if(selectedShortBy="Favourate"){
+         RightImageSection = RightImageSection.filter((item: any) => item.fillHeart === true); 
+        }
+       
+        SetRightSectionImage([...RightImageSection])
+        checkDataImage=RightImageSection
+        setIsPopoverFilterOpen(false)
+        setIsPopoverShortByOpen(false)
+     }
+    const FilterByRating=(value:any)=>{
+        let RightImageSection:any = [...checkDataImage]
+        if(value ==5){
+            RightImageSection = RightImageSection.filter((item: any) => item.ImageRating === 5); 
+        }else{
+            RightImageSection = RightImageSection.filter((item: any) => item.ImageRating >= value);   
+        }
+        SetRightSectionImage([...RightImageSection])
+        setIsPopoverFilterOpen(false)
+     }
 
     // ============== slider Image view function=====================
 
@@ -341,12 +390,12 @@ const ImageViewPanel = (props: any) => {
 
                                             </div>
                                             <div className='alignCenter'>
-                                                <div className='alignCenter mx-2 siteColor'>
-                                                    <span className='svg__icon--cross hreflink svg__iconbox me-1'></span>Exclude
-                                                </div>
-                                                <div className='alignCenter mx-2 siteColor RestoreImage'>
+                                                {(slide?.Exclude ==undefined || slide?.Exclude ==false)  ? <div className='alignCenter mx-2 siteColor' onClick={() => changeFunction('Exclude', slide, "Exclude")}>
+                                                    <span className='svg__icon--cross hreflink svg__iconbox me-1' ></span>Exclude
+                                                </div>:
+                                                <div className='alignCenter mx-2 siteColor RestoreImage'onClick={() => changeFunction('Restore', slide, "Restore")}>
                                                     <span className='svg__icon--refresh hreflink svg__iconbox me-1'></span>Restore
-                                                </div>
+                                                </div>}
                                                 <div className='alignCenter mx-2 imageFavorite siteColor' onClick={() => changeFunction('fillHeart', slide, "fillHeart")}>
 
                                                     {slide?.fillHeart ? <BsFillHeartFill className='me-2 fillHeart'/> : <BsHeart className='me-1'  />}
@@ -420,7 +469,7 @@ const ImageViewPanel = (props: any) => {
                                                                                            </div>
                                                                                            <div className='footer text-end'>
                                                                                             <button className='btnCol btn me-2 btn-primary' onClick={()=>PostReplyComment(slide,k)}>Save</button>
-                                                                                            <button className='btnCol btn btn-default'onClick={ReplyPopupClose} >Cancel</button>
+                                                                                            <button className='btnCol btn btn-default'>Cancel</button>
                                                                                            </div>
                                                                                         </PopoverSurface>
                                                                                     </Popover>
@@ -523,12 +572,12 @@ const ImageViewPanel = (props: any) => {
 
                             </div>
                             <div className='alignCenter'>
-                                <div className='alignCenter mx-2'>
-                                    <span className='svg__icon--cross hreflink svg__iconbox me-1'></span>Exclude
-                                </div>
-                                <div className='alignCenter mx-2 siteColor RestoreImage'>
+                            {(slide?.Exclude ==undefined || slide?.Exclude ==false)  ? <div className='alignCenter mx-2 siteColor' onClick={() => changeFunction('Exclude', slide, "Exclude")}>
+                                                    <span className='svg__icon--cross hreflink svg__iconbox me-1' ></span>Exclude
+                                                </div>:
+                                                <div className='alignCenter mx-2 siteColor RestoreImage'onClick={() => changeFunction('Restore', slide, "Restore")}>
                                                     <span className='svg__icon--refresh hreflink svg__iconbox me-1'></span>Restore
-                                                </div>
+                                                </div>}
                                 <div className='alignCenter mx-2 imageFavorite'>
 
                                     {slide?.fillHeart ? <BsFillHeartFill className='me-2 fillHeart' onClick={() => changeFunction('fillHeart', slide, "fillHeart")} /> : <BsHeart className='me-1' onClick={() => changeFunction('fillHeart', slide, "fillHeart")} />}
@@ -603,7 +652,7 @@ const ImageViewPanel = (props: any) => {
                                                                             </div>
                                                                             <div className='footer text-end'>
                                                                                 <button className='btnCol btn me-2 btn-primary' onClick={() => PostReplyComment(slide, k)}>Save</button>
-                                                                                <button className='btnCol btn btn-default' onClick={ReplyPopupClose} >Cancel</button>
+                                                                                <button className='btnCol btn btn-default'  >Cancel</button>
                                                                             </div>
                                                                         </PopoverSurface>
                                                                     </Popover>
@@ -838,6 +887,65 @@ const ImageViewPanel = (props: any) => {
                                             </label>
                                    
                                 </div>
+                                <div className='alignCenter me-5'>
+                              {(iconSeleted == "compareSeveral" || iconSeleted == "viewAll") && <Popover withArrow open={isPopoverShortByOpen} onOpenChange={(e, data) => setIsPopoverShortByOpen(data.open)} >
+                                    <PopoverTrigger disableButtonEnhancement>
+                                        <span className="svg__iconbox svg__icon--Switcher me-4" title="Short-By">Short-By</span>
+                                    </PopoverTrigger>
+
+                                    <PopoverSurface tabIndex={-1}>
+                                        <div>
+                                            <div className='Filterhead m-0 d-flex justify-content-between fw-bold '>
+                                                Short-By
+                                                <span className='svg__iconbox svg__icon--cross hreflink dark' onClick={()=>setIsPopoverShortByOpen(false)} ></span>
+                                            </div>
+                                            <div className='my-2'>
+                                               <div onClick={()=>shortByFunction("Rating(L-H)")} className='hreflink' >Rating(Lowest to Highest)</div>
+                                               <div onClick={()=>shortByFunction("Rating(H-L)")} className='my-2 hreflink'>Rating(Highest to Lowest)</div>
+                                               <div onClick={()=>shortByFunction("Date(Old-New)")}className='hreflink' >Date(Oldest to Newest)</div>
+                                               <div onClick={()=>shortByFunction("Date(New-Old)")}className='mt-2 hreflink'>Date(Newest to Oldest)</div>
+                                            </div>
+                                        </div>
+                                       
+                                    </PopoverSurface>
+                                </Popover>}
+                                {(iconSeleted == "compareSeveral" || iconSeleted == "viewAll") && <Popover withArrow open={isPopoverFilterOpen} onOpenChange={(e, data) => setIsPopoverFilterOpen(data.open)} >
+                                    <PopoverTrigger disableButtonEnhancement>
+                                         
+                                        <span className="svg__iconbox svg__icon--filter" title="Short-By"></span>
+                                    </PopoverTrigger>
+
+                                    <PopoverSurface tabIndex={-1}>
+                                        <div>
+                                            <div className='Filterhead m-0 d-flex justify-content-between fw-bold '>
+                                                Filter
+                                                <span className='svg__iconbox svg__icon--cross hreflink dark' onClick={()=>setIsPopoverFilterOpen(false)} ></span>
+                                            </div>
+                                            <div className='my-2'>
+                                               <div onClick={()=>shortByFunction("Favourate")} className='hreflink showFav' >Show Favourate</div>
+                                               <div className='ratingFilter'>
+                                               <label className='form-label w-100'>Show Rating By Stars</label>
+                                               <div className='SpfxCheckRadio m-0 ps-3'>
+                                                  <input type="radio" className='radio' onClick={()=>FilterByRating(5)} /> Only 5
+                                                </div>
+                                                <div className='SpfxCheckRadio m-0 ps-3'>
+                                                  <input type="radio" className='radio' onClick={()=>FilterByRating(4)} /> 4+
+                                                </div>
+                                                <div className='SpfxCheckRadio m-0 ps-3'>
+                                                  <input type="radio" className='radio' onClick={()=>FilterByRating(3)}/> 3+
+                                                </div>
+                                                <div className='SpfxCheckRadio m-0 ps-3'>
+                                                  <input type="radio" className='radio' onClick={()=>FilterByRating(2)}/> 2+
+                                                </div>
+                                                <div className='SpfxCheckRadio m-0 ps-3'>
+                                                  <input type="radio" className='radio' onClick={()=>FilterByRating(1)}/> 1+
+                                                </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                       
+                                    </PopoverSurface>
+                                </Popover>} </div>
                                {iconSeleted != "compareSeveral" && <div className='playpausebutton'>
                                     <span onClick={previous} className='svg__icon--arrowLeft hreflink svg__iconbox'></span>
                                     <span className="svg__icon--arrowRight hreflink svg__iconbox" onClick={next}></span>
