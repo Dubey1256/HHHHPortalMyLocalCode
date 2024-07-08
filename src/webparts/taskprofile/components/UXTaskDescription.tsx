@@ -424,13 +424,22 @@ const uxdescriptions = (props: any) => {
 
             }
             //Add object in feedback
-
-            if (TaskFeedbackData[parentIndex]["Subtext"][j].Comments != undefined) {
-                Result.FeedBack[0].FeedBackDescriptions[parentIndex]["Subtext"][j].Comments.unshift(temp);
+            if(objective){
+                if (TaskFeedbackData[parentIndex]["Subtext"][j].Comments != undefined) {
+                    Result.FeedBack[0].FeedBackDescriptions[parentIndex]["Subtext"][j].Comments.unshift(temp);
+                }
+                else {
+                    Result.FeedBack[0].FeedBackDescriptions[parentIndex]["Subtext"][j]['Comments'] = [temp];
+                }
+            }else{
+                if (TaskFeedbackData[CurrentActiveTab].TemplatesArray[parentIndex]["Subtext"][j].Comments != undefined) {
+                    Result.FeedBack[0].FeedBackDescriptions[CurrentActiveTab].TemplatesArray[parentIndex]["Subtext"][j].Comments.unshift(temp);
+                }
+                else {
+                    Result.FeedBack[0].FeedBackDescriptions[CurrentActiveTab].TemplatesArray[parentIndex]["Subtext"][j]['Comments'] = [temp];
+                }  
             }
-            else {
-                Result.FeedBack[0].FeedBackDescriptions[parentIndex]["Subtext"][j]['Comments'] = [temp];
-            }
+        
             (document.getElementById('txtCommentSubtext') as HTMLTextAreaElement).value = '';
             // setState({
             //     ...state,
@@ -738,23 +747,25 @@ const uxdescriptions = (props: any) => {
 
     }
     const openReplycommentPopup = (i: any, k: any,obj:any) => {
-        const temp = i + "" + k;
+        let temp :any = +i + '' + k;
         if (obj === 'objective') {
             setobjective(true)
         }
         else {
+             temp = +i + "" + k + obj;
             setobjective(false)
         }
         setcurrentDataIndex(temp)
         setisCalloutVisible(true)
     }
     const openReplySubcommentPopup = (i: any, j: any, k: any,obj:any) => {
-        const temp1 = +i + '' + j + k;
+        let  temp1 :any = +i + '' + j + k;
         if (obj === 'objective') {
             setobjective(true)
         }
         else {
             setobjective(false)
+            temp1 = +i + '' + j + k + obj;
         }
         setisCalloutVisible(true)
         setcurrentDataIndex(temp1)
@@ -1170,7 +1181,7 @@ const uxdescriptions = (props: any) => {
                                                                                             {fbComment?.AuthorName} - {fbComment?.Created}
                                                                                             <span className='d-flex'>
                                                                                                 <a className="ps-1" title="Comment Reply" >
-                                                                                                    <div data-toggle="tooltip" id={buttonId + "-" + i + j + k}
+                                                                                                    <div data-toggle="tooltip" id={buttonId + "-" + i + j + k }
                                                                                                         onClick={() => openReplySubcommentPopup(i, j, k,'objective')}
                                                                                                         data-placement="bottom"
                                                                                                     >
@@ -1312,8 +1323,8 @@ const uxdescriptions = (props: any) => {
                                                                                 <span className="mx-2" >{imgData?.UploadeDate}</span>
                                                                                 <span className='round px-1'>
                                                                                     {imgData?.UserImage != null && imgData?.UserImage != "" ?
-                                                                                        <img className='align-self-start hreflink ' title={imgData?.UserName} src={imgData?.UserImage} />
-                                                                                        : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
+                                                                                        <img className='align-self-start hreflink ' title={imgData?.UserName} src={imgData?.UserImage} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, imgData?.UserName, props?.taskUsers)} />
+                                                                                        : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"}onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, imgData?.UserName, props?.taskUsers)}   className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
                                                                                     }
                                                                                 </span>
                                                                                 {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
@@ -1439,7 +1450,7 @@ const uxdescriptions = (props: any) => {
                                                                                                     {fbComment?.AuthorName} - {fbComment?.Created}
                                                                                                     <span className='d-flex'>
                                                                                                         <a className="ps-1" title="Comment Reply" >
-                                                                                                            <div data-toggle="tooltip" id={buttonId + "-" + i + k}
+                                                                                                            <div data-toggle="tooltip" id={buttonId + "-" + i + k + "tab"}
                                                                                                                 onClick={() => openReplycommentPopup(i, k,'tab')}
                                                                                                                 data-placement="bottom"
                                                                                                             >
@@ -1601,7 +1612,7 @@ const uxdescriptions = (props: any) => {
                                                                                                         {fbComment?.AuthorName} - {fbComment?.Created}
                                                                                                         <span className='d-flex'>
                                                                                                             <a className="ps-1" title="Comment Reply" >
-                                                                                                                <div data-toggle="tooltip" id={buttonId + "-" + i + j + k}
+                                                                                                                <div data-toggle="tooltip" id={buttonId + "-" + i + j + k +"tab"}
                                                                                                                     onClick={() => openReplySubcommentPopup(i, j, k,'tab')}
                                                                                                                     data-placement="bottom"
                                                                                                                 >
