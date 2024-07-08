@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
@@ -6,6 +7,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import EditDocument from '../../taskprofile/components/EditDocunentPanel';
 import moment from 'moment';
 import PageLoad from '../../../globalComponents/pageLoader';
+import { Avatar } from "@fluentui/react-components";
 
 import { Items } from '@pnp/sp/items';
 var TaskUser: any = []
@@ -438,9 +440,16 @@ export default function DocumentSearchPage(Props: any) {
             cell: ({ row }) => (
                 <>
                     {row?.original?.CreatedDate}
-                    {row?.original?.AllCreatedImages?.map((item: any) => (
-                        <a className='ms-1' target="_blank" data-interception="off" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
-                            {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
+                    {row?.original?.AllCreatedImages?.map((item: any, index: number) => (
+                        <a key={index} className='ms-1' target="_blank" data-interception="off" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
+                            <Avatar
+                                title={item?.Title}
+                                className="workmember"
+                                image={{ src: item?.UserImage }}
+                                name={item?.Title}
+                                initials={!item?.UserImage ? item?.Suffix : undefined} // Display initials (suffix) if UserImage is not available
+                            />
+                             
                         </a>
                     ))}
                 </>
@@ -459,9 +468,23 @@ export default function DocumentSearchPage(Props: any) {
             cell: ({ row }) => (
                 <>
                     {row?.original?.ModifiedDate}
-                    {row?.original?.AllModifiedImages?.map((item: any) => (
-                        <a className='ms-1' target="_blank" data-interception="off" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
-                            {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
+                    {row?.original?.AllModifiedImages?.map((item: any, index: number) => (
+                        <a
+                            key={index} // Ensure each link has a unique key
+                            className='ms-1'
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-interception="off"
+                            href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}
+                        >
+                            <Avatar
+                                title={item?.Title}
+                                className="workmember"
+                                image={{ src: item?.UserImage }}
+                                name={item?.Title}
+                                initials={!item?.UserImage ? item?.Suffix : undefined} // Display initials (suffix) if UserImage is not available
+                            />
+                            
                         </a>
                     ))}
                 </>
