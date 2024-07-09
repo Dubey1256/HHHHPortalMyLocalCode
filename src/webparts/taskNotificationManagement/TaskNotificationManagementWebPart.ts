@@ -17,9 +17,9 @@ export interface ITaskNotificationManagementWebPartProps {
   Context:any;
   siteUrl:any;
   PortFolioTypeID:any;
-  SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
-  TaskUserListID: "b318ba84-e21d-4876-8851-88b94b9dc300";
-  NotificationsConfigrationListID:"B1F337D3-161F-43F1-BA43-FD3CF440CDE4"
+  SmartMetadataListID: '0af5c538-1190-4fe5-8644-d01252e79d4b';
+  TaskUserListID: "117bc416-3fbf-4641-8584-20d149078ee8";
+  NotificationsConfigrationListID:"ce037507-9908-451e-8b15-1b563d5c1f0b"
 }
 
 export default class TaskNotificationManagementWebPart extends BaseClientSideWebPart<ITaskNotificationManagementWebPartProps> {
