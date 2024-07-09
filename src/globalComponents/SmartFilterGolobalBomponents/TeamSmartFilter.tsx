@@ -29,7 +29,6 @@ import * as Moment from "moment";
 import ServiceComponentPortfolioPopup from '../EditTaskPopup/ServiceComponentPortfolioPopup';
 import SmartfilterSettingTypePanel from './SmartfilterSettingTypePanel';
 
-
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
 let timeSheetConfig: any = {};
@@ -2750,40 +2749,6 @@ const TeamSmartFilter = (item: any) => {
                         </div>
                     </section> : ''}
 
-
-                    {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
-                        <div className="px-2">
-                            <div className="togglebox">
-                                <label className="toggler full_width active">
-                                    <span className='full_width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isActionsExpendShow")}>
-                                        <div className='alignCenter'>
-                                            {isActionsExpendShow === true ?
-                                                <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
-                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Actions</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{(isPhone || isBottleneck || isAttention) ? `Working Action: (${(isPhone && isBottleneck && isAttention) ? "All" : [isPhone ? "Phone" : "", isBottleneck ? "Bottleneck" : "", isAttention ? "Attention" : ""].filter(Boolean).join(', ')})` : ""}</div>
-                                        </div>
-
-                                    </span>
-                                </label>
-                                {isActionsExpendShow === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
-                                    <Col className='mb-2 '>
-                                        <div>
-                                            <label className='me-3'>
-                                                <input className='form-check-input' type="checkbox" value="isPhone" checked={isPhone} onChange={() => setIsPhone(!isPhone)} /> Phone
-                                            </label>
-                                            <label className='me-3'>
-                                                <input className='form-check-input' type="checkbox" value="isBottleneck" checked={isBottleneck} onChange={() => setIsBottleneck(!isBottleneck)} /> Bottleneck
-                                            </label>
-                                            <label className='me-3'>
-                                                <input className='form-check-input' type="checkbox" value="isAttention" checked={isAttention} onChange={() => setIsAttention(!isAttention)} /> Attention
-                                            </label>
-                                        </div>
-                                    </Col>
-                                </div> : ""}
-                            </div>
-                        </div >
-                    </section> : ''}
-
-
                     {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
                         <div className="px-2">
                             <div className="togglebox">
@@ -3042,10 +3007,6 @@ const TeamSmartFilter = (item: any) => {
                                             <label className="me-3">
                                                 <input className="form-check-input" type="checkbox" value="isDueDate" checked={isDueDateSelected} onChange={() => setIsDueDateSelected(!isDueDateSelected)} />{" "}
                                                 Due Date
-                                            </label>
-                                            <label className="me-3">
-                                                <input className="form-check-input" type="checkbox" value="isWorkingDate" checked={isWorkingDate} onChange={() => setIsWorkingDate(!isWorkingDate)} />{" "}
-                                                Working Date
                                             </label>
                                         </Col>
                                         <Col className='my-2'>
