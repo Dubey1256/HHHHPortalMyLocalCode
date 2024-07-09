@@ -130,7 +130,7 @@ const inlineEditingcolumns = (props: any) => {
             $('.ms-Panel-main').css('--SiteBlue', props?.portfolioColor); // Set the desired color value here
         }
     }, 1500)
-}, [taskCategoriesPopup]);
+  }, [taskCategoriesPopup,dueDate.editPopup,TaskPriorityPopup,ItemRankPopup,teamMembersPopup,remark,UpdateEstimatedTime,TaskStatusPopup]);
 
   const updateItemValues = () => {
     selectedCatTitleVal = [];
@@ -171,47 +171,26 @@ const inlineEditingcolumns = (props: any) => {
       } else {
         siteUrl = props?.AllListId?.siteUrl;
       }
-      if (TempArrya.length == 0) {
         if (props?.item?.TaskCategories?.length > 0) {
           if (props?.item?.TaskCategories?.length > 0) {
             props?.item?.TaskCategories?.map((cat: any) => {
               cat.ActiveTile = true;
             });
-            setDesignStatus(
-              props?.item?.TaskCategories?.some(
-                (category: any) => category.Title === "Design"
-              )
-            );
+          setDesignStatus(props?.item?.TaskCategories?.some((category: any) => category.Title === "Design"));
+        }
             setCategoriesData(props?.item?.TaskCategories);
-          }
-        } else if (props?.item?.TaskCategories?.length == 0) {
-            setCategoriesData([]);
         } else if (props?.item?.TaskCategories?.results?.length > 0) {
           if (props?.item?.TaskCategories?.results?.length > 0) {
             props?.item?.TaskCategories?.results?.map((cat: any) => {
               cat.ActiveTile = true;
             });
-            setCategoriesData(props?.item?.TaskCategories?.results);
-          }
-        } else if (props?.item?.TaskCategories?.results?.length == 0) {
-          setCategoriesData([]);
         }
-      }
-      else {
-        TempArrya.forEach((item: any) => {
-          item.ActiveTile = true
-        })
-        setCategoriesData(TempArrya)
-      }
-      if (
-        (props?.item?.TaskCategories?.length == 0 ||
-          props?.item?.TaskCategories?.results?.length == 0) &&
-        props?.item?.Categories?.length > 0
-      ) {
+            setCategoriesData(props?.item?.TaskCategories?.results);
+      } else if ((props?.item?.TaskCategories?.length == 0 || props?.item?.TaskCategories?.results?.length == 0) && props?.item?.Categories?.length > 0) {
         selectedCatTitleVal = [];
-        selectedCatTitleVal = props?.item?.Categories?.split("; ")
-      }
+        selectedCatTitleVal = props?.item?.Categories?.split(";")
 
+      }
       loadTaskUsers();
       if (props?.item?.DueDate != undefined) {
         setEditDate(props?.item?.DueDate);
@@ -424,24 +403,6 @@ const inlineEditingcolumns = (props: any) => {
           instantCat.push(cat);
         }
       });
-      if (instantCat != null && instantCat != undefined) {
-        instantCat?.forEach((instCat: any) => {
-          if (props?.item?.TaskCategories?.length > 0){
-            props?.item?.TaskCategories?.forEach((cat: any) => {
-              if (instCat.Id === cat.Id) {
-                instCat.ActiveTile = true;
-              }
-            });
-          }
-          else if (props?.item?.TaskCategories?.results?.length > 0) {
-            props?.item?.TaskCategories?.results?.forEach((cat: any) => {
-              if (instCat.Id === cat.Id) {
-                instCat.ActiveTile = true;
-              }
-            });
-          }     
-        });
-      }
       let uniqueArray: any = [];
       AutoCompleteItemsArray.map((currentObject: any) => {
         if (!uniqueArray.find((obj: any) => obj.Id === currentObject.Id)) {
@@ -560,9 +521,9 @@ const inlineEditingcolumns = (props: any) => {
         taskCategoryType?.map((item: any) => {
           if (category === item.Id) {
             if (CategoryTitle?.length == 0) {
-              CategoryTitle = item.Title + "; ";
+              CategoryTitle = item.Title + ";";
             } else {
-              CategoryTitle += item.Title + "; ";
+              CategoryTitle += item.Title + ";";
             }
           }
         });
@@ -574,9 +535,9 @@ const inlineEditingcolumns = (props: any) => {
         if (!selectedCategoriesId?.some((cat: any) => cat == item?.Id)) {
           selectedCategoriesId.push(item?.Id);
           if (CategoryTitle?.length == 0) {
-            CategoryTitle = item.Title + "; ";
+            CategoryTitle = item.Title + ";";
           } else {
-            CategoryTitle += item.Title + "; ";
+            CategoryTitle += item.Title + ";";
           }
         }
       });
@@ -798,6 +759,7 @@ const inlineEditingcolumns = (props: any) => {
       AssignedToIds = []
       setTaskAssignedTo([])
     }
+    
     if (dt?.TeamMemberUsers?.length > 0) {
       let tempTeam: any = [];
       dt.TeamMemberUsers?.map((arrayData: any) => {
@@ -827,6 +789,35 @@ const inlineEditingcolumns = (props: any) => {
     else {
       ResponsibleTeamIds = []
       setTaskResponsibleTeam([])
+    }
+
+    if(props?.item?.TaskType){
+    if (dt?.dateInfo?.length > 0) {
+      let storeInWorkingAction: any = { "Title": "WorkingDetails", "InformationData": [] }
+      let userData: any = []
+      if (dt?.oldWorkingDaysInfo != undefined || dt?.oldWorkingDaysInfo != null && dt?.oldWorkingDaysInfo?.length > 0) {
+        dt?.oldWorkingDaysInfo.map((oldJson: any) => {
+          userData?.push(oldJson)
+        })
+    }
+      let oldWorkingActionData = props?.item?.WorkingActionParsed ? [...props.item.WorkingActionParsed] : [];
+      
+      dt.dateInfo.forEach((date: any) => {
+        let dataAccordingDays: any = {}
+        if (date.userInformation.length > 0) {
+          dataAccordingDays.WorkingDate = date?.originalDate
+          dataAccordingDays.WorkingMember = [];
+            date.userInformation.map((user: any) => {
+              dataAccordingDays.WorkingMember.push({ Id: user?.AssingedToUserId, Title: user.Title })
+            });                       
+            userData?.push(dataAccordingDays)
+        }
+    });
+    storeInWorkingAction.InformationData = [...userData]
+    oldWorkingActionData = oldWorkingActionData.filter((item: any) => item.Title != "WorkingDetails")
+    
+    setWorkingAction([...oldWorkingActionData, storeInWorkingAction]);
+    }
     }
   }, []);
 
@@ -1283,7 +1274,17 @@ const inlineEditingcolumns = (props: any) => {
     UpdateTaskStatus()
   }
   // Item Rank Update End 
-
+  const getPriorityRank = (title:any) => {
+    const titleNumber = parseInt(title, 10);
+    if (titleNumber >= 8 && titleNumber <= 10) {
+      return "High";
+    } else if (titleNumber >= 4 && titleNumber <= 7) {
+      return "Normal";
+    } else if (titleNumber >= 1 && titleNumber <= 3) {
+      return "Low";
+    }
+    return "Unknown"; // Default case if the title is outside the specified ranges
+  };
   return (
     <>
       {props?.columnName == "Team" ? (
