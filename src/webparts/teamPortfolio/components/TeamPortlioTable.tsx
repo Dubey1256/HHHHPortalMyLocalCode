@@ -513,8 +513,10 @@ function TeamPortlioTable(SelectedProp: any) {
                                         if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                             users.ItemCover = users.Item_x0020_Cover;
                                             result.TeamLeaderUser.push(users);
-                                            result.AllTeamName += users.Title + ";";
-                                        }
+                                            if(!(result.AllTeamName.includes(users.Title))){
+                                                result.AllTeamName += users.Title + ";";
+                                            }
+                                                                                    }
                                     });
                                 }
                             });
@@ -526,7 +528,10 @@ function TeamPortlioTable(SelectedProp: any) {
                                         if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                             users.ItemCover = users.Item_x0020_Cover;
                                             result.TeamLeaderUser.push(users);
-                                            result.AllTeamName += users.Title + ";";
+                                            if(!(result.AllTeamName.includes(users.Title))){
+                                                result.AllTeamName += users.Title + ";";
+                                            }
+                                            
                                         }
                                     });
                                 }
@@ -542,7 +547,10 @@ function TeamPortlioTable(SelectedProp: any) {
                                         if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                             users.ItemCover = users.Item_x0020_Cover;
                                             result.TeamLeaderUser.push(users);
-                                            result.AllTeamName += users.Title + ";";
+                                            if(!(result.AllTeamName.includes(users.Title))){
+                                                result.AllTeamName += users.Title + ";";
+                                            }
+                                            
                                         }
                                     });
                                 }
@@ -848,7 +856,10 @@ function TeamPortlioTable(SelectedProp: any) {
                                         if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                             users.ItemCover = users.Item_x0020_Cover;
                                             result.TeamLeaderUser.push(users);
-                                            result.AllTeamName += users.Title + ";";
+                                            if(!(result.AllTeamName.includes(users.Title))){
+                                                result.AllTeamName += users.Title + ";";
+                                            }
+                                            
                                         }
                                     });
                                 }
@@ -861,7 +872,10 @@ function TeamPortlioTable(SelectedProp: any) {
                                         if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                             users.ItemCover = users.Item_x0020_Cover;
                                             result.TeamLeaderUser.push(users);
-                                            result.AllTeamName += users.Title + ";";
+                                            if(!(result.AllTeamName.includes(users.Title))){
+                                                result.AllTeamName += users.Title + ";";
+                                            }
+                                            
                                         }
                                     });
                                 }
@@ -877,7 +891,10 @@ function TeamPortlioTable(SelectedProp: any) {
                                         if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                             users.ItemCover = users.Item_x0020_Cover;
                                             result.TeamLeaderUser.push(users);
-                                            result.AllTeamName += users.Title + ";";
+                                            if(!(result.AllTeamName.includes(users.Title))){
+                                                result.AllTeamName += users.Title + ";";
+                                            }
+                                            
                                         }
                                     });
                                 }
@@ -1085,7 +1102,10 @@ function TeamPortlioTable(SelectedProp: any) {
                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
-                                result.AllTeamName += users.Title + ";";
+                                if(!(result.AllTeamName.includes(users.Title))){
+                                    result.AllTeamName += users.Title + ";";
+                                }
+                                
                             }
                         });
                     }
@@ -1101,7 +1121,9 @@ function TeamPortlioTable(SelectedProp: any) {
                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
-                                result.AllTeamName += users.Title + ";";
+                                if(!(result.AllTeamName.includes(users.Title))){
+                                    result.AllTeamName += users.Title + ";";
+                                }
                             }
                         });
                     }
@@ -1114,7 +1136,9 @@ function TeamPortlioTable(SelectedProp: any) {
                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
-                                result.AllTeamName += users.Title + ";";
+                                if(!(result.AllTeamName.includes(users.Title))){
+                                    result.AllTeamName += users.Title + ";";
+                                }
                             }
                         });
                     }
