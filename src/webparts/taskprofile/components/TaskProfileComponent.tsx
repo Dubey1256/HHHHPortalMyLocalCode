@@ -339,7 +339,7 @@ const CopyTaskProfile = (props: any) => {
                                 })
                             }
                         })
-                    }     
+                    }  
                 })
             }
             let siteicon = GetSiteIcon(listName)
@@ -369,7 +369,7 @@ const CopyTaskProfile = (props: any) => {
                 ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
                 OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
                 OffshoreImageUrl: taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
-
+                workingTodayUser: taskDetails['workingTodayUser'],
                 ClientCategory: taskDetails["ClientCategory"],
                 siteType: taskDetails["siteType"],
                 listName: taskDetails["listName"],

@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Collapse from "bootstrap/js/dist/collapse";
 
-export default function FroalaEditorComponentJodIt(Props: any) {
+export default function HtmlEditorCard(Props: any) {
     const callBack = Props?.HtmlEditorStateChange;
     const editor = useRef(null);
     const [content, setContent] = useState(Props?.editorValue);
@@ -26,10 +26,10 @@ export default function FroalaEditorComponentJodIt(Props: any) {
                     const accordionHTML = `
                         <details>
                             <summary>
-                              <a> <span>Accordion Title</span> </a>
+                              <a> <span>Case Studies</span> </a>
                             </summary>
                             <div class="expand-AccordionContent border clearfix">
-                              Fill Accordion Content Here...
+                              test details
                             </div>
                         </details>
                     `;
@@ -54,8 +54,8 @@ export default function FroalaEditorComponentJodIt(Props: any) {
                 ref={editor}
                 value={content}
                 config={config}
-                onBlur={(newContent) => setContent(newContent)}
-                onChange={(newContent) => handleModelChange(newContent)}
+                onBlur={(newContent:any) => setContent(newContent)}
+                onChange={(newContent:any) => handleModelChange(newContent)}
             />
         </div>
     );

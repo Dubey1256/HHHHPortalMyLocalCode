@@ -1978,9 +1978,9 @@ const TimeEntryPopup = (item: any) => {
       let web = new Web(`${siteUrl}`);
 
       if (taskTime != null || taskTime != undefined) {
-        if (child.TaskTimeInMin > TimeInMinutes) {
+        if ((child.oldTaskInMinutes??child.TaskTimeInMin) > TimeInMinutes) {
           if (TimeInMinutes != 0) {
-            let time = child.TaskTimeInMin - TimeInMinutes;
+            let time = (child.oldTaskInMinutes??child.TaskTimeInMin) - TimeInMinutes;
             item.props.TotalTime = item.props?.TotalTime - time;
             TaskTimeTotal = taskTime - time;
           }
@@ -1988,7 +1988,7 @@ const TimeEntryPopup = (item: any) => {
         }
         else {
 
-          let time = TimeInMinutes - child.TaskTimeInMin;
+          let time = TimeInMinutes - (child.oldTaskInMinutes??child.TaskTimeInMin);
           item.props.TotalTime = item.props?.TotalTime + time;
           TaskTimeTotal = taskTime + time;
         }
@@ -2075,10 +2075,10 @@ const TimeEntryPopup = (item: any) => {
       var AddMainParent: any = "";
 
       if (taskTime != null) {
-        if (child.TaskTimeInMin > TimeInMinutes) {
+        if ((child.oldTaskInMinutes??child.TaskTimeInMin)   > TimeInMinutes) {
           if (TimeInMinutes == 0) {
-            item.props.TotalTime = item.props?.TotalTime + child.TaskTimeInMin;
-            TaskTimeTotal = taskTime + child.TaskTimeInMin;
+            item.props.TotalTime = item.props?.TotalTime + (child.oldTaskInMinutes??child.TaskTimeInMin);
+            TaskTimeTotal = taskTime + (child.oldTaskInMinutes??child.TaskTimeInMin);
           }
           else {
             let time = TimeInMinutes;
@@ -2696,10 +2696,12 @@ const TimeEntryPopup = (item: any) => {
     }
 
     if (Use === 'remove') {
+      let oldTaskInMinutes= saveEditTaskTimeChild.TaskTimeInMin;
       setsaveEditTaskTimeChild((prev: any) => ({
         ...prev,
         TaskTimeInMin: 0,
         TaskTime: 0,
+        oldTaskInMinutes
       }));
       changeTime = 0;
       setTimeInMinutes(changeTime);
@@ -2725,7 +2727,7 @@ const TimeEntryPopup = (item: any) => {
           }
           setTimeInMinutes(changeTime);
         } else {
-          saveEditTaskTimeChild.TaskTimeInMin = '';
+          saveEditTaskTimeChild.TaskTimeInMin = 0;
           saveEditTaskTimeChild.TaskTime = 0;
           setTimeInMinutes(0);
           setTimeInHours(0);

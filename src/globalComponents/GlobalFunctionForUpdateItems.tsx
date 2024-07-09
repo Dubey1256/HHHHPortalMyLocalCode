@@ -4,7 +4,6 @@ import * as GlobalCommon from './globalCommon';
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import * as Moment from "moment";
 import ReactDOM from "react-dom";
-import { Title } from "@material-ui/icons";
 
 
 // this is used for getting page context 
@@ -768,8 +767,8 @@ export const SendMSTeamsNotification = async (RequiredData: any) => {
         let SendMessage: string = '';
         if (usedFor === "Status") {
             SendMessage = `<p><b>Hi ${ReceiversName},</b> </p></br><p>${SendMSTeamMessage}</p> </br> 
-            <p>
-            Task Title:  <a href=${siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + ItemDetails?.Id + "&Site=" + ItemDetails?.siteType}>
+            <p style="font-size:16px;">
+            Task Link:  <a href=${siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + ItemDetails?.Id + "&Site=" + ItemDetails?.siteType}>
              ${ItemDetails?.TaskId}-${ItemDetails?.Title}
             </a>
             </br>
@@ -973,12 +972,7 @@ const joinObjectValues = (arr: any) => {
         val += element.Title + '; '
     });
     let FinalUserNames: string = '';
-    if (val?.length > 14) {
-        FinalUserNames = val?.slice(0, 14) + "...";
-    } else {
-        FinalUserNames = val;
-    }
-    return FinalUserNames;
+    return val;
 }
 
 // This function is used for generating the required HTML structure to handle different scenarios, such as sending email notifications for tasks that are created, approved, or rejected
@@ -1059,19 +1053,19 @@ export const SendApprovalEmailNotificationBodyContent = (props: any) => {
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Start Date:</span></b><u></u><u></u></p>
                                         </td>
                                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4px' }}>
-                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["StartDate"] != null && props.items["StartDate"] != undefined ? Moment(props.items["StartDate"]).format("DD/MMMM/YYYY") : ""}</span><u></u><u></u></p>
+                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["StartDate"] != null && props.items["StartDate"] != undefined ? Moment(props.items["StartDate"]).format("DD/MM/YYYY") : ""}</span><u></u><u></u></p>
                                         </td>
                                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4px' }}>
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Completion Date:</span></b><u></u><u></u></p>
                                         </td>
                                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4px' }}>
-                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["CompletedDate"] != null && props.items["CompletedDate"] != undefined ? Moment(props.items["CompletedDate"]).format("DD/MMMM/YYYY") : ""}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["CompletedDate"] != null && props.items["CompletedDate"] != undefined ? Moment(props.items["CompletedDate"]).format("DD/MM/YYYY") : ""}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                                         </td>
                                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4px' }}>
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Due Date:</span></b><u></u><u></u></p>
                                         </td>
                                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4px' }}>
-                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["DueDate"] != null && props.items["DueDate"] != undefined ? Moment(props.items["DueDate"]).format("DD/MMMM/YYYY") : ''}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{props.items["DueDate"] != null && props.items["DueDate"] != undefined ? Moment(props.items["DueDate"]).format("DD/MM/YYYY") : ''}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                                         </td>
                                     </tr>
                                     <tr>
@@ -1083,6 +1077,7 @@ export const SendApprovalEmailNotificationBodyContent = (props: any) => {
                                                 props.items["TeamMembers"].length > 0 &&
                                                 <span style={{ fontSize: '10.0pt', color: '#333' }}>
                                                     {joinObjectValues(props.items["TeamMembers"])}
+
                                                 </span>
                                             }
                                                 <span style={{ color: "black" }}> </span><u></u><u></u></p>
@@ -1091,7 +1086,7 @@ export const SendApprovalEmailNotificationBodyContent = (props: any) => {
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Created:</span></b><u></u><u></u></p>
                                         </td>
                                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4px' }}>
-                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{Moment(props.items["Created"]).format("DD/MMMM/YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            <p><span style={{ fontSize: '10.0pt', color: '#333' }}>{Moment(props.items["Created"]).format("DD/MM/YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                                         </td>
                                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4px' }}>
                                             <p><b><span style={{ fontSize: '10.0pt', color: '#333' }}>Created By:</span></b><u></u><u></u></p>
@@ -1408,7 +1403,7 @@ export const getDataByKey = (DataArray: any, keyName: any) => {
 export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any) => {
     try {
         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject, RequiredListIds } = RequiredData || {};
-        const TaskInformation = "Short_x0020_Description_x0020_On" in RequiredData.UpdatedDataObject ? GenerateMSTeamsNotificationPoprtfolioAndProject(UpdatedDataObject) : GenerateMSTeamsNotification(UpdatedDataObject);
+        const TaskInformation = "Short_x0020_Description_x0020_On" in RequiredData.UpdatedDataObject ? GenerateMSTeamsNotificationPortfolioAndProject(UpdatedDataObject) : GenerateMSTeamsNotification(UpdatedDataObject);
         const containerDiv = document.createElement('div');
         const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
         ReactDOM.render(reactElement, containerDiv);
@@ -1424,10 +1419,10 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
                 `You have been tagged <b>${ActionType == "Phone" ? "for the discussion" : "as " + ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}` : ''}
             <p></p>
             ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
-                `<div style="background-color: #fff; padding:16px; margin-top:10px; display:block;">
-            <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? " Discussion Point" : ActionType + " Comment"} </b>: <span>${ReasonStatement}</span> ` : ''}
+                `<div style="background-color: #fff; padding:16px; margin-top:10px; display:block;" title=${ReasonStatement}>
+            <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? " Discussion Point" : " Comment"} </b>: <span>${ReduceTheContentLines(ReasonStatement, 450)}</span> ` : ''}
             </div>
-            <div style="margin-top: 16px;">  <b style="font-weight:600;">Task Title: </b>
+            <div style="margin-top: 16px;">  <b style="font-weight:600; font-size: 16px;">Task Link: </b>
             <a href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? `Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}` : `Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">
             ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
             </a>
@@ -1458,21 +1453,21 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
     return new Promise(async (resolve, reject) => {
         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject, RequiredListIds } = RequiredData || {};
         let TeamsMessage = ` 
-      <div style="border-top: 5px solid #2f5596">
+       <div style="border-top: 5px solid #2f5596">
         <div style="margin-top:16px; font-size:16px;"> ${ActionType} reminder for task: ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}</div>
         <p>
         <br/>
         <div style="background-color: #fff; padding:16px; display:block;">
-        <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">Comment</b>: <span style="font-size:18px;">${ReasonStatement}</span>
+        <div style="font-size:18px;" title=${ReasonStatement}><b>Comment</b>: ${ReduceTheContentLines(ReasonStatement, 450)}</div>
         </div>
         </br>
         <p>
-        <div style="margin-top: 16px;font-size:16px;">  <b style="font-weight:600;">Task Title: </b>
+        <div style="margin-top: 16px;font-size:16px;">  <b style="font-weight:600; font-size:16px;">Task Link: </b>
         <a style="font-size:16px;" href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? `Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}` : `Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">
         ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
         </a>
         </div>
-        </div> 
+        </div>  
        `
         if (sendUserEmail?.length > 0) {
             await GlobalCommon.SendTeamMessage(
@@ -1521,19 +1516,19 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Start Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD/MMMM/YYYY") : ""}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD/MM/YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Completion Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD/MMMM/YYYY") : ""}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD/MM/YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Due Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD/MMMM/YYYY") : ''}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD/MM/YYYY") : ''}</span>
                             </div>
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
@@ -1543,8 +1538,8 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center', minHeight: '30px' }}>
                                 <div style={{ wordBreak: 'break-all', }}>{RequiredData["TeamMembers"] != null &&
                                     RequiredData["TeamMembers"].length > 0 &&
-                                    <span style={{ fontSize: '11.0pt', whiteSpace: 'nowrap', width: '95%', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>
-                                        {joinObjectValues(RequiredData["TeamMembers"])}
+                                    <span title={joinObjectValues(RequiredData["TeamMembers"])} style={{ fontSize: '11.0pt', whiteSpace: 'nowrap', width: '95%', wordWrap: 'break-word', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>
+                                        {ReduceTheContentLines(joinObjectValues(RequiredData["TeamMembers"]), 14)}
                                     </span>
                                 }
                                 </div>
@@ -1553,7 +1548,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Created:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '11.0pt' }}>{Moment(RequiredData["Created"]).format("DD/MMMM/YYYY")}</span>
+                                <span style={{ fontSize: '11.0pt' }}>{Moment(RequiredData["Created"]).format("DD/MM/YYYY")}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Created By:</span>
@@ -1627,72 +1622,75 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                             RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                                             RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title != '' &&
                                             RequiredData["FeedBack"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
-                                                return (<>
-                                                    <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff' }}>
-                                                        <div style={{ width: '100%' }}>
-                                                            <div style={{ display: 'flex' }}>
-                                                                <span style={{ fontSize: "10pt", display: "flex", color: "#333", marginRight: '5px', fontWeight: '600' }}>
-                                                                    {i + 1}.
-                                                                </span>
-                                                                {/* {fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")} */}
-                                                                {removeHtmlTagsFromString(fbData['Title'])}
-                                                            </div>
+                                                if (i < 5) {
+                                                    return (<>
+                                                        <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff' }}>
+                                                            <div style={{ width: '100%' }}>
+                                                                <div style={{ display: 'flex' }} title={fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")}>
+                                                                    <span style={{ fontSize: "10pt", display: "flex", color: "#333", marginRight: '5px', fontWeight: '600' }}>
+                                                                        {i + 1}.
+                                                                    </span>
 
-                                                            {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
-                                                                return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px', width: '100%' }}>
-                                                                    <div style={{ marginBottom: '8px' }}>
-                                                                        <div style={{ fontWeight: '600' }}>{fbComment.AuthorName} - {fbComment.Created}</div>
-                                                                    </div>
-                                                                    <div><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span></div>
-
-                                                                    {fbComment?.ReplyMessages?.length > 0 && fbComment?.ReplyMessages?.map((replycom: any) => {
-                                                                        return (
-                                                                            <div style={{ padding: '12px', backgroundColor: '#ffffff', width: '100%' }}>
-                                                                                <div style={{ marginBottom: '8px' }}>
-                                                                                    <div style={{ fontWeight: '600' }}><span>{replycom.AuthorName} - {replycom.Created}</span></div>
-                                                                                </div>
-                                                                                <div><span dangerouslySetInnerHTML={{ __html: replycom['Title'] }}></span></div>
-                                                                            </div>
-                                                                        )
-                                                                    })}
-
+                                                                    {removeHtmlTagsFromString(fbData['Title'])}
                                                                 </div>
-                                                            })}
-                                                        </div>
-                                                    </div>
-                                                    {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
-                                                        return <>
-                                                            <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff' }}>
-                                                                {/* <div style={{width:'5%'}}>
-                                                                <span style={{ fontSize: "10pt", color: "#333", marginRight:'5px' }}>{i + 1}.{j + 1}.</span> 
-                                                            </div> */}
-                                                                <div style={{ width: '100%' }}>
-                                                                    <span style={{ fontSize: "10pt", color: "#333", marginRight: '5px', fontWeight: '600' }}>{i + 1}.{j + 1}.</span>
-                                                                    <span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
-                                                                    {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
-                                                                        return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px' }}>
-                                                                            <div style={{ marginBottom: '8px' }}>
-                                                                                <span style={{ fontSize: '10.0pt', fontWeight: '600' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}</span>
-                                                                            </div>
-                                                                            <div><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span></div>
-                                                                            {fbSubComment?.ReplyMessages?.length > 0 && fbSubComment?.ReplyMessages?.map((replycom: any) => {
-                                                                                return (
-                                                                                    <div style={{ padding: '12px', backgroundColor: '#ffffff' }}>
-                                                                                        <div style={{ marginBottom: '8px' }}>
-                                                                                            <div style={{ fontWeight: '600' }}>{replycom.AuthorName} - {replycom.Created}</div>
-                                                                                        </div>
-                                                                                        <div><span dangerouslySetInnerHTML={{ __html: replycom['Title'] }}></span></div>
-                                                                                    </div>
-                                                                                )
-                                                                            })}
+
+                                                                {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
+                                                                    return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px', width: '100%' }}>
+                                                                        <div style={{ marginBottom: '8px' }}>
+                                                                            <div style={{ fontWeight: '600' }}>{fbComment.AuthorName} - {fbComment.Created}</div>
                                                                         </div>
-                                                                    })}
-                                                                </div>
+                                                                        <div title={fbComment['Title']}><span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbComment['Title'], 225) }}></span></div>
+
+                                                                        {fbComment?.ReplyMessages?.length > 0 && fbComment?.ReplyMessages?.map((replycom: any) => {
+                                                                            return (
+                                                                                <div style={{ padding: '12px', backgroundColor: '#ffffff', width: '100%' }}>
+                                                                                    <div style={{ marginBottom: '8px' }}>
+                                                                                        <div style={{ fontWeight: '600' }}><span>{replycom.AuthorName} - {replycom.Created}</span></div>
+                                                                                    </div>
+                                                                                    <div title={replycom['Title']}><span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
+                                                                                </div>
+                                                                            )
+                                                                        })}
+
+                                                                    </div>
+                                                                })}
                                                             </div>
-                                                        </>
-                                                    })}
-                                                </>)
+                                                        </div>
+                                                        {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
+                                                            return <>
+                                                                <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff' }}>
+                                                                    <div style={{ width: '100%' }}>
+                                                                        <span style={{ fontSize: "10pt", color: "#333", marginRight: '5px', fontWeight: '600' }}>{i + 1}.{j + 1}.</span>
+                                                                        <div title={fbSubData['Title']}>
+                                                                            <span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbSubData['Title'], 225) }}></span>
+                                                                        </div>
+                                                                        {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
+                                                                            return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px' }}>
+                                                                                <div style={{ marginBottom: '8px' }}>
+                                                                                    <span style={{ fontSize: '10.0pt', fontWeight: '600' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}</span>
+                                                                                </div>
+                                                                                <div title={fbSubComment['Title']}><span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbSubComment['Title'], 225) }}></span></div>
+                                                                                {fbSubComment?.ReplyMessages?.length > 0 && fbSubComment?.ReplyMessages?.map((replycom: any) => {
+                                                                                    return (
+                                                                                        <div style={{ padding: '12px', backgroundColor: '#ffffff' }}>
+                                                                                            <div style={{ marginBottom: '8px' }}>
+                                                                                                <div style={{ fontWeight: '600' }}>{replycom.AuthorName} - {replycom.Created}</div>
+                                                                                            </div>
+                                                                                            <div title={replycom['Title']} ><span style={{wordWrap: 'break-word'}}  dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
+                                                                                        </div>
+                                                                                    )
+                                                                                })}
+                                                                            </div>
+                                                                        })}
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        })}
+                                                    </>)
+                                                }
                                             })}
+                                        {RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length >= 5 ? <span>There are more Task Points in this task. <a href={`${RequiredData?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${RequiredData?.ID}&Site=${RequiredData?.siteType}`}>
+                                            Go to Task Page.</a> </span> : ""}
                                     </div>
                                 </div>
                                 :
@@ -1715,9 +1713,9 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                 <div>
                                                                     <span style={{ fontWeight: '600' }}>{cmtData.AuthorName}</span> - {cmtData.Created}
                                                                 </div>
-                                                                <div>
+                                                                <div style={{wordWrap: 'break-word'}} title={cmtData.Description}>
 
-                                                                    <span dangerouslySetInnerHTML={{ __html: cmtData.Description }}></span>
+                                                                    <span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(cmtData.Description, 120) }}></span>
                                                                 </div>
                                                             </div>
                                                             {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
@@ -1726,8 +1724,8 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                         <div style={{ marginBottom: '8px' }}>
                                                                             <span style={{ fontWeight: '600' }}>{replyData.AuthorName}</span> - {replyData.Created}
                                                                         </div>
-                                                                        <div>
-                                                                            <span dangerouslySetInnerHTML={{ __html: replyData.Description }}></span>
+                                                                        <div  title={replyData.Description}>
+                                                                            <span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replyData.Description, 120) }}></span>
                                                                         </div>
                                                                     </div>
                                                                 )
@@ -1740,8 +1738,8 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                             }
                                         })}
                                     </div>
-                                    {RequiredData?.CommentsArray?.length > 5 ? <span>For more go to Task: <a href={`${RequiredData?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${RequiredData?.ID}&Site=${RequiredData?.siteType}`}>
-                                        Click-here</a> </span> : ""}
+                                    {RequiredData?.CommentsArray?.length > 5 ? <span>There are more Comments in this task. <a href={`${RequiredData?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${RequiredData?.ID}&Site=${RequiredData?.siteType}`}>
+                                        Go to Task Page.</a> </span> : ""}
                                 </div>
                             </div>
                             : null
@@ -1755,7 +1753,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
     }
 
 }
-export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: any) => {
+export const GenerateMSTeamsNotificationPortfolioAndProject = (RequiredData: any) => {
     try {
         if (RequiredData?.Title?.length > 0) {
             return (
@@ -1792,19 +1790,19 @@ export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: an
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Start Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD/MMMM/YYYY") : ""}</span>
+                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD/MM/YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Completion Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD/MMMM/YYYY") : ""}</span>
+                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD/MM/YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Due Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD/MMMM/YYYY") : ''}</span>
+                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD/MM/YYYY") : ''}</span>
                             </div>
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
@@ -1824,7 +1822,7 @@ export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: an
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Created:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{Moment(RequiredData["Created"]).format("DD/MMMM/YYYY")}</span>
+                                <span style={{ fontSize: '10.0pt' }}>{Moment(RequiredData["Created"]).format("DD/MM/YYYY")}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Created By:</span>
@@ -1953,7 +1951,7 @@ export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredD
         const emailBodyContent = `
         <div style="border-top: 5px solid #2f5596;">
             <p style="margin-top:16px;">${messageContent}</p>
-            <p>Task Title: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
+            <p style="font-size:16px;">Task Link: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
             ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></p>
             <span>${containerDiv.innerHTML}</span>
             </div>
@@ -2013,7 +2011,20 @@ function removeHtmlTagsFromString(StringValue: string) {
     let cleanStr = StringValue?.replace(/<[^>]*>/g, '');
     cleanStr = cleanStr?.replace(/&nbsp;/g, ' ');
     cleanStr = cleanStr?.trim();
-    return cleanStr;
+    return ReduceTheContentLines(cleanStr, 225);
+}
+
+
+// this is used for the reducing the length of the string content into 4 lines
+
+
+export const ReduceTheContentLines: any = (Content: String, sliceFrom: number) => {
+    if (Content?.length > sliceFrom) {
+        let NewContent: string = Content.slice(0, sliceFrom);
+        return NewContent + "..."
+    } else {
+        return Content;
+    }
 }
 
 
