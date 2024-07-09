@@ -1403,7 +1403,7 @@ export const getDataByKey = (DataArray: any, keyName: any) => {
 export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any) => {
     try {
         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject, RequiredListIds } = RequiredData || {};
-        const TaskInformation = "Short_x0020_Description_x0020_On" in RequiredData.UpdatedDataObject ? GenerateMSTeamsNotificationPoprtfolioAndProject(UpdatedDataObject) : GenerateMSTeamsNotification(UpdatedDataObject);
+        const TaskInformation = "Short_x0020_Description_x0020_On" in RequiredData.UpdatedDataObject ? GenerateMSTeamsNotificationPortfolioAndProject(UpdatedDataObject) : GenerateMSTeamsNotification(UpdatedDataObject);
         const containerDiv = document.createElement('div');
         const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
         ReactDOM.render(reactElement, containerDiv);
@@ -1753,7 +1753,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
     }
 
 }
-export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: any) => {
+export const GenerateMSTeamsNotificationPortfolioAndProject = (RequiredData: any) => {
     try {
         if (RequiredData?.Title?.length > 0) {
             return (
