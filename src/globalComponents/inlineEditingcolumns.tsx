@@ -564,7 +564,7 @@ const inlineEditingcolumns = (props: any) => {
         postData.AssignedToId = { results: AssignedToIds ?? [] };
         postData.ResponsibleTeamId = { results: ResponsibleTeamIds ?? [] };
         postData.TeamMembersId = { results: TeamMemberIds ?? [] };
-        postData.WorkingAction = JSON.stringify(workingAction)
+        postData.WorkingAction = workingAction.length > 0 ? JSON.stringify(workingAction) : null;
         break;
 
       case 'Priority':
@@ -634,7 +634,7 @@ const inlineEditingcolumns = (props: any) => {
             }
             task.ResponsibleTeam = TaskResponsibleTeam;
             task.TeamMembers = TaskTeamMembers;
-            task.WorkingAction = JSON.stringify(workingAction)
+            task.WorkingAction = workingAction.length > 0 ? JSON.stringify(workingAction) : null;
             task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
             task.DisplayDueDate =
               task.DueDate != null
