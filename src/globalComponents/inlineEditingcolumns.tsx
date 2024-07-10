@@ -579,7 +579,6 @@ const inlineEditingcolumns = (props: any) => {
         postData.AssignedToId = { results: AssignedToIds ?? [] };
         postData.ResponsibleTeamId = { results: ResponsibleTeamIds ?? [] };
         postData.TeamMembersId = { results: TeamMemberIds ?? [] };
-        postData.WorkingAction = workingAction.length > 0 ? JSON.stringify(workingAction) : null;
         break;
 
       case 'Priority':
@@ -649,7 +648,6 @@ const inlineEditingcolumns = (props: any) => {
             }
             task.ResponsibleTeam = TaskResponsibleTeam;
             task.TeamMembers = TaskTeamMembers;
-            task.WorkingAction = workingAction.length > 0 ? JSON.stringify(workingAction) : null;
             task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
             task.DisplayDueDate =
               task.DueDate != null
@@ -1281,11 +1279,11 @@ const inlineEditingcolumns = (props: any) => {
             className="hreflink"
           >
             &nbsp;
-            <span className="alignCenter ml-auto">
+            <span className="alignCenter " style={{ display: "flex", width: "100%", height: "100%" }}>
             {Portfoliosta}
 
               {showEditPencil && (
-                <a className="pancil-icons">
+                <a className="pancil-icons ml-auto">
                   <span className="svg__iconbox svg__icon--editBox alignIcon "></span>
                 </a>
               )}
