@@ -1224,7 +1224,7 @@ const ProjectManagementMain = (props: any) => {
 
   const openRemark = (items: any) => {
     setRemarkData(items)
-    if (items.SmartInformation.length > 0) {
+    if (items?.SmartInformation?.length > 0) {
       setEditSmartInfo(true);
     } else {
       setEditSmartInfo(false);

@@ -85,6 +85,7 @@ const AddEditWebpartTemplate = (props: any) => {
                         await web.lists.getById(props?.props?.AdminConfigurationListId).items.getById(props?.EditItem?.UpdatedId).update({ Title: SmartFavDashboardTitle, Configurations: BackupNewItem != undefined && BackupNewItem?.length > 0 ? JSON.stringify(newArray[0]) : JSON.stringify(NewItem[0]) })
                             .then(async (res: any) => {
                                 setNewItem([]);
+                                onDropAction = [];
                                 CreatedSmartFavId = undefined;
                                 SmartFavDashboardTitle = undefined;
                                 props?.CloseConfigPopup(true, 'Update')
@@ -100,6 +101,7 @@ const AddEditWebpartTemplate = (props: any) => {
                     else {
                         await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: SmartFavDashboardTitle, Key: "WebpartTemplate", Value: result != undefined ? result.toString() : undefined, Configurations: JSON.stringify(NewItem[0]) })
                             .then(async (res: any) => {
+                                onDropAction = [];
                                 CreatedSmartFavId = undefined;
                                 SmartFavDashboardTitle = undefined;
                                 setNewItem([]);
@@ -145,6 +147,7 @@ const AddEditWebpartTemplate = (props: any) => {
                     }
                     await web.lists.getById(props?.props?.AdminConfigurationListId).items.getById(FilteredData?.Id).update({ Title: FilteredData?.Title, Configurations: JSON.stringify(props?.DashboardConfigBackUp) })
                         .then(async (res: any) => {
+                            onDropAction = [];
                             CreatedSmartFavId = undefined
                             SmartFavDashboardTitle = undefined;
                             setNewItem([]);

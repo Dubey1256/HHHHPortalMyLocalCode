@@ -249,6 +249,7 @@ const CreateAllStructureComponent = (props: any) => {
         let PortfolioStr;
         if (defaultPortfolioType === "Service") {
           PortfolioStr = "S" + level;
+          CheckPortfolioType(props.portfolioTypeData[1]);
         } else if (defaultPortfolioType === "Events") {
           PortfolioStr = "E" + level;
         } else {
@@ -708,12 +709,12 @@ const CreateAllStructureComponent = (props: any) => {
           {props?.SelectedItem == undefined && (
             <>
               <label>
-                <b>Select Portfolio type</b>
+                <b>Select Portfolio Type</b>
               </label>
-              <div>
+              <div className="py-3">
                 {props?.portfolioTypeData.map((item: any) => {
                   return (
-                    <span className="mb-2 mt-2">
+                    <span>
                       <label className="SpfxCheckRadio">
                         <input
                           className="radio"
@@ -758,7 +759,7 @@ const CreateAllStructureComponent = (props: any) => {
                               )
                             }
                             title="Add"
-                            className="svg__iconbox svg__icon--Plus mini mx-1 hreflink"
+                            className="svg__iconbox svg__icon--Plus mini mx-1"
                           ></span>
                         </div>
                       )
@@ -793,7 +794,7 @@ const CreateAllStructureComponent = (props: any) => {
                         )
                       }
                       title="Add"
-                      className="svg__iconbox svg__icon--Plus mini mx-1 hreflink"
+                      className="svg__iconbox svg__icon--Plus mini mx-1"
                     ></span>
                     <span className="Dyicons" key={`Feature-${index}`}>
                       F
@@ -810,7 +811,7 @@ const CreateAllStructureComponent = (props: any) => {
                         )
                       }
                       title="Add"
-                      className="svg__iconbox svg__icon--Plus mini mx-1 hreflink"
+                      className="svg__iconbox svg__icon--Plus mini mx-1"
                     ></span>
                   </span>
                 );
@@ -841,7 +842,7 @@ const CreateAllStructureComponent = (props: any) => {
                             handleAddSubComponent(index, 0, 0, "Component")
                           }
                           title="Add"
-                          className="svg__iconbox svg__icon--Plus mini mx-1 hreflink"
+                          className="svg__iconbox svg__icon--Plus mini mx-1"
                         ></span>
                         <div className="Dyicons">S</div>
                         <span
@@ -856,7 +857,7 @@ const CreateAllStructureComponent = (props: any) => {
                             )
                           }
                           title="Add"
-                          className="svg__iconbox svg__icon--Plus mini mx-1 hreflink"
+                          className="svg__iconbox svg__icon--Plus mini mx-1"
                         ></span>
                         <div className="Dyicons">F</div>
                         <span
@@ -871,13 +872,13 @@ const CreateAllStructureComponent = (props: any) => {
                             )
                           }
                           title="Add"
-                          className="svg__iconbox svg__icon--Plus mini mx-1 hreflink"
+                          className="svg__iconbox svg__icon--Plus mini mx-1"
                         ></span>
                       </span>
                     </label>
 
                     {isDisable == false && (
-                      <div className="input-group">
+                      <div className="input-group alignCenter">
                         <input
                           type="text"
                           disabled={isDisable}
@@ -898,7 +899,7 @@ const CreateAllStructureComponent = (props: any) => {
                                     handleDelete(index, 0, 0, "component")
                                   }
                                   title="Delete"
-                                  className="svg__iconbox svg__icon--trash hreflink"
+                                  className="svg__iconbox svg__icon--trash"
                                 ></span>
                               )}
                             </div>
@@ -923,7 +924,7 @@ const CreateAllStructureComponent = (props: any) => {
                               <span>{indexSub + 1} - </span> SubComponent
                               <span className="pull-right"></span>
                             </label>
-                            <div className="input-group">
+                            <div className="input-group alignCenter">
                               <input
                                 type="text"
                                 className="form-control"
@@ -952,7 +953,7 @@ const CreateAllStructureComponent = (props: any) => {
                                       )
                                     }
                                     title="Delete"
-                                    className="svg__iconbox svg__icon--trash hreflink"
+                                    className="svg__iconbox svg__icon--trash"
                                   ></span>
                                 )}
                               <span
@@ -968,7 +969,7 @@ const CreateAllStructureComponent = (props: any) => {
                                 }
 
                                 title="Add"
-                                className="svg__iconbox mx-1 svg__icon--Plus mini hreflink mt-1"
+                                className="svg__iconbox mx-1 svg__icon--Plus mini mt-1"
                               ></span>
                               {!(props?.SelectedItem?.Item_x0020_Type === "Component" && component.SubComponent.length === 1 && props?.SelectedItem === undefined) && (
                                 <div className="input-group-append alignCenter">
@@ -983,7 +984,7 @@ const CreateAllStructureComponent = (props: any) => {
                                         )
                                       }
                                       title="Delete"
-                                      className="svg__iconbox svg__icon--trash hreflink"
+                                      className="svg__iconbox svg__icon--trash"
                                     ></span>
                                   )}
                                 </div>
@@ -1033,7 +1034,7 @@ const CreateAllStructureComponent = (props: any) => {
                                             )
                                           }
                                           title="Delete"
-                                          className="svg__iconbox svg__icon--trash hreflink"
+                                          className="svg__iconbox svg__icon--trash"
                                         ></span>
                                         
                                        
@@ -1065,7 +1066,7 @@ const CreateAllStructureComponent = (props: any) => {
                                 Feature
                               </label>
 
-                              <div className="input-group">
+                              <div className="input-group alignCenter">
                                 <input
                                   type="text"
                                   className="form-control"
@@ -1094,7 +1095,7 @@ const CreateAllStructureComponent = (props: any) => {
                                       )
                                     }
                                     title="Delete"
-                                    className="svg__iconbox svg__icon--trash hreflink"
+                                    className="svg__iconbox svg__icon--trash"
                                   ></span>
                                 )}
                                 {component.SubComponent.length == 1 &&
@@ -1109,7 +1110,7 @@ const CreateAllStructureComponent = (props: any) => {
                                         )
                                       }
                                       title="Delete"
-                                      className="svg__iconbox svg__icon--trash hreflink"
+                                      className="svg__iconbox svg__icon--trash"
                                     ></span>
                                   )}
                               
@@ -1125,7 +1126,7 @@ const CreateAllStructureComponent = (props: any) => {
             ))}
           </div>
 
-          <footer className="modal-footer mt-2">
+          <footer className="modal-footer mt-2 p-0">
             {components[0].value != "" || props.SelectedItem != undefined ? (
               <button className="btn btn-primary" onClick={handleSave}>
                 Save

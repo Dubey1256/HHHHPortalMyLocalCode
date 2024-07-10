@@ -35,11 +35,11 @@ const SmartInformation = (props: any, ref: any) => {
   const [smartInformationArrow, setsmartInformationArrow]: any = useState();
   const [enlargeInformationArrow, setenlargeInformationArrow]: any = useState();
   const [copySmartInfo, setcopySmartInfo] = useState([]);
-  if (props?.Context?._pageContext?._web?.absoluteUrl?.indexOf('washington') > -1) {
-    var baseurl = props?.Context?._pageContext?._web?.absoluteUrl?.replace(/\/Team/i, '/Public') + '/SitePages/Smartmetadataportfolio.aspx';
+  if (props.AllListId?.siteUrl?.indexOf('washington') > -1) {
+    var baseurl = props.AllListId?.siteUrl?.replace(/\/Team/i, '/Public') + '/SitePages/Smartmetadataportfolio.aspx';
   }
   else {
-    var baseurl = props?.Context?._pageContext?._web?.absoluteUrl + '/SitePages/ManageSmartMetaData.aspx'
+    var baseurl = props.AllListId?.siteUrl + '/SitePages/ManageSmartMetaData.aspx'
   }
   const [allValue, setallSetValue] = useState({
     Title: "", Id: 1021, URL: "", Acronym: "", Description: "", InfoType: "Information Note", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
@@ -1622,7 +1622,7 @@ const SmartInformation = (props: any, ref: any) => {
           {!Htmleditorcall && allValue.InfoType !== 'Information Source' && <div className='mt-2'><HtmlEditorCard editorValue={allValue?.Description != null ? allValue?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>}
 
           {Htmleditorcall && <div className='text-end my-1'><a title='Add Description' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDescription()}>Add Source Description</a></div>}
-          {(Htmleditorcall || (popupEdit && allValue.InfoType === 'Information Source')) && <div className='mt-2'> <EditorComponent editorState={editorState} setEditorState={setEditorState} /> </div>}
+          {(Htmleditorcall || (popupEdit && allValue.InfoType === 'Information Source')) && <div className='mt-2'> <EditorComponent editorState={editorState} setEditorState={setEditorState} usedFor={''} /> </div>}
 
           <footer className='text-end mt-2'>
             <div className='col-sm-12 row m-0'>

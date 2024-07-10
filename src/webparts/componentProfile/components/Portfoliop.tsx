@@ -1476,11 +1476,12 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                               portfolioColor={portfolioColor}
                                 AllListId={ContextValue}
                                 callBack={inlineCallBack}
-                                columnName="PercentComplete"
+                                columnName="PortfolioStatus"
                                 item={data[0]}
                                 TaskUsers={AllTaskuser}
                                 pageName={"portfolioprofile"}
                               />
+                           
                             ))}
                           </dd>
                         </dl>
@@ -1526,13 +1527,12 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                       >
                                        {item?.Parent?.Title}
                                       </a>
-                                      <span className="pull-right">
-                                        <span className="pencil_icon">
+                                    
                                           <span className="hreflink">
                                             {item?.PortfolioType?.Title ==
                                               "Component" && (
                                                 <>
-                                                  <a
+                                                  <a className="pancil-icons ml-auto"
                                                     target="_blank"
                                                     data-interception="off"
                                                     href={
@@ -1541,20 +1541,16 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                                       item?.Parent?.Id
                                                     }
                                                   >
-                                                    <img
-                                                      src={require("../../../Assets/ICON/edit_page.svg")}
-                                                      width="25"
-                                                      height="25"
-                                                    />{" "}
+                                                    <span className="svg__iconbox svg__icon--editBox alignIcon "></span> {" "}
                                                   </a>
                                                 </>
                                               )}
                                             {item?.PortfolioType?.Title ==
                                               "Service" && (
                                                 <>
-                                                  <a
+                                                  <a className="pancil-icons ml-auto"
                                                     target="_blank"
-                                                    data-interception="off"
+                                                    data-interception="off" 
                                                     href={
                                                       SelectedProp.siteUrl +
                                                       "/SitePages/Team-Portfolio.aspx?ComponentID=" +
@@ -1562,17 +1558,12 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                                     }
                                                   >
                                                     {" "}
-                                                    <img
-                                                      src={require("../../../Assets/ICON/edit_page.svg")}
-                                                      width="25"
-                                                      height="25"
-                                                    />{" "}
+                                                    <span className="svg__iconbox svg__icon--editBox alignIcon "></span> {" "}
                                                   </a>
                                                 </>
                                               )}
                                           </span>
-                                        </span>
-                                      </span>
+                                     
                                     </>
                                   )}
                                 </dd>
