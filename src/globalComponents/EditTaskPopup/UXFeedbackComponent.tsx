@@ -20,6 +20,7 @@ import { BiInfoCircle } from "react-icons/bi";
 import FlorarImageUploadComponent from "../FlorarComponents/FlorarImageUploadComponent";
 
 import MoveSetComponent from "./MoveSetComponent";
+import Tooltip from "../Tooltip";
 let arrayOfChar = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',]
 //   End====
 let globalCount = 1;
@@ -617,7 +618,7 @@ export default function UXFeedbackComponent(textItems: any) {
 
             >
                 <div className="subheading siteColor">Add More Image</div>
-                {/* <Tooltip ComponentId="6776" isServiceTask={ServicesTaskCheck} /> */}
+                <Tooltip ComponentId="12134"  />
             </div>
         );
     };
@@ -806,10 +807,17 @@ export default function UXFeedbackComponent(textItems: any) {
                                         role="tabpanel"
                                         aria-labelledby={designdata?.setTitle}
                                     >
-                                        <div className="full-width my-2">
-                                            <span className="alignCenter">
-                                               
-                                                <a className="ms-2 alignCenter hreflink" onClick={() => AddMoreImages(j)}><span className="svg__iconbox svg__icon--Plus hreflink mini" title="Add set" ></span> Add Images</a></span>
+                                        <div className="full-width my-2" >
+                                            <span
+                                                className="mx-1 hover-text"
+                                                onClick={() => AddMoreImages(j)}
+                                            >
+                                             <span className="svg__iconbox svg__icon--Plus hreflink mini" ></span>Add Images
+                                               <span className="tooltip-text pop-right" >
+                                                    Add Images
+                                                </span>
+                                            </span>
+                                       
                                         </div>
                                         {
                                             designdata?.setImagesInfo?.length == 0 && <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} imageIndex={j} />}
@@ -851,7 +859,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                             >
                                                                                 {" "}
                                                                                 | <RiDeleteBin6Line /> 
-                                                                                <span className="tooltip-text pop-right">
+                                                                                <span className="tooltip-text pop-right" >
                                                                                     Delete
                                                                                 </span>
                                                                             </span>
@@ -1167,7 +1175,7 @@ export default function UXFeedbackComponent(textItems: any) {
 
     // ======End ====
     return (
-        <div className="col mt-2">
+        <div className="col mt-4">
             {State?.length ? null : <button className="btn btn-primary" onClick={() => addSet()}>Add New Set</button>}
 
             {State?.length && textItems?.UXStatus ? DesignCategoriesTask(State) : ""}

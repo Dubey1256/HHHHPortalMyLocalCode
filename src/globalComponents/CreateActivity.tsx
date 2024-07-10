@@ -101,7 +101,7 @@ const CreateActivity = (props: any) => {
 
   React.useEffect(() => {
     AllListId = props?.AllListId;
-    if (props?.selectedItem?.NoteCall != "Task" && props?.selectedItem?.NoteCall != "Activities" && props?.selectedItem?.NoteCall != undefined) {
+    if (props?.selectedItem?.NoteCall != "Task" && props?.selectedItem?.NoteCall != "Activities") {
       setTaskTitle(`${props?.selectedItem?.NoteCall} - ${props?.selectedItem?.Title}`);
     }
 
