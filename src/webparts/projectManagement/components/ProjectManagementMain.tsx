@@ -75,6 +75,7 @@ let keyRelevantPortfolioItems: any;
 let selectedItem: any
 let taggedPortfolioItem: any
 let taskTypeDataItem: any;
+let keyTaggedDocs: any;
 const ProjectManagementMain = (props: any) => {
   relevantDocRef = React.useRef();
   smartInfoRef = React.useRef();
@@ -122,11 +123,12 @@ const ProjectManagementMain = (props: any) => {
   const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
   const [editSmartInfo, setEditSmartInfo] = React.useState(false)
   const [suggestedItems, setSuggestedItems] = React.useState('')
-  const [suggestedPortfolio, setSuggestedPortfolio] = React.useState("")
+  const [taggedPortfolio, setTaggedPortfolio] = React.useState([])
     const [searchedKeyPortfolios, setSearchedkeyPortfolios] = React.useState([])
   const [ActivityPopup, setActivityPopup] = React.useState(false);
   const [activeTile, setActiveTile] = React.useState("")
   const [keyRelevantPortfolios, setKeyRelevantPortfolios] = React.useState(false)
+  const [keyTaggedDoc, setKeyTaggedDoc] = React.useState([])
   const childRef = React.useRef<any>();
   const StatusArray = [
     { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
@@ -510,7 +512,6 @@ const ProjectManagementMain = (props: any) => {
     setActivityPopup(false)
     setActiveTile("")
     setSearchedkeyPortfolios([])
-    setSuggestedPortfolio("")
     childRef?.current?.setRowSelection({});
   }
 
@@ -1075,6 +1076,9 @@ const ProjectManagementMain = (props: any) => {
   }
   const CreateActivityPopup = (type: any) => {
     setActiveTile(type)
+    if (Masterdata != null && Masterdata != undefined) {
+      Masterdata.NoteCall = type;
+    }
     if (checkedList?.TaskType === undefined) {
         checkedList.NoteCall = type;
         selectedItem.NoteCall = type;
@@ -1124,7 +1128,7 @@ const ProjectManagementMain = (props: any) => {
       alert("You can not create ny item inside Task");
     }
     setSearchedkeyPortfolios([])
-    setSuggestedPortfolio("")
+    setTaggedPortfolio([])
       };
   const Call = (propsItems: any, type: any) => {
     if (propsItems?.Id != undefined) {
@@ -1247,7 +1251,8 @@ const ProjectManagementMain = (props: any) => {
   const keyRelevantPortfolioPopupCallback = React.useCallback((DataItem: any, Type: any, functionType: any) => {
     if (DataItem?.length > 0 && Type == "Single") {
       DataItem?.forEach((data: any) => {
-        setTaggedPortfolioItem(data)
+        taggedPortfolioItem = data
+        setTaggedPortfolio([data])
       })
     }
     setKeyRelevantPortfolios(false);
@@ -1914,7 +1919,6 @@ const ProjectManagementMain = (props: any) => {
   const searchSuggestedPortfolio2 = (e: React.ChangeEvent<HTMLInputElement>) => {
     let SearchedKeyWord: any = e.target.value;
     let TempArray: any = [];
-    setSuggestedPortfolio(SearchedKeyWord)
     if (SearchedKeyWord.length > 0) {
       if (
         keyRelevantPortfolioItems != undefined &&
@@ -1935,13 +1939,12 @@ const ProjectManagementMain = (props: any) => {
       }
     } else {
       setSearchedkeyPortfolios([]);
-      setSuggestedPortfolio("");
     }
   };
 
   const setTaggedPortfolioItem = (item: any) => {
     taggedPortfolioItem = item
-    setSuggestedPortfolio(item?.Title)
+    setTaggedPortfolio([item])
     setSearchedkeyPortfolios([]);
   }
   return (
@@ -2477,14 +2480,48 @@ const ProjectManagementMain = (props: any) => {
                         <div className="clearfix col-12 mt-3 position-relative">
                        <h4 className="titleBorder">Key/Relevant Portfolios</h4>
                           <div className="clearfix col-12">
-                       <input type="text" className="form-control"
-                                value={suggestedPortfolio}
+                            {taggedPortfolio.length > 0 ? (
+                              <span className="full-width">
+                                {taggedPortfolio?.map((com: any) => {
+                                  return (
+                                    <>
+                                      <div
+                                        className="full-width replaceInput pe-0 alignCenter"
+                                        style={{ width: "90%" }}
+                                      >
+                                        <a
+                                          title={com?.Title}
+                                          target="_blank"
+                                          data-interception="off"
+                                          className="textDotted"
+                                          href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com?.Id}`}
+                                        >
+                                          {com?.Title}
+                                        </a>
+                                        <span
+                                          title="Remove Component"
+                                          onClick={() => setTaggedPortfolio([])}
+                                          style={{ backgroundColor: "black" }}
+                                          className="svg__iconbox svg__icon--cross hreflink mx-2"
+                                        ></span>
+                                      </div>
+                                    </>
+                                  );
+                                })}
+                              </span>
+                            ) : (
+                              <input
+                                type="text"
+                                className="form-control"
                                 onChange={(e) => searchSuggestedPortfolio2(e)}
-                         placeholder="Search Portfolio Items"
+                                placeholder="Search Portfolio Item"
                               />
+                            )}
                             <span className="input-group-text">
                               <span
-                           onClick={() => EditKeyRelevantPortfolio(checkedList)}
+                                onClick={() =>
+                                  EditKeyRelevantPortfolio(checkedList)
+                                }
                                 title="Edit Portfolios"
                                 className="hreflink svg__iconbox svg__icon--editBox mt-15"
                               ></span>
@@ -2509,7 +2546,8 @@ const ProjectManagementMain = (props: any) => {
                               </ul>
                             </div>
                           ) : null}
-                     </div></>
+                        </div>
+                      </>
                     )}
                   </div>
                 </div>
@@ -2518,7 +2556,8 @@ const ProjectManagementMain = (props: any) => {
                 <button
                   type="button"
                   className="btn btn-primary mx-2"
-                  onClick={() => Createbutton()} disabled={activeTile === "" || suggestedPortfolio === ""}
+                  onClick={() => Createbutton()}
+                  disabled={activeTile === "" || taggedPortfolio.length == 0}
                 >
                   Create
                 </button>
@@ -2543,6 +2582,8 @@ const ProjectManagementMain = (props: any) => {
                   checkedList != null && checkedList.Id != null
                     ? checkedList
                     : selectedItem
+                    ? selectedItem
+                    : Masterdata
                 }
                 taggedPortfolioItem={taggedPortfolioItem}
               ></CreateActivity>
@@ -2558,8 +2599,10 @@ const ProjectManagementMain = (props: any) => {
                 data={ProjectTableData}
               ></CreateWS>
             )}
-          </>) : (<div>Project not found</div>)}
-
+          </>
+        ) : (
+          <div>Project not found</div>
+        )}
       </div>
       {openTimeEntryPopup && (
         <TimeEntryPopup
