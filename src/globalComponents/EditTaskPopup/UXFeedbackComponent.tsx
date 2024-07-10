@@ -1175,7 +1175,7 @@ export default function UXFeedbackComponent(textItems: any) {
 
     // ======End ====
     return (
-        <div className="col mt-2">
+        <div className="col mt-4">
             {State?.length ? null : <button className="btn btn-primary" onClick={() => addSet()}>Add New Set</button>}
 
             {State?.length && textItems?.UXStatus ? DesignCategoriesTask(State) : ""}
