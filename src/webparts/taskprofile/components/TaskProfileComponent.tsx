@@ -225,7 +225,7 @@ const CopyTaskProfile = (props: any) => {
                 Context: propsValue.Context,
                 TaskTypeID: propsValue.TaskTypeID,
                 isShowTimeEntry: isShowTimeEntry,
-                isShowSiteCompostion: isShowSiteCompostion,
+                isShowSiteCompostion: propsValue?.SiteCompostion !== "" ? JSON.parse(propsValue?.SiteCompostion) : "",
                 listName:listName
             };
 

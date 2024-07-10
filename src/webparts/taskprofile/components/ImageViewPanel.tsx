@@ -1,7 +1,7 @@
 import moment from 'moment';
 import * as React from 'react';
 import { Panel, PanelType } from "office-ui-fabric-react";
-import { Tooltip } from "@fluentui/react-components";
+import { Display, Tooltip } from "@fluentui/react-components";
 import { useState, useEffect } from 'react'
 import { BiInfoCircle } from 'react-icons/bi'
 import * as globalCommon from '../../../globalComponents/globalCommon'
@@ -23,7 +23,7 @@ const ImageViewPanel = (props: any) => {
     var settings = {
         dots: false,
         infinite: true,
-        speed: 500,
+        speed: 700,
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: false,
@@ -50,12 +50,15 @@ const ImageViewPanel = (props: any) => {
     const [replyCommentData, setReplyCommentData] = useState("");
     const [isPopoverFilterOpen, setIsPopoverFilterOpen] = useState(false);
     const [isPopoverShortByOpen, setIsPopoverShortByOpen] = useState(false);
-    
+    const [seeMore, setSeeMore] = useState({status:false,index:null});
 
        //============= Open image right side function Start=============
     const openImageSection = (selectedTitle: any) => {
         SetRightSectionImage([...checkedImageData])
         checkDataImage=checkedImageData
+        if(checkedImageData?.length==2){
+        copyAllImage= copyAllImage?.filter((data:any)=>data?.ImageName!=props?.checkedImageData[0]?.ImageName)
+        }
         SetIconSeleted(selectedTitle)
         SetopenImageRightSection(true)
     }
@@ -375,10 +378,10 @@ const ImageViewPanel = (props: any) => {
                     <Slider ref={slider => (sliderRef = slider)} {...settings}>
                         {allImageData?.map((slide: any, index: any) => (
                             <div key={index}>
-                                <img style={{ height: "500px" }}
+                                <img 
                                     src={slide?.ImageUrl}
                                     loading="lazy"
-                                    className={`h-full w-full object-cover ${slide?.fillHeart && "borderFavImage"}`}
+                                    className={`h-full w-full  ${slide?.fillHeart && "borderFavImage"}`}
                                 />
                                 <div>
                                     {checked && <div className='belowImageSection'>
@@ -393,16 +396,16 @@ const ImageViewPanel = (props: any) => {
 
                                             </div>
                                             <div className='alignCenter'>
-                                                {(slide?.Exclude ==undefined || slide?.Exclude ==false)  ? <div className='alignCenter mx-2 siteColor' onClick={() => changeFunction('Exclude', slide, "Exclude")}>
+                                                {(slide?.Exclude ==undefined || slide?.Exclude ==false)  ? <a className='alignCenter mx-2' onClick={() => changeFunction('Exclude', slide, "Exclude")}>
                                                     <span className='svg__icon--cross svg__iconbox mini me-1' ></span>Exclude
-                                                </div>:
-                                                <div className='alignCenter mx-2 siteColor RestoreImage'onClick={() => changeFunction('Restore', slide, "Restore")}>
+                                                </a>:
+                                                <a className='alignCenter mx-2 RestoreImage'onClick={() => changeFunction('Restore', slide, "Restore")}>
                                                     <span className='svg__icon--refresh svg__iconbox me-1'></span>Restore
-                                                </div>}
-                                                <div className='alignCenter mx-2 imageFavorite siteColor' onClick={() => changeFunction('fillHeart', slide, "fillHeart")}>
+                                                </a>}
+                                                <a className='alignCenter mx-2 imageFavorite' onClick={() => changeFunction('fillHeart', slide, "fillHeart")}>
 
                                                     {slide?.fillHeart ? <BsFillHeartFill className='me-2 fillHeart'/> : <BsHeart className='me-1'  />}
-                                                    Favorite</div>
+                                                    Favorite</a>
                                             </div>
 
                                         </div>
@@ -446,8 +449,8 @@ const ImageViewPanel = (props: any) => {
                                                 <div className='SpfxCheckRadio m-0'>
                                                     <div className="col">
                                                         {slide?.Comments != null && slide?.Comments?.length > 0 && slide?.Comments?.map((fbComment: any, k: any) => {
-                                                            return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col bg-f5f5 p-2  my-1 ${fbComment.isShowLight}` : "col bg-f5f5 p-2  my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
-                                                                <div className="">
+                                                            return <> <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col bg-f5f5 p-2  my-1 ${fbComment.isShowLight}` : "col bg-f5f5 p-2  my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
+                                                                <div className="" style={{ display: (k > 0 && seeMore?.status==false && seeMore?.index !=index)? 'none ' : 'block' }}>
                                                                     <div className="d-flex p-0">
                                                                         <div className="col-1 p-0 wid30">
                                                                             {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink" onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)}
@@ -520,8 +523,8 @@ const ImageViewPanel = (props: any) => {
 
 
                                                             </div>
-
-
+                                                         { k > 0 && <button type="button" className="btn btn-primary btnCol ms-2" onClick={() => setSeeMore({...seeMore,status:true,index:index})}>See More</button>}
+                                                             </>
                                                         })}
                                                     </div>
                                                     {commentStatus?.status && commentStatus?.index === index && <div className="align-items-center d-flex" >
@@ -567,16 +570,16 @@ const ImageViewPanel = (props: any) => {
 
                             </div>
                             <div className='alignCenter'>
-                            {(slide?.Exclude ==undefined || slide?.Exclude ==false)  ? <div className='alignCenter mx-2 siteColor' onClick={() => changeFunction('Exclude', slide, "Exclude")}>
+                            {(slide?.Exclude ==undefined || slide?.Exclude ==false)  ? <a className='alignCenter mx-2' onClick={() => changeFunction('Exclude', slide, "Exclude")}>
                                                     <span className='svg__icon--cross svg__iconbox me-1 mini' ></span>Exclude
-                                                </div>:
-                                                <div className='alignCenter mx-2 siteColor RestoreImage'onClick={() => changeFunction('Restore', slide, "Restore")}>
+                                                </a>:
+                                                <a className='alignCenter mx-2 RestoreImage'onClick={() => changeFunction('Restore', slide, "Restore")}>
                                                     <span className='svg__icon--refresh svg__iconbox me-1'></span>Restore
-                                                </div>}
-                                <div className='alignCenter mx-2 imageFavorite'>
+                                                </a>}
+                                <a className='alignCenter mx-2 imageFavorite'>
 
                                     {slide?.fillHeart ? <BsFillHeartFill className='me-2 fillHeart' onClick={() => changeFunction('fillHeart', slide, "fillHeart")} /> : <BsHeart className='me-1' onClick={() => changeFunction('fillHeart', slide, "fillHeart")} />}
-                                    Favorite</div>
+                                    Favorite</a>
                             </div>
 
                         </div>
@@ -843,10 +846,11 @@ const ImageViewPanel = (props: any) => {
                                             </label>
                                    
                                 </div>
-                                <div className='alignCenter me-5'>
-                              {(iconSeleted == "compareSeveral" || iconSeleted == "viewAll") && <Popover withArrow open={isPopoverShortByOpen} onOpenChange={(e, data) => setIsPopoverShortByOpen(data.open)} >
+                                <span className='alignCenter ml-auto'>
+                                <div className={`${rightSectionImage?.length==1?'alignCenter me-5 DisableFilterSorting':'alignCenter me-5'}`}>
+                             <Popover withArrow open={isPopoverShortByOpen} onOpenChange={(e, data) => setIsPopoverShortByOpen(data.open)} >
                                     <PopoverTrigger disableButtonEnhancement>
-                                    <span className='alignCenter'> <span className="svg__iconbox svg__icon--Switcher me-4" title="Sort by"></span>Sort by</span>
+                                    <span className='alignCenter  me-4'> <span className="svg__iconbox svg__icon--Switcher" title="Sort by"></span>Sort by</span>
                                     </PopoverTrigger>
                                     <PopoverSurface tabIndex={-1}>
                                         <div>
@@ -863,10 +867,10 @@ const ImageViewPanel = (props: any) => {
                                         </div>
                                        
                                     </PopoverSurface>
-                                </Popover>}
-                                {(iconSeleted == "compareSeveral" || iconSeleted == "viewAll") && <Popover withArrow open={isPopoverFilterOpen} onOpenChange={(e, data) => setIsPopoverFilterOpen(data.open)} >
+                                </Popover>
+                               <Popover withArrow open={isPopoverFilterOpen} onOpenChange={(e, data) => setIsPopoverFilterOpen(data.open)} >
                                     <PopoverTrigger disableButtonEnhancement>
-                                        <span className='alignCenter'><span className="svg__iconbox svg__icon--filter" title="Sort by"></span></span>
+                                        <span className='alignCenter'><span className="svg__iconbox svg__icon--filter" title="Filter"></span>Filter</span>
                                     </PopoverTrigger>
 
                                     <PopoverSurface tabIndex={-1}>
@@ -899,11 +903,12 @@ const ImageViewPanel = (props: any) => {
                                         </div>
                                        
                                     </PopoverSurface>
-                                </Popover>} </div>
+                                </Popover></div>
                                {iconSeleted != "compareSeveral" && <div className='playpausebutton'>
                                     <span onClick={previous} className='svg__icon--arrowLeft svg__iconbox'></span>
                                     <span className="svg__icon--arrowRight svg__iconbox" onClick={next}></span>
                                 </div>}
+                               </span>
                             </div>
                             {iconSeleted == "fullScreen" && imageSlider(allImageData)}
                             {iconSeleted == "compare2" && <div className='CompareSection col-sm-12 row'>
@@ -913,7 +918,7 @@ const ImageViewPanel = (props: any) => {
                             {(iconSeleted == "compareSeveral" || iconSeleted == "viewAll") && <div className='CompareSection col-sm-12 row'>
                                 {rightSectionImage?.map((checkData: any, index: any) => {
                                     return (
-                                        <div className={hideLeftSection?`col-sm-4 ${(checkData?.Exclude !=undefined || checkData?.Exclude ==true) && 'faded'}`:`col-sm-6 ${(checkData?.Exclude !=undefined || checkData?.Exclude ==true) && 'faded'}`}>{singleImageView(checkData, index)} </div>
+                                        <div className={hideLeftSection?`${(checkData?.Exclude !=undefined  &&  checkData?.Exclude ==true) ? ' col-sm-4 faded':' col-sm-4'}`:`${(checkData?.Exclude !=undefined &&  checkData?.Exclude ==true)? 'col-sm-6  faded':"col-sm-6 "}`}>{singleImageView(checkData, index)} </div>
                                     )
 
                                 })}
