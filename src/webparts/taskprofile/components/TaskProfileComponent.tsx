@@ -345,7 +345,6 @@ const CopyTaskProfile = (props: any) => {
             let siteicon = GetSiteIcon(listName)
             let tempTask = {
                 SiteIcon: siteicon,
-                workingTodayUser: taskDetails['workingTodayUser'],
                 sitePage: propsValue.Context?._pageContext?._web?.title,
                 Comments: comments != null && comments != undefined ? comments : "",
                 Id: taskDetails["ID"],
