@@ -236,7 +236,7 @@ const CopyTaskProfile = (props: any) => {
                         category += item.Title;
                     } else {
                         category += item.Title + "; ";
-                    }                   
+                    }
                 });
             }
 
@@ -334,10 +334,10 @@ const CopyTaskProfile = (props: any) => {
                                 })
                             }
                         })
-                    }   
+                    }
                     if (Action?.Title == "Approval") {
                         setApprovalStatus(true)
-                    }                   
+                    }
                 })
             }
             let siteicon = GetSiteIcon(listName)
@@ -351,7 +351,7 @@ const CopyTaskProfile = (props: any) => {
                 Bottleneck: Bottleneck,
                 Attention: Attention,
                 Phone: Phone,
-                Approval:Approval,
+                Approval: Approval,
                 SmartPriority: globalCommon.calculateSmartPriority(taskDetails),
                 TaskTypeValue: '',
                 projectPriorityOnHover: '',
@@ -2005,7 +2005,7 @@ const CopyTaskProfile = (props: any) => {
                                                         <dd className='bg-Ff position-relative' >{state?.Result?.workingTodayUser != undefined && state?.Result?.workingTodayUser?.map((user: any) => {
                                                             return (
                                                                 <>
-                                                                { user?.Item_x0020_Cover?.Url ? <span className='tooltipbox'><img className='workmember' title={user?.Title} src={user?.Item_x0020_Cover?.Url} /></span> :
+                                                                    {user?.Item_x0020_Cover?.Url ? <span className='tooltipbox'><img className='workmember' title={user?.Title} src={user?.Item_x0020_Cover?.Url} /></span> :
                                                                         <span className="suffix_Usericon">{user?.Suffix}</span>}
                                                                 </>
                                                             )
@@ -2217,8 +2217,8 @@ const CopyTaskProfile = (props: any) => {
 
                                                         </dd>
                                                     </dl>
-                                                     {/* ////////////////this is Approval section/////////////// */}
-                                                     <dl>
+                                                    {/* ////////////////this is Approval section/////////////// */}
+                                                    <dl>
                                                         <dt className='bg-Fa'>Approval</dt>
                                                         <dd className='bg-Ff'>
                                                             {state?.Result?.Approval?.length > 0 && state?.Result?.Approval?.map((ApprovalData: any) => {
