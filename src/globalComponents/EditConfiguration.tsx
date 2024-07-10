@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
 import Tooltip from "./Tooltip";
-import { myContextValue } from "./globalCommon";
+import { deepCopy, myContextValue } from "./globalCommon";
 import PageLoader from '../globalComponents/pageLoader';
 import _ from "lodash";
 import AddEditWebpartTemplate from "./AddEditWebpartTemplate";
@@ -50,8 +50,12 @@ const EditConfiguration = (props: any) => {
     }
 
     const dragStart = (e: any, position: any, index: any) => {
+        //e.preventDefault();
+        e.dataTransfer.setData("Text", e.target.id);
         console.log(position);
         // dragItem.Current =position;
+        $('#textDrag').css('cursor', 'grabbing');
+        // TweenLite.set("#dragme",{cursor:"grabbing"});
         let dragStart = { Current: position, CurrentIndex: index }
         setDragItem(dragStart);
 
@@ -75,6 +79,7 @@ const EditConfiguration = (props: any) => {
     }
     const drop = (e: any, childindex: any, index: any, statusProperty: any) => {
         console.log(e);
+
         if (statusProperty === "sameArray") {
             const targetIndex = dragOverItem.Current;
 
@@ -126,43 +131,48 @@ const EditConfiguration = (props: any) => {
             const updatedItems = [...NewItem];
 
             // Extract the item being dragged
-            let draggedItemContent: any = ExistingWeparts[dragItem.Current];
-            draggedItemContent.WebpartTitle = draggedItemContent.WebpartTitle === undefined ? draggedItemContent.Title : draggedItemContent.WebpartTitle;
-            let obj: any = {};
-            obj.Column = dragOverItem.Current;
-            obj.Row = dragOverItem.CurrentIndex;
-            draggedItemContent.WebpartPosition = obj;
-            // Remove the dragged item from its original position
-            if (draggedItemContent?.Configurations != undefined) {
-                let draggedItemContent123: any = JSON.parse(draggedItemContent?.Configurations);
-                draggedItemContent = _.cloneDeep(draggedItemContent123);
-            }
-            let filterGroups = [...ExistingWeparts];
-            let ExistingWepartsNew = filterGroups.filter((obj: any) => obj.WebpartId != draggedItemContent.WebpartId)
-            updatedItems[dragOverItem?.CurrentIndex].ArrayValue.splice(targetIndex, 0, draggedItemContent);
-            // Clear the drag indices
-            let itemsArray: any = [];
-            updatedItems?.forEach((item: any, index: any) => {
-                item?.ArrayValue?.forEach((obj: any) => {
-                    itemsArray.push(obj);
-                })
-                if (dragOverItem.CurrentIndex === index)
-                    item?.ArrayValue?.forEach((subChild: any, indexChild: any) => {
-                        if (subChild?.WebpartPosition != undefined) {
-                            subChild.WebpartPosition.Row = indexChild + 1;
-                            subChild.WebpartPosition.Column = (dragOverItem.CurrentIndex + 1);
-                        }
-
+            let draggedItemContent = ExistingWeparts[dragItem.Current];
+            if (draggedItemContent != undefined) {
+                draggedItemContent.WebpartTitle = draggedItemContent.WebpartTitle === undefined ? draggedItemContent.Title : draggedItemContent.WebpartTitle;
+                let obj: any = {};
+                obj.Column = dragOverItem.Current;
+                obj.Row = dragOverItem.CurrentIndex;
+                draggedItemContent.WebpartPosition = obj;
+                // Remove the dragged item from its original position
+                if (draggedItemContent?.Configurations != undefined) {
+                    let draggedItemContent123: any = JSON.parse(draggedItemContent?.Configurations);
+                    draggedItemContent = _.cloneDeep(draggedItemContent123);
+                }
+                let filterGroups = [...ExistingWeparts];
+                let ExistingWepartsNew = filterGroups.filter((obj: any) => obj.WebpartId != draggedItemContent.WebpartId)
+                updatedItems[dragOverItem?.CurrentIndex].ArrayValue.splice(targetIndex, 0, draggedItemContent);
+                // Clear the drag indices
+                let itemsArray: any = [];
+                updatedItems?.forEach((item: any, index: any) => {
+                    item?.ArrayValue?.forEach((obj: any) => {
+                        itemsArray.push(obj);
                     })
+                    if (dragOverItem.CurrentIndex === index)
+                        item?.ArrayValue?.forEach((subChild: any, indexChild: any) => {
+                            if (subChild?.WebpartPosition != undefined) {
+                                subChild.WebpartPosition.Row = indexChild + 1;
+                                subChild.WebpartPosition.Column = (dragOverItem.CurrentIndex + 1);
+                            }
 
-            })
-            setItems(itemsArray);
-            console.log('ExistingWeparts before update:', ExistingWeparts);
-            console.log('ExistingWepartsNew:', ExistingWepartsNew);
-            setExistingWeparts(ExistingWepartsNew);
-            setNewItem(updatedItems);
-            //  rerender();
+                        })
+
+                })
+                setItems(itemsArray);
+                console.log('ExistingWeparts before update:', ExistingWeparts);
+                console.log('ExistingWepartsNew:', ExistingWepartsNew);
+                setExistingWeparts(ExistingWepartsNew);
+                setNewItem(updatedItems);
+                //  rerender();
+            }
         }
+        let data = e.dataTransfer.getData("Text");
+        e.target.appendChild(document.getElementById(data));
+        e.preventDefault();
     }
     const LoadSmartFav = () => {
         let SmartFavData: any = []
@@ -261,7 +271,6 @@ const EditConfiguration = (props: any) => {
             let backupaaray: any = [];
             data?.forEach((webpart: any) => {
                 if (webpart?.Configurations != undefined) {
-
                     let ConfigItem: any = JSON.parse(webpart?.Configurations);
                     ConfigItem.UpdatedId = webpart.Id;
                     backupaaray.push(ConfigItem);
@@ -374,9 +383,24 @@ const EditConfiguration = (props: any) => {
 
     const OpenConfigPopup = (Config: any) => {
         setIsManageConfigPopup(true);
-        setSelectedItem(Config);
+        let item = ExistingWepartsBackup?.filter((obj: any) => obj.WebpartId === Config.WebpartId);
+        setSelectedItem(item[0]);
     }
-    const CloseConfigPopup = (itesm: any, newitem: any) => {
+    const CloseConfigPopup = async (itesm: any, newitem: any) => {
+
+        if (itesm === true) {
+            let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
+            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Id eq " + SelectedItem?.UpdatedId).top(1).orderBy("Id", false).get().then(async (data: any) => {
+                const updatedItems = [...NewItem];
+                updatedItems?.forEach((item: any, index: any) => {
+                    item?.ArrayValue?.forEach((obj: any) => {
+                        if (obj.UpdatedId === data[0].Id)
+                            obj.WebpartTitle = data[0].Title
+                    })
+
+                })
+            })
+        }
         setIsManageConfigPopup(false);
         setSelectedItem('');
     }
@@ -491,6 +515,64 @@ const EditConfiguration = (props: any) => {
         }
         setIsOpenPopup(false);
     }
+    const formatId = (id: number): string => {
+        const paddedId = '00' + id;
+        return paddedId.slice(-3);
+    }
+    const CopyExistingWebpartTemplate = async (Item: any) => {
+        let confirmation = confirm('Do you want to copy this item?')
+        if (confirmation) {
+            let ItemNew = deepCopy(Item);
+            try {
+                let result: any;
+                let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
+                await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").orderBy("Created", false).getAll().then(async (data: any) => {
+
+                    if (data?.length && data[data.length - 1].Value != undefined && data[data.length - 1].Value != '') {
+                        result = parseInt(data[data.length - 1].Value) + 1;
+                    }
+                    else {
+                        result = data?.length + 1;
+                    }
+                    ItemNew.WebpartId = 'WP-' + formatId(result)
+                    await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: Item?.WebpartTitle, Key: "WebpartTemplate", Value: result != undefined ? result.toString() : undefined, Configurations: JSON.stringify(ItemNew) })
+                        .then(async (res: any) => {
+                            web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").top(1).orderBy("Id", false).get().then((data: any) => {
+                                ItemNew.UpdatedId = data[0].Id;
+                                ItemNew.WebpartTitle = Item?.WebpartTitle;
+                                const updatedItems = [...NewItem];
+                                const AllItems: any = [...Items];
+                                updatedItems?.forEach((item: any, index: any) => {
+                                    let findSameItems = item?.ArrayValue?.filter((obj: any) => obj.Title === Item.Title);
+                                    if (findSameItems?.length > 0) {
+                                        item?.ArrayValue.push(ItemNew);
+                                        AllItems.push(ItemNew)
+                                        ExistingWepartsBackup.push(ItemNew);
+                                    }
+                                })
+
+                                setItems(AllItems);
+                                setNewItem(updatedItems);
+                            })
+                        }).catch((err: any) => {
+                            console.log(err);
+                        })
+                })
+
+
+
+
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }
+    window.addEventListener('drag', () => {
+        document.body.style.cursor = 'grabbing';
+    }, true)
+    function allowDrop(ev: any) {
+        ev.preventDefault();
+    }
     return (
         <>
             <Panel onRenderHeader={CustomHeaderConfiguration}
@@ -509,7 +591,7 @@ const EditConfiguration = (props: any) => {
                         <label className='form-label full-width fw-semibold'>Drag and drop tiles between columns in any vertical order.</label></div>
                     <div className="Metadatapannel border p-2 mb-2">
                         <div className="row">
-                            <div className="col-sm-9 pe-0">
+                            <div className="col-sm-9 pe-0" draggable>
                                 <div className="row">
                                     {NewItem != undefined && NewItem?.length > 0 && NewItem.map((item: any, index: any) => {
                                         return (
@@ -521,37 +603,48 @@ const EditConfiguration = (props: any) => {
                                                     {item != undefined && item?.ArrayValue?.length > 0 ? item?.ArrayValue?.map((subitem: any, indexNew: any) => {
                                                         return (
                                                             <>
-                                                                <div className="alignCenter bg-siteColor justify-content-center mb-1 w-100" style={{ height: '30px' }}
+                                                                <div className="alignCenter bg-siteColor justify-content-center mb-1 w-100 outer-box" style={{ height: '30px' }}
                                                                     onDragStart={(e) => dragStart(e, indexNew, index)}
                                                                     onDragEnter={(e) => dragEnd(e, indexNew, index)}
                                                                     onDragEnd={(e) => drop(e, indexNew, index, "sameArray")}
                                                                     key={index}
+                                                                    onDragOver={(e) => allowDrop(e)}
                                                                     draggable
                                                                 >{subitem.WebpartTitle}
 
                                                                     {" "}
                                                                     <span title="Edit" className="light ml-12 svg__icon--editBox svg__iconbox" onClick={(e) => OpenConfigPopup(subitem)} ></span>
                                                                     <span title="Delete" className="light ml-12  svg__icon--cross svg__iconbox" onClick={(e) => deleteExistingTemplate(subitem, index)} ></span>
+                                                                    <span title="Copy webpart" className="light ml-12  alignIcon svg__iconbox svg__icon--copy" onClick={(e) => CopyExistingWebpartTemplate(subitem)} ></span>
                                                                 </div>
+                                                                {(item?.ArrayValue?.length - 1) === indexNew && <div id="textDrag" className="alignCenter justify-content-center mb-2 w-100 outer-box" style={{ height: '100px', width: "100px", cursor: "grab" }}
+                                                                    onDragStart={(e) => dragStart(e, indexNew, index)}
+                                                                    onDragEnter={(e) => dragEnd(e, indexNew, index)}
+                                                                    onDragEnd={(e) => drop(e, indexNew, index, "sameArray")}
+                                                                    onDragOver={(e) => allowDrop(e)}
+                                                                    key={index}
+                                                                    draggable
+                                                                > </div>}
                                                             </>
                                                         )
                                                     }) : <div>
-                                                        <div className="alignCenter justify-content-center mb-2 w-100" style={{ height: '200px', width: "150px" }}
+                                                        <div className="alignCenter justify-content-center mb-2 w-100 " style={{ height: '200px', width: "150px" }}
                                                             onDragStart={(e) => dragStart(e, 0, index)}
                                                             onDragEnter={(e) => dragEnd(e, 0, index)}
                                                             onDragEnd={(e) => drop(e, 0, index, "sameArray")}
                                                             key={index}
                                                             draggable
+                                                            onDragOver={(e) => allowDrop(e)}
                                                         >
                                                             &nbsp;
 
                                                         </div>
                                                     </div>}
-                                                </div>
+                                                </div >
                                                 {/* </div> */}
                                             </>
                                         )
-                                    })}</div></div>
+                                    })}</div ></div>
                             <div className="col-sm-3 text-end">
                                 <div className='form-label full-width mb-1 alignCenter' onClick={(e) => AddColumn('')}><a className="alignCenter hreflink ml-auto siteColor"><span className="svg__iconbox svg__icon--Plus mini"></span> Add Column</a></div>
                                 <div className='form-label full-width alignCenter' onClick={(e) => AddWebpartPopup()}><a className="alignCenter hreflink ml-auto siteColor"> <span className="svg__iconbox svg__icon--Plus mini"></span> Add WebPart</a></div>
@@ -587,7 +680,7 @@ const EditConfiguration = (props: any) => {
                 </div>
             </Panel >
             <span>
-                {IsManageConfigPopup && <AddEditWebpartTemplate props={props?.props} DashboardPage={true} DashboardConfigBackUp={Items} SingleWebpart={true} EditItem={SelectedItem} IsOpenPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />}
+                {IsManageConfigPopup && <AddEditWebpartTemplate props={props?.props} DashboardPage={false} DashboardConfigBackUp={Items} SingleWebpart={true} EditItem={SelectedItem} IsOpenPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />}
             </span>
             <span>
                 {IsOpenPopup && <AddEditWebpartTemplate props={props?.props} SingleWebpart={true} EditItem={""} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseIsConfigPopup} />}
@@ -599,3 +692,5 @@ const EditConfiguration = (props: any) => {
     );
 };
 export default EditConfiguration;
+
+

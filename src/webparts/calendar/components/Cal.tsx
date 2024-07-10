@@ -669,36 +669,55 @@ const Apps = (props: any) => {
     const daysOfWeekIndex = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
     const weekMap: any = { first: 1, second: 2, third: 3, fourth: 4, last: 5 };
 
-    // Find the day of the week that is set to "TRUE"
-    let day = '';
-    for (let i = 0; i < daysOfWeekIndex.length; i++) {
-      const key = daysOfWeekIndex[i];
-      if (frequency[key] === "TRUE") {
-        day = key;
-        break;
+   
+    const monthFreq = parseInt(monthFrequency, 10);
+
+    const processEvent = (dayIndexes: number[], isSpecificDay: boolean = false) => {
+      while (true) {
+        for (const dayIndex of dayIndexes) {
+          const targetDate:any = isSpecificDay
+            ? new Date(currentDate.getFullYear(), currentDate.getMonth(), weekMap[weekdayOfMonth])
+            : getNthWeekdayOfMonth(currentDate.getFullYear(), currentDate.getMonth(), dayIndex, weekMap[weekdayOfMonth]);
+  
+          if (targetDate.setHours(0, 0, 0, 0) > windowEndDate) {
+            dates.push(new Date(targetDate));
+            return; // Exit the loop once window end date is exceeded
+          }
+  
+          const event = eventDataForBinding(eventDetails, targetDate);
+          AllEvents.push(event);
+          dates.push(new Date(targetDate));
+        }
+        currentDate.setMonth(currentDate.getMonth() + monthFreq);
       }
-    }
-
-    if (!day) {
-      throw new Error("No valid day specified in frequency.");
-    }
-
-    while (true) {
-      const targetDayIndex = daysOfWeekIndex.indexOf(day);
-      const targetDate: any = getNthWeekdayOfMonth(currentDate.getFullYear(), currentDate.getMonth(), targetDayIndex, weekMap[weekdayOfMonth]);
-
-      if (targetDate.setHours(0, 0, 0, 0) > windowEndDate) {
-        // Push the last date greater than the windowEndDate
-        dates.push(new Date(targetDate));
-        break;
+    };
+      if (frequency?.day === "TRUE") {
+        // Process specific day based on weekdayOfMonth
+        const targetDayIndexes = [weekMap[weekdayOfMonth]]; // Specific day of the month
+        processEvent(targetDayIndexes, true);
+      } else if (frequency?.weekday === "TRUE") {
+        // Process weekdays (Monday to Friday)
+        const targetDayIndexes = [1, 2, 3, 4, 5]; // Monday to Friday
+        processEvent(targetDayIndexes);
+      } else if (frequency?.weekend_day === "TRUE") {
+        // Process weekends (Saturday and Sunday)
+        const targetDayIndexes = [0, 6]; // Sunday and Saturday
+        processEvent(targetDayIndexes);
+      }else {
+        // Process specific days of the week
+        const keys:any = Object.keys(frequency);
+        for (let i = 0; i < daysOfWeekIndex.length; i++) {
+          const key = daysOfWeekIndex[i];
+          if (keys.includes(key) && frequency[key] === "TRUE") {
+            const targetDayIndex = i;
+            processEvent([targetDayIndex]);
+            break;
+          }
+        }
       }
+    
 
-      const event = eventDataForBinding(eventDetails, targetDate);
-      AllEvents.push(event);
-      dates.push(new Date(targetDate));
-
-      currentDate.setMonth(currentDate.getMonth() + Number(monthFrequency));
-    }
+  
   }
 
   // Helper function to get the nth weekday of a given month
@@ -722,38 +741,53 @@ const Apps = (props: any) => {
     const daysOfWeekIndex = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
     const weekMap: any = { first: 1, second: 2, third: 3, fourth: 4, last: 5 };
 
-    // Find the day of the week that is set to "TRUE"
-    let day = '';
-    for (let i = 0; i < daysOfWeekIndex.length; i++) {
-      const key = daysOfWeekIndex[i];
-      if (frequency[key] === "TRUE") {
-        day = key;
-        break;
+    const yearFreq = parseInt(yearFrequency, 10);
+
+    const processEvent = (dayIndexes: number[], isSpecificDay: boolean = false) => {
+      while (true) {
+        for (const dayIndex of dayIndexes) {
+          const targetDate: any = isSpecificDay
+            ? new Date(currentDate.getFullYear(), Number(month) - 1, weekMap[weekdayOfMonth])
+            : getNthWeekdayOfMonth(currentDate.getFullYear(), Number(month) - 1, dayIndex, weekMap[weekdayOfMonth]);
+  
+          if (targetDate.setHours(0, 0, 0, 0) > windowEndDate) {
+            dates.push(new Date(targetDate));
+            return; // Exit the loop once window end date is exceeded
+          }
+  
+          const event = eventDataForBinding(eventDetails, targetDate);
+          AllEvents.push(event);
+          dates.push(new Date(targetDate));
+        }
+        currentDate.setFullYear(currentDate.getFullYear() + yearFreq);
+      }
+    };
+  
+    if (frequency?.day === "TRUE") {
+      // Process specific day based on weekdayOfMonth
+      const targetDayIndexes = [weekMap[weekdayOfMonth]]; // Specific day of the month
+      processEvent(targetDayIndexes, true);
+    } else if (frequency?.weekday === "TRUE") {
+      // Process weekdays (Monday to Friday)
+      const targetDayIndexes = [1, 2, 3, 4, 5]; // Monday to Friday
+      processEvent(targetDayIndexes);
+    } else if (frequency?.weekend_day === "TRUE") {
+      // Process weekends (Saturday and Sunday)
+      const targetDayIndexes = [0, 6]; // Sunday and Saturday
+      processEvent(targetDayIndexes);
+    } else {
+      // Process specific days of the week
+      const keys:any = Object.keys(frequency);
+      for (let i = 0; i < daysOfWeekIndex.length; i++) {
+        const key = daysOfWeekIndex[i];
+        if (keys.includes(key) && frequency[key] === "TRUE") {
+          const targetDayIndex = i;
+          processEvent([targetDayIndex]);
+          break;
+        }
       }
     }
-
-    if (!day) {
-      throw new Error("No valid day specified in frequency.");
-    }
-
-    while (true) {
-      const targetDayIndex = daysOfWeekIndex.indexOf(day);
-      const targetDate: any = getNthWeekdayOfMonth(currentDate.getFullYear(), Number(month) - 1, targetDayIndex, weekMap[weekdayOfMonth]);
-
-      if (targetDate.setHours(0, 0, 0, 0) > windowEndDate) {
-        // Push the last date greater than the windowEndDate
-        dates.push(new Date(targetDate));
-        break;
-      }
-
-      const event = eventDataForBinding(eventDetails, targetDate);
-      AllEvents.push(event);
-      dates.push(new Date(targetDate));
-
-      currentDate.setFullYear(currentDate.getFullYear() + Number(yearFrequency));
-    }
-  }
- 
+  } 
 
   function calculateNextDate(rule: any, firstDayOfWeek: string, currentDate: any, dates: Date[], endDate?: any, AllEvents?: any, eventDetails?: any): string {
     try {
@@ -1157,7 +1191,11 @@ const Apps = (props: any) => {
       const startMin = moment(startDate).format("mm").toString();
       const endHour = moment(endDate).format("HH").toString();
       const endMin = moment(endDate).format("mm").toString();
-
+      MDate = moment(event.Modified).format("DD-MM-YYYY");
+      MTime = moment(event.Modified).tz("Asia/Kolkata").format("HH:mm");
+      CDate = moment(event.Created).format("DD-MM-YYYY");
+      CTime = moment(event.Created).tz("Asia/Kolkata").format("HH:mm");
+    
       setStartDate(startDate);
       setSelectedTime(`${startHour}:${startMin}`);
       setEndDate(endDate);
@@ -1358,7 +1396,6 @@ const Apps = (props: any) => {
   const editEvent = async (editedEvent: any) => {
     try {
       const web = new Web(props.props.siteUrl);
-      const mytitle = `${editedEvent.name}-${editedEvent.type}-${editedEvent.title}`;
       const mycolors = (HalfDaye || HalfDayT) ? "#6d36c5" :
         (editedEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
           ((editedEvent.Event_x002d_Type === "Company Holiday") || (editedEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
@@ -1407,12 +1444,6 @@ const Apps = (props: any) => {
       const endTime = selectedTimeEnd;
       const endDateTime = `${_endDate} ${endTime}`;
       const end = moment(endDateTime, "YYYY/MM/DD HH:mm").toLocaleString();
-      if (peopleName === props.props.context._pageContext._user.displayName) {
-        setPeopleName(props.props.context._pageContext._user.displayName);
-      } else {
-        setPeopleName(title_people);
-        setPeopleId(title_Id)
-      }
       let mytitle = peopleName + "-" + type + "-" + inputValueName;
       let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : type === "Work From Home" ? "#e0a209" : (type === "Company Holiday" || type === "National Holiday") ? "#228B22" : "";
 
@@ -1437,10 +1468,11 @@ const Apps = (props: any) => {
         };
         await addEvent(newEventData);
       } else if (editRecurrenceEvent) {
+        
         const editEventData: any = {
           EventType: "1",
           EmployeeId: title_Id,
-          Title: mytitle,
+          Title: updateTitle(inputValueName, type, leaveapproved, leaverejected),
           EventDate: new Date(start),
           EndDate: new Date(end),
           fRecurrence: true,
@@ -1464,15 +1496,31 @@ const Apps = (props: any) => {
     setShowRecurrenceSeriesInfo(recurChecked);
     setNewRecurrenceEvent(recurChecked);
   };
-  const getUserInfo = async (userMail: any[]) => {
-    const userInfoArray = [];
-    for (const userMails of userMail) {
-      const userEndPoint: any = `${props.props.context.pageContext.web.absoluteUrl}/_api/Web/EnsureUser`;
-      const userData: string = JSON.stringify({ logonName: userMails });
-      const userReqData = { body: userData };
-      const resUserInfo = await props.props.context.spHttpClient.post(userEndPoint, SPHttpClient.configurations.v1, userReqData);
-      const userInfo = await resUserInfo.json(); userInfoArray.push(userInfo);
+  const getUserInfo = async (userMails: string[]): Promise<any[]> => {
+    const userInfoArray: any[] = [];
+    const userEndPoint: string = `${props.props.context.pageContext.web.absoluteUrl}/_api/Web/EnsureUser`;
+  
+    try {
+      const requests = userMails.map(async (userMail) => {
+        const userData: string = JSON.stringify({ logonName: userMail });
+        const userReqData = { body: userData };
+  
+        const resUserInfo: any = await props.props.context.spHttpClient.post(userEndPoint, SPHttpClient.configurations.v1, userReqData);
+  
+        if (!resUserInfo.ok) {
+          throw new Error(`Failed to fetch user info for ${userMail}`);
+        }
+  
+        const userInfo: any = await resUserInfo.json();
+        return userInfo;
+      });
+  
+      const userInfos = await Promise.all(requests);
+      userInfoArray.push(...userInfos);
+    } catch (error) {
+      console.error('Error fetching user info:', error);
     }
+  
     return userInfoArray;
   };
   const people = async (people: any) => {
@@ -1737,6 +1785,29 @@ const Apps = (props: any) => {
   const handleInputChangeReason = (value: string) => {
     setInputValueReason(value);
   };
+  const updateTitle = (inputValueName:any, type:any, leaveApproveded:any, leaverejected:any) => {
+    const leaveTypes = [
+        "Un-Planned",
+        "Sick",
+        "Planned Leave",
+        "Restricted Holiday",
+        "Work From Home",
+        "Half Day",
+        "fulldayevent",
+        "LWP"
+    ];
+
+    const regex = new RegExp(leaveTypes.join("|"), "g");
+    let updatedTitle = inputValueName.replace(regex, type);
+
+    if (leaveApproveded && !isLeaveApproved) {
+      updatedTitle += " Approved";
+  } else if (leaverejected) {
+      updatedTitle += " Rejected";
+  }
+
+    return updatedTitle;
+};
   const updateElement = async () => {
     if (editRecurrenceEvent) {
         await saveRecurrenceEvent();
@@ -1749,31 +1820,6 @@ const Apps = (props: any) => {
         setSelectedTimeEnd(selectedTimeEnd);
         return;
     }
-
-    const updateTitle = (inputValueName:any, type:any, leaveApproveded:any, leaverejected:any) => {
-        const leaveTypes = [
-            "Un-Planned",
-            "Sick",
-            "Planned Leave",
-            "Restricted Holiday",
-            "Work From Home",
-            "Half Day",
-            "fulldayevent",
-            "LWP"
-        ];
-
-        const regex = new RegExp(leaveTypes.join("|"), "g");
-        let updatedTitle = inputValueName.replace(regex, type);
-
-        if (leaveApproveded && !isLeaveApproved) {
-          updatedTitle += " Approved";
-      } else if (leaverejected) {
-          updatedTitle += " Rejected";
-      }
-
-        return updatedTitle;
-    };
-
     const web = new Web(props.props.siteUrl);
     const newEvent = {
         title: updateTitle(inputValueName, type, leaveapproved, leaverejected),
