@@ -372,7 +372,8 @@ const EditTaskPopup = (Items: any) => {
         let UsersData: any = [];
         let Groups: any = [];
         let MainArray: any = [];
-        taskUsers.map((EmpData: any) => {
+        let sortedTaskUser =  taskUsers?.sort((a: any, b: any) => a.SortOrder - b.SortOrder);
+        sortedTaskUser.map((EmpData: any) => {
             if (EmpData.ItemType == "Group") {
                 EmpData.Child = [];
                 Groups.push(EmpData);
@@ -2985,16 +2986,28 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
-        if (ApproverData != undefined && ApproverData?.length > 0) {
-            ApproverData?.map((ApproverInfo) => {
-                if (ApproverInfo.AssingedToUserId != undefined) {
-                    ApproverIds.push(ApproverInfo.AssingedToUserId)
-                }
-                else {
-                    ApproverIds.push(ApproverInfo.Id);
-                }
+        // if (ApproverData != undefined && ApproverData?.length > 0) {
+        //     ApproverData?.map((ApproverInfo) => {
+        //         if (ApproverInfo.AssingedToUserId != undefined) {
+        //             ApproverIds.push(ApproverInfo.AssingedToUserId)
+        //         }
+        //         else {
+        //             ApproverIds.push(ApproverInfo.Id);
+        //         }
 
-            });
+        //     });
+        // }
+
+        if (WorkingAction != undefined && WorkingAction?.length > 0) {
+            WorkingAction?.map((item) => {
+                if (item?.Title == "Approval") {
+                    if (item?.InformationData?.length > 0) {
+                        item?.InformationData?.map((infoItem: any) => {
+                            ApproverIds.push(infoItem?.TaggedUsers?.AssingedToUserId)
+                        })
+                    }
+                }
+            })
         }
 
         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
@@ -4533,6 +4546,11 @@ const EditTaskPopup = (Items: any) => {
         let data: any = ApproverData;
         if (useFor == "Bottleneck" || useFor == "Attention" || useFor == "Phone" || useFor == "Approval") {
             let CreatorData: any = currentUserBackupArray[0];
+            WorkingAction.map((item: any) => {
+                if (item.Title == useFor) {
+                    item.InformationData = []
+                }
+            })
             let workingDetail: any = WorkingAction?.filter((type: any) => type?.Title == "WorkingDetails");
             let copyWorkAction: any = [...WorkingAction]
             copyWorkAction = WorkingAction?.filter((type: any) => type?.Title != "WorkingDetails");
@@ -4690,60 +4708,57 @@ const EditTaskPopup = (Items: any) => {
         const usedFor: string = "Approval";
         let CreatorData: any = currentUserBackupArray[0];
         let ApproverDataInfo: any = [];
+        let CreateObject: any = {};
 
         if (taskUsers?.length > 0) {
-            taskUsers?.map((UserItem: any) => {
-                CreatorData?.Approver?.map((RecipientsItem: any) => {
+            taskUsers?.forEach((UserItem: any) => {
+                CreatorData?.Approver?.forEach((RecipientsItem: any) => {
                     if (UserItem.AssingedToUserId == RecipientsItem.Id) {
-                        ApproverDataInfo = UserItem;
+                        ApproverDataInfo.push(UserItem);
                     }
-                })
-            })
+                });
+            });
         }
 
         if (key == "IsChecked") {
             if (Value == true) {
                 setApprovalStatus(false);
                 if (copyWorkAction?.length > 0) {
-                    copyWorkAction?.map((DataItem: any) => {
+                    copyWorkAction?.forEach((DataItem: any) => {
                         if (DataItem.Title == usedFor) {
-                            DataItem.InformationData = []
+                            DataItem.InformationData = [];
                             DataItem[key] = false;
-                            DataItem.Type = ""
+                            DataItem.Type = "";
                         }
-                    })
+                    });
                 }
             } else {
                 setApprovalStatus(true);
                 isApprovalByStatus = true;
-                let e: any = {
-                    target: {
-                        value: Value
-                    }
-                }
-                let CreateObject: any = {
+    
+                const dataArray = ApproverDataInfo.map((approver: any) => ({
                     CreatorName: CreatorData?.Title,
                     CreatorImage: CreatorData?.UserImage,
                     CreatorID: CreatorData?.Id,
                     TaggedUsers: {
-                        Title: ApproverDataInfo?.Title,
-                        Email: ApproverDataInfo?.Email,
-                        AssingedToUserId: ApproverDataInfo?.AssingedToUserId,
-                        userImage: ApproverDataInfo?.Item_x0020_Cover?.Url,
+                        Title: approver?.Title,
+                        Email: approver?.Email,
+                        AssingedToUserId: approver?.AssingedToUserId,
+                        userImage: approver?.Item_x0020_Cover?.Url,
                     },
                     NotificationSend: false,
                     Comment: '',
                     CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
-                }
+                }));
+    
                 if (copyWorkAction?.length > 0) {
-                    copyWorkAction?.map((DataItem: any) => {
+                    copyWorkAction?.forEach((DataItem: any) => {
                         if (DataItem.Title == usedFor) {
-                            CreateObject.Id = DataItem.InformationData?.length;
-                            DataItem.InformationData.push(CreateObject);
+                            DataItem.InformationData = dataArray;
                             DataItem[key] = Value;
                         }
-                    })
-                } else {
+                    });
+                }  else {
                     let TempArrya: any = [
                         {
                             Title: "Bottleneck",
@@ -5063,7 +5078,7 @@ const EditTaskPopup = (Items: any) => {
         if (usedFor == "Remove") {
             let CopyWorkingActionData: any = [...WorkingAction];
         let TempWorkingActionData: any = removeDataFromInformationData(CopyWorkingActionData, ActionType, Index);
-            EditData.WorkingAction=[...TempWorkingActionData]
+            EditData.WorkingAction = [...TempWorkingActionData]
             console.log("Updated Data after removing User:", TempWorkingActionData);
             setWorkingAction([...EditData.WorkingAction])
         }
@@ -7352,7 +7367,7 @@ const EditTaskPopup = (Items: any) => {
                                                 return null;
                                             })}
                                         </div>
-
+                                        {/* //////////////////////////////This is Approval section/////////////////////////// */}
                                         <div className="col mt-2 ps-0 input-group" >
                                             {WorkingAction?.length > 0 ? <> {WorkingAction?.map((WAItemData, ItemIndex) => {
                                                 if ((WAItemData.Title === "Approval") && (WAItemData?.InformationData?.length === 0 || WAItemData?.InformationData?.length > 1)) {
