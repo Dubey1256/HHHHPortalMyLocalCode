@@ -1396,9 +1396,9 @@ const Apps = (props: any) => {
   const editEvent = async (editedEvent: any) => {
     try {
       const web = new Web(props.props.siteUrl);
-      const mycolors = (HalfDaye || HalfDayT) ? "#6d36c5" :
-        (editedEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
-          ((editedEvent.Event_x002d_Type === "Company Holiday") || (editedEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
+      // const mycolors = (HalfDaye || HalfDayT) ? "#6d36c5" :
+      //   (editedEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
+      //     ((editedEvent.Event_x002d_Type === "Company Holiday") || (editedEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
 
       const editedEventItem = {
         Title: editedEvent.Title,
@@ -1414,7 +1414,7 @@ const Apps = (props: any) => {
         UID: editedEvent.UID,
         HalfDay: editedEvent.HalfDay,
         HalfDayTwo: editedEvent.HalfDayTwo,
-        Color: mycolors,
+        // Color: mycolors,
         Approved: leaveapproved,
         Rejected:leaverejected,
         RecurrenceData: editedEvent.RecurrenceData ? await deCodeHtmlEntities(editedEvent.RecurrenceData) : "",
