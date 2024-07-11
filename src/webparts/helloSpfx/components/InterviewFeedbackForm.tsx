@@ -10,6 +10,7 @@ import AddPopup from './AddPopup';
 import './Recruitment.css'
 import { Dropdown, IDropdownOption, Modal, Panel, PanelType, PrimaryButton } from 'office-ui-fabric-react';
 import AddEditPostion from './AddEditPostion';
+import EditPosition from './EditPosition';
 import { myContextValue } from '../../../globalComponents/globalCommon';
 let allListId: any = {};
 let allSite: any = {
@@ -35,6 +36,7 @@ interface RowData {
     IsFavorite: boolean;
 }
 let overallRatings: any
+let currentjobData: any
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export default function InterviewFeedbackForm(props: any) {
     const [listData, setListData]: any = useState([]);
@@ -56,6 +58,10 @@ export default function InterviewFeedbackForm(props: any) {
     const [isStatButtonDisabled, setisStatButtonDisabled] = useState(true);
     const [newStatus, setNewStatus] = useState('')
     const [isAddStatusButtonDisabld, setIsAddStatusButonDisabled] = useState(true)
+    const [currentuser, setcurrentuser] = useState<any>([])
+    const [currentJob, setCurrentJob] = useState("")
+    const [edittableItem, setEdittableItem] = useState<any>()
+    const [isEditPopup, setisEditPopup] = useState(false);
 
     const HRweb = new Web(props?.props?.siteUrl);
     const EditPopupOpen = (item: any) => {
@@ -80,6 +86,13 @@ export default function InterviewFeedbackForm(props: any) {
     const openModal = () => {
         setopenModalPopup(true)
     }
+    const editPosition = (item: any) => {
+        setEdittableItem(item)
+        setisEditPopup(true)
+    };
+    const editPositionClose = () => {
+        setisEditPopup(false)
+    };
     const CloseCreateStatus = () => {
         setopenModalPopup(false)
         setNewStatus('')
@@ -245,6 +258,23 @@ export default function InterviewFeedbackForm(props: any) {
         }
     }, []);
 
+    const getCurrentJobTitle = () => {
+        let CurrentJobTitle: any
+        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
+        web.lists.getById(props?.props?.SkillsPortfolioListID)
+        .items.select('Id', 'Title')
+        .filter(`Id eq ${JobPositionId}`).get().then((Job: any) => {
+            if (Job != null && Job != undefined) {
+                Job.map((item: any) => {
+                    CurrentJobTitle = item.Title
+                })
+            }
+            setCurrentJob(CurrentJobTitle)
+        }).catch((error: any) => {
+            console.log(error)
+        })
+    }
+
     const getListData = () => {
         const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
         let query = web.lists
@@ -390,7 +420,18 @@ export default function InterviewFeedbackForm(props: any) {
         }
         getListData();
         loadAdminConfigurations();
+        getCurrentUserData();
     }, []);
+
+    useEffect(() => {
+        getCurrentJobTitle();
+        getPositionData();
+    }, [JobPositionId])
+
+    const getCurrentUserData = async () => {
+        const currentUser =  await sp.web.currentUser.get();
+        setcurrentuser(currentUser)
+    }
     const handleStatusAction = (event: React.FormEvent<HTMLDivElement>, item?: IDropdownOption): void => {
         if (item) {
             setSelectedStatus(item.key as string);
@@ -444,6 +485,50 @@ export default function InterviewFeedbackForm(props: any) {
             </>
         );
     };
+    const getPlainTextFromHTML = (htmlString: string) => {   const temporaryElement = document.createElement('div');   temporaryElement.innerHTML = htmlString;   return temporaryElement.innerText; }
+
+    const getPositionData = async () => {
+        try{
+           await HRweb.lists.getById(props?.props?.SkillsPortfolioListID).items.select('Id', 'Title', 'PositionTitle', 'PositionDescription', 'JobSkills', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .expand('Author', 'Editor').filter(`Id eq ${JobPositionId}`).get().then((response: any) => { 
+            const updatedData = response.map((itm: { JobSkills: string | undefined; ImpSkills?: { itemParentId: any; }[]; Id: any; PositionDescription: any; Skills: any }) => {
+                itm.PositionDescription = itm.PositionDescription !== null ? getPlainTextFromHTML(itm.PositionDescription) : null;
+                if (itm.JobSkills !== undefined && itm.JobSkills !== '') {
+                    const impSkills = JSON.parse(itm.JobSkills).map((skill: { itemParentId: any; }) => ({
+                        ...skill,
+                        itemParentId: itm.Id,
+                    }));
+                    let tempString = ''
+                    impSkills.forEach((items: any, index: any) => {
+                        if (index < impSkills.length -1) {
+                            tempString += items?.SkillTitle + ' ,'
+                        }
+                        else {
+                            tempString += items?.SkillTitle
+                        }
+                    })
+                    return {
+                        ...itm,
+                        ImpSkills: impSkills,
+                        Skills: tempString
+                    };
+                }
+                return itm;
+            });
+            if (updatedData) {
+                updatedData.forEach((job: any) => {
+                    currentjobData = job
+                })
+            }
+        }).catch((error: unknown) => {
+            console.error(error);
+        });
+        }catch(error) {
+            console.log(error)
+        }    
+    };
+
+
     const callbackEdit = () => {
         getListData();
     };
@@ -456,7 +541,8 @@ export default function InterviewFeedbackForm(props: any) {
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName, }}>
             <div>
                 <div className='alignCenter'>
-                <h2 className='heading'>Recruiting-Tool</h2>
+                <h2 className='heading'>{currentJob ? `Recruiting Tool-${currentJob}`: "Recruiting-Tool"}</h2>
+                {JobPositionId && <span onClick={() => editPosition(currentjobData)} className='svg__iconbox svg__icon--edit'></span>}
                 <a target='_blank' className='hreflink ml-auto f-14 fw-semibold' data-interception="off" href={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/Recruiting-Tool.aspx'}>Old Recruting Tool</a>
                 </div>
                 
@@ -503,8 +589,9 @@ export default function InterviewFeedbackForm(props: any) {
                     </div>
                 </div>
                 {isEditPopupOpen ? <EditPopup siteUrl={props?.props?.siteUrl} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} skillsList={props?.props?.SkillsPortfolioListID} statusData={AllAvlStatusdata}/> : ''}
-                {isAddPopupOpen ? <AddPopup siteUrl={props?.props?.siteUrl} context={props?.props?.Context} AddPopupClose={AddPopupClose} callbackAdd={callbackAdd} ListID={props?.props?.InterviewFeedbackFormListId} skillsList={props?.props?.SkillsPortfolioListID}/> : ''}
+                {isAddPopupOpen ? <AddPopup context={props?.props?.Context} AddPopupClose={AddPopupClose} callbackAdd={callbackAdd} ListID={props?.props?.InterviewFeedbackFormListId} siteUrl={props?.props?.siteUrl} skillsList={props?.props?.SkillsPortfolioListID} CurrentUser={currentuser} selectedPositionId={parseInt(JobPositionId)}/> : ''}
                 {isAddEditPositionOpen ? <AddEditPostion AddEditPositionCLose={AddEditPositionCLose} props={props?.props}/> : ''}
+                {isEditPopup && <EditPosition siteUrl={props?.props?.siteUrl} skillsList={props?.props?.SkillsPortfolioListID} edittableItem={edittableItem} openPopup={isEditPopup} closePopup={editPositionClose} callbackEdit={getPositionData}/>}
             </div>
 
             {/* ********************* this is Add/Edit Status Task panel ****************** */}
