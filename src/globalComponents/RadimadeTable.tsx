@@ -522,6 +522,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         item.flag = true;
                         item.TitleNew = item.Title;
                         item.childs = [];
+                        item.Item_x0020_Type="Task";
                         item.siteType = config.Title;
                         item.listId = config.listId;
                         item.siteUrl = ContextValue.siteUrl;
