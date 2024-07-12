@@ -85,7 +85,7 @@ const CreateActivity = (props: any) => {
     linkedServices: [],
     recentClick: undefined,
     Mileage: "",
-    Body: [],
+    Body: '',
     DueDate: undefined,
     dueDate: "",
     taskCategory: "",
