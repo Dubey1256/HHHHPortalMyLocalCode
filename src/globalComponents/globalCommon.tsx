@@ -3646,8 +3646,8 @@ export const getsiteConfig = async () => {
             let siteUrl='https://hhhhteams.sharepoint.com/sites/HHHH';
             let listId='fb4b4ae0-fb2d-4623-bffd-a7172e12cd09';
             if (window?.location?.href?.toLowerCase()?.indexOf('hhhhqa')>-1) {
-                 siteUrl='https://hhhhteams.sharepoint.com/sites/HHHH';
-                listId='fb4b4ae0-fb2d-4623-bffd-a7172e12cd09';          
+                 siteUrl='https://hhhhteams.sharepoint.com/sites/HHHHQA';
+                listId='69a5eee2-8ab3-45af-b9a5-363086ddc122';          
             }
             else {
                  siteUrl='https://hhhhteams.sharepoint.com/sites/HHHH';
