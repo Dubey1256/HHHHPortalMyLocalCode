@@ -23,7 +23,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { LuBellPlus } from "react-icons/lu";
 import { FaExpandAlt } from "react-icons/fa";
 import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
-import { SlArrowDown, SlArrowRight, SlUserUnfollow } from "react-icons/sl";
+import { SlArrowDown, SlArrowRight} from "react-icons/sl";
 import { TbReplace } from "react-icons/tb";
 
 // Used Global Common functions imports
@@ -187,6 +187,7 @@ const EditTaskPopup = (Items: any) => {
     const [TotalEstimatedTime, setTotalEstimatedTime] = useState(0);
     const [SiteCompositionShow, setSiteCompositionShow] = useState(false);
     const [IsTaskStatusUpdated, setIsTaskStatusUpdated] = useState(false);
+    const [IsTaskCategoryUpdated, setIsTaskCategoryUpdated] = useState(false);
     const [SendCategoryName, setSendCategoryName] = useState("");
     const [TeamMemberChanged, setTeamMemberChanged] = useState(false);
     const [TeamLeaderChanged, setTeamLeaderChanged] = useState(false);
@@ -1666,6 +1667,7 @@ const EditTaskPopup = (Items: any) => {
             }
             return false;
         });
+        setIsTaskCategoryUpdated(true);
         BackupTaskCategoriesData = result;
         let updatedItem = {
             ...EditDataBackup,
@@ -2265,6 +2267,7 @@ const EditTaskPopup = (Items: any) => {
 
     // ******************** This is used for updating all the Task Popup details on backend side  ***************************
 
+   
     const UpdateTaskInfoFunction = async (usedFor: any) => {
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
         let taskPercentageValue: any = DataJSONUpdate?.PercentComplete ? DataJSONUpdate?.PercentComplete : 0;
@@ -2431,6 +2434,12 @@ const EditTaskPopup = (Items: any) => {
                     const CheckForInformationRequestCategory: any = TaskCategories.includes("Information Request");
                     let checkStatusUpdate = Number(taskPercentageValue) * 100;
 
+                    // This used for send MS Teams and Email Notification according to Task Notification Configuration Tool
+                    if (IsTaskStatusUpdated || IsTaskCategoryUpdated) {
+                        let TaskConfigurationInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ SiteURL: siteUrls, ItemDetails: UpdatedDataObject, Context: Context, RequiredListIds: AllListIdData })
+                        console.log("Task Configuration Information All Details from backend  ==================", TaskConfigurationInformation);
+                    }
+
                     // This is used for send MS Teams Notification 
                     try {
                         const sendUserEmails: string[] = [];
@@ -2464,27 +2473,7 @@ const EditTaskPopup = (Items: any) => {
                         let CommonMsg = '';
                         const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
                         const SendUserEmailFinal: any = sendUserEmails?.filter((item: any, index: any) => sendUserEmails?.indexOf(item) === index);
-
-                        if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
-                            CommonMsg = ` Task created from your end has been set to 8%. Please take necessary action.`;
-                            let functionType: any = '';
-                            if (checkStatusUpdate === 90 && CheckForInformationRequestCategory) {
-                                functionType = "Information-Request"
-                            } else {
-                                functionType = "Priority-Check"
-                            }
-                            let RequiredDataForNotification: any = {
-                                ItemDetails: UpdatedDataObject,
-                                ReceiverEmail: SendUserEmailFinal,
-                                Context: Context,
-                                usedFor: functionType,
-                                ReceiverName: AssignedUserName,
-                                RequiredListIds: AllListIdData
-                            }
-                            GlobalFunctionForUpdateItems.SendEmailNotificationForIRCTasksAndPriorityCheck(RequiredDataForNotification);
-                        }
-
-                        else if (TeamMemberChanged && TeamLeaderChanged) {
+                        if (TeamMemberChanged && TeamLeaderChanged) {
                             CommonMsg = `You have been marked as TL/working member in the below task. Please take necessary action.`;
                         } else if (TeamMemberChanged) {
                             CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyze the points in the task, fill up the Estimation, Set to 10%).`;
@@ -2527,109 +2516,6 @@ const EditTaskPopup = (Items: any) => {
                         }
                     } catch (error) {
                         console.log("Error in send MS Teams Notifications function", error.message);
-                    }
-
-                    let CreatorData: any = []
-                    if (IsTaskStatusUpdated && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
-                        taskUsers?.forEach((allUserItem: any) => {
-                            if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
-                                CreatorData.push(allUserItem);
-                            }
-
-                        });
-                        CreatorData?.map((InfoItem: any) => {
-                            let DataForNotification: any = {
-                                ReceiverName: InfoItem?.Title,
-                                sendUserEmail: [InfoItem?.Email],
-                                Context: Items.context,
-                                ActionType: "Immediate",
-                                ReasonStatement: '',
-                                UpdatedDataObject: UpdatedDataObject,
-                                RequiredListIds: AllListIdData
-                            }
-                            GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                console.log("Ms Teams Notifications send")
-                            })
-
-                        })
-                    }
-
-                    if (UpdatedDataObject?.TaskCategories?.length > 0) {
-
-                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
-                            taskUsers?.forEach((allUserItem: any) => {
-                                if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
-                                    CreatorData.push(allUserItem);
-                                }
-
-                            });
-
-                            CreatorData?.map((InfoItem: any) => {
-                                let DataForNotification: any = {
-                                    ReceiverName: InfoItem?.Title,
-                                    sendUserEmail: [InfoItem?.Email],
-                                    Context: Items.context,
-                                    ActionType: "Immediate",
-                                    ReasonStatement: checkStatusUpdate,
-                                    UpdatedDataObject: UpdatedDataObject,
-                                    RequiredListIds: AllListIdData
-                                }
-                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                    console.log("Ms Teams Notifications send")
-                                })
-
-                            })
-
-
-
-                        }
-
-                        if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('Design') !== -1) {
-
-                            let DataForNotification: any = {
-                                ReceiverName: 'kristina',
-                                sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
-                                Context: Items.context,
-                                ActionType: "Design",
-                                ReasonStatement: "Task Completed",
-                                UpdatedDataObject: UpdatedDataObject,
-                                RequiredListIds: AllListIdData
-                            }
-                            GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                console.log("Ms Teams Notifications send")
-                            })
-                        }
-
-                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
-                            let DataForNotification: any = {
-                                ReceiverName: 'Alina',
-                                sendUserEmail: ['alina.chyhasova@hochhuth-consulting.de'],
-                                Context: Items.context,
-                                ActionType: "User Experience - UX",
-                                ReasonStatement: "New Task Created",
-                                UpdatedDataObject: UpdatedDataObject,
-                                RequiredListIds: AllListIdData
-                            }
-                            await GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                console.log("Ms Teams Notifications send")
-                            })
-
-                        }
-
-                        if (checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.length > 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') !== -1) {
-                            let DataForNotification: any = {
-                                ReceiverName: 'kristina',
-                                sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
-                                Context: Items.context,
-                                ActionType: "User Experience - UX",
-                                ReasonStatement: "Task Completed",
-                                UpdatedDataObject: UpdatedDataObject,
-                                RequiredListIds: AllListIdData
-                            }
-                            GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                console.log("Ms Teams Notifications send")
-                            })
-                        }
                     }
                     if (ApproverData != undefined && ApproverData.length > 0) {
                         taskUsers.forEach((val: any) => {
@@ -2678,7 +2564,6 @@ const EditTaskPopup = (Items: any) => {
                         GetExtraLookupColumnData();
                     } else {
                         BackupTaskCategoriesData = [];
-
                         taskUsers = [];
                         CommentBoxData = [];
                         SubCommentBoxData = [];
@@ -2694,10 +2579,6 @@ const EditTaskPopup = (Items: any) => {
                         ApproverIds = [];
                         TempSmartInformationIds = [];
                         userSendAttentionEmails = [];
-
-
-                        let CalculateStatusPercentage: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete
-                            : 0;
                         isApprovalByStatus = false;
                         if (Items.sendApproverMail != undefined) {
                             if (Items.sendApproverMail) {
@@ -2713,14 +2594,6 @@ const EditTaskPopup = (Items: any) => {
                                 setSendEmailComponentStatus(false);
                             }
                         }
-                        if (
-                            (CalculateStatusPercentage == 5 || CalculateStatusPercentage == 10 || CalculateStatusPercentage == 80 ||
-                                CalculateStatusPercentage == 90) && ImmediateStatus && EditData.PercentComplete != CalculateStatusPercentage) {
-                            ValueStatus = CalculateStatusPercentage;
-                            setSendEmailNotification(true);
-                            Items.StatusUpdateMail = true;
-                        }
-
                         if (sendEmailGlobalCount > 0) {
                             if (sendEmailStatus) {
                                 setSendEmailComponentStatus(false);
@@ -5955,14 +5828,7 @@ const EditTaskPopup = (Items: any) => {
                                                         ) : null}
                                                         {TaskCategoriesData?.map(
                                                             (type: any, index: number) => {
-                                                                if (
-                                                                    type.Title != "Phone" &&
-                                                                    type.Title != "Email Notification" &&
-                                                                    type.Title != "Immediate" &&
-                                                                    type.Title != "Approval" &&
-                                                                    type.Title != "Email" &&
-                                                                    type.Title != "Only Completed"
-                                                                ) {
+                                                                
                                                                     return (
                                                                         <div className="block w-100">
                                                                             <a
@@ -5981,7 +5847,8 @@ const EditTaskPopup = (Items: any) => {
                                                                             ></span>
                                                                         </div>
                                                                     );
-                                                                }
+                                                                
+
                                                             }
                                                         )}</> :
                                                         <>
@@ -6053,51 +5920,6 @@ const EditTaskPopup = (Items: any) => {
                                                     </span>
                                                 </div>
 
-                                                <div className="col">
-                                                    <div className="col">
-
-                                                        <div className="form-check">
-                                                            <input
-                                                                className="form-check-input rounded-0"
-                                                                type="checkbox"
-                                                                checked={EmailStatus}
-                                                                value={`${EmailStatus}`}
-                                                                onClick={(e) =>
-                                                                    CategoryChange(e, "Email Notification")
-                                                                }
-                                                            />
-                                                            <label>Email Notification</label>
-                                                            <div className="form-check ms-2">
-                                                                <input
-                                                                    className="form-check-input rounded-0"
-                                                                    type="checkbox"
-                                                                    checked={OnlyCompletedStatus}
-                                                                    value={`${OnlyCompletedStatus}`}
-                                                                    onClick={(e) =>
-                                                                        CategoryChange(e, "Only Completed")
-                                                                    }
-                                                                />
-                                                                <label>Only Completed</label>
-                                                            </div>
-                                                        </div>
-                                                        <div className="form-check">
-                                                            <input
-                                                                className="form-check-input rounded-0"
-                                                                type="checkbox"
-                                                                checked={ImmediateStatus}
-                                                                value={`${ImmediateStatus}`}
-                                                                onClick={(e) =>
-                                                                    CategoryChange(e, "Immediate")
-                                                                }
-                                                            />
-                                                            <label>Immediate</label>
-                                                        </div>
-
-                                                    </div>
-
-
-
-                                                </div>
                                             </div>
                                             <div className="col-6 ps-0 pe-0">
                                                 <div className="row">
@@ -8634,14 +8456,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     ) : null}
                                                                     {TaskCategoriesData?.map(
                                                                         (type: any, index: number) => {
-                                                                            if (
-                                                                                type.Title != "Phone" &&
-                                                                                type.Title != "Email Notification" &&
-                                                                                type.Title != "Immediate" &&
-                                                                                type.Title != "Approval" &&
-                                                                                type.Title != "Email" &&
-                                                                                type.Title != "Only Completed"
-                                                                            ) {
+                                                                            
                                                                                 return (
                                                                                     <div className="block w-100">
                                                                                         <a
@@ -8660,7 +8475,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                         ></span>
                                                                                     </div>
                                                                                 );
-                                                                            }
+                                                                            
                                                                         }
                                                                     )}</> :
                                                                     <>
@@ -8732,46 +8547,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 </span>
                                                             </div>
 
-                                                            <div className="col">
-                                                                <div className="col">
-                                                                    <div className="form-check">
-                                                                        <input
-                                                                            className="form-check-input rounded-0"
-                                                                            type="checkbox"
-                                                                            checked={EmailStatus}
-                                                                            value={`${EmailStatus}`}
-                                                                            onClick={(e) =>
-                                                                                CategoryChange(e, "Email Notification")
-                                                                            }
-                                                                        />
-                                                                        <label>Email Notification</label>
-                                                                        <div className="form-check ms-2">
-                                                                            <input
-                                                                                className="form-check-input rounded-0"
-                                                                                type="checkbox"
-                                                                                checked={OnlyCompletedStatus}
-                                                                                value={`${OnlyCompletedStatus}`}
-                                                                                onClick={(e) =>
-                                                                                    CategoryChange(e, "Only Completed")
-                                                                                }
-                                                                            />
-                                                                            <label>Only Completed</label>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="form-check">
-                                                                        <input
-                                                                            className="form-check-input rounded-0"
-                                                                            type="checkbox"
-                                                                            checked={ImmediateStatus}
-                                                                            value={`${ImmediateStatus}`}
-                                                                            onClick={(e) =>
-                                                                                CategoryChange(e, "Immediate")
-                                                                            }
-                                                                        />
-                                                                        <label>Immediate</label>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                          
                                                         </div>
                                                         <div className="col-6 ps-0 pe-0">
                                                             <div className="row">

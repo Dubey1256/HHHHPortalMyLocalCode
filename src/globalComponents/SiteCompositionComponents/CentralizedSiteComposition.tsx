@@ -895,7 +895,7 @@ const CentralizedSiteComposition = (Props: any) => {
 
     const CustomFooter = () => {
         return (
-            <footer className="bg-f4 alignCenter fixed-bottom justify-content-between p-3">
+            <footer className="alignCenter modal-footer justify-content-between p-3">
                 <div>
                     {ItemDetails?.Id != undefined ?
                         <VersionHistory
@@ -2382,7 +2382,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                     </span>
                                 </div>
                             </div>
-                            <div className="tagged-child-items-table Alltable">
+                            <div className="tagged-child-items-table Alltable mb-5">
                                 <GlobalCommonTable
                                     setLoaded={setLoaded}
                                     AllListId={RequiredListIds}
