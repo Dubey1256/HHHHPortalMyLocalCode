@@ -97,7 +97,7 @@ const Picker = (item: any) => {
         var AllTaskusers = []
         var AllMetaData: any = []
         var TaxonomyItems: any = []
-        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomyName + "'")
+        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,ItemImage,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomyName + "'")
         $.ajax({
             url: url,
             method: "GET",
@@ -371,10 +371,10 @@ const Picker = (item: any) => {
                                     return (
                                         <>
                                             <li onMouseEnter={() => HoverFirstLevel(item.Id)} onMouseLeave={HoverOutFirstLevel} key={item.Id}>
-                                                {item.Item_x005F_x0020_Cover != null &&
+                                                {item.ItemImage != null &&
                                                     <div onClick={() => selectPickerData(item)} className='alignCenter hreflink justify-content-between'>
                                                         <a className={`${FirstHoveredItemId == item?.Id ? 'boldOnHover flag_icon alignCenter' : 'flag_icon alignCenter'}`}>
-                                                            <img className="flag_icon" style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
+                                                            <img className="flag_icon" style={{ height: "12px", width: "18px" }} src={item.ItemImage.Url} />
                                                             {item.Title}
                                                         </a>
                                                         {item?.childs?.length > 0 && <SlArrowRight />}
@@ -388,9 +388,9 @@ const Picker = (item: any) => {
                                                                     <li onMouseEnter={() => HoverSecondLevel(child1.Id)} onMouseLeave={HoverOutSecondLevel}>
                                                                         <div onClick={() => selectPickerData(child1)} className='alignCenter hreflink justify-content-between'>
                                                                                 <a className={`${SecondHoveredItemId == child1?.Id ? 'boldOnHover alignCenter' : 'alignCenter'}`}>
-                                                                                    {child1.Item_x005F_x0020_Cover ? 
+                                                                                    {child1.ItemImage ? 
                                                                                     <img className="flag_icon" style={{ height: "12px", width: "18px;" }}
-                                                                                        src={child1.Item_x005F_x0020_Cover.Url} /> :
+                                                                                        src={child1.ItemImage.Url} /> :
                                                                                         <span className="me-4"></span>}
                                                                                     {child1.Title}
                                                                                     {child1.Description1 ? 
