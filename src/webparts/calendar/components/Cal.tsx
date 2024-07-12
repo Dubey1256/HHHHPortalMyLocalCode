@@ -495,8 +495,19 @@ const Apps = (props: any) => {
           useCount = true
         }
         let count = 0;
-        const windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(recurrenceData?.EndDate).setHours(0, 0, 0, 0);
-        while (dates.length < repeatInstance || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
+        let windowEndDate:any;
+        if(rule?.repeatForever[0] === 'FALSE'){
+          if(rule?.windowEnd == undefined){
+            let createenddate = new Date(recurrenceData?.EndDate);
+            createenddate.setHours(0, 0, 0, 0);
+            createenddate.setDate(createenddate.getDate() + 1000);
+            createenddate.setHours(0, 0, 0, 0);
+            windowEndDate = createenddate;
+          }
+            }else{
+              windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(recurrenceData?.EndDate).setHours(0, 0, 0, 0);
+            }
+          while (dates.length < repeatInstance || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
           if ((repeatInstance != 0 ? count > repeatInstance : new Date(dates[dates.length - 1]).setHours(0, 0, 0, 0) > windowEndDate) && useCount == true) {
             break
           }
