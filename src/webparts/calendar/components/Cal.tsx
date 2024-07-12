@@ -485,6 +485,7 @@ const Apps = (props: any) => {
         const rule = recurrence?.rule?.[0];
         const firstDayOfWeek = rule?.firstDayOfWeek || 'su';
         const startDate = new Date(recurrenceData?.EventDate);
+        startDate.setDate(startDate.getDate() - 1);
         let repeatInstance = 0;
 
         if (rule?.repeatInstances && rule.repeatInstances[0] > 0) {
