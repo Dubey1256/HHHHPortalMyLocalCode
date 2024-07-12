@@ -135,6 +135,7 @@ const Header = () => {
   return (
     <div>
       <section className="tabSec">
+        <div className="row"><h4 className="heading">{ContextData?.DashboardTitle}</h4></div>
         <div className="row">
           <div className='col-8'>
             {DashboardId === '4' ? (
@@ -193,7 +194,7 @@ const Header = () => {
             )}
           </div>
           <div className="col-1 alignCenter hreflink mb-3  bg-white shadow-sm">
-            {DashboardId != undefined && DashboardId != '' && DashboardId != 1 && <> <span className="iconSec">
+            {(DashboardId != undefined && DashboardId != '' && DashboardId != 1) && <> <span className="iconSec">
               <span title="Manage Configuration" className="svg__iconbox svg__icon--setting hreflink" style={{ width: '28px', height: '28px' }}></span>
             </span>
               <span className="ms-2">
