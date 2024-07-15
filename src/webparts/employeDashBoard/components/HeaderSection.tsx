@@ -6,6 +6,7 @@ import EmployeePieChart from './EmployeePieChart';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { GrNext, GrPrevious } from "react-icons/gr";
 import Slider from "react-slick";
+import EditConfiguration from '../../../globalComponents/EditConfiguration';
 let smartFavTableConfig: any = [];
 let DashboardConfig: any = [];
 let Count: any = 0
@@ -22,6 +23,8 @@ const Header = () => {
   const [AllPortfolioLeads, setAllPortfolioLeads] = useState([]);
   const [IsRestoreDefault, setIsRestoreDefault] = useState(false);
   const [SelectedLead, setSelectedLead] = useState(undefined);
+  const [IsOpenEditDashboardPopup, setIsOpenEditDashboardPopup] = React.useState<any>(false);
+  const [EditItem, setEditItem] = React.useState<any>(undefined);
   if (ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
     DashboardConfig = JSON.parse(JSON.stringify(ContextData?.DashboardConfig));
     DashboardConfig.sort((a: any, b: any) => a.Id - b.Id);
@@ -128,6 +131,15 @@ const Header = () => {
     setIsRestoreDefault(true);
     setSelectedLead(undefined)
   }
+  const EditDashboard = () => {
+    setEditItem(ContextData?.CurrentConfigItem)
+    setIsOpenEditDashboardPopup(true);
+  }
+  const CloseEditConfiguration = (IsLoad: any) => {
+    setEditItem(undefined)
+    setIsOpenEditDashboardPopup(false);
+
+  }
   useEffect(() => {
     handleTileClick(ContextData?.ActiveTile, undefined)
   }, [ContextData?.ActiveTile]);
@@ -205,17 +217,19 @@ const Header = () => {
               </span></>}
 
           </div>
-          <div className="col-1 alignCenter hreflink mb-3  bg-white shadow-sm">
+          <div className="col-1 alignCenter hreflink mb-3  bg-white shadow-sm" onClick={() => EditDashboard()}  >
             <span className="iconSec">
               <span title="Manage Dashboard" className="svg__iconbox svg__icon--setting hreflink" style={{ width: '28px', height: '28px' }}></span>
             </span>
             <span className="ms-2">
               <div>
-                {DashboardId != undefined && DashboardId != '' ? <a data-interception="off" target="_blank" className="empCol hreflink" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx?DashBoardId=" + DashboardId} >Manage Dashboard</a>
-                  : <a data-interception="off" target="_blank" className="empCol hreflink" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx"} >Manage<br /> Dashboard</a>}
+                <span className="empCol hreflink"  >Manage Dashboard</span>
+                {/* {DashboardId != undefined && DashboardId != '' ?
+                  <a data-interception="off" target="_blank" className="empCol hreflink" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx?DashBoardId=" + DashboardId} >Manage Dashboard</a>
+                  : <a data-interception="off" target="_blank" className="empCol hreflink" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx"} >Manage<br /> Dashboard</a>
+                } */}
               </div>
             </span>
-
           </div>
           <div className={`col-1 alignCenter hreflink mb-3  ${activeTile === 'TimeSheet' ? 'empBg shadow-sm active empBg' : 'bg-white shadow-sm'}`} onClick={() => handleTileClick('TimeSheet', undefined)}   >
             <span className="iconSec">
@@ -274,6 +288,7 @@ const Header = () => {
           <button className='btn btn-default ms-1' onClick={ClosePortfolioLeadPopup}>Cancel</button>
         </div>
       </Panel>
+      {IsOpenEditDashboardPopup && <EditConfiguration props={ContextData?.propsValue} IsDashboardPage={true} EditItem={EditItem} IsOpenPopup={IsOpenEditDashboardPopup} CloseConfigPopup={CloseEditConfiguration} />}
     </div >
   );
 }

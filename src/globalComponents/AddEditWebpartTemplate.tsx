@@ -161,7 +161,9 @@ const AddEditWebpartTemplate = (props: any) => {
                                             item['WebpartTitle'] = SmartFavDashboardTitle
                                         }
                                         if (key == 'onDropAction')
-                                            item['onDropAction'] = onDropAction
+                                            item['onDropAction'] = onDropAction;
+                                        else if (item.onDropAction == undefined || item.onDropAction == '')
+                                            item['onDropAction'] = onDropAction;
                                     }
                                 });
                             }
