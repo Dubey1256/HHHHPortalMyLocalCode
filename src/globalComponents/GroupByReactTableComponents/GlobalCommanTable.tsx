@@ -16,7 +16,7 @@ import {
     Row
 } from "@tanstack/react-table";
 import { useVirtualizer, notUndefined } from "@tanstack/react-virtual";
-// import { exportmeExcel } from "excel-ent";
+import { exportmeExcel } from "excel-ent";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaPlus, FaMinus, FaListAlt } from 'react-icons/fa';
 import { HTMLProps } from 'react';
@@ -28,7 +28,7 @@ import { RiFileExcel2Fill, RiFilter3Fill, RiListSettingsFill } from 'react-icons
 import ShowTeamMembers from '../ShowTeamMember';
 import SelectFilterPanel from './selectFilterPannel';
 import ExpndTable from '../ExpandTable/Expandtable';
-// import RestructuringCom from '../RestructringComponent/RestructuringCom';
+ import RestructuringCom from '../RestructringComponent/RestructuringCom';
 import { SlArrowDown, SlArrowRight, SlArrowUp } from 'react-icons/sl';
 import { BsClockHistory, BsList, BsSearch } from 'react-icons/bs';
 import Tooltip from "../../globalComponents/Tooltip";
@@ -1062,44 +1062,44 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 widthArray.push(columnWidth)
             })
 
-            // exportmeExcel({
-            //     data: flattenedData,
-            //     fileName: `${FileSaveName} excel`,
-            //     exportAs: {
-            //         type: "download",
-            //     },
-            //     options: {
-            //         columnWidths: widthArray,
-            //         globalRowHeight: 25,
-            //         headerStyle: {
-            //             fill: {
-            //                 fgColor: {
-            //                     rgb: headerColur,
-            //                 },
-            //             },
-            //             font: {
-            //                 bold: true,
-            //                 color: {
-            //                     rgb: "ffffff",
-            //                 },
-            //             },
-            //             alignment: {
-            //                 vertical: "center",
-            //                 horizontal: "center",
-            //             },
+            exportmeExcel({
+                data: flattenedData,
+                fileName: `${FileSaveName} excel`,
+                exportAs: {
+                    type: "download",
+                },
+                options: {
+                    columnWidths: widthArray,
+                    globalRowHeight: 25,
+                    headerStyle: {
+                        fill: {
+                            fgColor: {
+                                rgb: headerColur,
+                            },
+                        },
+                        font: {
+                            bold: true,
+                            color: {
+                                rgb: "ffffff",
+                            },
+                        },
+                        alignment: {
+                            vertical: "center",
+                            horizontal: "center",
+                        },
 
-            //         },
-            //         bodyStyle: {
+                    },
+                    bodyStyle: {
 
-            //             alignment: {
-            //                 vertical: "center",
-            //                 horizontal: "center",
-            //             },
+                        alignment: {
+                            vertical: "center",
+                            horizontal: "center",
+                        },
 
-            //         },
+                    },
 
-            //     },
-            // })
+                },
+            })
             setExportColumnOpen(false)
         } else {
             setExportColumnOpen(false)
@@ -1425,7 +1425,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         </> : ''}
 
                     </div> :
-                        <span style={items?.showingDataCoustom ? { color: "#333333", flex: "none", fontSize: "bold" } : { color: "#333333", flex: "none" }} className='Header-Showing-Items'>{items?.showingDataCoustom ? items?.showingDataCoustom : `Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
+                        <span style={items?.showingDataCoustom ? { color: "#333333", flex: "none", fontWeight: "bold" } : { color: "#333333", flex: "none" }} className='Header-Showing-Items'>{items?.showingDataCoustom ? items?.showingDataCoustom : `Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
                     <span className="mx-1">{items?.showDateTime}</span>
                     <span className="SearchInput-container">
                         <DebouncedInput
@@ -1476,14 +1476,14 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         {items?.protfolioProfileButton === true && items?.hideAddActivityBtn != true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" disabled={true} > Add Activity-Task</button>}</>}
-                        {/* 
+                        
                         {items?.showRestructureButton === true && <>
                             {
                                 trueRestructuring == true ?
                                     <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} projectmngmnt={items?.projectmngmnt} MasterdataItem={items?.MasterdataItem} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                     : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
                             }
-                        </>} */}
+                        </>}
 
                         {items?.showCompareButton === true && <div> {
                             ((table?.getSelectedRowModel()?.flatRows?.length === 2) && (table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Workstream" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task")) ?
@@ -1495,13 +1495,13 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {items.taskProfile === true && items?.showCreationAllButton === true && items?.hideRestructureBtn != true && <>
                         {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Workstream-Task")}>{(table?.getSelectedRowModel()?.flatRows.length > 0 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType.Title == "Workstream") || (items?.queryItems?.TaskType?.Title == "Workstream") ? "Add Task" : "Add Workstream-Task"}</button> :
                             <button type="button" className="btn btn-primary" disabled={true} > Add Workstream-Task</button>}
-                        {/* 
+                        
                         {
                             trueRestructuring == true ?
                                 <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary"
                                 >Restructure</button>
-                        } */}
+                        }
                     </>
                     }
                     {
