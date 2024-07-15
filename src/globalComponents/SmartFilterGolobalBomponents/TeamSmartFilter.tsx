@@ -797,7 +797,7 @@ const TeamSmartFilter = (item: any) => {
                 filterGroups[index].selectAllChecked = childrenLength === checked?.length;
             }
             // ///end///
-            // handleTeamsFilterCreatedModifiAssign(event);
+            handleTeamsFilterCreatedModifiAssign(event);
             setTaskUsersData(filterGroups);
             rerender();
 
@@ -817,26 +817,26 @@ const TeamSmartFilter = (item: any) => {
         rerender()
         headerCountData();
     }
-    // const handleTeamsFilterCreatedModifiAssign = (event: any) => {
-    //     if (
-    //         !isCreatedBy &&
-    //         !isModifiedby &&
-    //         !isAssignedto
-    //     ) {
-    //         switch (event) {
-    //             case "FilterTeamMembers":
-    //                 setIsCreatedBy(true);
-    //                 setIsModifiedby(true);
-    //                 setIsAssignedto(true);
-    //                 break;
-    //             default:
-    //                 setIsCreatedBy(false);
-    //                 setIsModifiedby(false);
-    //                 setIsAssignedto(false);
-    //                 break;
-    //         }
-    //     }
-    // };
+    const handleTeamsFilterCreatedModifiAssign = (event: any) => {
+        if (
+            !isCreatedBy &&
+            !isModifiedby &&
+            !isAssignedto
+        ) {
+            switch (event) {
+                case "FilterTeamMembers":
+                    setIsCreatedBy(true);
+                    setIsModifiedby(true);
+                    setIsAssignedto(true);
+                    break;
+                default:
+                    setIsCreatedBy(false);
+                    setIsModifiedby(false);
+                    setIsAssignedto(false);
+                    break;
+            }
+        }
+    };
     const handleSelectAllChangeTeamSection = () => {
         setIsSelectAll(!isSelectAll);
         setIsCreatedBy(!isSelectAll);
@@ -1693,6 +1693,13 @@ const TeamSmartFilter = (item: any) => {
     const toggleIcon = () => {
         setIconIndex((prevIndex) => (prevIndex + 1) % 4);
     };
+    React.useEffect(() => {
+        if (item?.webPartTemplateSmartFilter === true) {
+            setIconIndex((prevIndex) => (1 + 1) % 4);
+            toggleAllExpendCloseUpDown(1);
+        }
+    }, [item?.webPartTemplateSmartFilter])
+
     const icons = [
         <AiOutlineUp className='upSizeIcon' style={{ color: `${portfolioColor}`, width: '16px', height: "16px" }} />,
         <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px' }} />,
@@ -1901,6 +1908,25 @@ const TeamSmartFilter = (item: any) => {
     const handleDateFilterChange = (event: any) => {
         setSelectedFilter(event.target.value);
         setChangeDatePicker(false)
+        if (
+            !isCreatedDateSelected &&
+            !isModifiedDateSelected &&
+            !isDueDateSelected
+        ) {
+            switch (event.target.value) {
+                case "today": case "yesterday": case "thisweek": case "last7days":
+                case "thismonth": case "last30days": case "last3months": case "thisyear": case "lastyear": case "Pre-set":
+                    setIsCreatedDateSelected(true);
+                    setIsModifiedDateSelected(true);
+                    setIsDueDateSelected(true);
+                    break;
+                default:
+                    setIsCreatedDateSelected(false);
+                    setIsModifiedDateSelected(false);
+                    setIsDueDateSelected(false);
+                    break;
+            }
+        }
     };
     const clearDateFilters = () => {
         setSelectedFilter("");
@@ -1968,7 +1994,25 @@ const TeamSmartFilter = (item: any) => {
     }, [selectedFilterWorkingAction]);
     const handleDateFilterChangeWorkingAction = (event: any) => {
         setSelectedFilterWorkingAction(event.target.value);
+        if (!isWorkingDate) {
+            switch (event.target.value) {
+                case "today": case "tomorrow": case "thisweek": case "nextweek":
+                case "thismonth": case "nextmonth": case "custom":
+                    setIsWorkingDate(true);
+                    break;
+                default:
+                    setIsWorkingDate(false);
+                    break;
+            }
+        }
     };
+    React.useEffect(() => {
+        if (isWorkingDate === false) {
+            setSelectedFilterWorkingAction("");
+            setStartDateWorkingAction(null);
+            setEndDateWorkingAction(null);
+        }
+    }, [isWorkingDate])
     const clearDateFiltersWorkingAction = () => {
         setSelectedFilterWorkingAction("");
         setStartDateWorkingAction(null);
@@ -2363,7 +2407,6 @@ const TeamSmartFilter = (item: any) => {
                 </div>}
             </div>}
 
-
             <section className='smartFilter bg-light border mb-2 col'>
                 {isSmartFevShowHide === false && <>
                     <section className="p-0 smartFilterSection">
@@ -2753,20 +2796,81 @@ const TeamSmartFilter = (item: any) => {
                         <div className="px-2">
                             <div className="togglebox">
                                 <label className="toggler full_width active">
-                                    <span className='full_width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isTeamMembersExpendShow")}>
+                                    <span className='full_width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isActionsExpendShow")}>
                                         <div className='alignCenter'>
-                                            {isTeamMembersExpendShow === true ?
+                                            {isActionsExpendShow === true ?
                                                 <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
-                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Team Members</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{teamMembersCountInfo ? '- ' + teamMembersCountInfo : ''}</div>
+                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Actions</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{(isPhone || isBottleneck || isAttention) ? `Working Action: (${(isPhone && isBottleneck && isAttention) ? "All" : [isPhone ? "Phone" : "", isBottleneck ? "Bottleneck" : "", isAttention ? "Attention" : ""].filter(Boolean).join(', ')})` : ""}</div>
                                         </div>
 
                                     </span>
                                 </label>
+                                {isActionsExpendShow === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
+                                    <Col className='mb-2 '>
+                                        <div>
+                                            <label className='me-3'>
+                                                <input className='form-check-input' type="checkbox" value="isPhone" checked={isPhone} onChange={() => setIsPhone(!isPhone)} /> Phone
+                                            </label>
+                                            <label className='me-3'>
+                                                <input className='form-check-input' type="checkbox" value="isBottleneck" checked={isBottleneck} onChange={() => setIsBottleneck(!isBottleneck)} /> Bottleneck
+                                            </label>
+                                            <label className='me-3'>
+                                                <input className='form-check-input' type="checkbox" value="isAttention" checked={isAttention} onChange={() => setIsAttention(!isAttention)} /> Attention
+                                            </label>
+                                        </div>
+                                    </Col>
+                                </div> : ""}
+                            </div>
+                        </div >
+                    </section> : ''}
+
+                    {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
+                        <div className="px-2">
+                            <div className="togglebox">
+                                <div className="toggler full_width active">
+                                    <span className='full_width' style={{ color: `${portfolioColor}` }}>
+                                        <div className='alignCenter'>
+                                            {isTeamMembersExpendShow === true ?
+                                                <SlArrowDown style={{ color: "#555555", width: '12px' }} onClick={() => showSmartFilter("isTeamMembersExpendShow")} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} onClick={() => showSmartFilter("isTeamMembersExpendShow")} />}
+                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold me-2'>Team Members</span>
+                                            <div className="f-14 me-2" style={{ color: "#333333" }}>{TaskUsersData?.some((e) => e.checked?.length > 0) ? '- ' : ''}</div>
+                                            {
+                                                TaskUsersData?.map((Group: any, index: any) => {
+                                                    return (
+                                                        <div className='filterContentSec'>
+                                                            <div style={{ display: "flex", flexWrap: "wrap" }}>
+                                                                {Group?.values?.map((user: any) => {
+                                                                    const isSelected = Group?.checked?.some((selectedUser: any) => selectedUser === user.Id);
+                                                                    return (
+                                                                        <>
+                                                                            {isSelected && <div>
+                                                                                {
+                                                                                    user?.Item_x0020_Cover != undefined && user?.Item_x0020_Cover?.Url != undefined && user?.AssingedToUser != undefined ? <div key={user.Id} style={{ marginRight: "2px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "2px solid var(--SiteBlue)" : "2px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)}>
+                                                                                        <img src={user?.Item_x0020_Cover?.Url} title={user.Title} alt={user.Title} style={{ width: "24px", height: "24px", borderRadius: "50%" }} />
+                                                                                    </div> :
+                                                                                        <div key={user.Id} style={{ marginRight: "2px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "2px solid var(--SiteBlue)" : "2px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)} >
+                                                                                            <span title={user.Title} className='suffix_Usericon showSuffixIcon'>{user.Suffix}</span>
+                                                                                        </div>
+                                                                                }
+                                                                            </div>}
+                                                                        </>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+
+                                            <div className='me-3 d-end'>
+                                                <input className='form-check-input' type="checkbox" value="isSelectAll" checked={isSelectAll} onChange={handleSelectAllChangeTeamSection} /> Select All
+                                            </div>
+                                        </div>
+
+                                    </span>
+                                </div>
                                 {isTeamMembersExpendShow === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
                                     <Col className='mb-2 '>
-                                        <label className='me-3'>
-                                            <input className='form-check-input' type="checkbox" value="isSelectAll" checked={isSelectAll} onChange={handleSelectAllChangeTeamSection} /> Select All
-                                        </label>
                                         <label className='me-3'>
                                             <input className='form-check-input' type="checkbox" value="isCretaedBy" checked={isCreatedBy} onChange={() => setIsCreatedBy(!isCreatedBy)} /> Created by
                                         </label>
@@ -2819,10 +2923,10 @@ const TeamSmartFilter = (item: any) => {
                                                                                         return (
                                                                                             <>
                                                                                                 {
-                                                                                                    user?.Item_x0020_Cover != undefined && user?.Item_x0020_Cover?.Url != undefined && user?.AssingedToUser != undefined ? <div key={user.Id} style={{ marginRight: "2px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "3px solid var(--SiteBlue)" : "3px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)}>
+                                                                                                    user?.Item_x0020_Cover != undefined && user?.Item_x0020_Cover?.Url != undefined && user?.AssingedToUser != undefined ? <div key={user.Id} style={{ marginRight: "2px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "2px solid var(--SiteBlue)" : "2px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)}>
                                                                                                         <img src={user?.Item_x0020_Cover?.Url} title={user.Title} alt={user.Title} style={{ width: "24px", height: "24px", borderRadius: "50%" }} />
                                                                                                     </div> :
-                                                                                                        <div key={user.Id} style={{ marginRight: "2px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "3px solid var(--SiteBlue)" : "3px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)} >
+                                                                                                        <div key={user.Id} style={{ marginRight: "2px", marginBottom: "4px", cursor: "pointer", border: isSelected ? "2px solid var(--SiteBlue)" : "2px solid transparent", borderRadius: "50%", }} onClick={() => handleTeamMemberClick(user, index)} >
                                                                                                             <span title={user.Title} className='suffix_Usericon showSuffixIcon'>{user.Suffix}</span>
                                                                                                         </div>
                                                                                                 }
@@ -2848,59 +2952,32 @@ const TeamSmartFilter = (item: any) => {
                     </section> : ''}
 
 
-
                     {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
                         <div className="px-2">
                             <div className="togglebox">
-                                <label className="toggler full_width active">
-                                    <span className='full_width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isActionsExpendShow")}>
+                                <div className="toggler full_width active">
+                                    <span className="full-width" style={{ color: `${portfolioColor}` }}>
                                         <div className='alignCenter'>
-                                            {isActionsExpendShow === true ?
-                                                <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
-                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Actions</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{(isPhone || isBottleneck || isAttention) ? `Working Action: (${(isPhone && isBottleneck && isAttention) ? "All" : [isPhone ? "Phone" : "", isBottleneck ? "Bottleneck" : "", isAttention ? "Attention" : ""].filter(Boolean).join(', ')})` : ""}</div>
-                                        </div>
-
-                                    </span>
-                                </label>
-                                {isActionsExpendShow === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
-                                    <Col className='mb-2 '>
-                                        <div>
-                                            <label className='me-3'>
-                                                <input className='form-check-input' type="checkbox" value="isPhone" checked={isPhone} onChange={() => setIsPhone(!isPhone)} /> Phone
-                                            </label>
-                                            <label className='me-3'>
-                                                <input className='form-check-input' type="checkbox" value="isBottleneck" checked={isBottleneck} onChange={() => setIsBottleneck(!isBottleneck)} /> Bottleneck
-                                            </label>
-                                            <label className='me-3'>
-                                                <input className='form-check-input' type="checkbox" value="isAttention" checked={isAttention} onChange={() => setIsAttention(!isAttention)} /> Attention
-                                            </label>
-                                        </div>
-                                    </Col>
-                                </div> : ""}
-                            </div>
-                        </div >
-                    </section> : ''}
-
-                    {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
-                        <div className="px-2">
-                            <div className="togglebox">
-                                <label className="toggler full_width active">
-                                    <span className="full-width" style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isDateExpendShowWorkingAction")}>
-                                        <div className='alignCenter'>
-                                            {isDateExpendShowWorkingAction === true ?
-                                                <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
-                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Working Date</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{dateCountInfo ? '- ' + dateCountInfo : ''}</div>
+                                            <div>
+                                                {isDateExpendShowWorkingAction === true ?
+                                                    <SlArrowDown style={{ color: "#555555", width: '12px' }} onClick={(e: any) => { showSmartFilter("isDateExpendShowWorkingAction") }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} onClick={(e) => { showSmartFilter("isDateExpendShowWorkingAction") }} />}
+                                                <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Working Date</span>
+                                            </div>
+                                            <div className="ms-2 f-14">
+                                                <input className="form-check-input" id="workingDateCheckbox" name="workingDateCheckbox" type="checkbox" value="isWorkingDate" checked={isWorkingDate} onChange={() => setIsWorkingDate(!isWorkingDate)} />{" "}
+                                                <label htmlFor=""></label>
+                                            </div>
                                         </div>
                                     </span>
-                                </label>
+                                </div>
                                 {isDateExpendShowWorkingAction === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
                                     <div className="col-sm-12">
-                                        <Col className='mb-2'>
+                                        {/* <Col className='mb-2'>
                                             <label className="me-3">
                                                 <input className="form-check-input" type="checkbox" value="isWorkingDate" checked={isWorkingDate} onChange={() => setIsWorkingDate(!isWorkingDate)} />{" "}
                                                 Working Date
                                             </label>
-                                        </Col>
+                                        </Col> */}
                                         <Col className='my-2'>
                                             <span className='SpfxCheckRadio  me-3'>
                                                 <input type="radio" name="dateFilter" className='radio' value="today" checked={selectedFilterWorkingAction === "today"} onChange={handleDateFilterChangeWorkingAction} />
