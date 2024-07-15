@@ -18,6 +18,7 @@ let allData: any = [];
 let LoginUserTeamMembers: any = [];
 let ActiveTile = ''
 let DashboardTitle: any = '';
+let DashboardValue: any = '';
 let timeSheetConfig: any = {};
 let TimeSheetLists: any = [];
 let dates: any = [];
@@ -160,6 +161,7 @@ const EmployeProfile = (props: any) => {
     await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then(async (data: any) => {
       data = data?.filter((config: any) => config?.Value == DashboardId)[0];
       DashboardTitle = data?.Title
+      DashboardValue = data?.Value;
       DashboardConfig = globalCommon.parseJSON(data?.Configurations)
       DashboardConfig = DashboardConfig.sort((a: any, b: any) => {
         if (a.WebpartPosition.Row == b.WebpartPosition.Row)
@@ -1141,7 +1143,7 @@ const EmployeProfile = (props: any) => {
       if (Array.isArray(data[ItemProperty])) {
         return data[ItemProperty]?.some((item: any) => filterArray.some((filter: any) => filter.Title == item.Title));
       } else {
-        return filterArray.some((filter: any) => filter[FilterProperty] == data[ItemProperty]);
+        return filterArray.some((filter: any) => data[ItemProperty] != undefined && data[ItemProperty] != '' && filter[FilterProperty] == data[ItemProperty]);
       }
     } catch (error) { }
   };
@@ -1630,7 +1632,7 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, todaysDrafTimeEntry: todaysDrafTimeEntry, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      <myContextValue.Provider value={{ ...myContextValue, todaysDrafTimeEntry: todaysDrafTimeEntry, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, DashboardValue: DashboardValue, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div> <Header /></div>
         {IsCallContext == true && <TaskStatusTbl />}
       </myContextValue.Provider >

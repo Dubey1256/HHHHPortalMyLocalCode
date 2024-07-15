@@ -267,8 +267,8 @@ const LandingPage = (props: any) => {
     
     return (
         <>
-            <h2 className='heading'>Recruitment-LandingPage</h2>
             <div className="container">
+                <h2 className='heading'>Recruitment Landing Page</h2>
                 <div className="mb-5 clearfix">
                     <div className="text-right">
                         <button

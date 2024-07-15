@@ -19,6 +19,7 @@ import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import SendEmailEODReport from './SendEmailEODReport';
 import SmartPriorityToolTip from '../../../globalComponents/SmartPriorityTooltip';
 import SmartPriorityHover from '../../../globalComponents/EditTaskPopup/SmartPriorityHover';
+import { Avatar } from "@fluentui/react-components";
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -1009,14 +1010,23 @@ const TaskDashboard = (props: any) => {
                 cell: ({ row, getValue }) => (
                     <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         <span className="ms-1">{row?.original?.CreateDate}</span>
-                        {row?.original?.createdImg != undefined ?
+                        {row?.original?.createdImg != undefined &&
                             <>
                                 <a href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank"
                                     data-interception="off" >
-                                    <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                                    {row?.original?.createdImg || row?.original?.Author?.Suffix ? <Avatar
+                                                className="UserImage"
+                                                title={row?.original?.Author?.Title}
+                                                name={row?.original?.Author?.Title}
+                                                image={{ src: row?.original?.createdImg }}
+                                                initials={row?.original?.createdImg == undefined ? row.original?.Author?.Suffix : undefined}
+
+                                            /> :
+                                            <Avatar  title={row?.original?.Author?.Title}
+                                            name={row?.original?.Author?.Title} className="UserImage" />}
                                 </a>
                             </>
-                            : <span title={row?.original?.Author?.Title} className="alignIcon grey ms-1 svg__icon--defaultUser svg__iconbox "></span>}
+                            }
                     </span>
                 ),
                 id: "CreateDate",
@@ -1206,14 +1216,23 @@ const TaskDashboard = (props: any) => {
                 cell: ({ row, getValue }) => (
                     <span>
                         <span className="ms-1">{row?.original?.CreateDate}</span>
-                        {row?.original?.createdImg != undefined ?
+                        {row?.original?.createdImg != undefined &&
                             <>
                                 <a href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank"
                                     data-interception="off" >
-                                    <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                                    {row?.original?.createdImg || row?.original?.Author?.Suffix ? <Avatar
+                                                className="UserImage"
+                                                title={row?.original?.Author?.Title}
+                                                name={row?.original?.Author?.Title}
+                                                image={{ src: row?.original?.createdImg }}
+                                                initials={row?.original?.createdImg == undefined ? row.original?.Author?.Suffix : undefined}
+
+                                            /> :
+                                            <Avatar  title={row?.original?.Author?.Title}
+                                            name={row?.original?.Author?.Title} className="UserImage" />}
                                 </a>
                             </>
-                            : <span title={row?.original?.Author?.Title} className="alignIcon grey ms-1 svg__icon--defaultUser svg__iconbox "></span>}
+                          }
                     </span>
                 ),
                 id: "CreateDate",
@@ -2451,9 +2470,9 @@ const TaskDashboard = (props: any) => {
                                                 <dt className='SpfxCheckRadio'>
                                                     <input className='radio' type="radio" value="This Month" name="date" checked={selectedTimeReport == 'This Month'} onClick={() => currentUserTimeEntry('This Month')} /> This Month
                                                 </dt>
-                                                <dt className='SpfxCheckRadio'>
+                                                {/* <dt className='SpfxCheckRadio'>
                                                     <input className='radio' type="radio" value="Last Month" name="date" checked={selectedTimeReport == 'Last Month'} onClick={() => currentUserTimeEntry('Last Month')} /> Last Month
-                                                </dt>
+                                                </dt> */}
                                             </dl>
                                         </div>
                                         <div>
@@ -2503,7 +2522,7 @@ const TaskDashboard = (props: any) => {
                                 <div className='AccordionContent'>
                                     {(value && value?.length > 0) ?
 
-                                        <div className='Alltable border-0 dashboardTable float-none'>
+                                        <div className='Alltable dashboardTable float-none'>
                                             <>
                                                 <GlobalCommanTable AllListId={AllListId} showPagination={true} columns={columnsName} data={value} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                                             </>

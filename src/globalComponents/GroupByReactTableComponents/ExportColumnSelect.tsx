@@ -50,7 +50,7 @@ const ExportColumnSelect = (props: any) => {
                 <div className="alignCenter subheading">
                     <span  className="siteColor">Export Columns</span>
                 </div>
-                <Tooltip ComponentId={839} />
+                <Tooltip ComponentId={8781} />
             </>
         );
     };

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { myContextValue } from "../../../globalComponents/globalCommon";
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import ComingBirthday from "./comingBirthday";
@@ -23,6 +23,7 @@ import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
 import { Panel } from '@fluentui/react';
 import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import AddEditWebpartTemplate from "../../../globalComponents/AddEditWebpartTemplate";
+import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -41,25 +42,27 @@ let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1,
 const TaskStatusTbl = (Tile: any) => {
   const childRef = React.useRef<any>();
   const ContextData: any = React.useContext(myContextValue);
-  const [IsShowAllUser, setIsShowAllUser] = React.useState(true);
+  const [IsShowAllUser, setIsShowAllUser] = useState(true);
   const [state, rerender] = React.useReducer(() => ({}), {});
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
-  const [editPopup, setEditPopup]: any = React.useState(false);
-  const [EditCompPopup, setEditCompPopup]: any = React.useState(false);
-  const [result, setResult]: any = React.useState(false);
-  const [CompResult, setCompResult]: any = React.useState(false);
-  const [ActiveTile, setActiveTile] = React.useState(Tile?.activeTile);
-  const [dateRange, setDateRange] = React.useState<any>([]);
-  const [isRejectItem, setisRejectItem] = React.useState<any>(undefined);
-  const [RefSelectedItem, setRefSelectedItem] = React.useState<any>([]);
-  const [bulkUpdateDataCallBack, setBulkUpdateDataCallBack] = React.useState<any>([]);
-  const [bulkUpdateDataTableId, setBulkUpdateDataTableId] = React.useState('')
+  const [editPopup, setEditPopup]: any = useState(false);
+  const [EditCompPopup, setEditCompPopup]: any = useState(false);
+  const [result, setResult]: any = useState(false);
+  const [CompResult, setCompResult]: any = useState(false);
+  const [ActiveTile, setActiveTile] = useState(Tile?.activeTile);
+  const [dateRange, setDateRange] = useState<any>([]);
+  const [isRejectItem, setisRejectItem] = useState<any>(undefined);
+  const [RefSelectedItem, setRefSelectedItem] = useState<any>([]);
+  const [bulkUpdateDataCallBack, setBulkUpdateDataCallBack] = useState<any>([]);
+  const [bulkUpdateDataTableId, setBulkUpdateDataTableId] = useState('')
+  const [IsTimeEntry, setIsTimeEntry] = useState(false);
+  const [TimeComponent, setTimeComponent] = useState(undefined);
   const dashBoardbulkUpdateCallBack = React.useCallback(async (configTableId: any, data: any) => {
     setBulkUpdateDataCallBack(data);
     setBulkUpdateDataTableId(configTableId);
   }, []);
-  React.useEffect(() => {
+  useEffect(() => {
     if (bulkUpdateDataCallBack?.length > 0 && bulkUpdateDataTableId) {
       DashboardConfig?.map((elem: any, index: any) => {
         if ("DashboardID" + ContextData?.DashboardId + "WebpartId" + elem?.Id + "Dashboard" === bulkUpdateDataTableId) {
@@ -79,7 +82,7 @@ const TaskStatusTbl = (Tile: any) => {
     dots: false, infinite: true, speed: 500, slidesToShow: 6, slidesToScroll: 1, nextArrow: <SamplePrevNextArrow type="next" />, prevArrow: <SamplePrevNextArrow type="prev" />,
     beforeChange: handleBeforeChange,
   };
-  const [currentSlide, setCurrentSlide] = React.useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
   function handleBeforeChange(current: any, next: any) {
     setCurrentSlide(next);
   }
@@ -99,10 +102,10 @@ const TaskStatusTbl = (Tile: any) => {
     else
       AllapprovalTask = []
   }
-  let [approvalTask, setapprovalTask]: any = React.useState([]);
-  const [sendMail, setsendMail]: any = React.useState(false);
-  const [IsManageConfigPopup, setIsManageConfigPopup] = React.useState(false);
-  const [SelectedItem, setSelectedItem]: any = React.useState({});
+  let [approvalTask, setapprovalTask]: any = useState([]);
+  const [sendMail, setsendMail]: any = useState(false);
+  const [IsManageConfigPopup, setIsManageConfigPopup] = useState(false);
+  const [SelectedItem, setSelectedItem]: any = useState({});
   if (ContextData != undefined && ContextData != '') {
     ContextData.ShowHideSettingIcon = (Value: any) => {
       IsShowConfigBtn = Value;
@@ -274,14 +277,14 @@ const TaskStatusTbl = (Tile: any) => {
           });
           if (Item != undefined && Item != '') {
             let web = new Web(ContextData?.propsValue?.siteUrl);
-            web.lists.getById(Item.listId).items.getById(Item?.Id).update({
-              // TeamMembersId: { results: TeamMemberIds != undefined && TeamMemberIds.length > 0 ? TeamMemberIds : [], },
+            let PostData: any = {
               AssignedToId: { results: AssignedToIds != undefined && AssignedToIds.length > 0 ? AssignedToIds : [], },
               PercentComplete: 10 / 100,
               Status: Item?.Status,
               WorkingAction: Item?.WorkingAction?.length > 0 ? JSON.stringify(Item?.WorkingAction) : '',
               IsTodaysTask: true,
-            }).then((res: any) => {
+            }
+            web.lists.getById(Item.listId).items.getById(Item?.Id).update(PostData).then((res: any) => {
               count++;
               console.log('Drop successfuly');
               DashboardConfig?.forEach((item: any) => {
@@ -485,87 +488,150 @@ const TaskStatusTbl = (Tile: any) => {
           });
           Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item?.WorkingAction))
           if (Item != undefined && Item != '') {
-            if (config?.TileName == 'WorkingToday') {
-              let today: any = new Date();
-              today.setDate(today.getDate());
-              today.setHours(0, 0, 0, 0);
-              let WorkingDate: any = Moment(today).format("DD/MM/YYYY");
-              Item.WorkingDate = WorkingDate
-              if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0) {
-                let IsAddNew: boolean = true;
-                let IsWorkingDetailsExist = false;
-                Item?.WorkingAction?.map((workingMember: any) => {
-                  if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
-                    IsWorkingDetailsExist = true;
-                    workingMember?.InformationData?.map((workingDetails: any) => {
-                      if (workingDetails?.WorkingDate == WorkingDate) {
-                        IsAddNew = false;
-                        if (workingDetails?.WorkingMember == undefined)
-                          workingDetails.WorkingMember = []
-                        if (!IsUserIdExist(workingDetails?.WorkingMember, ContextData?.currentUserData))
-                          workingDetails?.WorkingMember.push({ 'Id': ContextData?.currentUserData?.AssingedToUserId, 'Title': ContextData?.currentUserData?.Title })
-                      }
-                    })
-                  }
-                })
-                if (IsAddNew == true) {
-                  if (IsWorkingDetailsExist == false) {
-                    Item?.WorkingAction.push({ 'Title': "WorkingDetails", 'InformationData': [] })
-                  }
-                  Item?.WorkingAction?.map((workingMember: any) => {
-                    if (workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
-                      if (workingMember?.InformationData == undefined)
-                        workingMember.InformationData = [];
-                      workingMember.InformationData.push({ 'WorkingDate': WorkingDate, 'WorkingMember': [{ 'Id': ContextData?.currentUserData?.AssingedToUserId, 'Title': ContextData?.currentUserData?.Title }] })
-
-                    }
-                  })
-                }
-              }
-              Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item?.WorkingAction))
-            }
-            else {
-              if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0)
-                Item.WorkingAction = Item?.WorkingAction.filter((Category: any) => Category?.Title !== 'WorkingDetails')
-            }
+            let PostData: any = {};
             let web = new Web(ContextData?.propsValue?.siteUrl);
-            DragDropType == "Un-Assigned"
-            let PostData: any = {
-              PercentComplete: Status / 100,
-              Status: Item?.Status,
-              WorkingAction: Item?.WorkingAction?.length > 0 ? JSON.stringify(Item?.WorkingAction) : '',
-              AssignedToId: { results: config?.TileName == 'WorkingToday' ? [ContextData?.currentUserData?.AssingedToUserId] : [], },
-              IsTodaysTask: false,
-            }
-            if (DragDropType == "Un-Assigned")
-              PostData.ResponsibleTeamId = { results: [ContextData?.currentUserData?.AssingedToUserId] }
-            web.lists.getById(Item.listId).items.getById(Item?.Id).update(PostData).then((res: any) => {
-              console.log('Drop successfuly');
-              count++;
-              DashboardConfig?.forEach((item: any) => {
-                if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
-                  if (item?.Tasks != undefined) {
-                    item?.Tasks.map((user: any) => {
-                      // if (user?.AssingedToUserId == sourceUser?.AssingedToUserId) {
-                      if (config?.TileName != 'WorkingToday')
-                        Item.WorkingDate = '';
-                      if (Item.PrevWorkingAction != undefined && Item.PrevWorkingAction != '' && Item.PrevWorkingAction?.length > 0) {
-                        Item.PrevWorkingAction?.map((workingMember: any) => {
-                          if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
+            if (config?.onDropAction != undefined && config?.onDropAction?.length) {
+              config?.onDropAction.map((dropAction: any) => {
+                if (dropAction?.SelectedValue) {
+                  if (dropAction?.SelectedField != undefined && dropAction?.SelectedField != '' && dropAction?.SelectedField == 'Status') {
+                    Status = dropAction?.SelectedValue != undefined ? dropAction?.SelectedValue : Status
+                    Item.percentage = Status != undefined && Status != '' ? Status : dropAction?.SelectedValue;
+                    Item.PercentComplete = dropAction?.SelectedValue;
+                    StatusOptions?.map((item: any) => {
+                      if (Status == item.value) {
+                        Item.Status = item?.taskStatusComment
+                      }
+                    });
+                    PostData.PercentComplete = Status / 100;
+                    PostData.Status = Item.Status;
+                  }
+                  else if (dropAction?.SelectedField != undefined && dropAction?.SelectedField != '' && dropAction?.SelectedField == 'DueDate') {
+                    Item.DisplayDueDate = dropAction?.SelectedValue;
+                    let SplitDate: any = dropAction?.SelectedValue.split('/')
+                    let serverDate: any = Moment(SplitDate[1] + '/' + SplitDate[0] + '/' + SplitDate[2])
+                    serverDate._d.setHours(0, 0, 0, 0);
+                    PostData.DueDate = serverDate._d;
+                    Item.DueDate = serverDate._d;
+                  }
+                  else if (dropAction?.SelectedField != undefined && dropAction?.SelectedField != '' && dropAction?.SelectedField == 'Priority') {
+                    let priority = '';
+                    if (dropAction?.SelectedValue >= 8 && dropAction?.SelectedValue <= 10) {
+                      priority = '(1) High';
+                    }
+                    if (dropAction?.SelectedValue >= 4 && dropAction?.SelectedValue <= 7) {
+                      priority = '(2) Normal';
+                    }
+                    if (dropAction?.SelectedValue >= 1 && dropAction?.SelectedValue <= 3) {
+                      priority = '(3) Low';
+                    }
+                    PostData.Priority = priority
+                    Item.Priority = dropAction?.SelectedValue;
+                    PostData.PriorityRank = dropAction?.SelectedValue;
+                    Item.PriorityRank = dropAction?.SelectedValue;
+                  }
+                  else if (dropAction?.SelectedField != undefined && dropAction?.SelectedField != '' && dropAction?.SelectedField == 'WorkingMember') {
+                    let AssignedToIds: any = [];
+                    if (Item?.AssignedTo == undefined)
+                      Item.AssignedTo = [];
+                    Item?.AssignedTo.map((assign: any) => {
+                      AssignedToIds.push(assign?.Id)
+                    })
+                    if (dropAction?.SelectedValue != undefined && dropAction?.SelectedValue?.length) {
+                      dropAction?.SelectedValue.map((dropActions: any) => {
+                        AssignedToIds.push(dropActions?.AssingedToUserId)
+                        if (Item?.AssignedTo) {
+                          Item?.AssignedTo?.push({ 'Id': dropActions?.AssingedToUserId, "Title": dropActions?.Title })
+                        }
+                        else {
+                          Item.AssignedTo = []
+                          Item?.AssignedTo?.push({ 'Id': dropActions?.AssingedToUserId, "Title": dropActions?.Title })
+                        }
+                      });
+                    }
+                    PostData.AssignedToId = { results: AssignedToIds }
+                  }
+                  else if (dropAction?.SelectedField != undefined && dropAction?.SelectedField != '' && dropAction?.SelectedField == 'TeamMember') {
+                    let TeamMembersIds: any = [];
+                    if (Item?.TeamMembers == undefined)
+                      Item.TeamMembers = [];
+                    Item?.TeamMembers.map((assign: any) => {
+                      TeamMembersIds.push(assign?.Id)
+                    })
+                    if (dropAction?.SelectedValue != undefined && dropAction?.SelectedValue?.length) {
+                      dropAction?.SelectedValue.map((dropActions: any) => {
+                        TeamMembersIds.push(dropActions?.AssingedToUserId)
+                        if (Item?.TeamMembers) {
+                          Item?.TeamMembers?.push({ 'Id': dropActions?.AssingedToUserId, "Title": dropActions?.Title })
+                        }
+                        else {
+                          Item.TeamMembers = []
+                          Item?.TeamMembers?.push({ 'Id': dropActions?.AssingedToUserId, "Title": dropActions?.Title })
+                        }
+                      });
+                    }
+                    PostData.TeamMembersId = { results: TeamMembersIds }
+                  }
+                  else if (dropAction?.SelectedField != undefined && dropAction?.SelectedField != '' && dropAction?.SelectedField == 'TeamLeader') {
+                    let ResponsibleTeamIds: any = [];
+                    if (Item?.ResponsibleTeam == undefined)
+                      Item.ResponsibleTeam = [];
+                    Item?.ResponsibleTeam.map((assign: any) => {
+                      ResponsibleTeamIds.push(assign?.Id)
+                    })
+                    if (dropAction?.SelectedValue != undefined && dropAction?.SelectedValue?.length) {
+                      dropAction?.SelectedValue.map((dropActions: any) => {
+                        ResponsibleTeamIds.push(dropActions?.AssingedToUserId)
+                        if (Item?.ResponsibleTeam) {
+                          Item?.ResponsibleTeam?.push({ 'Id': dropActions?.AssingedToUserId, "Title": dropActions?.Title })
+                        }
+                        else {
+                          Item.ResponsibleTeam = []
+                          Item?.ResponsibleTeam?.push({ 'Id': dropActions?.AssingedToUserId, "Title": dropActions?.Title })
+                        }
+                      });
+                    }
+                    PostData.ResponsibleTeamId = { results: ResponsibleTeamIds }
+                  }
+                  else if (dropAction?.SelectedField != undefined && dropAction?.SelectedField != '' && dropAction?.SelectedField == 'WorkingDate') {
+                    let AssignedUser: any = config?.onDropAction?.filter((Category: any) => Category?.SelectedField == 'WorkingMember')[0]
+                    if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0) {
+                      let IsAddNew: boolean = true;
+                      let IsWorkingDetailsExist = false;
+                      Item?.WorkingAction?.map((workingMember: any) => {
+                        if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
+                          IsWorkingDetailsExist = true;
+                          workingMember?.InformationData?.map((workingDetails: any) => {
+                            if (workingDetails?.WorkingDate == dropAction?.SelectedValue) {
+                              IsAddNew = false;
+                              if (workingDetails?.WorkingMember == undefined)
+                                workingDetails.WorkingMember = []
+                              if (AssignedUser?.SelectedValue) {
+                                AssignedUser?.SelectedValue?.map((User: any) => {
+                                  if (!IsUserIdExist(workingDetails?.WorkingMember, User))
+                                    workingDetails?.WorkingMember.push({ 'Id': User?.AssingedToUserId, 'Title': User?.Title })
+                                })
+                              }
+                            }
+                          })
+                        }
+                      })
+                      if (IsAddNew == true) {
+                        if (IsWorkingDetailsExist == false) {
+                          Item?.WorkingAction.push({ 'Title': "WorkingDetails", 'InformationData': [] })
+                        }
+                        Item?.WorkingAction?.map((workingMember: any) => {
+                          if (workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
+                            if (workingMember?.InformationData == undefined)
+                              workingMember.InformationData = [];
+                            workingMember.InformationData.push({ 'WorkingDate': dropAction?.SelectedValue, 'WorkingMember': [] })
                             workingMember?.InformationData?.map((workingDetails: any) => {
-                              if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
-                                let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
-                                WorkingDate?._d.setHours(0, 0, 0, 0)
-                                if (user?.dates != undefined && user?.dates?.length > 0) {
-                                  user?.dates.map((Time: any) => {
-                                    if (Time?.ServerDate?.getTime() == WorkingDate?._d.getTime()) {
-                                      Time.Tasks = Time?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
-                                      Time.TotalTask = Time?.Tasks?.length;
-                                      Time.TotalEstimatedTime -= Item?.EstimatedTime;
-                                      user.Tasks = Time?.Tasks
-                                      user.TotalTask = Time?.TotalTask
-                                      user.TotalEstimatedTime -= Time?.TotalEstimatedTime
-                                    }
+                              if (workingDetails?.WorkingDate == dropAction?.SelectedValue) {
+                                if (workingDetails?.WorkingMember == undefined)
+                                  workingDetails.WorkingMember = []
+                                if (AssignedUser?.SelectedValue) {
+                                  AssignedUser?.SelectedValue?.map((User: any) => {
+                                    if (!IsUserIdExist(workingDetails?.WorkingMember, User))
+                                      workingDetails?.WorkingMember.push({ 'Id': User?.AssingedToUserId, 'Title': User?.Title })
                                   })
                                 }
                               }
@@ -573,47 +639,195 @@ const TaskStatusTbl = (Tile: any) => {
                           }
                         })
                       }
-                      //}
-                    });
-                    if ((sourceUser?.AssingedToUserId == undefined || sourceUser?.AssingedToUserId == '') && config?.TileName != 'WorkingToday') {
-                      item.Tasks = item?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
                     }
-                    if (DragDropType == "Un-Assigned" && item?.Tasks[0] != undefined && item?.Tasks[0]?.dates?.length > 0 && item?.Tasks[0]?.dates[0]?.Tasks != undefined && item?.Tasks[0]?.dates[0]?.Tasks?.length > 0) {
-                      item.Tasks[0].dates[0].Tasks = item?.Tasks[0]?.dates[0]?.Tasks?.filter((Task: any) => Task?.Id != Item.Id);
+                    else {
+                      if (Item?.WorkingAction == undefined || Item?.WorkingAction?.length == 0) {
+                        Item.WorkingAction = [];
+                        Item?.WorkingAction.push({ 'Title': "WorkingDetails", 'InformationData': [{ 'WorkingDate': dropAction?.SelectedValue, 'WorkingMember': [] }] })
+                        Item?.WorkingAction?.map((workingMember: any) => {
+                          if (workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
+                            workingMember?.InformationData?.map((workingDetails: any) => {
+                              if (workingDetails?.WorkingDate == dropAction?.SelectedValue) {
+                                if (workingDetails?.WorkingMember == undefined)
+                                  workingDetails.WorkingMember = []
+                                if (AssignedUser?.SelectedValue) {
+                                  AssignedUser?.SelectedValue?.map((User: any) => {
+                                    if (!IsUserIdExist(workingDetails?.WorkingMember, User))
+                                      workingDetails?.WorkingMember.push({ 'Id': User?.AssingedToUserId, 'Title': User?.Title })
+                                  })
+                                }
+                              }
+                            })
+                          }
+                        })
+                      }
                     }
+                    PostData.WorkingAction = JSON.stringify(Item?.WorkingAction);
+                  }
+                  else if (dropAction?.SelectedField != undefined && dropAction?.SelectedField != '' && dropAction?.SelectedField == 'Categories') {
+                    let CategoriesIds: any = [];
+                    let TaskCategoriesTite = '';
+                    Item?.TaskCategories.map((cate: any) => {
+                      CategoriesIds.push(cate?.Id)
+                      TaskCategoriesTite += TaskCategoriesTite + ';' + cate?.Title
+                    })
+                    if (dropAction?.SelectedValue != undefined && dropAction?.SelectedValue?.length) {
+                      dropAction?.SelectedValue.map((dropActions: any) => {
+                        CategoriesIds.push(dropActions?.Id)
+                        TaskCategoriesTite += TaskCategoriesTite + ';' + dropActions?.Title
+                        if (Item?.TaskCategories) {
+                          Item?.TaskCategories?.push(dropActions)
+                        }
+                        else {
+                          Item.TaskCategories = []
+                          Item?.TaskCategories?.push(dropActions)
+                        }
+                      });
+                    }
+                    Item.TaskTypeValue = TaskCategoriesTite;
+                    PostData.TaskCategoriesId = { results: CategoriesIds }
+                    PostData.Categories = TaskCategoriesTite;
                   }
                 }
-                if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle && !isTaskItemExists(item?.Tasks, Item)) {
-                  item?.Tasks.push(Item)
-                }
-              });
-              DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
-              DashboardConfigCopy?.map((Config: any) => {
-                if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
-                  Config?.Tasks?.map((Date: any) => {
-                    if (Date?.dates != undefined && Date?.dates?.length > 0) {
-                      Date?.dates?.map((Time: any) => {
-                        if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
-                          Time.ServerDate = Moment(Time?.ServerDate)
-                          Time.ServerDate = Time.ServerDate?._d;
-                          Time.ServerDate.setHours(0, 0, 0, 0)
+              })
+            }
+            else {
+              if (config?.TileName == 'WorkingToday') {
+                let today: any = new Date();
+                today.setDate(today.getDate());
+                today.setHours(0, 0, 0, 0);
+                let WorkingDate: any = Moment(today).format("DD/MM/YYYY");
+                Item.WorkingDate = WorkingDate
+                if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0) {
+                  let IsAddNew: boolean = true;
+                  let IsWorkingDetailsExist = false;
+                  Item?.WorkingAction?.map((workingMember: any) => {
+                    if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
+                      IsWorkingDetailsExist = true;
+                      workingMember?.InformationData?.map((workingDetails: any) => {
+                        if (workingDetails?.WorkingDate == WorkingDate) {
+                          IsAddNew = false;
+                          if (workingDetails?.WorkingMember == undefined)
+                            workingDetails.WorkingMember = []
+                          if (!IsUserIdExist(workingDetails?.WorkingMember, ContextData?.currentUserData))
+                            workingDetails?.WorkingMember.push({ 'Id': ContextData?.currentUserData?.AssingedToUserId, 'Title': ContextData?.currentUserData?.Title })
                         }
                       })
                     }
-                  });
+                  })
+                  if (IsAddNew == true) {
+                    if (IsWorkingDetailsExist == false) {
+                      Item?.WorkingAction.push({ 'Title': "WorkingDetails", 'InformationData': [] })
+                    }
+                    Item?.WorkingAction?.map((workingMember: any) => {
+                      if (workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
+                        if (workingMember?.InformationData == undefined)
+                          workingMember.InformationData = [];
+                        workingMember.InformationData.push({ 'WorkingDate': WorkingDate, 'WorkingMember': [{ 'Id': ContextData?.currentUserData?.AssingedToUserId, 'Title': ContextData?.currentUserData?.Title }] })
+
+                      }
+                    })
+                  }
                 }
-              });
-              if (count == UpdatedItem?.length) {
-                try {
-                  if (childRef?.current != undefined)
-                    childRef?.current?.setRowSelection({});
-                  setRefSelectedItem([])
-                } catch (e) {
-                  console.log(e)
+                Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item?.WorkingAction))
+              }
+              else {
+                if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0)
+                  Item.WorkingAction = Item?.WorkingAction.filter((Category: any) => Category?.Title !== 'WorkingDetails')
+              }
+              PostData = {
+                PercentComplete: Status / 100,
+                Status: Item?.Status,
+                WorkingAction: Item?.WorkingAction?.length > 0 ? JSON.stringify(Item?.WorkingAction) : '',
+                AssignedToId: { results: config?.TileName == 'WorkingToday' ? [ContextData?.currentUserData?.AssingedToUserId] : [], },
+                IsTodaysTask: false,
+              }
+              if (DragDropType == "Un-Assigned")
+                PostData.ResponsibleTeamId = { results: [ContextData?.currentUserData?.AssingedToUserId] }
+            }
+
+            web.lists.getById(Item.listId).items.getById(Item?.Id).update(PostData).then((res: any) => {
+              console.log('Drop successfuly');
+              count++;
+              if (config?.onDropAction != undefined && config?.onDropAction?.length) {
+                if (count == UpdatedItem?.length) {
+                  alert('Task update successfully please refresh page to reflect changes')
                 }
               }
-              setActiveTile(Tile?.activeTile)
-              rerender();
+              else {
+                DashboardConfig?.forEach((item: any) => {
+                  if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
+                    if (item?.Tasks != undefined) {
+                      item?.Tasks.map((user: any) => {
+                        // if (user?.AssingedToUserId == sourceUser?.AssingedToUserId) {
+                        if (config?.TileName != 'WorkingToday')
+                          Item.WorkingDate = '';
+                        if (Item.PrevWorkingAction != undefined && Item.PrevWorkingAction != '' && Item.PrevWorkingAction?.length > 0) {
+                          Item.PrevWorkingAction?.map((workingMember: any) => {
+                            if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
+                              workingMember?.InformationData?.map((workingDetails: any) => {
+                                if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                                  let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
+                                  WorkingDate?._d.setHours(0, 0, 0, 0)
+                                  if (user?.dates != undefined && user?.dates?.length > 0) {
+                                    user?.dates.map((Time: any) => {
+                                      if (Time?.ServerDate?.getTime() == WorkingDate?._d.getTime()) {
+                                        Time.Tasks = Time?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                                        Time.TotalTask = Time?.Tasks?.length;
+                                        Time.TotalEstimatedTime -= Item?.EstimatedTime;
+                                        user.Tasks = Time?.Tasks
+                                        user.TotalTask = Time?.TotalTask
+                                        user.TotalEstimatedTime -= Time?.TotalEstimatedTime
+                                      }
+                                    })
+                                  }
+                                }
+                              })
+                            }
+                          })
+                        }
+                        //}
+                      });
+                      if ((sourceUser?.AssingedToUserId == undefined || sourceUser?.AssingedToUserId == '') && config?.TileName != 'WorkingToday') {
+                        item.Tasks = item?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                      }
+                      if (DragDropType == "Un-Assigned" && item?.Tasks[0] != undefined && item?.Tasks[0]?.dates?.length > 0 && item?.Tasks[0]?.dates[0]?.Tasks != undefined && item?.Tasks[0]?.dates[0]?.Tasks?.length > 0) {
+                        item.Tasks[0].dates[0].Tasks = item?.Tasks[0]?.dates[0]?.Tasks?.filter((Task: any) => Task?.Id != Item.Id);
+                      }
+                    }
+                  }
+                  if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle && !isTaskItemExists(item?.Tasks, Item)) {
+                    item?.Tasks.push(Item)
+                  }
+                });
+                DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+                DashboardConfigCopy?.map((Config: any) => {
+                  if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+                    Config?.Tasks?.map((Date: any) => {
+                      if (Date?.dates != undefined && Date?.dates?.length > 0) {
+                        Date?.dates?.map((Time: any) => {
+                          if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
+                            Time.ServerDate = Moment(Time?.ServerDate)
+                            Time.ServerDate = Time.ServerDate?._d;
+                            Time.ServerDate.setHours(0, 0, 0, 0)
+                          }
+                        })
+                      }
+                    });
+                  }
+                });
+                if (count == UpdatedItem?.length) {
+                  try {
+                    if (childRef?.current != undefined)
+                      childRef?.current?.setRowSelection({});
+                    setRefSelectedItem([])
+                  } catch (e) {
+                    console.log(e)
+                  }
+                }
+                setActiveTile(Tile?.activeTile)
+                rerender();
+              }
             }).catch((err: any) => {
               console.log(err);
             })
@@ -831,6 +1045,14 @@ const TaskStatusTbl = (Tile: any) => {
   }
   const LoadTimeSheet = () => {
     ContextData?.callbackFunction()
+  }
+  const EditDataTimeEntryData = (e: any, item: any) => {
+    setIsTimeEntry(true)
+    setTimeComponent(item)
+  };
+  const TimeEntryCallBack = () => {
+    setIsTimeEntry(false)
+    setTimeComponent(undefined)
   }
   const generateDynamicColumns = (item: any, index: any) => {
     if (item?.DataSource != 'TimeSheet') {
@@ -1164,17 +1386,36 @@ const TaskStatusTbl = (Tile: any) => {
         fixedColumnWidth: true,
         isColumnDefultSortingDesc: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Modified" ? true : false
       },
-
       {
-        accessorKey: "TotalTaskTime",
+        accessorFn: (row: any) => row?.TotalTaskTime,
+        cell: ({ row, column }: any) => (
+          <>
+            <a
+              className="alignCenter" onClick={(e) => EditDataTimeEntryData(e, row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Add/Edit Timesheet"   >
+              <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"  ></span>
+            </a>
+          </>
+        ),
         id: "TotalTaskTime",
-        placeholder: "Smart Time",
-        header: "",
+        accessorKey: "TotalTaskTime",
+        canSort: false,
+        resetSorting: false,
         resetColumnFilters: false,
-        size: 49,
         isColumnVisible: item?.DataSource == 'Tasks' ? true : false,
-        fixedColumnWidth: true
+        fixedColumnWidth: true,
+        placeholder: "Smart Time",
+        size: 40,
       },
+      // {
+      //   accessorKey: "TotalTaskTime",
+      //   id: "TotalTaskTime",
+      //   placeholder: "Smart Time",
+      //   header: "",
+      //   resetColumnFilters: false,
+      //   size: 49,
+      //   isColumnVisible: item?.DataSource == 'Tasks' ? true : false,
+      //   fixedColumnWidth: true
+      // },
       {
         cell: ({ row, getValue }: any) => (
           <>
@@ -1546,17 +1787,13 @@ const TaskStatusTbl = (Tile: any) => {
     return (
       <span className="alignCenter">
         {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
-        {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink me-2"
+        {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink"
           target="_blank" data-interception="off" title="Create New Task" href={`${ContextData?.siteUrl}/SitePages/CreateTask.aspx`}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48" fill="none">
-            <path d="M27.9601 22.2H26.0401V26.0399H22.2002V27.9599H26.0401V31.8H27.9601V27.9599H31.8002V26.0399H27.9601V22.2Z" fill="#057BD0" />
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M32.3996 9.60001H9.59961V32.4H15.5996V38.4H38.3996V15.6H15.5996V31.2968H10.7028V10.7032H31.2964V15.4839H32.3996V9.60001ZM16.7028 16.7032H37.2964V37.2968H16.7028V16.7032Z" fill="#057BD0" />
-            <path d="M9.59956 9.59999V9.29999H9.29956V9.59999H9.59956ZM32.3996 9.59999H32.6996V9.29999H32.3996V9.59999ZM9.59956 32.4H9.29956V32.7H9.59956V32.4ZM15.5996 32.4H15.8996V32.1H15.5996V32.4ZM15.5996 38.4H15.2996V38.7H15.5996V38.4ZM38.3996 38.4V38.7H38.6996V38.4H38.3996ZM38.3996 15.6H38.6996V15.3H38.3996V15.6ZM15.5996 15.6V15.3H15.2996V15.6H15.5996ZM15.5996 31.2968V31.5968H15.8996V31.2968H15.5996ZM10.7028 31.2968H10.4028V31.5968H10.7028V31.2968ZM10.7028 10.7032V10.4032H10.4028V10.7032H10.7028ZM31.2964 10.7032H31.5963V10.4032H31.2964V10.7032ZM31.2964 15.4839H30.9964V15.7839H31.2964V15.4839ZM32.3996 15.4839V15.7839H32.6996V15.4839H32.3996ZM37.2963 16.7032H37.5964V16.4032H37.2963V16.7032ZM16.7028 16.7032V16.4032H16.4028V16.7032H16.7028ZM37.2963 37.2968V37.5968H37.5964V37.2968H37.2963ZM16.7028 37.2968H16.4028V37.5968H16.7028V37.2968ZM9.59956 9.89999H32.3996V9.29999H9.59956V9.89999ZM9.89956 32.4V9.59999H9.29956V32.4H9.89956ZM15.5996 32.1H9.59956V32.7H15.5996V32.1ZM15.2996 32.4V38.4H15.8996V32.4H15.2996ZM15.5996 38.7H38.3996V38.1H15.5996V38.7ZM38.6996 38.4V15.6H38.0996V38.4H38.6996ZM38.3996 15.3H15.5996V15.9H38.3996V15.3ZM15.2996 15.6V31.2968H15.8996V15.6H15.2996ZM10.7028 31.5968H15.5996V30.9968H10.7028V31.5968ZM10.4028 10.7032V31.2968H11.0028V10.7032H10.4028ZM31.2964 10.4032H10.7028V11.0032H31.2964V10.4032ZM31.5963 15.4839V10.7032H30.9964V15.4839H31.5963ZM32.3996 15.1839H31.2964V15.7839H32.3996V15.1839ZM32.0996 9.59999V15.4839H32.6996V9.59999H32.0996ZM37.2963 16.4032H16.7028V17.0032H37.2963V16.4032ZM37.5964 37.2968V16.7032H36.9963V37.2968H37.5964ZM16.7028 37.5968H37.2963V36.9968H16.7028V37.5968ZM16.4028 16.7032V37.2968H17.0028V16.7032H16.4028Z" fill="#057BD0" />
-          </svg>
+          <span className="hreflink svg__iconbox svg__icon--CNTask empBg"></span>
         </a>}
         {config?.WebpartTitle == 'Draft Tasks' && <a className="empCol hreflink me-3">Approve</a>}
         {config?.WebpartTitle == 'Waiting for Approval' && <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>}
-        {(ContextData?.DashboardId == 1 || ContextData?.DashboardId == undefined || ContextData?.DashboardId == '') && <span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks, config)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
+        {(ContextData?.DashboardId == 1 || ContextData?.DashboardId == undefined || ContextData?.DashboardId == '') && <span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks, config)} className="hreflink svg__iconbox svg__icon--TShare empBg"></span>}
       </span>
     )
   }
@@ -1620,13 +1857,12 @@ const TaskStatusTbl = (Tile: any) => {
               {config?.ShowWebpart == true && config?.GroupByView != undefined && <section>
                 {(config?.DataSource == 'Tasks' || config?.DataSource == 'Project') && <div className="workingSec empAllSec clearfix">
                   <div className="alignCenter mb-2 justify-content-between">
-                    <span className="fw-bold">
-                      {`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}
-                    </span>
                   </div>
                   <div className="Alltable" draggable={true} onDragStart={(e) => handleDragStart(e, config, '')} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                      <GlobalCommanTable wrapperHeight="300px" showHeader={true}
+                        showingDataCoustom={`${config?.WebpartTitle} (${config?.Tasks?.length})`}
+                        customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                         pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
@@ -1758,7 +1994,7 @@ const TaskStatusTbl = (Tile: any) => {
                     <div className="alignCenter empAllSec justify-content-between">
                       <span className="fw-bold">
                         {/* {config?.Status == "My TimSheet" && */}
-                        <>{`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}</>
+                        {/* <>{`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}</> */}
                         {/* } */}
                       </span>
                       <span className="alignCenter">
@@ -1767,11 +2003,11 @@ const TaskStatusTbl = (Tile: any) => {
                     </div>
                     <div className="Alltable" >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
-                        <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        <GlobalCommanTable showingDataCoustom={`${config?.WebpartTitle} (${config?.Tasks?.length})`} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                           pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                       )}
                       {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
-                        <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        <GlobalCommanTable showingDataCoustom={`${config?.WebpartTitle} (${config?.Tasks?.length})`} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                           pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                       )}
                     </div>
@@ -1827,6 +2063,11 @@ const TaskStatusTbl = (Tile: any) => {
         </span>
         <span>
           {IsManageConfigPopup && <AddEditWebpartTemplate props={ContextData?.propsValue} DashboardPage={true} DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}
+        </span>
+        <span>
+          {IsTimeEntry && (
+            <TimeEntryPopup props={TimeComponent} CallBackTimeEntry={TimeEntryCallBack} Context={ContextData?.propsValue?.Context}  ></TimeEntryPopup>
+          )}
         </span>
       </div>
       {

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import * as React from 'react';
 import { Panel, PanelType } from "office-ui-fabric-react";
-import { Tooltip } from "@fluentui/react-components";
+import { Display, Tooltip } from "@fluentui/react-components";
 import { useState, useEffect } from 'react'
 import { BiInfoCircle } from 'react-icons/bi'
 import * as globalCommon from '../../../globalComponents/globalCommon'
@@ -15,6 +15,7 @@ import { Web } from 'sp-pnp-js';
 import {makeStyles,Button,Popover,PopoverTrigger,PopoverSurface,} from "@fluentui/react-components";
 import { MdOutlineStarBorder, MdOutlineStar  } from 'react-icons/Md';
  let checkDataImage:any=[];
+ let copyAllImage:any=[];
 const ImageViewPanel = (props: any) => {
 
     //===================slider functiona start=========================
@@ -22,7 +23,7 @@ const ImageViewPanel = (props: any) => {
     var settings = {
         dots: false,
         infinite: true,
-        speed: 500,
+        speed: 700,
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: false,
@@ -49,12 +50,15 @@ const ImageViewPanel = (props: any) => {
     const [replyCommentData, setReplyCommentData] = useState("");
     const [isPopoverFilterOpen, setIsPopoverFilterOpen] = useState(false);
     const [isPopoverShortByOpen, setIsPopoverShortByOpen] = useState(false);
-    
+    const [seeMore, setSeeMore] = useState({status:false,index:null});
 
        //============= Open image right side function Start=============
     const openImageSection = (selectedTitle: any) => {
         SetRightSectionImage([...checkedImageData])
         checkDataImage=checkedImageData
+        if(checkedImageData?.length==2){
+        copyAllImage= copyAllImage?.filter((data:any)=>data?.ImageName!=props?.checkedImageData[0]?.ImageName)
+        }
         SetIconSeleted(selectedTitle)
         SetopenImageRightSection(true)
     }
@@ -62,7 +66,8 @@ const ImageViewPanel = (props: any) => {
     useEffect(() => {
         
         if (props?.AllImageData?.length > 0) {
-            setAllImageData(JSON.parse(JSON.stringify(props?.AllImageData)))
+            setAllImageData(JSON.parse(JSON.stringify(props?.AllImageData)));
+            copyAllImage = JSON.parse(JSON.stringify(props?.AllImageData));
             if (props?.checkedImageData?.length > 0) {
                 SetCheckedImageData(JSON.parse(JSON.stringify(props?.checkedImageData)))
                 SetRightSectionImage(JSON.parse(JSON.stringify(props?.checkedImageData)))
@@ -74,6 +79,7 @@ const ImageViewPanel = (props: any) => {
                 }
                 else if(props?.checkedImageData?.length==2){
                     SetRightSectionImage(props?.checkedImageData)
+                    copyAllImage= copyAllImage?.filter((data:any)=>data?.ImageName!=props?.checkedImageData[0]?.ImageName)
                     SetIconSeleted("compare2")
                     SetopenImageRightSection(true)
                 }
@@ -342,7 +348,7 @@ const ImageViewPanel = (props: any) => {
         else if(selectedShortBy=="Date(New-Old)"){
             RightImageSection.sort((a:any, b:any) => new Date(b.UploadeDate).getTime() - new Date(a.UploadeDate).getTime()); 
         }
-        else if(selectedShortBy="Favourate"){
+        else if(selectedShortBy="Favorite"){
          RightImageSection = RightImageSection.filter((item: any) => item.fillHeart === true); 
         }
        
@@ -372,15 +378,15 @@ const ImageViewPanel = (props: any) => {
                     <Slider ref={slider => (sliderRef = slider)} {...settings}>
                         {allImageData?.map((slide: any, index: any) => (
                             <div key={index}>
-                                <img style={{ height: "500px" }}
+                                <img 
                                     src={slide?.ImageUrl}
                                     loading="lazy"
-                                    className={`h-full w-full object-cover ${slide?.fillHeart && "borderFavImage"}`}
+                                    className={`h-full w-full  ${slide?.fillHeart && "borderFavImage"}`}
                                 />
                                 <div>
                                     {checked && <div className='belowImageSection'>
                                         <div className='alignCenter justify-content-between' style={{ margin: '8px 0px' }}>
-                                            <div className='startSection'>
+                                            <div className='starSection'>
                                                 <Rating initialRating={slide?.ImageRating != undefined ? slide?.ImageRating : 0}
                                                     emptySymbol={<MdOutlineStarBorder />}
                                                     fullSymbol={<MdOutlineStar  />}
@@ -390,16 +396,16 @@ const ImageViewPanel = (props: any) => {
 
                                             </div>
                                             <div className='alignCenter'>
-                                                {(slide?.Exclude ==undefined || slide?.Exclude ==false)  ? <div className='alignCenter mx-2 siteColor' onClick={() => changeFunction('Exclude', slide, "Exclude")}>
-                                                    <span className='svg__icon--cross hreflink svg__iconbox me-1' ></span>Exclude
-                                                </div>:
-                                                <div className='alignCenter mx-2 siteColor RestoreImage'onClick={() => changeFunction('Restore', slide, "Restore")}>
-                                                    <span className='svg__icon--refresh hreflink svg__iconbox me-1'></span>Restore
-                                                </div>}
-                                                <div className='alignCenter mx-2 imageFavorite siteColor' onClick={() => changeFunction('fillHeart', slide, "fillHeart")}>
+                                                {(slide?.Exclude ==undefined || slide?.Exclude ==false)  ? <a className='alignCenter mx-2' onClick={() => changeFunction('Exclude', slide, "Exclude")}>
+                                                    <span className='svg__icon--cross svg__iconbox mini me-1' ></span>Exclude
+                                                </a>:
+                                                <a className='alignCenter mx-2 RestoreImage'onClick={() => changeFunction('Restore', slide, "Restore")}>
+                                                    <span className='svg__icon--refresh svg__iconbox me-1'></span>Restore
+                                                </a>}
+                                                <a className='alignCenter mx-2 imageFavorite' onClick={() => changeFunction('fillHeart', slide, "fillHeart")}>
 
                                                     {slide?.fillHeart ? <BsFillHeartFill className='me-2 fillHeart'/> : <BsHeart className='me-1'  />}
-                                                    Favorite</div>
+                                                    Favorite</a>
                                             </div>
 
                                         </div>
@@ -407,7 +413,7 @@ const ImageViewPanel = (props: any) => {
                                             <div className='alignCenter justify-content-between'>
                                                 <label className='fw-bold'>Notes:</label>
                                                 <div className='alignCenter'>
-                                                    <div className="alignCenter mx-2 siteColor" onClick={() => setProsConsStatus({ ...prosConsStatus, status: true, index: index })}>
+                                                    <a className="alignCenter mx-2 siteColor" onClick={() => setProsConsStatus({ ...prosConsStatus, status: true, index: index })}>
                                                         {(prosConsStatus?.status && prosConsStatus?.index == index) || (slide?.ImagePros != undefined) ?
                                                             <svg xmlns="
                                                         http://www.w3.org/2000/svg"
@@ -418,12 +424,12 @@ const ImageViewPanel = (props: any) => {
                                                                 <line x1="7.5" y1="13.625" x2="12.5" y2="13.625" stroke="white" stroke-width="0.75" />
                                                             </svg>
 
-                                                            : <span className='svg__icon--ProsCons hreflink svg__iconbox me-1'></span>
+                                                            : <span className='svg__icon--ProsCons svg__iconbox me-1'></span>
                                                         }
-                                                        Add Pros/Cons</div>
-                                                    <div className="alignCenter mx-2 siteColor" onClick={() => setCommentStatus({ ...commentStatus, status: true, index: index })}>
-                                                        <span className='svg__icon--comment hreflink svg__iconbox me-1'></span>
-                                                        Add Comment</div>
+                                                        Add Pros/Cons</a>
+                                                    <a className="alignCenter mx-2 siteColor" onClick={() => setCommentStatus({ ...commentStatus, status: true, index: index })}>
+                                                        <span className='svg__icon--comment svg__iconbox me-1'></span>
+                                                        Add Comment</a>
                                                 </div>
                                             </div>
                                             <div className='NotesSection'>
@@ -443,13 +449,13 @@ const ImageViewPanel = (props: any) => {
                                                 <div className='SpfxCheckRadio m-0'>
                                                     <div className="col">
                                                         {slide?.Comments != null && slide?.Comments?.length > 0 && slide?.Comments?.map((fbComment: any, k: any) => {
-                                                            return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col bg-f5f5 p-2  my-1 ${fbComment.isShowLight}` : "col bg-f5f5 p-2  my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
-                                                                <div className="">
+                                                            return <> <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col bg-f5f5 p-2  my-1 ${fbComment.isShowLight}` : "col bg-f5f5 p-2  my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
+                                                                <div className="" style={{ display: (k > 0 && seeMore?.status==false && seeMore?.index !=index)? 'none ' : 'block' }}>
                                                                     <div className="d-flex p-0">
                                                                         <div className="col-1 p-0 wid30">
-                                                                            {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)}
+                                                                            {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink" onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)}
                                                                                 src={fbComment.AuthorImage} /> :
-                                                                                <span onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)} title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>}
+                                                                                <span onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)} title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser"></span>}
                                                                         </div>
                                                                         <div className="col-11 pe-0" >
                                                                             <div className='d-flex justify-content-between align-items-center'>
@@ -477,13 +483,8 @@ const ImageViewPanel = (props: any) => {
                                                                                     <a title='Edit'
                                                                                     onClick={() => setUpdateComment(
                                                                                         {...updateComment,selectedData:slide,CommentIndex:k,commentData:fbComment?.Title,openPopup:true,status:"commentUpdate"})}
-                                                                                    >
-                                                                                        <span className='svg__iconbox svg__icon--edit'></span>
-                                                                                    </a>
-                                                                                    <a title='Delete'
-                                                                                     onClick={() => clearComment(slide,k,null,"Comment")}
-                                                                                    >
-                                                                                        <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                                                    ><span className='svg__iconbox svg__icon--edit'></span></a>
+                                                                                    <a title='Delete' onClick={() => clearComment(slide,k,null,"Comment")}><span className='svg__iconbox svg__icon--trash'></span></a>
                                                                                 </span>
                                                                             </div>
                                                                             <div><span >{fbComment?.Title}</span></div>
@@ -495,7 +496,7 @@ const ImageViewPanel = (props: any) => {
                                                                                 <div className="d-flex border ms-3 p-2  mb-1">
                                                                                     <div className="col-1 p-0 wid30">
                                                                                         {replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, replymessage?.AuthorName, props?.taskUsers)}
-                                                                                            src={replymessage?.AuthorImage} /> : <span title={replymessage?.AuthorName != undefined ? replymessage?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser" ></span>}
+                                                                                            src={replymessage?.AuthorImage} /> : <span title={replymessage?.AuthorName != undefined ? replymessage?.AuthorName : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser" ></span>}
                                                                                     </div>
                                                                                     <div className="col-11 pe-0" >
                                                                                         <div className='d-flex justify-content-between align-items-center'>
@@ -505,13 +506,10 @@ const ImageViewPanel = (props: any) => {
                                                                                                  onClick={() => setUpdateComment(
                                                                                                     {...updateComment,selectedData:slide,CommentIndex:index,commentData:replymessage?.Title,openPopup:true,status:"replyUpdate"})}
                                                                                                  
-                                                                                                >
-                                                                                                    <span className='svg__iconbox svg__icon--edit'></span>
+                                                                                                ><span className='svg__iconbox svg__icon--edit'></span>
                                                                                                 </a>
-                                                                                                <a title='Delete'
-                                                                                                onClick={() => clearComment(slide,k,index,"ReplyComment")}
-                                                                                                >
-                                                                                                    <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                                                                <a title='Delete' onClick={() => clearComment(slide,k,index,"ReplyComment")}
+                                                                                                ><span className='svg__iconbox svg__icon--trash'></span></a>
                                                                                             </span>
                                                                                         </div>
                                                                                         <div><span>{replymessage?.Title}</span></div>
@@ -525,8 +523,8 @@ const ImageViewPanel = (props: any) => {
 
 
                                                             </div>
-
-
+                                                         { k > 0 && <button type="button" className="btn btn-primary btnCol ms-2" onClick={() => setSeeMore({...seeMore,status:true,index:index})}>See More</button>}
+                                                             </>
                                                         })}
                                                     </div>
                                                     {commentStatus?.status && commentStatus?.index === index && <div className="align-items-center d-flex" >
@@ -562,7 +560,7 @@ const ImageViewPanel = (props: any) => {
                 <div>
                     {checked && <div className='belowImageSection'>
                         <div className='alignCenter justify-content-between' style={{ margin: '8px 0px' }}>
-                            <div className='startSection'>
+                            <div className='starSection'>
                                 <Rating initialRating={slide?.ImageRating != undefined ? slide?.ImageRating : 0}
                                     
                                     emptySymbol={<MdOutlineStarBorder />}
@@ -572,16 +570,16 @@ const ImageViewPanel = (props: any) => {
 
                             </div>
                             <div className='alignCenter'>
-                            {(slide?.Exclude ==undefined || slide?.Exclude ==false)  ? <div className='alignCenter mx-2 siteColor' onClick={() => changeFunction('Exclude', slide, "Exclude")}>
-                                                    <span className='svg__icon--cross hreflink svg__iconbox me-1' ></span>Exclude
-                                                </div>:
-                                                <div className='alignCenter mx-2 siteColor RestoreImage'onClick={() => changeFunction('Restore', slide, "Restore")}>
-                                                    <span className='svg__icon--refresh hreflink svg__iconbox me-1'></span>Restore
-                                                </div>}
-                                <div className='alignCenter mx-2 imageFavorite'>
+                            {(slide?.Exclude ==undefined || slide?.Exclude ==false)  ? <a className='alignCenter mx-2' onClick={() => changeFunction('Exclude', slide, "Exclude")}>
+                                                    <span className='svg__icon--cross svg__iconbox me-1 mini' ></span>Exclude
+                                                </a>:
+                                                <a className='alignCenter mx-2 RestoreImage'onClick={() => changeFunction('Restore', slide, "Restore")}>
+                                                    <span className='svg__icon--refresh svg__iconbox me-1'></span>Restore
+                                                </a>}
+                                <a className='alignCenter mx-2 imageFavorite'>
 
                                     {slide?.fillHeart ? <BsFillHeartFill className='me-2 fillHeart' onClick={() => changeFunction('fillHeart', slide, "fillHeart")} /> : <BsHeart className='me-1' onClick={() => changeFunction('fillHeart', slide, "fillHeart")} />}
-                                    Favorite</div>
+                                    Favorite</a>
                             </div>
 
                         </div>
@@ -589,7 +587,7 @@ const ImageViewPanel = (props: any) => {
                             <div className='alignCenter justify-content-between'>
                                 <label className='fw-bold'>Notes:</label>
                                 <div className='alignCenter'>
-                                    <div className="alignCenter mx-2" onClick={() => setProsConsStatus({ ...prosConsStatus, status: true, index: index })}>
+                                    <a className="alignCenter mx-2" onClick={() => setProsConsStatus({ ...prosConsStatus, status: true, index: index })}>
                                         {(prosConsStatus?.status && prosConsStatus?.index == index) || (slide?.ImagePros != undefined) ?
                                             <svg xmlns="
                                                         http://www.w3.org/2000/svg"
@@ -600,12 +598,12 @@ const ImageViewPanel = (props: any) => {
                                                 <line x1="7.5" y1="13.625" x2="12.5" y2="13.625" stroke="white" stroke-width="0.75" />
                                             </svg>
 
-                                            : <span className='svg__icon--ProsCons hreflink svg__iconbox me-1'></span>
+                                            : <span className='svg__icon--ProsCons svg__iconbox me-1'></span>
                                         }
-                                        Add Pros/Cons</div>
-                                    <div className="alignCenter mx-2" onClick={() => setCommentStatus({ ...commentStatus, status: true, index: index })}>
-                                        <span className='svg__icon--comment hreflink svg__iconbox me-1'></span>
-                                        Add Comment</div>
+                                        Add Pros/Cons</a>
+                                    <a className="alignCenter mx-2" onClick={() => setCommentStatus({ ...commentStatus, status: true, index: index })}>
+                                        <span className='svg__icon--comment svg__iconbox me-1'></span>
+                                        Add Comment</a>
                                 </div>
                             </div>
                             <div className='NotesSection'>
@@ -631,7 +629,7 @@ const ImageViewPanel = (props: any) => {
                                                         <div className="col-1 p-0 wid30">
                                                             {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)}
                                                                 src={fbComment.AuthorImage} /> :
-                                                                <span onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)} title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>}
+                                                                <span onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)} title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser"></span>}
                                                         </div>
                                                         <div className="col-11 pe-0" >
                                                             <div className='d-flex justify-content-between align-items-center'>
@@ -678,7 +676,7 @@ const ImageViewPanel = (props: any) => {
                                                                 <div className="d-flex border ms-3 p-2  mb-1">
                                                                     <div className="col-1 p-0 wid30">
                                                                         {replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, replymessage?.AuthorName, props?.taskUsers)}
-                                                                            src={replymessage?.AuthorImage} /> : <span title={replymessage?.AuthorName != undefined ? replymessage?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser" ></span>}
+                                                                            src={replymessage?.AuthorImage} /> : <span title={replymessage?.AuthorName != undefined ? replymessage?.AuthorName : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser" ></span>}
                                                                     </div>
                                                                     <div className="col-11 pe-0" >
                                                                         <div className='d-flex justify-content-between align-items-center'>
@@ -778,27 +776,7 @@ const ImageViewPanel = (props: any) => {
 
                                             <span onClick={() => openImageSection("viewAll")} className={`svg__iconbox svg__icon--viewAll ${(checkedImageData?.length > 4) ? 'siteColor' : ""}`}></span>
                                         </Tooltip>
-                                        <div onClick={()=>SetHideLeftSection(true)}>
-                                        <svg xmlns="
-                                            http://www.w3.org/2000/svg"
-                                            width="20" height="20" viewBox="0 0 20 20" fill="none">
-
-                                            <g clip-path="url(#clip0_2232_40228)">
-                                                <rect x="2" y="2" width="16.25" height="16.25" fill="#000066" />
-                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M7.21693 9.99855L11.668 14.6673L12.332 14.0451L8.46253 9.99855L12.332 5.95622L11.668 5.33398L7.21693 9.99855Z" fill="white" />
-                                            </g>
-                                            <defs>
-                                                <clipPath id="clip0_2232_40228">
-                                                    <rect width="20" height="20" fill="white" />
-                                                </clipPath>
-                                            </defs>
-                                         
-                                        </svg>
-                                        </div>
-                                    
-
-
-
+                                        <span onClick={()=>SetHideLeftSection(true)} className="svg__iconbox svg__icon--arrowCollapse"></span>
                                     </div>
                                 </label>
 
@@ -831,7 +809,7 @@ const ImageViewPanel = (props: any) => {
                                                     <span className='round px-1'>
                                                         {imgData?.UserImage != null && imgData?.UserImage != "" ?
                                                             <img className='align-self-start hreflink ' title={imgData?.UserName} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, imgData?.UserName, props?.taskUsers)} src={imgData?.UserImage} />
-                                                            : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, imgData?.UserName, props?.taskUsers)} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
+                                                            : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, imgData?.UserName, props?.taskUsers)} className="alignIcon svg__iconbox svg__icon--defaultUser"></span>
                                                         }
                                                     </span>
                                                     {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
@@ -841,11 +819,9 @@ const ImageViewPanel = (props: any) => {
                                                 </span>
                                             </div>
                                             <div className="expandicon">
-
                                                 <span >
                                                     {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
                                                 </span>
-
                                             </div>
 
                                         </div>
@@ -859,85 +835,67 @@ const ImageViewPanel = (props: any) => {
                     <div className="UXImageRightSection" style={{width:hideLeftSection?"100%":""}}>
                         {openImageRightSection && <div className='bg-white p-0 mb-3'>
                            
-                            <div className='alignCenter justify-content-between'>
+                            <div className='alignCenter justify-content-between mb-1'>
                                 <div className="toggleButon alignCenter">
-                                   {hideLeftSection && <span className='openLeftSection' onClick={()=>SetHideLeftSection(false)}> <svg xmlns="
-                                  http://www.w3.org/2000/svg"
-                                width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <g clip-path="url(#clip0_414_3)">
-                                    <mask id="mask0_414_3" maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
-                                        <path d="M0 20L20 20L20 0L0 0L0 20Z" fill="white" />
-                                    </mask>
-                                    <g mask="url(#mask0_414_3)">
-                                        <path d="M1.75 18L18 18L18 1.75L1.75 1.75L1.75 18Z" fill="#000066" />
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7831 10.0014L8.33201 5.3327L7.66801 5.9549L11.5375 10.0014L7.66801 14.0438L8.33201 14.666L12.7831 10.0014Z" fill="white" />
-                                    </g>
-                                </g>
-                                <defs>
-                                    <clipPath id="clip0_414_3">
-                                        <rect width="20" height="20" fill="white" transform="matrix(-1 0 0 -1 20 20)" />
-                                    </clipPath>
-                                </defs>
-                            </svg></span>} 
+                            {hideLeftSection && <span  onClick={()=>SetHideLeftSection(false)} className="openLeftSection svg__iconbox svg__icon--arrowExpand"></span>}
 
-                                   <span  className='me-1'>Image Details</span>
+                                   <span className='me-1'>Image Details</span>
                                             <label className="switch me-2" htmlFor="checkbox">
                                                 <input checked={checked}   onChange={ChangeTogalButton} type="checkbox" id="checkbox" />
                                                 {checked === true ? <div className="slider round"></div> : <div  className="slider round"></div>}
                                             </label>
                                    
                                 </div>
-                                <div className='alignCenter me-5'>
-                              {(iconSeleted == "compareSeveral" || iconSeleted == "viewAll") && <Popover withArrow open={isPopoverShortByOpen} onOpenChange={(e, data) => setIsPopoverShortByOpen(data.open)} >
+                                <span className='alignCenter ml-auto'>
+                                <div className={`${rightSectionImage?.length==1?'alignCenter me-5 DisableFilterSorting':'alignCenter me-5'}`}>
+                             <Popover withArrow open={isPopoverShortByOpen} onOpenChange={(e, data) => setIsPopoverShortByOpen(data.open)} >
                                     <PopoverTrigger disableButtonEnhancement>
-                                        <span className="svg__iconbox svg__icon--Switcher me-4" title="Short-By">Short-By</span>
+                                    <span className='alignCenter  me-4'> <span className="svg__iconbox svg__icon--Switcher" title="Sort by"></span>Sort by</span>
                                     </PopoverTrigger>
-
                                     <PopoverSurface tabIndex={-1}>
                                         <div>
                                             <div className='Filterhead m-0 d-flex justify-content-between fw-bold '>
-                                                Short-By
-                                                <span className='svg__iconbox svg__icon--cross hreflink dark' onClick={()=>setIsPopoverShortByOpen(false)} ></span>
+                                            Sort by
+                                                <span className='svg__iconbox svg__icon--cross dark' onClick={()=>setIsPopoverShortByOpen(false)} ></span>
                                             </div>
-                                            <div className='my-2'>
-                                               <div onClick={()=>shortByFunction("Rating(L-H)")} className='hreflink' >Rating(Lowest to Highest)</div>
+                                            <div className='mt-2'>
+                                               <div onClick={()=>shortByFunction("Rating(L-H)")} className='hreflink'>Rating(Lowest to Highest)</div>
                                                <div onClick={()=>shortByFunction("Rating(H-L)")} className='my-2 hreflink'>Rating(Highest to Lowest)</div>
-                                               <div onClick={()=>shortByFunction("Date(Old-New)")}className='hreflink' >Date(Oldest to Newest)</div>
+                                               <div onClick={()=>shortByFunction("Date(Old-New)")}className='hreflink'>Date(Oldest to Newest)</div>
                                                <div onClick={()=>shortByFunction("Date(New-Old)")}className='mt-2 hreflink'>Date(Newest to Oldest)</div>
                                             </div>
                                         </div>
                                        
                                     </PopoverSurface>
-                                </Popover>}
-                                {(iconSeleted == "compareSeveral" || iconSeleted == "viewAll") && <Popover withArrow open={isPopoverFilterOpen} onOpenChange={(e, data) => setIsPopoverFilterOpen(data.open)} >
+                                </Popover>
+                               <Popover withArrow open={isPopoverFilterOpen} onOpenChange={(e, data) => setIsPopoverFilterOpen(data.open)} >
                                     <PopoverTrigger disableButtonEnhancement>
-                                         
-                                        <span className="svg__iconbox svg__icon--filter" title="Short-By"></span>
+                                        <span className='alignCenter'><span className="svg__iconbox svg__icon--filter" title="Filter"></span>Filter</span>
                                     </PopoverTrigger>
 
                                     <PopoverSurface tabIndex={-1}>
                                         <div>
                                             <div className='Filterhead m-0 d-flex justify-content-between fw-bold '>
                                                 Filter
-                                                <span className='svg__iconbox svg__icon--cross hreflink dark' onClick={()=>setIsPopoverFilterOpen(false)} ></span>
+                                                <span className='svg__iconbox svg__icon--cross dark' onClick={()=>setIsPopoverFilterOpen(false)} ></span>
                                             </div>
-                                            <div className='my-2'>
-                                               <div onClick={()=>shortByFunction("Favourate")} className='hreflink showFav' >Show Favourate</div>
+                                            <div className='mt-2'>
+                                               <label onClick={()=>shortByFunction("Favorite")} className="label-hover showFav">Show Favorite</label>
                                                <div className='ratingFilter'>
-                                               <label className='form-label w-100'>Show Rating By Stars</label>
-                                               <div className='SpfxCheckRadio m-0 ps-3'>
+                                               <label className="mt-1 label-hover">Show Rating By Stars</label>
+                                               <div className='SpfxCheckRadio m-0 ps-3 py-1'>
                                                   <input type="radio" className='radio' onClick={()=>FilterByRating(5)} /> Only 5
                                                 </div>
                                                 <div className='SpfxCheckRadio m-0 ps-3'>
                                                   <input type="radio" className='radio' onClick={()=>FilterByRating(4)} /> 4+
                                                 </div>
-                                                <div className='SpfxCheckRadio m-0 ps-3'>
+                                                <div className='SpfxCheckRadio m-0 ps-3 py-1'>
                                                   <input type="radio" className='radio' onClick={()=>FilterByRating(3)}/> 3+
                                                 </div>
                                                 <div className='SpfxCheckRadio m-0 ps-3'>
                                                   <input type="radio" className='radio' onClick={()=>FilterByRating(2)}/> 2+
                                                 </div>
-                                                <div className='SpfxCheckRadio m-0 ps-3'>
+                                                <div className='SpfxCheckRadio m-0 ps-3 py-1'>
                                                   <input type="radio" className='radio' onClick={()=>FilterByRating(1)}/> 1+
                                                 </div>
                                                 </div>
@@ -945,21 +903,22 @@ const ImageViewPanel = (props: any) => {
                                         </div>
                                        
                                     </PopoverSurface>
-                                </Popover>} </div>
+                                </Popover></div>
                                {iconSeleted != "compareSeveral" && <div className='playpausebutton'>
-                                    <span onClick={previous} className='svg__icon--arrowLeft hreflink svg__iconbox'></span>
-                                    <span className="svg__icon--arrowRight hreflink svg__iconbox" onClick={next}></span>
+                                    <span onClick={previous} className='svg__icon--arrowLeft svg__iconbox'></span>
+                                    <span className="svg__icon--arrowRight svg__iconbox" onClick={next}></span>
                                 </div>}
+                               </span>
                             </div>
                             {iconSeleted == "fullScreen" && imageSlider(allImageData)}
                             {iconSeleted == "compare2" && <div className='CompareSection col-sm-12 row'>
                                 <div className='col-sm-6'>{singleImageView(rightSectionImage[0], 0)}</div>
-                                <div className='col-sm-6'>{imageSlider(allImageData)} </div>
+                                <div className='col-sm-6'>{imageSlider(copyAllImage)} </div>
                             </div>}
                             {(iconSeleted == "compareSeveral" || iconSeleted == "viewAll") && <div className='CompareSection col-sm-12 row'>
                                 {rightSectionImage?.map((checkData: any, index: any) => {
                                     return (
-                                        <div className={hideLeftSection?'col-sm-4':'col-sm-6'}>{singleImageView(checkData, index)} </div>
+                                        <div className={hideLeftSection?`${(checkData?.Exclude !=undefined  &&  checkData?.Exclude ==true) ? ' col-sm-4 faded':' col-sm-4'}`:`${(checkData?.Exclude !=undefined &&  checkData?.Exclude ==true)? 'col-sm-6  faded':"col-sm-6 "}`}>{singleImageView(checkData, index)} </div>
                                     )
 
                                 })}

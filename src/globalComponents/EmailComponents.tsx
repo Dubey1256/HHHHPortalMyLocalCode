@@ -132,7 +132,7 @@ const EmailComponent = (props: any) => {
         <div style={{ marginTop: "2pt" }}>
             Approval Task for {props?.items.TaskApprovers != null && props?.items.TaskApprovers?.length > 0 && props?.items.TaskApprovers?.map((Approver: any, index: any) => {
               return <span>
-                {Approver?.Title}{(props?.items.TaskApprovers?.length - 1 < index && props?.items.TaskApprovers?.length > 1) ? <span>;</span> : ''}
+                {Approver?.Title+" "}
               </span>
             })}
                  <p>
@@ -165,7 +165,7 @@ const EmailComponent = (props: any) => {
               <tbody>
                   <tr>
                     <td style={{ border: 'none', background: '#fff', color: "#f333", padding: '.75pt .75pt .75pt .75pt' }}>
-                      <b style={{ marginBottom: '1.25pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }} >Task Details :</span></b>
+                      <b style={{ marginBottom: '1.25pt' }}><div style={{fontFamily: 'Segoe UI Dark', fontSize: '10.0pt', color: 'black' }} >Task Details :</div></b>
                     </td>
                   </tr>
                 <tr>

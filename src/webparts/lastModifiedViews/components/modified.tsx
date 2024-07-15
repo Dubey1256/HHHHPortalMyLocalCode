@@ -421,7 +421,10 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           if (item?.AllusersName?.length > 0) {
             item['teamUserName'] = '';
             item.AllusersName.forEach((items: any) => {
-              item['teamUserName'] += items.Title + ' ';
+              if(!(item['teamUserName'].includes(items.Title))){
+                item['teamUserName'] += items.Title + ' ';
+            } 
+                 
             })
           }
         })
@@ -852,7 +855,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
   const EditDataTimeEntryData = (item: any) => {
     let timeEntryValue=item
     if(timeEntryValue.siteType!=undefined){
-      timeEntryValue.siteType=timeEntryValue.siteType.toLowerCase();
+      timeEntryValue.siteType=timeEntryValue.siteuse;
     }
     setIsTimeEntryOpen(true);
     setCurrentTimeEntry(timeEntryValue);
@@ -1541,7 +1544,9 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
             <>
                <span className='Dyicons mx-1 '>{row?.original?.ItemType?.toUpperCase()?.charAt(0)}
                                 </span>
-              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596 ' }}>{row.original.PortfolioStructureID}</span>
+                                <ReactPopperTooltipSingleLevel CMSToolId={row.original.PortfolioStructureID} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData}/>
+
+              {/* <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596 ' }}>{row.original.PortfolioStructureID}</span> */}
             </>
         },
         {
@@ -1685,7 +1690,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           cell: ({ row }) => (
             <div className="alignCenter">
               <span className={row.original.Title!= undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
-                <>{row.original.Title != undefined ?<a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596 ' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row?.original?.siteType?.toLowerCase()}`}>
+                <>{row.original.Title != undefined ?<a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#2F5596 ' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row?.original?.siteuse}`}>
               {row.original.Title}
               </a> : ''}</>
                 <span className="tooltip-text pop-right">

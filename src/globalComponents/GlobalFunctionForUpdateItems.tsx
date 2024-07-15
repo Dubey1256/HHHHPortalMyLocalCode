@@ -767,7 +767,7 @@ export const SendMSTeamsNotification = async (RequiredData: any) => {
         let SendMessage: string = '';
         if (usedFor === "Status") {
             SendMessage = `<p><b>Hi ${ReceiversName},</b> </p></br><p>${SendMSTeamMessage}</p> </br> 
-            <p>
+            <p style="font-size:16px;">
             Task Link:  <a href=${siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + ItemDetails?.Id + "&Site=" + ItemDetails?.siteType}>
              ${ItemDetails?.TaskId}-${ItemDetails?.Title}
             </a>
@@ -972,12 +972,7 @@ const joinObjectValues = (arr: any) => {
         val += element.Title + '; '
     });
     let FinalUserNames: string = '';
-    if (val?.length > 14) {
-        FinalUserNames = val?.slice(0, 14) + "...";
-    } else {
-        FinalUserNames = val;
-    }
-    return FinalUserNames;
+    return val;
 }
 
 // This function is used for generating the required HTML structure to handle different scenarios, such as sending email notifications for tasks that are created, approved, or rejected
@@ -1082,6 +1077,7 @@ export const SendApprovalEmailNotificationBodyContent = (props: any) => {
                                                 props.items["TeamMembers"].length > 0 &&
                                                 <span style={{ fontSize: '10.0pt', color: '#333' }}>
                                                     {joinObjectValues(props.items["TeamMembers"])}
+
                                                 </span>
                                             }
                                                 <span style={{ color: "black" }}> </span><u></u><u></u></p>
@@ -1407,7 +1403,7 @@ export const getDataByKey = (DataArray: any, keyName: any) => {
 export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any) => {
     try {
         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject, RequiredListIds } = RequiredData || {};
-        const TaskInformation = "Short_x0020_Description_x0020_On" in RequiredData.UpdatedDataObject ? GenerateMSTeamsNotificationPoprtfolioAndProject(UpdatedDataObject) : GenerateMSTeamsNotification(UpdatedDataObject);
+        const TaskInformation = GenerateMSTeamsNotification(UpdatedDataObject);
         const containerDiv = document.createElement('div');
         const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
         ReactDOM.render(reactElement, containerDiv);
@@ -1426,7 +1422,7 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
                 `<div style="background-color: #fff; padding:16px; margin-top:10px; display:block;" title=${ReasonStatement}>
             <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? " Discussion Point" : " Comment"} </b>: <span>${ReduceTheContentLines(ReasonStatement, 450)}</span> ` : ''}
             </div>
-            <div style="margin-top: 16px;">  <b style="font-weight:600;">Task Link: </b>
+            <div style="margin-top: 16px;">  <b style="font-weight:600; font-size: 16px;">Task Link: </b>
             <a href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? `Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}` : `Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">
             ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
             </a>
@@ -1466,7 +1462,7 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         </div>
         </br>
         <p>
-        <div style="margin-top: 16px;font-size:16px;">  <b style="font-weight:600;">Task Link: </b>
+        <div style="margin-top: 16px;font-size:16px;">  <b style="font-weight:600; font-size:16px;">Task Link: </b>
         <a style="font-size:16px;" href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? `Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}` : `Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">
         ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
         </a>
@@ -1483,6 +1479,10 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         }
     })
 }
+
+
+
+// This is used for generating the All Task Details dynamically for Send MS Teams Notification Body Content
 
 export const GenerateMSTeamsNotification = (RequiredData: any) => {
     try {
@@ -1542,8 +1542,8 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center', minHeight: '30px' }}>
                                 <div style={{ wordBreak: 'break-all', }}>{RequiredData["TeamMembers"] != null &&
                                     RequiredData["TeamMembers"].length > 0 &&
-                                    <span style={{ fontSize: '11.0pt', whiteSpace: 'nowrap', width: '95%', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>
-                                        {joinObjectValues(RequiredData["TeamMembers"])}
+                                    <span title={joinObjectValues(RequiredData["TeamMembers"])} style={{ fontSize: '11.0pt', whiteSpace: 'nowrap', width: '95%', wordWrap: 'break-word', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>
+                                        {ReduceTheContentLines(joinObjectValues(RequiredData["TeamMembers"]), 14)}
                                     </span>
                                 }
                                 </div>
@@ -1634,7 +1634,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                     <span style={{ fontSize: "10pt", display: "flex", color: "#333", marginRight: '5px', fontWeight: '600' }}>
                                                                         {i + 1}.
                                                                     </span>
-                                                                  
+
                                                                     {removeHtmlTagsFromString(fbData['Title'])}
                                                                 </div>
 
@@ -1643,7 +1643,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                         <div style={{ marginBottom: '8px' }}>
                                                                             <div style={{ fontWeight: '600' }}>{fbComment.AuthorName} - {fbComment.Created}</div>
                                                                         </div>
-                                                                        <div title={fbComment['Title']}><span dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbComment['Title'], 225) }}></span></div>
+                                                                        <div title={fbComment['Title']}><span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbComment['Title'], 225) }}></span></div>
 
                                                                         {fbComment?.ReplyMessages?.length > 0 && fbComment?.ReplyMessages?.map((replycom: any) => {
                                                                             return (
@@ -1651,7 +1651,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                                     <div style={{ marginBottom: '8px' }}>
                                                                                         <div style={{ fontWeight: '600' }}><span>{replycom.AuthorName} - {replycom.Created}</span></div>
                                                                                     </div>
-                                                                                    <div title={replycom['Title']}><span dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
+                                                                                    <div title={replycom['Title']}><span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
                                                                                 </div>
                                                                             )
                                                                         })}
@@ -1666,21 +1666,21 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                     <div style={{ width: '100%' }}>
                                                                         <span style={{ fontSize: "10pt", color: "#333", marginRight: '5px', fontWeight: '600' }}>{i + 1}.{j + 1}.</span>
                                                                         <div title={fbSubData['Title']}>
-                                                                            <span dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbSubData['Title'], 225) }}></span>
+                                                                            <span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbSubData['Title'], 225) }}></span>
                                                                         </div>
                                                                         {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
                                                                             return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px' }}>
                                                                                 <div style={{ marginBottom: '8px' }}>
                                                                                     <span style={{ fontSize: '10.0pt', fontWeight: '600' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}</span>
                                                                                 </div>
-                                                                                <div title={fbSubComment['Title']}><span dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbSubComment['Title'], 225) }}></span></div>
+                                                                                <div title={fbSubComment['Title']}><span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbSubComment['Title'], 225) }}></span></div>
                                                                                 {fbSubComment?.ReplyMessages?.length > 0 && fbSubComment?.ReplyMessages?.map((replycom: any) => {
                                                                                     return (
                                                                                         <div style={{ padding: '12px', backgroundColor: '#ffffff' }}>
                                                                                             <div style={{ marginBottom: '8px' }}>
                                                                                                 <div style={{ fontWeight: '600' }}>{replycom.AuthorName} - {replycom.Created}</div>
                                                                                             </div>
-                                                                                            <div title={replycom['Title']} ><span dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
+                                                                                            <div title={replycom['Title']} ><span style={{wordWrap: 'break-word'}}  dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
                                                                                         </div>
                                                                                     )
                                                                                 })}
@@ -1717,9 +1717,9 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                 <div>
                                                                     <span style={{ fontWeight: '600' }}>{cmtData.AuthorName}</span> - {cmtData.Created}
                                                                 </div>
-                                                                <div title={cmtData.Description}>
+                                                                <div style={{wordWrap: 'break-word'}} title={cmtData.Description}>
 
-                                                                    <span dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(cmtData.Description, 120) }}></span>
+                                                                    <span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(cmtData.Description, 120) }}></span>
                                                                 </div>
                                                             </div>
                                                             {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
@@ -1728,8 +1728,8 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                         <div style={{ marginBottom: '8px' }}>
                                                                             <span style={{ fontWeight: '600' }}>{replyData.AuthorName}</span> - {replyData.Created}
                                                                         </div>
-                                                                        <div title={replyData.Description}>
-                                                                            <span dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replyData.Description, 120) }}></span>
+                                                                        <div  title={replyData.Description}>
+                                                                            <span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replyData.Description, 120) }}></span>
                                                                         </div>
                                                                     </div>
                                                                 )
@@ -1757,237 +1757,269 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
     }
 
 }
-export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: any) => {
-    try {
-        if (RequiredData?.Title?.length > 0) {
-            return (
-                <div style={{ display: 'flex' }}>
 
-                    <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '528px' } : { marginRight: '8px' }}>
-                        <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>{"Short_x0020_Description_x0020_On" in RequiredData.UpdatedDataObject && RequiredData?.UpdatedDataObject?.Item_x0020_Type} Details:</div>
-                        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginBottom: '8px' }}>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Id:</span>
-                            </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData?.PortfolioStructureID}</span>
-                            </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Component:</span>
-                            </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                {RequiredData["Portfolio"] != null &&
-                                    <span style={{ fontSize: '10.0pt' }}>
-                                        {RequiredData["Portfolio"]?.Title}
-                                    </span>
-                                }
-                            </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Priority:</span>
-                            </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["Priority"]}</span>
-                            </div>
-                        </div>
-                        <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Start Date:</span>
-                            </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD/MM/YYYY") : ""}</span>
-                            </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Completion Date:</span>
-                            </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD/MM/YYYY") : ""}</span>
-                            </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Due Date:</span>
-                            </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD/MM/YYYY") : ''}</span>
-                            </div>
-                        </div>
-                        <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Team Members:</span>
-                            </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <div style={{ wordBreak: "break-all" }}>{RequiredData["TeamMembers"] != null &&
-                                    RequiredData["TeamMembers"].length > 0 &&
-                                    <span style={{ fontSize: '10.0pt' }}>
-                                        {joinObjectValues(RequiredData["TeamMembers"])}
-                                    </span>
-                                }
-                                </div>
-                            </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Created:</span>
-                            </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{Moment(RequiredData["Created"]).format("DD/MM/YYYY")}</span>
-                            </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Created By:</span>
-                            </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["Author"] != null && RequiredData["Author"] != undefined && RequiredData["Author"].Title}</span>
-                            </div>
-                        </div>
-                        <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Categories:</span>
-                            </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>{RequiredData["Categories"]}</span>
-                            </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>Status:</span>
-                            </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                {RequiredData["Status"]}
-                            </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>% Complete:</span>
-                            </div>
-                            <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                {RequiredData["PercentComplete"]}
-                            </div>
-                        </div>
-                        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start' }}>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color: '#333' }}>URL:</span>
-                            </div>
-                            <div style={{ wordBreak: "break-all", padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt' }}>
-                                    {RequiredData["ComponentLink"] != null &&
-                                        <a href={RequiredData["ComponentLink"].Url} target="_blank">{RequiredData["ComponentLink"].Url}</a>
-                                    }</span>
-                            </div>
-                        </div>
 
-                        {RequiredData?.UpdatedDataObject["Short_x0020_Description_x0020_On"] != null ?
-                            <div style={{ width: "100%" }}>
-                                <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px', marginTop: '24px' }}>Short Description:</div>
-                                <div>
-                                    <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff' }}><div style={{ width: '100%' }}>
-                                        <span dangerouslySetInnerHTML={{ __html: RequiredData.UpdatedDataObject["Short_x0020_Description_x0020_On"] }}></span>
-                                    </div>
-                                    </div></div></div>
+// This is used for generating the All Task Details dynamically for Send Email Notification Body Content
+
+export const  GenerateEmailNotification = (RequiredData: any) => {
+    return (
+        <table cellPadding="0" cellSpacing="0" width="100%" style={{ width: "100%" }}>
+            <tbody>
+                <tr>
+                    <td width="70%" valign="top" style={{ width: '70.0%', padding: '.75pt .75pt .75pt .75pt' }}>
+                        <table cellPadding="0" cellSpacing="0" width="99%" style={{ width: "99.0%", marginTop: "6px" }}>
+                            <tbody>
+                                <tr>
+                                    <td style={{ border: 'none', background: '#fff', color: "#f333", padding: '.75pt .75pt .75pt .75pt' }}>
+                                        <b style={{ marginBottom: '1.25pt' }}><div style={{ fontFamily: 'Segoe UI Dark', fontSize: '10.0pt', color: 'black' }} >Task Details :</div></b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" valign="middle" style={{ border: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>Task Id:</span>
+                                    </td>
+                                    <td colSpan={2} style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderTop: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData?.TaskId}</span>
+                                    </td>
+                                    <td style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderTop: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>Component:</span>
+                                    </td>
+                                    <td colSpan={2} style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderTop: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                                        {RequiredData["Portfolio"] != null &&
+                                            <span style={{ fontSize: '10.0pt', color: 'black' }}>
+                                                {RequiredData["Portfolio"]?.Title}
+                                            </span>
+                                        }
+                                    </td>
+                                    <td style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderTop: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>Priority:</span>
+                                    </td>
+                                    <td colSpan={2} style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderTop: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["Priority"]}</span><span style={{ color: "black" }}> </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderLeft: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>Start Date:</span>
+                                    </td>
+                                    <td colSpan={2} style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD-MMMM-YYYY") : ""}</span>
+                                    </td>
+                                    <td style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>Completion Date:</span>
+                                    </td>
+                                    <td colSpan={2} style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span><span style={{ color: "black" }}> </span>
+                                    </td>
+                                    <td style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>Due Date:</span>
+                                    </td>
+                                    <td colSpan={2} style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD-MMMM-YYYY") : ''}</span><span style={{ color: "black" }}> </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderLeft: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>Team Members:</span>
+                                    </td>
+                                    <td colSpan={2} style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                                        {RequiredData["TeamMembers"] != null &&
+                                            RequiredData["TeamMembers"].length > 0 &&
+                                            <span style={{ fontSize: '10.0pt', color: 'black' }}>
+                                                {joinObjectValues(RequiredData["TeamMembers"])}
+                                            </span>
+                                        }
+                                        <span style={{ color: "black" }}> </span>
+                                    </td>
+                                    <td style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span>
+                                    </td>
+                                    <td colSpan={2} style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{Moment(RequiredData["Created"]).format("DD-MMMM-YYYY")}</span><span style={{ color: "black" }}> </span>
+                                    </td>
+                                    <td style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</span>
+                                    </td>
+                                    <td colSpan={2} style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["Author"] != null && RequiredData["Author"] != undefined && RequiredData["Author"].Title}</span><span style={{ color: "black" }}> </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderLeft: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>Categories:</span>
+                                    </td>
+                                    <td colSpan={2} style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["Categories"]}</span>
+                                    </td>
+                                    <td style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>Status:</span>
+                                    </td>
+                                    <td colSpan={2} style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                                        {RequiredData["Status"]}
+                                    </td>
+                                    <td style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span>
+                                    </td>
+                                    <td colSpan={2} style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                                        {RequiredData["PercentComplete"]}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderLeft: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>URL:</span>
+                                    </td>
+                                    <td colSpan={7} style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>
+                                            {RequiredData["ComponentLink"] != null &&
+                                                <a href={RequiredData["ComponentLink"].Url} target="_blank">{RequiredData["ComponentLink"].Url}</a>
+                                            }</span><span style={{ color: "black" }}> </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderLeft: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                                        <span style={{ fontSize: '10.0pt', color: 'black' }}>Smart Priority:</span>
+                                    </td>
+                                    <td colSpan={7} style={{ borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily: " Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                                        {RequiredData["SmartPriority"]}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        {RequiredData["FeedBack"] != null &&
+                            RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
+                            RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title?.length > 8 ?
+                            <table cellPadding="0" cellSpacing="0" width="99%" style={{ width: "99.0%", marginTop: "15px" }}>
+                                <tbody>
+                                    <td colSpan={2} style={{ padding: '0.75pt', whiteSpace: 'nowrap' }}><b><span style={{ fontSize: '10pt', color: 'black' }}>Task Description:</span></b></td>
+                                    {RequiredData["FeedBack"] != null &&
+                                        RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
+                                        RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title != '' &&
+                                        RequiredData["FeedBack"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
+                                            return (<>
+                                                <tr>
+                                                    <td width="50" align="center" style={{ border: "1px solid #ccc", width: "50px" }}>
+                                                        <span style={{ fontSize: "10pt", color: "rgb(111, 111, 111)" }}>
+                                                            <span>{i + 1}</span>
+
+                                                        </span>
+                                                    </td>
+                                                    <td style={{ padding: "10px", borderBottom: "1px solid #ccc", borderTop: "1px solid #ccc", borderRight: "1px solid #ccc", width: "calc(100% - 50px)" }}><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
+                                                        {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
+                                                            return <div style={{ backgroundColor: '#f5f5f5', padding: '7.0pt 7.0pt 7.0pt 7.0pt', margin: '5px 0px' }}>
+                                                                <div style={{ marginBottom: '3.75pt' }}>
+                                                                    <span>{fbComment.AuthorName} - {fbComment.Created}</span>
+                                                                </div>
+                                                                {fbComment?.ReplyMessages?.length > 0 && fbComment?.ReplyMessages?.map((replyData: any) => {
+                                                                    return (
+                                                                        <div style={{ padding: '7.0pt 7.0pt 7.0pt 7.0pt', background: '#fff', marginTop: '3.75pt' }}>
+                                                                            <div style={{ marginBottom: "3.75pt" }}>
+                                                                                <p style={{ margin: '0px' }}>
+                                                                                    <span style={{ color: 'black' }}>{replyData.AuthorName} - {replyData.Created}</span></p>
+                                                                            </div>
+                                                                            <p style={{ marginBottom: '1.25pt' }}>
+                                                                                <span style={{ color: 'black' }}>{replyData.Title}</span></p>
+                                                                        </div>
+                                                                    )
+                                                                })}
+                                                                <div><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span></span></div>
+                                                            </div>
+                                                        })}
+                                                    </td>
+                                                </tr>
+                                                {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
+                                                    return <>
+                                                        <tr>
+                                                            <td width="50" align="center" style={{ borderBottom: "1px solid #ccc", borderLeft: "1px solid #ccc", borderRight: "1px solid #ccc", width: "50px" }}>
+                                                                <span style={{ fontSize: "10pt", color: "rgb(111, 111, 111)" }}>
+                                                                    <span>{i + 1}.{j + 1}</span>
+
+                                                                </span>
+                                                            </td>
+                                                            <td style={{ padding: "10px", borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", width: "calc(100% - 50px)" }}
+                                                            ><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
+                                                                {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
+                                                                    return <div style={{ backgroundColor: '#f5f5f5', padding: '7.0pt 7.0pt 7.0pt 7.0pt', margin: '5px 0px' }}>
+                                                                        <div style={{ marginBottom: '3.75pt' }}>
+                                                                            <span>{fbSubComment.AuthorName} - {fbSubComment.Created}</span>
+
+                                                                            {fbSubComment?.ReplyMessages?.length > 0 && fbSubComment?.ReplyMessages?.map((replyData: any) => {
+                                                                                return (
+                                                                                    <div style={{ padding: '7.0pt 7.0pt 7.0pt 7.0pt', background: '#fff', marginTop: '3.75pt' }}>
+                                                                                        <div style={{ marginBottom: "3.75pt" }}>
+                                                                                            <p style={{ margin: '0px' }}>
+                                                                                                <span style={{ color: 'black' }}>{replyData.AuthorName} - {replyData.Created}</span></p>
+                                                                                        </div>
+                                                                                        <p style={{ marginBottom: '1.25pt' }}>
+                                                                                            <span style={{ color: 'black' }}>{replyData.Title}</span></p>
+                                                                                    </div>
+                                                                                )
+                                                                            })}
+                                                                        </div>
+                                                                        <div><span><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span></span></div>
+                                                                    </div>
+                                                                })}
+                                                            </td>
+                                                        </tr>
+                                                    </>
+                                                })}
+                                            </>)
+                                        })}
+                                </tbody>
+                            </table>
                             :
                             null
                         }
-                    </div>
+                    </td>
                     {RequiredData?.CommentsArray?.length > 0 ?
-                        <div style={{ width: '232px' }}>
-                            <div className="">
-                                <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>
-                                    Comments:
-                                </div>
-                                <div style={{ width: '100%' }}>
-                                    {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
-                                        return (
-                                            <div style={{ backgroundColor: '#fff', width: '100%', padding: '8px 12px', marginBottom: "8px" }}>
-                                                <div style={{ marginBottom: "8px", width: '100%' }}>
-                                                    <div>
-                                                        <span style={{ fontWeight: '600' }}>{cmtData.AuthorName}</span> - {cmtData.Created}
-                                                    </div>
-                                                    <div>
-                                                        {cmtData.Description}
-                                                    </div>
-                                                </div>
-                                                {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
-                                                    return (
-                                                        <div style={{ backgroundColor: '#f5f5f5', padding: '8px 12px', width: '100%' }}>
-                                                            <div style={{ marginBottom: '8px' }}>
-                                                                <span style={{ fontWeight: '600' }}>{replyData.AuthorName}</span> - {replyData.Created}
+                        <td width="22%" style={{ width: '22.0%', padding: '.75pt .75pt .75pt .75pt', verticalAlign: 'top' }}>
+                            <table className='table table-striped ' cellPadding={0} width="100%" style={{ width: '100.0%', borderRadius: '4px', }}>
+                                <tbody>
+                                    <tr>
+                                        <td style={{ border: 'none', background: '#fff', color: "#f333", padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <b style={{ marginBottom: '1.25pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }} >Comments:</span></b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style={{ border: 'none', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
+                                                return (
+                                                    <>
+                                                        <div style={{ border: '1px solid #ccc', background: '#f5f5f5', padding: '7.0pt 7.0pt 7.0pt 7.0pt' }}>
+                                                            <div style={{ marginBottom: "3.75pt" }}>
+                                                                <p style={{ marginBottom: '1.25pt' }}>
+                                                                    <span style={{ color: 'black' }}>{cmtData.AuthorName} - {cmtData.Created}</span></p>
                                                             </div>
-                                                            <div>
-                                                                {replyData.Description}
-                                                            </div>
+                                                            <p style={{ marginBottom: '1.25pt' }}>
+                                                                <span style={{ color: 'black' }}>{cmtData.Description}</span></p>
+
+                                                            {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
+                                                                return (
+                                                                    <div style={{ padding: '7.0pt 7.0pt 7.0pt 7.0pt', background: '#fff', marginTop: '3.75pt' }}>
+                                                                        <div style={{ marginBottom: "3.75pt" }}>
+                                                                            <p style={{ margin: '0px' }}>
+                                                                                <span style={{ color: 'black' }}>{replyData.AuthorName} - {replyData.Created}</span></p>
+                                                                        </div>
+                                                                        <p style={{ marginBottom: '1.25pt' }}>
+                                                                            <span style={{ color: 'black' }}>{replyData.Description}</span></p>
+                                                                    </div>
+                                                                )
+                                                            })}
                                                         </div>
-                                                    )
-                                                })}
-
-                                            </div>
-
-                                        )
-
-                                    })}
-                                </div>
-                            </div>
-                        </div>
+                                                    </>
+                                                )
+                                            })}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
                         : null
                     }
-                </div>
-            )
-        }
-    } catch (error) {
-        console.log("Error:", error.message)
-    }
-
+                </tr>
+            </tbody>
+        </table>
+    )
 }
-
-
-// This is used for Send Email Notification for the Information Request Category Tasks 
-
-export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredData: any) => {
-    try {
-        const { ItemDetails, ReceiverEmail, Context, usedFor, ReceiverName } = requiredData || {};
-        const emailMessage = GenerateMSTeamsNotification(ItemDetails);
-        const containerDiv = document.createElement('div');
-        const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
-        ReactDOM.render(reactElement, containerDiv);
-
-        let emailSubject = '';
-        let messageContent = '';
-
-        if (usedFor === "Information-Request") {
-            emailSubject = `[Information Request - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title} - Request is completed`;
-            messageContent = 'Task created from your end for Information Request has been completed. Please take necessary action';
-        }
-        if (usedFor === "Priority-Check") {
-            emailSubject = `[Task Priority Check - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title}. Please have a look`;
-            messageContent = 'Task created from your end has been set to 8%. Please take necessary action';
-        }
-
-        const emailBodyContent = `
-        <div style="border-top: 5px solid #2f5596;">
-            <p style="margin-top:16px;">${messageContent}</p>
-            <p>Task Link: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
-            ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></p>
-            <span>${containerDiv.innerHTML}</span>
-            </div>
-            `;
-
-        const emailProps = {
-            To: ReceiverEmail,
-            Subject: emailSubject,
-            Body: emailBodyContent
-        };
-
-        if (ReceiverEmail?.length > 0) {
-            const sp = spfi().using(spSPFx(Context));
-            const data = await sp.utility.sendEmail({
-                Body: emailProps.Body,
-                Subject: emailProps.Subject,
-                To: emailProps.To,
-                AdditionalHeaders: {
-                    "content-type": "text/html"
-                },
-            });
-            console.log("Email Sent!");
-            console.log(data);
-            return data;
-        } else {
-            throw new Error("Receiver email not provided");
-        }
-    } catch (error) {
-        console.error("Error:", error.message);
-        throw error;
-    }
-};
 
 
 // This is used for Prepare Data on The basis of sort order 
@@ -2030,6 +2062,180 @@ export const ReduceTheContentLines: any = (Content: String, sliceFrom: number) =
         return Content;
     }
 }
+
+
+
+// This is used for getting information from TaskNotificationConfiguration  when  Category and status selected
+
+export const TaskNotificationConfiguration = async (requiredData: any) => {
+    const { SiteURL, ItemDetails, Context, RequiredListIds }: any = requiredData || {}
+    try {
+        const web = new Web(SiteURL)
+        let ResponseData: any = await web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').expand('Author,Editor,Recipients ,PortfolioType').get();
+        if (ResponseData?.length > 0) {
+            console.log("Task Notification Configuration ResponseData =================== :", ResponseData);
+            let workingActionUsers: any = [];
+            let TaskNotificationConfig: any = [];
+            const filterNotificationData: any = [];
+            ResponseData?.map((TNMItem: any) => {
+                if (TNMItem?.Title == "workingAction") {
+                    workingActionUsers = TNMItem?.Recipients;
+                }
+                if (TNMItem?.Title == "TaskNotificationConfigComponent") {
+                    TaskNotificationConfig = JSON.parse(TNMItem.ConfigrationJSON);
+                    TaskNotificationConfig?.map((TNC: any) => {
+                        if (TNC.percentComplete == ItemDetails.PercentComplete) {
+                            TNC.Category?.map((TNCCategory: any) => {
+                                ItemDetails.TaskCategories?.map(async (ItemDetailsCat: any) => {
+                                    if (TNCCategory == ItemDetailsCat.Title) {
+                                        filterNotificationData.push(TNC);
+                                        if (TNC.NotificationType == "Teams") {
+                                            await SendDynamicMSTeamsNotification({ Configuration: TNC, ItemDetails: ItemDetails, Context: Context, RequiredListIds: RequiredListIds });
+                                        }
+                                        if (TNC.NotificationType == "Email") {
+                                            await SendDynamicEmailNotification({ Configuration: TNC, ItemDetails: ItemDetails, Context: Context });
+                                        }
+                                        console.log(filterNotificationData);
+                                    }
+                                })
+                            })
+                        }
+                    })
+                }
+            })
+            return filterNotificationData;
+        }
+    } catch (error) {
+        console.log("Error in getTaskNotificationConfiguration function : ", error.message);
+    }
+}
+
+
+//This is used for Send Task Notification when  Category and status selected according to Task Notification Configuration tool
+
+export const SendDynamicMSTeamsNotification = async (RequiredData: any) => {
+    try {
+        const { Configuration, ItemDetails, Context, RequiredListIds } = RequiredData || {};
+        const TaskInformation = GenerateMSTeamsNotification(ItemDetails);
+        const sendUserEmail: any = [];
+        if (Configuration.Notify == "Creator") {
+            ItemDetails.TaskCreatorData?.map(async (CreatorEmail: any) => {
+                sendUserEmail.push(CreatorEmail.Email);
+            });
+        }
+        if (Configuration.Notify == "Specific") {
+            Configuration.Notifier?.map(async (NotifierEmail: any) => {
+                sendUserEmail.push(NotifierEmail.Email);
+            });
+        }
+        const containerDiv = document.createElement('div');
+        const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
+        ReactDOM.render(reactElement, containerDiv);
+        let finalTaskInfo: any = containerDiv.innerHTML;
+        let messageContent = Configuration.notifyContent;
+        if (messageContent?.includes('taskStatus')) {
+            messageContent = messageContent?.replace('taskStatus', `${ItemDetails.PercentComplete}%`)
+        }
+        const TeamsMessage = `
+        <div style="background-color: transparent; border-top: 5px solid #2f5596 ;">
+        <div style="margin-bottom: 16px;"></div>
+                 <p>${messageContent}</p>
+            <div style="margin-top: 16px;">  <b style="font-weight:600;">Task Title: </b>
+            <a href="${ItemDetails?.siteUrl}/SitePages/${`Task-Profile.aspx?taskId=${ItemDetails.Id}&Site=${ItemDetails.siteType}`}">
+            ${ItemDetails?.TaskId}-${ItemDetails?.Title}
+            </a>
+            </div>
+            <p></p>
+            <span>${finalTaskInfo}</span>
+        </div>
+        `;
+
+        if (sendUserEmail?.length > 0) {
+            await GlobalCommon.SendTeamMessage(
+                sendUserEmail,
+                TeamsMessage,
+                Context,
+                RequiredListIds
+            );
+        }
+        return 'Notification sent successfully';
+    } catch (error) {
+        console.error('Error sending notification:', error);
+        throw error;
+    }
+};
+
+//This is used for  Send Dynamic Email Notification according to Task Notification Configuration tool
+
+export const SendDynamicEmailNotification = async (requiredData: any) => {
+    try {
+        const { Configuration, ItemDetails, Context } = requiredData || {};
+        const emailMessage = GenerateEmailNotification(ItemDetails);
+        const containerDiv = document.createElement('div');
+        const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
+        ReactDOM.render(reactElement, containerDiv);
+        const ReceiverEmail: any = [];
+        if (Configuration.Notify == "Creator") {
+            ItemDetails.TaskCreatorData?.map(async (CreatorEmail: any) => {
+                ReceiverEmail.push(CreatorEmail.Email);
+            });
+        }
+        if (Configuration.Notify == "Specific") {
+            Configuration.Notifier?.map(async (NotifierEmail: any) => {
+                ReceiverEmail.push(NotifierEmail.Email);
+            });
+        }
+        let emailSubject: any = Configuration.subject;
+        if (emailSubject?.includes('siteType')) {
+            emailSubject = emailSubject?.replace('siteType', `${ItemDetails.siteType}`)
+        }
+        if (emailSubject?.includes('TaskId')) {
+            emailSubject = emailSubject?.replace('TaskId', `${ItemDetails.TaskId}`)
+        }
+        if (emailSubject?.includes('Title')) {
+            emailSubject = emailSubject?.replace('Title', `${ItemDetails.Title}`)
+        }
+        let messageContent = Configuration.notifyContent;
+        if (messageContent?.includes('taskStatus')) {
+            messageContent = messageContent?.replace('taskStatus', `${ItemDetails.PercentComplete}%`)
+        }
+        const emailBodyContent = `
+        <div>
+            <p style="margin-top:16px;">
+             ${messageContent}
+            </p>
+            <p>Task Title: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
+            ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></p>
+            <span>${containerDiv.innerHTML}</span>
+            </div>
+            `;
+        const emailProps = {
+            To: ReceiverEmail,
+            Subject: emailSubject,
+            Body: emailBodyContent
+        };
+
+        if (ReceiverEmail?.length > 0) {
+            const sp = spfi().using(spSPFx(Context));
+            const data = await sp.utility.sendEmail({
+                Body: emailProps.Body,
+                Subject: emailProps.Subject,
+                To: emailProps.To,
+                AdditionalHeaders: {
+                    "content-type": "text/html"
+                },
+            });
+            console.log("Email Sent!");
+            console.log(data);
+            return data;
+        } else {
+            throw new Error("Receiver email not provided");
+        }
+    } catch (error) {
+        console.error("Error:", error.message);
+        throw error;
+    }
+};
 
 
 // Instructions for Using this Global Common Functions 

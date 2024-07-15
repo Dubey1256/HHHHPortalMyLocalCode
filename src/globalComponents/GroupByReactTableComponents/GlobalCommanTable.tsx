@@ -28,7 +28,7 @@ import { RiFileExcel2Fill, RiFilter3Fill, RiListSettingsFill } from 'react-icons
 import ShowTeamMembers from '../ShowTeamMember';
 import SelectFilterPanel from './selectFilterPannel';
 import ExpndTable from '../ExpandTable/Expandtable';
-import RestructuringCom from '../Restructuring/RestructuringCom';
+ import RestructuringCom from '../RestructringComponent/RestructuringCom';
 import { SlArrowDown, SlArrowRight, SlArrowUp } from 'react-icons/sl';
 import { BsClockHistory, BsList, BsSearch } from 'react-icons/bs';
 import Tooltip from "../../globalComponents/Tooltip";
@@ -45,7 +45,7 @@ import { TbChevronDown, TbChevronUp, TbSelector } from 'react-icons/tb';
 import { myContextValue, deepCopy } from '../globalCommon';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import moment from 'moment';
-import ExportColumnSelect from './ExportColumnSelect'
+import ExportColumnSelect from './ExportColumnSelect';
 // import TileBasedTasks from './TileBasedTasks';
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -489,22 +489,37 @@ const GlobalCommanTable = (items: any, ref: any) => {
             try {
                 if (smartFabBasedColumnsSetting != undefined && smartFabBasedColumnsSetting != '' && Object.keys(smartFabBasedColumnsSetting).length == 1 && Object.keys(smartFabBasedColumnsSetting[0])?.[0] == 'tableId') {
                     setSmartFabBasedColumnsSetting(smartFabBasedColumnsSetting);
-                    smartFabBasedColumnsSetting = [];
                 }
             } catch (e) { }
-            if (smartFabBasedColumnsSetting?.length === 0) {
-                let configurationData: any = [];
-                settingConfrigrationData = [];
-                const web = new Web(items?.AllListId?.siteUrl);
-                const resultsArray = await web.lists.getByTitle('AdminConfigurations').items.select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations', "Author/Id", "Author/Title").expand("Author").filter(`Title eq '${tableId}' and Author/Id eq ${items?.AllListId?.Context?.pageContext?.legacyPageContext?.userId}`).get();
-                configurationData = resultsArray?.map((smart: any) => JSON.parse(smart?.Configurations));
-                if (configurationData?.length > 0) {
-                    configurationData[0].ConfrigId = resultsArray[0]?.Id;
-                }
-                console.log(resultsArray);
-                settingConfrigrationData = settingConfrigrationData.concat(configurationData);
-            } else if (smartFabBasedColumnsSetting?.length > 0) {
+            let configurationData: any = [];
+            let configurationData1: any = [];
+            // if (items?.WebPartGalleryColumnSettingData) {
+            //     const web = new Web(items?.AllListId?.siteUrl);
+            //     const resultsArray = await web.lists.getByTitle('AdminConfigurations').items.select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations', "Author/Id", "Author/Title").expand("Author").filter(`Value eq '${items?.ConfigValue}'`).get();
+            //     configurationData1 = JSON.parse(resultsArray[0]?.Configurations);
+            //     configurationData1 = configurationData1?.filter((smart: any) => smart?.WebPartGalleryColumnSettingData?.tableId === tableId);
+            //     if (configurationData1?.length > 0) {
+            //         configurationData1[0].ConfrigId = resultsArray[0]?.Id;
+            //     }
+            // }
+            const web = new Web(items?.AllListId?.siteUrl);
+            const resultsArray = await web.lists.getByTitle('AdminConfigurations').items.select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations', "Author/Id", "Author/Title").expand("Author").filter(`Title eq '${tableId}' and Author/Id eq ${items?.AllListId?.Context?.pageContext?.legacyPageContext?.userId}`).get();
+            configurationData = resultsArray?.map((smart: any) => JSON.parse(smart?.Configurations));
+            if (configurationData?.length > 0) {
+                configurationData[0].ConfrigId = resultsArray[0]?.Id;
+            }
+            console.log(resultsArray);
+            // if (Object.keys(configurationData1[0]?.WebPartGalleryColumnSettingData)?.length > 0 && configurationData[0]?.tableId === configurationData1[0]?.WebPartGalleryColumnSettingData?.tableId) {
+            //     settingConfrigrationData = settingConfrigrationData.concat(configurationData);
+            // } else if (Object.keys(configurationData1[0]?.WebPartGalleryColumnSettingData)?.length > 0 && configurationData?.length === 0) {
+            //     let webPartSetting = [];
+            //     webPartSetting.push(configurationData1[0]?.WebPartGalleryColumnSettingData);
+            //     settingConfrigrationData = settingConfrigrationData.concat(webPartSetting);
+            // }
+            if (smartFabBasedColumnsSetting?.length > 0) {
                 settingConfrigrationData = settingConfrigrationData.concat(smartFabBasedColumnsSetting);
+            } else {
+                settingConfrigrationData = settingConfrigrationData.concat(configurationData);
             }
             if (event != true) {
                 defultColumnPrepare();
@@ -524,7 +539,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 console.error('Error:', error);
             }
         }; fetchData();
-    }, [items?.columns]);
+    }, [items?.columns || items?.WebPartGalleryColumnSettingData || items?.tableId]);
 
     const defultColumnPrepare = () => {
         if (columns?.length > 0 && columns != undefined) {
@@ -538,7 +553,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 try {
                     if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
                         const preSetColumnsValue = settingConfrigrationData[0]
-                        if (preSetColumnsValue?.tableId === items?.tableId) {
+                        if (preSetColumnsValue?.tableId === tableId) {
                             preSetColumnSettingVisibility = preSetColumnsValue?.columnSettingVisibility;
                             preSetColumnOrdring = preSetColumnsValue
                             setShowHeaderLocalStored(preSetColumnsValue?.showHeader)
@@ -576,7 +591,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 }
             });
             setSelectedFilterPannelData(updatedSelectedFilterPannelData);
-            if (preSetColumnOrdring?.columnOrderValue?.length > 0 && preSetColumnOrdring?.tableId === items?.tableId) {
+            if (preSetColumnOrdring?.columnOrderValue?.length > 0 && preSetColumnOrdring?.tableId === tableId) {
                 const colValue = preSetColumnOrdring?.columnOrderValue?.map((elem: any) => elem.id);
                 setColumnOrder(colValue);
             } else if (items?.columnSettingIcon === true && tableId) {
@@ -594,10 +609,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 setShowProgress(false)
             }
             try {
-                if ((Object.keys(preSetColumnSettingVisibility) != null && Object.keys(preSetColumnSettingVisibility) != undefined) && Object.keys(preSetColumnSettingVisibility)?.length > 0 && preSetColumnOrdring?.tableId === items?.tableId) {
-                    setColumnVisibility(preSetColumnSettingVisibility);
+                if ((Object.keys(preSetColumnSettingVisibility) != null && Object.keys(preSetColumnSettingVisibility) != undefined) && Object.keys(preSetColumnSettingVisibility)?.length > 0 && preSetColumnOrdring?.tableId === tableId) {
+                    //setColumnVisibility(preSetColumnSettingVisibility);
+                    setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...preSetColumnSettingVisibility }));
                 } else if (Object.keys(columnVisibilityResult)?.length > 0) {
-                    setColumnVisibility(columnVisibilityResult);
+                    //setColumnVisibility(columnVisibilityResult);
+                    setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...columnVisibilityResult }));
                     columnVisibilityDataValue = { ...columnVisibilityResult };
                 }
             } catch (error) {
@@ -612,7 +629,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             try {
                 if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
                     const preSetColumnsValue = settingConfrigrationData[0]
-                    if (preSetColumnsValue?.tableId === items?.tableId) {
+                    if (preSetColumnsValue?.tableId === tableId) {
                         makeConfrigrationColumnsDefult()
                     }
                 }
@@ -688,7 +705,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     }
     /****************** defult sorting  part end *******************/
-
     const table: any = useReactTable({
         data,
         columns: modColumns,
@@ -1324,8 +1340,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
     /**************************************** Drag And Drop Functionality End ***************************************/
     return (
         <>
-            {items?.bulkEditIcon === true && (bulkEditingCongration?.priority === true || bulkEditingCongration?.dueDate === true || bulkEditingCongration?.status === true || bulkEditingCongration?.Project === true || bulkEditingCongration?.categories === true || bulkEditingCongration?.FeatureType === true || bulkEditingCongration?.teamMember === true) && <span className="toolbox">
-                <BulkEditingFeature dashBoardbulkUpdateCallBack={items?.dashBoardbulkUpdateCallBack} tableId={items?.tableId} DashboardContextData={items?.DashboardContextData} categoriesTiles={categoriesTiles} masterTaskData={items?.masterTaskData} data={data} columns={items?.columns} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId}
+            {items?.bulkEditIcon === true && (bulkEditingCongration?.priority === true || bulkEditingCongration?.dueDate === true || bulkEditingCongration?.status === true || bulkEditingCongration?.Project === true || bulkEditingCongration?.categories === true || bulkEditingCongration?.FeatureType === true || bulkEditingCongration?.teamMember === true || bulkEditingCongration?.itemRank === true) && <span className="toolbox">
+                <BulkEditingFeature dashBoardbulkUpdateCallBack={items?.dashBoardbulkUpdateCallBack} tableId={tableId} DashboardContextData={items?.DashboardContextData} categoriesTiles={categoriesTiles} masterTaskData={items?.masterTaskData} data={data} columns={items?.columns} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId}
                     setBulkEditingCongration={setBulkEditingCongration} dragedTask={dragedTask} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} AllTaskUser={items.TaskUsers} />
             </span>}
             {showHeaderLocalStored === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
@@ -1409,7 +1425,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         </> : ''}
 
                     </div> :
-                        <span style={{ color: "#333333", flex: "none" }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
+                        <span style={items?.showingDataCoustom ? { color: "#333333", flex: "none", fontWeight: "bold" } : { color: "#333333", flex: "none" }} className='Header-Showing-Items'>{items?.showingDataCoustom ? items?.showingDataCoustom : `Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
                     <span className="mx-1">{items?.showDateTime}</span>
                     <span className="SearchInput-container">
                         <DebouncedInput
@@ -1460,7 +1476,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         {items?.protfolioProfileButton === true && items?.hideAddActivityBtn != true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" disabled={true} > Add Activity-Task</button>}</>}
-
+                        
                         {items?.showRestructureButton === true && <>
                             {
                                 trueRestructuring == true ?
@@ -1479,7 +1495,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {items.taskProfile === true && items?.showCreationAllButton === true && items?.hideRestructureBtn != true && <>
                         {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Workstream-Task")}>{(table?.getSelectedRowModel()?.flatRows.length > 0 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType.Title == "Workstream") || (items?.queryItems?.TaskType?.Title == "Workstream") ? "Add Task" : "Add Workstream-Task"}</button> :
                             <button type="button" className="btn btn-primary" disabled={true} > Add Workstream-Task</button>}
-
+                        
                         {
                             trueRestructuring == true ?
                                 <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
@@ -1743,8 +1759,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
             {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} bulkEditingCongration={bulkEditingCongration} />}
-            {columnSettingPopup && <ColumnsSetting showProgres={showProgress} ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} wrapperHeight={wrapperHeight} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility}
-                smartFabBasedColumnsSettingToggle={smartFabBasedColumnsSettingToggle} setSmartFabBasedColumnsSettingToggle={setSmartFabBasedColumnsSettingToggle} data={items?.data} setData={items?.setData} portfolioColor={portfolioColor} />}
+            {columnSettingPopup && <ColumnsSetting showProgres={showProgress} ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} wrapperHeight={wrapperHeight} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility}
+                WebPartGalleryColumnSettingId={items?.WebPartGalleryColumnSettingData?.tableId} smartFabBasedColumnsSettingToggle={smartFabBasedColumnsSettingToggle} setSmartFabBasedColumnsSettingToggle={setSmartFabBasedColumnsSettingToggle} data={items?.data} setData={items?.setData} portfolioColor={portfolioColor} />}
 
             {coustomButtonMenuPopup && <HeaderButtonMenuPopup isOpen={coustomButtonMenuPopup} coustomButtonMenuToolBoxCallback={coustomButtonMenuToolBoxCallback} setCoustomButtonMenuPopup={setCoustomButtonMenuPopup}
                 selectedRow={table?.getSelectedRowModel()?.flatRows} ShowTeamFunc={ShowTeamFunc} portfolioColor={portfolioColor}

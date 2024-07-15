@@ -16,6 +16,7 @@ import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import Slider from 'react-slick';
 import { BiInfoCircle } from 'react-icons/bi';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
+import { Accordion, AccordionHeader,AccordionItem, AccordionPanel, AccordionToggleEventHandler, } from "@fluentui/react-components";
 let countemailbutton: number;
 var changespercentage = false;
 var buttonId: any;
@@ -65,6 +66,7 @@ const uxdescriptions = (props: any) => {
     const [CurrentActiveTab, setCurrentActiveTab]=React.useState(1)
     const [countfeedback, setcountfeedback] = React.useState(0)
     const [objective, setobjective] = React.useState(false);
+    const [openItems, setOpenItems] = React.useState(["1"]);
     React.useEffect(() => {
         buttonId = `callout-button`;        
         // if (Result["TaskId"] != undefined && Result['Title'] != undefined) {
@@ -905,7 +907,9 @@ const uxdescriptions = (props: any) => {
         setCurrentActiveTab(newValue);
     }, []);
 
-
+    const handleToggle: AccordionToggleEventHandler<string> = (event, data) => {
+        setOpenItems(data.openItems);
+      };
     return (
         <>
             {/* //============ New Design Templates Start =========== */}
@@ -915,7 +919,11 @@ const uxdescriptions = (props: any) => {
                     TaskFeedbackData[0]?.Title != '' && countfeedback >= 0 &&
                     <div className={"Addcomment boxshadow p-2" + " manage_gap"}>
                         {/* **************************************** OBJECTIVE    ******************************************** */}
-                        <label className='form-label full-width'>Objective</label>
+                        <Accordion className='taskacordion' collapsible openItems={openItems}  onToggle={handleToggle}>
+                            <AccordionItem value="1">
+                                <AccordionHeader> <span className='fw-semibold'>Objective</span></AccordionHeader>
+                                <AccordionPanel>
+                                       
                         {TaskFeedbackData?.map((fbData: any, i: any) => {
                             if (typeof fbData == "object") {
                                 let userdisplay: any = [];
@@ -1258,12 +1266,66 @@ const uxdescriptions = (props: any) => {
                                                 })}
 
                                             </div>
+                                            <div>
+                                             
+                                            <div className={`carouselSlider taskImgTemplate ${fbData?.setImagesInfo?.length == 1 ? "ArrowIconHide" : ""}`} >
+                                                    <Slider {...settings}>
+                                                        {fbData?.setImagesInfo?.map((imgData: any, indeximage: any) => {
+
+                                                            return (
+                                                                <div key={indeximage} className='carouselHeight'>
+                                                                    <img className="img-fluid"
+                                                                        alt={imgData?.ImageName}
+                                                                        src={imgData?.ImageUrl}
+                                                                        loading="lazy"
+                                                                    ></img>
+                                                                    <div className="Footerimg d-flex align-items-center justify-content-between p-1 ">
+                                                                        <div className='usericons'>
+
+                                                                            <div className="d-flex">
+
+                                                                                <span className="mx-2" >{imgData?.UploadeDate}</span>
+                                                                                <span className='round px-1'>
+                                                                                    {imgData?.UserImage != null && imgData?.UserImage != "" ?
+                                                                                        <img className='align-self-start hreflink ' title={imgData?.UserName} src={imgData?.UserImage} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, imgData?.UserName, props?.taskUsers)} />
+                                                                                        : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"}onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, imgData?.UserName, props?.taskUsers)}   className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
+                                                                                    }
+                                                                                </span>
+                                                                                {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
+                                                                                    <BiInfoCircle />
+                                                                                </span>}
+
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="expandicon">
+
+                                                                            <span >
+                                                                                {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
+                                                                            </span>
+
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </div>
+                                                            )
+
+
+
+                                                        })}
+                                                    </Slider>
+                                                </div>
+                                            </div>
                                         </>
                                     )
                                 }
                             }
 
                         })}
+                                </AccordionPanel>
+                            </AccordionItem>
+                        </Accordion>
+                   
 
                         {/* ************************************ TAB ******************************************* */}
                         <div className='mt-2'>

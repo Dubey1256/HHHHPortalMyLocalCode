@@ -135,6 +135,7 @@ const Header = () => {
   return (
     <div>
       <section className="tabSec">
+        <div className="row"><h4 className="heading">{ContextData?.DashboardTitle}</h4></div>
         <div className="row">
           <div className='col-8'>
             {DashboardId === '4' ? (
@@ -193,15 +194,15 @@ const Header = () => {
             )}
           </div>
           <div className="col-1 alignCenter hreflink mb-3  bg-white shadow-sm">
-            <span className="iconSec">
+            {(DashboardId != undefined && DashboardId != '' && DashboardId != 1) && <> <span className="iconSec">
               <span title="Manage Configuration" className="svg__iconbox svg__icon--setting hreflink" style={{ width: '28px', height: '28px' }}></span>
             </span>
-            <span className="ms-2">
-              <div>
-                {IsShowConfigBtn == false && <a className="empCol hreflink" onClick={(e) => { setIsShowConfigBtn(true); ContextData.ShowHideSettingIcon(true); }} >Manage <br />Configuration</a>}
-                {IsShowConfigBtn == true && <a className="empCol hreflink" onClick={(e) => { setIsShowConfigBtn(false); ContextData.ShowHideSettingIcon(false); }}>Cancel</a>}
-              </div>
-            </span>
+              <span className="ms-2">
+                <div>
+                  {IsShowConfigBtn == false && <a className="empCol hreflink" onClick={(e) => { setIsShowConfigBtn(true); ContextData.ShowHideSettingIcon(true); }} >Manage <br />Configuration</a>}
+                  {IsShowConfigBtn == true && <a className="empCol hreflink" onClick={(e) => { setIsShowConfigBtn(false); ContextData.ShowHideSettingIcon(false); }}>Cancel</a>}
+                </div>
+              </span></>}
 
           </div>
           <div className="col-1 alignCenter hreflink mb-3  bg-white shadow-sm">
@@ -230,7 +231,7 @@ const Header = () => {
                 <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z" />
               </svg>
             </span>
-            {activeTile != undefined &&<WorldClock />}
+            {activeTile != undefined && <WorldClock />}
             <img className="rounded-circle" title={userName?.Title} width={30} height={30} src={userName?.Item_x0020_Cover?.Url} alt={userName?.Title} />
             {DashboardId == '5' && <span title='Open leads popup' className="svg__iconbox svg__icon--editBox" onClick={(e) => openPortfolioLeadsPopup()} ></span>}
           </div>

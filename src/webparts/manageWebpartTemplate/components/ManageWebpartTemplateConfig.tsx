@@ -4,6 +4,7 @@ import * as globalCommon from '../../../globalComponents/globalCommon';
 import { ColumnDef } from "@tanstack/react-table";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import AddEditWebpartTemplate from "../../../globalComponents/AddEditWebpartTemplate";
+let ConfigColumns: any = [];
 const ManageWebpartTemplateConfig = (props: any) => {
     const [WebpartConfig, setWebpartConfig] = useState<any>([]);
     const [IsOpenPopup, setIsOpenPopup] = React.useState<any>(false);
@@ -28,7 +29,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
     const LoadAdminConfiguration = async () => {
         let templateDataArray: any = [];
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-        await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").getAll().then((data: any) => {
+        await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate' or Key eq 'DashboardTemplate' ").getAll().then((data: any) => {
             data?.forEach((config: any) => {
                 if (config?.Configurations != undefined && config?.Configurations != '') {
                     let configurations = globalCommon.parseJSON(config?.Configurations);
@@ -142,7 +143,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
             {
                 cell: ({ row }) => (
                     <>
-                        <div className='d-flex pull-right text-end'>
+                        {row?.original?.IsTemplate != true && <div className='d-flex pull-right text-end'>
                             <a className="me-1" data-bs-toggle="tooltip" data-bs-placement="auto" title={'Edit ' + `${row?.original?.WebpartTitle}`}  >
                                 {" "}
                                 <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditTemplate(row?.original)} ></span>
@@ -151,7 +152,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
                                 {" "}
                                 <span className="hreflink ml-auto svg__icon--cross svg__iconbox" onClick={(e) => DeleteTemplate(row?.original)} ></span>
                             </a>
-                        </div>
+                        </div>}
                     </>
                 ),
                 id: "row?.original.Id",
@@ -170,6 +171,30 @@ const ManageWebpartTemplateConfig = (props: any) => {
         </div>
     )
 
+
+    const fetchSettingConfrigrationData = async (event: any) => {
+        try {
+            ConfigColumns = [];
+            let configurationData: any = [];
+            const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
+            const resultsArray = await web.lists.getByTitle('AdminConfigurations').items.select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations', "Author/Id", "Author/Title").expand("Author").filter(`Value eq 'DynamicTableColumns'`).get();
+            configurationData = resultsArray?.map((smart: any) => JSON.parse(smart?.Configurations));
+            console.log(resultsArray);
+            ConfigColumns = ConfigColumns.concat(configurationData[0]);
+        } catch (error) {
+            console.error(error)
+        }
+    };
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await fetchSettingConfrigrationData('');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }; fetchData();
+    }, []);
+
     useEffect(() => {
         LoadAdminConfiguration()
     }, []);
@@ -182,7 +207,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
                     <GlobalCommanTable columnSettingIcon={true} tableId="ManageWebpartTemplateID" AllListId={AllListId} customTableHeaderButtons={customTableHeaderButtons} customHeaderButtonAvailable={true} hideOpenNewTableIcon={true} hideTeamIcon={true} showHeader={true} portfolioColor={'#000066'} columns={columns} data={WebpartConfig} callBackData={callBackData} />
                 </div>
             </div>
-            {IsOpenPopup && <AddEditWebpartTemplate props={props?.props} SingleWebpart={true} EditItem={EditItem} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseConfigPopup} />}
+            {IsOpenPopup && <AddEditWebpartTemplate columns={ConfigColumns} props={props?.props} SingleWebpart={true} EditItem={EditItem} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseConfigPopup} />}
         </>
     );
 };
