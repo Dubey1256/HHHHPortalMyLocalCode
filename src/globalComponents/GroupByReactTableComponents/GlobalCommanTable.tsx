@@ -28,7 +28,7 @@ import { RiFileExcel2Fill, RiFilter3Fill, RiListSettingsFill } from 'react-icons
 import ShowTeamMembers from '../ShowTeamMember';
 import SelectFilterPanel from './selectFilterPannel';
 import ExpndTable from '../ExpandTable/Expandtable';
- import RestructuringCom from '../RestructringComponent/RestructuringCom';
+ import RestructuringCom from '../Restructuring/RestructuringCom';
 import { SlArrowDown, SlArrowRight, SlArrowUp } from 'react-icons/sl';
 import { BsClockHistory, BsList, BsSearch } from 'react-icons/bs';
 import Tooltip from "../../globalComponents/Tooltip";

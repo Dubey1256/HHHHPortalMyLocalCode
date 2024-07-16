@@ -6,6 +6,8 @@ import { deepCopy, myContextValue } from "./globalCommon";
 import PageLoader from '../globalComponents/pageLoader';
 import _ from "lodash";
 import AddEditWebpartTemplate from "./AddEditWebpartTemplate";
+import AddDashboardTemplate from "./AddDashboardTemplate";
+import { GlobalConstants } from "./LocalCommon";
 
 let DashTemp: any = [];
 let ExistingWepartsBackup: any = [];
@@ -34,6 +36,8 @@ const EditConfiguration = (props: any) => {
     const [IsWebPartPopup, setIsWebPartPopup] = React.useState(false);
     const [type, setType] = useState<any>({});
     const [IsOpenPopup, setIsOpenPopup] = React.useState(false);
+    const [IsDashboardTemplate, setIsDashboardTemplate] = React.useState(false);
+    const [DashboardTemplateItem, setDashboardTemplateItem]: any = React.useState({});
 
     const NewConfigarray = (newArray: any, arrayItem: any, Count: any) => {
 
@@ -118,6 +122,11 @@ const EditConfiguration = (props: any) => {
                     updatedItems.splice(Itemindex, 1);
             })
 
+            updatedItems?.forEach((obj: any ,index:any) => {
+                obj.ColumnTitle = 'Column' + (index+1);
+                obj.ClassValues = "col-sm-" + 12 / updatedItems.length;
+            })
+
             dragItem.Current = null;
             dragOverItem.Current = null;
 
@@ -132,7 +141,15 @@ const EditConfiguration = (props: any) => {
 
             // Extract the item being dragged
             let draggedItemContent = ExistingWeparts[dragItem.Current];
-            if (draggedItemContent != undefined) {
+            if (draggedItemContent?.Key === "DashboardTemplate") {
+               
+                setDashboardTemplateItem(draggedItemContent);
+                setIsDashboardTemplate(true);
+                let data = e.dataTransfer.getData("Text");
+                e.target.appendChild(document.getElementById(data));
+                e.preventDefault();
+            }
+            if (draggedItemContent?.Key != "DashboardTemplate" && draggedItemContent != undefined) {
                 draggedItemContent.WebpartTitle = draggedItemContent.WebpartTitle === undefined ? draggedItemContent.Title : draggedItemContent.WebpartTitle;
                 let obj: any = {};
                 obj.Column = dragOverItem.Current;
@@ -144,7 +161,7 @@ const EditConfiguration = (props: any) => {
                     draggedItemContent = _.cloneDeep(draggedItemContent123);
                 }
                 let filterGroups = [...ExistingWeparts];
-                let ExistingWepartsNew = filterGroups.filter((obj: any) => obj.WebpartId != draggedItemContent.WebpartId)
+                //   let ExistingWepartsNew = filterGroups.filter((obj: any) => obj.WebpartId != draggedItemContent.WebpartId)
                 updatedItems[dragOverItem?.CurrentIndex].ArrayValue.splice(targetIndex, 0, draggedItemContent);
                 // Clear the drag indices
                 let itemsArray: any = [];
@@ -164,15 +181,16 @@ const EditConfiguration = (props: any) => {
                 })
                 setItems(itemsArray);
                 console.log('ExistingWeparts before update:', ExistingWeparts);
-                console.log('ExistingWepartsNew:', ExistingWepartsNew);
-                setExistingWeparts(ExistingWepartsNew);
+                //  console.log('ExistingWepartsNew:', ExistingWepartsNew);
+                //  setExistingWeparts(ExistingWepartsNew);
                 setNewItem(updatedItems);
                 //  rerender();
             }
+            let data = e.dataTransfer.getData("Text");
+            e.target.appendChild(document.getElementById(data));
+            e.preventDefault();
         }
-        let data = e.dataTransfer.getData("Text");
-        e.target.appendChild(document.getElementById(data));
-        e.preventDefault();
+       
     }
     const LoadSmartFav = () => {
         let SmartFavData: any = []
@@ -263,7 +281,7 @@ const EditConfiguration = (props: any) => {
     }
     const LoadExistingWebparts = () => {
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-        web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").getAll().then((data: any) => {
+        web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate' or Key eq 'DashboardTemplate'").getAll().then((data: any) => {
             //  ExistingWepartsBackup = data;
 
 
@@ -273,17 +291,18 @@ const EditConfiguration = (props: any) => {
                 if (webpart?.Configurations != undefined) {
                     let ConfigItem: any = JSON.parse(webpart?.Configurations);
                     ConfigItem.UpdatedId = webpart.Id;
+                    ConfigItem.Key = webpart?.Key;
                     backupaaray.push(ConfigItem);
-                    let items = TempBackup?.filter((obj: any) => obj.WebpartId === ConfigItem.WebpartId);
-                    if (items?.length === 0) {
-                        ConfigItem.Title = ConfigItem.WebpartTitle != undefined ? ConfigItem.WebpartTitle : ConfigItem.Title
-                        aaray.push(ConfigItem)
-                    }
+                    //  let items = TempBackup?.filter((obj: any) => obj.WebpartId === ConfigItem.WebpartId);
+                    // if (items?.length === 0) {
+                    //     ConfigItem.Title = ConfigItem.WebpartTitle != undefined ? ConfigItem.WebpartTitle : ConfigItem.Title
+                    //     aaray.push(ConfigItem)
+                    // }
                 }
             })
 
             ExistingWepartsBackup = _.cloneDeep(backupaaray);
-            setExistingWeparts(aaray);
+            setExistingWeparts(backupaaray);
         }).catch((err: any) => {
             console.log(err);
         })
@@ -448,7 +467,7 @@ const EditConfiguration = (props: any) => {
                             let arrayItems: any = [];
                             const ExistingItems = [...ExistingWeparts];
                             arrayItems = ExistingItems.concat(findItem[0]);
-                            setExistingWeparts(arrayItems);
+                            // setExistingWeparts(arrayItems);
                         }
                         item?.ArrayValue?.splice(indexChild, 1);
                     }
@@ -515,49 +534,74 @@ const EditConfiguration = (props: any) => {
         }
         setIsOpenPopup(false);
     }
+    const CloseDashboardTemplate = (Item: any) => {
+        if (Item === true) {
+            LoadCallbackExistingWebparts()
+        }
+        setIsDashboardTemplate(false);
+    }
     const formatId = (id: number): string => {
         const paddedId = '00' + id;
         return paddedId.slice(-3);
     }
     const CopyExistingWebpartTemplate = async (Item: any) => {
+        let CreatedSmartFavId: any = "";
         let confirmation = confirm('Do you want to copy this item?')
         if (confirmation) {
             let ItemNew = deepCopy(Item);
             try {
                 let result: any;
                 let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-                await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").orderBy("Created", false).getAll().then(async (data: any) => {
+                web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Id eq '" + Item?.smartFevId + "'").orderBy("Id", false).get().then(async (data: any) => {
 
-                    if (data?.length && data[data.length - 1].Value != undefined && data[data.length - 1].Value != '') {
-                        result = parseInt(data[data.length - 1].Value) + 1;
-                    }
-                    else {
-                        result = data?.length + 1;
-                    }
-                    ItemNew.WebpartId = 'WP-' + formatId(result)
-                    await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: Item?.WebpartTitle, Key: "WebpartTemplate", Value: result != undefined ? result.toString() : undefined, Configurations: JSON.stringify(ItemNew) })
-                        .then(async (res: any) => {
-                            web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").top(1).orderBy("Id", false).get().then((data: any) => {
-                                ItemNew.UpdatedId = data[0].Id;
-                                ItemNew.WebpartTitle = Item?.WebpartTitle;
-                                const updatedItems = [...NewItem];
-                                const AllItems: any = [...Items];
-                                updatedItems?.forEach((item: any, index: any) => {
-                                    let findSameItems = item?.ArrayValue?.filter((obj: any) => obj.Title === Item.Title);
-                                    if (findSameItems?.length > 0) {
-                                        item?.ArrayValue.push(ItemNew);
-                                        AllItems.push(ItemNew)
-                                        ExistingWepartsBackup.push(ItemNew);
-                                    }
+                    let WebpartGallaryItem = data[0];
+                    let config = JSON.parse(WebpartGallaryItem?.Configurations)
+                    const postData = {
+                        Configurations: JSON.stringify(config),
+                        Key: 'WebPartGallarySmartfavorites',
+                        Title: 'WebPartGallarySmartfavorites'
+                    };
+                    await web.lists.getByTitle("AdminConfigurations").items.add(postData).then(async (result: any) => {
+                        CreatedSmartFavId = result?.data?.Id;
+                        await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").orderBy("Created", false).getAll().then(async (data: any) => {
+
+                            if (data?.length && data[data.length - 1].Value != undefined && data[data.length - 1].Value != '') {
+                                result = parseInt(data[data.length - 1].Value) + 1;
+                            }
+                            else {
+                                result = data?.length + 1;
+                            }
+                            ItemNew.WebpartId = 'WP-' + formatId(result)
+                            ItemNew.smartFevId = CreatedSmartFavId;
+                            await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: Item?.WebpartTitle, Key: "WebpartTemplate", Value: result != undefined ? result.toString() : undefined, Configurations: JSON.stringify(ItemNew) })
+                                .then(async (res: any) => {
+                                    web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'WebpartTemplate'").top(1).orderBy("Id", false).get().then((data: any) => {
+                                        ItemNew.UpdatedId = data[0].Id;
+                                        ItemNew.WebpartTitle = Item?.WebpartTitle;
+                                        const updatedItems = [...NewItem];
+                                        const AllItems: any = [...Items];
+                                        updatedItems?.forEach((item: any, index: any) => {
+                                            let findSameItems = item?.ArrayValue?.filter((obj: any) => obj.Title === Item.Title);
+                                            if (findSameItems?.length > 0) {
+                                                item?.ArrayValue.push(ItemNew);
+                                                AllItems.push(ItemNew)
+                                                ExistingWepartsBackup.push(ItemNew);
+                                            }
+                                        })
+
+                                        setItems(AllItems);
+                                        setNewItem(updatedItems);
+                                    })
+                                }).catch((err: any) => {
+                                    console.log(err);
                                 })
-
-                                setItems(AllItems);
-                                setNewItem(updatedItems);
-                            })
-                        }).catch((err: any) => {
-                            console.log(err);
                         })
+
+                    })
+
+
                 })
+
 
 
 
@@ -684,6 +728,10 @@ const EditConfiguration = (props: any) => {
             </span>
             <span>
                 {IsOpenPopup && <AddEditWebpartTemplate props={props?.props} SingleWebpart={true} EditItem={""} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseIsConfigPopup} />}
+
+            </span>
+            <span>
+                {IsDashboardTemplate && <AddDashboardTemplate props={props?.props} SingleWebpart={true} Item={DashboardTemplateItem} IsDashboardTemplate={IsDashboardTemplate}  CloseDashboardTemplate={CloseDashboardTemplate} />}
 
             </span>
 
