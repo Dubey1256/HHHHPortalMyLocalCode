@@ -1850,4 +1850,6 @@ const uxdescriptions = (props: any) => {
         </>
     )
 }
+
 export default uxdescriptions;
+
