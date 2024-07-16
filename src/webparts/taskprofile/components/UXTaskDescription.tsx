@@ -1373,7 +1373,7 @@ const uxdescriptions = (props: any) => {
                                         )
                                     }
                                 })}
-                                 <a onClick={()=>setComparesetpannel(true)}>Compare</a>
+                                 <a className="ml-auto mt-2" onClick={()=>setComparesetpannel(true)}>Compare</a>
 
                             </ul>
 
@@ -1850,4 +1850,6 @@ const uxdescriptions = (props: any) => {
         </>
     )
 }
+
 export default uxdescriptions;
+

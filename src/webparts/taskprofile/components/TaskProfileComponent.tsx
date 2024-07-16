@@ -334,11 +334,11 @@ const CopyTaskProfile = (props: any) => {
                         Action?.InformationData?.map((isworkingToday: any) => {
                             if (isworkingToday?.WorkingDate == currentDate && isworkingToday?.WorkingMember?.length > 0) {
                                 taskDetails["IsTodaysTask"] = true
-                                let workingTodayUser:any;
+                                let workingTodayUser:any=[];
                                 isworkingToday?.WorkingMember?.map((itm: any) => {
                                     
                                    let  filterworkingTodayUser = copytaskuser.filter((x: any) => x.AssingedToUser?.Id == itm?.Id)
-                                   workingTodayUser=[...workingTodayUser,filterworkingTodayUser]
+                                   workingTodayUser=[...workingTodayUser,filterworkingTodayUser[0]]
                                 })
                                 taskDetails['workingTodayUser']=workingTodayUser ;
                             }
@@ -1832,7 +1832,7 @@ const CopyTaskProfile = (props: any) => {
                                             {state?.Result?.Portfolio != null && state.breadCrumData.length > 0 &&
                                                 <li >
                                                     {state?.Result?.Portfolio != null &&
-                                                        <a className="fw-bold" style={{ color: state?.Result?.Portfolio?.PortfolioType?.Color }} target="_blank" data-interception="off" href={`${state?.Result?.siteUrl}/SitePages/Team-Portfolio.aspx`}>Team Portfolio</a>
+                                                        <a className="fw-bold" style={{ color: state?.Result?.Portfolio?.PortfolioType?.Color }} target="_blank" data-interception="off" href={`${state?.Result?.siteUrl}/SitePages/Team-Portfolio.aspx`}>Team portfolio</a>
                                                     }
                                                     <span><SlArrowRight /></span>
                                                 </li>
@@ -2029,8 +2029,14 @@ const CopyTaskProfile = (props: any) => {
                                                         <dt className='bg-Fa'>Working Today</dt>
                                                         <dd className='bg-Ff position-relative' >{state?.Result?.workingTodayUser != undefined && state?.Result?.workingTodayUser?.map((user: any) => {
                                                             return (
-                                                                <span className='tooltipbox'><img className='workmember' title={user?.Title} src={user?.Item_x0020_Cover?.Url} /></span>
-                                                            )
+                                                                <>
+                                                              
+                                                               {user?.Item_x0020_Cover?.Url!=undefined ? <span className='tooltipbox'><img className='workmember' title={user?.Title} src={user?.Item_x0020_Cover?.Url} /></span>
+                                                                 : <span title={`${user?.Title != undefined ? user?.Title  : "Default user icons "}`} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser" onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, user?.AssingedToUser?.Id)}></span>
+                                                                       }
+                                                                       </>
+                                                                )
+                                                                
                                                         })}
                                                         </dd>
                                                     </dl>
