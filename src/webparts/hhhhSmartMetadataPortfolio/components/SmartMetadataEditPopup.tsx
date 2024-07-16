@@ -17,19 +17,29 @@ let allSitesTask: any[] = []
 let Selecteditems: any[] = [];
 let allCalls: any[] = []
 var childItems: any = [];
+let selectfilterarray: any = [];
 var ChangedTopCategories: any = [];
 let CurrentSiteUrl: any;
 export default function SmartMetadataEditPopup(props: any) {
+    const [state, rerender] = React.useReducer(() => ({}), {});
     const [activeTab, setActiveTab] = useState('');
     const [AllSitesTask, setAllSitesTask]: any = useState([]);
     const [dropdownArray, setDropdownArray]: any = useState([]);
     const [loaded, setloaded]: any = useState(false);
     const [, setVersionHistoryPopup] = React.useState(false);
+    const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [openChangeParentPopup, setOpenChangeParentPopup] = useState(false);
     const [selectedOptionTop, setSelectedOptionTop] = useState('');
+    const [FilterTypeData, setFilterTypeData] = React.useState([]);
+    const [Smartdatapopup, setSmartdatapopup] = React.useState(false);
     const [selectedOptionSecond, setSelectedOptionSecond] = useState('');
+    const [autoSearchFilterType, setAutoSearchFilterType] = React.useState([]);
+    const [searchFilterType, setsearchFilterType] = React.useState([]);
     const [selectedChangedCategories, setSelectedChangedCategories] = useState('');
     const [metadatPopupBreadcrum, setMetadatPopupBreadcrum]: any = useState([]);
+    const [opensmartmetapopup, setopensmartmetapopup] = useState(false);
+    const [smartFilterArray, setSmartFilterArray]: any = useState([]);
+    const [TaggedsmartFilterArray, setTaggedsmartFilterArray]: any = useState([]);
     const [SmartTaxonomyItem, setSmartTaxonomyItem]: any = useState({
         Id: 0,
         Title: '',
@@ -64,6 +74,7 @@ export default function SmartMetadataEditPopup(props: any) {
     let Items: any
     let folderUrl: any
     let SelectItemImagetype: any = 'ItemImage';
+    
     useEffect(() => {
         if (props?.siteName === 'GmbH') {
             setActiveTab('WebPageInfo')
@@ -151,6 +162,7 @@ export default function SmartMetadataEditPopup(props: any) {
     const openParent = (Value: any) => {
         setOpenChangeParentPopup(true)
     }
+
     const showingBreadcrumb = (metadata: any) => {
         const findBreadcrumb = (itemId: any) => {
             const item = props?.MetadataItems.find((top: any) => top.Id === itemId);
@@ -220,7 +232,30 @@ export default function SmartMetadataEditPopup(props: any) {
     const handleSecondOptionChange = (SecondItem: any) => {
         setSelectedOptionSecond(SecondItem.target.value);
     };
-
+    const opensmartmetadatapopup = (item: any) => {
+        setSmartdatapopup(true);
+        setopensmartmetapopup(true);
+        setSmartFilterArray(item);
+        setTaggedsmartFilterArray(FilterTypeData);
+    };
+    const customHeader = () => (
+        <>
+            <div className="subheading">Select SmartFilters</div>
+            <Tooltip ComponentId="1741" />
+        </>
+    );
+    const customFooter = () => (
+        <>
+            <footer className="bg-f4 p-3 text-end">
+                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveselectedData} >
+                    Save
+                </button>
+                <button type="button" className="btn btn-default" onClick={closePopupSmartPopup} >
+                    Cancel
+                </button>
+            </footer>
+        </>
+    );
     useEffect(() => {
         loaddropdown();
         //loadSmartfilters();
@@ -229,7 +264,9 @@ export default function SmartMetadataEditPopup(props: any) {
                 const web = new Web(props?.AllList?.SPSitesListUrl);
                 const query = `TaxType eq '${props.modalInstance.TaxType}'`
                 const select = `*,Author/Title,Editor/Title,Parent/Id,Parent/Title`;
-                const items = await web.lists.getById(props.AllList.SmartMetadataListID).items.select(select).expand("Author,Editor,Parent").filter(query).getAll();
+                const items = await web.lists.getById(props?.AllList?.SmartMetadataListID).items.select(select).expand("Author,Editor,Parent").filter(query).getAll();
+                const smart_filters_Data = await web.lists.getById(props?.AllList?.SmartMetadataListID).fields.filter("EntityPropertyName eq 'SmartFilters'").select('Choices').get();
+                setSmartFilterArray(smart_filters_Data[0].Choices);
                 const SmartMetDataAllItems: any[] = [];
                 items.forEach((item: any) => {
                     if (item.Parent == undefined) {
@@ -272,6 +309,7 @@ export default function SmartMetadataEditPopup(props: any) {
         getDataOfSmartMetaData();
     }, []);
     const openpopup = (taxType: string, item: any, parent: any, firstParent: any, lastparent: any, Levels: any) => {
+
         if (taxType == 'Categories') {
             if (item != undefined && item.Id != undefined) {
                 CategoryTitle = item.Id;
@@ -312,6 +350,11 @@ export default function SmartMetadataEditPopup(props: any) {
             }
             if (props?.smartDescription !== '' && props?.smartDescription !== undefined && props?.smartDescription !== null) {
                 item['Description'] = props?.smartDescription;
+            }
+            item.smartFilterSearch = '';
+            if (item?.SmartFilters != null && item?.SmartFilters?.length > 0) {
+                setFilterTypeData(item?.SmartFilters);
+                item.smartFilterSearch = item?.SmartFilters?.map((elem: any) => elem).join(" ")
             }
             setSmartTaxonomyItem(item)
         }
@@ -412,10 +455,11 @@ export default function SmartMetadataEditPopup(props: any) {
                 Status: SmartTaxonomyItem.Status != null ? SmartTaxonomyItem.Status : '',
                 // siteName: SmartTaxonomyItem.siteName,
                 SubTitle: SmartTaxonomyItem.SubTitle,
-                PageTitle: SmartTaxonomyItem.PageTitle,
+                // PageTitle: SmartTaxonomyItem.PageTitle,
                 ProfileType: SmartTaxonomyItem.ProfileType,
                 ShortDescription: SmartTaxonomyItem.ShortDescription !== null ? SmartTaxonomyItem.ShortDescription : '',
                 HelpDescription: SmartTaxonomyItem.Description !== null ? SmartTaxonomyItem.Description : '',
+                SmartFilters: { "results": TaggedsmartFilterArray },
                 //SmartCountriesId: { "results": smart_Countries },
                 //SmartActivitiesId: { "results": smart_Activity },
                 //SmartTopicsId: { "results": smart_Topics },
@@ -488,6 +532,7 @@ export default function SmartMetadataEditPopup(props: any) {
             setSmartTaxonomyItem({ ...SmartTaxonomyItem, PageContent: PageContent })
         }
     }
+
     const onRenderCustomHeaderMetadata = () => {
         return (
             <>
@@ -508,6 +553,70 @@ export default function SmartMetadataEditPopup(props: any) {
             </>
         );
     };
+    const autoSuggestionsForSmartFilters = (e: any) => {
+        let searchedKey: any = e.target.value;
+        let tempArray: any = [];
+        if (searchedKey?.length > 0) {
+            smartFilterArray?.map((itemData: any) => {
+                if (itemData?.toLowerCase().includes(searchedKey.toLowerCase())) {
+                    tempArray.push(itemData);
+                }
+            });
+            setsearchFilterType(tempArray);
+        } else {
+            setsearchFilterType([]);
+        }
+    };
+    const handleSuggestionFilters = (suggestion: any) => {
+        smartFilterArray?.map((items: any) => {
+            if (items === suggestion) {
+                SmartmetadatafilterTYpe([items]);
+            }
+        });
+        setsearchFilterType([]);
+    };
+    const SmartmetadatafilterTYpe = React.useCallback((data: any) => {
+        if (data === "Close") {
+            setSmartdatapopup(false);
+        } else {
+            setSmartdatapopup(false);
+            setFilterTypeData(data);
+        }
+    }, []);
+    const deleteFilterItem = (Item: any) => {
+        const updatedSelectedItems = FilterTypeData.filter(
+            (valuee: any) => Item !== valuee
+        );
+        selectfilterarray = selectfilterarray.filter((type: any) => { Item !== type });
+        setFilterTypeData(updatedSelectedItems);
+        setTaggedsmartFilterArray(updatedSelectedItems);
+    };
+    const isItemExists = (arr: any, Title: any) => {
+        var isExists = false;
+        arr.forEach((item: any) => { if (item == Title) { isExists = true; return false; } });
+        return isExists;
+    }
+
+    const handleItemClick = (item: any) => {
+        selectfilterarray = TaggedsmartFilterArray?.length > 0 ? TaggedsmartFilterArray : selectfilterarray;
+        if (!isItemExists(selectfilterarray, item))
+            selectfilterarray.push(item);
+        setTaggedsmartFilterArray(selectfilterarray);
+        rerender();
+    };
+    const deleteSelectedFeature = (val: any) => {
+        selectfilterarray = selectfilterarray !== undefined && selectfilterarray?.length > 0 ? selectfilterarray : FilterTypeData;
+        selectfilterarray = selectfilterarray?.filter((valuee: any) => val !== valuee);
+        setTaggedsmartFilterArray(selectfilterarray);
+    };
+    const closePopupSmartPopup = () => {
+
+        setopensmartmetapopup(false);
+    }
+    const saveselectedData = () => {
+        setFilterTypeData(selectfilterarray);
+        setopensmartmetapopup(false);
+    }
     return (
         <>
             <div>
@@ -709,17 +818,109 @@ export default function SmartMetadataEditPopup(props: any) {
                                                             </select>
                                                         </div>
                                                     </div>
+                                                    <div className="col">
+                                                        <div className=' input-group'>
+                                                            <label className="full_width">SmartFilters </label>
+                                                            {(FilterTypeData?.length == 0 ||
+                                                                FilterTypeData[0] == undefined) && (
+                                                                    <>
+                                                                        <input
+                                                                            type="text"
+                                                                            className="form-control"
+                                                                            onChange={(e) =>
+                                                                                autoSuggestionsForSmartFilters(e)
+                                                                            }
+                                                                        />
+                                                                        <span className="input-group-text" title="Status Popup">
+                                                                            <span title="SmartFilters" onClick={(e) => opensmartmetadatapopup(smartFilterArray)} className="svg__iconbox svg__icon--editBox"
+                                                                            ></span>
+                                                                        </span>
+                                                                    </>
+                                                                )}
+
+                                                            {FilterTypeData &&
+                                                                FilterTypeData?.length == 1 &&
+                                                                FilterTypeData?.map((item: any) => {
+                                                                    return (
+                                                                        <>
+                                                                            {item != undefined && (
+                                                                                <div className="full-width replaceInput alignCenter">
+                                                                                    <a style={{ color: "#fff !important" }}>
+                                                                                        {item}
+                                                                                    </a>
+                                                                                    <span className="input-group-text" placeholder="SmartFilters">
+                                                                                        <span
+                                                                                            title="SmartFilters"
+                                                                                            onClick={(e) =>
+                                                                                                opensmartmetadatapopup(smartFilterArray)
+                                                                                            }
+                                                                                            className="svg__iconbox svg__icon--editBox"
+                                                                                        ></span>
+                                                                                    </span>
+                                                                                </div>
+                                                                            )}
+                                                                        </>
+                                                                    );
+                                                                })}
+                                                            {searchFilterType?.length > 0 && (
+                                                                <div className="SmartTableOnTaskPopup">
+                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                        {searchFilterType.map(
+                                                                            (suggestion: any, index: any) => (
+                                                                                <li
+                                                                                    className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                                    key={index}
+                                                                                    onClick={() =>
+                                                                                        handleSuggestionFilters(suggestion)
+                                                                                    }
+                                                                                >
+                                                                                    {suggestion}
+                                                                                </li>
+                                                                            )
+                                                                        )}
+                                                                    </ul>
+                                                                </div>
+                                                            )}
+                                                            {FilterTypeData &&
+                                                                FilterTypeData?.length > 1 ?
+                                                                <>
+                                                                    <input type="text" className="form-control" onChange={(e) => autoSuggestionsForSmartFilters(e)} />
+                                                                    <span className="input-group-text" title="Status Popup">
+                                                                        <span title="SmartFilters" onClick={(e) => opensmartmetadatapopup(smartFilterArray)} className="svg__iconbox svg__icon--editBox"
+                                                                        ></span>
+                                                                    </span>
+                                                                    {FilterTypeData?.map((item: any) => {
+                                                                        return (
+                                                                            <>
+                                                                                {item != undefined && (
+                                                                                    <div className="block d-flex full-width justify-content-between mt-1">
+                                                                                        <a style={{ color: "#fff !important" }}>
+                                                                                            {item}
+                                                                                        </a>
+                                                                                        <span
+                                                                                            className="bg-light svg__iconbox svg__icon--cross"
+                                                                                            onClick={() =>
+                                                                                                deleteFilterItem(item)
+                                                                                            }
+                                                                                        ></span>
+                                                                                    </div>
+                                                                                )}
+                                                                            </>
+                                                                        );
+                                                                    })}
+                                                                </>
+                                                                : null}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="col-md-2 mt-md-3">
-
                                                 <input className='form-check-input' type="checkbox" checked={SmartTaxonomyItem.IsVisible} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, IsVisible: e.target.checked })} />
                                                 <label className='ms-1'>IsVisible</label><br />
                                                 <input className='form-check-input' type="checkbox" checked={SmartTaxonomyItem.Selectable} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, Selectable: e.target.checked })} />
                                                 <label className='ms-1'>Selectable</label><br />
                                                 <input className='form-check-input' type="checkbox" checked={SmartTaxonomyItem.SmartSuggestions} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, SmartSuggestions: e.target.checked })} />
                                                 <label className='ms-1'>Smart Suggestions</label>
-
                                             </div>
                                             <div className="col-md-2  text-end ">
                                                 {/* <a style={{ float: 'right' }} href="javascript:void(0);" onClick={() => openparent(SecondLevel)}> */}
@@ -1012,7 +1213,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                     |
                                     <span>
                                         <div className="text-left" onClick={() => setVersionHistoryPopup(false)}>
-                                            {SmartTaxonomyItem?.Id && <VersionHistory listName = 'SmartMetadata'
+                                            {SmartTaxonomyItem?.Id && <VersionHistory listName='SmartMetadata'
                                                 taskId={SmartTaxonomyItem?.Id}
                                                 RequiredListIds={props?.AllList}
                                                 siteUrls={props?.AllList?.SPSitesListUrl}
@@ -1026,7 +1227,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                 <a
                                     data-interception="off"
                                     target="_blank"
-                                    href={`${props?.AllList?.SPSitesListUrl}/Lists/SmartMetadata/AllItems.aspx`}
+                                    href={`${props?.AllList?.SPSitesListUrl}/Lists/SmartMetadata/EditForm.aspx?ID=${SmartTaxonomyItem.Id}`}
                                 >
                                     Open out-of-the-box form
                                 </a>
@@ -1051,7 +1252,44 @@ export default function SmartMetadataEditPopup(props: any) {
                         activeTab === "TaskInfo" && loaded ? <PageLoader /> : ''
                     }
                 </Panel>
-            </div >
+            </div>
+            <Panel
+                onRenderHeader={customHeader}
+                isOpen={opensmartmetapopup}
+                type={PanelType.custom}
+                customWidth="375px"
+                onDismiss={closePopupSmartPopup}
+                isBlocking={false}
+                onRenderFooter={customFooter}
+            >
+                <div className='modal-body'>
+                    {TaggedsmartFilterArray?.length > 0 ? (
+                        <div className="full-width">
+                            {TaggedsmartFilterArray?.map((val: any, index: any) => (
+                                <>
+                                    {val != undefined && val != '' && val != undefined &&
+                                        <span className="block me-1">
+                                            <span>{val}</span>
+                                            <span className="bg-light hreflink ms-2 svg__icon--cross svg__iconbox" onClick={() => deleteSelectedFeature(val)}>
+                                            </span>
+                                        </span>
+                                    }
+                                </>
+                            ))}
+                        </div>
+                    ) : null}
+                    <div className='mt-3'>
+                        <ul className='categories-menu p-0  w-100'>
+                            {smartFilterArray.map((item: any, index: any) => (
+                                <li key={index} onClick={() => handleItemClick(item)}>
+                                    <a target="_blank" >{item}</a>
+                                </li>
+                        ))}
+                        </ul>
+                    </div>
+                </div>
+
+            </Panel>
         </>
     );
 }
