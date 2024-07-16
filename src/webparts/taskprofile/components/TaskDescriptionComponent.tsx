@@ -1188,7 +1188,7 @@ const TaskDescriptions = (props: any) => {
                     </div>
                 </div>
                 <footer className='modal-footer mt-2'>
-                    <button className="btn btn-primary ms-1" onClick={(e) => updateComment()}>Save</button>
+                    <button className="btn btn-primary ms-1"  disabled={CommenttoUpdate?.length===0?true:false} onClick={(e) => updateComment()}>Save</button>
                     <button className='btn btn-default ms-1' onClick={Closecommentpopup}>Cancel</button>
                 </footer>
             </Panel>}
