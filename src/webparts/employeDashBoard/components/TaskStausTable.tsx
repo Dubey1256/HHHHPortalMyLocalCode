@@ -1785,11 +1785,11 @@ const TaskStatusTbl = (Tile: any) => {
   }
   const customTableHeaderButtons = (config: any) => {
     return (
-      <span className="alignCenter">
+      <span className="alignCenter CustomHeaderIcon">
         {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
         {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink"
           target="_blank" data-interception="off" title="Create New Task" href={`${ContextData?.siteUrl}/SitePages/CreateTask.aspx`}>
-          <span className="hreflink svg__iconbox svg__icon--CNTask empBg"></span>
+          <span className="hreflink alignIcon svg__iconbox svg__icon--CNTask empBg"></span>
         </a>}
         {config?.WebpartTitle == 'Draft Tasks' && <a className="empCol hreflink me-3">Approve</a>}
         {config?.WebpartTitle == 'Waiting for Approval' && <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>}
