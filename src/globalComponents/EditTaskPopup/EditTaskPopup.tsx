@@ -5366,7 +5366,7 @@ const EditTaskPopup = (Items: any) => {
                 rank =
                     <label className="alignCenter form-label full-width gap-1">
                         {res?.Title}
-                        <div className={styles.root}>
+                       {res?.Description!=null && res?.Description!='' && <div className={styles.root}>
                             <InfoToolTip
                                 content={{
                                     children: <span dangerouslySetInnerHTML={{ __html: res?.Description }}></span>,
@@ -5377,7 +5377,7 @@ const EditTaskPopup = (Items: any) => {
                                 onVisibleChange={(e: any, data: any) => setVisible(data?.visible)} >
                                 <Info16Regular tabIndex={0} className={mergeClasses(visible && styles.visible)} />
                             </InfoToolTip>
-                        </div>
+                        </div>}
                     </label>
                 setItemRankval(rank)
             }
@@ -9425,7 +9425,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     />
                                                                     <span
                                                                         className="input-group-text"
-                                                                        onClick={() => openTaskUserPopup("Attention")}
+                                                                        onClick={() => openTaskUserPopup("Bottleneck")}
                                                                     >
                                                                         <span title="Edit" className="svg__iconbox svg__icon--editBox"></span>
                                                                     </span>

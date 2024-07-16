@@ -17,6 +17,7 @@ import Slider from 'react-slick';
 import { BiInfoCircle } from 'react-icons/bi';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import { Accordion, AccordionHeader,AccordionItem, AccordionPanel, AccordionToggleEventHandler, } from "@fluentui/react-components";
+import CompareSetData from './CompareSetData';
 let countemailbutton: number;
 var changespercentage = false;
 var buttonId: any;
@@ -67,6 +68,9 @@ const uxdescriptions = (props: any) => {
     const [countfeedback, setcountfeedback] = React.useState(0)
     const [objective, setobjective] = React.useState(false);
     const [openItems, setOpenItems] = React.useState(["1"]);
+    const [checkedSetData,setCheckedSetData]=React.useState([])
+    const [comparesetpannel,setComparesetpannel]=React.useState(false)
+    
     React.useEffect(() => {
         buttonId = `callout-button`;        
         // if (Result["TaskId"] != undefined && Result['Title'] != undefined) {
@@ -910,6 +914,17 @@ const uxdescriptions = (props: any) => {
     const handleToggle: AccordionToggleEventHandler<string> = (event, data) => {
         setOpenItems(data.openItems);
       };
+
+      // ==================Compare set Data function ================
+      const CheckSetData=(isChecked :any,data:any)=>{
+        if (isChecked) {
+            setCheckedSetData([...checkedSetData, data]);
+        } else {
+            setCheckedSetData(checkedSetData.filter(item => item.setTitle !== data.setTitle));
+        }
+    }
+  
+       
     return (
         <>
             {/* //============ New Design Templates Start =========== */}
@@ -1328,11 +1343,13 @@ const uxdescriptions = (props: any) => {
                    
 
                         {/* ************************************ TAB ******************************************* */}
-                        <div className='mt-2'>
+                        <div className='mt-2 UXDesignTabs'>
                             <ul className="nav nav-tabs" id="myTab" role="tablist">
                                 {TaskFeedbackData?.map((tab: any, index: any) => {
                                     if (index > 0) {
                                         return (
+                                            <>
+                                         <div className="position-relative">
                                             <button
                                                 className={`nav-link ${CurrentActiveTab == index ? 'active' : ''}`}
                                                 id={tab?.setTitle}
@@ -1347,9 +1364,16 @@ const uxdescriptions = (props: any) => {
                                                 {arrayOfChar[index - 1] + "." + tab?.setTitle}
 
                                             </button>
+                                           <div className='editTab'>
+                                           <input type="checkbox" className='form-check-input me-1' onChange={(e) => CheckSetData(e.target.checked,tab)} />
+                                            </div> 
+                                           
+                                            </div>
+                                            </>
                                         )
                                     }
                                 })}
+                                 <a onClick={()=>setComparesetpannel(true)}>Compare</a>
 
                             </ul>
 
@@ -1822,9 +1846,8 @@ const uxdescriptions = (props: any) => {
                     <button className='btn btn-default ms-1' onClick={Closecommentpopup}>Cancel</button>
                 </footer>
             </Panel>}
+           {comparesetpannel  && checkedSetData?.length>0 &&   <CompareSetData checkedSetData={checkedSetData} setComparesetpannel={setComparesetpannel}></CompareSetData>}
         </>
     )
 }
-
 export default uxdescriptions;
-
