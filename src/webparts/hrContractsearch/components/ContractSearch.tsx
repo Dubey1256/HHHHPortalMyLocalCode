@@ -232,6 +232,12 @@ let allSite: any = {
     setCreate(false)
 
     }, []);
+
+    const customTableHeaderButtons = (
+        <button className='btn btn-primary' onClick={()=>createContracts()}>Create Contract</button>
+
+     )
+
     const openEditPopup=(data:any)=>{
         editData = data
         setOpenEdit(true)
@@ -257,9 +263,9 @@ let allSite: any = {
         </div>
       </div>
         <myContextValue.Provider value={{ ...myContextValue, allSite:allSite,allListId:allListId ,loggedInUserName:props.props?.userDisplayName}}>
-        <button className='btnCol btn btn-primary pull-right' type='submit' onClick={()=>createContracts()}>Create Contract</button>
+        {/* <button className='btnCol btn btn-primary pull-right' type='submit' onClick={()=>createContracts()}>Create Contract</button> */}
         <div className='Alltable'>
-        <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true}/>
+        <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons}/>
         </div>
         {create && <CreateContract callBack={() => {getData(); setCreate(false)}} closeContracts={() => closeContracts()} callback={callBackData} AllListId={props}/>}
         {openEdit && <EditContractPopup openPopup={openEdit} closePopup={() => setOpenEdit(false)} props={editData} AllListId={props} callback={callBack}></EditContractPopup>}
