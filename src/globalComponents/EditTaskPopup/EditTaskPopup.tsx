@@ -26,6 +26,13 @@ import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
 import { SlArrowDown, SlArrowRight} from "react-icons/sl";
 import { TbReplace } from "react-icons/tb";
 
+
+import { Label, makeStyles, mergeClasses, tokens, Tooltip as InfoToolTip, useId, } from "@fluentui/react-components";
+import { Info16Regular, Add16Regular } from "@fluentui/react-icons";
+const useStyles = makeStyles({
+    root: { display: "flex", columnGap: tokens.spacingVerticalS, },
+    visible: { color: tokens.colorNeutralForeground2BrandSelected, },
+});
 // Used Global Common functions imports
 
 import * as globalCommon from "../globalCommon";
@@ -96,11 +103,20 @@ let globalSelectedProject: any = { PriorityRank: 1 };
 let oldWorkingAction: any = []
 let linkedPortfolioPopup: any;
 let portfolioPopup: any;
+
+let ColumnDetails: any = [];
 const EditTaskPopup = (Items: any) => {
     // Task Popup Config Info 
     const Context = Items?.context;
     const AllListIdData = Items?.AllListId;
     AllListIdData.listId = Items?.Items?.listId;
+
+    const styles = useStyles();
+    const contentId = useId("content");
+    const [visible, setVisible] = useState(false);
+    const [visibleRank, setVisibleRank] = useState(false);
+    const [ItemRankval, setItemRankval] = useState<any>(null);
+
     // Items.Items.Id = Items?.Items?.ID;
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
@@ -255,6 +271,7 @@ const EditTaskPopup = (Items: any) => {
 
     useEffect(() => {
         if (FeedBackCount == 0) {
+            loadColumnDetails();
             getTaskNotificationConfiguration();
             loadTaskUsers();
             GetExtraLookupColumnData();
@@ -5340,7 +5357,38 @@ const EditTaskPopup = (Items: any) => {
         updateFeedbackArray[0].FeedBackDescriptions = designFeedbackData
 
     }
+    const getColumnDetails = (name: string) => {
+        let rank: any = ''
+        if (!visibleRank) {
+            const res = globalCommon.GetColumnDetails(name, ColumnDetails);
+            if (res && res.Title) {
+                setVisibleRank(true);
+                rank =
+                    <label className="alignCenter form-label full-width gap-1">
+                        {res?.Title}
+                       {res?.Description!=null && res?.Description!='' && <div className={styles.root}>
+                            <InfoToolTip
+                                content={{
+                                    children: <span dangerouslySetInnerHTML={{ __html: res?.Description }}></span>,
+                                    id: contentId,
+                                }}
+                                withArrow
+                                relationship="label"
+                                onVisibleChange={(e: any, data: any) => setVisible(data?.visible)} >
+                                <Info16Regular tabIndex={0} className={mergeClasses(visible && styles.visible)} />
+                            </InfoToolTip>
+                        </div>}
+                    </label>
+                setItemRankval(rank)
+            }
+        }
+        return rank;
+    };
 
+    const loadColumnDetails = async () => {
+        let getvalue = await globalCommon.getsiteConfig();
+        ColumnDetails = getvalue;
+    };
     return (
         <div
             className={`${EditData.Id}`}
@@ -5688,9 +5736,10 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col-6 ps-0 pe-0 mt-2">
                                                 <div className="input-group">
-                                                    <label className="form-label full-width">
+                                                    {/* <label className="form-label full-width">
                                                         Item Rank
-                                                    </label>
+                                                    </label> */}
+                                                      {visibleRank ? ItemRankval : (getColumnDetails('Item_x0020_Rank'))}
                                                     <select
                                                         className="form-select"
                                                         defaultValue={EditData.ItemRank}

@@ -161,7 +161,9 @@ const AddEditWebpartTemplate = (props: any) => {
                                             item['WebpartTitle'] = SmartFavDashboardTitle
                                         }
                                         if (key == 'onDropAction')
-                                            item['onDropAction'] = onDropAction
+                                            item['onDropAction'] = onDropAction;
+                                        else if (item.onDropAction == undefined || item.onDropAction == '')
+                                            item['onDropAction'] = onDropAction;
                                     }
                                 });
                             }
@@ -1019,7 +1021,7 @@ const AddEditWebpartTemplate = (props: any) => {
                                                 </Col>
                                                 <Col sm="4" md="4" lg="4">
                                                     <div className="form-check form-check-inline m-4">
-                                                        <label className='SpfxCheckRadio hreflink siteColor' onClick={() => openTableSettingPopup("favBased")}>Table Confrigrations</label>
+                                                        <label className='SpfxCheckRadio hreflink siteColor' onClick={() => openTableSettingPopup("favBased")}>Table Configurations</label>
                                                     </div>
                                                 </Col>
                                             </Row>

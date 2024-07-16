@@ -1123,6 +1123,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
         }
       });
     }
+    AllClientCategoryDataBackup = getSmartMetadataItemsByTaxType(smartmetaDetails, "Client Category");
     TaskTypes = getSmartMetadataItemsByTaxType(smartmetaDetails, "Categories");
     let instantCat: any = [];
     TaskTypes?.map((cat: any) => {

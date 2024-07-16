@@ -219,7 +219,7 @@ const ContractProfile = (props:any) => {
 
                 </div>
             </section>
-            {openPopup && <EditContractPopup props={propsData} AllListId={props.props} callback={callback}></EditContractPopup>}
+            {openPopup && <EditContractPopup openPopup={openPopup} closePopup={() => setOpenPopup(false)} props={propsData} AllListId={props.props} callback={callback} pageName={props?.pageName}></EditContractPopup>}
 
         </>
     ) 

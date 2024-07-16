@@ -2212,6 +2212,7 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
                         <details open>
                           <summary>
                               <label>Site Composition</label>
+                              <a className="alignCenter ml-auto pull-right"><span className="svg__iconbox svg__icon--editBox" title="Edit Site Composition" onClick={() => setSiteCompositionShow(true)}></span></a>
                           </summary>
                           {data?.length > 0 &&
                             data[0]?.siteCompositionData?.length > 0 ? (

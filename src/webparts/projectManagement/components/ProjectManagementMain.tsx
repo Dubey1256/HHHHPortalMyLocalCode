@@ -77,6 +77,7 @@ let taggedPortfolioItem: any
 let taskTypeDataItem: any;
 let keyTaggedDocs: any;
 const ProjectManagementMain = (props: any) => {
+  const [openServiceComponent, setopenServiceComponent]= React.useState(false)
   relevantDocRef = React.useRef();
   smartInfoRef = React.useRef();
   keyDocRef = React.useRef();
@@ -122,13 +123,14 @@ const ProjectManagementMain = (props: any) => {
   const [remarkData, setRemarkData] = React.useState(null);
   const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
   const [editSmartInfo, setEditSmartInfo] = React.useState(false)
-  const [suggestedItems, setSuggestedItems] = React.useState('')
-  const [taggedPortfolio, setTaggedPortfolio] = React.useState([])
-    const [searchedKeyPortfolios, setSearchedkeyPortfolios] = React.useState([])
+  const [suggestedPortfolio, setSuggestedPortfolio] = React.useState("")
+  const [searchedKeyPortfolios, setSearchedkeyPortfolios] = React.useState([])
   const [ActivityPopup, setActivityPopup] = React.useState(false);
   const [activeTile, setActiveTile] = React.useState("")
   const [keyRelevantPortfolios, setKeyRelevantPortfolios] = React.useState(false)
   const [keyTaggedDoc, setKeyTaggedDoc] = React.useState([])
+  const [filteredTask, setFilteredTasks] = React.useState([])
+  const [taggedPortfolio, setTaggedPortfolio] = React.useState([])
   const childRef = React.useRef<any>();
   const StatusArray = [
     { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
@@ -981,6 +983,7 @@ const ProjectManagementMain = (props: any) => {
       backupTableData = allSprints;
       setTaskTaggedPortfolios(taskTaggedComponents)
       setSuggestedPortfolios(suggestedPortfolioItems)
+      filteredTasks("Week")
       setPageLoader(false);
     } catch (error) {
       console.log(error)
@@ -989,6 +992,43 @@ const ProjectManagementMain = (props: any) => {
     }
 
   }
+
+  const filteredTasks = (filterType: any) => {
+    let currentDate: any = Moment();
+    let date: any = new Date();
+    if (filterType == "Week"){
+      let weekDates: any = []
+            let startWeekDay = currentDate.day()
+            let conditionRun = 6 - startWeekDay;
+            while (conditionRun > 0) {
+                weekDates.push(currentDate.format('DD/MM/YYYY'))
+                currentDate.add(1, 'day');
+                conditionRun--;
+            }
+      let groupedDataItems = globalCommon.deepCopy(backupTableData);
+      let flattenedData = flattenData(groupedDataItems)
+      let tasksData = flattenedData.filter((item: any) => item.TaskType && item.WorkingAction != undefined)
+      let filterTasksinfo = tasksData.filter((task:any) => task.WorkingActionParsed.some((workingAct:any) => workingAct.Title == "WorkingDetails" && workingAct.InformationData.some((taskInfo:any) => weekDates.includes(taskInfo.WorkingDate))))
+      filterTasksinfo.map((tasks: any) => {
+        tasks.WorkingActionParsed.map((workingAct: any) => {
+          if (workingAct.Title == "WorkingDetails" && workingAct.InformationData) {
+            workingAct.InformationData.map((taskInfo: any) => {
+              if (taskInfo.WorkingDate == Moment(date).format('DD/MM/YYYY') && weekDates.includes(taskInfo.WorkingDate)) {
+                tasks.WorkingTitle = `${tasks.Title} - Working Today`
+              }
+              else if (taskInfo.WorkingDate != Moment(date).format('DD/MM/YYYY') && weekDates.includes(taskInfo.WorkingDate)) {
+                tasks.WorkingTitle = `${tasks.Title} - Working This Week`
+              }
+            })
+          }
+        })
+      })
+      console.log(filterTasksinfo)
+      setFilteredTasks(filterTasksinfo)
+    }
+  }
+
+
   const getAllRowInfo = (allSprints: any) => {
     let allrowInfo: any = [];
     function getallRows(value: any) {
@@ -1128,8 +1168,8 @@ const ProjectManagementMain = (props: any) => {
       alert("You can not create ny item inside Task");
     }
     setSearchedkeyPortfolios([])
-    setTaggedPortfolio([])
-      };
+    setSuggestedPortfolio("")
+  };
   const Call = (propsItems: any, type: any) => {
     if (propsItems?.Id != undefined) {
       if (propsItems?.DueDate != undefined) {
@@ -1245,7 +1285,7 @@ const ProjectManagementMain = (props: any) => {
     console.log(Masterdata)
     setIsComponent(false);
     setIsPortfolio(false);
-
+    setopenServiceComponent(false)
   }, [])
 
   const keyRelevantPortfolioPopupCallback = React.useCallback((DataItem: any, Type: any, functionType: any) => {
@@ -1852,6 +1892,371 @@ const ProjectManagementMain = (props: any) => {
     ],
     [ProjectTableData]
   );
+
+  const workingThisWeekColumns = React.useMemo<ColumnDef<any, unknown>[]>(
+    () => [
+      {
+        accessorKey: "",
+        placeholder: "",
+        hasCheckbox: true,
+        hasCustomExpanded: hasCustomExpanded,
+        hasExpanded: hasExpanded,
+        isHeaderNotAvlable: isHeaderNotAvlable,
+        size: 12,
+        id: 'Id',
+      },
+      {
+        accessorFn: (row) => row?.Site,
+        cell: ({ row }) => (
+
+          <span>
+            {row?.original?.Item_x0020_Type == "Sprint" ?
+              <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={"Dyicons me-1"}>
+                X
+              </div>
+              : <img className='circularImage rounded-circle' src={row?.original?.SiteIcon} />}
+
+          </span>
+        ),
+        id: "Site",
+        placeholder: "Site",
+        header: "",
+        resetSorting: false,
+        resetColumnFilters: false,
+        size: 50,
+        isColumnVisible: true,
+        fixedColumnWidth: true,
+      },
+      {
+        accessorKey: "TaskID",
+        cell: ({ row, getValue }) => (
+          <>
+            <span className="d-flex">
+              <ReactPopperTooltipSingleLevel AllListId={AllListId} CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+            </span>
+          </>
+        ),
+        id: "TaskID",
+        placeholder: "Task Id",
+        header: "",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 125,
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row) => row?.WorkingTitle,
+        cell: ({ row, column, getValue }) => (
+          <>
+            <span>
+                <a
+                  className="hreflink"
+                  href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                  data-interception="off"
+                  target="_blank"
+                >
+                  {row?.original?.WorkingTitle}
+                </a>
+              </span>
+          </>
+        ),
+        id: "Title",
+        placeholder: "Title",
+        resetColumnFilters: false,
+        resetSorting: false,
+        header: "",
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row) => row?.TaskTypeValue,
+        cell: ({ row }) => (
+          <>
+            <span className="columnFixedTaskCate">
+              <InlineEditingcolumns
+                AllListId={AllListId}
+                callBack={inlineCallBack}
+                columnName='TaskCategories'
+                item={row?.original}
+                TaskUsers={AllUser}
+                pageName={'ProjectManagment'}
+              />
+            </span>
+          </>
+        ),
+        placeholder: "Task Type",
+        header: "",
+        resetColumnFilters: false,
+        size: 120,
+        id: "TaskTypeValue",
+      },
+
+      {
+        accessorFn: (row) => row?.PriorityRank,
+        cell: ({ row }) => (
+          <span>
+            <InlineEditingcolumns
+              AllListId={AllListId}
+              type='Task'
+              TaskUsers={AllUser}
+              columnName='Priority'
+              item={row?.original} />
+          </span>
+        ),
+        placeholder: "Priority",
+        id: 'Priority',
+        header: "",
+        resetColumnFilters: false,
+        isColumnVisible: true,
+        fixedColumnWidth: true,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          return row?.original?.PriorityRank == filterValue
+        },
+        resetSorting: false,
+        size: 55,
+      },
+      {
+        accessorFn: (row) => row?.SmartPriority,
+        cell: ({ row }) => (
+          <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority}</div>
+        ),
+        id: "SmartPriority",
+        placeholder: "SmartPriority",
+        resetColumnFilters: false,
+        isColumnVisible: true,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          return row?.original?.SmartPriority == filterValue
+        },
+        header: "",
+        size: 57,
+        fixedColumnWidth: true
+      },
+      {
+        accessorFn: (row) => row?.PercentComplete,
+        cell: ({ row }) => (
+          <span>
+            <InlineEditingcolumns
+              AllListId={AllListId}
+              callBack={inlineCallBack}
+              columnName='PercentComplete'
+              item={row?.original}
+              TaskUsers={AllUser}
+              pageName={'ProjectManagment'}
+            />
+          </span>
+        ),
+        id: 'PercentComplete',
+        placeholder: "% Complete",
+        resetColumnFilters: false,
+        isColumnVisible: true,
+        fixedColumnWidth: true,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          return row?.original?.PercentComplete == filterValue
+        },
+        resetSorting: false,
+        header: "",
+        size: 55
+      },
+      {
+        accessorFn: (row) => row?.TeamMembers?.map((elem: any) => elem.Title).join('-'),
+        cell: ({ row }) => (
+          <span>
+            <InlineEditingcolumns
+              AllListId={AllListId}
+              callBack={inlineCallBack}
+              columnName='Team'
+              item={row?.original}
+              TaskUsers={AllUser}
+              pageName={'ProjectManagment'}
+            />
+          </span>
+        ),
+        id: 'TeamMembers',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "TeamMembers",
+        header: "",
+        size: 110,
+        isColumnVisible: true
+      },
+      
+      {
+        accessorFn: (row) => row?.SmartInformationTitle,
+        cell: ({ row }) => (
+          <span className='d-flex hreflink' >
+            &nbsp; {row?.original?.SmartInformation?.length > 0 ? (
+              <>
+                <span onClick={() => openRemark(row?.original)} className="commentDetailFill-active svg__iconbox svg__icon--commentBlank"></span>
+              </>
+            ) : (
+              <>
+                <span onClick={() => openRemark(row?.original)} className="commentDetailFill svg__iconbox svg__icon--commentBlank"></span>
+              </>
+            )}
+          </span>
+        ),
+        id: 'SmartInformation',
+        resetSorting: false,
+        resetColumnFilters: false,
+        placeholder: "Remarks",
+        header: '',
+        size: 55,
+        isColumnVisible: true
+      },
+
+      {
+        accessorFn: (row) => row?.Created,
+        cell: ({ row }) => (
+          <span className="d-flex">
+            <span>{row?.original?.DisplayCreateDate} </span>
+
+            {row?.original?.createdImg != undefined ? (
+              <>
+                <a
+                  href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                  target="_blank"
+                  data-interception="off"
+                >
+                  <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                </a>
+              </>
+            ) : (
+              <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+            )}
+          </span>
+        ),
+        id: 'Created',
+        canSort: false,
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Created",
+        isColumnVisible: true,
+        fixedColumnWidth: true,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 105
+      },
+      {
+        accessorFn: (row) => row?.Modified,
+        cell: ({ row }) => (
+          <span className="d-flex">
+            <span>{row?.original?.DisplayModifiedDate} </span>
+
+            {row?.original?.modifiedImg != undefined ? (
+              <>
+                <a
+                  href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                  target="_blank"
+                  data-interception="off"
+                >
+                  <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.modifiedImg} />
+                </a>
+              </>
+            ) : (
+              <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Editor?.Title}></span>
+            )}
+          </span>
+        ),
+        id: 'Modified',
+        canSort: false,
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Modified",
+        isColumnVisible: true,
+        fixedColumnWidth: true,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 105
+      },
+      {
+        accessorFn: (row) => row?.TotalTaskTime,
+        cell: ({ row }) => (
+          <span> {row?.original?.TotalTaskTime}</span>
+        ),
+        id: "TotalTaskTime",
+        placeholder: "Smart Time",
+        header: "",
+        resetColumnFilters: false,
+        size: 49,
+        isColumnVisible: true,
+        fixedColumnWidth: true,
+      },
+      {
+        header: ({ table }: any) => (
+          <>{
+            topCompoIcon ?
+              <span style={{ backgroundColor: `${''}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => projectTopIcon(true)}>
+                <span className="svg__iconbox svg__icon--re-structure"></span>
+              </span>
+              : ''
+          }
+          </>
+        ),
+        cell: ({ row, getValue }) => (
+          <>
+            {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
+              <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
+                <span className="svg__iconbox svg__icon--re-structure"> </span>
+              </span>
+            )}
+            {getValue()}
+          </>
+        ),
+        id: "Restructure",
+        canSort: false,
+        placeholder: "",
+        size: 1,
+      },
+      {
+        cell: ({ row }) => (
+          <div className="alignCenter ml-auto">
+            {row?.original?.TaskType != undefined &&
+              (row?.original?.TaskType?.Title == "Activities" ||
+                row?.original?.TaskType?.Title == "Workstream" ||
+                row?.original?.TaskType?.Title == "Task") ? (
+              <>
+                {showTimeEntryIcon && <span
+                  onClick={(e) => EditDataTimeEntry(e, row.original)}
+                  className="svg__iconbox svg__icon--clock"
+                  title="Click To Edit Timesheet"
+                ></span>}
+                <span
+                  title="Edit Task"
+                  onClick={(e) => EditPopup(row?.original)}
+                  className="svg__iconbox svg__icon--edit hreflink"
+                ></span>
+              </>
+            ) : (
+              <span
+                title="Edit Project"
+                onClick={(e) => EditPopup(row?.original)}
+                className="svg__iconbox svg__icon--edit hreflink"
+              ></span>
+            )}
+          </div>
+        ),
+        id: "EditPopup",
+        accessorKey: "",
+        canSort: false,
+        resetSorting: false,
+        resetColumnFilters: false,
+        placeholder: "",
+        size: 55,
+      }
+    ],
+    [filteredTask]
+  );
   const filterPotfolioTasks = (portfolio: any, clickedIndex: any, type: any) => {
     let projectData = Masterdata;
     let displayTasks = AllTasks;
@@ -1908,14 +2313,6 @@ const ProjectManagementMain = (props: any) => {
     }
   }, [])
 
-  const searchSuggestedPortfolio = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const searchQuery = e?.target?.value
-    setSuggestedItems(searchQuery);
-    const filteredPortfolioItems = suggestedPortfolioItems.filter((item: any) =>
-      item?.Title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setSuggestedPortfolios(searchQuery === '' ? suggestedPortfolioItems : filteredPortfolioItems);
-  }
   const searchSuggestedPortfolio2 = (e: React.ChangeEvent<HTMLInputElement>) => {
     let SearchedKeyWord: any = e.target.value;
     let TempArray: any = [];
@@ -1977,160 +2374,6 @@ const ProjectManagementMain = (props: any) => {
             </div>
             <div className="ProjectManagementPage Dashboardsecrtion">
               <div className="dashboard-colm">
-                <aside className="sidebar">
-                  <section className="sidebar__section sidebar__section--menu">
-                    <nav className="nav__item">
-                      <ul className="nav__list">
-                        <li id="DefaultViewSelectId" className="nav__item ">
-                          <a
-                            ng-click="ChangeView('DefaultView','DefaultViewSelectId')"
-                            className="nav__link border-bottom pb-1"
-                          >
-                            <span className="nav__icon nav__icon--home"></span>
-                            <span className="nav__text alignCenter">
-                              Portfolios Item{" "}
-                              <span
-                                className="ml-auto svg__iconbox svg__icon--Plus light"
-                                style={{ cursor: "pointer" }}
-                                onClick={(e) =>
-                                  EditPortfolio(Masterdata, "Portfolios")
-                                }
-                              ></span>
-                            </span>
-                          </a>
-                        </li>
-                        <li className="nav__item  pb-1 pt-0 mt-1">
-                          <div className="nav__text">
-                            <>
-                              {Masterdata?.taggedPortfolios?.length > 0 ? (
-                                <div>
-                                  <span className="nav__text">Key Portfolio Items</span>
-                                  <ul className="nav__subList wrapper ps-0 pe-2">
-                                    {Masterdata?.taggedPortfolios?.map((component: any, index: any) => {
-                                      return (
-                                        <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
-                                          <span>
-                                            <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="_blank" onClick={() => filterPotfolioTasks(component, index, "Component")}>
-                                              {component?.Title}
-                                            </a>
-                                          </span>
-                                        </li>
-                                      )
-                                    })}
-                                  </ul>
-                                </div>
-                              ) : (
-                                <>
-                                  <span className="nav__text">Key Portfolio Items</span>
-                                  <div className="nontag mt-2 text-center">
-                                    No Tagged Portfolio
-                                  </div>
-                                </>
-                              )}
-                              {TaskTaggedPortfolios?.length > 0 ? (
-                                <div>
-                                  <span className="nav__text">Relevant Portfolio Items</span>
-                                  <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar">
-                                    {TaskTaggedPortfolios?.map((component: any, index: any) => {
-                                      return (
-                                        <li key={index} className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
-                                          <div className="alignCenter">
-                                            <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(component, index, "taskComponent")}>
-                                              {component?.Title}
-                                            </a>
-                                            <span
-                                              className="ml-auto wid30 svg__iconbox svg__icon--Plus light hreflink"
-                                              onClick={(e) =>
-                                                ComponentServicePopupCallBack([component], '', '')}
-                                            >
-                                            </span>
-                                          </div>
-                                        </li>
-                                      )
-                                    })}
-                                  </ul>
-                                </div>
-                              ) : (
-                                <>
-                                  <span className="nav__text">Relevant Portfolio Items</span>
-                                  <div className="nontag mt-2 text-center">
-                                    No Tagged Portfolio
-                                  </div>
-                                </>
-                              )}
-                              <div>
-                                <span className="nav__text">Suggested Portfolio Items</span>
-                                <input
-                                  type="search"
-                                  value={suggestedItems}
-                                  onChange={(e) => searchSuggestedPortfolio(e)}
-                                  placeholder="Search Suggested Portfolio Items"
-                                  className="bg-transparent full-width px-1 py-0 mt-1 text-bg-secondary"
-                                />
-                                {suggestedPortfolios?.length > 0 ? (
-                                  <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar mt-2">
-                                    {suggestedPortfolios?.map(
-                                      (component: any, index: any) => (
-                                        <li
-                                          key={index}
-                                          className={
-                                            component?.Id ==
-                                              createTaskId?.portfolioData?.Id
-                                              ? "nav__item bg-ee ps-1"
-                                              : "mb-1 bg-shade hreflink"
-                                          }
-                                        >
-                                          <div className="alignCenter">
-                                            <a
-                                              className={
-                                                component?.Id ==
-                                                  createTaskId?.portfolioData?.Id
-                                                  ? "hreflink "
-                                                  : "text-white hreflink"
-                                              }
-                                              data-interception="off"
-                                              target="blank"
-                                              onClick={() =>
-                                                filterPotfolioTasks(
-                                                  component,
-                                                  index,
-                                                  "taskComponent"
-                                                )
-                                              }
-                                            >
-                                              {component?.Title}
-                                            </a>
-                                            <span
-                                              className="ml-auto wid30 svg__iconbox svg__icon--Plus light hreflink"
-                                              onClick={(e) =>
-                                                ComponentServicePopupCallBack(
-                                                  [component],
-                                                  "",
-                                                  ""
-                                                )
-                                              }
-                                            ></span>
-                                          </div>
-                                        </li>
-                                      )
-                                    )}
-                                  </ul>
-                                ) : (
-                                  <>
-                                    <div className="nontag mt-2 text-center">
-                                      No Tagged Portfolio
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                            </>
-                          </div>
-                        </li>
-                      </ul>
-                    </nav>
-                  </section>
-
-                </aside>
                 <div className="dashboard-contentbox ps-2 full-width">
                   <article className="row">
                     <div className="col-md-12">
@@ -2206,7 +2449,7 @@ const ProjectManagementMain = (props: any) => {
                                         <dt className="bg-fxdark">Priority</dt>
                                         <dd className="bg-light">
                                           <InlineEditingcolumns
-                                            // mypriority={true}
+                                            mypriority={true}
                                             AllListId={AllListId}
                                             callBack={inlineCallBackMasterTask}
                                             columnName='Priority'
@@ -2225,6 +2468,28 @@ const ProjectManagementMain = (props: any) => {
                                           </span>
                                         </dd>
                                       </dl>
+                                      <dl>
+                                        <dt className="bg-fxdark">Key Portfolio Items</dt>
+                                        <dd className="bg-light">
+                                            {openServiceComponent ? <ServiceComponentPortfolioPopup
+                                            props={CMSComponent}
+                                            Portfolios={Masterdata.taggedPortfolios}
+                                            Relevant={TaskTaggedPortfolios}
+                                            Suggested={suggestedPortfolioItems}
+                                            Dynamic={AllListId}
+                                            ComponentType={portfolioType}
+                                            Call={ComponentServicePopupCallBack}
+                                            selectionType={"Multi"}
+                                            groupedData={groupedComponentData}
+                                            pageName={"projectManagement"}
+                                            /> : null}  
+                                            {Masterdata?.taggedPortfolios?.map((component: any, index: any) =>(`${component?.Title};`))}                                     
+                                              <a className="ml-auto pull-right" onClick={()=>setopenServiceComponent(true)}>
+                                            <span className="svg__iconbox svg__icon--editBox alignIcon"  ></span>
+                                            </a>
+                                        </dd>
+                                      </dl>
+                                              
                                     </div>
                                     <div className="col-md-6 p-0">
                                       <dl>
@@ -2314,6 +2579,21 @@ const ProjectManagementMain = (props: any) => {
                                   </div>
                                 </div>
                                 <div className='col-md-12 bg-white'> {Masterdata?.Id != undefined && <KeyDocuments ref={relevantDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId.DocumentsListID} siteName={"Master Tasks"} folderName={Masterdata?.Title} keyDoc={true}></KeyDocuments>}</div>
+                                <div className='col-md-12 bg-white'>
+                                <details>
+                                    <summary> Working This Week {'(' + filteredTask?.length + ')'} </summary>
+                                    <div className='AccordionContent'  >
+                                        {filteredTask?.length > 0 ?
+                                            <div className='Alltable border-0 dashboardTable' >
+                                                <>
+                                                    <GlobalCommanTable columns={workingThisWeekColumns} data={filteredTask} wrapperHeight="100%" callBackData={callBackData}/>
+                                                </>
+                                            </div> : <div className='text-center full-width'>
+                                                <span>No Working Tasks Available</span>
+                                            </div>}
+                                    </div>
+                                </details>
+                                </div>  
                               </div>
                             </div>
                           </section>

@@ -1,3 +1,4 @@
+
 // // Commits on Jun 1, 2023  take if required the neha changes in the page , it shows error on the all the profile 
 import * as React from "react";
 import { Button, Modal } from "react-bootstrap";
@@ -508,7 +509,7 @@ function ShowTeamMembers(item: any) {
                                 ) : (
                                   ""
                                 )}
-                                {items.Title == "Senior Developer Team" ? (
+                                {items.Title == "Portfolio Lead Team" ? (
                                   <span
 
                                   >
@@ -564,7 +565,7 @@ function ShowTeamMembers(item: any) {
                                 ) : (
                                   ""
                                 )}
-                                {items.Title == "Junior Developer Team" ? (
+                                {items.Title == "Developers Team" ? (
                                   <span
 
                                   >
@@ -648,7 +649,147 @@ function ShowTeamMembers(item: any) {
                                 ) : (
                                   ""
                                 )}
+                                 {items.Title == "Trainees" ? (
+                                  <span
+
+                                  >
+                                    {
+                                      childItem?.Item_x0020_Cover?.Url != undefined ?
+                                        <img
+                                          onDragStart={(e) =>
+                                            dragStart(e, index, indexes)
+                                          }
+                                          onDragOver={(e) => e.preventDefault()}
+
+                                          key={index}
+                                          draggable
+                                          className="ProirityAssignedUserPhoto"
+                                          title={childItem?.Title}
+                                          src={childItem?.Item_x0020_Cover?.Url}
+                                        /> : <span onDragStart={(e) =>
+                                          dragStart(e, index, indexes)
+                                        }
+                                          onDragOver={(e) => e.preventDefault()}
+
+                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9">{childItem?.Suffix}</span>
+                                    }
+                                  </span>
+                                ) : (
+                                  ""
+                                )}
                                 {items?.Title == "Ex Staff" ? (
+                                  <span
+
+                                  >
+                                    {
+                                      childItem?.Item_x0020_Cover?.Url != undefined ?
+                                        <img
+                                          onDragStart={(e) =>
+                                            dragStart(e, index, indexes)
+                                          }
+                                          onDragOver={(e) => e.preventDefault()}
+
+                                          key={index}
+                                          draggable
+                                          className="ProirityAssignedUserPhoto"
+                                          title={childItem?.Title}
+                                          src={childItem?.Item_x0020_Cover?.Url}
+                                        /> : <span onDragStart={(e) =>
+                                          dragStart(e, index, indexes)
+                                        }
+                                          onDragOver={(e) => e.preventDefault()}
+
+                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9">{childItem?.Suffix}</span>
+                                    }
+                                  </span>
+                                ) : (
+                                  ""
+                                )}
+                                  {items?.Title == "Mobile Team" ? (
+                                  <span
+
+                                  >
+                                    {
+                                      childItem?.Item_x0020_Cover?.Url != undefined ?
+                                        <img
+                                          onDragStart={(e) =>
+                                            dragStart(e, index, indexes)
+                                          }
+                                          onDragOver={(e) => e.preventDefault()}
+
+                                          key={index}
+                                          draggable
+                                          className="ProirityAssignedUserPhoto"
+                                          title={childItem?.Title}
+                                          src={childItem?.Item_x0020_Cover?.Url}
+                                        /> : <span onDragStart={(e) =>
+                                          dragStart(e, index, indexes)
+                                        }
+                                          onDragOver={(e) => e.preventDefault()}
+
+                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9">{childItem?.Suffix}</span>
+                                    }
+                                  </span>
+                                ) : (
+                                  ""
+                                )}
+                                {items?.Title == "Junior Task Management" ? (
+                                  <span
+
+                                  >
+                                    {
+                                      childItem?.Item_x0020_Cover?.Url != undefined ?
+                                        <img
+                                          onDragStart={(e) =>
+                                            dragStart(e, index, indexes)
+                                          }
+                                          onDragOver={(e) => e.preventDefault()}
+
+                                          key={index}
+                                          draggable
+                                          className="ProirityAssignedUserPhoto"
+                                          title={childItem?.Title}
+                                          src={childItem?.Item_x0020_Cover?.Url}
+                                        /> : <span onDragStart={(e) =>
+                                          dragStart(e, index, indexes)
+                                        }
+                                          onDragOver={(e) => e.preventDefault()}
+
+                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9">{childItem?.Suffix}</span>
+                                    }
+                                  </span>
+                                ) : (
+                                  ""
+                                )}
+                                {items?.Title == "HR" ? (
+                                  <span
+
+                                  >
+                                    {
+                                      childItem?.Item_x0020_Cover?.Url != undefined ?
+                                        <img
+                                          onDragStart={(e) =>
+                                            dragStart(e, index, indexes)
+                                          }
+                                          onDragOver={(e) => e.preventDefault()}
+
+                                          key={index}
+                                          draggable
+                                          className="ProirityAssignedUserPhoto"
+                                          title={childItem?.Title}
+                                          src={childItem?.Item_x0020_Cover?.Url}
+                                        /> : <span onDragStart={(e) =>
+                                          dragStart(e, index, indexes)
+                                        }
+                                          onDragOver={(e) => e.preventDefault()}
+
+                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9">{childItem?.Suffix}</span>
+                                    }
+                                  </span>
+                                ) : (
+                                  ""
+                                )}
+                                {items?.Title == "User Experience Team" ? (
                                   <span
 
                                   >

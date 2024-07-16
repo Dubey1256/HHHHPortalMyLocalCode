@@ -673,10 +673,10 @@ const TeamSmartFavoritesCopy = (item: any) => {
         if (preSetEndDate != undefined) {
             setEndDate(preSetEndDate);
         }
-        if(preSetStartDate!=undefined ||preSetEndDate != undefined ){
+        if (preSetStartDate != undefined || preSetEndDate != undefined) {
             setSelectedFilter("Pre-set");
         }
-       
+
         setPreSetPanelIsOpen(false)
     }, []);
     const preSetIconClick = () => {
@@ -841,7 +841,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                     <input className='radio' type='radio' value="SmartFilterBased" checked={FavoriteFieldvalue === "SmartFilterBased"} onChange={(event) => FavoriteField(event)} /> SmartFilter Based
                                 </label>
                                 <label className='SpfxCheckRadio'><input className='radio' type='radio' value="UrlBased" checked={FavoriteFieldvalue === "UrlBased"} onChange={(event) => FavoriteField(event)} /> Url Based</label>
-                                <label className='SpfxCheckRadio hreflink siteColor' onClick={() => item?.openTableSettingPopup("favBased")}>Table Confrigrations</label>
+                                <label className='SpfxCheckRadio hreflink siteColor' onClick={() => item?.openTableSettingPopup("favBased")}>Table Configurations</label>
                             </div>
                             {FavoriteFieldvalue === "SmartFilterBased" &&
                                 <div className='row'>
@@ -1184,6 +1184,36 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                         <label className="toggler full_width active">
                                             <span className='full_width'>
                                                 <div className='alignCenter'>
+                                                    <span className='f-15 fw-semibold'>Actions</span>
+                                                </div>
+
+                                            </span>
+                                        </label>
+                                        <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
+                                            <Col className='mb-2 '>
+                                                <div>
+                                                    <label className='me-3'>
+                                                        <input className='form-check-input' type="checkbox" value="isPhone" checked={isPhone} onChange={() => setIsPhone(!isPhone)} /> Phone
+                                                    </label>
+                                                    <label className='me-3'>
+                                                        <input className='form-check-input' type="checkbox" value="isBottleneck" checked={isBottleneck} onChange={() => setIsBottleneck(!isBottleneck)} /> Bottleneck
+                                                    </label>
+                                                    <label className='me-3'>
+                                                        <input className='form-check-input' type="checkbox" value="isAttention" checked={isAttention} onChange={() => setIsAttention(!isAttention)} /> Attention
+                                                    </label>
+                                                </div>
+                                            </Col>
+                                        </div>
+                                    </div>
+                                </div >
+                            </section>
+
+                            <section className="smartFilterSection p-0 mb-1">
+                                <div className="px-2">
+                                    <div className="togglebox">
+                                        <label className="toggler full_width active">
+                                            <span className='full_width'>
+                                                <div className='alignCenter'>
                                                     <span className='f-15 fw-semibold'>Team Members</span>
                                                 </div>
                                             </span>
@@ -1281,39 +1311,9 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                 <div className="px-2">
                                     <div className="togglebox">
                                         <label className="toggler full_width active">
-                                            <span className='full_width'>
-                                                <div className='alignCenter'>
-                                                    <span className='f-15 fw-semibold'>Actions</span>
-                                                </div>
-
-                                            </span>
-                                        </label>
-                                        <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
-                                            <Col className='mb-2 '>
-                                                <div>
-                                                    <label className='me-3'>
-                                                        <input className='form-check-input' type="checkbox" value="isPhone" checked={isPhone} onChange={() => setIsPhone(!isPhone)} /> Phone
-                                                    </label>
-                                                    <label className='me-3'>
-                                                        <input className='form-check-input' type="checkbox" value="isBottleneck" checked={isBottleneck} onChange={() => setIsBottleneck(!isBottleneck)} /> Bottleneck
-                                                    </label>
-                                                    <label className='me-3'>
-                                                        <input className='form-check-input' type="checkbox" value="isAttention" checked={isAttention} onChange={() => setIsAttention(!isAttention)} /> Attention
-                                                    </label>
-                                                </div>
-                                            </Col>
-                                        </div>
-                                    </div>
-                                </div >
-                            </section>
-
-                            <section className="smartFilterSection p-0 mb-1">
-                                <div className="px-2">
-                                    <div className="togglebox">
-                                        <label className="toggler full_width active">
                                             <span className="full-width">
                                                 <div className='alignCenter'>
-                                                    <span className='f-15 fw-semibold'>Working Actions</span>
+                                                    <span className='f-15 fw-semibold'>Working Date</span>
                                                 </div>
                                             </span>
                                         </label>
