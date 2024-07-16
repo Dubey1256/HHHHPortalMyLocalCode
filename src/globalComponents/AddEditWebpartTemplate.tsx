@@ -1020,9 +1020,9 @@ const AddEditWebpartTemplate = (props: any) => {
                                                     </div>
                                                 </Col>
                                                 <Col sm="4" md="4" lg="4">
-                                                    <div className="form-check form-check-inline m-4">
+                                                    {/* <div className="form-check form-check-inline m-4">
                                                         <label className='SpfxCheckRadio hreflink siteColor' onClick={() => openTableSettingPopup("favBased")}>Table Configurations</label>
-                                                    </div>
+                                                    </div> */}
                                                 </Col>
                                             </Row>
                                             <Row className="Metadatapannel">

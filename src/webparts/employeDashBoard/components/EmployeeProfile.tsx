@@ -983,9 +983,20 @@ const EmployeProfile = (props: any) => {
           items.workingDetailsAttention = [];
           items.workingDetailsPhone = [];
           items.workingTodayUsers = [];
+          items.WorkingDate = '';
+          items.fontColorTask = "#000"
           try {
             if (items?.WorkingAction != undefined && items?.WorkingAction != '' && items?.WorkingAction != null) {
               items.WorkingAction = JSON.parse(items?.WorkingAction)
+              for (let workingMember of items?.WorkingAction || []) {
+                if (workingMember.Title === 'WorkingDetails' && workingMember.InformationData) {
+                  for (let workingDetails of workingMember.InformationData) {
+                    if (workingDetails.WorkingMember) {
+                      items.WorkingDate += workingDetails?.WorkingDate + ' | '
+                    }
+                  }
+                }
+              }
               const todayStr = Moment().format('DD/MM/YYYY');
               items.workingDetailsBottleneck = items?.WorkingAction?.find((item: any) => item.Title === 'Bottleneck' && item?.InformationData?.length > 0);
               items.workingDetailsAttention = items?.WorkingAction?.find((item: any) => item.Title === 'Attention' && item?.InformationData?.length > 0);
