@@ -122,8 +122,8 @@ const EditConfiguration = (props: any) => {
                     updatedItems.splice(Itemindex, 1);
             })
 
-            updatedItems?.forEach((obj: any ,index:any) => {
-                obj.ColumnTitle = 'Column' + (index+1);
+            updatedItems?.forEach((obj: any, index: any) => {
+                obj.ColumnTitle = 'Column' + (index + 1);
                 obj.ClassValues = "col-sm-" + 12 / updatedItems.length;
             })
 
@@ -142,7 +142,7 @@ const EditConfiguration = (props: any) => {
             // Extract the item being dragged
             let draggedItemContent = ExistingWeparts[dragItem.Current];
             if (draggedItemContent?.Key === "DashboardTemplate") {
-               
+
                 setDashboardTemplateItem(draggedItemContent);
                 setIsDashboardTemplate(true);
                 let data = e.dataTransfer.getData("Text");
@@ -190,7 +190,7 @@ const EditConfiguration = (props: any) => {
             e.target.appendChild(document.getElementById(data));
             e.preventDefault();
         }
-       
+
     }
     const LoadSmartFav = () => {
         let SmartFavData: any = []
@@ -626,7 +626,7 @@ const EditConfiguration = (props: any) => {
                 type={PanelType.large}>
                 <div className='modal-body'>
                     {progressBar && <PageLoader />}
-
+                    {props?.IsDashboardPage == true && <a data-interception="off" target="_blank" className="pull-right empCol hreflink" href={props?.props?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx"}>Go To All Dashboard</a>}
                     <div className="mb-2">
                         <label className='form-label full-width'>Dashboard Title</label>
                         <input className='form-control' type='text' placeholder="Dashboard Title" value={DashboardTitle} onChange={(e) => setDashboardTitle(e.target.value)} />
@@ -731,7 +731,7 @@ const EditConfiguration = (props: any) => {
 
             </span>
             <span>
-                {IsDashboardTemplate && <AddDashboardTemplate props={props?.props} SingleWebpart={true} Item={DashboardTemplateItem} IsDashboardTemplate={IsDashboardTemplate}  CloseDashboardTemplate={CloseDashboardTemplate} />}
+                {IsDashboardTemplate && <AddDashboardTemplate props={props?.props} SingleWebpart={true} Item={DashboardTemplateItem} IsDashboardTemplate={IsDashboardTemplate} CloseDashboardTemplate={CloseDashboardTemplate} />}
 
             </span>
 

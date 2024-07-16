@@ -264,29 +264,29 @@ const LandingPage = (props: any) => {
             </>
         );
     };
+    const customTableHeaderButtons = (
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={addMorePosition}
+        >
+          Add More Positions
+        </button>
+    );
     
     return (
         <>
-            <h2 className='heading'>Recruitment-LandingPage</h2>
             <div className="container">
-                <div className="mb-5 clearfix">
-                    <div className="text-right">
-                        <button
-                            type="button"
-                            className="btnCol btn btn-primary text-end float-end mb-1"
-                            onClick={addMorePosition}
-                        >
-                            Add More Positions
-                        </button>
-                    </div>
+            <h2 className='heading'>Recruitment Landing Page</h2>
+                <div className="mb-5 clearfix">  
                     {portfiloData && (
                         <div className="Alltable">
-                            <GlobalCommanTable columns={columns} fixedWidth={true} data={portfiloData} showHeader={true} callBackData={callBackData} />
+                            <GlobalCommanTable columns={columns} fixedWidth={true} data={portfiloData} showHeader={true} callBackData={callBackData} customTableHeaderButtons={customTableHeaderButtons} customHeaderButtonAvailable={true}/>
                         </div>
                     )}
                 </div>
             </div>
-                        <Panel
+            <Panel
                 onRenderHeader={onRenderCustomHeaderMain5}
                 isOpen={isaddOnlySkill}
                 onDismiss={addOnlySkillClose}
@@ -337,5 +337,3 @@ const LandingPage = (props: any) => {
     );
 };
 export default LandingPage;
-
-
