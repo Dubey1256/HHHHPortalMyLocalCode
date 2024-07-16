@@ -508,7 +508,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             callBack={subTextCallBack}
                                             allUsers={textItems.allUsers}
                                             ApprovalStatus={ApprovalStatus}
-                                            SmartLightStatus={obj?.isShowLight}
+                                            SmartLightStatus={SmartLightStatus}
                                             SmartLightPercentStatus={SmartLightPercentStatus}
                                             isCurrentUserApprover={isCurrentUserApprover}
                                             Context={Context}

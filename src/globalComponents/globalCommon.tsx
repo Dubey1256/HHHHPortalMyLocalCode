@@ -3634,3 +3634,52 @@ export const getWorkingActionJSON = (teamConfigData: any) => {
     }
     return storeInWorkingAction
 };
+
+export const getsiteConfig = async () => {
+    let columnManagement = sessionStorage.getItem("ColumnsInfo");
+    if (columnManagement != undefined && columnManagement?.length > 0){
+        columnManagement=JSON.parse(columnManagement)
+        return columnManagement;
+    }
+    else {
+        try {
+            let siteUrl='https://hhhhteams.sharepoint.com/sites/HHHH';
+            let listId='fb4b4ae0-fb2d-4623-bffd-a7172e12cd09';
+            if (window?.location?.href?.toLowerCase()?.indexOf('hhhhqa')>-1) {
+                 siteUrl='https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP';
+                listId='69a5eee2-8ab3-45af-b9a5-363086ddc122';          
+            }
+            else {
+                 siteUrl='https://hhhhteams.sharepoint.com/sites/HHHH';
+                 listId='fb4b4ae0-fb2d-4623-bffd-a7172e12cd09';
+            }
+            let web = new Web(siteUrl);
+            let getdata:any =[];
+             getdata = await web.lists.getById(listId).items.select("Id", "Title", "InternalName", "Description").getAll();
+            if (getdata != undefined && getdata.length > 0) {
+                sessionStorage.setItem("ColumnsInfo", JSON.stringify(getdata));
+                return getdata
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+}
+export const GetColumnDetails = (name: any, Columns: any) => {
+    let columnDetail: any = null;
+    if (Columns!=undefined && Columns?.length > 0) {
+        Columns?.forEach(function (column: any) {
+            if (column.InternalName == name) {
+                columnDetail = column;
+                return false;
+            }
+        })
+    }
+    if (columnDetail != undefined)
+        return columnDetail;
+    else  return columnDetail;
+
+   
+}

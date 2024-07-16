@@ -3,8 +3,9 @@ import { Dropdown, Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
 import { Col, Row } from "react-bootstrap";
 import Tooltip from "./Tooltip";
-import { myContextValue } from "./globalCommon";
+import { deepCopy, myContextValue } from "./globalCommon";
 import TeamSmartFilter from "./SmartFilterGolobalBomponents/TeamSmartFilter";
+import DynamicColumnSettingGallary from "../webparts/manageWebpartTemplate/components/DynamicColumnSettingGallary";
 import Picker from "./EditTaskPopup/SmartMetaDataPicker";
 import { PeoplePicker, PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
 import DatePicker from "react-datepicker";
@@ -20,6 +21,10 @@ let BackupNewItem: any = [];
 let IsShowTileCopy: any = false;
 let onDropAction: any = [];
 let AutoCompleteItemsArray: any = [];
+let settingConfrigrationData: any = [];
+let WebPartGalleryColumnSettingData = {}
+let tableIdsCopy = "";
+let columns: any = [];
 let AllTaskUsers: any = [];
 const AddEditWebpartTemplate = (props: any) => {
     const [FilterColumn, setFilterColumn] = React.useState<any>([{ "Column0": "", "Id": 0, "DataSource": '' }]);
@@ -33,6 +38,11 @@ const AddEditWebpartTemplate = (props: any) => {
     const [IsComponentPicker, setIsComponentPicker] = useState<any>(false);
     props.props.siteUrl = props?.props?.Context?._pageContext?._web?.absoluteUrl;
     props.props.AdminconfigrationID = props?.props?.AdminConfigurationListId;
+    try {
+        columns = deepCopy(props?.columns);
+    } catch (error) {
+        console.log(error)
+    }
     const params = new URLSearchParams(window.location.search);
     let DashboardId: any = params.get('DashBoardId');
     if (DashboardId == undefined || DashboardId == '')
@@ -40,6 +50,18 @@ const AddEditWebpartTemplate = (props: any) => {
     const ContextData: any = useContext(myContextValue);
     let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": true, "IsDashboardFav": false, "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
     const [NewItem, setNewItem]: any = useState<any>([defaultConfig]);
+
+
+    const [columnSettingPopup, setColumnSettingPopup] = React.useState<any>(false);
+    const [tableSettingPageSize, setTableSettingPageSize] = React.useState(0);
+    const [wrapperHeight, setWrapperHeight] = React.useState("");
+    const [columnOrder, setColumnOrder] = React.useState<string[]>([]);
+    const [sorting, setSorting] = React.useState([]);
+    const [showHeaderLocalStored, setShowHeaderLocalStored] = React.useState(false);
+    const [tableId, setTableId] = React.useState("");
+    const [columnVisibility, setColumnVisibility] = React.useState<any>({ descriptionsSearch: false, commentsSearch: false, timeSheetsDescriptionSearch: false });
+    // const [settingConfrigrationData, setSettingConfrigrationData] = React.useState([]);
+
     const CloseConfiguationPopup = () => {
         setNewItem([]);
         props?.CloseConfigPopup(false, undefined)
@@ -80,6 +102,7 @@ const AddEditWebpartTemplate = (props: any) => {
                     })
                     if (onDropAction)
                         newArray[0].onDropAction = onDropAction;
+                    newArray[0].WebPartGalleryColumnSettingData = WebPartGalleryColumnSettingData;
                     setNewItem(newArray);
                     if (props?.EditItem != undefined && props?.EditItem != '') {
                         await web.lists.getById(props?.props?.AdminConfigurationListId).items.getById(props?.EditItem?.UpdatedId).update({ Title: SmartFavDashboardTitle, Configurations: BackupNewItem != undefined && BackupNewItem?.length > 0 ? JSON.stringify(newArray[0]) : JSON.stringify(NewItem[0]) })
@@ -99,7 +122,7 @@ const AddEditWebpartTemplate = (props: any) => {
                             })
                     }
                     else {
-                        await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: SmartFavDashboardTitle, Key: "WebpartTemplate", Value: result != undefined ? result.toString() : undefined, Configurations: JSON.stringify(NewItem[0]) })
+                        await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: SmartFavDashboardTitle, Key: "WebpartTemplate", Value: result != undefined ? result.toString() : undefined, Configurations: newArray != undefined && newArray?.length > 0 ? JSON.stringify(newArray[0]) : JSON.stringify(NewItem[0]) })
                             .then(async (res: any) => {
                                 onDropAction = [];
                                 CreatedSmartFavId = undefined;
@@ -138,7 +161,9 @@ const AddEditWebpartTemplate = (props: any) => {
                                             item['WebpartTitle'] = SmartFavDashboardTitle
                                         }
                                         if (key == 'onDropAction')
-                                            item['onDropAction'] = onDropAction
+                                            item['onDropAction'] = onDropAction;
+                                        else if (item.onDropAction == undefined || item.onDropAction == '')
+                                            item['onDropAction'] = onDropAction;
                                     }
                                 });
                             }
@@ -172,7 +197,7 @@ const AddEditWebpartTemplate = (props: any) => {
         return (
             <>
                 <div className='siteColor subheading'>
-                    {props?.EditItem != undefined && props?.EditItem != '' ? <span>Edit Webpart </span> : <span>Add Webpart</span>}
+                    {props?.EditItem != undefined && props?.EditItem != '' ? <span>Edit Webpart - {props?.EditItem?.WebpartTitle} </span> : <span>Add Webpart</span>}
                 </div>
                 {props?.EditItem != undefined && props?.EditItem != '' ? <Tooltip ComponentId={11975} /> : <Tooltip ComponentId={1107} />}
 
@@ -360,9 +385,14 @@ const AddEditWebpartTemplate = (props: any) => {
                     item.IsShowTile = true;
                     IsShowTileCopy = true;
                 }
-                if (item?.smartFevId != undefined && item?.smartFevId != '')
+                if (item?.smartFevId != undefined && item?.smartFevId != '') {
                     item.smartFevId = parseInt(item?.smartFevId)
-            })
+                }
+                tableIdsCopy = props?.EditItem?.WebPartGalleryColumnSettingData?.tableId
+                settingConfrigrationData = [];
+                settingConfrigrationData = settingConfrigrationData.concat(props?.EditItem?.WebPartGalleryColumnSettingData);
+                defultColumnPrepare()
+            });
             setNewItem(newArray);
             BackupNewItem = [...newArray];
             UpdatedItem = JSON.parse(JSON.stringify(newArray));
@@ -371,6 +401,154 @@ const AddEditWebpartTemplate = (props: any) => {
             setNewItem([defaultConfig])
         }
     }, [props?.EditItem]);
+
+    const defultColumnPrepare = () => {
+        if (columns?.length > 0 && columns != undefined) {
+            let sortingDescData: any = [];
+            let columnVisibilityResult: any = {};
+            let preSetColumnSettingVisibility: any = {};
+            let updatedSelectedFilterPannelData: any = {};
+            let preSetColumnOrdring: any = [];
+            console.log(settingConfrigrationData);
+            columns = columns?.map((updatedSortDec: any) => {
+                try {
+                    if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableIdsCopy) {
+                        const preSetColumnsValue = settingConfrigrationData[0]
+                        if (preSetColumnsValue?.tableId === tableIdsCopy) {
+                            preSetColumnSettingVisibility = preSetColumnsValue?.columnSettingVisibility;
+                            preSetColumnOrdring = preSetColumnsValue
+                            setShowHeaderLocalStored(preSetColumnsValue?.showHeader)
+                            if (preSetColumnSettingVisibility != undefined && preSetColumnSettingVisibility != '' && Object.keys(preSetColumnSettingVisibility)?.length) {
+                                const columnId = updatedSortDec.id;
+                                if (preSetColumnSettingVisibility[columnId] !== undefined) {
+                                    updatedSortDec.isColumnVisible = preSetColumnSettingVisibility[columnId];
+                                }
+                            }
+                        } else if (updatedSortDec?.isColumnVisible === false) {
+                            columnVisibilityResult[updatedSortDec.id] = updatedSortDec.isColumnVisible;
+                        }
+                    } else if (updatedSortDec?.isColumnVisible === false) {
+                        columnVisibilityResult[updatedSortDec.id] = updatedSortDec.isColumnVisible;
+                    }
+                    if (updatedSortDec.isColumnDefultSortingDesc === true) {
+                        let obj = { 'id': updatedSortDec.id, desc: true };
+                        sortingDescData.push(obj);
+                    } else if (updatedSortDec.isColumnDefultSortingAsc === true) {
+                        let obj = { 'id': updatedSortDec.id, desc: false };
+                        sortingDescData.push(obj);
+                    }
+                    if (updatedSortDec.placeholder != "" && updatedSortDec.placeholder != undefined) {
+                        updatedSelectedFilterPannelData[updatedSortDec.id] = {
+                            [updatedSortDec.id]: updatedSortDec.id,
+                            Selected: updatedSortDec.isColumnVisible,
+                            lebel: updatedSortDec.placeholder
+                        };
+                    }
+                    return updatedSortDec;
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+            if (preSetColumnOrdring?.columnOrderValue?.length > 0 && preSetColumnOrdring?.tableId === tableIdsCopy) {
+                const colValue = preSetColumnOrdring?.columnOrderValue?.map((elem: any) => elem.id);
+                setColumnOrder(colValue);
+            } else if (tableIdsCopy) {
+                const colValue = columns?.map((elem: any) => elem.id);
+                setColumnOrder(colValue);
+            }
+            if (preSetColumnOrdring?.tableHeightValue?.length > 0 && preSetColumnOrdring?.tableHeightValue != "") {
+                setWrapperHeight(preSetColumnOrdring?.tableHeightValue);
+            } else {
+                setWrapperHeight("");
+            }
+            try {
+                if ((Object.keys(preSetColumnSettingVisibility) != null && Object.keys(preSetColumnSettingVisibility) != undefined) && Object.keys(preSetColumnSettingVisibility)?.length > 0 && preSetColumnOrdring?.tableId === tableIdsCopy) {
+                    setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...preSetColumnSettingVisibility }));
+                } else if (Object.keys(columnVisibilityResult)?.length > 0) {
+                    setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...columnVisibilityResult }));
+                }
+            } catch (error) {
+                console.log(error)
+            }
+
+            if (sortingDescData.length > 0) {
+                setSorting(sortingDescData);
+            } else {
+                setSorting([]);
+            }
+            try {
+                if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableIdsCopy) {
+                    const preSetColumnsValue = settingConfrigrationData[0]
+                    if (preSetColumnsValue?.tableId === tableIdsCopy) {
+                        makeConfrigrationColumnsDefult()
+                    }
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+    const makeConfrigrationColumnsDefult = () => {
+        try {
+            if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableIdsCopy) {
+                const eventSetting = settingConfrigrationData[0]
+                if (eventSetting?.columanSize?.length > 0) {
+                    columns?.map((elem1: any) => {
+                        eventSetting?.columanSize?.map((colSize: any) => {
+                            if (colSize?.id === elem1?.id) {
+                                let sizeValue = { ...colSize }
+                                elem1.size = parseInt(sizeValue?.size);
+                            }
+                        })
+                        return elem1;
+                    })
+                }
+                if (columns?.length > 0 && columns != undefined) {
+                    let sortingDescData: any = [];
+                    if (Object?.keys(eventSetting?.columnSorting)?.length > 0 || eventSetting?.columanSize?.length > 0) {
+                        columns?.map((updatedSortDec: any) => {
+                            let idMatch = updatedSortDec.id;
+                            if (eventSetting?.columnSorting[idMatch]?.id === updatedSortDec.id) {
+                                if (eventSetting?.columnSorting[idMatch]?.desc === true) {
+                                    let obj = { 'id': updatedSortDec.id, desc: true }
+                                    sortingDescData.push(obj);
+                                }
+                                if (eventSetting?.columnSorting[idMatch]?.asc === true) {
+                                    let obj = { 'id': updatedSortDec.id, desc: false }
+                                    sortingDescData.push(obj);
+                                }
+                            }
+                            eventSetting?.columanSize?.map((elem: any) => {
+                                if (elem?.id === updatedSortDec.id) {
+                                    let sizeValue = { ...elem }
+                                    updatedSortDec.size = parseInt(sizeValue?.size);
+                                }
+                            })
+                            return updatedSortDec
+                        });
+                    }
+                    if (sortingDescData.length > 0) {
+                        setSorting(sortingDescData);
+                    } else {
+                        setSorting([]);
+                    }
+                }
+                try {
+                    if (Object?.keys(eventSetting?.showPageSizeSetting)?.length > 0 && eventSetting?.showPageSizeSetting != undefined) {
+                        if (eventSetting?.showPageSizeSetting?.tablePageSize > 0) {
+                            setTableSettingPageSize(eventSetting?.showPageSizeSetting?.tablePageSize)
+                        } else {
+                            setTableSettingPageSize(0);
+                        }
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
     const smartFiltercallBackData = React.useCallback(async (Favorite) => {
         let AddnewItem: any = [];
         Favorite.Title = SmartFavDashboardTitle;
@@ -429,6 +607,70 @@ const AddEditWebpartTemplate = (props: any) => {
             }
         }
 
+    }, []);
+    function generateRandomString(length: any) {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            result += characters.charAt(randomIndex);
+        }
+        return result;
+    }
+    const fetchSettingConfrigrationData = async (event: any) => {
+        try {
+            let sortingDescData: any = [];
+            let columnVisibilityResult: any = {};
+            setTableId(generateRandomString(10));
+            columns?.map((updatedSortDec: any) => {
+                if (updatedSortDec.isColumnDefultSortingDesc === true) {
+                    let obj = { 'id': updatedSortDec.id, desc: true };
+                    sortingDescData.push(obj);
+                } else if (updatedSortDec.isColumnDefultSortingAsc === true) {
+                    let obj = { 'id': updatedSortDec.id, desc: false };
+                    sortingDescData.push(obj);
+                }
+                if (updatedSortDec?.isColumnVisible === false) {
+                    columnVisibilityResult[updatedSortDec.id] = updatedSortDec.isColumnVisible;
+                }
+            })
+            const colValue = columns?.map((elem: any) => elem.id);
+            setColumnOrder(colValue);
+            if (Object.keys(columnVisibilityResult)?.length > 0) {
+                setColumnVisibility(columnVisibilityResult);
+            }
+            if (sortingDescData.length > 0) {
+                setSorting(sortingDescData);
+            } else {
+                setSorting([]);
+            }
+        } catch (error) {
+            console.log("backup Json parse error backGround Loade All Task Data")
+        }
+    };
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if (props?.columns?.length > 0 && !props?.EditItem)
+                    await fetchSettingConfrigrationData('');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }; fetchData();
+    }, [props?.columns]);
+
+    const openTableSettingPopup = (event: any) => {
+        if (event === "favBased") {
+            setColumnSettingPopup(true);
+        }
+    }
+    const columnSettingCallBack = React.useCallback(async (eventSetting: any) => {
+        if (eventSetting != 'close') {
+            WebPartGalleryColumnSettingData = { ...eventSetting }
+            setColumnSettingPopup(false)
+        } else {
+            setColumnSettingPopup(false)
+        }
     }, []);
     const handleDataSourceChange = (event: any, index: any, column: any) => {
         let isPush = true
@@ -756,7 +998,7 @@ const AddEditWebpartTemplate = (props: any) => {
                             {NewItem != undefined && NewItem?.length > 0 && NewItem.map((items: any, index: any) => {
                                 return (
                                     <>
-                                        <div className={`${items?.IsEditable != false ? 'p-2 mb-2' : 'p-2 mb-2'}`}>
+                                        <div key={index} className={`${items?.IsEditable != false ? 'p-2 mb-2' : 'p-2 mb-2'}`}>
                                             <Row className="Metadatapannel mb-2">
                                                 <Col sm="4" md="4" lg="4">
                                                     <div className="input-group">
@@ -777,6 +1019,11 @@ const AddEditWebpartTemplate = (props: any) => {
                                                         <label className="form-check-label">Show Tile</label>
                                                     </div>
                                                 </Col>
+                                                <Col sm="4" md="4" lg="4">
+                                                    <div className="form-check form-check-inline m-4">
+                                                        <label className='SpfxCheckRadio hreflink siteColor' onClick={() => openTableSettingPopup("favBased")}>Table Configurations</label>
+                                                    </div>
+                                                </Col>
                                             </Row>
                                             <Row className="Metadatapannel">
                                                 <Col sm="12" md="12" lg="12">
@@ -790,6 +1037,8 @@ const AddEditWebpartTemplate = (props: any) => {
                                                                         <>
                                                                             <Row>
                                                                                 <Col sm="4" md="4" lg="4">
+
+
                                                                                     <Dropdown id={`FiltersCustomdropdown`} className={ColumnIndex % 2 == 0 ? "mb-2 kkp" : "mb-2 lls"} options={[{ key: '', text: '' }, ...(SelectedColumn?.map((item: any) => ({ key: item?.key, text: item?.text })) || [])]} defaultSelectedKey={column?.SelectedField} selectedKey={column?.SelectedField}
                                                                                         onChange={(e, option) => handleDataSourceChange(option?.key, ColumnIndex, column)}
                                                                                         styles={{ dropdown: { width: '100%' } }}
@@ -902,6 +1151,22 @@ const AddEditWebpartTemplate = (props: any) => {
                         </Col>
                     </Row>
                 </div>
+
+                {columnSettingPopup && <DynamicColumnSettingGallary
+                    settingConfrigrationData={settingConfrigrationData}
+                    tableSettingPageSize={tableSettingPageSize}
+                    tableHeight={wrapperHeight}
+                    wrapperHeight={wrapperHeight}
+                    columnOrder={columnOrder}
+                    setSorting={setSorting}
+                    sorting={sorting}
+                    tableId={tableIdsCopy ? tableIdsCopy : tableId}
+                    showHeader={showHeaderLocalStored}
+                    isOpen={columnSettingPopup}
+                    columnSettingCallBack={columnSettingCallBack}
+                    columns={columns}
+                    columnVisibilityData={columnVisibility}
+                />}
             </Panel >
             {IsComponentPicker && (
                 <Picker

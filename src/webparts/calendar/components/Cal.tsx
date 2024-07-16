@@ -485,6 +485,7 @@ const Apps = (props: any) => {
         const rule = recurrence?.rule?.[0];
         const firstDayOfWeek = rule?.firstDayOfWeek || 'su';
         const startDate = new Date(recurrenceData?.EventDate);
+        startDate.setDate(startDate.getDate() - 1);
         let repeatInstance = 0;
 
         if (rule?.repeatInstances && rule.repeatInstances[0] > 0) {
@@ -495,8 +496,19 @@ const Apps = (props: any) => {
           useCount = true
         }
         let count = 0;
-        const windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(recurrenceData?.EndDate).setHours(0, 0, 0, 0);
-        while (dates.length < repeatInstance || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
+        let windowEndDate:any;
+        if(rule?.repeatForever[0] === 'FALSE'){
+          if(rule?.windowEnd == undefined){
+            let createenddate = new Date(recurrenceData?.EndDate);
+            createenddate.setHours(0, 0, 0, 0);
+            createenddate.setDate(createenddate.getDate() + 1000);
+            createenddate.setHours(0, 0, 0, 0);
+            windowEndDate = createenddate;
+          }
+            }else{
+              windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(recurrenceData?.EndDate).setHours(0, 0, 0, 0);
+            }
+          while (dates.length < repeatInstance || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
           if ((repeatInstance != 0 ? count > repeatInstance : new Date(dates[dates.length - 1]).setHours(0, 0, 0, 0) > windowEndDate) && useCount == true) {
             break
           }
@@ -1396,9 +1408,9 @@ const Apps = (props: any) => {
   const editEvent = async (editedEvent: any) => {
     try {
       const web = new Web(props.props.siteUrl);
-      const mycolors = (HalfDaye || HalfDayT) ? "#6d36c5" :
-        (editedEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
-          ((editedEvent.Event_x002d_Type === "Company Holiday") || (editedEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
+      // const mycolors = (HalfDaye || HalfDayT) ? "#6d36c5" :
+      //   (editedEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
+      //     ((editedEvent.Event_x002d_Type === "Company Holiday") || (editedEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
 
       const editedEventItem = {
         Title: editedEvent.Title,
@@ -1414,7 +1426,7 @@ const Apps = (props: any) => {
         UID: editedEvent.UID,
         HalfDay: editedEvent.HalfDay,
         HalfDayTwo: editedEvent.HalfDayTwo,
-        Color: mycolors,
+        // Color: mycolors,
         Approved: leaveapproved,
         Rejected:leaverejected,
         RecurrenceData: editedEvent.RecurrenceData ? await deCodeHtmlEntities(editedEvent.RecurrenceData) : "",

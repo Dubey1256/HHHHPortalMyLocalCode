@@ -52,6 +52,7 @@ const EditPopup = (props: any) => {
     const [otherChoice, setOtherChoice] = useState('');
     const [listData, setListData] = useState([]);
     const [openFeedback, setOpenFeedback] = useState(true)
+    const [candidateDetails, setCandidateDetails] = useState<any>({})
     
     let allListID={
         InterviewFeedbackFormListId: props?.ListID,
@@ -60,6 +61,25 @@ const EditPopup = (props: any) => {
     }
 
     const HRweb = new Web(allListID?.siteUrl);
+    
+    const getCandidateDetails = async () => {
+        try {
+            const item = await HRweb.lists.getById(allListID?.InterviewFeedbackFormListId)
+                .items.select("Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .expand("Author,Editor")
+                .filter(`Id eq ${props?.item?.Id}`).get()
+                if (item) {
+                    let candidate: any
+                    item.forEach((cand: any) => {
+                       candidate = cand 
+                    })
+                    setCandidateDetails(candidate)
+                }    
+        } catch (error) {
+            console.error("Error fetching candidate details:", error);
+            throw error; // Re-throw the error after logging it
+        }
+    };
 
     const handlePlatformClick = (e: React.ChangeEvent<HTMLInputElement>, PlatformName: string) => {
         const clickedPlatform = e.target.value; // Assuming the value of the checkbox is the platform name
@@ -245,6 +265,7 @@ const EditPopup = (props: any) => {
     };
     useEffect(() => {
         getListData();
+        getCandidateDetails();
     }, []);
     const loadDocumentsByCandidate = async (candidateId: number) => {
         try {
@@ -394,6 +415,57 @@ const EditPopup = (props: any) => {
             </>
         );
     };
+    const onRenderCustomFooterMain = () => {
+        return (
+            <footer className="bg-f4 fixed-bottom px-4 py-2">
+            <div className="align-items-center d-flex justify-content-between">
+                <div>
+                    <div className="">
+                        Created{" "}
+                        <span className="font-weight-normal siteColor">
+                            {" "}
+                            {props.item.Created
+                                ? Moment(props.item.Created).format("DD/MM/YYYY")
+                                : ""}{" "}
+                        </span>{" "}
+                        By{" "}
+                        <span className="font-weight-normal siteColor">
+                            {candidateDetails?.Author?.Title ? candidateDetails?.Author?.Title : ""}
+                        </span>
+                    </div>
+                    <div>
+                        Last modified{" "}
+                        <span className="font-weight-normal siteColor">
+                            {" "}
+                            {props.item.Modified
+                                ? Moment(props.item.Modified).format("DD/MM/YYYY")
+                                : ""}
+                        </span>{" "}
+                        By{" "}
+                        <span className="font-weight-normal siteColor">
+                            {candidateDetails?.Editor?.Title ? candidateDetails?.Editor.Title : ""}
+                        </span>
+                    </div>
+                    <div>
+                        <a className="hreflink siteColor">
+                            <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
+                            <span
+                                onClick={() => delItem(props.item.ID)}
+                            >
+                                Delete This Item
+                            </span>
+                        </a>
+                    </div>
+                </div>
+
+                <div className="float-end text-end">
+                    <button onClick={handleEditSave} type='button' className='btn btn-primary'>Save</button>
+                    <button onClick={onClose} type='button' className='btn btn-default ms-1'>Cancel</button>
+                </div>
+            </div>
+        </footer>
+        );
+    };
     const onRenderCustomHeaderMainDoc = () => {
         return (
             <>
@@ -451,8 +523,9 @@ const EditPopup = (props: any) => {
             fileSections.forEach(function (section: any) {
                 if (section.selectedFiles.length > 0) {
                     section.selectedFiles.forEach(function (itm: any) {
+                        let fileExtension = "." + itm.name.split(".")[1]
                         let obj = {
-                            FileLeafRef: itm.name,
+                            FileLeafRef: section.renamedFileName?.length > 0 ? section.renamedFileName + fileExtension : itm.name,
                             File_x0020_Type: itm.name?.split('.')[1]
                         };
                         setTaggedDocuments(prevDocuments => [...prevDocuments, obj]);
@@ -471,6 +544,9 @@ const EditPopup = (props: any) => {
             isBlocking={false}
             customWidth={"850px"}
             closeButtonAriaLabel="Close"
+            onRenderFooterContent={onRenderCustomFooterMain}
+            isFooterAtBottom={true}
+
         >
             <div className='modal-body mb-5'>
                 <div>
@@ -650,53 +726,7 @@ const EditPopup = (props: any) => {
                     </div>
                 </div>
             </div>
-            <footer className="bg-f4 fixed-bottom px-4 py-2">
-                <div className="align-items-center d-flex justify-content-between me-3">
-                    <div>
-                        <div className="">
-                            Created{" "}
-                            <span className="font-weight-normal siteColor">
-                                {" "}
-                                {props.item.Created
-                                    ? Moment(props.item.Created).format("DD/MM/YYYY")
-                                    : ""}{" "}
-                            </span>{" "}
-                            By{" "}
-                            <span className="font-weight-normal siteColor">
-                                {props.item.Author?.Title ? props.item.Author?.Title : ""}
-                            </span>
-                        </div>
-                        <div>
-                            Last modified{" "}
-                            <span className="font-weight-normal siteColor">
-                                {" "}
-                                {props.item.Modified
-                                    ? Moment(props.item.Modified).format("DD/MM/YYYY")
-                                    : ""}
-                            </span>{" "}
-                            By{" "}
-                            <span className="font-weight-normal siteColor">
-                                {props.item.Editor?.Title ? props.item.Editor.Title : ""}
-                            </span>
-                        </div>
-                        <div>
-                            <a className="hreflink siteColor">
-                                <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
-                                <span
-                                    onClick={() => delItem(props.item.ID)}
-                                >
-                                    Delete This Item
-                                </span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div className="float-end text-end">
-                        <button onClick={handleEditSave} type='button' className='btn btn-primary'>Save</button>
-                        <button onClick={onClose} type='button' className='btn btn-default ms-1'>Cancel</button>
-                    </div>
-                </div>
-            </footer>
+            
             {showAddDocumentPanel && (
                 <Panel
                     isOpen={true}

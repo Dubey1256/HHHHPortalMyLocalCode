@@ -26,8 +26,9 @@ import InlineEditingcolumns from "../../../globalComponents/inlineEditingcolumns
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import CentralizedSiteComposition from "../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition";
-import KeyDocuments from "../../taskprofile/components/KeyDocument";
+import KeyDocuments from "../../taskprofile/components/KeyDocument";  
 import RadimadeTable from "../../../globalComponents/RadimadeTable";
+
 const sp = spfi();
 let AllClientCategoryDataBackup: any = [];
 // Specially for the Custome Calendar 
@@ -36,6 +37,7 @@ import { FaCalendarAlt } from 'react-icons/fa';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from "moment";
+import PortfolioProjectManagement from "./PortfolioProjectmanagement";
 const CalendarPicker = ({ fieldValue, handleInputChange, type }:any) => {
   const [startDate, setStartDate] = useState(null);
   const [open, setOpen] = useState(true);
@@ -454,6 +456,7 @@ let keyDocRef: any;
 let relevantDocRef: any;
 let smartInfoRef: any;
 let portfolioColor: any = '';
+let MyDefaultData:any= [];
 function Portfolio({ SelectedProp, TaskUser }: any) {
   AllTaskuser = TaskUser;
   keyDocRef = React.useRef();
@@ -504,6 +507,40 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
   const [hoveredId, setHoveredId] = React.useState(null);
   const [isTooltipOpen, setIsTooltipOpen] = React.useState(false);
   // PortfolioType
+
+// Handle For the HHHH Project Management
+const renderPortfolioProjectManagement = React.useCallback(() => {
+  console.log("Rendering PortfolioProjectManagement");
+  console.log("data:", data);
+  console.log("ContextValue:", ContextValue);
+  console.log("AllTaskuser:", AllTaskuser);
+  console.log("portfolioTyped:", portfolioTyped);
+
+  // Set default values to avoid undefined propsdata
+  const defaultData = MyDefaultData?.length>0?MyDefaultData[0]: [];
+  const defaultContextValue = ContextValue || {};
+  const defaultContext = defaultContextValue.Context || {};
+  const defaultAllTaskUsers = AllTaskuser || [];
+  const defaultPortfolioTyped = portfolioTyped || [];
+  const DefaultAllMasterTaskData = AllMasterTaskData?.length>0?AllMasterTaskData: [];
+  
+ 
+
+  return (
+    <PortfolioProjectManagement
+      AllListId={defaultContextValue}
+      MyAllData={defaultData}
+      ContextValue={defaultContext}
+      AllTaskUsers={defaultAllTaskUsers}
+      portfolioTypeDataItem={defaultPortfolioTyped}
+      AllMasterTask = {DefaultAllMasterTaskData}
+    />
+  );
+}, [MyDefaultData, ContextValue, AllTaskuser, portfolioTyped]);
+
+// End of Project management 
+
+
 
   const getPortFolioType = async () => {
     let web = new Web(SelectedProp.siteUrl);
@@ -795,7 +832,10 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
           if (data.d.__next) {
             url = data.d.__next;
             GetListItems();
-          } else setTaskData(response);
+          } else {
+            MyDefaultData = response;
+            setTaskData(response);
+          }
           if (
             response?.length > 0 &&
             response[0]?.PortfolioType?.Color != undefined
@@ -1161,6 +1201,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
     }
   }
 
+  
   return (
     <myContextValue.Provider
       value={{
@@ -1481,7 +1522,6 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                 TaskUsers={AllTaskuser}
                                 pageName={"portfolioprofile"}
                               />
-                           
                             ))}
                           </dd>
                         </dl>
@@ -1527,12 +1567,13 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                       >
                                        {item?.Parent?.Title}
                                       </a>
-                                    
+                                      <span className="pull-right">
+                                        <span className="pencil_icon">
                                           <span className="hreflink">
                                             {item?.PortfolioType?.Title ==
                                               "Component" && (
                                                 <>
-                                                  <a className="pancil-icons ml-auto"
+                                                  <a
                                                     target="_blank"
                                                     data-interception="off"
                                                     href={
@@ -1541,16 +1582,20 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                                       item?.Parent?.Id
                                                     }
                                                   >
-                                                    <span className="svg__iconbox svg__icon--editBox alignIcon "></span> {" "}
+                                                    <img
+                                                      src={require("../../../Assets/ICON/edit_page.svg")}
+                                                      width="25"
+                                                      height="25"
+                                                    />{" "}
                                                   </a>
                                                 </>
                                               )}
                                             {item?.PortfolioType?.Title ==
                                               "Service" && (
                                                 <>
-                                                  <a className="pancil-icons ml-auto"
+                                                  <a
                                                     target="_blank"
-                                                    data-interception="off" 
+                                                    data-interception="off"
                                                     href={
                                                       SelectedProp.siteUrl +
                                                       "/SitePages/Team-Portfolio.aspx?ComponentID=" +
@@ -1558,12 +1603,17 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                                     }
                                                   >
                                                     {" "}
-                                                    <span className="svg__iconbox svg__icon--editBox alignIcon "></span> {" "}
+                                                    <img
+                                                      src={require("../../../Assets/ICON/edit_page.svg")}
+                                                      width="25"
+                                                      height="25"
+                                                    />{" "}
                                                   </a>
                                                 </>
                                               )}
                                           </span>
-                                     
+                                        </span>
+                                      </span>
                                     </>
                                   )}
                                 </dd>
@@ -1843,32 +1893,13 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                       <div className="accordion  pe-1 overflow-hidden">
                         {/* Project Management Box */}
                         {filterdata?.length !== 0 && (
-                          <details open>
+                          <details open className="border">
                             <summary className="alignCenter">
                               <label className="toggler full_width">
                                 HHHH Project Management
                               </label>
                             </summary>
-                            <div className="border border-top-0 p-2">
-                              {filterdata?.map((item: any) => (
-                                <div
-                                  className="accordion-body pt-1"
-                                  id="testDiv1"
-                                >
-                                  <a
-                                    href={
-                                      SelectedProp.siteUrl +
-                                      "/SitePages/PX-Profile.aspx?ProjectId=" +
-                                      item?.Id
-                                    }
-                                    data-interception="off"
-                                    target="_blank"
-                                  >
-                                    {item?.Title}{" "}
-                                  </a>{" "}
-                                </div>
-                              ))}
-                            </div>
+                            {renderPortfolioProjectManagement()}
                           </details>
                         )}
                         {/* Project Management Box End */}
@@ -2178,31 +2209,12 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                   <div className="mb-3 mt-1">
                     {SelectedProp?.isShowSiteCompostion ? (
                       <div className="Sitecomposition mb-2">
-                        <div className="dropdown">
-                          <a className="sitebutton bg-fxdark alignCenter justify-content-between">
-                            <div
-                              style={{ cursor: "pointer" }}
-                              onClick={() =>
-                                setComposition(composition ? false : true)
-                              }
-                            >
-                              <span>
-                                {composition ? (
-                                  <SlArrowDown />
-                                ) : (
-                                  <SlArrowRight />
-                                )}
-                              </span>
-                              <span className="mx-2">Site Composition</span>
-                            </div>
-                            <span
-                              className="svg__iconbox svg__icon--editBox hreflink"
-                              title="Edit Site Composition"
-                              onClick={() => setSiteCompositionShow(true)}
-                            ></span>
-                          </a>
-                          {composition &&
-                            data?.length > 0 &&
+                        <details open>
+                          <summary>
+                              <label>Site Composition</label>
+                              <a className="alignCenter ml-auto pull-right"><span className="svg__iconbox svg__icon--editBox" title="Edit Site Composition" onClick={() => setSiteCompositionShow(true)}></span></a>
+                          </summary>
+                          {data?.length > 0 &&
                             data[0]?.siteCompositionData?.length > 0 ? (
                             <div className="spxdropdown-menu">
                               <ul>
@@ -2270,7 +2282,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                               </ul>
                             </div>
                           ) : null}
-                        </div>
+                        </details>
                       </div>
                     ) : null}
                   </div>

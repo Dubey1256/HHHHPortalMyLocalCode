@@ -65,45 +65,19 @@ const AddMorePosition = (props: any) => {
     };
 
     const updateChoiceField = async () => {
-        const skillsCopy = [];
         const newSkillsCopy = []
-        if (skills && skills.length > 0) {
-            for (const skill of skills) {
-                if (skill && skill !== '') {
-                    const obj = {
-                        SkillTitle: skill,
-                        current: 0,
-                        max: 10,
-                        Comment: '',
-                        PositionDescription: jobDescription,
-                    };
-                    const obj1 = {"SkillTitle":"Salary Expectations","current":0,"max":10,"Comment":"","PositionDescription":jobDescription}
-                    const obj2 = {"SkillTitle":"Availability","current":0,"max":10,"Comment":"","PositionDescription":jobDescription}
-    
-                    skillsCopy.push(obj);
-                    skillsCopy.push(obj1);
-                    skillsCopy.push(obj2);
-                }
-            }
-        }
-        else if (skills.length == 0) {
-            const obj5 = {"SkillTitle":"Salary Expectations","current":0,"max":10,"Comment":"","PositionDescription":jobDescription}
-            const obj6 = {"SkillTitle":"Availability","current":0,"max":10,"Comment":"","PositionDescription":jobDescription}
-            skillsCopy.push(obj5)
-            skillsCopy.push(obj6)
-        }
     
         try {
             const listItem = await HRweb.lists.getById(props?.skillsList).items.add({
                 Title: positionTitle,
                 PositionDescription: jobDescription,
-                JobSkills: JSON.stringify(skillsCopy),
             });
     
             // Get the ID of the newly added item
             const newItemId = listItem.data.Id;
 
             if (skills && skills.length > 0) {
+                let isFirstIteration = true;
                 for (const skill of skills) {
                     if (skill && skill !== '') {
                         const obj = {
@@ -114,28 +88,30 @@ const AddMorePosition = (props: any) => {
                             PositionDescription: jobDescription,
                             itemParentId: newItemId
                         };
-                        const obj3 = {"SkillTitle":"Salary Expectations","current":0,"max":10,"Comment":"","PositionDescription":jobDescription, "itemParentId": newItemId}
-                        const obj4 = {"SkillTitle":"Availability","current":0,"max":10,"Comment":"","PositionDescription":jobDescription, "itemParentId": newItemId}
-        
                         newSkillsCopy.push(obj);
-                        newSkillsCopy.push(obj3);
-                        newSkillsCopy.push(obj4);
+                        if (isFirstIteration) {
+                            const obj3 = {"SkillTitle":"Salary Expectations","current":0,"max":10,"Comment":"","PositionDescription":jobDescription, "itemParentId": newItemId}
+                            const obj4 = {"SkillTitle":"Availability","current":0,"max":10,"Comment":"","PositionDescription":jobDescription, "itemParentId": newItemId}
+                            newSkillsCopy.push(obj3);
+                            newSkillsCopy.push(obj4);
+                            isFirstIteration = false;
+                        }   
                     }
                 }
             }
             else if(skills.length == 0) {
-                const obj9 = {"SkillTitle":"Salary Expectations","current":0,"max":10,"Comment":"","PositionDescription":jobDescription}
-                const obj0 = {"SkillTitle":"Availability","current":0,"max":10,"Comment":"","PositionDescription":jobDescription}
-                newSkillsCopy.push(obj9)
-                newSkillsCopy.push(obj0) 
+            const obj9 = {"SkillTitle":"Salary Expectations","current":0,"max":10,"Comment":"","PositionDescription":jobDescription}
+            const obj0 = {"SkillTitle":"Availability","current":0,"max":10,"Comment":"","PositionDescription":jobDescription}
+            newSkillsCopy.push(obj9)
+            newSkillsCopy.push(obj0) 
             }
             await HRweb.lists.getById(props?.skillsList).items.getById(newItemId).update({
                 JobSkills: JSON.stringify(newSkillsCopy)
             });
     
             alert("Position added successfully")
-            props?.closePopup()
             props?.callbackAdd()
+            props?.closePopup()
         } catch (error) {
             console.error(error);
             props?.closePopup()
@@ -164,7 +140,7 @@ const AddMorePosition = (props: any) => {
                 onRenderHeader={onRenderCustomHeaderMain}
                 isOpen={props?.openPopup}
                 onDismiss={() => {props?.closePopup()}}
-                isBlocking={props?.openPopup}
+                isBlocking={false}
                 type={PanelType.medium}
                 closeButtonAriaLabel="Close"
             >

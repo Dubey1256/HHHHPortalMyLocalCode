@@ -1857,13 +1857,12 @@ const TaskStatusTbl = (Tile: any) => {
               {config?.ShowWebpart == true && config?.GroupByView != undefined && <section>
                 {(config?.DataSource == 'Tasks' || config?.DataSource == 'Project') && <div className="workingSec empAllSec clearfix">
                   <div className="alignCenter mb-2 justify-content-between">
-                    <span className="fw-bold">
-                      {`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}
-                    </span>
                   </div>
                   <div className="Alltable" draggable={true} onDragStart={(e) => handleDragStart(e, config, '')} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                      <GlobalCommanTable wrapperHeight="300px" showHeader={true}
+                        showingDataCoustom={`${config?.WebpartTitle} (${config?.Tasks?.length})`}
+                        customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                         pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
@@ -1995,7 +1994,7 @@ const TaskStatusTbl = (Tile: any) => {
                     <div className="alignCenter empAllSec justify-content-between">
                       <span className="fw-bold">
                         {/* {config?.Status == "My TimSheet" && */}
-                        <>{`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}</>
+                        {/* <>{`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}</> */}
                         {/* } */}
                       </span>
                       <span className="alignCenter">
@@ -2004,11 +2003,11 @@ const TaskStatusTbl = (Tile: any) => {
                     </div>
                     <div className="Alltable" >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
-                        <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        <GlobalCommanTable showingDataCoustom={`${config?.WebpartTitle} (${config?.Tasks?.length})`} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                           pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                       )}
                       {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
-                        <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        <GlobalCommanTable showingDataCoustom={`${config?.WebpartTitle} (${config?.Tasks?.length})`} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                           pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                       )}
                     </div>
