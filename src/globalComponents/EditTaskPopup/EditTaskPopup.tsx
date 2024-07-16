@@ -9425,7 +9425,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     />
                                                                     <span
                                                                         className="input-group-text"
-                                                                        onClick={() => openTaskUserPopup("Attention")}
+                                                                        onClick={() => openTaskUserPopup("Bottleneck")}
                                                                     >
                                                                         <span title="Edit" className="svg__iconbox svg__icon--editBox"></span>
                                                                     </span>
