@@ -1547,11 +1547,17 @@ validSites = validSites.filter((site:any) => {
       ID: item.ID,
       value: item.value,
       label: item.label,
-      Group: item.Group,
+      Title: item.label,
+      TaxType: item?.TaxType,
+      Group: item?.Group,
+      IsVisible:item.IsVisible,
       children: item.children ? item.children.map((child:any) => ({
           ID: child.ID,
           value: child.value,
           label: child.label,
+          IsVisible:child.IsVisible,
+          Title: child.label,
+          TaxType: child.TaxType,
           Group: child.Group,
       })) : [] 
   }));
@@ -3215,6 +3221,7 @@ validSites = validSites.filter((site:any) => {
         {
           AllTimeEntry: this.AllTimeEntry,
           resultSummary,
+          loaded: false
         },
         () => this.createTableColumns()
       );
