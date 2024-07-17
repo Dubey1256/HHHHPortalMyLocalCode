@@ -105,7 +105,6 @@ const AddEditPostion = (props: any) => {
             });
     };
 
-    const getPlainTextFromHTML = (htmlString: string) => {   const temporaryElement = document.createElement('div');   temporaryElement.innerHTML = htmlString;   return temporaryElement.innerText; }
     const delPosition = (itm: any) => {
         const isConfirmed = window.confirm(`Are you sure you want to delete the position titled "${itm.Title}"?`);
         if (isConfirmed) {
@@ -124,6 +123,34 @@ const AddEditPostion = (props: any) => {
         }
     };
 
+    const removeSkill = async (position: any, skill: any) => {
+        let updatedData = [...portfiloData];
+        let itemToBeUpdated;
+        let obj;
+    
+        updatedData.forEach((item: any) => {
+            if (item.Title === position.Title) {
+                item.ImpSkills = item.ImpSkills.filter((skills: any) => skills !== skill);
+                item.JobSkills = JSON.stringify(item.ImpSkills);
+                itemToBeUpdated = item.Id;
+                obj = {
+                    JobSkills: item.JobSkills 
+                };
+            }
+        });
+    
+        if (itemToBeUpdated) {
+            try {
+                await HRweb.lists.getById(allListID?.SkillsPortfolioListID).items.getById(itemToBeUpdated).update(obj).then((item: any) => {
+                    getListData(); 
+                })
+            } catch (error) {
+                console.error('Error updating skills:', error);
+            }
+        }
+    };
+
+    const getPlainTextFromHTML = (htmlString: string) => {   const temporaryElement = document.createElement('div');   temporaryElement.innerHTML = htmlString;   return temporaryElement.innerText; }
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
@@ -160,7 +187,7 @@ const AddEditPostion = (props: any) => {
                     <>
                         {row?.original?.ImpSkills !== (null || undefined) ?
                             row?.original?.ImpSkills?.map((items: any) => (
-                                <div className='block w-100' key={items?.SkillTitle}>
+                                <div className='block w-100' onClick={() => removeSkill(row.original, items)} key={items?.SkillTitle}>
                                     <span className='width-90'>{items?.SkillTitle}</span>
                                     <span className='ml-auto wid30 svg__iconbox svg__icon--cross light' />
                                 </div>
@@ -387,5 +414,3 @@ const AddEditPostion = (props: any) => {
     );
 };
 export default AddEditPostion;
-
-
