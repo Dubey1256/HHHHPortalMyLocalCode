@@ -62,6 +62,9 @@ const SP = spfi();
 let AllMetadata: [] = [];
 let checkedFlat = false;
 const TimeEntryPopup = (item: any) => {
+  if(item?.props?.SiteUrl != undefined){
+    item.props.siteUrl = item?.props?.SiteUrl;
+  }
   if (item?.props?.Portfolio?.PortfolioType?.Color != undefined) {
     document?.documentElement?.style?.setProperty('--SiteBlue', item?.props?.Portfolio?.PortfolioType?.Color);
   }
