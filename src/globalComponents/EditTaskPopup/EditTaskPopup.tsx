@@ -311,7 +311,7 @@ const EditTaskPopup = (Items: any) => {
 
     // This is used for loading current task Time Sheet Data 
     const loadTime = async () => {
-        let SiteId = "Task" + Items.Items.siteType;
+        let SiteId = "Task" + Items?.Items?.siteType?.split("%20")?.join("");
         let web = new Web(siteUrls);
         const TimeEntry = await web.lists
             .getByTitle("TaskTimeSheetListNew")
