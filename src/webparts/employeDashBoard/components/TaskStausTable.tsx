@@ -939,6 +939,7 @@ const TaskStatusTbl = (Tile: any) => {
           let web = new Web(UpdatedItem?.siteUrl);
           await web.lists.getById(UpdatedItem?.listId).items.getById(UpdatedItem.Id).update({ AdditionalTimeEntry: JSON.stringify(UpdatedItem?.AdditionalTimeEntry), })
             .then(async (res: any) => {
+              setisRejectItem(undefined);
               alert("Time Entry " + Type + " Successfully.")
               DashboardConfig?.map((Config: any) => {
                 if (Config?.DataSource == 'TimeSheet' && Config.Tasks != undefined && Config.Tasks?.length > 0) {
@@ -949,20 +950,6 @@ const TaskStatusTbl = (Tile: any) => {
                   });
                 }
               })
-              console.log('Updated Succesfully')
-              if (Type == "Rejected") {
-                let sendUserEmail: any = [];
-                let FilterItem = AllTaskUser?.filter((User: any) => User?.AssingedToUserId == RejectedItem?.AuthorId)[0];
-                sendUserEmail.push(FilterItem?.AssingedToUser?.EMail)
-                let TeamMsg = ` <p>Hi ${RejectedItem?.AuthorName},</p>
-                </br>
-                <p>Your timesheet on the task: <a href=${UpdatedItem?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${UpdatedItem['Task' + UpdatedItem?.TaskListType].Id}&Site=${UpdatedItem?.TaskListType}>T${UpdatedItem['Task' + UpdatedItem?.TaskListType].Id}-${UpdatedItem['Task' + UpdatedItem?.TaskListType].Title}</a> has been rejected by your lead. Please have a look and take the necessary action.</p>
-                <p>Reason for rejection:</p>
-                <p>${RejectedItem?.RejectedDetails?.RejectedComment}</p>
-                </br>
-                <p>Thanks,</p>`
-                await globalCommon.SendTeamMessage(sendUserEmail, TeamMsg, ContextData?.propsValue?.Context, ContextData?.propsValue);
-              }
               DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
               DashboardConfigCopy?.map((Config: any) => {
                 if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
@@ -979,9 +966,24 @@ const TaskStatusTbl = (Tile: any) => {
                   });
                 }
               });
+              console.log('Updated Succesfully')
               setisRejectItem(undefined)
               setActiveTile(Tile?.activeTile)
               rerender();
+              if (Type == "Rejected") {
+                let sendUserEmail: any = [];
+                let FilterItem = AllTaskUser?.filter((User: any) => User?.AssingedToUserId == RejectedItem?.AuthorId)[0];
+                sendUserEmail.push(FilterItem?.AssingedToUser?.EMail)
+                let TeamMsg = ` <p>Hi ${RejectedItem?.AuthorName},</p>
+                </br>
+                <p>Your timesheet on the task: <a href=${UpdatedItem?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${UpdatedItem['Task' + UpdatedItem?.TaskListType].Id}&Site=${UpdatedItem?.TaskListType}>T${UpdatedItem['Task' + UpdatedItem?.TaskListType].Id}-${UpdatedItem['Task' + UpdatedItem?.TaskListType].Title}</a> has been rejected by your lead. Please have a look and take the necessary action.</p>
+                <p>Reason for rejection:</p>
+                <p>${RejectedItem?.RejectedDetails?.RejectedComment}</p>
+                </br>
+                <p>Thanks,</p>`
+                await globalCommon.SendTeamMessage(sendUserEmail, TeamMsg, ContextData?.propsValue?.Context, ContextData?.propsValue);
+              }
+
             }).catch((err: any) => {
               console.log(err);
             })
@@ -1068,15 +1070,29 @@ const TaskStatusTbl = (Tile: any) => {
       {
         accessorFn: (row: any) => row?.portfolioItemsSearch,
         cell: ({ row, getValue }: any) => (
-          <>
-            {item?.DataSource != 'Project' && <div draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)}>
-              <img width={"20px"} height={"20px"} className="rounded-circle" src={row?.original?.SiteIcon} />
-            </div>}
-            {item?.DataSource == 'Project' && <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
-              row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"}>
-              {row?.original?.SiteIconTitle}
-            </div>}
-          </>
+          <div className="alignCenter">
+            {row?.original?.SiteIcon != undefined ? (
+              <div className="alignCenter" >
+                <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
+                  row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember me-1"
+                }
+                  src={row?.original?.SiteIcon}>
+                </img>
+              </div>
+            ) : (
+              <>
+                {row?.original?.Title != "Others" ? (
+                  <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                    row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                  }>
+                    {row?.original?.SiteIconTitle}
+                  </div>
+                ) : (
+                  ""
+                )}
+              </>
+            )}
+          </div>
         ),
         id: "portfolioItemsSearch",
         placeholder: "Type",
@@ -1161,11 +1177,11 @@ const TaskStatusTbl = (Tile: any) => {
       },
       {
         accessorFn: (row: any) => row?.projectStructerId + "." + row?.ProjectTitle,
-        cell: ({ row, column, getValue }: any) => (
+        cell: ({ row, getValue }: any) => (
           <div draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)} >
             {row?.original?.ProjectTitle != (null || undefined) &&
               <span><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
+                <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
             }
           </div>
         ),
@@ -1785,11 +1801,11 @@ const TaskStatusTbl = (Tile: any) => {
   }
   const customTableHeaderButtons = (config: any) => {
     return (
-      <span className="alignCenter">
+      <span className="alignCenter CustomHeaderIcon">
         {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
         {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink"
           target="_blank" data-interception="off" title="Create New Task" href={`${ContextData?.siteUrl}/SitePages/CreateTask.aspx`}>
-          <span className="hreflink svg__iconbox svg__icon--CNTask empBg"></span>
+          <span className="hreflink alignIcon svg__iconbox svg__icon--CNTask empBg"></span>
         </a>}
         {config?.WebpartTitle == 'Draft Tasks' && <a className="empCol hreflink me-3">Approve</a>}
         {config?.WebpartTitle == 'Waiting for Approval' && <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>}
@@ -1991,15 +2007,15 @@ const TaskStatusTbl = (Tile: any) => {
                 }
                 {config?.DataSource == 'TimeSheet' &&
                   <>
-                    <div className="alignCenter empAllSec justify-content-between">
+                    <div className="alignCenter empAllSec mt-2 justify-content-between">
                       <span className="fw-bold">
                         {/* {config?.Status == "My TimSheet" && */}
                         {/* <>{`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}</> */}
                         {/* } */}
                       </span>
-                      <span className="alignCenter">
+                      {/* <span className="alignCenter">
                         <span className="empCol me-1 mt-2 hreflink"><br /></span>
-                      </span>
+                      </span> */}
                     </div>
                     <div className="Alltable" >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (

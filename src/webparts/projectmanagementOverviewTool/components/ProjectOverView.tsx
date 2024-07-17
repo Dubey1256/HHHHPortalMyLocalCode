@@ -394,7 +394,7 @@ export default function ProjectOverview(props: any) {
                                 >
                                     {row?.original?.Title}
                                 </a>
-                                {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span>}
+                                {row?.original?.descriptionsSearch?.length > 0 ? <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span>: ''}
                             </span> : ''}
                     </div>
 
@@ -750,7 +750,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row, getValue }) => (
                     <div className='alignCenter'>
                         <a className='hreflink' href={row?.original?.siteType == "Project" ? `${AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Id}` : `${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
-                        {row?.original?.descriptionsSearch?.length > 0 && <InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} />}
+                        {row?.original?.descriptionsSearch?.length > 0 ? <InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} />: ''}
                     </div>
 
                 ),
@@ -1380,6 +1380,7 @@ export default function ProjectOverview(props: any) {
                     //     sprint.subRows = allSitesTasks?.filter((child: any) => child?.Project?.Id == sprint?.Id && child?.IsTodaysTask == true)
                     // })
                     items.descriptionsSearch = globalCommon.portfolioSearchData(items)
+                    items.descriptionsSearch = items?.descriptionsSearch.trim()
                     items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                     items['TaskID'] = items?.PortfolioStructureID
                     items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
@@ -1786,6 +1787,7 @@ export default function ProjectOverview(props: any) {
                     if (items?.FeedBack != undefined) {
 
                         items.descriptionsSearch = globalCommon?.descriptionSearchData(items)
+                        items.descriptionsSearch = items?.descriptionsSearch.trim()
                     }
                     items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                     // items.PercentComplete = (items.PercentComplete * 100).toFixed(0);

@@ -3400,12 +3400,13 @@ function TeamPortlioTable(SelectedProp: any) {
 
 
     const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
-        // renderData = [];
-        // renderData = renderData.concat(getData);
-        // refreshData();
-        setData(getData);
+        setData((getData: any) => [...getData]);
         setTopCompoIcon(topCompoIcon);
-    }, []);
+        renderData = [];
+        renderData = renderData.concat(getData);
+        refreshData();
+      }, []);
+
 
 
     //  Function to call the child component's function
