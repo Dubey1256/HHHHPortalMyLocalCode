@@ -516,7 +516,84 @@ const ProjectManagementMain = (props: any) => {
     setSearchedkeyPortfolios([])
     childRef?.current?.setRowSelection({});
   }
+ 
+  const loadTaggedDocuments = async () => {
+    let taggedDocs: any = []
+    let AllDocs: any
+    let uniqueIds: any = {}
+    const web = new Web(AllListId?.siteUrl);
+    try {
+      await web.lists.getById(AllListId?.DocumentsListID)
+        .items
+        .select("Id,Title,PriorityRank,Year,Body,recipients,senderEmail,creationTime,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,Created,Modified,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,Status,ItemType,Url,EncodedAbsUrl,Author/Id,Author/Title,Editor/Id,Editor/Title,HHHH/Id,HHHH/Title,Education/Id,Education/Title,DE/Id,DE/Title,Shareweb/Id,Shareweb/Title,EPS/Id,EPS/Title,EI/Id,KathaBeck/Id,KathaBeck/Title,EI/Title,Gruene/Id,Gruene/Title")
+        .expand("Portfolios,Author,Editor,HHHH,EPS,Shareweb,EI,Education,DE,KathaBeck,Gruene")
+        .getAll()
+        .then((Data: any) => {
+          let flatTableData = globalCommon.deepCopy(backupTableData)
+          let flatData = flattenData(flatTableData)
+          flatData.push(projectData)  
+          AllDocs = Data
+          AllDocs.forEach((doc: any) => {
+            flatData.forEach((item: any) => {
+              // Check for TaskType and matching Id
+              if (item.TaskType) {
+                if (doc[item.siteType] && doc[item.siteType][0]?.Id == item.Id) {
+                  doc.Reference = item
+                  taggedDocs.push(doc);
+                }
+              }
+              // Check for Portfolios and matching Id
+              if (doc.Portfolios) {
+                doc.Portfolios.forEach((docItem: any) => {
+                  if (docItem.Id == item.Id) {
+                    doc.Reference = item
+                    taggedDocs.push(doc);
+                  }
+                  
+                });
+              }
+            });
+          });
+        })
+        taggedDocs = taggedDocs.filter((items: any) => {
+          if (!uniqueIds[items.Id]) {
+            uniqueIds[items.Id] = true;
+            return true;
+          }
+          return false;
+        })
+        console.log("All Tagged Documents", taggedDocs)
+        keyTaggedDocs = taggedDocs.filter((doc: any) => doc.ItemRank == 6)
 
+        if (keyTaggedDocs.length > 0) {
+          keyTaggedDocs.map((docs: any) => {
+            AllUser.map((user: any) => {
+              if (user?.AssingedToUser != undefined && user?.AssingedToUser?.Id != undefined) {
+                if (user?.AssingedToUser?.Id == docs?.Author?.Id) {
+                  docs.UserImage = user?.Item_x0020_Cover?.Url
+                }
+                if (user?.AssingedToUser?.Id == docs?.Editor?.Id) {
+                  docs.EditorImage = user?.Item_x0020_Cover?.Url
+                }
+                if (docs.Reference) {
+                if (docs.Reference.Item_x0020_Type == "Project" || docs.Reference.Item_x0020_Type == "Sprint") {
+                  docs.ReferenceID = docs.Reference.PortfolioStructureID
+                }
+                else if (docs.Reference.TaskType) {
+                  docs.ReferenceID = docs.Reference.TaskID
+                }
+              }
+            }
+            })
+          })
+        }
+        console.log(keyTaggedDocs)
+        setKeyTaggedDoc(keyTaggedDocs)
+
+    } catch (e: any) {
+      console.log(e);
+    }
+  }
 
   const CallBack = React.useCallback((item: any, type: any) => {
     setIsAddStructureOpen(false)
@@ -983,6 +1060,7 @@ const ProjectManagementMain = (props: any) => {
       backupTableData = allSprints;
       setTaskTaggedPortfolios(taskTaggedComponents)
       setSuggestedPortfolios(suggestedPortfolioItems)
+      loadTaggedDocuments();
       filteredTasks("Week")
       setPageLoader(false);
     } catch (error) {
@@ -1898,7 +1976,7 @@ const ProjectManagementMain = (props: any) => {
       {
         accessorKey: "",
         placeholder: "",
-        hasCheckbox: true,
+        hasCheckbox: false,
         hasCustomExpanded: hasCustomExpanded,
         hasExpanded: hasExpanded,
         isHeaderNotAvlable: isHeaderNotAvlable,
@@ -1967,29 +2045,6 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         isColumnVisible: true
       },
-      {
-        accessorFn: (row) => row?.TaskTypeValue,
-        cell: ({ row }) => (
-          <>
-            <span className="columnFixedTaskCate">
-              <InlineEditingcolumns
-                AllListId={AllListId}
-                callBack={inlineCallBack}
-                columnName='TaskCategories'
-                item={row?.original}
-                TaskUsers={AllUser}
-                pageName={'ProjectManagment'}
-              />
-            </span>
-          </>
-        ),
-        placeholder: "Task Type",
-        header: "",
-        resetColumnFilters: false,
-        size: 120,
-        id: "TaskTypeValue",
-      },
-
       {
         accessorFn: (row) => row?.PriorityRank,
         cell: ({ row }) => (
@@ -2077,107 +2132,6 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         size: 110,
         isColumnVisible: true
-      },
-      
-      {
-        accessorFn: (row) => row?.SmartInformationTitle,
-        cell: ({ row }) => (
-          <span className='d-flex hreflink' >
-            &nbsp; {row?.original?.SmartInformation?.length > 0 ? (
-              <>
-                <span onClick={() => openRemark(row?.original)} className="commentDetailFill-active svg__iconbox svg__icon--commentBlank"></span>
-              </>
-            ) : (
-              <>
-                <span onClick={() => openRemark(row?.original)} className="commentDetailFill svg__iconbox svg__icon--commentBlank"></span>
-              </>
-            )}
-          </span>
-        ),
-        id: 'SmartInformation',
-        resetSorting: false,
-        resetColumnFilters: false,
-        placeholder: "Remarks",
-        header: '',
-        size: 55,
-        isColumnVisible: true
-      },
-
-      {
-        accessorFn: (row) => row?.Created,
-        cell: ({ row }) => (
-          <span className="d-flex">
-            <span>{row?.original?.DisplayCreateDate} </span>
-
-            {row?.original?.createdImg != undefined ? (
-              <>
-                <a
-                  href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
-                  target="_blank"
-                  data-interception="off"
-                >
-                  <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
-                </a>
-              </>
-            ) : (
-              <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
-            )}
-          </span>
-        ),
-        id: 'Created',
-        canSort: false,
-        resetColumnFilters: false,
-        resetSorting: false,
-        placeholder: "Created",
-        isColumnVisible: true,
-        fixedColumnWidth: true,
-        filterFn: (row: any, columnId: any, filterValue: any) => {
-          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
-        },
-        header: "",
-        size: 105
-      },
-      {
-        accessorFn: (row) => row?.Modified,
-        cell: ({ row }) => (
-          <span className="d-flex">
-            <span>{row?.original?.DisplayModifiedDate} </span>
-
-            {row?.original?.modifiedImg != undefined ? (
-              <>
-                <a
-                  href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
-                  target="_blank"
-                  data-interception="off"
-                >
-                  <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.modifiedImg} />
-                </a>
-              </>
-            ) : (
-              <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Editor?.Title}></span>
-            )}
-          </span>
-        ),
-        id: 'Modified',
-        canSort: false,
-        resetColumnFilters: false,
-        resetSorting: false,
-        placeholder: "Modified",
-        isColumnVisible: true,
-        fixedColumnWidth: true,
-        filterFn: (row: any, columnId: any, filterValue: any) => {
-          if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
-        },
-        header: "",
-        size: 105
       },
       {
         accessorFn: (row) => row?.TotalTaskTime,
@@ -2422,7 +2376,6 @@ const ProjectManagementMain = (props: any) => {
                             </div>
                           </section>
                           <section>
-                            <div>
                               <div className="row">
                                 <div className="col-md-12 bg-white">
                                   <div className="team_member row  py-2">
@@ -2578,7 +2531,23 @@ const ProjectManagementMain = (props: any) => {
 
                                   </div>
                                 </div>
-                                <div className='col-md-12 bg-white'> {Masterdata?.Id != undefined && <KeyDocuments ref={relevantDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId.DocumentsListID} siteName={"Master Tasks"} folderName={Masterdata?.Title} keyDoc={true}></KeyDocuments>}</div>
+                                <div className='col-md-12 bg-white'> 
+                                  {keyTaggedDoc.length > 0 && (
+                                    <KeyDocuments
+                                      keyTaggedDocs={keyTaggedDoc}
+                                      pageName={"ProjectManagement"}
+                                      ref={relevantDocRef}
+                                      AllListId={AllListId}
+                                      Context={props?.Context}
+                                      siteUrl={AllListId?.siteUrl}
+                                      DocumentsListID={
+                                        AllListId.DocumentsListID
+                                      }
+                                      siteName={"Master Tasks"}
+                                      folderName={Masterdata?.Title}
+                                      keyDoc={true}
+                                    ></KeyDocuments>
+                                  )}
                                 <div className='col-md-12 bg-white'>
                                 <details>
                                     <summary> Working This Week {'(' + filteredTask?.length + ')'} </summary>
@@ -2586,7 +2555,7 @@ const ProjectManagementMain = (props: any) => {
                                         {filteredTask?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable' >
                                                 <>
-                                                    <GlobalCommanTable columns={workingThisWeekColumns} data={filteredTask} wrapperHeight="100%" callBackData={callBackData}/>
+                                                    <GlobalCommanTable columns={workingThisWeekColumns} data={filteredTask} wrapperHeight="175px" callBackData={callBackData}/>
                                                 </>
                                             </div> : <div className='text-center full-width'>
                                                 <span>No Working Tasks Available</span>
