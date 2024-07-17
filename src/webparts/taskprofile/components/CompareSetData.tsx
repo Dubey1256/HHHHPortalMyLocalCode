@@ -89,7 +89,7 @@ const showSetData=(designtempateData:any ,indexdesign:any)=>{
                                    <div className="expandicon">
 
                                        <span >
-                                           {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
+                                           {imgData?.ImageName?.length > 50 ? imgData?.ImageName.substring(0, 50) + '...' : imgData?.ImageName}
                                        </span>
 
                                    </div>

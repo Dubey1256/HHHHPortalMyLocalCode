@@ -229,6 +229,14 @@ const EmployeProfile = (props: any) => {
       console.log(err);
     })
   }
+  function removeHtmlAndNewline(text: any) {
+    if (text) {
+      return text.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+    } else {
+      return ''; // or any other default value you prefer
+    }
+  }
+
   const loadMasterTask = () => {
     globalCommon.GetServiceAndComponentAllData(props?.props).then((data: any) => {
       AllMasterTasks = data?.AllData;
@@ -236,15 +244,9 @@ const EmployeProfile = (props: any) => {
       AllMasterTasks?.map((items: any) => {
         items.descriptionsSearch = '';
         items.SiteIconTitle = items?.Item_x0020_Type == "Sprint" ? "X" : items?.Item_x0020_Type.charAt(0);
-        if (items?.FeedBack != undefined && Array.isArray(items?.FeedBack)) {
-          let DiscriptionSearchData: any = '';
-          let feedbackdata: any = JSON.parse(items?.FeedBack)
-          DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-            const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-            const subtextText = (child?.Subtext || [])?.map((elem: any) => elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')).join('');
-            return childText + subtextText;
-          }).join('');
-          items.descriptionsSearch = DiscriptionSearchData
+        if (items?.Deliverables != undefined || items?.Short_x0020_Description_x0020_On != undefined || items?.TechnicalExplanations != undefined || items?.Body != undefined || items?.AdminNotes != undefined || items?.ValueAdded != undefined
+          || items.Idea != undefined || items.Background != undefined) {
+          items.descriptionsSearch = `${removeHtmlAndNewline(items?.Deliverables)} ${removeHtmlAndNewline(items?.Short_x0020_Description_x0020_On)} ${removeHtmlAndNewline(items?.TechnicalExplanations)} ${removeHtmlAndNewline(items?.Body)} ${removeHtmlAndNewline(items?.AdminNotes)} ${removeHtmlAndNewline(items?.ValueAdded)} ${removeHtmlAndNewline(items?.Idea)} ${removeHtmlAndNewline(items?.Background)}`;
         }
 
         let EstimatedDesc: any = [];
@@ -963,15 +965,36 @@ const EmployeProfile = (props: any) => {
           loadAllTimeEntry();
         data?.map((items: any) => {
           items.descriptionsSearch = '';
-          if (items?.FeedBack != undefined && Array.isArray(items?.FeedBack)) {
-            let DiscriptionSearchData: any = '';
-            let feedbackdata: any = JSON.parse(items?.FeedBack)
-            DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-              const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-              const subtextText = (child?.Subtext || [])?.map((elem: any) => elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')).join('');
-              return childText + subtextText;
-            }).join('');
-            items.descriptionsSearch = DiscriptionSearchData
+          let descriptionSearchData = '';
+          const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
+          try {
+            const feedbackData = JSON.parse(items.FeedBack);
+            if (feedbackData != undefined && feedbackData[0] != undefined && feedbackData[0]?.FeedBackDescriptions != undefined && feedbackData[0]?.FeedBackDescriptions?.length) {
+              descriptionSearchData = feedbackData[0]?.FeedBackDescriptions?.map((child: any) => {
+                const childText = cleanText(child?.Title);
+                const comments = (child?.Comments || [])?.map((comment: any) => {
+                  const commentText = cleanText(comment?.Title);
+                  const replyText = (comment?.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                  return [commentText, replyText]?.filter(Boolean).join(' ');
+                }).join(' ');
+
+                const subtextData = (child.Subtext || [])?.map((subtext: any) => {
+                  const subtextComment = cleanText(subtext?.Title);
+                  const subtextReply = (subtext.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                  const subtextComments = (subtext.Comments || [])?.map((subComment: any) => {
+                    const subCommentTitle = cleanText(subComment?.Title);
+                    const subCommentReplyText = (subComment.ReplyMessages || []).map((val: any) => cleanText(val?.Title)).join(' ');
+                    return [subCommentTitle, subCommentReplyText]?.filter(Boolean).join(' ');
+                  }).join(' ');
+                  return [subtextComment, subtextReply, subtextComments].filter(Boolean).join(' ');
+                }).join(' ');
+
+                return [childText, comments, subtextData].filter(Boolean).join(' ');
+              }).join(' ');
+            }
+            items.descriptionsSearch = descriptionSearchData;
+          } catch (error) {
+            console.error("Error:", error);
           }
           let EstimatedDesc: any = [];
           items.EstimatedTime = 0;
@@ -983,9 +1006,20 @@ const EmployeProfile = (props: any) => {
           items.workingDetailsAttention = [];
           items.workingDetailsPhone = [];
           items.workingTodayUsers = [];
+          items.WorkingDate = '';
+          items.fontColorTask = "#000"
           try {
             if (items?.WorkingAction != undefined && items?.WorkingAction != '' && items?.WorkingAction != null) {
               items.WorkingAction = JSON.parse(items?.WorkingAction)
+              for (let workingMember of items?.WorkingAction || []) {
+                if (workingMember.Title === 'WorkingDetails' && workingMember.InformationData) {
+                  for (let workingDetails of workingMember.InformationData) {
+                    if (workingDetails.WorkingMember) {
+                      items.WorkingDate += workingDetails?.WorkingDate + ' | '
+                    }
+                  }
+                }
+              }
               const todayStr = Moment().format('DD/MM/YYYY');
               items.workingDetailsBottleneck = items?.WorkingAction?.find((item: any) => item.Title === 'Bottleneck' && item?.InformationData?.length > 0);
               items.workingDetailsAttention = items?.WorkingAction?.find((item: any) => item.Title === 'Attention' && item?.InformationData?.length > 0);

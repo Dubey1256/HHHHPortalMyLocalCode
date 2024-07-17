@@ -128,26 +128,24 @@ const LandingPage = (props: any) => {
             },
 
             {
-                accessorFn: (row) => row?.ImpSkills,
+                accessorFn: (row) => row?.Skills,
                 cell: ({ row }) => (
-                    <>
-                        {row?.original?.ImpSkills !== (null || undefined) ?
-                            row?.original?.ImpSkills?.map((items: any, index: number) => (
-                                // eslint-disable-next-line react/jsx-key
-                                <React.Fragment key={index}>
-                                    <span className='width-90'>{items?.SkillTitle}</span>
-                                    {index < row.original.ImpSkills.length - 1 && <span>,</span>}
-                                </React.Fragment>
-                            ))
-                            : ""}
-                    </>
+                  <div className="columnFixedTitle">
+                    <div
+                      className="text-content"
+                      title={row.original.Skills}
+                      dangerouslySetInnerHTML={{
+                        __html: row.original.Skills,
+                      }}
+                    />
+                  </div>
                 ),
                 id: 'Skills',
                 placeholder: "Skills",
                 resetColumnFilters: false,
                 header: "",
                 size: 500,
-            },
+              },
             {
                 accessorFn: (row) => row?.PositionDescription,
                 cell: ({ row, getValue }) => (
@@ -157,7 +155,7 @@ const LandingPage = (props: any) => {
 
                 ),
                 id: "PositionDescription",
-                placeholder: "PositionDescription",
+                placeholder: "Position Description",
                 resetColumnFilters: false,
                 header: "",
                 size: 500

@@ -21,6 +21,7 @@ import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaInfoCircle, FaC
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import DisplayTimeEntry from '../../../globalComponents/TimeEntry/TimeEntryComponent';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 //import inlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 
 var AllListId: any = {};
@@ -320,13 +321,7 @@ const RootLevelDashboard = (props: any) => {
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              <div className='tooltipSec popover__wrapper me-1' data-bs-toggle='tooltip' data-bs-placement='auto'>
-                {row.original.Portfolio?.Title !=undefined ? (
-                  <span>{row?.original?.TaskID}</span>
-                ) : (
-                  <span>{row?.original?.TaskID}</span>
-                )}
-              </div>
+            <ReactPopperTooltipSingleLevel AllListId={AllListId} CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={[]} AllSitesTaskData={AllTasks} />
             </span>
           </>
         ),
