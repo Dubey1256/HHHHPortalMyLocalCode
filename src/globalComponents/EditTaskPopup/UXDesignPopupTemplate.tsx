@@ -266,7 +266,7 @@ const UXDesignPopupTemplate = (props: any) => {
                                 data={props?.data}
                                 callBack={ObjectiveDataCallback}
                                 allUsers={props?.allUsers}
-                                ApprovalStatus={props?.ApprovalStatus}
+                                // ApprovalStatus={props?.ApprovalStatus}
                                 SmartLightStatus={props?.SmartLightStatus}
                                 SmartLightPercentStatus={props?.SmartLightPercentStatus}
                                 Context={props?.Context}
