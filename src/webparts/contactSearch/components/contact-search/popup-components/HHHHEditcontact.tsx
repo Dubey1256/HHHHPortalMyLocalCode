@@ -1562,7 +1562,7 @@ const HHHHEditComponent = (props: any) => {
                         </div>
                     </div>
                     {status.orgPopup ? <OrgContactEditPopup callBack={CloseOrgPopup} updateData={updateData} /> : null}
-                    {status.countryPopup ? <CountryContactEditPopup popupName="Country" selectedCountry={currentCountry} callBack={CloseCountryPopup} data={countryData} updateData={updateData} /> : null}
+                    {status.countryPopup ? <CountryContactEditPopup popupName="Country" siteurl = {props?.siteurl} selectedCountry={currentCountry} callBack={CloseCountryPopup} data={countryData} updateData={updateData} /> : null}
                     {status.statePopup ? <CountryContactEditPopup popupName="State" selectedState={selectedState} callBack={CloseCountryPopup} data={stateData} updateData={updateData} /> : null}
                     
                 </div >
@@ -1590,7 +1590,7 @@ const HHHHEditComponent = (props: any) => {
                             {(myContextData2.allSite?.MainSite || myContextData2?.allSite?.HrSite) && <span>|</span>}
                             {myContextData2.allSite?.MainSite && <span>
                                 <a className="ForAll hreflink" target="_blank" data-interception="off"
-                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/SmartMetaDataPortfolio.aspx`}>
+                                    href={`https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP/SitePages/SmartMetaDataPortfolio.aspx`}>
                                     Manage Contact-Categories
                                 </a>
                             </span>}

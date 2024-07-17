@@ -12,4 +12,6 @@ export interface IContactSearchProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string; 
+  SitePagesList:string;
+  siteUrl:string;
 }

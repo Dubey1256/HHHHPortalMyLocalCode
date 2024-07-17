@@ -44,14 +44,23 @@ const RelevantDocuments = (props: any, ref: any) => {
 
             setFileurl(MyContextdata.FileDirRef)
 
-        } else {
+        } else if (props?.pageName == "ProjectManagement" && props?.keyTaggedDocs.length > 0) {
+            let keydata: any = props?.keyTaggedDocs
+
+            setKeyDocument(props?.keyTaggedDocs)
+            if (keydata?.length > 10) {
+                setCopyKeyDocument(keydata?.splice(0, 10))
+
+            }
+        }
+        else {
             setKeyDocument([])
         }
 
     }
     React.useMemo(() => {
         getKeyDoc();
-    }, [MyContextdata?.keyDoc])
+    }, [MyContextdata?.keyDoc, props?.keyTaggedDocs])
 
     const callbackeditpopup = React.useCallback((EditdocumentsData: any) => {
         // loadAllSitesDocuments();
@@ -197,6 +206,110 @@ const RelevantDocuments = (props: any, ref: any) => {
             }
 
         ], [copykeyDocument?.length > 0 ? copykeyDocument : keyDocument?.length>0]);
+    
+        const columns2 = useMemo<ColumnDef<any, unknown>[]>(() =>
+            [
+                {
+                    accessorKey: "",
+                    placeholder: "",
+                    hasCheckbox: false,
+                    hasCustomExpanded: false,
+                    hasExpanded: false,
+                    isHeaderNotAvlable: true,
+                    size: 20,
+                    id: 'Id',
+                },
+                {
+                    accessorFn: (row) => row?.Title,
+                    cell: ({ row }) => (
+                        <div className='alignCenter columnFixedTitle p-0'>
+                            <><a target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1` }>
+                                <span className={`alignIcon svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`} title={row?.original?.File_x0020_Type}></span></a>
+                                <a className='ms-1 wid90' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a>
+                            </>
+                        </div>
+                    ),
+                    id: 'Title',
+                    placeholder: 'File Name',
+                    resetColumnFilters: false,
+                    header: '',
+                    size: 500,
+                },
+                {
+                    accessorFn: (row: any) => row?.ReferenceID,
+                    cell: ({ row }: any) => (
+                        <div className='alignCenter columnFixedTitle p-0'>
+                            <>
+                            <a className='ms-1' target="_blank" data-interception="off" href={(row?.original?.Reference?.Item_x0020_Type == "Project" || row?.original?.Reference?.Item_x0020_Type == "Sprint") ? `${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Reference?.Id}`: row?.original?.Reference?.TaskType ? `${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Reference?.Id}&Site=${row?.original?.Reference?.siteType}`: ''}> {row?.original?.ReferenceID} </a>
+                            </>
+                        </div>
+                    ),
+                    id: 'ReferenceID',
+                    placeholder: 'ReferenceID',
+                    resetColumnFilters: false,
+                    header: '',
+                    size: 91,
+                },
+                {
+                    accessorFn: (row: any) => row?.Modified,
+                    cell: ({ row }: any) => (
+                        <div> {row?.original.Modified !== null ? moment(row?.original.Modified).format("DD/MM/YYYY") : ""}
+                            <>
+                                <a onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, row?.original?.Editor?.Id)}
+                                    target="_blank" data-interception="off">
+                                   {row?.original?.EditorImage!=undefined ?<img title={row?.original?.Editor?.Title} className="workmember ms-1" src={(row?.original?.EditorImage)} />:
+                                    <span className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"title={row?.original?.Author?.Title}></span>} 
+                                </a>
+    
+                            </>
+                        </div>
+                    ),
+                    id: 'Modified',
+                    placeholder: 'Modified',
+                    resetColumnFilters: false,
+                    header: '',
+                    size: 91,
+                },
+                {
+                    accessorFn: (row: any) => row?.Created,
+                    cell: ({ row }: any) => (
+                        <div>{row?.original.Created !== null ? moment(row?.original.Created).format("DD/MM/YYYY") : ""}
+    
+    
+                            <>
+                                <a onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl,row?.original?.Author?.Id)} target="_blank" data-interception="off">
+                                    {row?.original?.UserImage!=undefined ?<img title={row?.original?.Author?.Title} className="workmember ms-1" src={(row?.original?.UserImage)} />
+                                    :   <span className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"title={row?.original?.Author?.Title}></span>
+                                }
+                                 
+                                </a>
+    
+                            </>
+    
+    
+                        </div>
+    
+                    ),
+                    id: 'Created',
+                    placeholder: 'Created',
+                    resetColumnFilters: false,
+                    header: '',
+                    size: 91,
+                },
+                {
+                    accessorFn: "",
+                    cell: ({ row }: any) => (
+                        <span title="Edit" className="alignIcon  svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(row?.original)}></span>
+    
+                    ),
+                    id: 'CreatedDate',
+                    placeholder: '',
+                    resetColumnFilters: false,
+                    header: '',
+                    size: 42,
+                }
+    
+            ], [copykeyDocument?.length > 0 ? copykeyDocument : keyDocument?.length>0]);
 
 
     const ShowData = () => {
@@ -239,7 +352,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                     <div className='TableSection w-100'>
                         <div className='Alltable'>
                             <div className='smart Key-documents'>
-                              <GlobalCommanTable columns={columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} />
+                              <GlobalCommanTable columns={props?.pageName == "ProjectManagement" ? columns2 : columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} />
                             </div>
                         </div>
                     </div>
