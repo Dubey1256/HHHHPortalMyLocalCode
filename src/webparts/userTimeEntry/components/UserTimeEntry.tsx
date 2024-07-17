@@ -1560,9 +1560,27 @@ validSites = validSites.filter((site:any) => {
           TaxType: child.TaxType,
           Group: child.Group,
       })) : [] 
+     }));
+     const filterItemss = filterItems.map((item:any) => ({
+      ID: item.ID,
+      value: item.value,
+      label: item.label,
+      Title: item.label,
+      TaxType: item?.TaxType,
+      Group: item?.Group,
+      IsVisible:item.IsVisible,
+      children: item.children ? item.children.map((child:any) => ({
+          ID: child.ID,
+          value: child.value,
+          label: child.label,
+          IsVisible:child.IsVisible,
+          Title: child.label,
+          TaxType: child.TaxType,
+          Group: child.Group,
+      })) : [] 
   }));
-    filterItems = this.removeDuplicates(filterItems);
-    filterSites = this.removeDuplicates(filterSitesss);
+      filterItems = this.removeDuplicates(filterItemss);
+      filterSites = this.removeDuplicates(filterSitesss);
     this.setState({ filterItems, filterSites });
   }
   private SelectAllCategories(ev: any) {
