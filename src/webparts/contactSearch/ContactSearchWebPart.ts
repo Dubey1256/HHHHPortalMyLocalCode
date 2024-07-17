@@ -14,13 +14,13 @@ import { IContactSearchProps } from './components/IContactSearchProps';
 
 export interface IContactSearchWebPartProps {
   description: string;
-  ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
-  HHHHContactListId:'edc879b9-50d2-4144-8950-5110cacc267a',
-  HHHHInstitutionListId:'9f13fd36-456a-42bc-a5e0-cd954d97fc5f',
-  MAIN_SMARTMETADATA_LISTID:'D1C6D7C3-F36E-4F95-8715-8DA9F33622E7',
-  MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
-  GMBH_CONTACT_SEARCH_LISTID:'6CE99A82-F577-4467-9CDA-613FADA2296F',
-  HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
+  ContractListID:'',
+  HHHHContactListId:'0fb52a5f-e68a-48c4-9d42-99c81fc58f85',
+  HHHHInstitutionListId:'',
+  MAIN_SMARTMETADATA_LISTID:'0af5c538-1190-4fe5-8644-d01252e79d4b',
+  MAIN_HR_LISTID:'',
+  GMBH_CONTACT_SEARCH_LISTID:'',
+  HR_EMPLOYEE_DETAILS_LIST_ID:'',
 }
 export default class ContactSearchWebPart extends BaseClientSideWebPart<IContactSearchWebPartProps> {
   private _isDarkTheme: boolean = false;
@@ -32,16 +32,18 @@ export default class ContactSearchWebPart extends BaseClientSideWebPart<IContact
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         Context: this.context,
-        ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
-        HHHHContactListId:'edc879b9-50d2-4144-8950-5110cacc267a',
-        HHHHInstitutionListId:'9f13fd36-456a-42bc-a5e0-cd954d97fc5f',
-        MAIN_SMARTMETADATA_LISTID:'D1C6D7C3-F36E-4F95-8715-8DA9F33622E7',
-        MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
-        GMBH_CONTACT_SEARCH_LISTID:'6CE99A82-F577-4467-9CDA-613FADA2296F',
-        HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
+        ContractListID:'',
+        HHHHContactListId:'0fb52a5f-e68a-48c4-9d42-99c81fc58f85',
+        HHHHInstitutionListId:'',
+        MAIN_SMARTMETADATA_LISTID:'0af5c538-1190-4fe5-8644-d01252e79d4b',
+        MAIN_HR_LISTID:'',
+        GMBH_CONTACT_SEARCH_LISTID:'',
+        HR_EMPLOYEE_DETAILS_LIST_ID:'',
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.loginName
+        userDisplayName: this.context.pageContext.user.loginName,
+        SitePagesList: 'd0874cde-43f3-4fc0-88b3-a1980d1f0b91',
+        siteUrl:'https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP'
       }
     );
 
