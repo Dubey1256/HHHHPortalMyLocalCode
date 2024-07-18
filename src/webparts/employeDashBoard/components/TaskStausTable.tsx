@@ -1435,12 +1435,8 @@ const TaskStatusTbl = (Tile: any) => {
       {
         cell: ({ row, getValue }: any) => (
           <>
-            {item?.DataSource != 'Project' ? <span title="Edit Task" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span> :
-              <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span>}
-
+            <span title="Edit Item" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
           </>
-
-
         ),
         id: 'EditTaskPopup',
         canSort: false,
@@ -1603,14 +1599,16 @@ const TaskStatusTbl = (Tile: any) => {
   });
   DashboardConfig = updatedDashboardConfig;
   const editPopFunc = (item: any) => {
-    setEditPopup(true);
-    setResult(item)
-  }
-  const EditComponentPopup = (item: any) => {
-    item['siteUrl'] = `${AllListId?.siteUrl}`;
-    item['listName'] = 'Master Tasks';
-    setEditCompPopup(true);
-    setCompResult(item)
+    if (item?.siteType != 'Master Tasks') {
+      setEditPopup(true);
+      setResult(item)
+    }
+    else {
+      item['siteUrl'] = `${AllListId?.siteUrl}`;
+      item['listName'] = 'Master Tasks';
+      setEditCompPopup(true);
+      setCompResult(item)
+    }
   }
   function CallBack() {
     setEditCompPopup(false);

@@ -32,6 +32,8 @@ CurrentMatchableDate.setHours(0, 0, 0, 0)
 const EmployeProfile = (props: any) => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
+  if (DashboardId == undefined || DashboardId == '')
+    DashboardId = params.get('dashBoardId');
   const [progressBar, setprogressBar] = useState(true)
   const [AllSite, setAllSite] = useState([]);
   const [data, setData]: any = React.useState({ AllTaskUser: [] });
