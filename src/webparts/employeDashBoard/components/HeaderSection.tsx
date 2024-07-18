@@ -13,6 +13,8 @@ let Count: any = 0
 const Header = () => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
+  if (DashboardId == undefined || DashboardId == '')
+    DashboardId = params.get('dashBoardId');
   const ContextData: any = useContext(myContextValue)
   let userName: any = ContextData?.currentUserData;
   const [activeTile, setActiveTile] = useState(undefined);
