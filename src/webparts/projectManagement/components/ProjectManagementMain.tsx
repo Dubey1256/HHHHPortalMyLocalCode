@@ -2436,7 +2436,7 @@ const ProjectManagementMain = (props: any) => {
                                             groupedData={groupedComponentData}
                                             pageName={"projectManagement"}
                                             /> : null}  
-                                            {Masterdata?.taggedPortfolios?.map((component: any, index: any) =>(`${component?.Title};`))}                                     
+                                            {smartPortfoliosData?.map((component: any, index: any) =>(`${component?.Title};`))}                                     
                                               <a className="ml-auto pull-right" onClick={()=>setopenServiceComponent(true)}>
                                             <span className="svg__iconbox svg__icon--editBox alignIcon"  ></span>
                                             </a>
