@@ -46,6 +46,8 @@ const AddEditWebpartTemplate = (props: any) => {
     const params = new URLSearchParams(window.location.search);
     let DashboardId: any = params.get('DashBoardId');
     if (DashboardId == undefined || DashboardId == '')
+        DashboardId = params.get('dashBoardId');
+    if (DashboardId == undefined || DashboardId == '')
         DashboardId = 1;
     const ContextData: any = useContext(myContextValue);
     let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": true, "IsDashboardFav": false, "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
@@ -1020,6 +1022,7 @@ const AddEditWebpartTemplate = (props: any) => {
                                                     </div>
                                                 </Col>
                                                 <Col sm="4" md="4" lg="4">
+                                                    <a className="pull-right" target="_blank" data-interception="off" href={props?.props?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/WebpartGallery.aspx"}>Webpart Gallery</a>
                                                     {/* <div className="form-check form-check-inline m-4">
                                                         <label className='SpfxCheckRadio hreflink siteColor' onClick={() => openTableSettingPopup("favBased")}>Table Configurations</label>
                                                     </div> */}
