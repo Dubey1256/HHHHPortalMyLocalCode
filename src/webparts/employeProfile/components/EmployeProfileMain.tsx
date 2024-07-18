@@ -51,25 +51,22 @@ const EmployeProfileMain = (props: any) => {
             ContractListID: props?.props?.ContractListID,
             HR_SMARTMETADATA_LISTID:props?.props?.HR_SMARTMETADATA_LISTID,
             siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
-
-            jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
+            jointSiteUrl: "https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP"
         }
         if (allSite?.MainSite == true) {
-            OldEmployeeProfile = `https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Contact-Profile.aspx?contactId=${params.get('contactId')}`
+            OldEmployeeProfile = `https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP/SitePages/Contact-Profile.aspx?contactId=${params.get('contactId')}`
             if (allSite?.MainSite) {
                 EmployeeDetails(params.get('contactId'));
             }
-
-
             // InstitutionDetails();
         }
         else if (allSite?.GMBHSite) {
             let contactId = params.get('contactId')
             HrGmbhEmployeDeatails(contactId)
-            OldEmployeeProfile = `https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SitePages/Contact-Profile.aspx?contactId=${params.get('contactId')}`
+            OldEmployeeProfile = `https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/GmBH/SitePages/Contact-Profile.aspx?contactId=${params.get('contactId')}`
         }
         else if (allSite?.HrSite) {
-            OldEmployeeProfile = `https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/EmployeeInfo-old.aspx?employeeId=${params.get('employeeId')}`
+            OldEmployeeProfile = `https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/HR/SitePages/EmployeeInfo-old.aspx?employeeId=${params.get('employeeId')}`
             let employeeId = params.get('employeeId')
             HrGmbhEmployeDeatails(employeeId)
         }
@@ -308,7 +305,7 @@ const EmployeProfileMain = (props: any) => {
             <div>
                 <div className='alignCenter border-bottom pb-2'>
                     <div>
-                        <img className='user-dp' src={EmployeeData?.Item_x0020_Cover?.Url != undefined ? EmployeeData?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                        <img className='user-dp' src={EmployeeData?.Item_x0020_Cover?.Url != undefined ? EmployeeData?.Item_x0020_Cover?.Url : "https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                     </div>
                     <div className='w-100 ms-4'>
                         <div className='alignCenter'>

@@ -712,7 +712,6 @@ return(
                         </div>
 
                         <div>
-                          
                            {myContextData2.allSite?.MainSite && <span>
                                 <a className="ForAll hreflink" target="_blank" data-interception="off"
                                     href={`${myContextData2.allSite?.MainSite?myContextData2?.allListId?.jointSiteUrl:myContextData2?.allListId?.siteUrl}/SitePages/contact-Profile.aspx?contactId=${updateData.Id}`}>
@@ -720,7 +719,6 @@ return(
                                         src="/_layouts/15/images/ichtm.gif?rev=23" alt="icon" />Go to Profile page
                                 </a>
                             </span>}
-                        
                             {myContextData2.allSite?.MainSite && <span>|</span>}
                           <a href={`${myContextData2.allSite?.MainSite?myContextData2?.allListId?.jointSiteUrl:myContextData2?.allListId?.siteUrl}/Lists/Institutions/EditForm.aspx?ID=${updateData?.Id}`}  data-interception="off"
                             target="_blank">Open out-of-the-box form</a> 
@@ -739,7 +737,7 @@ return(
                     </div>  
                     </div>
 
-                    {status.countryPopup ? <CountryContactEditPopup popupName="Country" 
+                    {status.countryPopup ? <CountryContactEditPopup popupName="Country" siteurl={props?.siteurl}
                     selectedCountry={currentCountry} 
                     callBack={CloseCountryPopup} data={countryData} updateData={updateData} /> : null}
 

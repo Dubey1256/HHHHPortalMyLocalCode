@@ -131,7 +131,7 @@ function ReadyMadeTable(SelectedProp: any) {
     let TaskUsers: any = [];
     let TasksItem: any = [];
     React.useEffect(() => {
-        if (AllSiteTasksData?.length > 0) {
+        if (AlltaskfilterData?.length > 0) {
             if (isUpdated != "") {
                 // if (portfolioTypeData.length > 0) {
                 //     portfolioTypeData?.map((elem: any) => {
@@ -185,7 +185,7 @@ function ReadyMadeTable(SelectedProp: any) {
         }
 
 
-    }, [AllSiteTasksData?.length > 0])
+    }, [AlltaskfilterData?.length > 0])
     
     React.useEffect(() => {
         setTimeout(() => {
@@ -522,8 +522,8 @@ function ReadyMadeTable(SelectedProp: any) {
                         item.flag = true;
                         item.TitleNew = item.Title;
                         item.childs = [];
-                        item.Item_x0020_Type="Task";
                         item.siteType = config.Title;
+                        item.Item_x0020_Type="Task";
                         item.listId = config.listId;
                         item.siteUrl = ContextValue.siteUrl;
                         item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
@@ -593,6 +593,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         result.Editor.suffix = authImg.Suffix
                     }
                 }
+                result["TaskID"] = globalCommon.GetTaskId(result);
                 result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
                 if (result.DisplayDueDate == "Invalid date" || "") {
                     result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
@@ -677,8 +678,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 
             });
             if(filterTaskType){
-                console.log(AllSiteTasksData)
-                 AlltaskfilterData=[...AllSiteTasksData,...AllTasksData]
+                console.log(AlltaskfilterData)
+                 AlltaskfilterData=AllTasksData;
                  await smartTimeUseLocalStorage(AlltaskfilterData)
                
                  setAllSiteTasksData(AlltaskfilterData);
@@ -687,6 +688,7 @@ function ReadyMadeTable(SelectedProp: any) {
             
             else{
                 await smartTimeUseLocalStorage(AllTasksData)
+                AlltaskfilterData=AllTasksData
                 setAllSiteTasksData(AllTasksData);
             }
            
@@ -697,6 +699,7 @@ function ReadyMadeTable(SelectedProp: any) {
             }
             if(AllTasksData?.length==0 ){
                 let data=[{}];
+                AlltaskfilterData=data;
                 setAllSiteTasksData(data);
             }
         
@@ -940,9 +943,16 @@ function ReadyMadeTable(SelectedProp: any) {
                             TasksItem.push(result);
                             AllTasksData.push(result);
                         });
+                         // allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
+                         try {
+                            allTaskDataFlatLoadeViewBackup = AllTasksData?.length>0?JSON.parse(JSON.stringify(AllTasksData)):[]
+                        } catch (error) {
+                            console.log("backup Json parse error Page Loade Task Data");
+                        }
                         if(filterTaskType){
                             console.log(AllSiteTasksData)
                              AlltaskfilterData=[...AllSiteTasksData,...AllTasksData]
+                          
                              await smartTimeUseLocalStorage(AlltaskfilterData)
                            
                              setAllSiteTasksData(AlltaskfilterData);
@@ -951,21 +961,18 @@ function ReadyMadeTable(SelectedProp: any) {
                         
                         else{
                             await smartTimeUseLocalStorage(AllTasksData)
+                            AlltaskfilterData=AllTasksData
                             setAllSiteTasksData(AllTasksData);
                         }
                        
                         // countTaskAWTLevel(AllTasksData, '');
                         // let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
-                        // allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
-                        try {
-                            allTaskDataFlatLoadeViewBackup = AllTasksData?.length>0?JSON.parse(JSON.stringify(AllTasksData)):[]
-                        } catch (error) {
-                            console.log("backup Json parse error Page Loade Task Data");
-                        }
+                       
                         // allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
                     }
                     if(AllTasksMatches?.length==0 && Counter == siteConfig?.length){
                         let data=[{}];
+                        AlltaskfilterData=data;
                         setAllSiteTasksData(data);
                     }
             });
@@ -1021,7 +1028,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 }
             });
         });
-        AllSiteTasksData?.map((task: any) => {
+        AlltaskfilterData?.map((task: any) => {
             task.TotalTaskTime = 0;
             const key = `Task${task?.siteType + task.Id}`;
             if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
@@ -1033,7 +1040,7 @@ function ReadyMadeTable(SelectedProp: any) {
             localStorage.setItem('timeEntryIndex', dataString);
         }
         console.log("timeEntryIndex", timeEntryIndex)
-        if (AllSiteTasksData?.length > 0) {
+        if (AlltaskfilterData?.length > 0) {
             setData([]);
             portfolioTypeData?.map((port: any, index: any) => {
                 if (SelectedProp?.SelectedItem != undefined) {
@@ -1076,7 +1083,7 @@ function ReadyMadeTable(SelectedProp: any) {
         }
 
         setLoaded(true)
-        return AllSiteTasksData;
+        return AlltaskfilterData;
     };
     const GetComponents = async () => {
         if (portfolioTypeData.length > 0) {
@@ -1352,7 +1359,7 @@ function ReadyMadeTable(SelectedProp: any) {
         if (AllMasterTasksData?.length > 0) {
             DataPrepareForCSFAWT()
         }
-    }, [(AllMasterTasksData.length > 0 && AllSiteTasksData?.length > 0)]);
+    }, [(AllMasterTasksData.length > 0 && AlltaskfilterData?.length > 0)]);
 
 
     function DataPrepareForCSFAWT(){
@@ -1490,7 +1497,7 @@ function ReadyMadeTable(SelectedProp: any) {
                             elem1?.Portfolio?.Id === SelectedProp?.SelectedItem?.Id
                     );
                 }else{
-                    Actatcomponent = AllSiteTasksData?.filter(
+                    Actatcomponent = AlltaskfilterData?.filter(
                         (elem1: any) =>
                             elem1?.TaskType?.Id === 1 &&
                             elem1?.Portfolio?.Id === SelectedProp?.SelectedItem?.Id
@@ -1544,7 +1551,7 @@ function ReadyMadeTable(SelectedProp: any) {
             }else{
                 temp.subRows =
             
-                AllSiteTasksData?.filter((elem1: any) =>
+                AlltaskfilterData?.filter((elem1: any) =>
                     elem1?.TaskType?.Id != undefined &&
                     elem1?.TaskType?.Level != 1 &&
                     elem1?.TaskType?.Level != 2 &&
@@ -1561,7 +1568,14 @@ function ReadyMadeTable(SelectedProp: any) {
             componentData.push(temp)
         }
         setLoaded(true);
-        setData(componentData);
+        const modifiedData = componentData.reduce((result:any, item:any) => {
+            result.push(item);
+            if (item.title === 'others') {
+              return result;
+            }
+            return result;
+          }, []);
+        setData(modifiedData);
         console.log(AfterFilterTaskCount);
     }
     //---------------------- ********* component Grouping Function  End----------------- *********************************
@@ -1589,13 +1603,13 @@ function ReadyMadeTable(SelectedProp: any) {
         }
        }else{
         if (items?.Id != undefined) {
-            findActivity = AllSiteTasksData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id && elem?.Portfolio?.Id === items?.Id);
-            findTasks = AllSiteTasksData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && (elem1?.ParentTask?.Id === 0 || elem1?.ParentTask?.Id === undefined) && elem1?.Portfolio?.Id === items?.Id);
+            findActivity = AlltaskfilterData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id && elem?.Portfolio?.Id === items?.Id);
+            findTasks = AlltaskfilterData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && (elem1?.ParentTask?.Id === 0 || elem1?.ParentTask?.Id === undefined) && elem1?.Portfolio?.Id === items?.Id);
         }
 
         else {
-            findActivity = AllSiteTasksData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id);
-            findTasks = AllSiteTasksData?.filter((elem1: any) => {
+            findActivity = AlltaskfilterData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id);
+            findTasks = AlltaskfilterData?.filter((elem1: any) => {
                 if (elem1?.TaskType?.Id != levelType.Id && (elem1?.ParentTask?.Id === 0 || elem1?.ParentTask?.Id === undefined)) {
 
                 }
@@ -1610,7 +1624,7 @@ function ReadyMadeTable(SelectedProp: any) {
 
         findActivity?.forEach((act: any) => {
             act.subRows = [];
-            let worstreamAndTask = AllSiteTasksData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
+            let worstreamAndTask = AlltaskfilterData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
             countAllTasksData = countAllTasksData.concat(worstreamAndTask);
             if (worstreamAndTask.length > 0) {
                 act.subRows = act?.subRows?.concat(worstreamAndTask);
@@ -1618,7 +1632,7 @@ function ReadyMadeTable(SelectedProp: any) {
             }
             worstreamAndTask?.forEach((wrkst: any) => {
                 wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
-                let allTasksData = AllSiteTasksData?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
+                let allTasksData = AlltaskfilterData?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
                 if (allTasksData.length > 0) {
                     wrkst.subRows = wrkst?.subRows?.concat(allTasksData);
                     // AfterFilterTaskCount = AfterFilterTaskCount.concat(allTasksData);
@@ -1691,8 +1705,9 @@ function ReadyMadeTable(SelectedProp: any) {
     //    }
 
     //------------ *************** wst grouping function Start------------------------  *******************************
+    
     const componentWsT = (items: any) => {
-        let findws = AllSiteTasksData.filter(
+        let findws = AlltaskfilterData.filter(
             (elem1: any) =>
                 elem1?.ParentTask?.Id === items?.Id &&
                 elem1?.siteType === items?.siteType
@@ -1700,7 +1715,7 @@ function ReadyMadeTable(SelectedProp: any) {
         countAllTasksData = countAllTasksData.concat(findws);
         findws?.forEach((act: any) => {
             act.subRows = [];
-            let allTasksData = AllSiteTasksData.filter(
+            let allTasksData = AlltaskfilterData.filter(
                 (elem1: any) =>
                     elem1?.ParentTask?.Id === act?.Id && elem1?.siteType === act?.siteType
             );
@@ -1711,7 +1726,6 @@ function ReadyMadeTable(SelectedProp: any) {
         });
         items.subRows = items?.subRows?.concat(findws);
     };
-   
     // *************** wst grouping function End   *******************************
     // const updatedSmartFilterFlatViewData = (data: any) => {
     //     hasCustomExpanded = false

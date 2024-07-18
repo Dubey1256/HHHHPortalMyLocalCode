@@ -53,7 +53,7 @@ const orgContactEditPopup = (props: any) => {
     
     const InstitutionDetails = async () => {
         try {
-            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
+            let web = new Web("https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP");
             await web.lists.getById('9f13fd36-456a-42bc-a5e0-cd954d97fc5f')
                 .items
                 .select("Id,FirstName,ItemType,FullName,WorkCity,WorkCountry")
