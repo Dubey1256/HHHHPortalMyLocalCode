@@ -473,7 +473,8 @@ export default function VersionHistory(props: any) {
                                 const WorkingActionValue = JSON.parse(currentObj?.WorkingAction);
                                 WorkingActionValue?.map((item: any) => {
                                     newKey = item?.Title;
-                                    differingPairs[newKey] = item?.InformationData;
+                                    if (item?.InformationData != undefined)
+                                        differingPairs[newKey] = item?.InformationData;
                                 })
 
                             }
@@ -647,7 +648,8 @@ export default function VersionHistory(props: any) {
                                     const WorkingActionValue = JSON.parse(currentObj?.WorkingAction);
                                     WorkingActionValue?.map((item: any) => {
                                         newKey = item?.Title;
-                                        differingPairs[newKey] = item?.InformationData;
+                                        if (item?.InformationData != undefined)
+                                            differingPairs[newKey] = item?.InformationData;
                                     })
 
                                 }
