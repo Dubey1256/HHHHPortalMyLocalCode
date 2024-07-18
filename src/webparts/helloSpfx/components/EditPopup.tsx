@@ -642,9 +642,9 @@ const EditPopup = (props: any) => {
                 </div>
                 <div className="col-sm-12 my-4">
                             <label className="full_width">
-                                <div className="alignCenter"><span onClick={() => {setOpenFeedback(!openFeedback)}}>{openFeedback ? <BsChevronDown/> : <BsChevronRight/>}</span>Feedback</div>
+                                <div className="alignCenter"><span className='me-1' onClick={() => {setOpenFeedback(!openFeedback)}}>{openFeedback ? <BsChevronDown/> : <BsChevronRight/>}</span>Feedback</div>
                             </label>
-                        {openFeedback ? (<div className="border border-top-0 p-2">
+                        {openFeedback ? (<div className="feedback-box">
                             <div className="star-block">
                                 {localRatings.map((rating: any, index: number) => (
                                     <div key={index} className="skillBlock">
