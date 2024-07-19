@@ -2151,7 +2151,8 @@ const CopyTaskProfile = (props: any) => {
                                                                                 <span  className="hover-text me-1" >
                                                                                 <span className='svg__icon--info svg__iconbox mt-1'></span> 
                                                                                 <span className="tooltip-text pop-left">
-                                                                                <div className="alignCenter">
+                                                                                <div className="alignCenter"> 
+                                                                                <span className='me-2'>  By </span>
                                                                             {BottleneckData.CreatorImage != undefined && BottleneckData.CreatorImage.length > 0 ? <img
                                                                                 className="ProirityAssignedUserPhoto m-0"
                                                                                 title={BottleneckData.CreatorName}
@@ -2217,6 +2218,7 @@ const CopyTaskProfile = (props: any) => {
                                                                                 <span className='svg__icon--info svg__iconbox mt-1'></span> 
                                                                                 <span className="tooltip-text pop-left">
                                                                                 <div className="alignCenter">
+                                                                                <span className='me-2'>  By </span>
                                                                             {AttentionData.CreatorImage != undefined && AttentionData.CreatorImage.length > 0 ? <img
                                                                                 className="ProirityAssignedUserPhoto m-0"
                                                                                 title={AttentionData.CreatorName}
@@ -2278,9 +2280,10 @@ const CopyTaskProfile = (props: any) => {
                                                                                     </span>
                                                                                 </span>}
                                                                                 <span  className="hover-text me-1" >
-                                                                                <span className=' mt-1'></span> 
-                                                                                <span className="tooltip-text pop-left">
+                                                                                <span className=' svg__icon--info svg__iconbox mt-1'></span> 
+                                                                                <span className="tooltip-text pop-left"> 
                                                                                 <div className="alignCenter">
+                                                                                   <span className='me-2'>  By </span>
                                                                             {PhoneData.CreatorImage != undefined && PhoneData.CreatorImage.length > 0 ? <img
                                                                                 className="ProirityAssignedUserPhoto m-0"
                                                                                 title={PhoneData.CreatorName}
