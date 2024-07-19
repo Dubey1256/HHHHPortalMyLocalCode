@@ -550,7 +550,7 @@ const EditPopup = (props: any) => {
         >
             <div className='modal-body mb-5'>
                 <div>
-                    <div className='sectionHead siteBdrBottom mb-1'>Profile</div>
+                    <div className='full-width fw-semibold mb-1 mt-1 siteBdrBottom'>Profile</div>
                     <div className='row'>
                         <div className='col-sm-6 mb-2'>
                             <div className='input-group'>
@@ -571,7 +571,7 @@ const EditPopup = (props: any) => {
                         <div className='col-sm-6 mb-2'>
                             <div className='input-group'>
                                 <label className='form-label full-width'>Experience</label>
-                                <div className='d-flex'>
+                                <div className='d-flex justify-content-between w-100'>
                                     <input
                                         className='form-control form-control-sm'
                                         type='number'
@@ -605,11 +605,11 @@ const EditPopup = (props: any) => {
                         </div>
                     </div>
                     <div className="col-sm-12">
-                        <div className='input-group'>
-                            <label className="form-label full-width">Platform</label>
-                            <div className="CustomCheckRadio justify-content-between valign-middle">
+                    <div className="full-width fw-semibold mb-1 mt-1 siteBdrBottom">Platform</div>
+                        <div className='d-flex gap-1 justify-content-between valign-middle'>
+                            <div className="d-flex gap-2 justify-content-between valign-middle">
                                 {platformChoices.map((item) => (
-                                    <label className="SpfxCheckRadio" key={item.name}>
+                                    <label key={item.name}>
                                         <input
                                             type="checkbox"
                                             className="cursor-pointer form-check-input me-1"
@@ -619,7 +619,10 @@ const EditPopup = (props: any) => {
                                         {item.name}
                                     </label>
                                 ))}
-                                <label className="label--checkbox">
+                            
+                            </div>
+                            <div>
+                                 <label className="label--checkbox">
                                     <input
                                         className="form-control"
                                         type="text"
@@ -628,23 +631,23 @@ const EditPopup = (props: any) => {
                                         onChange={handleOtherChoiceChange}
                                         style={{ display: showTextInput ? 'block' : 'none' }}
                                     />
-                                </label>
+                                 </label>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="col-sm-12 mb-3">
-                    <div className="sectionHead siteBdrBottom mb-1">Cover Letter/Motivation</div>
+                <div className="col-sm-12 mb-3 mt-3">
+                    <div className="full-width fw-semibold mb-2 mt-1 pt-2 siteBdrBottom">Cover Letter/Motivation</div>
                     <HtmlEditorCard
                         editorValue={props.item.Motivation !== undefined && props.item.Motivation !== null ? props.item.Motivation : ''}
                         HtmlEditorStateChange={HtmlEditorCallBack}
                     />
                 </div>
                 <div className="col-sm-12 my-4">
-                            <label className="full_width">
-                                <div className="alignCenter"><span className='me-1' onClick={() => {setOpenFeedback(!openFeedback)}}>{openFeedback ? <BsChevronDown/> : <BsChevronRight/>}</span>Feedback</div>
+                            <label className="full_width fw-semibold pb-1 siteBdrBottom">
+                                <div className="alignCenter"><span onClick={() => {setOpenFeedback(!openFeedback)}}>{openFeedback ? <BsChevronDown/> : <BsChevronRight/>}</span>Feedback</div>
                             </label>
-                        {openFeedback ? (<div className="feedback-box">
+                        {openFeedback ? (<div className="border-top p-2">
                             <div className="star-block">
                                 {localRatings.map((rating: any, index: number) => (
                                     <div key={index} className="skillBlock">
@@ -664,7 +667,7 @@ const EditPopup = (props: any) => {
                 </div>
 
                 <div className="col-sm-12 mb-3">
-                    <div className="sectionHead siteBdrBottom mb-1">Overall Remarks</div>
+                    <div className="full-width fw-semibold mb-1 mt-1 siteBdrBottom">Overall Remarks</div>
                     <textarea
                         name="remarks"
                         value={overAllRemark}
@@ -675,7 +678,7 @@ const EditPopup = (props: any) => {
                 <div className="row">
                     <div className="col-sm-6">
                         <div className='input-group'>
-                            <div className="sectionHead siteBdrBottom mb-1 w-100">Documents
+                            <div className="full-width fw-semibold mb-1 mt-1 siteBdrBottom">Documents
                                 <span className="pull-right text-end">
                                     <a onClick={() => setShowAddDocumentPanel(true)} className="f-13 hreflink">+Add More</a>
                                 </span>
