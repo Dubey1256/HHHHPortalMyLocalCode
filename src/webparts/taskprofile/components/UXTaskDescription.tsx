@@ -958,7 +958,7 @@ const uxdescriptions = (props: any) => {
                                             <div className='bg-white p-2 rounded-1'>
                                                 <div className="col mb-2">
                                                     <div className='justify-content-between d-flex'>
-                                                        {/* <div className="alignCenter m-0">
+                                                        <div className="alignCenter m-0">
                                                             {props?.ApprovalStatus ?
                                                                 <span className="alignCenter">
                                                                     <span title="Rejected"
@@ -988,7 +988,7 @@ const uxdescriptions = (props: any) => {
                                                                 </span>
                                                                 : null
                                                             }
-                                                        </div> */}
+                                                        </div>
                                                         <div className='m-0'>
                                                             <span className="d-block">
                                                                 <a className="siteColor" style={{ cursor: 'pointer' }} onClick={(e) => showhideCommentBox(i,'objective')}>Add Comment</a>
@@ -1121,7 +1121,7 @@ const uxdescriptions = (props: any) => {
                                                 {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                                                     return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
                                                         <div className='justify-content-between d-flex'>
-                                                            {/* <div className='alignCenter m-0'>
+                                                            <div className='alignCenter m-0'>
                                                                 {props?.ApprovalStatus ?
                                                                     <span className="alignCenter">
                                                                         <span title="Rejected"
@@ -1148,7 +1148,7 @@ const uxdescriptions = (props: any) => {
                                                                     </span>
                                                                     : null
                                                                 }
-                                                            </div> */}
+                                                            </div>
                                                             <div className='m-0'>
                                                                 <a className="d-block text-end">
                                                                     <a className='siteColor' style={{ cursor: 'pointer' }}

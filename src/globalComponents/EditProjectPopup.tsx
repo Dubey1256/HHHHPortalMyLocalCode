@@ -1141,7 +1141,7 @@ function EditProjectPopup(item: any) {
           ? PostShort_x0020_Description_x0020_On
           : EditData.Short_x0020_Description_x0020_On,
       Body:
-        PostBody != undefined && PostBody != "" ? PostBody : EditData.Body,
+        PostBody != undefined && PostBody != null ? PostBody : EditData.Body,
       AssignedToId: {
         results:
           AssignedToIds != undefined && AssignedToIds?.length > 0
@@ -1988,8 +1988,8 @@ function EditProjectPopup(item: any) {
 
                                   <HtmlEditorCard
                                     editorValue={
-                                      EditData.Body != undefined
-                                        ? EditData.Body
+                                      PostBody != undefined && PostBody != null
+                                        ? PostBody
                                         : ""
                                     }
                                     HtmlEditorStateChange={HtmlEditorCallBack}
