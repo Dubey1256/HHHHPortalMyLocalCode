@@ -34,8 +34,10 @@ const EditConfiguration = (props: any) => {
     const [IsManageConfigPopup, setIsManageConfigPopup] = React.useState(false);
     const [SelectedItem, setSelectedItem]: any = React.useState({});
     const [IsWebPartPopup, setIsWebPartPopup] = React.useState(false);
+    const [IsTemplatePopup, setIsTemplatePopup] = React.useState(false);
     const [type, setType] = useState<any>({});
     const [IsOpenPopup, setIsOpenPopup] = React.useState(false);
+    const [IsDashboardPage, setIsDashboardPage] = React.useState(false);
     const [IsDashboardTemplate, setIsDashboardTemplate] = React.useState(false);
     const [DashboardTemplateItem, setDashboardTemplateItem]: any = React.useState({});
 
@@ -81,6 +83,7 @@ const EditConfiguration = (props: any) => {
         }
         return isExists;
     }
+
     const drop = (e: any, childindex: any, index: any, statusProperty: any) => {
         console.log(e);
 
@@ -403,11 +406,16 @@ const EditConfiguration = (props: any) => {
     const OpenConfigPopup = (Config: any) => {
         setIsManageConfigPopup(true);
         let item = ExistingWepartsBackup?.filter((obj: any) => obj.WebpartId === Config.WebpartId);
-        setSelectedItem(item[0]);
+        if (item?.length > 0)
+            setSelectedItem(item[0]);
+        else {
+            setIsDashboardPage(true);
+            setSelectedItem(Config);
+        }
     }
     const CloseConfigPopup = async (itesm: any, newitem: any) => {
 
-        if (itesm === true) {
+        if (itesm === true && SelectedItem?.UpdatedId != undefined) {
             let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
             await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Id eq " + SelectedItem?.UpdatedId).top(1).orderBy("Id", false).get().then(async (data: any) => {
                 const updatedItems = [...NewItem];
@@ -420,13 +428,21 @@ const EditConfiguration = (props: any) => {
                 })
             })
         }
+        setIsDashboardPage(false);
         setIsManageConfigPopup(false);
         setSelectedItem('');
     }
 
     const AddWebpartPopup = () => {
+        let IsIsWebPartPopupNew = IsWebPartPopup === true ? false : true;
+        setIsWebPartPopup(IsIsWebPartPopupNew);
+        setIsTemplatePopup(false);
+    }
+    const AddTemplatePopup = () => {
 
-        setIsWebPartPopup(true);
+        let IsTemplatePopupNew = IsTemplatePopup === true ? false : true;
+        setIsTemplatePopup(IsTemplatePopupNew);
+        setIsWebPartPopup(false);
     }
     const CloseWebpartPopup = (array: any, Properties: any) => {
         if (array?.length > 0) {
@@ -511,11 +527,11 @@ const EditConfiguration = (props: any) => {
                 if (webpart?.Configurations != undefined) {
                     let ConfigItem: any = JSON.parse(webpart?.Configurations);
                     backupaaray.push(ConfigItem);
-                    let items = TempBackup?.filter((obj: any) => obj.WebpartId === ConfigItem.WebpartId);
-                    if (items?.length === 0) {
-                        ConfigItem.Title = ConfigItem.WebpartTitle != undefined ? ConfigItem.WebpartTitle : ConfigItem.Title
-                        aaray.push(ConfigItem)
-                    }
+                    //  let items = TempBackup?.filter((obj: any) => obj.WebpartId === ConfigItem.WebpartId);
+                    //  if (items?.length === 0) {
+                    ConfigItem.Title = ConfigItem.WebpartTitle != undefined ? ConfigItem.WebpartTitle : ConfigItem.Title
+                    aaray.push(ConfigItem)
+                    // }
                 }
             })
             let ExistingWepartsItems = [...ExistingWeparts];
@@ -530,13 +546,15 @@ const EditConfiguration = (props: any) => {
 
     const CloseIsConfigPopup = (Item: any) => {
         if (Item === true) {
-            LoadCallbackExistingWebparts()
+            LoadExistingWebparts()
         }
         setIsOpenPopup(false);
     }
     const CloseDashboardTemplate = (Item: any) => {
-        if (Item === true) {
-            LoadCallbackExistingWebparts()
+        if (Item != undefined) {
+            let DataItem = [...NewItem]
+            DataItem[dragOverItem.CurrentIndex].ArrayValue = DataItem[dragOverItem.CurrentIndex].ArrayValue.concat(Item);
+            setNewItem(DataItem);
         }
         setIsDashboardTemplate(false);
     }
@@ -628,7 +646,7 @@ const EditConfiguration = (props: any) => {
                     {progressBar && <PageLoader />}
                     {props?.IsDashboardPage == true && <a data-interception="off" target="_blank" className="pull-right empCol hreflink" href={props?.props?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx"}>Go To All Dashboard</a>}
                     <div className="mb-2">
-                        <label className='form-label full-width'>Dashboard Title</label>
+                        <label className='form-label full-width'>Dashboard Title <span className="ml-1 mr-1 text-danger">*</span></label>
                         <input className='form-control' type='text' placeholder="Dashboard Title" value={DashboardTitle} onChange={(e) => setDashboardTitle(e.target.value)} />
                     </div>
                     <div className="mb-2">
@@ -692,21 +710,49 @@ const EditConfiguration = (props: any) => {
                             <div className="col-sm-3 text-end">
                                 <div className='form-label full-width mb-1 alignCenter' onClick={(e) => AddColumn('')}><a className="alignCenter hreflink ml-auto siteColor"><span className="svg__iconbox svg__icon--Plus mini"></span> Add Column</a></div>
                                 <div className='form-label full-width alignCenter' onClick={(e) => AddWebpartPopup()}><a className="alignCenter hreflink ml-auto siteColor"> <span className="svg__iconbox svg__icon--Plus mini"></span> Add WebPart</a></div>
+                                <div className='form-label full-width alignCenter' onClick={(e) => AddTemplatePopup()}><a className="alignCenter hreflink ml-auto siteColor"> <span className="svg__iconbox svg__icon--Plus mini"></span> Add Template</a></div>
                                 {IsWebPartPopup && <div className='my-2 card addconnect boxshadow' >
-                                    <div className="alignCenter border-bottom f-15 fw-semibold m-2 siteColor"><div>Existing Webparts</div><div className="ml-auto" onClick={CreateNewWebPart}>Create new Webpart</div></div>
+                                    <div className="alignCenter border-bottom f-15 fw-semibold m-2 siteColor"><div>Basic Webpart Gallery <span className="hover-text">
+                                        <span className="svg__iconbox mt-1 svg__icon--info dark"></span>
+                                        <span className="tooltip-text pop-left">
+                                        Basic Webparts provide basic filters and can be customized in each Dashboard.
+                                        </span>
+                                    </span></div><div className="ml-auto" onClick={CreateNewWebPart}>Create new Webpart</div></div>
                                     <div className="card-body">
                                         {IsWebPartPopup && ExistingWeparts?.length > 0 && ExistingWeparts?.map((item: any, index: any) => {
-                                            return (
-                                                <>
-                                                    <div className="alignCenter bg-siteColor justify-content-center mb-1 w-100" style={{ height: '30px' }} onDragStart={(e) => dragStart(e, index, index)}
-                                                        onDragEnter={(e) => dragEnd(e, index, index)}
-                                                        onDragEnd={(e) => drop(item, index, index, "DifferentArray")}
-                                                        key={index}
-                                                        draggable
-                                                    >{item.WebpartTitle === undefined ? item.Title : item.WebpartTitle}
-                                                    </div>
-                                                </>
-                                            )
+                                            if (item.Key === "WebpartTemplate") {
+                                                return (
+                                                    <>
+                                                        <div className="alignCenter bg-siteColor justify-content-center mb-1 w-100" style={{ height: '30px' }} onDragStart={(e) => dragStart(e, index, index)}
+                                                            onDragEnter={(e) => dragEnd(e, index, index)}
+                                                            onDragEnd={(e) => drop(item, index, index, "DifferentArray")}
+                                                            key={index}
+                                                            draggable
+                                                        >{item.WebpartTitle === undefined ? item.Title : item.WebpartTitle}
+                                                            <span title="Edit" className="light ml-12 svg__icon--editBox svg__iconbox" onClick={(e) => OpenConfigPopup(item)} ></span>
+                                                        </div>
+                                                    </>
+                                                )
+                                            }
+                                        })}</div>
+                                </div>}
+                                {IsTemplatePopup && <div className='my-2 card addconnect boxshadow' >
+                                    <div className="alignCenter border-bottom f-15 fw-semibold m-2 siteColor"><div>Existing Templates</div></div>
+                                    <div className="card-body">
+                                        {IsTemplatePopup && ExistingWeparts?.length > 0 && ExistingWeparts?.map((item: any, index: any) => {
+                                            if (item.Key === "DashboardTemplate") {
+                                                return (
+                                                    <>
+                                                        <div className="alignCenter bg-siteColor justify-content-center mb-1 w-100" style={{ height: '30px' }} onDragStart={(e) => dragStart(e, index, index)}
+                                                            onDragEnter={(e) => dragEnd(e, index, index)}
+                                                            onDragEnd={(e) => drop(item, index, index, "DifferentArray")}
+                                                            key={index}
+                                                            draggable
+                                                        >{item.WebpartTitle === undefined ? item.Title : item.WebpartTitle}
+                                                        </div>
+                                                    </>
+                                                )
+                                            }
                                         })}</div>
                                 </div>}
 
@@ -724,7 +770,7 @@ const EditConfiguration = (props: any) => {
                 </div>
             </Panel >
             <span>
-                {IsManageConfigPopup && <AddEditWebpartTemplate props={props?.props} DashboardPage={false} DashboardConfigBackUp={Items} SingleWebpart={true} EditItem={SelectedItem} IsOpenPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />}
+                {IsManageConfigPopup && <AddEditWebpartTemplate props={props?.props} DashboardPage={IsDashboardPage} DashboardConfigBackUp={Items} SingleWebpart={true} EditItem={SelectedItem} IsOpenPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />}
             </span>
             <span>
                 {IsOpenPopup && <AddEditWebpartTemplate props={props?.props} SingleWebpart={true} EditItem={""} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseIsConfigPopup} />}

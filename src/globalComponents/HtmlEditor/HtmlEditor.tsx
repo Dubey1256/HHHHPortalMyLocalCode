@@ -12,7 +12,7 @@ export default function HtmlEditorCard(Props: any) {
 
     const config = useMemo(() => ({
         readonly: false,
-        placeholder: Props?.placeholder || 'Start typing...',
+        placeholder: Props?.placeholder || 'Write Description....',
         uploader: {
             insertImageAsBase64URI: true
         },
@@ -26,10 +26,10 @@ export default function HtmlEditorCard(Props: any) {
                     const accordionHTML = `
                         <details>
                             <summary>
-                              <a> <span>Case Studies</span> </a>
+                              <a> <span>Custom Accordion</span> </a>
                             </summary>
                             <div class="expand-AccordionContent border clearfix">
-                              test details
+                              
                             </div>
                         </details>
                     `;
