@@ -266,6 +266,8 @@ const CopyTaskProfile = (props: any) => {
                                 "https://hhhhteams.sharepoint.com/sites/HHHH"
                             );
                             OffshoreComments.push(items);
+                        }else{
+                            OffshoreComments.push(items); 
                         }
                     });
                 }
@@ -2586,16 +2588,19 @@ const CopyTaskProfile = (props: any) => {
                                                         })}
                                                     </div>
                                                 }
-                                                {state?.Result?.OffshoreComments != null && state?.Result?.OffshoreComments != undefined && state?.Result?.OffshoreComments.length > 0 && <div className="col-sm-8 pe-0 mt-2">
+                                                {state?.Result?.OffshoreComments != null && state?.Result?.OffshoreComments != undefined && state?.Result?.OffshoreComments?.length > 0 && <div className="col-sm-8 pe-0 mt-2">
                                                     <fieldset className='border p-1'>
                                                         <legend className="border-bottom fs-6">Background Comments</legend>
-                                                        {state?.Result?.OffshoreComments != null && state?.Result?.OffshoreComments.length > 0 && state?.Result?.OffshoreComments?.map((item: any, index: any) => {
+                                                        {state?.Result?.OffshoreComments != null && state?.Result?.OffshoreComments?.length > 0 && state?.Result?.OffshoreComments?.map((item: any, index: any) => {
                                                             return <div>
 
 
                                                                 <span className='round px-1'>
-                                                                    {item.AuthorImage != null &&
+                                                                    {item.AuthorImage != null ?
                                                                         <img className='align-self-start hreflink ' title={item?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, item?.AuthorName, taskUsers)} src={item?.AuthorImage} />
+                                                                       
+                                                                    :
+                                                                    <span title={item?.AuthorName!= undefined ? item?.AuthorName : "Default user icons"} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, item?.AuthorName, taskUsers)} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>  
                                                                     }
                                                                 </span>
 
