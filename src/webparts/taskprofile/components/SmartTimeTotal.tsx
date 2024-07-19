@@ -271,7 +271,7 @@ const SmartTimeTotalFunction = (item: any) => {
             {/* {smartTimeTotal.toFixed(1)} */}
             {TotalTime != null && TotalTime >= 0 ? TotalTime.toFixed(1) : 0.0}
             <span className='openhoverpopup hoverimg'>
-                <span className="svg__iconbox svg__icon--clock" onClick={OpenTimeEntry}></span>
+                <span className="svg__iconbox svg__icon--clock " onClick={OpenTimeEntry}></span>
                 <div className='hoverpopup overlay'>
                     <div className='hoverpopuptitle'>{item.props.Title}</div>
                     <div className='hoverpopupbody'>
