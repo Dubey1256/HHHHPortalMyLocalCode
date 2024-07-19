@@ -821,7 +821,7 @@ const EmployeProfile = (props: any) => {
     const currentDate = todayDate;
     currentDate.setDate(today.getDate());
     currentDate.setHours(0, 0, 0, 0);
-    if (DashboardId == 1) {
+    if (DashboardId == 1 || DashboardId == 27) {
       for (const items of array ?? []) {
         for (const config of DashboardConfig ?? []) {
           if (config?.Tasks == undefined) {
@@ -888,7 +888,7 @@ const EmployeProfile = (props: any) => {
                     }
                   }
                 }
-                if (config.TileName == 'AssignedTask' && !isTaskItemExists(config?.Tasks, items))
+                if (config?.IsAssignedTask === true && !isTaskItemExists(config?.Tasks, items))
                   config?.Tasks.push(items);
               }
             }
@@ -963,7 +963,7 @@ const EmployeProfile = (props: any) => {
   const getAllData = async (IsLoad: any) => {
     if (IsLoad != undefined && IsLoad == true) {
       await globalCommon?.loadAllSiteTasks(props?.props, undefined).then((data: any) => {
-        if (DashboardId == 1)
+        if (DashboardId == 1 || DashboardId == 27)
           loadAllTimeEntry();
         data?.map((items: any) => {
           items.descriptionsSearch = '';

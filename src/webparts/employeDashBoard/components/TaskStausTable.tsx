@@ -134,7 +134,7 @@ const TaskStatusTbl = (Tile: any) => {
     if (ContextData?.DataRange != undefined && ContextData?.DataRange?.length > 0) {
       setDateRange(ContextData?.DataRange)
     }
-  }, [ContextData?.DashboardConfig]);
+  }, [ContextData?.DashboardConfig]); 
   const ShowWorkingTask = (config: any, User: any, Time: any, ShowHideTable: any) => {
     DashboardConfig.forEach((configuration: any) => {
       if (configuration?.WebpartTitle == config?.WebpartTitle && configuration?.Tasks != undefined && configuration?.Tasks?.length > 0) {
@@ -1591,7 +1591,7 @@ const TaskStatusTbl = (Tile: any) => {
     }
   }
   if (Tile.activeTile != undefined && DashboardConfigCopy != undefined && DashboardConfigCopy?.length > 0)
-    DashboardConfig = DashboardConfigCopy.filter((config: any) => config?.TileName == '' || config?.TileName == Tile.activeTile);
+    DashboardConfig = DashboardConfigCopy.filter((config: any) => config?.TileName == '' || config?.TileName == Tile.activeTile);  
   const updatedDashboardConfig = DashboardConfig?.map((item: any, index: any) => {
     let columnss: any = [];
     columnss = generateDynamicColumns(item, index);
@@ -1807,7 +1807,7 @@ const TaskStatusTbl = (Tile: any) => {
         </a>}
         {config?.WebpartTitle == 'Draft Tasks' && <a className="empCol hreflink me-3">Approve</a>}
         {config?.WebpartTitle == 'Waiting for Approval' && <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>}
-        {(ContextData?.DashboardId == 1 || ContextData?.DashboardId == undefined || ContextData?.DashboardId == '') && <span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks, config)} className="hreflink svg__iconbox svg__icon--TShare empBg"></span>}
+        {(ContextData?.DashboardId == 1 || ContextData?.DashboardId == 27 || ContextData?.DashboardId == undefined || ContextData?.DashboardId == '') && <span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks, config)} className="hreflink svg__iconbox svg__icon--TShare empBg"></span>}
       </span>
     )
   }
