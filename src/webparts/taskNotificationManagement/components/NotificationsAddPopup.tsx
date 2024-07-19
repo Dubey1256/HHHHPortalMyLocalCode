@@ -369,8 +369,12 @@ export const NotificationsAddPopup = (props: any) => {
                                                                 {config?.NotificationType == "Email" ? <span className='svg__iconbox svg__icon--mail hreflink'></span> :
                                                                     <span className='svg__iconbox svg__icon--team hreflink'></span>}
                                                                 <span className='ms-2'>{config?.Notifier[0]?.text}</span>
-                                                                <span className='svg__iconbox svg__icon--edit ml-auto' onClick={() => EditTaskNotificationPopup(config, index)}></span>
-                                                                <span className='svg__iconbox svg__icon--trash' onClick={() => DeleteTaskNotificationPopup(config, index)}></span>
+                                                                <span className='svg__iconbox svg__icon--edit ml-auto' data-toggle="tooltip"
+                                                                    data-placement="bottom"
+                                                                    title="Edit" onClick={() => EditTaskNotificationPopup(config, index)}></span>
+                                                                <span className='svg__iconbox svg__icon--trash' data-toggle="tooltip"
+                                                                    data-placement="bottom"
+                                                                    title="delete" onClick={() => DeleteTaskNotificationPopup(config, index)}></span>
                                                             </div>
                                                             <div className='alignCenter'>
                                                                 <label className='form-label'>Task Status :</label>
@@ -445,9 +449,9 @@ export const NotificationsAddPopup = (props: any) => {
                                 <div><span className='pe-2'>Created</span><span className='pe-2'>{props?.SelectedEditItem?.Created !== null ? props?.SelectedEditItem?.Created : ""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Author?.Title}</a></span></div>
                                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{props?.SelectedEditItem?.Modified !== null ? props?.SelectedEditItem?.Modified : ""}&nbsp;By</span><span><a>{props?.SelectedEditItem?.Editor?.Title}</a></span></div>
                                 <div>
-                                    <a onClick={() => deleteDocumentsData(props?.SelectedEditItem?.Id)} className="hreflink"><span style={{ marginLeft: '-4px' }} className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item
+                                    <a onClick={() => deleteDocumentsData(props?.SelectedEditItem?.Id)} className="hreflink me-1"><span style={{ marginLeft: '-4px' }} className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item
                                     </a>
-                                    |
+                                     |
                                     <span>
                                         <VersionHistory
                                             taskId={props?.SelectedEditItem.Id}

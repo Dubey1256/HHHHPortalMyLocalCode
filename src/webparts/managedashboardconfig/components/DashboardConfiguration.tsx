@@ -8,6 +8,8 @@ import EditConfiguration from '../../../globalComponents/EditConfiguration';
 const DashboardConfiguration = (props: any) => {
     const params = new URLSearchParams(window.location.search);
     let DashboardId: any = params.get('DashBoardId');
+    if (DashboardId == undefined || DashboardId == '')
+        DashboardId = params.get('dashBoardId');
     const [WebpartConfig, setWebpartConfig] = React.useState<any>([]);
     const [IsOpenPopup, setIsOpenPopup] = React.useState<any>(false);
     const [EditItem, setEditItem] = React.useState<any>(undefined);

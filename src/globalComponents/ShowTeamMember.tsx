@@ -1,8 +1,7 @@
-
 // // Commits on Jun 1, 2023  take if required the neha changes in the page , it shows error on the all the profile 
 import * as React from "react";
 import { Button, Modal } from "react-bootstrap";
-import Tooltip from "./Tooltip";
+import Tooltip from "../globalComponents/Tooltip";
 import { MSGraphClientV3 } from '@microsoft/sp-http';
 import * as globalCommon from '../globalComponents/globalCommon';
 import { Web } from "sp-pnp-js";
@@ -112,9 +111,10 @@ function ShowTeamMembers(item: any) {
     setTeamMembers(uniqueAuthors);
     setLoaded(true);
   };
-  const dragStart = (e: any, position: any, index: any) => {
+  const dragStart = (e: any, position: any, index: any,path:any) => {
     dragItem.current = position;
     dragItem.current1 = index;
+    dragItem.path=path
     console.log(e.target.innerHTML);
   };
   const drop = async (e: any) => {
@@ -158,50 +158,55 @@ function ShowTeamMembers(item: any) {
       }
     }
   };
+  
   const drop1 = async (e: any) => {
-    e.preventDefault();
-    const copyListItems = [...teamMembers];
-    const copyListItems1 = [...allEmployeeData];
-    const dragItemContent = copyListItems1[dragItem.current1].Child[dragItem.current];
-    copyListItems1[dragItem.current1].Child.splice(dragItem.current, 1);
-    copyListItems?.splice(dragOverItem.current, 0, dragItemContent);
-    dragItem.current = null;
-    dragOverItem.current = null;
-    setTeamMembers(copyListItems);
-    setAllEmployeeData(copyListItems1);
-    let ab = copyListItems?.map((val: any) => val?.AssingedToUser?.EMail).join(",");
-    const emailStringWithoutSpaces: any = ab.replace(/\s/g, '');
-    setEmail(emailStringWithoutSpaces);
-    if (new_chat_resp != undefined && new_chat_resp != '') {
-      let mention_To: any = []
-      if (dragItemContent != undefined && dragItemContent != '')
-        mention_To.push(dragItemContent?.AssingedToUser?.EMail)
-      try {
-        const client: MSGraphClientV3 = await item?.context.msGraphClientFactory.getClient();
-        let participants: any = {};
-        for (let index = 0; index < mention_To?.length; index++) {
-          for (let TeamUserIndex = 0; TeamUserIndex < TeamUser?.length; TeamUserIndex++) {
-            if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase().trim() == TeamUser[TeamUserIndex].userPrincipalName.toLowerCase().trim())
-              participants = TeamUser[TeamUserIndex]
-            if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase().trim() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
-              participants = TeamUser[TeamUserIndex]
+    if(dragItem.path!=="selectTeamMemebrs"){
+      e.preventDefault();
+      const copyListItems = [...teamMembers];
+      const copyListItems1 = [...allEmployeeData];
+      const dragItemContent = copyListItems1[dragItem.current1].Child[dragItem.current];
+      copyListItems1[dragItem.current1].Child.splice(dragItem.current, 1);
+      copyListItems?.splice(dragOverItem.current, 0, dragItemContent);
+      dragItem.current = null;
+      dragOverItem.current = null;
+      setTeamMembers(copyListItems);
+      setAllEmployeeData(copyListItems1);
+      let ab = copyListItems?.map((val: any) => val?.AssingedToUser?.EMail).join(",");
+      const emailStringWithoutSpaces: any = ab.replace(/\s/g, '');
+      setEmail(emailStringWithoutSpaces);
+      if (new_chat_resp != undefined && new_chat_resp != '') {
+        let mention_To: any = []
+        if (dragItemContent != undefined && dragItemContent != '')
+          mention_To.push(dragItemContent?.AssingedToUser?.EMail)
+        try {
+          const client: MSGraphClientV3 = await item?.context.msGraphClientFactory.getClient();
+          let participants: any = {};
+          for (let index = 0; index < mention_To?.length; index++) {
+            for (let TeamUserIndex = 0; TeamUserIndex < TeamUser?.length; TeamUserIndex++) {
+              if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase().trim() == TeamUser[TeamUserIndex].userPrincipalName.toLowerCase().trim())
+                participants = TeamUser[TeamUserIndex]
+              if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase().trim() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
+                participants = TeamUser[TeamUserIndex]
+            }
           }
+          if (participants != undefined && participants != '') {
+            const conversationMember = {
+              '@odata.type': '#microsoft.graph.aadUserConversationMember',
+              'user@odata.bind': `https://graph.microsoft.com/v1.0/users/${participants?.id}`,
+              visibleHistoryStartDateTime: '2019-04-18T23:51:43.255Z',
+              roles: ['owner']
+            };
+            client.api('/chats/' + new_chat_resp + '/members').version('v1.0').post(conversationMember).then(function () {
+              console.log('add user successfully')
+            });
+          }
+        } catch (error) {
+          console.log(error)
         }
-        if (participants != undefined && participants != '') {
-          const conversationMember = {
-            '@odata.type': '#microsoft.graph.aadUserConversationMember',
-            'user@odata.bind': `https://graph.microsoft.com/v1.0/users/${participants?.id}`,
-            visibleHistoryStartDateTime: '2019-04-18T23:51:43.255Z',
-            roles: ['owner']
-          };
-          client.api('/chats/' + new_chat_resp + '/members').version('v1.0').post(conversationMember).then(function () {
-            console.log('add user successfully')
-          });
-        }
-      } catch (error) {
-        console.log(error)
       }
+
     }
+   
   };
   const CreateGroup = async (mention_To: any, GroupName: any, Context: any) => {
     try {
@@ -473,7 +478,7 @@ function ShowTeamMembers(item: any) {
                                       childItem?.Item_x0020_Cover?.Url != undefined ?
                                         <img
                                           onDragStart={(e) =>
-                                            dragStart(e, index, indexes)
+                                            dragStart(e, index, indexes, "")
                                           }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -483,7 +488,7 @@ function ShowTeamMembers(item: any) {
                                           title={childItem?.Title}
                                           src={childItem?.Item_x0020_Cover?.Url}
                                         /> : <span onDragStart={(e) =>
-                                          dragStart(e, index, indexes)
+                                          dragStart(e, index, indexes,"")
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -500,9 +505,9 @@ function ShowTeamMembers(item: any) {
                                   >
                                     {
                                       childItem?.Item_x0020_Cover?.Url != undefined ?
-                                        <img onDragStart={(e) => dragStart(e, index, indexes)} onDragOver={(e) => e.preventDefault()} key={index} draggable
+                                        <img onDragStart={(e) => dragStart(e, index, indexes,"")} onDragOver={(e) => e.preventDefault()} key={index} draggable
                                           className="ProirityAssignedUserPhoto" title={childItem?.Title} src={childItem?.Item_x0020_Cover?.Url} />
-                                        : <span onDragStart={(e) => dragStart(e, index, indexes)} onDragOver={(e) => e.preventDefault()} key={index} title={childItem?.Title} draggable className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                        : <span onDragStart={(e) => dragStart(e, index, indexes,"")} onDragOver={(e) => e.preventDefault()} key={index} title={childItem?.Title} draggable className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
                                     }
 
                                   </span>
@@ -517,7 +522,7 @@ function ShowTeamMembers(item: any) {
                                       childItem?.Item_x0020_Cover?.Url != undefined ?
                                         <img
                                           onDragStart={(e) =>
-                                            dragStart(e, index, indexes)
+                                            dragStart(e, index, indexes,"")
                                           }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -527,7 +532,7 @@ function ShowTeamMembers(item: any) {
                                           title={childItem?.Title}
                                           src={childItem?.Item_x0020_Cover?.Url}
                                         /> : <span onDragStart={(e) =>
-                                          dragStart(e, index, indexes)
+                                          dragStart(e, index, indexes,"")
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -545,7 +550,7 @@ function ShowTeamMembers(item: any) {
                                       childItem?.Item_x0020_Cover?.Url != undefined ?
                                         <img
                                           onDragStart={(e) =>
-                                            dragStart(e, index, indexes)
+                                            dragStart(e, index, indexes,"")
                                           }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -555,7 +560,7 @@ function ShowTeamMembers(item: any) {
                                           title={childItem?.Title}
                                           src={childItem?.Item_x0020_Cover?.Url}
                                         /> : <span onDragStart={(e) =>
-                                          dragStart(e, index, indexes)
+                                          dragStart(e, index, indexes,"")
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -573,7 +578,7 @@ function ShowTeamMembers(item: any) {
                                       childItem?.Item_x0020_Cover?.Url != undefined ?
                                         <img
                                           onDragStart={(e) =>
-                                            dragStart(e, index, indexes)
+                                            dragStart(e, index, indexes,"")
                                           }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -583,7 +588,7 @@ function ShowTeamMembers(item: any) {
                                           title={childItem?.Title}
                                           src={childItem?.Item_x0020_Cover?.Url}
                                         /> : <span onDragStart={(e) =>
-                                          dragStart(e, index, indexes)
+                                          dragStart(e, index, indexes,"")
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -601,7 +606,7 @@ function ShowTeamMembers(item: any) {
                                       childItem?.Item_x0020_Cover?.Url != undefined ?
                                         <img
                                           onDragStart={(e) =>
-                                            dragStart(e, index, indexes)
+                                            dragStart(e, index, indexes,"")
                                           }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -611,7 +616,7 @@ function ShowTeamMembers(item: any) {
                                           title={childItem?.Title}
                                           src={childItem?.Item_x0020_Cover?.Url}
                                         /> : <span onDragStart={(e) =>
-                                          dragStart(e, index, indexes)
+                                          dragStart(e, index, indexes,"")
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -629,7 +634,7 @@ function ShowTeamMembers(item: any) {
                                       childItem?.Item_x0020_Cover?.Url != undefined ?
                                         <img
                                           onDragStart={(e) =>
-                                            dragStart(e, index, indexes)
+                                            dragStart(e, index, indexes,"")
                                           }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -639,7 +644,7 @@ function ShowTeamMembers(item: any) {
                                           title={childItem?.Title}
                                           src={childItem?.Item_x0020_Cover?.Url}
                                         /> : <span onDragStart={(e) =>
-                                          dragStart(e, index, indexes)
+                                          dragStart(e, index, indexes,"")
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -657,7 +662,7 @@ function ShowTeamMembers(item: any) {
                                       childItem?.Item_x0020_Cover?.Url != undefined ?
                                         <img
                                           onDragStart={(e) =>
-                                            dragStart(e, index, indexes)
+                                            dragStart(e, index, indexes,"")
                                           }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -667,7 +672,7 @@ function ShowTeamMembers(item: any) {
                                           title={childItem?.Title}
                                           src={childItem?.Item_x0020_Cover?.Url}
                                         /> : <span onDragStart={(e) =>
-                                          dragStart(e, index, indexes)
+                                          dragStart(e, index, indexes,"")
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -685,7 +690,7 @@ function ShowTeamMembers(item: any) {
                                       childItem?.Item_x0020_Cover?.Url != undefined ?
                                         <img
                                           onDragStart={(e) =>
-                                            dragStart(e, index, indexes)
+                                            dragStart(e, index, indexes,"")
                                           }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -695,7 +700,7 @@ function ShowTeamMembers(item: any) {
                                           title={childItem?.Title}
                                           src={childItem?.Item_x0020_Cover?.Url}
                                         /> : <span onDragStart={(e) =>
-                                          dragStart(e, index, indexes)
+                                          dragStart(e, index, indexes,"")
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -713,7 +718,7 @@ function ShowTeamMembers(item: any) {
                                       childItem?.Item_x0020_Cover?.Url != undefined ?
                                         <img
                                           onDragStart={(e) =>
-                                            dragStart(e, index, indexes)
+                                            dragStart(e, index, indexes,"")
                                           }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -723,7 +728,7 @@ function ShowTeamMembers(item: any) {
                                           title={childItem?.Title}
                                           src={childItem?.Item_x0020_Cover?.Url}
                                         /> : <span onDragStart={(e) =>
-                                          dragStart(e, index, indexes)
+                                          dragStart(e, index, indexes,"")
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -741,7 +746,7 @@ function ShowTeamMembers(item: any) {
                                       childItem?.Item_x0020_Cover?.Url != undefined ?
                                         <img
                                           onDragStart={(e) =>
-                                            dragStart(e, index, indexes)
+                                            dragStart(e, index, indexes,"")
                                           }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -751,7 +756,7 @@ function ShowTeamMembers(item: any) {
                                           title={childItem?.Title}
                                           src={childItem?.Item_x0020_Cover?.Url}
                                         /> : <span onDragStart={(e) =>
-                                          dragStart(e, index, indexes)
+                                          dragStart(e, index, indexes,"")
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -769,7 +774,7 @@ function ShowTeamMembers(item: any) {
                                       childItem?.Item_x0020_Cover?.Url != undefined ?
                                         <img
                                           onDragStart={(e) =>
-                                            dragStart(e, index, indexes)
+                                            dragStart(e, index, indexes,"")
                                           }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -779,7 +784,7 @@ function ShowTeamMembers(item: any) {
                                           title={childItem?.Title}
                                           src={childItem?.Item_x0020_Cover?.Url}
                                         /> : <span onDragStart={(e) =>
-                                          dragStart(e, index, indexes)
+                                          dragStart(e, index, indexes,"")
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -797,7 +802,7 @@ function ShowTeamMembers(item: any) {
                                       childItem?.Item_x0020_Cover?.Url != undefined ?
                                         <img
                                           onDragStart={(e) =>
-                                            dragStart(e, index, indexes)
+                                            dragStart(e, index, indexes,"")
                                           }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -807,7 +812,7 @@ function ShowTeamMembers(item: any) {
                                           title={childItem?.Title}
                                           src={childItem?.Item_x0020_Cover?.Url}
                                         /> : <span onDragStart={(e) =>
-                                          dragStart(e, index, indexes)
+                                          dragStart(e, index, indexes,"")
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
@@ -835,7 +840,7 @@ function ShowTeamMembers(item: any) {
                       return (
                         <>
                           <span
-                            onDragStart={(e) => dragStart(e, index, index)}
+                            onDragStart={(e) => dragStart(e, index, index,"selectTeamMemebrs")}
                             onDragOver={(e) => e.preventDefault()}
                             key={index}
                             draggable

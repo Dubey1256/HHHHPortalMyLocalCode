@@ -377,7 +377,7 @@ const ImageViewPanel = (props: any) => {
 
                     <Slider ref={slider => (sliderRef = slider)} {...settings}>
                         {allImageData?.map((slide: any, index: any) => (
-                            <div key={index}>
+                            <div key={index} className={slide?.Exclude==true?"faded": ""}>
                                 <img 
                                     src={slide?.ImageUrl}
                                     loading="lazy"
@@ -555,7 +555,7 @@ const ImageViewPanel = (props: any) => {
 
     const singleImageView = (slide: any, index: any) => {
         return (
-            <>
+            <div className={slide?.Exclude ==true?'faded' : ""}>
                 <img src={slide?.ImageUrl} className={`w-100 ${slide?.fillHeart && "borderFavImage"}`} />
                 <div>
                     {checked && <div className='belowImageSection'>
@@ -721,7 +721,7 @@ const ImageViewPanel = (props: any) => {
                         </div>
                     </div>}
                 </div>
-            </>
+            </div>
         )
     }
 
