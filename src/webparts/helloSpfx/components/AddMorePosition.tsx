@@ -110,7 +110,7 @@ const AddMorePosition = (props: any) => {
             });
     
             alert("Position added successfully")
-            props?.callbackAdd()
+            props?.callBackAdd()
             props?.closePopup()
         } catch (error) {
             console.error(error);

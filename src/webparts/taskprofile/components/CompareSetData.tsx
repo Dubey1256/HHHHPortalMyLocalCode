@@ -327,7 +327,7 @@ const showSetData=(designtempateData:any ,indexdesign:any)=>{
 
                                <div className="d-flex pe-0 FeedBack-comment">
                                    <div className="border p-1 me-1">
-                                       <span >{arrayOfChar[indexdesign - 1] + "." + (i + 1)}.{j + 1}</span>
+                                       <span >{arrayOfChar[indexdesign] + "." + (i + 1)}.{j + 1}</span>
                                        <ul className="list-none">
                                            <li>
                                                {fbSubData?.Completed != null && fbSubData?.Completed &&
