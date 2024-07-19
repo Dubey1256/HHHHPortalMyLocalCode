@@ -132,11 +132,11 @@ const AddCommentComponent = (FbData: any) => {
     const updateCommentFunction = (e: any, CommentData: any, usedFor: any) => {
         if (usedFor == "ParentComment") {
             FeedBackArray[CommentData.Index].Title = e.target.value;
-            FbData.callBack(true, FeedBackArray, FbData?.UXStatus ?CommentData?.SubTextIndex:0);
+            FbData.callBack(true, FeedBackArray, FbData?.UXStatus ?CommentData?.SubTextIndex:FbData?.Index);
         }
         if (usedFor == "ReplyComment") {
             FeedBackArray[CommentData.SubTextIndex].ReplyMessages[CommentData.Index].Title = e.target.value;
-            FbData.callBack(true, FeedBackArray, FbData?.UXStatus ?CommentData?.SubTextIndex:0);
+            FbData.callBack(true, FeedBackArray, FbData?.UXStatus ?CommentData?.SubTextIndex:FbData?.Index);
         }
     }
     const cancelCommentBtn = () => {
