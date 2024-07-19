@@ -1504,7 +1504,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center', minHeight: '30px' }}>
                                 {RequiredData["Portfolio"] != null &&
                                     <span style={{ fontSize: '11.0pt' }} title={RequiredData["Portfolio"]?.Title}>
-                                        {RequiredData["Portfolio"]?.Title?.length > 17 ? RequiredData["Portfolio"]?.Title.slice(0, 14) + "..." : RequiredData["Portfolio"]?.Title}
+                                        {RequiredData["Portfolio"]?.Title?.length > 14 ? RequiredData["Portfolio"]?.Title.slice(0, 12) + "..." : RequiredData["Portfolio"]?.Title}
                                     </span>
                                 }
                             </div>
@@ -1643,7 +1643,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                         <div style={{ marginBottom: '8px' }}>
                                                                             <div style={{ fontWeight: '600' }}>{fbComment.AuthorName} - {fbComment.Created}</div>
                                                                         </div>
-                                                                        <div title={fbComment['Title']}><span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbComment['Title'], 225) }}></span></div>
+                                                                        <div title={fbComment['Title']}><span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbComment['Title'], 225) }}></span></div>
 
                                                                         {fbComment?.ReplyMessages?.length > 0 && fbComment?.ReplyMessages?.map((replycom: any) => {
                                                                             return (
@@ -1651,7 +1651,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                                     <div style={{ marginBottom: '8px' }}>
                                                                                         <div style={{ fontWeight: '600' }}><span>{replycom.AuthorName} - {replycom.Created}</span></div>
                                                                                     </div>
-                                                                                    <div title={replycom['Title']}><span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
+                                                                                    <div title={replycom['Title']}><span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
                                                                                 </div>
                                                                             )
                                                                         })}
@@ -1666,21 +1666,21 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                     <div style={{ width: '100%' }}>
                                                                         <span style={{ fontSize: "10pt", color: "#333", marginRight: '5px', fontWeight: '600' }}>{i + 1}.{j + 1}.</span>
                                                                         <div title={fbSubData['Title']}>
-                                                                            <span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbSubData['Title'], 225) }}></span>
+                                                                            <span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbSubData['Title'], 225) }}></span>
                                                                         </div>
                                                                         {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
                                                                             return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px' }}>
                                                                                 <div style={{ marginBottom: '8px' }}>
                                                                                     <span style={{ fontSize: '10.0pt', fontWeight: '600' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}</span>
                                                                                 </div>
-                                                                                <div title={fbSubComment['Title']}><span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbSubComment['Title'], 225) }}></span></div>
+                                                                                <div title={fbSubComment['Title']}><span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbSubComment['Title'], 225) }}></span></div>
                                                                                 {fbSubComment?.ReplyMessages?.length > 0 && fbSubComment?.ReplyMessages?.map((replycom: any) => {
                                                                                     return (
                                                                                         <div style={{ padding: '12px', backgroundColor: '#ffffff' }}>
                                                                                             <div style={{ marginBottom: '8px' }}>
                                                                                                 <div style={{ fontWeight: '600' }}>{replycom.AuthorName} - {replycom.Created}</div>
                                                                                             </div>
-                                                                                            <div title={replycom['Title']} ><span style={{wordWrap: 'break-word'}}  dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
+                                                                                            <div title={replycom['Title']} ><span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
                                                                                         </div>
                                                                                     )
                                                                                 })}
@@ -1717,9 +1717,9 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                 <div>
                                                                     <span style={{ fontWeight: '600' }}>{cmtData.AuthorName}</span> - {cmtData.Created}
                                                                 </div>
-                                                                <div style={{wordWrap: 'break-word'}} title={cmtData.Description}>
+                                                                <div style={{ wordWrap: 'break-word' }} title={cmtData.Description}>
 
-                                                                    <span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(cmtData.Description, 120) }}></span>
+                                                                    <span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(cmtData.Description, 115) }}></span>
                                                                 </div>
                                                             </div>
                                                             {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
@@ -1728,8 +1728,8 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                         <div style={{ marginBottom: '8px' }}>
                                                                             <span style={{ fontWeight: '600' }}>{replyData.AuthorName}</span> - {replyData.Created}
                                                                         </div>
-                                                                        <div  title={replyData.Description}>
-                                                                            <span style={{wordWrap: 'break-word'}} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replyData.Description, 120) }}></span>
+                                                                        <div title={replyData.Description}>
+                                                                            <span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replyData.Description, 115) }}></span>
                                                                         </div>
                                                                     </div>
                                                                 )
@@ -1761,7 +1761,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
 
 // This is used for generating the All Task Details dynamically for Send Email Notification Body Content
 
-export const  GenerateEmailNotification = (RequiredData: any) => {
+export const GenerateEmailNotification = (RequiredData: any) => {
     return (
         <table cellPadding="0" cellSpacing="0" width="100%" style={{ width: "100%" }}>
             <tbody>
@@ -2068,19 +2068,17 @@ export const ReduceTheContentLines: any = (Content: String, sliceFrom: number) =
 // This is used for getting information from TaskNotificationConfiguration  when  Category and status selected
 
 export const TaskNotificationConfiguration = async (requiredData: any) => {
-    const { SiteURL, ItemDetails, Context, RequiredListIds }: any = requiredData || {}
+    const { SiteURL, ItemDetails, Context, RequiredListIds, AllTaskUser, Status}: any = requiredData || {};
+    const filterData: any = [];
+    const UserArray: any = []
     try {
         const web = new Web(SiteURL)
         let ResponseData: any = await web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').expand('Author,Editor,Recipients ,PortfolioType').get();
         if (ResponseData?.length > 0) {
             console.log("Task Notification Configuration ResponseData =================== :", ResponseData);
-            let workingActionUsers: any = [];
             let TaskNotificationConfig: any = [];
             const filterNotificationData: any = [];
             ResponseData?.map((TNMItem: any) => {
-                if (TNMItem?.Title == "workingAction") {
-                    workingActionUsers = TNMItem?.Recipients;
-                }
                 if (TNMItem?.Title == "TaskNotificationConfigComponent") {
                     TaskNotificationConfig = JSON.parse(TNMItem.ConfigrationJSON);
                     TaskNotificationConfig?.map((TNC: any) => {
@@ -2100,16 +2098,76 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                 })
                             })
                         }
+                        if (TNC?.percentComplete == Status && TNC?.NotificationType == 'Assigned To') {
+                            ItemDetails?.TaskCategories?.map((item: any) => {
+                                if ((TNC.Category?.includes(item.Title) || TNC?.Category?.includes('All')) && TNC?.notifygroupname != undefined) {
+                                    const groupArray = TNC?.notifygroupname.split(',').map((item: any) => item.trim());
+                                   
+                                    if (ItemDetails?.TeamMembers != undefined) {
+                                        ItemDetails?.TeamMembers?.map((teamMembersData: any) => {
+                                            AllTaskUser?.map((TaskUserData: any) => {
+                                                groupArray?.map((groupArrayData: any) => {
+                                                    if (teamMembersData.Id == TaskUserData.AssingedToUserId && groupArrayData == TaskUserData.TimeCategory) {
+                                                        UserArray.push(TaskUserData);
+                                                    }
+                                                });
+                                            });
+                                        });
+                                        ItemDetails.TaskAssignedUsers = UserArray;
+                                    }
+                                }
+                                if (!TNC?.Category?.includes('All') && TNC.Category?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
+                                    //Kristina
+                                    TNC.Notifier.map((user: any) => {
+                                        AllTaskUser?.map((TaskUserData: any) => {
+                                            if(user.Id == TaskUserData.AssingedToUserId)
+                                                UserArray.push(TaskUserData);                                       
+                                            })
+                                    });
+                                    ItemDetails.TaskAssignedUsers = UserArray
+                                }
+                                if (TNC?.Category?.includes('All') && TNC?.ExceptionCategory?.length > 0 && !TNC?.ExceptionCategory?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
+                                    // Mattis
+                                    TNC.Notifier.map((user: any) => {
+                                        AllTaskUser?.map((TaskUserData: any) => {
+                                        if(user.Id == TaskUserData.AssingedToUserId)
+                                            UserArray.push(TaskUserData);                                       
+                                        })
+                                    });
+                                    ItemDetails.TaskAssignedUsers = UserArray;
+                                }
+
+                                if (TNC.Site == ItemDetails.siteType) {
+                                    //Deepak
+                                    TNC.Notifier.map((user: any) => {
+                                        AllTaskUser?.map((TaskUserData: any) => {
+                                            if(user.Id == TaskUserData.AssingedToUserId)
+                                                UserArray.push(TaskUserData);                                       
+                                            })
+                                    });
+                                    ItemDetails.TaskAssignedUsers = UserArray
+                                }
+                                if (TNC?.Category?.includes('All') && TNC?.Site?.includes('All') && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
+                                    //Stefan
+                                    TNC.Notifier.map((user: any) => {
+                                        AllTaskUser?.map((TaskUserData: any) => {
+                                            if(user.Id == TaskUserData.AssingedToUserId)
+                                                UserArray.push(TaskUserData);                                       
+                                            })
+                                    });
+                                    ItemDetails.TaskAssignedUsers = UserArray
+                                }
+                            })
+                        }
                     })
                 }
             })
             return filterNotificationData;
         }
     } catch (error) {
-        console.log("Error in getTaskNotificationConfiguration function : ", error.message);
+        console.log("Error in get Task Notification Configuration function : ", error.message);
     }
 }
-
 
 //This is used for Send Task Notification when  Category and status selected according to Task Notification Configuration tool
 
@@ -2118,6 +2176,17 @@ export const SendDynamicMSTeamsNotification = async (RequiredData: any) => {
         const { Configuration, ItemDetails, Context, RequiredListIds } = RequiredData || {};
         const TaskInformation = GenerateMSTeamsNotification(ItemDetails);
         const sendUserEmail: any = [];
+
+        const isItemExists = (arr: any, value: any) => {
+            let isExists = false;
+            arr.forEach((item: any) => {
+                if (item == value) {
+                    isExists = true;
+                    return;
+                }
+            });
+            return isExists;
+        };
         if (Configuration.Notify == "Creator") {
             ItemDetails.TaskCreatorData?.map(async (CreatorEmail: any) => {
                 sendUserEmail.push(CreatorEmail.Email);
@@ -2128,6 +2197,25 @@ export const SendDynamicMSTeamsNotification = async (RequiredData: any) => {
                 sendUserEmail.push(NotifierEmail.Email);
             });
         }
+
+
+        if (Configuration.Notify == "Group") {
+            if (ItemDetails != undefined) {
+                const assignedTo = ItemDetails.AssignedTo;
+                if (assignedTo != undefined) {
+                    assignedTo.map((assignedData: any) => {
+                        sendUserEmail.push(assignedData.Email);
+                    });
+                }
+            }
+        }
+        const finalSentUserEmail: any = [];
+        sendUserEmail.map((finalEmail: any) => {
+            if (finalEmail != undefined && !isItemExists(finalSentUserEmail, finalEmail)) {
+                finalSentUserEmail.push(finalEmail)
+            }
+        });
+
         const containerDiv = document.createElement('div');
         const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
         ReactDOM.render(reactElement, containerDiv);
@@ -2150,9 +2238,9 @@ export const SendDynamicMSTeamsNotification = async (RequiredData: any) => {
         </div>
         `;
 
-        if (sendUserEmail?.length > 0) {
+        if (finalSentUserEmail?.length > 0) {
             await GlobalCommon.SendTeamMessage(
-                sendUserEmail,
+                finalSentUserEmail,
                 TeamsMessage,
                 Context,
                 RequiredListIds
@@ -2164,6 +2252,7 @@ export const SendDynamicMSTeamsNotification = async (RequiredData: any) => {
         throw error;
     }
 };
+
 
 //This is used for  Send Dynamic Email Notification according to Task Notification Configuration tool
 
@@ -2232,7 +2321,7 @@ export const SendDynamicEmailNotification = async (requiredData: any) => {
             throw new Error("Receiver email not provided");
         }
     } catch (error) {
-        console.error("Error:", error.message);
+        console.error("Error in Send Dynamic Email Notification:", error.message);
         throw error;
     }
 };
