@@ -3388,7 +3388,8 @@ const RestructuringCom = (props: any, ref: any) => {
 
   const trueTopIcon = (items: any) => {
     if(RestructureChecked?.length > 1 || selectedItems?.length > 1 || RestructureChecked?.length >= 0){
-          setResturuningOpen(true);
+      OpenModal(selectedItems[0]);
+      setResturuningOpen(true);
     }else{
       setTrueTopCompo(items);
     }

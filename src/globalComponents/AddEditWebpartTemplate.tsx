@@ -46,6 +46,8 @@ const AddEditWebpartTemplate = (props: any) => {
     const params = new URLSearchParams(window.location.search);
     let DashboardId: any = params.get('DashBoardId');
     if (DashboardId == undefined || DashboardId == '')
+        DashboardId = params.get('dashBoardId');
+    if (DashboardId == undefined || DashboardId == '')
         DashboardId = 1;
     const ContextData: any = useContext(myContextValue);
     let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": true, "IsDashboardFav": false, "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
@@ -141,7 +143,7 @@ const AddEditWebpartTemplate = (props: any) => {
             else if (props?.DashboardPage === true) {
                 await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").orderBy("Created", false).getAll().then(async (data: any) => {
                     let FilteredData = data?.filter((config: any) => config?.Value == DashboardId)[0];
-                    if (props?.DashboardConfigBackUp && UpdatedItem[0]?.Id !== undefined) {
+                    if (props?.DashboardConfigBackUp) {
                         props.DashboardConfigBackUp.forEach((item: any) => {
                             if (item?.WebpartId !== undefined && item.WebpartId === UpdatedItem[0].WebpartId) {
                                 Object.keys(UpdatedItem[0]).forEach((key) => {
@@ -327,7 +329,7 @@ const AddEditWebpartTemplate = (props: any) => {
     const loadTaskUsers = async () => {
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
         AllTaskUsers = await web.lists
-            .getById(props?.props?.TaskUserListID).items.select('Id', 'IsActive', 'UserGroupId', 'Suffix', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
+            .getById(props?.props?.TaskUserListID ? props?.props?.TaskUserListID : props?.props?.TaskUserListId).items.select('Id', 'IsActive', 'UserGroupId', 'Suffix', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
             .filter('IsActive eq 1').expand('AssingedToUser').orderBy('SortOrder', true).orderBy("Title", true).get();
     }
     useEffect(() => {
@@ -350,9 +352,11 @@ const AddEditWebpartTemplate = (props: any) => {
                     }
                     else if (filterColumn?.SelectedField == 'TeamLeader' || filterColumn?.SelectedField == 'TeamMember' || filterColumn?.SelectedField == 'WorkingMember') {
                         let mail: any = [];
-                        filterColumn?.SelectedValue?.map((User: any) => {
-                            mail.push(User?.email)
-                        })
+                        if (filterColumn?.SelectedValue != undefined && filterColumn?.SelectedValue?.length) {
+                            filterColumn?.SelectedValue?.map((User: any) => {
+                                mail.push(User?.email)
+                            })
+                        }
                         obj["SelectedValue"] = mail;
                     }
                     else if (filterColumn?.SelectedField == "Categories") {
@@ -1020,6 +1024,7 @@ const AddEditWebpartTemplate = (props: any) => {
                                                     </div>
                                                 </Col>
                                                 <Col sm="4" md="4" lg="4">
+                                                    <a className="pull-right" target="_blank" data-interception="off" href={props?.props?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/WebpartGallery.aspx"}>Webpart Gallery</a>
                                                     {/* <div className="form-check form-check-inline m-4">
                                                         <label className='SpfxCheckRadio hreflink siteColor' onClick={() => openTableSettingPopup("favBased")}>Table Configurations</label>
                                                     </div> */}

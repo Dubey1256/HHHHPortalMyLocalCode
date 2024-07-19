@@ -83,6 +83,7 @@ const Designation = [
 ];
 let newEvent: any
 const Apps = (props: any) => {
+  const [hasDeletePermission, setHasDeletePermission]: any = React.useState(false);
   const [leaveReport, setleaveReport] = React.useState(false);
   const [recurringEvents, setRecurringEvents] = useState([]);
   const [m, setm]: any = React.useState(false);
@@ -508,6 +509,9 @@ const Apps = (props: any) => {
         } else if (repeatInstance && repeatInstance > 0) {
           let repeatInstanceEndDate =new Date(recurrenceData?.EventDate);
           repeatInstanceEndDate.setHours(0, 0, 0, 0);
+          if(recurrenceData?.RecurrenceData?.includes('daily')){
+          repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() + repeatInstance);
+          }
           repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() + repeatInstance);
           repeatInstanceEndDate.setHours(0, 0, 0, 0);
           windowEndDate = repeatInstanceEndDate;
@@ -887,7 +891,9 @@ const Apps = (props: any) => {
         HalfDay: item.HalfDay,
         HalfDayTwo: item.HalfDayTwo,
         clickable: item.clickable,
-        Color: item.Color
+        Color: item.Color,
+        Rejected:item.Rejected,
+        Approved:item.Approved
       };
 
       return dataEvent;
@@ -1491,7 +1497,7 @@ const Apps = (props: any) => {
         const editEventData: any = {
           EventType: "1",
           EmployeeId: title_Id,
-          Title: updateTitle(inputValueName, type, leaveapproved, leaverejected),
+          Title: updateAndReplaceType(inputValueName, type, isFirstHalfDChecked, isSecondtHalfDChecked, leaveapproved, leaverejected),
           EventDate: new Date(start),
           EndDate: new Date(end),
           fRecurrence: true,
@@ -1804,29 +1810,90 @@ const Apps = (props: any) => {
   const handleInputChangeReason = (value: string) => {
     setInputValueReason(value);
   };
-  const updateTitle = (inputValueName: any, type: any, leaveApproveded: any, leaverejected: any) => {
+  
+  const updateAndReplaceType = (input:any, newType:any, isFirstHalfDChecked:any, isSecondtHalfDChecked:any, leaveApproved:any, leaveRejected:any) => {
     const leaveTypes = [
+      "Half Day Un-Planned",
+      "Half Day Planned Leave",
       "Un-Planned",
       "Sick",
       "Planned Leave",
       "Restricted Holiday",
       "Work From Home",
-      "Half Day",
       "fulldayevent",
       "LWP"
     ];
-
-    const regex = new RegExp(leaveTypes.join("|"), "g");
-    let updatedTitle = inputValueName.replace(regex, type);
-
-    if (leaveApproveded && !isLeaveApproved) {
-      updatedTitle += " Approved";
-    } else if (leaverejected) {
-      updatedTitle += " Rejected";
+  
+    const normalize = (text:any) => text.toLowerCase().replace(/[-\s]+/g, '');
+  
+    let result = input;
+    let normalizedNewType = normalize(newType);
+  
+    // Determine if "Half Day" should be added
+    const shouldAddHalfDay = isFirstHalfDChecked || isSecondtHalfDChecked;
+  
+    if (shouldAddHalfDay) {
+      newType = "Half Day " + newType;
+      normalizedNewType = normalize(newType);
     }
-
-    return updatedTitle;
+  
+    const normalizedResult = normalize(result);
+    const regex = new RegExp(leaveTypes.map(normalize).join("|"), "gi");
+  
+    result = result.replace((regex:any, matched:any) => {
+      const normalizedMatched = normalize(matched);
+      if (normalizedResult.includes(normalizedMatched)) {
+        return newType;
+      }
+      return matched;
+    });
+  
+    // Adjust "Half Day" prefix
+    if (shouldAddHalfDay) {
+      const halfDayRegex = /Half Day\s*/gi;
+      const hyphenIndex = result.indexOf('-');
+      result = result.replace(halfDayRegex, '').trim();
+      if (hyphenIndex >= 0) {
+        result = result.slice(0, hyphenIndex + 1) + " Half Day" + result.slice(hyphenIndex + 1);
+      }
+    } else {
+      const halfDayRegex = /Half Day\s*/gi;
+      result = result.replace(halfDayRegex, '').trim();
+    }
+  
+    // Append approval or rejection status if not already present
+    if (leaveApproved && !result.includes("Approved")) {
+      result += " Approved";
+    } else if (leaveRejected && !result.includes("Rejected")) {
+      result += " Rejected";
+    }
+  
+    // Handle non-"Half Day" newType and replacement
+    if (!newType.includes("Half Day")) {
+      const normalizedNewResult = normalize(result);
+      const typeRegex = new RegExp(leaveTypes.map(normalize).join("|"), "gi");
+  
+      result = result.replace((typeRegex:any, matched:any) => {
+        const normalizedMatched = normalize(matched);
+        if (normalizedNewResult.includes(normalizedMatched)) {
+          return newType;
+        }
+        return matched;
+      });
+  
+      if (leaveApproved && !result.includes("Approved")) {
+        result += " Approved";
+      } else if (leaveRejected && !result.includes("Rejected")) {
+        result += " Rejected";
+      }
+  
+      return result;
+    }
+  
+    return result;
   };
+   
+  
   const updateElement = async () => {
     if (editRecurrenceEvent) {
       await saveRecurrenceEvent();
@@ -1841,7 +1908,7 @@ const Apps = (props: any) => {
     }
     const web = new Web(props.props.siteUrl);
     const newEvent = {
-      title: updateTitle(inputValueName, type, leaveapproved, leaverejected),
+      title: updateAndReplaceType(inputValueName, type, isFirstHalfDChecked, isSecondtHalfDChecked, leaveapproved, leaverejected),
       name: peopleName,
       start: startDate,
       end: endDate,
@@ -2102,8 +2169,15 @@ const Apps = (props: any) => {
   const userId = props?.props?.context?.pageContext?.legacyPageContext?.userId;
   const isAllowedUser = allowedUserIds.indexOf(userId) !== -1;
 
-  const result = isAllowedUser && !disabl && (!leaveapproved || !leaverejected);
-  const isLeaveApproved = inputValueName.indexOf("Approved") >= 0;
+  const result = isAllowedUser && !disabl && !(leaveapproved || leaverejected);
+  
+
+
+
+  const deletePermission = async () => {
+    let permission = await globalCommon.verifyComponentPermission("DeleteLeavePermissionCalendar")
+    setHasDeletePermission(permission)
+  }
   return (
 
     <div>
@@ -2393,10 +2467,12 @@ const Apps = (props: any) => {
                   Last Modified {MDate} {MTime} by {modofiedBy}
                 </div>
                 <div>
+                {hasDeletePermission && (
                   <a href="#" onClick={() => deleteElement(vId)}>
                     <span className="svg__iconbox svg__icon--trash"></span>{" "}
                     Delete this Item
                   </a>
+                )}
                   <VersionHistoryPopup
                     taskId={vId}
                     listId={props.props.SmalsusLeaveCalendar}

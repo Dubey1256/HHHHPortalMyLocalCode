@@ -233,6 +233,11 @@ const CopyTaskProfile = (props: any) => {
             taskDetails["siteType"] = listName;
             taskDetails["siteUrl"] = propsValue?.siteUrl;
             taskDetails.TaskId = globalCommon.GetTaskId(taskDetails);
+            if (taskDetails?.TaskId != undefined && taskDetails?.Title!= undefined) {
+                      document.title = `${taskDetails?.TaskId }-${taskDetails?.Title}`
+                    } else {
+                      document.title = "Task Profile"
+                    }
 
             let category = "";
             if (taskDetails["TaskCategories"] && taskDetails["TaskCategories"].length > 0) {
@@ -447,6 +452,8 @@ const CopyTaskProfile = (props: any) => {
 
             console.log(tempTask);
 
+            
+
             setState((prevState: any) => ({
                 ...prevState,
                 Result: tempTask,
@@ -455,7 +462,7 @@ const CopyTaskProfile = (props: any) => {
                 // maincollection: globalCommon.MainCollection(taskDetails, propsValue?.siteUrl),
                 // breadCrumData: globalCommon.BreadCrum(taskDetails, listName, propsValue?.siteUrl),
             }))
-
+ 
             updateResult(tempTask)
 
         } catch (error) {
@@ -1802,6 +1809,7 @@ const CopyTaskProfile = (props: any) => {
 
     }
     return (
+        
         <>
             <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc: state.keydoc, FileDirRef: state.FileDirRef, user: taskUsers, ColorCode: state?.Result?.Portfolio?.PortfolioType?.Color }}>
                 <div className='taskprofilesection'>
@@ -2140,6 +2148,24 @@ const CopyTaskProfile = (props: any) => {
                                                                                     </span>
                                                                                 </span>}
 
+                                                                                <span  className="hover-text me-1" >
+                                                                                <span className='svg__icon--info svg__iconbox mt-1'></span> 
+                                                                                <span className="tooltip-text pop-left">
+                                                                                <div className="alignCenter"> 
+                                                                                <span className='me-2'>  By </span>
+                                                                            {BottleneckData.CreatorImage != undefined && BottleneckData.CreatorImage.length > 0 ? <img
+                                                                                className="ProirityAssignedUserPhoto m-0"
+                                                                                title={BottleneckData.CreatorName}
+                                                                                src={BottleneckData.CreatorImage} />
+                                                                                :
+                                                                                <span title={BottleneckData.CreatorName != undefined ? BottleneckData.CreatorName: "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                                                            }
+                                                                            <span className="mx-1">{BottleneckData?.CreatorName}</span>
+                                                                            <span>{BottleneckData?.CreatedOn}</span>
+                                                                        </div>
+                                                                                </span>
+                                                                            </span>
+
                                                                         </div>
                                                                     </div>
                                                                 )
@@ -2188,6 +2214,23 @@ const CopyTaskProfile = (props: any) => {
                                                                                         {AttentionData.Comment}
                                                                                     </span>
                                                                                 </span>}
+                                                                                <span  className="hover-text me-1" >
+                                                                                <span className='svg__icon--info svg__iconbox mt-1'></span> 
+                                                                                <span className="tooltip-text pop-left">
+                                                                                <div className="alignCenter">
+                                                                                <span className='me-2'>  By </span>
+                                                                            {AttentionData.CreatorImage != undefined && AttentionData.CreatorImage.length > 0 ? <img
+                                                                                className="ProirityAssignedUserPhoto m-0"
+                                                                                title={AttentionData.CreatorName}
+                                                                                src={AttentionData.CreatorImage} />
+                                                                                :
+                                                                                <span title={AttentionData.CreatorName != undefined ? AttentionData.CreatorName: "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                                                            }
+                                                                            <span className="mx-1">{AttentionData?.CreatorName}</span>
+                                                                            <span>{AttentionData?.CreatedOn}</span>
+                                                                        </div>
+                                                                                </span>
+                                                                            </span>
 
                                                                         </div>
                                                                     </div>
@@ -2236,6 +2279,23 @@ const CopyTaskProfile = (props: any) => {
                                                                                         {PhoneData.Comment}
                                                                                     </span>
                                                                                 </span>}
+                                                                                <span  className="hover-text me-1" >
+                                                                                <span className=' svg__icon--info svg__iconbox mt-1'></span> 
+                                                                                <span className="tooltip-text pop-left"> 
+                                                                                <div className="alignCenter">
+                                                                                   <span className='me-2'>  By </span>
+                                                                            {PhoneData.CreatorImage != undefined && PhoneData.CreatorImage.length > 0 ? <img
+                                                                                className="ProirityAssignedUserPhoto m-0"
+                                                                                title={PhoneData.CreatorName}
+                                                                                src={PhoneData.CreatorImage} />
+                                                                                :
+                                                                                <span title={PhoneData.CreatorName != undefined ? PhoneData.CreatorName: "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                                                            }
+                                                                            <span className="mx-1">{PhoneData?.CreatorName}</span>
+                                                                            <span>{PhoneData?.CreatedOn}</span>
+                                                                        </div>
+                                                                                </span>
+                                                                            </span>
 
                                                                         </div>
                                                                     </div>
