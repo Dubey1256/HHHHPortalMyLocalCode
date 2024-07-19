@@ -1182,7 +1182,7 @@ const EmployeProfile = (props: any) => {
       if (Array.isArray(data[ItemProperty])) {
         return data[ItemProperty]?.some((item: any) => filterArray.some((filter: any) => filter.Title == item.Title));
       } else {
-        return filterArray.some((filter: any) => data[ItemProperty] != undefined && data[ItemProperty] != '' && filter[FilterProperty] == data[ItemProperty]);
+        return filterArray.some((filter: any) => data[ItemProperty] !== undefined && data[ItemProperty] !== '' && filter[FilterProperty] === data[ItemProperty]);
       }
     } catch (error) { }
   };
