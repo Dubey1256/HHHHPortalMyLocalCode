@@ -377,7 +377,7 @@ const ImageViewPanel = (props: any) => {
 
                     <Slider ref={slider => (sliderRef = slider)} {...settings}>
                         {allImageData?.map((slide: any, index: any) => (
-                            <div key={index}>
+                            <div key={index} className={slide?.Exclude==true?"faded": ""}>
                                 <img 
                                     src={slide?.ImageUrl}
                                     loading="lazy"
