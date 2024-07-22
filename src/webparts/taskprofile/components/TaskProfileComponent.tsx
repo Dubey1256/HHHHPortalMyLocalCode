@@ -233,6 +233,11 @@ const CopyTaskProfile = (props: any) => {
             taskDetails["siteType"] = listName;
             taskDetails["siteUrl"] = propsValue?.siteUrl;
             taskDetails.TaskId = globalCommon.GetTaskId(taskDetails);
+            if (taskDetails?.TaskId != undefined && taskDetails?.Title!= undefined) {
+                      document.title = `${taskDetails?.TaskId }-${taskDetails?.Title}`
+                    } else {
+                      document.title = "Task Profile"
+                    }
 
             let category = "";
             if (taskDetails["TaskCategories"] && taskDetails["TaskCategories"].length > 0) {
@@ -241,11 +246,7 @@ const CopyTaskProfile = (props: any) => {
                         category += item.Title;
                     } else {
                         category += item.Title + "; ";
-                    }
-
-                    if (category.search("Approval") >= 0) {
-                        setApprovalStatus(true)
-                    }
+                    }                   
                 });
             }
 
@@ -261,6 +262,8 @@ const CopyTaskProfile = (props: any) => {
                                 "https://hhhhteams.sharepoint.com/sites/HHHH"
                             );
                             OffshoreComments.push(items);
+                        }else{
+                            OffshoreComments.push(items); 
                         }
                     });
                 }
@@ -329,6 +332,10 @@ const CopyTaskProfile = (props: any) => {
                     if (Action?.Title == "Phone") {
                         Phone = Action?.InformationData;
                     }
+                    if (Action?.Title == "Approval") {
+                        taskDetails['ApprovalCat'] = Action?.InformationData?.length > 0 ? true : false;
+                        setApprovalStatus(Action?.InformationData?.length > 0 ? true : false)
+                    }  
                     if (Action?.Title == "WorkingDetails") {
                         let currentDate = moment(new Date()).format("DD/MM/YYYY")
                         Action?.InformationData?.map((isworkingToday: any) => {
@@ -417,6 +424,7 @@ const CopyTaskProfile = (props: any) => {
                 SmartInformationId: taskDetails["SmartInformation"],
                 Approver: taskDetails?.Approver != undefined ? copytaskuser.find((userData: any) => userData?.AssingedToUser?.Id == taskDetails?.Approver[0]?.Id) : "",
                 ParentTask: taskDetails?.ParentTask,
+                ApprovalCat: taskDetails['ApprovalCat'],
             };
 
             if (tempTask?.FeedBack != null && tempTask?.FeedBack.length > 0) {
@@ -447,6 +455,8 @@ const CopyTaskProfile = (props: any) => {
 
             console.log(tempTask);
 
+            
+
             setState((prevState: any) => ({
                 ...prevState,
                 Result: tempTask,
@@ -455,7 +465,7 @@ const CopyTaskProfile = (props: any) => {
                 // maincollection: globalCommon.MainCollection(taskDetails, propsValue?.siteUrl),
                 // breadCrumData: globalCommon.BreadCrum(taskDetails, listName, propsValue?.siteUrl),
             }))
-
+ 
             updateResult(tempTask)
 
         } catch (error) {
@@ -1802,6 +1812,7 @@ const CopyTaskProfile = (props: any) => {
 
     }
     return (
+        
         <>
             <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc: state.keydoc, FileDirRef: state.FileDirRef, user: taskUsers, ColorCode: state?.Result?.Portfolio?.PortfolioType?.Color }}>
                 <div className='taskprofilesection'>
@@ -1882,7 +1893,7 @@ const CopyTaskProfile = (props: any) => {
                                     <a className="hreflink" title='Edit' onClick={() => OpenEditPopUp()}>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
                                     </a>
-                                    {state?.Result?.Approver != undefined && state?.Result?.Approver != "" && state?.Result?.Categories?.includes("Approval") && ((currentUser != undefined && currentUser?.length > 0 && state.Result?.Approver?.AssingedToUser?.Id == currentUser[0]?.Id) || (currentUser != undefined && currentUser?.length > 0 && state?.Result?.Approver?.Approver?.length > 0 && state?.Result?.Approver?.Approver[0]?.Id == currentUser[0]?.Id)) && state?.Result?.Status == "For Approval" &&
+                                    {state?.Result?.Approver != undefined && state?.Result?.Approver != "" && state?.Result?.ApprovalCat && ((currentUser != undefined && currentUser?.length > 0 && state.Result?.Approver?.AssingedToUser?.Id == currentUser[0]?.Id) || (currentUser != undefined && currentUser?.length > 0 && state?.Result?.Approver?.Approver?.length > 0 && state?.Result?.Approver?.Approver[0]?.Id == currentUser[0]?.Id)) && state?.Result?.Status == "For Approval" &&
                                         state?.Result?.PercentComplete == 1 ? <span><button onClick={() => sendEmail("Approved")} className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger" onClick={() => sendEmail("Rejected")}>Reject</button></span></span> : null
                                     }
                                     {currentUser != undefined && state.sendMail && state.emailStatus != "" && <EmailComponenet approvalcallback={() => { approvalcallback() }} Context={propsValue.Context} emailStatus={state.emailStatus} currentUser={currentUser} items={state.Result} />}
@@ -2140,6 +2151,24 @@ const CopyTaskProfile = (props: any) => {
                                                                                     </span>
                                                                                 </span>}
 
+                                                                                <span  className="hover-text me-1" >
+                                                                                <span className='svg__icon--info svg__iconbox mt-1'></span> 
+                                                                                <span className="tooltip-text pop-left">
+                                                                                <div className="alignCenter"> 
+                                                                                <span className='me-2'>  By </span>
+                                                                            {BottleneckData.CreatorImage != undefined && BottleneckData.CreatorImage.length > 0 ? <img
+                                                                                className="ProirityAssignedUserPhoto m-0"
+                                                                                title={BottleneckData.CreatorName}
+                                                                                src={BottleneckData.CreatorImage} />
+                                                                                :
+                                                                                <span title={BottleneckData.CreatorName != undefined ? BottleneckData.CreatorName: "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                                                            }
+                                                                            <span className="mx-1">{BottleneckData?.CreatorName}</span>
+                                                                            <span>{BottleneckData?.CreatedOn}</span>
+                                                                        </div>
+                                                                                </span>
+                                                                            </span>
+
                                                                         </div>
                                                                     </div>
                                                                 )
@@ -2188,6 +2217,23 @@ const CopyTaskProfile = (props: any) => {
                                                                                         {AttentionData.Comment}
                                                                                     </span>
                                                                                 </span>}
+                                                                                <span  className="hover-text me-1" >
+                                                                                <span className='svg__icon--info svg__iconbox mt-1'></span> 
+                                                                                <span className="tooltip-text pop-left">
+                                                                                <div className="alignCenter">
+                                                                                <span className='me-2'>  By </span>
+                                                                            {AttentionData.CreatorImage != undefined && AttentionData.CreatorImage.length > 0 ? <img
+                                                                                className="ProirityAssignedUserPhoto m-0"
+                                                                                title={AttentionData.CreatorName}
+                                                                                src={AttentionData.CreatorImage} />
+                                                                                :
+                                                                                <span title={AttentionData.CreatorName != undefined ? AttentionData.CreatorName: "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                                                            }
+                                                                            <span className="mx-1">{AttentionData?.CreatorName}</span>
+                                                                            <span>{AttentionData?.CreatedOn}</span>
+                                                                        </div>
+                                                                                </span>
+                                                                            </span>
 
                                                                         </div>
                                                                     </div>
@@ -2236,6 +2282,23 @@ const CopyTaskProfile = (props: any) => {
                                                                                         {PhoneData.Comment}
                                                                                     </span>
                                                                                 </span>}
+                                                                                <span  className="hover-text me-1" >
+                                                                                <span className=' svg__icon--info svg__iconbox mt-1'></span> 
+                                                                                <span className="tooltip-text pop-left"> 
+                                                                                <div className="alignCenter">
+                                                                                   <span className='me-2'>  By </span>
+                                                                            {PhoneData.CreatorImage != undefined && PhoneData.CreatorImage.length > 0 ? <img
+                                                                                className="ProirityAssignedUserPhoto m-0"
+                                                                                title={PhoneData.CreatorName}
+                                                                                src={PhoneData.CreatorImage} />
+                                                                                :
+                                                                                <span title={PhoneData.CreatorName != undefined ? PhoneData.CreatorName: "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                                                            }
+                                                                            <span className="mx-1">{PhoneData?.CreatorName}</span>
+                                                                            <span>{PhoneData?.CreatedOn}</span>
+                                                                        </div>
+                                                                                </span>
+                                                                            </span>
 
                                                                         </div>
                                                                     </div>
@@ -2526,29 +2589,30 @@ const CopyTaskProfile = (props: any) => {
                                                         })}
                                                     </div>
                                                 }
-                                                {state?.Result?.OffshoreComments != null && state?.Result?.OffshoreComments != undefined && state?.Result?.OffshoreComments.length > 0 && <div className="col-sm-8 pe-0 mt-2">
-                                                    <fieldset className='border p-1'>
-                                                        <legend className="border-bottom fs-6">Background Comments</legend>
-                                                        {state?.Result?.OffshoreComments != null && state?.Result?.OffshoreComments.length > 0 && state?.Result?.OffshoreComments?.map((item: any, index: any) => {
-                                                            return <div>
+                                                {state?.Result?.OffshoreComments != null && state?.Result?.OffshoreComments != undefined && state?.Result?.OffshoreComments.length > 0 && state?.Result?.OffshoreComments?.map((item: any, index: any) => {
+                                                    return (
+                                                        item?.Type !== "EODReport"
+                                                        && <div className="col-sm-8 pe-0 mt-2">
+                                                            <fieldset className='border p-1'>
+                                                                <legend className="border-bottom fs-6">Background Comments</legend>
+                                                                <div>
+                                                                    <span className='round px-1'>
+                                                                        {item?.AuthorImage != null &&
+                                                                            <img className='align-self-start hreflink ' title={item?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, item?.AuthorName, taskUsers)} src={item?.AuthorImage} />
+                                                                        }
+                                                                    </span>
 
-
-                                                                <span className='round px-1'>
-                                                                    {item.AuthorImage != null &&
-                                                                        <img className='align-self-start hreflink ' title={item?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, item?.AuthorName, taskUsers)} src={item?.AuthorImage} />
-                                                                    }
-                                                                </span>
-
-                                                                <span className="pe-1">{item.AuthorName}</span>
-                                                                <span className="pe-1" >{moment(item?.Created).format("DD/MM/YY")}</span>
-                                                                <div style={{ paddingLeft: "30px" }} className=" mb-4 text-break"><span dangerouslySetInnerHTML={{ __html: item?.Body }}></span>
+                                                                    <span className="pe-1">{item?.AuthorName}</span>
+                                                                    <span className="pe-1" >{moment(item?.Created).format("DD/MM/YY")}</span>
+                                                                    <div style={{ paddingLeft: "30px" }} className=" mb-4 text-break"><span dangerouslySetInnerHTML={{ __html: item?.Body }}></span>
+                                                                    </div>
                                                                 </div>
+                                                            </fieldset>
+                                                        </div>
+                                                    )
 
-
-                                                            </div>
-                                                        })} </fieldset>
-
-                                                </div>}
+                                                })
+                                                }
                                             </div>
                                         </div>}
 

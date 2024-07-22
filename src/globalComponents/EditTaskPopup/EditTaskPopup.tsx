@@ -23,7 +23,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { LuBellPlus } from "react-icons/lu";
 import { FaExpandAlt } from "react-icons/fa";
 import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
-import { SlArrowDown, SlArrowRight} from "react-icons/sl";
+import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import { TbReplace } from "react-icons/tb";
 
 
@@ -214,7 +214,7 @@ const EditTaskPopup = (Items: any) => {
     const [WorkingAction, setWorkingAction] = useState([]);
     const [AddDescriptionModelName, setAddDescriptionModelName] = useState("");
     const [useFor, setUseFor] = useState("")
-    const [TaskNotificationConfiguration, setTaskNotificationConfiguration] = useState([]);
+    const [TaskNotificationConfigurationJSON, setTaskNotificationConfigurationJSON] = useState([]);
     let [WorkingActionDefaultUsers, setWorkingActionDefaultUsers] = useState([]);
     const [DesignNewTemplates, setDesignNewTemplates] = useState(false);
     // Edit Task Popup Local Scope Variables 
@@ -342,10 +342,10 @@ const EditTaskPopup = (Items: any) => {
         taskUsers = await web.lists
             .getById(AllListIdData?.TaskUserListID)
             .items.select(
-                "Id,UserGroupId,TimeCategory,CategoriesItemsJson,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name"
+                "Id,UserGroupId,TimeCategory,CategoriesItemsJson,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,UserGroup/Id,UserGroup/Title,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name"
             )
             .filter("IsActive eq 1")
-            .expand("AssingedToUser,Approver")
+            .expand("AssingedToUser,Approver,UserGroup")
             .orderBy("SortOrder", true)
             .orderBy("Title", true)
             .getAll();
@@ -390,7 +390,7 @@ const EditTaskPopup = (Items: any) => {
         let UsersData: any = [];
         let Groups: any = [];
         let MainArray: any = [];
-        let sortedTaskUser =  taskUsers?.sort((a: any, b: any) => a.SortOrder - b.SortOrder);
+        let sortedTaskUser = taskUsers?.sort((a: any, b: any) => a.SortOrder - b.SortOrder);
         sortedTaskUser.map((EmpData: any) => {
             if (EmpData.ItemType == "Group") {
                 EmpData.Child = [];
@@ -423,7 +423,7 @@ const EditTaskPopup = (Items: any) => {
             const web = new Web(siteUrls)
             let ResponseData: any = await web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').expand('Author,Editor,Recipients ,PortfolioType').get();
             if (ResponseData?.length > 0) {
-                setTaskNotificationConfiguration(ResponseData);
+                setTaskNotificationConfigurationJSON(ResponseData);
                 console.log("Task Notification Configuration ResponseData =================== :", ResponseData);
                 let workingActionUsers: any = [];
                 ResponseData?.map((TNMItem: any) => {
@@ -1536,7 +1536,7 @@ const EditTaskPopup = (Items: any) => {
 
                         } else {
                             setTaggedPortfolioData(DataItem);
-                            setTaskResponsibleTeam( DataItem[0].ResponsibleTeam)
+                            setTaskResponsibleTeam(DataItem[0].ResponsibleTeam)
                             setTaskTeamMembers(DataItem[0].TeamMembers)
                             let ComponentType: any = DataItem[0].PortfolioType.Title;
                             getLookUpColumnListId(
@@ -1598,35 +1598,35 @@ const EditTaskPopup = (Items: any) => {
                     if (EditDataBackup?.Categories?.includes('UX-New')) {
                         setDesignNewTemplates(true)
                     }
-               else{
-                const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
-                if (RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length > 0) {
-                    console.log(EditData)
-                    firstIndexData = RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
-                    let imageData = RestructureData?.BasicImageInfo != null ? JSON.parse(RestructureData?.BasicImageInfo) : []
-                    RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
-                    let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
+                    else {
+                        const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
+                        if (RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length > 0) {
+                            console.log(EditData)
+                            firstIndexData = RestructureData.FeedBackBackup[0].FeedBackDescriptions[0]
+                            let imageData = RestructureData?.BasicImageInfo != null ? JSON.parse(RestructureData?.BasicImageInfo) : []
+                            RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
+                            let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
 
-                    let designTemplates: any = [firstIndexData, {
-                        setTitle: "SET1",
-                        setImagesInfo: imageData?.length > 0 ? imageData : [],
-                        TemplatesArray: setDataFeedback
-                    }]
-                    RestructureData.FeedBackBackup[0].FeedBackDescriptions = designTemplates
-                    let updatedItem: any = {
-                        ...EditDataBackup,
-                        FeedBackBackup: RestructureData.FeedBackBackup,
-                        FeedBackArray: designTemplates,
-                        FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
-                    };
-                    setEditData(updatedItem);
-                    updateFeedbackArray[0].FeedBackDescriptions = designTemplates
-                    EditDataBackup = updatedItem;
-                }
+                            let designTemplates: any = [firstIndexData, {
+                                setTitle: "SET1",
+                                setImagesInfo: imageData?.length > 0 ? imageData : [],
+                                TemplatesArray: setDataFeedback
+                            }]
+                            RestructureData.FeedBackBackup[0].FeedBackDescriptions = designTemplates
+                            let updatedItem: any = {
+                                ...EditDataBackup,
+                                FeedBackBackup: RestructureData.FeedBackBackup,
+                                FeedBackArray: designTemplates,
+                                FeedBack: JSON.stringify(RestructureData?.FeedBackBackup)
+                            };
+                            setEditData(updatedItem);
+                            updateFeedbackArray[0].FeedBackDescriptions = designTemplates
+                            EditDataBackup = updatedItem;
+                        }
 
-                setDesignNewTemplates(true)
-               }
-                  
+                        setDesignNewTemplates(true)
+                    }
+
                 }
             })
             BackupTaskCategoriesData = TempArray;
@@ -1645,7 +1645,7 @@ const EditTaskPopup = (Items: any) => {
                     let firstIndexData: any = []
                     if (EditDataBackup?.Categories?.includes('UX-New')) {
                         setDesignNewTemplates(true)
-                    }else{
+                    } else {
                         const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
                         if (RestructureData.FeedBackBackup[0].FeedBackDescriptions?.length > 0) {
                             console.log(EditData)
@@ -1653,7 +1653,7 @@ const EditTaskPopup = (Items: any) => {
                             let imageData = RestructureData?.BasicImageInfo != null ? JSON.parse(RestructureData?.BasicImageInfo) : []
                             RestructureData.FeedBackBackup[0].FeedBackDescriptions.splice(0, 1);
                             let setDataFeedback = RestructureData.FeedBackBackup[0].FeedBackDescriptions;
-    
+
                             let designTemplates: any = [firstIndexData, {
                                 setTitle: "SET1",
                                 setImagesInfo: imageData?.length > 0 ? imageData : [],
@@ -1670,10 +1670,10 @@ const EditTaskPopup = (Items: any) => {
                             updateFeedbackArray[0].FeedBackDescriptions = designTemplates
                             EditDataBackup = updatedItem;
                         }
-    
+
                         setDesignNewTemplates(true)
                     }
-                    
+
                 }
             });
         }
@@ -1700,14 +1700,7 @@ const EditTaskPopup = (Items: any) => {
         setEmailStatus(result?.some((category: any) => category.Title === "Email Notification"));
         setImmediateStatus(result?.some((category: any) => category.Title === "Immediate"));
         setOnlyCompletedStatus(result?.some((category: any) => category.Title === "Only Completed"));
-        let checkForApproval: any = result?.some((category: any) => category.Title === "Approval")
-        if (checkForApproval) {
-            setApprovalStatus(true);
-            setApproverData(TaskApproverBackupArray);
-        } else {
-            setApprovalStatus(false);
-            setApproverData([]);
-        }
+
         if (usedFor === "For-Panel" || usedFor === "For-Auto-Search") {
             setTaskCategoriesData(result);
             if (usedFor === "For-Auto-Search") {
@@ -1885,7 +1878,7 @@ const EditTaskPopup = (Items: any) => {
 
                     EditData.TaskApprovers = finalData;
                     EditData.CurrentUserData = currentUserData;
-                    setApproverData(finalData);
+
                     setApprovalStatus(true);
                     Items.sendApproverMail = true;
                     StatusOptions?.map((item: any) => {
@@ -2045,7 +2038,7 @@ const EditTaskPopup = (Items: any) => {
     //    ************************* This is for status section Functions **************************
 
     //   ######################  This is used for Status Popup Change Status #########################
-    const SmartMetaDataPanelSelectDataFunction = (
+    const SmartMetaDataPanelSelectDataFunction = async (
         StatusData: any,
         usedFor: any
     ) => {
@@ -2064,7 +2057,19 @@ const EditTaskPopup = (Items: any) => {
                 setTaskStatus(StatusData.taskStatusComment);
                 setPercentCompleteCheck(false);
                 setIsTaskStatusUpdated(true);
+                let DynamicAssignmentInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({usedFor:"Auto-Assignment", SiteURL: siteUrls, ItemDetails: EditData, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: StatusData.value })
+                console.log("Dynamic Assignment Information All Details from backend  ==================", DynamicAssignmentInformation);
+                const assignmentUser = EditData.TaskAssignedUsers;
+                if (assignmentUser?.length) {
+                    setTaskAssignedTo(assignmentUser);
+                }
+
+                if (StatusData.value == 0) {
+                    updateWAForApproval(ApprovalStatus, "isChekedfor0%")
+                }
+
                 if (StatusData.value == 1) {
+                    updateWAForApproval(ApprovalStatus, "isChekedfor1%")
                     let tempArray: any = [];
                     if (
                         TaskApproverBackupArray != undefined &&
@@ -2092,40 +2097,11 @@ const EditTaskPopup = (Items: any) => {
                     EditData.CurrentUserData = currentUserData;
                     CategoryChange(e, "Approval");
                 }
-
-
                 if (StatusData.value == 80) {
-                    // let tempArray: any = [];
-                    EditData.IsTodaysTask = false;
-                    EditData.workingThisWeek = false;
-                    if (
-                        EditData.TeamMembers != undefined &&
-                        EditData.TeamMembers?.length > 0
-                    ) {
-                        setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
-
-                        EditData.WorkingAction = removeWorkingMembers(JSON.parse(EditData?.WorkingAction), "QA")
-                        setWorkingAction(EditData?.WorkingAction)
-                    } else {
-                        setWorkingMember(143);
-                    }
                     EditData.IsTodaysTask = false;
                     EditData.CompletedDate = undefined;
+                    EditData.workingThisWeek = false;
                 }
-                if (StatusData.value == 70) {
-                    if (
-                        (EditData.TeamMembers != undefined &&
-                            EditData.TeamMembers?.length > 0) && (EditData.TeamMembers?.length != EditData?.AssignedTo?.length)
-                    ) {
-                        setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
-                    } else if (EditData.ResponsibleTeam?.length > 0) {
-                        setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
-                    }
-                    else {
-                        setWorkingMember(0);
-                    }
-                }
-
                 if (StatusData.value == 5) {
                     EditData.CompletedDate = undefined;
                     EditData.IsTodaysTask = false;
@@ -2146,14 +2122,9 @@ const EditTaskPopup = (Items: any) => {
                     }
                     EditData.IsTodaysTask = true;
                 }
-                if (
-                    StatusData.value == 93 ||
-                    StatusData.value == 96 ||
-                    StatusData.value == 99
-                ) {
+                if (StatusData.value == 93 || StatusData.value == 96 || StatusData.value == 99) {
                     EditData.IsTodaysTask = false;
                     EditData.workingThisWeek = false;
-                    setWorkingMember(32);
                     StatusOptions?.map((item: any) => {
                         if (StatusData.value == item.value) {
                             setPercentCompleteStatus(item.status);
@@ -2164,13 +2135,6 @@ const EditTaskPopup = (Items: any) => {
                 if (StatusData.value == 90) {
                     EditData.IsTodaysTask = false;
                     EditData.workingThisWeek = false;
-                    if (EditData.siteType == "Offshore%20Tasks") {
-                        setWorkingMember(36);
-                    } else if (DesignStatus) {
-                        setWorkingMember(301);
-                    } else {
-                        setWorkingMember(42);
-                    }
                     EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY");
                     StatusOptions?.map((item: any) => {
                         if (StatusData.value == item.value) {
@@ -2188,9 +2152,9 @@ const EditTaskPopup = (Items: any) => {
     //  ###################### This is Common Function for Change The Team Members According to Change Status ######################
 
     const removeWorkingMembers = (workingActionValue: any, FilterType: any) => {
-        workingActionValue.map((workingActions: any,index:any) => {
+        workingActionValue.map((workingActions: any, index: any) => {
             if (workingActions?.Title == "WorkingDetails") {
-                workingActionValue.splice(index,1)
+                workingActionValue.splice(index, 1)
             }
         })
         return workingActionValue
@@ -2284,7 +2248,7 @@ const EditTaskPopup = (Items: any) => {
 
     // ******************** This is used for updating all the Task Popup details on backend side  ***************************
 
-   
+
     const UpdateTaskInfoFunction = async (usedFor: any) => {
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
         let taskPercentageValue: any = DataJSONUpdate?.PercentComplete ? DataJSONUpdate?.PercentComplete : 0;
@@ -2337,7 +2301,6 @@ const EditTaskPopup = (Items: any) => {
                                 User?.Title?.toLowerCase() == "robert ungethuem" ||
                                 User?.Title?.toLowerCase() == "stefan hochhuth"
                             ) {
-
                                 SDCRecipientMail.push(User);
                             }
                         });
@@ -2447,92 +2410,22 @@ const EditTaskPopup = (Items: any) => {
                         }
                         return false;
                     });
-                    const TaskCategories = result.map((item: any) => item.Title).join(', ');
-                    const CheckForInformationRequestCategory: any = TaskCategories.includes("Information Request");
-                    let checkStatusUpdate = Number(taskPercentageValue) * 100;
-
                     // This used for send MS Teams and Email Notification according to Task Notification Configuration Tool
                     if (IsTaskStatusUpdated || IsTaskCategoryUpdated) {
-                        let TaskConfigurationInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ SiteURL: siteUrls, ItemDetails: UpdatedDataObject, Context: Context, RequiredListIds: AllListIdData })
-                        console.log("Task Configuration Information All Details from backend  ==================", TaskConfigurationInformation);
-                    }
-
-                    // This is used for send MS Teams Notification 
-                    try {
-                        const sendUserEmails: string[] = [];
-                        let AssignedUserName = '';
-                        const addEmailAndUserName = (userItem: any) => {
-                            if (userItem?.AssingedToUserId !== currentUserId) {
-                                sendUserEmails.push(userItem.Email);
-                                AssignedUserName = AssignedUserName ? "Team" : userItem?.Title;
-                            }
-                        };
-
-                        if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
-                            taskUsers?.forEach((allUserItem: any) => {
-                                if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
-                                    addEmailAndUserName(allUserItem);
-                                }
-                            });
-                        } else {
-                            const usersToCheck = TeamLeaderChanged && TeamMemberChanged ? TaskResponsibleTeam?.concat(TaskAssignedTo) :
-                                TeamLeaderChanged ? UpdatedDataObject?.ResponsibleTeam :
-                                    TeamMemberChanged || IsTaskStatusUpdated ? TaskAssignedTo : [];
-
-                            usersToCheck.forEach((userDtl: any) => {
-                                taskUsers?.forEach((allUserItem: any) => {
-                                    if (userDtl.Id === allUserItem?.AssingedToUserId) {
-                                        addEmailAndUserName(allUserItem);
-                                    }
+                        if (UpdatedDataObject != undefined) {
+                            const assignedTo = UpdatedDataObject.AssignedTo;
+                            if (assignedTo != undefined) {
+                                assignedTo.map((assignedData: any) => {
+                                    taskUsers?.forEach((userData: any) => {
+                                        if (assignedData?.Id == userData?.AssingedToUserId) {
+                                            assignedData.Email = userData?.AssingedToUser?.EMail;
+                                        }
+                                    });
                                 });
-                            });
-                        }
-                        let CommonMsg = '';
-                        const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
-                        const SendUserEmailFinal: any = sendUserEmails?.filter((item: any, index: any) => sendUserEmails?.indexOf(item) === index);
-                        if (TeamMemberChanged && TeamLeaderChanged) {
-                            CommonMsg = `You have been marked as TL/working member in the below task. Please take necessary action.`;
-                        } else if (TeamMemberChanged) {
-                            CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyze the points in the task, fill up the Estimation, Set to 10%).`;
-                        } else if (TeamLeaderChanged) {
-                            CommonMsg = `You have been marked as a Lead on the below task. Please take necessary action.`;
-                        } else if (IsTaskStatusUpdated) {
-                            switch (checkStatusUpdate) {
-                                case 80:
-                                    CommonMsg = `Below task has been set to 80%, please review it.`;
-                                    break;
-                                case 70:
-                                    CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`;
-                                    break;
                             }
                         }
-                        const emailMessage = GlobalFunctionForUpdateItems?.GenerateMSTeamsNotification(UpdatedDataObject);
-                        const containerDiv = document.createElement('div');
-                        const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
-                        ReactDOM.render(reactElement, containerDiv);
-                        const SendMessage = `
-                            <span>${CommonMsg}</span> 
-                            <p></p>
-                            <span>
-                            Task Link:  
-                            <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
-                            ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
-                            </a>
-                            </span>
-                            <p></p>
-                            <span>${containerDiv.innerHTML}</span>
-                            `;
-                        if ((sendMSGCheck || SendMsgToAuthor || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
-                            if (sendUserEmails.length > 0) {
-                                globalCommon.SendTeamMessage(SendUserEmailFinal, SendMessage, Items.context, AllListIdData).then(() => {
-                                    console.log("MS Teams Message Send Successfully !!!!")
-                                }).catch((error) => {
-                                    console.log("MS Teams Message Not Send !!!!", error.message)
-                                })
-                            }
-                        }
-                    } catch (error) {
-                        console.log("Error in send MS Teams Notifications function", error.message);
+                        let TaskConfigurationInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({usedFor:"Notification", SiteURL: siteUrls, ItemDetails: UpdatedDataObject, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: UpdatedDataObject.PercentComplete })
+                        console.log("Task Configuration Information All Details from backend  ==================", TaskConfigurationInformation);
                     }
                     if (ApproverData != undefined && ApproverData.length > 0) {
                         taskUsers.forEach((val: any) => {
@@ -2560,21 +2453,7 @@ const EditTaskPopup = (Items: any) => {
                             currentUserId != EditData?.Author.Id
                         ) {
                             EditData.TaskApprovers = EditData.TaskCreatorData;
-                            //EditData.TaskApprovers.push(EditData?.Author)
                         }
-                    }
-                    let spaceIndex = EditData.TaskCreatorData[0]?.Title?.lastIndexOf(' ');
-                    if (spaceIndex !== -1) {
-                        TaskDetailsFromCall[0].CreatorTitle = EditData.TaskCreatorData[0]?.Title?.substring(0, spaceIndex);
-                    } else {
-                        console.log("No last name found");
-                    }
-                    let CalculateStatusPercentages: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete
-                        : 0;
-                    if (IsTaskStatusUpdated && CalculateStatusPercentages == 90 && EmailStatus == true) {
-                        setLastUpdateTaskData(TaskDetailsFromCall[0]);
-                        ValueStatus = "90";
-                        setSendEmailNotification(true);
                     }
                     setLastUpdateTaskData(TaskDetailsFromCall[0]);
                     if (usedFor == "Image-Tab") {
@@ -3525,7 +3404,7 @@ const EditTaskPopup = (Items: any) => {
         };
         let arrayIndex: any = TaskImages?.length;
         TaskImages.push(DataObject);
-        if (dt.length > 0) {
+        if (dt?.length > 0) {
             onUploadImageFunction(TaskImages, [arrayIndex]);
         }
     };
@@ -4351,8 +4230,8 @@ const EditTaskPopup = (Items: any) => {
         });
         let count = 0;
         timeSheetData?.forEach(async (val: any) => {
-            if(SelectedSite=='Offshore Tasks'){
-                SelectedSite='OffshoreTasks'
+            if (SelectedSite == 'Offshore Tasks') {
+                SelectedSite = 'OffshoreTasks'
             }
             let siteType: any = "Task" + SelectedSite + "Id";
             let SiteId = "Task" + Items.Items.siteType;
@@ -4436,11 +4315,8 @@ const EditTaskPopup = (Items: any) => {
         let data: any = ApproverData;
         if (useFor == "Bottleneck" || useFor == "Attention" || useFor == "Phone" || useFor == "Approval") {
             let CreatorData: any = currentUserBackupArray[0];
-            WorkingAction.map((item: any) => {
-                if (item.Title == useFor) {
-                    item.InformationData = []
-                }
-            })
+            setTaskAssignedTo(ApproverData)
+            setTaskTeamMembers(ApproverData)
             let workingDetail: any = WorkingAction?.filter((type: any) => type?.Title == "WorkingDetails");
             let copyWorkAction: any = [...WorkingAction]
             copyWorkAction = WorkingAction?.filter((type: any) => type?.Title != "WorkingDetails");
@@ -4592,14 +4468,13 @@ const EditTaskPopup = (Items: any) => {
 
 
     // this is used for update working action JSOn for Approval Secanrios 
-
     const updateWAForApproval = (Value: any, key: string) => {
         let copyWorkAction: any = [...WorkingAction];
         const usedFor: string = "Approval";
         let CreatorData: any = currentUserBackupArray[0];
         let ApproverDataInfo: any = [];
         let CreateObject: any = {};
-
+ 
         if (taskUsers?.length > 0) {
             taskUsers?.forEach((UserItem: any) => {
                 CreatorData?.Approver?.forEach((RecipientsItem: any) => {
@@ -4609,7 +4484,7 @@ const EditTaskPopup = (Items: any) => {
                 });
             });
         }
-
+ 
         if (key == "IsChecked") {
             if (Value == true) {
                 setApprovalStatus(false);
@@ -4625,7 +4500,7 @@ const EditTaskPopup = (Items: any) => {
             } else {
                 setApprovalStatus(true);
                 isApprovalByStatus = true;
-    
+ 
                 const dataArray = ApproverDataInfo.map((approver: any) => ({
                     CreatorName: CreatorData?.Title,
                     CreatorImage: CreatorData?.UserImage,
@@ -4640,15 +4515,21 @@ const EditTaskPopup = (Items: any) => {
                     Comment: '',
                     CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
                 }));
-    
+ 
                 if (copyWorkAction?.length > 0) {
                     copyWorkAction?.forEach((DataItem: any) => {
                         if (DataItem.Title == usedFor) {
-                            DataItem.InformationData = dataArray;
-                            DataItem[key] = Value;
+                            if (DataItem.InformationData.length > 0) {
+                                let aproveInfoData=dataArray.concat(DataItem.InformationData)
+                                DataItem.InformationData = aproveInfoData;
+                                DataItem[key] = Value;
+                            } else {
+                                DataItem.InformationData = dataArray;
+                                DataItem[key] = Value;
+                            }
                         }
                     });
-                }  else {
+                } else {
                     let TempArrya: any = [
                         {
                             Title: "Bottleneck",
@@ -4671,12 +4552,12 @@ const EditTaskPopup = (Items: any) => {
                         if (TempItem.Title == usedFor) {
                             CreateObject.Id = TempItem.InformationData?.length;
                             TempItem[key] = Value;
-                            TempItem.InformationData.push(CreateObject);
-
+                            TempItem.InformationData = dataArray;
                         }
                     })
                     copyWorkAction = TempArrya;
                 }
+ 
                 let tempArray: any = [];
                 if (currentUserData != undefined && currentUserData.length > 0) {
                     currentUserData.map((dataItem: any) => {
@@ -4707,7 +4588,131 @@ const EditTaskPopup = (Items: any) => {
                     }
                 });
             }
-        } else {
+        }
+        else if(key=="isChekedfor1%"){
+           
+            if (Value == true) {
+                setApprovalStatus(true)
+                if (copyWorkAction?.length > 0) {
+                    copyWorkAction?.forEach((DataItem: any) => {
+                        // if (DataItem.Title == usedFor) {
+                        //     DataItem.InformationData = [];
+                        //     DataItem[key] = false;
+                        //     DataItem.Type = "";
+                        // }
+                    });
+                }
+            } else {
+                setApprovalStatus(true);
+                isApprovalByStatus = true;
+ 
+                const dataArray = ApproverDataInfo.map((approver: any) => ({
+                    CreatorName: CreatorData?.Title,
+                    CreatorImage: CreatorData?.UserImage,
+                    CreatorID: CreatorData?.Id,
+                    TaggedUsers: {
+                        Title: approver?.Title,
+                        Email: approver?.Email,
+                        AssingedToUserId: approver?.AssingedToUserId,
+                        userImage: approver?.Item_x0020_Cover?.Url,
+                    },
+                    NotificationSend: false,
+                    Comment: '',
+                    CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
+                }));
+ 
+                if (copyWorkAction?.length > 0) {
+                    copyWorkAction?.forEach((DataItem: any) => {
+                        if (DataItem.Title == usedFor) {
+                            if (DataItem.InformationData.length > 0) {
+                                let aproveInfoData=dataArray.concat(DataItem.InformationData)
+                                DataItem.InformationData = aproveInfoData;
+                                DataItem[key] = Value;
+                            } else {
+                                DataItem.InformationData = dataArray;
+                                DataItem[key] = Value;
+                            }
+                        }
+                    });
+                } else {
+                    let TempArrya: any = [
+                        {
+                            Title: "Bottleneck",
+                            InformationData: []
+                        },
+                        {
+                            Title: "Attention",
+                            InformationData: []
+                        },
+                        {
+                            Title: "Phone",
+                            InformationData: []
+                        },
+                        {
+                            Title: "Approval",
+                            InformationData: []
+                        }
+                    ]
+                    TempArrya?.map((TempItem: any) => {
+                        if (TempItem.Title == usedFor) {
+                            CreateObject.Id = TempItem.InformationData?.length;
+                            TempItem[key] = Value;
+                            TempItem.InformationData = dataArray;
+                        }
+                    })
+                    copyWorkAction = TempArrya;
+                }
+ 
+                let tempArray: any = [];
+                if (currentUserData != undefined && currentUserData.length > 0) {
+                    currentUserData.map((dataItem: any) => {
+                        dataItem?.Approver.map((items: any) => {
+                            tempArray.push(items);
+                        });
+                    });
+                }
+                const finalData = tempArray.filter(
+                    (val: any, id: any, array: any) => {
+                        return array?.indexOf(val) == id;
+                    }
+                );
+                EditData.TaskApprovers = finalData;
+                EditData.CurrentUserData = currentUserData;
+                setApproverData(finalData);
+                setApprovalStatus(true);
+                Items.sendApproverMail = true;
+                StatusOptions?.map((item: any) => {
+                    if (item.value == 1) {
+                        setUpdateTaskInfo({
+                            ...UpdateTaskInfo,
+                            PercentCompleteStatus: "1",
+                        });
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+                        setPercentCompleteCheck(false);
+                    }
+                });
+            }
+        }
+        else if(key=="isChekedfor0%"){
+ 
+            if (Value == true) {
+                setApprovalStatus(false)
+                if (copyWorkAction?.length > 0) {
+                    copyWorkAction?.forEach((DataItem: any) => {
+                        if (DataItem.Title == usedFor) {
+                             DataItem.InformationData = [];
+                             DataItem[key] = false;
+                             DataItem.Type = "";
+                         }
+                    });
+                }
+            }
+ 
+        }
+       
+       
+        else {
             if (copyWorkAction?.length > 0) {
                 copyWorkAction?.map((DataItem: any) => {
                     if (DataItem.Title == usedFor) {
@@ -4715,9 +4720,9 @@ const EditTaskPopup = (Items: any) => {
                             DataItem[key] = Value;
                         } else {
                             alert("You haven’t checked the approval. First, check the approval checkbox, and then select the approval type.")
-
+ 
                         }
-
+ 
                     }
                 })
             } else {
@@ -4726,7 +4731,7 @@ const EditTaskPopup = (Items: any) => {
         }
         setWorkingAction([...copyWorkAction]);
     }
-
+ 
     // this is a common function for auto suggetions for the Task Users also used for workingAction
 
     const SelectApproverFromAutoSuggestion = (ApproverData: any, usedFor: string) => {
@@ -4924,16 +4929,27 @@ const EditTaskPopup = (Items: any) => {
         }
     };
 
-
     const removeAssignedMember = (value: any) => {
+        const beforeItemDelete: any = ApproverData.filter((item: any) => item.Title == value.Title)
         const afterItemDelete: any = ApproverData.filter((item: any) => item.Title != value.Title)
         setApproverData(afterItemDelete)
+        if (useFor == "Bottleneck" || useFor == "Attention" || useFor == "Phone" || useFor == "Approval") {
+            WorkingAction.map((item: any) => {
+                if (item.Title == useFor) {
+                    item.InformationData.map((infoItem: any, index: any) => {
+                        beforeItemDelete.map((approveItem: any) => {
+                            if (infoItem.TaggedUsers.AssingedToUserId == approveItem.AssingedToUserId) {
+                                item.InformationData.splice(index, 1)
+                            }
+                        })
+                    })
+                }
+            })
+        }
     }
-
     // this is used for updating workingAction JSON Data on Backedn Side 
 
     const UpdateWorkingActionJSON = async (DataForUpdate: any) => {
-
         try {
             let web = new Web(siteUrls);
             await web.lists
@@ -4967,7 +4983,7 @@ const EditTaskPopup = (Items: any) => {
         }
         if (usedFor == "Remove") {
             let CopyWorkingActionData: any = [...WorkingAction];
-        let TempWorkingActionData: any = removeDataFromInformationData(CopyWorkingActionData, ActionType, Index);
+            let TempWorkingActionData: any = removeDataFromInformationData(CopyWorkingActionData, ActionType, Index);
             EditData.WorkingAction = [...TempWorkingActionData]
             console.log("Updated Data after removing User:", TempWorkingActionData);
             setWorkingAction([...EditData.WorkingAction])
@@ -4997,14 +5013,10 @@ const EditTaskPopup = (Items: any) => {
                     item.Id = item?.TaggedUsers?.AssingedToUserId;
                     selectedtagMember.push(item?.TaggedUsers)
                 })
-
             }
-
         })
         setApproverData(selectedtagMember)
     }
-
-
 
     const onRenderCustomHeaderMain = () => {
         return (
@@ -5366,7 +5378,7 @@ const EditTaskPopup = (Items: any) => {
                 rank =
                     <label className="alignCenter form-label full-width gap-1">
                         {res?.Title}
-                       {res?.Description!=null && res?.Description!='' && <div className={styles.root}>
+                        {res?.Description != null && res?.Description != '' && <div className={styles.root}>
                             <InfoToolTip
                                 content={{
                                     children: <span dangerouslySetInnerHTML={{ __html: res?.Description }}></span>,
@@ -5739,7 +5751,7 @@ const EditTaskPopup = (Items: any) => {
                                                     {/* <label className="form-label full-width">
                                                         Item Rank
                                                     </label> */}
-                                                      {visibleRank ? ItemRankval : (getColumnDetails('Item_x0020_Rank'))}
+                                                    {visibleRank ? ItemRankval : (getColumnDetails('Item_x0020_Rank'))}
                                                     <select
                                                         className="form-select"
                                                         defaultValue={EditData.ItemRank}
@@ -5877,26 +5889,26 @@ const EditTaskPopup = (Items: any) => {
                                                         ) : null}
                                                         {TaskCategoriesData?.map(
                                                             (type: any, index: number) => {
-                                                                
-                                                                    return (
-                                                                        <div className="block w-100">
-                                                                            <a
-                                                                                style={{ color: "#fff !important" }}
-                                                                                className="textDotted"
-                                                                            >
-                                                                                {type.Title}
-                                                                            </a>
-                                                                            <span
-                                                                                onClick={() =>
-                                                                                    removeCategoryItem(
-                                                                                        type.Title
-                                                                                    )
-                                                                                }
-                                                                                className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                                            ></span>
-                                                                        </div>
-                                                                    );
-                                                                
+
+                                                                return (
+                                                                    <div className="block w-100">
+                                                                        <a
+                                                                            style={{ color: "#fff !important" }}
+                                                                            className="textDotted"
+                                                                        >
+                                                                            {type.Title}
+                                                                        </a>
+                                                                        <span
+                                                                            onClick={() =>
+                                                                                removeCategoryItem(
+                                                                                    type.Title
+                                                                                )
+                                                                            }
+                                                                            className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                        ></span>
+                                                                    </div>
+                                                                );
+
 
                                                             }
                                                         )}</> :
@@ -7544,192 +7556,192 @@ const EditTaskPopup = (Items: any) => {
                                 </div>
                                 {DesignNewTemplates != true ?
                                     <div className="d-flex">
-                                       
-                                            <div
-                                                className={
-                                                    IsShowFullViewImage != true
-                                                        ? "col-sm-3 me-2 padL-0 DashboardTaskPopup-Editor above"
-                                                        : "col-sm-6  padL-0 DashboardTaskPopup-Editor above"
-                                                }
-                                            >
-                                                <div className="image-upload">
-                                                    <ImageUploading
-                                                        multiple
-                                                        value={TaskImages}
-                                                        onChange={onUploadImageFunction}
-                                                        dataURLKey="data_url"
-                                                    >
-                                                        {({
-                                                            imageList,
-                                                            onImageUpload,
-                                                            onImageRemoveAll,
-                                                            onImageUpdate,
-                                                            onImageRemove,
-                                                            isDragging,
-                                                            dragProps,
-                                                        }) => (
-                                                            <div className="upload__image-wrapper">
-                                                                {imageList.map((ImageDtl, index) => (
-                                                                    <div key={index} className="image-item">
-                                                                        <div className="my-1">
-                                                                            <div>
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    className="form-check-input"
-                                                                                    checked={ImageDtl.Checked}
-                                                                                    onClick={() =>
-                                                                                        ImageCompareFunction(ImageDtl, index)
-                                                                                    }
-                                                                                />
-                                                                                <span className="mx-1">
-                                                                                    {ImageDtl.ImageName
-                                                                                        ? ImageDtl.ImageName.slice(0, 24)
+
+                                        <div
+                                            className={
+                                                IsShowFullViewImage != true
+                                                    ? "col-sm-3 me-2 padL-0 DashboardTaskPopup-Editor above"
+                                                    : "col-sm-6  padL-0 DashboardTaskPopup-Editor above"
+                                            }
+                                        >
+                                            <div className="image-upload">
+                                                <ImageUploading
+                                                    multiple
+                                                    value={TaskImages}
+                                                    onChange={onUploadImageFunction}
+                                                    dataURLKey="data_url"
+                                                >
+                                                    {({
+                                                        imageList,
+                                                        onImageUpload,
+                                                        onImageRemoveAll,
+                                                        onImageUpdate,
+                                                        onImageRemove,
+                                                        isDragging,
+                                                        dragProps,
+                                                    }) => (
+                                                        <div className="upload__image-wrapper">
+                                                            {imageList.map((ImageDtl, index) => (
+                                                                <div key={index} className="image-item">
+                                                                    <div className="my-1">
+                                                                        <div>
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                className="form-check-input"
+                                                                                checked={ImageDtl.Checked}
+                                                                                onClick={() =>
+                                                                                    ImageCompareFunction(ImageDtl, index)
+                                                                                }
+                                                                            />
+                                                                            <span className="mx-1">
+                                                                                {ImageDtl.ImageName
+                                                                                    ? ImageDtl.ImageName.slice(0, 24)
+                                                                                    : ""}
+                                                                            </span>
+                                                                        </div>
+                                                                        <a
+                                                                            href={ImageDtl.ImageUrl}
+                                                                            target="_blank"
+                                                                            data-interception="off"
+                                                                        >
+                                                                            <img
+                                                                                src={
+                                                                                    ImageDtl.ImageUrl
+                                                                                        ? ImageDtl.ImageUrl
+                                                                                        : ""
+                                                                                }
+                                                                                onMouseOver={(e) =>
+                                                                                    MouseHoverImageFunction(e, ImageDtl)
+                                                                                }
+                                                                                onMouseOut={(e) =>
+                                                                                    MouseOutImageFunction(e)
+                                                                                }
+                                                                                className="card-img-top"
+                                                                            />
+                                                                        </a>
+
+                                                                        <div className="card-footer alignCenter justify-content-between pt-0 pb-1 px-2">
+                                                                            <div className="alignCenter">
+                                                                                <span className="fw-semibold">
+                                                                                    {ImageDtl.UploadeDate
+                                                                                        ? ImageDtl.UploadeDate
                                                                                         : ""}
                                                                                 </span>
+                                                                                <span className="mx-1">
+                                                                                    <img
+                                                                                        className="imgAuthor"
+                                                                                        title={ImageDtl.UserName}
+                                                                                        src={
+                                                                                            ImageDtl.UserImage
+                                                                                                ? ImageDtl.UserImage
+                                                                                                : ""
+                                                                                        }
+                                                                                    />
+                                                                                </span>
                                                                             </div>
-                                                                            <a
-                                                                                href={ImageDtl.ImageUrl}
-                                                                                target="_blank"
-                                                                                data-interception="off"
-                                                                            >
-                                                                                <img
-                                                                                    src={
-                                                                                        ImageDtl.ImageUrl
-                                                                                            ? ImageDtl.ImageUrl
-                                                                                            : ""
+                                                                            <div className="alignCenter">
+                                                                                <span
+                                                                                    className="hover-text"
+                                                                                    onClick={() =>
+                                                                                        openReplaceImagePopup(index)
                                                                                     }
-                                                                                    onMouseOver={(e) =>
-                                                                                        MouseHoverImageFunction(e, ImageDtl)
+                                                                                >
+                                                                                    <TbReplace />{" "}
+                                                                                    <span className="tooltip-text pop-right">
+                                                                                        Replace Image
+                                                                                    </span>
+                                                                                </span>
+                                                                                <span
+                                                                                    className="mx-1 hover-text"
+                                                                                    onClick={() =>
+                                                                                        RemoveImageFunction(
+                                                                                            index,
+                                                                                            ImageDtl.ImageName,
+                                                                                            "Remove"
+                                                                                        )
                                                                                     }
-                                                                                    onMouseOut={(e) =>
-                                                                                        MouseOutImageFunction(e)
+                                                                                >
+                                                                                    {" "}
+                                                                                    | <RiDeleteBin6Line /> |
+                                                                                    <span className="tooltip-text pop-right">
+                                                                                        Delete
+                                                                                    </span>
+                                                                                </span>
+                                                                                <span
+                                                                                    className="hover-text"
+                                                                                    onClick={() =>
+                                                                                        ImageCustomizeFunction(index)
                                                                                     }
-                                                                                    className="card-img-top"
-                                                                                />
-                                                                            </a>
-
-                                                                            <div className="card-footer alignCenter justify-content-between pt-0 pb-1 px-2">
-                                                                                <div className="alignCenter">
-                                                                                    <span className="fw-semibold">
-                                                                                        {ImageDtl.UploadeDate
-                                                                                            ? ImageDtl.UploadeDate
-                                                                                            : ""}
+                                                                                >
+                                                                                    <FaExpandAlt /> |
+                                                                                    <span className="tooltip-text pop-right">
+                                                                                        Customize the Width of Page
                                                                                     </span>
-                                                                                    <span className="mx-1">
-                                                                                        <img
-                                                                                            className="imgAuthor"
-                                                                                            title={ImageDtl.UserName}
-                                                                                            src={
-                                                                                                ImageDtl.UserImage
-                                                                                                    ? ImageDtl.UserImage
-                                                                                                    : ""
-                                                                                            }
-                                                                                        />
+                                                                                </span>
+                                                                                <span
+                                                                                    className="ms-1 m-0 img-info hover-text"
+                                                                                    onClick={() =>
+                                                                                        openAddImageDescriptionFunction(
+                                                                                            index,
+                                                                                            ImageDtl,
+                                                                                            "Image"
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <span className="svg__iconbox svg__icon--info dark"></span>
+                                                                                    <span className="tooltip-text pop-right">
+                                                                                        {ImageDtl.Description != undefined &&
+                                                                                            ImageDtl.Description?.length > 1
+                                                                                            ? ImageDtl.Description
+                                                                                            : "Add Image Description"}
                                                                                     </span>
-                                                                                </div>
-                                                                                <div className="alignCenter">
-                                                                                    <span
-                                                                                        className="hover-text"
-                                                                                        onClick={() =>
-                                                                                            openReplaceImagePopup(index)
-                                                                                        }
-                                                                                    >
-                                                                                        <TbReplace />{" "}
-                                                                                        <span className="tooltip-text pop-right">
-                                                                                            Replace Image
-                                                                                        </span>
-                                                                                    </span>
-                                                                                    <span
-                                                                                        className="mx-1 hover-text"
-                                                                                        onClick={() =>
-                                                                                            RemoveImageFunction(
-                                                                                                index,
-                                                                                                ImageDtl.ImageName,
-                                                                                                "Remove"
-                                                                                            )
-                                                                                        }
-                                                                                    >
-                                                                                        {" "}
-                                                                                        | <RiDeleteBin6Line /> |
-                                                                                        <span className="tooltip-text pop-right">
-                                                                                            Delete
-                                                                                        </span>
-                                                                                    </span>
-                                                                                    <span
-                                                                                        className="hover-text"
-                                                                                        onClick={() =>
-                                                                                            ImageCustomizeFunction(index)
-                                                                                        }
-                                                                                    >
-                                                                                        <FaExpandAlt /> |
-                                                                                        <span className="tooltip-text pop-right">
-                                                                                            Customize the Width of Page
-                                                                                        </span>
-                                                                                    </span>
-                                                                                    <span
-                                                                                        className="ms-1 m-0 img-info hover-text"
-                                                                                        onClick={() =>
-                                                                                            openAddImageDescriptionFunction(
-                                                                                                index,
-                                                                                                ImageDtl,
-                                                                                                "Image"
-                                                                                            )
-                                                                                        }
-                                                                                    >
-                                                                                        <span className="svg__iconbox svg__icon--info dark"></span>
-                                                                                        <span className="tooltip-text pop-right">
-                                                                                            {ImageDtl.Description != undefined &&
-                                                                                                ImageDtl.Description?.length > 1
-                                                                                                ? ImageDtl.Description
-                                                                                                : "Add Image Description"}
-                                                                                        </span>
-                                                                                    </span>
-                                                                                </div>
+                                                                                </span>
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                ))}
-                                                                <div className="d-flex justify-content-between py-1 border-top ">
-                                                                    {/* <span className="siteColor"
+                                                                </div>
+                                                            ))}
+                                                            <div className="d-flex justify-content-between py-1 border-top ">
+                                                                {/* <span className="siteColor"
                                                                 style={{ cursor: "pointer" }}
                                                                 onClick={() => alert("We are working on it. This Feature will be live soon ..")}>
                                                                 Upload Item-Images
                                                             </span> */}
 
-                                                                    {TaskImages?.length != 0 ? (
-                                                                        <span
-                                                                            className="siteColor"
-                                                                            style={{ cursor: "pointer" }}
-                                                                            onClick={() =>
-                                                                                setUploadBtnStatus(
-                                                                                    UploadBtnStatus ? false : true
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            Add New Image
-                                                                        </span>
-                                                                    ) : null}
-                                                                </div>
-                                                                {UploadBtnStatus ? (
-                                                                    <div>
-                                                                        <FlorarImageUploadComponent
-                                                                            callBack={FroalaImageUploadComponentCallBack}
-                                                                        />
-                                                                    </div>
-                                                                ) : null}
-                                                                {TaskImages?.length == 0 && EditData?.Id != undefined ? (
-                                                                    <div>
-                                                                        <FlorarImageUploadComponent
-                                                                            callBack={FroalaImageUploadComponentCallBack}
-                                                                        />
-                                                                    </div>
+                                                                {TaskImages?.length != 0 ? (
+                                                                    <span
+                                                                        className="siteColor"
+                                                                        style={{ cursor: "pointer" }}
+                                                                        onClick={() =>
+                                                                            setUploadBtnStatus(
+                                                                                UploadBtnStatus ? false : true
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        Add New Image
+                                                                    </span>
                                                                 ) : null}
                                                             </div>
-                                                        )}
-                                                    </ImageUploading>
-                                                </div>
+                                                            {UploadBtnStatus ? (
+                                                                <div>
+                                                                    <FlorarImageUploadComponent
+                                                                        callBack={FroalaImageUploadComponentCallBack}
+                                                                    />
+                                                                </div>
+                                                            ) : null}
+                                                            {TaskImages?.length == 0 && EditData?.Id != undefined ? (
+                                                                <div>
+                                                                    <FlorarImageUploadComponent
+                                                                        callBack={FroalaImageUploadComponentCallBack}
+                                                                    />
+                                                                </div>
+                                                            ) : null}
+                                                        </div>
+                                                    )}
+                                                </ImageUploading>
                                             </div>
-                                      
+                                        </div>
+
                                         <div
                                             className={
                                                 IsShowFullViewImage != true
@@ -8505,26 +8517,26 @@ const EditTaskPopup = (Items: any) => {
                                                                     ) : null}
                                                                     {TaskCategoriesData?.map(
                                                                         (type: any, index: number) => {
-                                                                            
-                                                                                return (
-                                                                                    <div className="block w-100">
-                                                                                        <a
-                                                                                            style={{ color: "#fff !important" }}
-                                                                                            className="textDotted"
-                                                                                        >
-                                                                                            {type.Title}
-                                                                                        </a>
-                                                                                        <span
-                                                                                            onClick={() =>
-                                                                                                removeCategoryItem(
-                                                                                                    type.Title
-                                                                                                )
-                                                                                            }
-                                                                                            className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                                                        ></span>
-                                                                                    </div>
-                                                                                );
-                                                                            
+
+                                                                            return (
+                                                                                <div className="block w-100">
+                                                                                    <a
+                                                                                        style={{ color: "#fff !important" }}
+                                                                                        className="textDotted"
+                                                                                    >
+                                                                                        {type.Title}
+                                                                                    </a>
+                                                                                    <span
+                                                                                        onClick={() =>
+                                                                                            removeCategoryItem(
+                                                                                                type.Title
+                                                                                            )
+                                                                                        }
+                                                                                        className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                                    ></span>
+                                                                                </div>
+                                                                            );
+
                                                                         }
                                                                     )}</> :
                                                                     <>
@@ -8596,7 +8608,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 </span>
                                                             </div>
 
-                                                          
+
                                                         </div>
                                                         <div className="col-6 ps-0 pe-0">
                                                             <div className="row">

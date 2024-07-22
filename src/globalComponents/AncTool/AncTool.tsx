@@ -88,6 +88,7 @@ const AncTool = (props: any) => {
     const [editdocpanel, setEditdocpanel] = React.useState(false);
     const [EditdocData, setEditdocData] = React.useState<any>({});
     const [Doctab, setDoctab] = React.useState('');
+    const [CNcheckbox, setCNcheckbox] = React.useState(false);
     React.useEffect(() => {
         GetSmartMetadata();
         siteUrl = props?.Context?.pageContext?.web?.absoluteUrl;
@@ -921,6 +922,7 @@ const AncTool = (props: any) => {
                 setUploadedDocDetails(AllTaggedUploadDoc);
                 setShowConfirmation(true)
                 setUploadEmailModal(false)
+                setCNcheckbox(false);
                 //setModalIsOpenToFalse()
             } catch (error) {
                 console.log("File upload failed:", error);
@@ -958,6 +960,7 @@ const AncTool = (props: any) => {
         setLinkDocitemRank(5);
         setLinkToDocTitle('');
         setLinkToDocUrl('');
+        setCNcheckbox(false);
     }
     // Choose Path Folder
     const cancelPathFolder = () => {
@@ -1440,6 +1443,12 @@ const AncTool = (props: any) => {
         }
         setEditdocpanel(false);
     }
+    const handleCNcheckbox = (event: any) => {
+        setCNcheckbox(event.target.checked);
+        const temp = `Concept Note - `
+        setRenamedFileName(event.target.checked ? temp : '');
+    }
+
     return (
         <>
             <div className={ServicesTaskCheck ? "serviepannelgreena mb-3 card addconnect boxshadow" : "mb-3 card addconnect boxshadow"}>
@@ -1502,6 +1511,10 @@ const AncTool = (props: any) => {
                                         <div className="col-sm-12 mt-2 p-0 input-group">
                                             <input type="text" onChange={(e) => { changeFileName(e) }} value={renamedFileName} placeholder='Enter File Name' className='form-control' />
                                         </div>
+                                        {createNewDocType == 'docx' && <div className="col-sm-12 mt-2 p-0 input-group">
+                                            <label>Concept Note</label>
+                                            <input type="checkbox" onChange={(e) => handleCNcheckbox(e)} checked={CNcheckbox} className='form-check-input hreflink ms-1' />
+                                        </div>}
                                         <footer className='text-end py-2'>
                                             <button className="btn btn-primary" disabled={!createNewFile} onClick={() => { CreateNewAndTag() }}>Create</button>
                                             <button className='btn btn-default ms-1' onClick={() => cancelNewCreateFile()}>Cancel</button>

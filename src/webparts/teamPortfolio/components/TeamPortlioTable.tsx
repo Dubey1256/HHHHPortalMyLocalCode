@@ -3854,28 +3854,28 @@ function TeamPortlioTable(SelectedProp: any) {
                                     </div>
                                 ) : (
                                     <div className="mt-4 clearfix">
-                                        <h4 className="titleBorder "> Type</h4>
-                                        <div className="col p-0 taskcatgoryPannel">
-                                            <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Feedback")} className={activeTile == "Feedback" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                                <span className="tasks-label">Feedback</span>
-                                            </a>
-                                            <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile == "Improvement" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                                <span className="tasks-label">Improvement</span>
-                                            </a>
-                                            <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Implementation")} className={activeTile == "Implementation" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                                <span className="tasks-label">Implementation</span>
-                                            </a>
-                                            <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Development")} className={activeTile == "Development" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                                <span className="tasks-label">Development</span>
-                                            </a>
-                                            <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Activities")} className={activeTile == "Activities" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                                <span className="tasks-label">Activity</span>
-                                            </a>
-                                            <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
-                                                <span className="tasks-label">Task</span>
-                                            </a>
-                                        </div>
+                                    <h4 className="titleBorder "> Type</h4>
+                                    <div className="col p-0 taskcatgoryPannel">
+                                    <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Activities")} className={activeTile == "Activities" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Activity</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Task</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Development")} className={activeTile == "Development" ? "active bg-siteColor subcategoryTask text-center ms-3" : "bg-siteColor subcategoryTask text-center ms-3"}>
+                                            <span className="tasks-label">Development</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile == "Improvement" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Improvement</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Implementation")} className={activeTile == "Implementation" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Implementation</span>
+                                        </a>
+                                      
+                                       
+                                       
                                     </div>
+                                </div>
                                 )}
                             </div>
                         </div>

@@ -10,7 +10,12 @@ import { Avatar } from "@fluentui/react-components";
 const BackgroundCommentComponent = (Props: any) => {
     const [BackgroundComment, setBackgroundComment] = useState('');
     const [EditCommentPanel, setEditCommentPanel] = useState(false);
+    const [editTypeUsedFor, setEditTypeUsedFor] = useState("")
     const [BackgroundComments, setBackgroundComments] = useState(Props.TaskData?.BackgroundComments != undefined ? Props.TaskData?.BackgroundComments : []);
+    const [EODPendingComment, setEODPendingComment] = useState('');
+    const [EODAchiviedComment, setEODAchiviedComment] = useState('');
+    const [taskInfo, setTaskInfo] = useState(Props.TaskData)
+    
     const [uploadImageContainer, setuploadImageContainer] = useState(false);
     const [UpdateCommentData, setUpdateCommentData] = useState('');
     const [CurrentIndex, setCurrentIndex] = useState<any>();
@@ -96,6 +101,38 @@ const BackgroundCommentComponent = (Props: any) => {
             alert("Please Enter Your Comment First!")
         }
     }
+    // Code by Udbhav related to the EOD report Comments Add
+    const AddEODComent = () => {
+        if (EODPendingComment?.length > 0 || EODAchiviedComment?.length > 0) {
+            let CurrentUser: any
+            if (currentUserData?.length > 0) {
+                CurrentUser = currentUserData[0];
+            }
+            let CommentJSON = {
+                AuthorId: CurrentUser?.AssingedToUserId != undefined ? CurrentUser?.AssingedToUserId : 0,
+                Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+                Body: "",
+                AuthorImage: CurrentUser?.Item_x0020_Cover != null ? CurrentUser?.Item_x0020_Cover?.Url : null,
+                AuthorName: CurrentUser?.Title != undefined ? CurrentUser?.Title : Context?.pageContext?._user.displayName,
+                Type: "EODReport",
+                Title: taskInfo?.Title,
+                ProjectID: taskInfo?.Project.Id,
+                ProjectName: taskInfo?.Project?.Title,
+                Achieved: EODAchiviedComment,
+                Pending: EODPendingComment,
+                ID: (BackgroundComments != undefined ? BackgroundComments?.length + 1 : 0)
+            }
+            BackgroundComments.push(CommentJSON);
+            setBackgroundComments(BackgroundComments)
+            setEODAchiviedComment('')
+            setEODPendingComment('')
+            updateCommentFunction(BackgroundComments, "OffshoreComments");
+        } else {
+            alert("Please Enter Your Comment First!")
+        }
+
+    }
+
     // This is used for Deleteing Background Comments 
     const DeleteBackgroundCommentFunction = (ID: any, Body: any) => {
         let tempArray: any = [];
@@ -116,6 +153,33 @@ const BackgroundCommentComponent = (Props: any) => {
         updateCommentFunction(tempArray, "OffshoreComments");
         tempArray = [];
     }
+  // Code by Udbhav for delete EOD Comment
+
+    const DeleteEODComment = (CommentId: any, Comment: any, UsedFor: any) => {
+        let tempArray:any=BackgroundComments
+        tempArray?.map((EODComment: any, index: any) => {
+            if (EODComment.ID == CommentId) {
+                if (UsedFor == "Achieved") {
+                    if (EODComment?.Achieved == Comment) {
+                        delete EODComment.Achieved;
+                    }
+                }
+                 if (UsedFor == "Pending") {
+                    if (EODComment?.Pending == Comment) {
+                        delete EODComment.Pending;
+                    }
+                }
+                 if (EODComment?.Pending == undefined && EODComment?.Achieved == undefined) {
+                    tempArray?.splice(index, 1)
+                }
+
+            }
+
+        })
+        updateCommentFunction(tempArray, "OffshoreComments");
+        setBackgroundComments([...tempArray]);
+    }
+
 
     const deletebackgroundImageFunction = async (ItemData: any) => {
 
@@ -173,16 +237,28 @@ const BackgroundCommentComponent = (Props: any) => {
     const editPostCloseFunction = () => {
         setEditCommentPanel(false);
     }
-    const openEditModal = (Index: any, Body: any) => {
+    const openEditModal = (Index: any, Body: any, UsedFor: any) => {
+        setEditTypeUsedFor(UsedFor)
         setEditCommentPanel(true);
         setUpdateCommentData(Body);
         setCurrentIndex(Index);
     }
     const ChangeCommentFunction = () => {
         if (BackgroundComments != undefined && BackgroundComments.length > 0) {
-            BackgroundComments[CurrentIndex].Body = UpdateCommentData;
-            updateCommentFunction(BackgroundComments, "OffshoreComments");
-            setUpdateCommentData("");
+            if (editTypeUsedFor === "Achieved" || editTypeUsedFor === "Pending") {
+                if (editTypeUsedFor === "Achieved") {
+                    BackgroundComments[CurrentIndex].Achieved = UpdateCommentData;
+                } else {
+                    BackgroundComments[CurrentIndex].Pending = UpdateCommentData;
+                }
+                updateCommentFunction(BackgroundComments, "OffshoreComments");
+                setUpdateCommentData("");
+            } else {
+                BackgroundComments[CurrentIndex].Body = UpdateCommentData;
+                updateCommentFunction(BackgroundComments, "OffshoreComments");
+                setUpdateCommentData("");
+            }
+
         }
         setEditCommentPanel(false);
 
@@ -222,7 +298,7 @@ const BackgroundCommentComponent = (Props: any) => {
                                                     className="UserImage"
                                                     title={ImageDtl?.UserName}
                                                     name={ImageDtl?.UserName}
-                                                    image={ImageDtl?.UserImage != undefined && ImageDtl?.UserImage!=''? {
+                                                    image={ImageDtl?.UserImage != undefined && ImageDtl?.UserImage != '' ? {
                                                         src: ImageDtl?.UserImage,
                                                     } : undefined}
                                                     initials={ImageDtl?.UserImage == undefined && ImageDtl?.Suffix != undefined ? ImageDtl?.Suffix : undefined}
@@ -261,47 +337,45 @@ const BackgroundCommentComponent = (Props: any) => {
                 <p className="siteColor mb-0">Comments</p>
                 {BackgroundComments != undefined && BackgroundComments.length > 0 ? BackgroundComments.map((dataItem: any, Index: any) => {
                     return (
-                        <div className={`col-12 d-flex float-end add_cmnt my-1 `}>
-                            <div className="">
-                                <Avatar
-                                    className="UserImage"
-                                    title={dataItem?.AuthorName}
-                                    name={dataItem?.AuthorName}
-                                    image={dataItem.AuthorImage != undefined ? {
-                                        src: dataItem.AuthorImage,
-                                    } : undefined}
-                                    initials={dataItem.AuthorImage == undefined && dataItem?.Suffix!=undefined? dataItem?.Suffix : undefined}
-                                />
+                        (dataItem.Type == undefined || dataItem.Type == null) &&
+                            <div className={`col-12 d-flex float-end add_cmnt my-1 `}>
+                                <div className="">
+                                    <Avatar
+                                        className="UserImage"
+                                        title={dataItem?.AuthorName}
+                                        name={dataItem?.AuthorName}
+                                        image={dataItem.AuthorImage != undefined ? {
+                                            src: dataItem.AuthorImage,
+                                        } : undefined}
+                                        initials={dataItem.AuthorImage == undefined && dataItem?.Suffix != undefined ? dataItem?.Suffix : undefined}
+                                    />
+                                </div>
+                                <div className="col-11 ms-3 pe-0 text-break" >
+                                    <div className='d-flex justify-content-between align-items-center'>
+                                        <span className="siteColor font-weight-normal">
+                                            {dataItem.AuthorName} - {dataItem.Created}
+                                        </span>
+                                        <span className="alignCenter">
+                                            {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
+                                            <span onClick={() => openEditModal(Index, dataItem.Body, "backGroundComment")} title="Edit Comment" className="svg__iconbox hreflink svg__icon--edit"></span>
 
-
-                            </div>
-                            <div className="col-11 ms-3 pe-0 text-break" >
-                                <div className='d-flex justify-content-between align-items-center'>
-                                    <span className="siteColor font-weight-normal">
-                                        {dataItem.AuthorName} - {dataItem.Created}
-                                    </span>
-                                    <span className="alignCenter">
-                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
-                                        <span onClick={() => openEditModal(Index, dataItem.Body)} title="Edit Comment" className="svg__iconbox hreflink svg__icon--edit"></span>
-
-                                        {/* <img src={require('../../Assets/ICON/cross.svg')} width="25">
+                                            {/* <img src={require('../../Assets/ICON/cross.svg')} width="25">
                                         </img> */}
-                                        <span onClick={() => DeleteBackgroundCommentFunction(dataItem.ID, dataItem.Body)} title="Delete Comment" className="svg__iconbox hreflink ms-1 svg__icon--trash"></span>
+                                            <span onClick={() => DeleteBackgroundCommentFunction(dataItem.ID, dataItem.Body)} title="Delete Comment" className="svg__iconbox hreflink ms-1 svg__icon--trash"></span>
 
-                                    </span>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span dangerouslySetInnerHTML={{ __html: dataItem.Body }}></span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <span dangerouslySetInnerHTML={{ __html: dataItem.Body }}></span>
-                                </div>
-                            </div>
-                        </div>
+                            </div> 
                     )
                 }) :
-                    <div
-                        className="commented-data-sections my-2 p-1"
-                    >
-                        There is no comments
-                    </div>
+                <div
+                className="commented-data-sections my-2 p-1" >
+                There is no comments
+            </div>
                 }
                 <div className="enter-comment-data-section">
                     <textarea
@@ -314,6 +388,105 @@ const BackgroundCommentComponent = (Props: any) => {
                 <button className="btn btn-primary float-end" onClick={AddBackgroundCommentFunction}>
                     Post Comment
                 </button>
+                {/* Code by Udbhav realted EOD report */}
+                {currentUserData[0]?.UserGroup?.Title=="Portfolio Lead Team" && 
+               <>
+               <p className="siteColor mb-0">EOD Report</p>
+                {BackgroundComments != undefined && BackgroundComments.length > 0 ? BackgroundComments.map((dataItem: any, Index: any) => {
+                    {
+                        return (
+                            (dataItem.Type === 'EODReport') && <>
+
+
+                                <div className={`col-12 d-flex float-end add_cmnt my-1 `}>
+                                    <div className="">
+                                        <Avatar
+                                            className="UserImage"
+                                            title={dataItem?.AuthorName}
+                                            name={dataItem?.AuthorName}
+                                            image={dataItem.AuthorImage != undefined ? {
+                                                src: dataItem.AuthorImage,
+                                            } : undefined}
+                                            initials={dataItem.AuthorImage == undefined && dataItem?.Suffix != undefined ? dataItem?.Suffix : undefined}
+                                        />
+
+
+                                    </div>
+                                    <div className="col ms-3 pe-0" >
+                                        <div className='d-flex justify-content-between align-items-center'>
+                                            <span className="siteColor font-weight-normal">
+                                                {dataItem.AuthorName} - {dataItem.Created}
+                                            </span>
+                                            
+                                        </div>
+                                        <div className="d-flex flex-column gap-1">
+
+
+                                            {dataItem.Achieved != undefined &&
+                                                <div className="d-flex gap-2">
+                                                    <span className="col-1"> Completed- </span>
+                                                    <span>{dataItem.Achieved}</span>
+                                                    <span className="d-flex">
+                                                    <span onClick={() => openEditModal(Index, dataItem.Achieved, "Achieved")} title="Edit Comment" className="svg__iconbox svg__icon--edit"></span>
+                                                    <span onClick={() => DeleteEODComment(dataItem.ID, dataItem.Achieved, "Achieved")} title="Delete Comment" className="svg__iconbox ms-1 svg__icon--trash"></span>
+                                                    </span>
+                                                </div>
+                                            }
+                                            {dataItem.Pending != undefined &&
+                                           <div className="d-flex gap-2">
+                                                <span className="col-1"> Pending-</span>
+                                                <span>{dataItem.Pending}</span>
+                                                <span className="d-flex">
+                                                <span onClick={() => openEditModal(Index, dataItem.Pending, "Pending")} title="Edit Comment" className="svg__iconbox svg__icon--edit"></span>
+                                                <span onClick={() => DeleteEODComment(dataItem.ID, dataItem.Pending, "Pending")} title="Delete Comment" className="svg__iconbox ms-1 svg__icon--trash"></span>
+                                                </span>
+                                            </div>}
+
+
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </> 
+                        )
+                    }
+
+
+                }) : <div
+                className="commented-data-sections my-2 p-1"
+            >
+                There is no EOD comments
+            </div>
+                }
+                <p className="siteColor mb-0">PENDING COMMENT</p>
+                <div className="enter-comment-data-section">
+                    <textarea
+                        value={EODPendingComment}
+                        onChange={(e) => setEODPendingComment(e.target.value)}
+                        placeholder="Enter  what is pending in Task ?"
+                    >
+                    </textarea>
+                </div>
+                <p className="siteColor mb-0">ACHIEVED COMMENT</p>
+                <div className="enter-comment-data-section">
+                    <textarea
+                        value={EODAchiviedComment}
+                        onChange={(e) => setEODAchiviedComment(e.target.value)}
+                        placeholder="'Enter  What has been Completed in task ?'"
+                    >
+                    </textarea>
+                </div>
+                <button className="btn btn-primary float-end" onClick={AddEODComent}>
+                    Post EOD Comment
+                </button>
+               </> 
+                }
+                
+
+
+
             </div>
             <section className="Update-FeedBack-section SiteColor">
                 <Panel

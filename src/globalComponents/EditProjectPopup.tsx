@@ -1141,7 +1141,7 @@ function EditProjectPopup(item: any) {
           ? PostShort_x0020_Description_x0020_On
           : EditData.Short_x0020_Description_x0020_On,
       Body:
-        PostBody != undefined && PostBody != "" ? PostBody : EditData.Body,
+        PostBody != undefined && PostBody != null ? PostBody : EditData.Body,
       AssignedToId: {
         results:
           AssignedToIds != undefined && AssignedToIds?.length > 0
@@ -1440,14 +1440,14 @@ function EditProjectPopup(item: any) {
     <>
       {console.log("Done")}
       <Panel
-        headerText={`  Service-Portfolio > ${EditData.Title}`}
+        headerText={`  Service-Portfolio > ${EditData?.Title}`}
         isOpen={modalIsOpen}
         onDismiss={setModalIsOpenToFalse}
         onRenderHeader={onRenderCustomHeader}
         isBlocking={false}
         type={PanelType.large}
       >
-        {EditData != undefined && EditData.Title != undefined && (
+        {EditData != undefined && EditData?.Title != undefined && (
           <>
           <div className="subheading alignCenter ms-0">
             <span className="siteColor">
@@ -1988,8 +1988,8 @@ function EditProjectPopup(item: any) {
 
                                   <HtmlEditorCard
                                     editorValue={
-                                      EditData.Body != undefined
-                                        ? EditData.Body
+                                      EditData?.Body != undefined && EditData?.Body != null
+                                        ? EditData?.Body
                                         : ""
                                     }
                                     HtmlEditorStateChange={HtmlEditorCallBack}

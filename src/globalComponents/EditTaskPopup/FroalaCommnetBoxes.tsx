@@ -487,7 +487,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                         {globalCount && <AddCommentComponent
                                             Data={obj.Comments != null ? obj.Comments : []}
                                             allFbData={TextItems}
-                                            index={i}
+                                            index={currentIndex}
                                             postStatus={i == Number(currentIndex) && postBtnStatus ? true : false}
                                             allUsers={textItems.allUsers}
                                             callBack={postBtnHandleCallBack}
