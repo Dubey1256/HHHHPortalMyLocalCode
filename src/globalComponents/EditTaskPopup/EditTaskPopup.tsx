@@ -342,10 +342,10 @@ const EditTaskPopup = (Items: any) => {
         taskUsers = await web.lists
             .getById(AllListIdData?.TaskUserListID)
             .items.select(
-                "Id,UserGroupId,TimeCategory,CategoriesItemsJson,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name"
+                "Id,UserGroupId,TimeCategory,CategoriesItemsJson,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,UserGroup/Id,UserGroup/Title,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name"
             )
             .filter("IsActive eq 1")
-            .expand("AssingedToUser,Approver")
+            .expand("AssingedToUser,Approver,UserGroup")
             .orderBy("SortOrder", true)
             .orderBy("Title", true)
             .getAll();

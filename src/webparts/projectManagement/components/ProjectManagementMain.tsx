@@ -76,6 +76,7 @@ let selectedItem: any
 let taggedPortfolioItem: any
 let taskTypeDataItem: any;
 let keyTaggedDocs: any;
+let tempmetadata: any;
 const ProjectManagementMain = (props: any) => {
   const [openServiceComponent, setopenServiceComponent]= React.useState(false)
   relevantDocRef = React.useRef();
@@ -205,6 +206,7 @@ const ProjectManagementMain = (props: any) => {
     getQueryVariable((e: any) => e);
     getTaskType()
     loadAllSmartInformation()
+    LoadSmartmetadata();
     try {
       $("#spPageCanvasContent").removeClass();
       $("#spPageCanvasContent").addClass("hundred");
@@ -516,6 +518,39 @@ const ProjectManagementMain = (props: any) => {
     setSearchedkeyPortfolios([])
     childRef?.current?.setRowSelection({});
   }
+
+  const LoadSmartmetadata = async () => {
+    let web = new Web(AllListId?.siteUrl);
+    let smartmetaDetails: any = [];
+    smartmetaDetails = await web.lists
+      .getById(AllListId?.SmartMetadataListID)
+      .items.select(
+        "Id",
+        "Title",
+        "IsVisible",
+        "ParentID",
+        "SmartSuggestions",
+        "TaxType",
+        "Description1",
+        "Configurations",
+        "Item_x005F_x0020_Cover",
+        "listId",
+        "siteName",
+        "siteUrl",
+        "SortOrder",
+        "SmartFilters",
+        "Selectable",
+        "Color_x0020_Tag",
+        "Parent/Id",
+        "Parent/Title"
+      )
+      .filter("TaxType eq 'Documentquery'")
+      .top(4999)
+      .expand("Parent")
+      .get();
+
+    tempmetadata = JSON.parse(smartmetaDetails[0].Configurations)
+  };
  
   const loadTaggedDocuments = async () => {
     let taggedDocs: any = []
@@ -525,8 +560,7 @@ const ProjectManagementMain = (props: any) => {
     try {
       await web.lists.getById(AllListId?.DocumentsListID)
         .items
-        .select("Id,Title,PriorityRank,Year,Body,recipients,senderEmail,creationTime,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,Created,Modified,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,Status,ItemType,Url,EncodedAbsUrl,Author/Id,Author/Title,Editor/Id,Editor/Title,HHHH/Id,HHHH/Title,Education/Id,Education/Title,DE/Id,DE/Title,Shareweb/Id,Shareweb/Title,EPS/Id,EPS/Title,EI/Id,KathaBeck/Id,KathaBeck/Title,EI/Title,Gruene/Id,Gruene/Title")
-        .expand("Portfolios,Author,Editor,HHHH,EPS,Shareweb,EI,Education,DE,KathaBeck,Gruene")
+        .select(tempmetadata[0]?.query)
         .getAll()
         .then((Data: any) => {
           let flatTableData = globalCommon.deepCopy(backupTableData)
@@ -2535,7 +2569,7 @@ const ProjectManagementMain = (props: any) => {
                                   {keyTaggedDoc.length > 0 && (
                                     <KeyDocuments
                                       keyTaggedDocs={keyTaggedDoc}
-                                      pageName={"ProjectManagement"}
+                                      pageName={keydoc.length == 0 ? "ProjectManagement" : ""}
                                       ref={relevantDocRef}
                                       AllListId={AllListId}
                                       Context={props?.Context}

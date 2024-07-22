@@ -10,9 +10,10 @@ import { Web } from 'sp-pnp-js';
 import moment from 'moment';
 import SmartPriorityHover from '../../../globalComponents/EditTaskPopup/SmartPriorityHover';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
+import HighlightableCell from '../../../globalComponents/GroupByReactTableComponents/highlight';
 
 const PortfolioProjectManagement = memo((Props: any) => {
-    const { AllListId, MyAllData, ContextValue, AllTaskUsers, portfolioTypeDataItem } = Props;
+    const { AllListId, MyAllData, ContextValue, AllTaskUsers, portfolioTypeDataItem, AllMasterTask } = Props;
     const [ProjectData, setProjectData] = useState([]);
     const [IsComponent, setIsComponent] = useState(false);
     const [CMSToolComponent, setCMSToolComponent] = useState('');
@@ -63,7 +64,7 @@ const PortfolioProjectManagement = memo((Props: any) => {
                 "PercentComplete", "Portfolios/Id", "Portfolios/Title",
                 "PriorityRank", "TeamMembers/Title", "TeamMembers/Name",
                 "TeamMembers/Id", "AssignedTo/Title", "AssignedTo/Name",
-                "AssignedTo/Id", "DueDate", "Priority"
+                "AssignedTo/Id", "DueDate", "Priority","Body","Background","Deliverables","Idea"
             )
             .expand("Portfolios", "TeamMembers", "AssignedTo")
             .filter(`(Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint') and Portfolios/Id eq ${MyAllData?.Id}`)
@@ -116,7 +117,8 @@ const PortfolioProjectManagement = memo((Props: any) => {
                 id: "TaskID",
                 size: 100,
                 cell: ({ row }) => <span className="d-flex">
-                <ReactPopperTooltipSingleLevel AllListId={AllListId} CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={[]} AllSitesTaskData={[]} />
+                <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} AllListId={AllListId} row={row?.original} singleLevel={true} masterTaskData={AllMasterTask} AllSitesTaskData={[]} />
+
               </span>,
             },
             {
@@ -152,10 +154,24 @@ const PortfolioProjectManagement = memo((Props: any) => {
             },
             {
                 accessorFn: (row) => row?.DueDate,
-                cell: ({ row }) => <span>{row?.original?.DueDate}</span>,
-                id: "DueDate",
-                placeholder: "PX Due Date",
-                filterFn: (row, columnName, filterValue) => row?.original?.DueDate?.includes(filterValue),
+                cell: ({ row, column, getValue }) => (
+                    <HighlightableCell value={row?.original?.DisplayDueDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+                ),
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                id: 'DueDate',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "PX DueDate",
+                header: "",
+                size: 91,
+                isColumnVisible: true,
+                fixedColumnWidth:true
             },
             {
                 accessorFn: (row) => row?.TeamMembersSearch,
@@ -164,16 +180,23 @@ const PortfolioProjectManagement = memo((Props: any) => {
                 placeholder: "PX Lead",
             },
             {
-                accessorKey: "EditPopup",
-                id: "EditPopup",
-                cell: ({ row }) => (
-                    <span
-                        title="Edit Task"
-                        onClick={() => EditComponentPopup(row?.original)}
-                        className="alignIcon svg__iconbox svg__icon--edit hreflink"
-                    />
+                cell: ({ row, getValue }) => (
+                    <>
+                        <span className="svg__iconbox hreflink svg__icon--edit"
+                                        onClick={(e) => EditComponentPopup(row?.original)}
+                                    ></span>
+                      
+                        {/* {getValue()} */}
+                    </>
                 ),
-            },
+                id: "editIcon",
+                canSort: false,
+                placeholder: "",
+                header: "",
+                size: 30,
+                isColumnVisible: true
+            }
+            
         ],
         [ProjectData]
     );
