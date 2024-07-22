@@ -2589,32 +2589,30 @@ const CopyTaskProfile = (props: any) => {
                                                         })}
                                                     </div>
                                                 }
-                                                {state?.Result?.OffshoreComments != null && state?.Result?.OffshoreComments != undefined && state?.Result?.OffshoreComments?.length > 0 && <div className="col-sm-8 pe-0 mt-2">
-                                                    <fieldset className='border p-1'>
-                                                        <legend className="border-bottom fs-6">Background Comments</legend>
-                                                        {state?.Result?.OffshoreComments != null && state?.Result?.OffshoreComments?.length > 0 && state?.Result?.OffshoreComments?.map((item: any, index: any) => {
-                                                            return <div>
+                                                {state?.Result?.OffshoreComments != null && state?.Result?.OffshoreComments != undefined && state?.Result?.OffshoreComments.length > 0 && state?.Result?.OffshoreComments?.map((item: any, index: any) => {
+                                                    return (
+                                                        item?.Type !== "EODReport"
+                                                        && <div className="col-sm-8 pe-0 mt-2">
+                                                            <fieldset className='border p-1'>
+                                                                <legend className="border-bottom fs-6">Background Comments</legend>
+                                                                <div>
+                                                                    <span className='round px-1'>
+                                                                        {item?.AuthorImage != null &&
+                                                                            <img className='align-self-start hreflink ' title={item?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, item?.AuthorName, taskUsers)} src={item?.AuthorImage} />
+                                                                        }
+                                                                    </span>
 
-
-                                                                <span className='round px-1'>
-                                                                    {item.AuthorImage != null ?
-                                                                        <img className='align-self-start hreflink ' title={item?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, item?.AuthorName, taskUsers)} src={item?.AuthorImage} />
-                                                                       
-                                                                    :
-                                                                    <span title={item?.AuthorName!= undefined ? item?.AuthorName : "Default user icons"} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, item?.AuthorName, taskUsers)} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>  
-                                                                    }
-                                                                </span>
-
-                                                                <span className="pe-1">{item.AuthorName}</span>
-                                                                <span className="pe-1" >{moment(item?.Created).format("DD/MM/YY")}</span>
-                                                                <div style={{ paddingLeft: "30px" }} className=" mb-4 text-break"><span dangerouslySetInnerHTML={{ __html: item?.Body }}></span>
+                                                                    <span className="pe-1">{item?.AuthorName}</span>
+                                                                    <span className="pe-1" >{moment(item?.Created).format("DD/MM/YY")}</span>
+                                                                    <div style={{ paddingLeft: "30px" }} className=" mb-4 text-break"><span dangerouslySetInnerHTML={{ __html: item?.Body }}></span>
+                                                                    </div>
                                                                 </div>
+                                                            </fieldset>
+                                                        </div>
+                                                    )
 
-
-                                                            </div>
-                                                        })} </fieldset>
-
-                                                </div>}
+                                                })
+                                                }
                                             </div>
                                         </div>}
 
