@@ -2467,12 +2467,12 @@ const Apps = (props: any) => {
                   Last Modified {MDate} {MTime} by {modofiedBy}
                 </div>
                 <div>
-                {hasDeletePermission && (
+               
                   <a href="#" onClick={() => deleteElement(vId)}>
                     <span className="svg__iconbox svg__icon--trash"></span>{" "}
                     Delete this Item
                   </a>
-                )}
+               
                   <VersionHistoryPopup
                     taskId={vId}
                     listId={props.props.SmalsusLeaveCalendar}
