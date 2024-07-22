@@ -214,7 +214,7 @@ const EditTaskPopup = (Items: any) => {
     const [WorkingAction, setWorkingAction] = useState([]);
     const [AddDescriptionModelName, setAddDescriptionModelName] = useState("");
     const [useFor, setUseFor] = useState("")
-    const [TaskNotificationConfiguration, setTaskNotificationConfiguration] = useState([]);
+    const [TaskNotificationConfigurationJSON, setTaskNotificationConfigurationJSON] = useState([]);
     let [WorkingActionDefaultUsers, setWorkingActionDefaultUsers] = useState([]);
     const [DesignNewTemplates, setDesignNewTemplates] = useState(false);
     // Edit Task Popup Local Scope Variables 
@@ -423,7 +423,7 @@ const EditTaskPopup = (Items: any) => {
             const web = new Web(siteUrls)
             let ResponseData: any = await web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').expand('Author,Editor,Recipients ,PortfolioType').get();
             if (ResponseData?.length > 0) {
-                setTaskNotificationConfiguration(ResponseData);
+                setTaskNotificationConfigurationJSON(ResponseData);
                 console.log("Task Notification Configuration ResponseData =================== :", ResponseData);
                 let workingActionUsers: any = [];
                 ResponseData?.map((TNMItem: any) => {
@@ -2057,7 +2057,7 @@ const EditTaskPopup = (Items: any) => {
                 setTaskStatus(StatusData.taskStatusComment);
                 setPercentCompleteCheck(false);
                 setIsTaskStatusUpdated(true);
-                let DynamicAssignmentInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ SiteURL: siteUrls, ItemDetails: EditData, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: StatusData.value })
+                let DynamicAssignmentInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({usedFor:"Auto-Assignment", SiteURL: siteUrls, ItemDetails: EditData, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: StatusData.value })
                 console.log("Dynamic Assignment Information All Details from backend  ==================", DynamicAssignmentInformation);
                 const assignmentUser = EditData.TaskAssignedUsers;
                 if (assignmentUser?.length) {
@@ -2301,7 +2301,6 @@ const EditTaskPopup = (Items: any) => {
                                 User?.Title?.toLowerCase() == "robert ungethuem" ||
                                 User?.Title?.toLowerCase() == "stefan hochhuth"
                             ) {
-
                                 SDCRecipientMail.push(User);
                             }
                         });
@@ -2411,10 +2410,6 @@ const EditTaskPopup = (Items: any) => {
                         }
                         return false;
                     });
-                    const TaskCategories = result.map((item: any) => item.Title).join(', ');
-                    const CheckForInformationRequestCategory: any = TaskCategories.includes("Information Request");
-                    let checkStatusUpdate = Number(taskPercentageValue) * 100;
-
                     // This used for send MS Teams and Email Notification according to Task Notification Configuration Tool
                     if (IsTaskStatusUpdated || IsTaskCategoryUpdated) {
                         if (UpdatedDataObject != undefined) {
@@ -2429,86 +2424,8 @@ const EditTaskPopup = (Items: any) => {
                                 });
                             }
                         }
-                        let TaskConfigurationInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ SiteURL: siteUrls, ItemDetails: UpdatedDataObject, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: UpdatedDataObject.PercentComplete })
+                        let TaskConfigurationInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({usedFor:"Notification", SiteURL: siteUrls, ItemDetails: UpdatedDataObject, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: UpdatedDataObject.PercentComplete })
                         console.log("Task Configuration Information All Details from backend  ==================", TaskConfigurationInformation);
-                    }
-
-                    // This is used for send MS Teams Notification 
-                    try {
-                        const sendUserEmails: string[] = [];
-                        let AssignedUserName = '';
-                        const addEmailAndUserName = (userItem: any) => {
-                            if (userItem?.AssingedToUserId !== currentUserId) {
-                                sendUserEmails.push(userItem.Email);
-                                AssignedUserName = AssignedUserName ? "Team" : userItem?.Title;
-                            }
-                        };
-
-                        if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
-                            taskUsers?.forEach((allUserItem: any) => {
-                                if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
-                                    addEmailAndUserName(allUserItem);
-                                }
-                            });
-                        } else {
-                            const usersToCheck = TeamLeaderChanged && TeamMemberChanged ? TaskResponsibleTeam?.concat(TaskAssignedTo) :
-                                TeamLeaderChanged ? UpdatedDataObject?.ResponsibleTeam :
-                                    TeamMemberChanged || IsTaskStatusUpdated ? TaskAssignedTo : [];
-
-                            usersToCheck.forEach((userDtl: any) => {
-                                taskUsers?.forEach((allUserItem: any) => {
-                                    if (userDtl.Id === allUserItem?.AssingedToUserId) {
-                                        addEmailAndUserName(allUserItem);
-                                    }
-                                });
-                            });
-                        }
-                        let CommonMsg = '';
-                        const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
-                        const SendUserEmailFinal: any = sendUserEmails?.filter((item: any, index: any) => sendUserEmails?.indexOf(item) === index);
-                        if (TeamMemberChanged && TeamLeaderChanged) {
-                            CommonMsg = `You have been marked as TL/working member in the below task. Please take necessary action.`;
-                        } else if (TeamMemberChanged) {
-                            CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyze the points in the task, fill up the Estimation, Set to 10%).`;
-                        } else if (TeamLeaderChanged) {
-                            CommonMsg = `You have been marked as a Lead on the below task. Please take necessary action.`;
-                        } else if (IsTaskStatusUpdated) {
-                            switch (checkStatusUpdate) {
-                                case 80:
-                                    CommonMsg = `Below task has been set to 80%, please review it.`;
-                                    break;
-                                case 70:
-                                    CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`;
-                                    break;
-                            }
-                        }
-                        const emailMessage = GlobalFunctionForUpdateItems?.GenerateMSTeamsNotification(UpdatedDataObject);
-                        const containerDiv = document.createElement('div');
-                        const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
-                        ReactDOM.render(reactElement, containerDiv);
-                        const SendMessage = `
-                            <span>${CommonMsg}</span> 
-                            <p></p>
-                            <span>
-                            Task Link:  
-                            <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
-                            ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
-                            </a>
-                            </span>
-                            <p></p>
-                            <span>${containerDiv.innerHTML}</span>
-                            `;
-                        if ((sendMSGCheck || SendMsgToAuthor || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
-                            if (sendUserEmails.length > 0) {
-                                globalCommon.SendTeamMessage(SendUserEmailFinal, SendMessage, Items.context, AllListIdData).then(() => {
-                                    console.log("MS Teams Message Send Successfully !!!!")
-                                }).catch((error) => {
-                                    console.log("MS Teams Message Not Send !!!!", error.message)
-                                })
-                            }
-                        }
-                    } catch (error) {
-                        console.log("Error in send MS Teams Notifications function", error.message);
                     }
                     if (ApproverData != undefined && ApproverData.length > 0) {
                         taskUsers.forEach((val: any) => {
@@ -2536,21 +2453,7 @@ const EditTaskPopup = (Items: any) => {
                             currentUserId != EditData?.Author.Id
                         ) {
                             EditData.TaskApprovers = EditData.TaskCreatorData;
-                            //EditData.TaskApprovers.push(EditData?.Author)
                         }
-                    }
-                    let spaceIndex = EditData.TaskCreatorData[0]?.Title?.lastIndexOf(' ');
-                    if (spaceIndex !== -1) {
-                        TaskDetailsFromCall[0].CreatorTitle = EditData.TaskCreatorData[0]?.Title?.substring(0, spaceIndex);
-                    } else {
-                        console.log("No last name found");
-                    }
-                    let CalculateStatusPercentages: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete
-                        : 0;
-                    if (IsTaskStatusUpdated && CalculateStatusPercentages == 90 && EmailStatus == true) {
-                        setLastUpdateTaskData(TaskDetailsFromCall[0]);
-                        ValueStatus = "90";
-                        setSendEmailNotification(true);
                     }
                     setLastUpdateTaskData(TaskDetailsFromCall[0]);
                     if (usedFor == "Image-Tab") {
@@ -3501,7 +3404,7 @@ const EditTaskPopup = (Items: any) => {
         };
         let arrayIndex: any = TaskImages?.length;
         TaskImages.push(DataObject);
-        if (dt.length > 0) {
+        if (dt?.length > 0) {
             onUploadImageFunction(TaskImages, [arrayIndex]);
         }
     };
