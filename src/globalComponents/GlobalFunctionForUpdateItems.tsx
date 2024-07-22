@@ -1486,6 +1486,17 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
 
 export const GenerateMSTeamsNotification = (RequiredData: any) => {
     try {
+        let TaskDescriptionFlatView: any = [];
+        RequiredData["FeedBack"][0]?.FeedBackDescriptions.map((ItemDetails: any, IndexValue: number) => {
+            ItemDetails.ViewIndex = IndexValue + 1;
+            TaskDescriptionFlatView.push(ItemDetails);
+            if (ItemDetails.Subtext?.length > 0) {
+                ItemDetails.Subtext?.map((subTextItem: any, subTextIndex: number) => {
+                    subTextItem.ViewIndex = (IndexValue + 1) + "." + (subTextIndex + 1);
+                    TaskDescriptionFlatView.push(subTextItem);
+                })
+            }
+        })
         if (RequiredData?.Title?.length > 0) {
             return (
                 <div style={{ backgroundColor: 'transparent' }}>
@@ -1622,20 +1633,17 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 <div style={{ width: "100%" }}>
                                     <div><b style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Task Description:</b></div>
                                     <div>
-                                        {RequiredData["FeedBack"] != null &&
-                                            RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
-                                            RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title != '' &&
-                                            RequiredData["FeedBack"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
+                                        {TaskDescriptionFlatView?.length > 0 &&
+                                            TaskDescriptionFlatView.map((fbData: any, i: any) => {
                                                 if (i < 5) {
                                                     return (<>
                                                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff' }}>
                                                             <div style={{ width: '100%' }}>
                                                                 <div style={{ display: 'flex' }} title={fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")}>
                                                                     <span style={{ fontSize: "10pt", display: "flex", color: "#333", marginRight: '5px', fontWeight: '600' }}>
-                                                                        {i + 1}.
+                                                                        {fbData.ViewIndex}.
                                                                     </span>
-
-                                                                    {removeHtmlTagsFromString(fbData['Title'])}
+                                                                    <div>{removeHtmlTagsFromString(fbData['Title'])}</div>
                                                                 </div>
 
                                                                 {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
@@ -1660,36 +1668,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                 })}
                                                             </div>
                                                         </div>
-                                                        {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
-                                                            return <>
-                                                                <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff' }}>
-                                                                    <div style={{ width: '100%' }}>
-                                                                        <span style={{ fontSize: "10pt", color: "#333", marginRight: '5px', fontWeight: '600' }}>{i + 1}.{j + 1}.</span>
-                                                                        <div title={fbSubData['Title']}>
-                                                                            <span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbSubData['Title'], 225) }}></span>
-                                                                        </div>
-                                                                        {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
-                                                                            return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px' }}>
-                                                                                <div style={{ marginBottom: '8px' }}>
-                                                                                    <span style={{ fontSize: '10.0pt', fontWeight: '600' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}</span>
-                                                                                </div>
-                                                                                <div title={fbSubComment['Title']}><span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbSubComment['Title'], 225) }}></span></div>
-                                                                                {fbSubComment?.ReplyMessages?.length > 0 && fbSubComment?.ReplyMessages?.map((replycom: any) => {
-                                                                                    return (
-                                                                                        <div style={{ padding: '12px', backgroundColor: '#ffffff' }}>
-                                                                                            <div style={{ marginBottom: '8px' }}>
-                                                                                                <div style={{ fontWeight: '600' }}>{replycom.AuthorName} - {replycom.Created}</div>
-                                                                                            </div>
-                                                                                            <div title={replycom['Title']} ><span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
-                                                                                        </div>
-                                                                                    )
-                                                                                })}
-                                                                            </div>
-                                                                        })}
-                                                                    </div>
-                                                                </div>
-                                                            </>
-                                                        })}
+                                                      
                                                     </>)
                                                 }
                                             })}
@@ -2068,7 +2047,7 @@ export const ReduceTheContentLines: any = (Content: String, sliceFrom: number) =
 // This is used for getting information from TaskNotificationConfiguration  when  Category and status selected
 
 export const TaskNotificationConfiguration = async (requiredData: any) => {
-    const { SiteURL, ItemDetails, Context, RequiredListIds, AllTaskUser, Status}: any = requiredData || {};
+    const { usedFor, SiteURL, ItemDetails, Context, RequiredListIds, AllTaskUser, Status }: any = requiredData || {};
     const filterData: any = [];
     const UserArray: any = []
     try {
@@ -2082,82 +2061,86 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                 if (TNMItem?.Title == "TaskNotificationConfigComponent") {
                     TaskNotificationConfig = JSON.parse(TNMItem.ConfigrationJSON);
                     TaskNotificationConfig?.map((TNC: any) => {
-                        if (TNC.percentComplete == ItemDetails.PercentComplete) {
-                            TNC.Category?.map((TNCCategory: any) => {
-                                ItemDetails.TaskCategories?.map(async (ItemDetailsCat: any) => {
-                                    if (TNCCategory == ItemDetailsCat.Title) {
-                                        filterNotificationData.push(TNC);
-                                        if (TNC.NotificationType == "Teams") {
-                                            await SendDynamicMSTeamsNotification({ Configuration: TNC, ItemDetails: ItemDetails, Context: Context, RequiredListIds: RequiredListIds });
+                        if (usedFor == "Notification") {
+                            if (TNC.percentComplete == ItemDetails.PercentComplete) {
+                                TNC.Category?.map((TNCCategory: any) => {
+                                    ItemDetails.TaskCategories?.map(async (ItemDetailsCat: any) => {
+                                        if (TNCCategory == ItemDetailsCat.Title) {
+                                            filterNotificationData.push(TNC);
+                                            if (TNC.NotificationType == "Teams") {
+                                                await SendDynamicMSTeamsNotification({ Configuration: TNC, ItemDetails: ItemDetails, Context: Context, RequiredListIds: RequiredListIds });
+                                            }
+                                            if (TNC.NotificationType == "Email") {
+                                                await SendDynamicEmailNotification({ Configuration: TNC, ItemDetails: ItemDetails, Context: Context });
+                                            }
+                                            console.log(filterNotificationData);
                                         }
-                                        if (TNC.NotificationType == "Email") {
-                                            await SendDynamicEmailNotification({ Configuration: TNC, ItemDetails: ItemDetails, Context: Context });
-                                        }
-                                        console.log(filterNotificationData);
-                                    }
+                                    })
                                 })
-                            })
+                            }
                         }
-                        if (TNC?.percentComplete == Status && TNC?.NotificationType == 'Assigned To') {
-                            ItemDetails?.TaskCategories?.map((item: any) => {
-                                if ((TNC.Category?.includes(item.Title) || TNC?.Category?.includes('All')) && TNC?.notifygroupname != undefined) {
-                                    const groupArray = TNC?.notifygroupname.split(',').map((item: any) => item.trim());
-                                   
-                                    if (ItemDetails?.TeamMembers != undefined) {
-                                        ItemDetails?.TeamMembers?.map((teamMembersData: any) => {
-                                            AllTaskUser?.map((TaskUserData: any) => {
-                                                groupArray?.map((groupArrayData: any) => {
-                                                    if (teamMembersData.Id == TaskUserData.AssingedToUserId && groupArrayData == TaskUserData.TimeCategory) {
-                                                        UserArray.push(TaskUserData);
-                                                    }
+                        if (usedFor == "Auto-Assignment") {
+                            if (TNC?.percentComplete == Status && TNC?.NotificationType == 'Assigned To') {
+                                ItemDetails?.TaskCategories?.map((item: any) => {
+                                    if ((TNC.Category?.includes(item.Title) || TNC?.Category?.includes('All')) && TNC?.notifygroupname != undefined) {
+                                        const groupArray = TNC?.notifygroupname.split(',').map((item: any) => item.trim());
+
+                                        if (ItemDetails?.TeamMembers != undefined) {
+                                            ItemDetails?.TeamMembers?.map((teamMembersData: any) => {
+                                                AllTaskUser?.map((TaskUserData: any) => {
+                                                    groupArray?.map((groupArrayData: any) => {
+                                                        if (teamMembersData.Id == TaskUserData.AssingedToUserId && groupArrayData == TaskUserData.TimeCategory) {
+                                                            UserArray.push(TaskUserData);
+                                                        }
+                                                    });
                                                 });
                                             });
+                                            ItemDetails.TaskAssignedUsers = UserArray;
+                                        }
+                                    }
+                                    if (!TNC?.Category?.includes('All') && TNC.Category?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
+                                        //Kristina
+                                        TNC.Notifier.map((user: any) => {
+                                            AllTaskUser?.map((TaskUserData: any) => {
+                                                if (user.Id == TaskUserData.AssingedToUserId)
+                                                    UserArray.push(TaskUserData);
+                                            })
+                                        });
+                                        ItemDetails.TaskAssignedUsers = UserArray
+                                    }
+                                    if (TNC?.Category?.includes('All') && TNC?.ExceptionCategory?.length > 0 && !TNC?.ExceptionCategory?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
+                                        // Mattis
+                                        TNC.Notifier.map((user: any) => {
+                                            AllTaskUser?.map((TaskUserData: any) => {
+                                                if (user.Id == TaskUserData.AssingedToUserId)
+                                                    UserArray.push(TaskUserData);
+                                            })
                                         });
                                         ItemDetails.TaskAssignedUsers = UserArray;
                                     }
-                                }
-                                if (!TNC?.Category?.includes('All') && TNC.Category?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
-                                    //Kristina
-                                    TNC.Notifier.map((user: any) => {
-                                        AllTaskUser?.map((TaskUserData: any) => {
-                                            if(user.Id == TaskUserData.AssingedToUserId)
-                                                UserArray.push(TaskUserData);                                       
-                                            })
-                                    });
-                                    ItemDetails.TaskAssignedUsers = UserArray
-                                }
-                                if (TNC?.Category?.includes('All') && TNC?.ExceptionCategory?.length > 0 && !TNC?.ExceptionCategory?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
-                                    // Mattis
-                                    TNC.Notifier.map((user: any) => {
-                                        AllTaskUser?.map((TaskUserData: any) => {
-                                        if(user.Id == TaskUserData.AssingedToUserId)
-                                            UserArray.push(TaskUserData);                                       
-                                        })
-                                    });
-                                    ItemDetails.TaskAssignedUsers = UserArray;
-                                }
 
-                                if (TNC.Site == ItemDetails.siteType) {
-                                    //Deepak
-                                    TNC.Notifier.map((user: any) => {
-                                        AllTaskUser?.map((TaskUserData: any) => {
-                                            if(user.Id == TaskUserData.AssingedToUserId)
-                                                UserArray.push(TaskUserData);                                       
+                                    if (TNC.Site == ItemDetails.siteType) {
+                                        //Deepak
+                                        TNC.Notifier.map((user: any) => {
+                                            AllTaskUser?.map((TaskUserData: any) => {
+                                                if (user.Id == TaskUserData.AssingedToUserId)
+                                                    UserArray.push(TaskUserData);
                                             })
-                                    });
-                                    ItemDetails.TaskAssignedUsers = UserArray
-                                }
-                                if (TNC?.Category?.includes('All') && TNC?.Site?.includes('All') && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
-                                    //Stefan
-                                    TNC.Notifier.map((user: any) => {
-                                        AllTaskUser?.map((TaskUserData: any) => {
-                                            if(user.Id == TaskUserData.AssingedToUserId)
-                                                UserArray.push(TaskUserData);                                       
+                                        });
+                                        ItemDetails.TaskAssignedUsers = UserArray
+                                    }
+                                    if (TNC?.Category?.includes('All') && TNC?.Site?.includes('All') && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
+                                        //Stefan
+                                        TNC.Notifier.map((user: any) => {
+                                            AllTaskUser?.map((TaskUserData: any) => {
+                                                if (user.Id == TaskUserData.AssingedToUserId)
+                                                    UserArray.push(TaskUserData);
                                             })
-                                    });
-                                    ItemDetails.TaskAssignedUsers = UserArray
-                                }
-                            })
+                                        });
+                                        ItemDetails.TaskAssignedUsers = UserArray
+                                    }
+                                })
+                            }
                         }
                     })
                 }
