@@ -20,6 +20,7 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
+import MSTeamsChat from "../../../globalComponents/MSTeamsChat";
 import SmartInformation from "../../taskprofile/components/SmartInformation";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import { BiCommentDetail } from "react-icons/bi";
@@ -2614,6 +2615,22 @@ const ProjectManagementMain = (props: any) => {
                                 />
                               )}
                             </span>
+                          </div>
+                          <div>
+                            <div>
+                              <span>
+                                {Masterdata?.TeamsGroup && (
+                                  <MSTeamsChat
+                                  AllListId={AllListId}
+                                  Context={props.Context}
+                                  siteUrl={props.siteUrl}
+                                  listName={"Master Tasks"}
+                                  itemID={QueryId}
+                                  ExistingGroup={Masterdata?.TeamsGroup}
+                                  />
+                                )}
+                              </span>
+                            </div>
                           </div>
                           <div>
                             {Masterdata?.Id != undefined && <AncTool item={Masterdata} callBack={AncCallback} AllListId={AllListId} Context={props.Context} listName={"Master Tasks"} />}
