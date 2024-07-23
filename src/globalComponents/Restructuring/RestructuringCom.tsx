@@ -52,7 +52,8 @@ const RestructuringCom = (props: any, ref: any) => {
       });
       setRestructureItem(array);
       setSelectedItems(array);
-      const setPortfolioTypeCheck = (arr: any, portfolioTypeCheck: any) => { 
+
+      const setPortfolioTypeCheck = (arr: any, portfolioTypeCheck: any) => {
         arr?.forEach((obj: any) => {
           obj.PortfolioTypeCheck = "";
           const matchingTask = props?.AllMasterTasksData?.find((task: any) => obj?.Portfolio?.Id === task?.Id);
@@ -62,10 +63,9 @@ const RestructuringCom = (props: any, ref: any) => {
             if (portfolioTypeCheck !== "" && obj?.Item_x0020_Type !== "Task" && obj?.Title !== "Others") {
               obj.PortfolioTypeCheck = obj?.PortfolioType?.Title;
             } else if (portfolioTypeCheck !== "" && obj?.Title === "Others") {
-              obj.PortfolioTypeCheck = portfolioTypeCheck; 
+              obj.PortfolioTypeCheck = portfolioTypeCheck;
             }
           }
-
 
           if (obj?.subRows?.length > 0 && obj?.subRows != undefined) {
             setPortfolioTypeCheck(obj.subRows, portfolioTypeCheck);
@@ -3388,8 +3388,8 @@ const RestructuringCom = (props: any, ref: any) => {
 
   const trueTopIcon = (items: any) => {
     if(RestructureChecked?.length > 1 || selectedItems?.length > 1 || RestructureChecked?.length >= 0){
-      OpenModal(selectedItems[0]);
-      setResturuningOpen(true);
+       OpenModal(selectedItems[0]);
+          setResturuningOpen(true);
     }else{
       setTrueTopCompo(items);
     }

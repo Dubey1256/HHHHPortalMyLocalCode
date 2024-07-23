@@ -64,7 +64,7 @@ const ContactMainPage = (props: any) => {
             HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
             siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
             HR_SMARTMETADATA_LISTID: props?.props?.HR_SMARTMETADATA_LISTID,
-            jointSiteUrl: "https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP"
+            // jointSiteUrl: "https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP"
         }
         if (allSite?.MainSite == true) {
             oldTaskLink = "https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP/SitePages/Contacts-Search-Old.aspx"
@@ -80,7 +80,7 @@ const ContactMainPage = (props: any) => {
     const getSmartMetaData = async () => {
 
         try {
-            let web = new Web(allListId?.jointSiteUrl);
+            let web = new Web(allListId?.siteUrl);
             await web.lists.getById(allListId?.MAIN_SMARTMETADATA_LISTID)
                 .items.getAll().then((smartmetadata: any) => {
                     countryData.current = smartmetadata

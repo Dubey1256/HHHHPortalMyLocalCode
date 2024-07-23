@@ -64,11 +64,11 @@ const GroupByDashboard = (SelectedProp: any) => {
   const [AllUsers, setTaskUser] = React.useState([]);
   const [AllMetadata, setMetadata] = React.useState([])
   const [loaded, setLoaded] = React.useState(false);
-  
-  const [RestrucPopup , SetRestrucPopup] = React.useState(false);
+
+  const [RestrucPopup, SetRestrucPopup] = React.useState(false);
   const [AllClientCategory, setAllClientCategory] = React.useState([])
   const [IsUpdated, setIsUpdated] = React.useState("");
-  const [RestructredItem , SetRestructredItem] = React.useState<any>({});
+  const [RestructredItem, SetRestructredItem] = React.useState<any>({});
   const [checkedList, setCheckedList] = React.useState<any>({});
   const [AllMasterTasksData, setAllMasterTasks] = React.useState([]);
   const [portfolioTypeData, setPortfolioTypeData] = React.useState([])
@@ -77,8 +77,8 @@ const GroupByDashboard = (SelectedProp: any) => {
   const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
   const [taskTypeDataItem, setTaskTypeDataItem] = React.useState([]);
   const [selecteditems, setselecteditems] = React.useState([]);
-  const [restructureLead , setRestructureLead] =React.useState<any>({});
-  
+  const [restructureLead, setRestructureLead] = React.useState<any>({});
+
   const [OpenAddStructurePopup, setOpenAddStructurePopup] = React.useState(false);
   const [IsComponent, setIsComponent] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState("");
@@ -118,6 +118,7 @@ const GroupByDashboard = (SelectedProp: any) => {
         "AssingedToUser/Id",
         "AssingedToUser/Name",
         "UserGroup/Id",
+        "UserGroup/Title",
         "ItemType"
       )
       .expand("AssingedToUser", "UserGroup", "Approver")
@@ -146,7 +147,7 @@ const GroupByDashboard = (SelectedProp: any) => {
     return (
       <>
         <div className="subheading siteColor">Restucturing Tool</div>
-        
+
         {/* <div>
           <Tooltip ComponentId="454" />
         </div> */}
@@ -334,8 +335,11 @@ const GroupByDashboard = (SelectedProp: any) => {
           if (data.Approver[0].Title === 'Anshu  Mishra') {
             data.Approver[0].Title = 'Anshu Mishra';
           }
+          if (data.Approver[0].Title == 'Vivek Anand') {
+            data.Approver[0].Title = 'Vivekanand';
+          }
         }
-        
+
         if (data?.Approver?.length > 0 && item?.AssignedTo === data?.Approver[0].Title) {
           if (!item.TeamMembers) {
             item.TeamMembers = [];
@@ -352,11 +356,12 @@ const GroupByDashboard = (SelectedProp: any) => {
     setData(groupedDatacopy); // Set the grouped data
     setLoaded(true);
   };
-  
+
   const closePanel = () => {
     SetRestrucPopup(false);
-  
-   
+
+
+
   };
   const sortGroupedData = (groupedData: GroupedDataItem[]): GroupedDataItem[] => {
     return groupedData.sort((a, b) => {
@@ -372,13 +377,13 @@ const GroupByDashboard = (SelectedProp: any) => {
       return 0;
     });
   };
-  
+
   const groupByAssignedTo = (data: any[], allUsers: any[]) => {
     let groupedData: any[] = [];
-    const filteredUsers = allUsers.filter(user => user.UserGroup && user.UserGroup.Id === 9);
-      filteredUsers.forEach(user => {
+    const filteredUsers = allUsers.filter(user => user.UserGroup && user.UserGroup.Title === 'Portfolio Lead Team');
+    filteredUsers.forEach(user => {
       groupedData.push({
-        AssignedToId:  user.AssingedToUser.Id,
+        AssignedToId: user.AssingedToUser.Id,
         AssignedTo: user.Title,
         Items: [],
         TeamMembers: []
@@ -394,6 +399,9 @@ const GroupByDashboard = (SelectedProp: any) => {
             }
             if (user.Title == 'Anshu  Mishra') {
               user.Title = 'Anshu Mishra';
+            }
+            if (user.Title == 'Vivek Anand') {
+              user.Title = 'Vivekanand';
             }
             if (groupedData[i].AssignedTo == user.Title) {
               groupedData[i].Items.push(item);
@@ -480,7 +488,7 @@ const GroupByDashboard = (SelectedProp: any) => {
 
     return users.length > 0 ? Image : null;
   };
-  const OpenRestPopup =(item : any)=>{
+  const OpenRestPopup = (item: any) => {
     SetRestrucPopup(true);
     setRestructureLead(item);
     console.log(checkedList1)
@@ -497,10 +505,32 @@ const GroupByDashboard = (SelectedProp: any) => {
     return a.localeCompare(b);
   };
   const Restructurebutton = (
-    <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }}  onClick={() => RestructureCsf(selecteditems)}>RESTRUCTURE</button>
-    
+    <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => RestructureCsf(selecteditems)}>RESTRUCTURE</button>
+
 
   )
+  const inlineCallBack = React.useCallback((item: any) => {
+    let ComponentsData: any = [];
+    let AllMasterItem = backupAllMaster;
+    AllMasterItem = AllMasterItem?.map((result: any) => {
+      if (result?.Id == item?.Id) {
+        return { ...result, ...item };
+      }
+      return result;
+    })
+
+    AllMasterItem?.map((result: any) => {
+      if (result?.Item_x0020_Type == 'Component') {
+        const groupedResult = globalCommon?.componentGrouping(result, AllMasterItem)
+        ComponentsData.push(groupedResult?.comp);
+      }
+    })
+    setAllMasterTasks(AllMasterItem)
+
+    setData(ComponentsData)
+
+
+  }, []);
 
   const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
@@ -514,7 +544,7 @@ const GroupByDashboard = (SelectedProp: any) => {
         size: 55,
         id: 'Id',
       },
-      
+
       {
         accessorFn: (row) => row?.Items,
         cell: ({ row, getValue }) => (
@@ -587,7 +617,7 @@ const GroupByDashboard = (SelectedProp: any) => {
         size: 30,
         isColumnVisible: true
       },
-      
+
       {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
@@ -693,24 +723,24 @@ const GroupByDashboard = (SelectedProp: any) => {
         header: "",
         size: 125
       },
-    
+
       {
         cell: ({ row }) => (
-            <>
-                {row.original.Item_x0020_Type !== undefined && (
-                    <a
-                        href="#"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="auto"
-                        title={'Edit ' + `${row.original.Title}`}
-                    >
-                        <span
-                            className="alignIcon svg__iconbox svg__icon--edit"
-                            onClick={(e) => EditComponentPopup(row?.original)}
-                        ></span>
-                    </a>
-                )}
-            </>
+          <>
+            {row.original.Item_x0020_Type !== undefined && (
+              <a
+                href="#"
+                data-bs-toggle="tooltip"
+                data-bs-placement="auto"
+                title={'Edit ' + `${row.original.Title}`}
+              >
+                <span
+                  className="alignIcon svg__iconbox svg__icon--edit"
+                  onClick={(e) => EditComponentPopup(row?.original)}
+                ></span>
+              </a>
+            )}
+          </>
         ),
         id: "editIcon",
         canSort: false,
@@ -718,36 +748,36 @@ const GroupByDashboard = (SelectedProp: any) => {
         header: "",
         size: 30,
         isColumnVisible: true
-    },
-    {
-   cell: ({ row }) => (
+      },
+      {
+        cell: ({ row }) => (
           <>
-              {row.original.restructureIcon == true && (
-                  <a
-                     
-                      onClick={(e) => OpenRestPopup(row?.original)}
-                      
-                  >
-                      <img
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                          alt="Restructuring Tool"
-                          style={{ width: '30px', height: '30px' }}
-                      />
-                  </a>
-              )}
+            {row.original.restructureIcon == true && (
+              <a
+
+                onClick={(e) => OpenRestPopup(row?.original)}
+
+              >
+                <img
+                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
+                  alt="Restructuring Tool"
+                  style={{ width: '30px', height: '30px' }}
+                />
+              </a>
+            )}
           </>
-      ),
-      id: "restructure",
-      placeholder: "",
-      header: "",
-      size: 30,
-      isColumnVisible: true
-  }
-  
+        ),
+        id: "restructure",
+        placeholder: "",
+        header: "",
+        size: 30,
+        isColumnVisible: true
+      }
 
-    
 
-     
+
+
+
     ],
     [ContextValue, allMasterTaskDataFlatLoadeViewBackup, SelectedProp, portfolioTypeData, isUpdated, setAllMasterTasks]
   );
@@ -841,7 +871,7 @@ const GroupByDashboard = (SelectedProp: any) => {
   const callBackData = React.useCallback((checkData: any) => {
     checkedList1.push(checkData);
     setCheckedList1(checkedList1)
-}, []);
+  }, []);
 
 
   const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
@@ -934,7 +964,6 @@ const GroupByDashboard = (SelectedProp: any) => {
             comp.downArrowIcon = item.props.SelectedItem.downArrowIcon;
             comp.RightArrowIcon = item.props.SelectedItem.RightArrowIcon;
 
-            //comp.childs = item.props.SelectedItem.subRows;
             comp.subRows = item.props.SelectedItem.subRows;
           }
           if (comp.subRows != undefined && comp.subRows.length > 0) {
@@ -964,7 +993,7 @@ const GroupByDashboard = (SelectedProp: any) => {
       renderData = [];
       renderData = renderData.concat(copyDtaArray)
       refreshData();
-      // rerender();
+
     }
     if (!isOpenPopup && item.data != undefined) {
       item.data.subRows = [];
@@ -978,9 +1007,8 @@ const GroupByDashboard = (SelectedProp: any) => {
             item.data.PortfolioType = obj;
         })
       }
-      //  item.data.SiteIconTitle = item?.data?.Item_x0020_Type?.charAt(0);
-      item.data["TaskID"] = item.data.PortfolioStructureID;
 
+      item.data["TaskID"] = item.data.PortfolioStructureID;
       copyDtaArray.unshift(item.data);
       renderData = [];
       renderData = renderData.concat(copyDtaArray)
@@ -991,77 +1019,63 @@ const GroupByDashboard = (SelectedProp: any) => {
       }
       refreshData();
     }
-
     setOpenAddStructurePopup(false);
   }, []);
-  const handleAccordionClick = (id: any) => {
 
-  }
   const RestructureCsf = (items: any) => {
-    data?.map((item: any) => {
-        if (item.Item_x0020_Type === undefined) {
-            item.restructureIcon = true;
-        }
+    const updatedData = data.map((item: any) => {
+      if (item.Item_x0020_Type === undefined) {
+        return { ...item, restructureIcon: true };
+      }
+      return item;
     });
-    
-    console.log(checkedList1)
-    setData(data);
-};
-const Saverestruc =()=>{
-  const web = new Web(ContextValue.siteUrl);
-  const ListId = 'ec34b38f-0669-480a-910c-f84e92e58adf';
-  console.log(checkedList1);   
-  console.log(restructureLead);
-  checkedList1?.map((item:any)=>{
-   if(item?.AssignedTo != undefined){
-    item?.AssignedTo?.map((user:any)=>{
-      user.Title = restructureLead?.AssignedTo;
-      user.Id = restructureLead?.AssignedToId
-    })
-   }
-
-   var postData: any = {
-// AssignedToId: { results: restructureLead?.AssignedToId ? [restructureLead?.AssignedToId] : [],
-//     }
-    AssignedToId:{
-      results:
-      restructureLead?.AssignedToId != undefined 
-          ? [restructureLead?.AssignedToId]
-          : [],
-    },
-  }
-  if(item?.Id != undefined){
-    web.lists.getById(ListId).items.getById(item?.Id).update(postData)
-    .then((result:any)=>{
-     console.log(result);
-    })
-    .catch((err:any)=>{
-     console.log(err)
-    })
-
-  }
-
- })
-
-
-}
-const Cancelrestruc =()=>{ 
-
-}
-
-const onRenderCustomHeaderMain1 = () => {
-    return (
-      <>
-        <div className="subheading alignCenter">
-          <>
-            {checkedList != null && checkedList != undefined && checkedList?.SiteIconTitle != undefined && checkedList?.SiteIconTitle != null ? <span className="Dyicons me-2" >{checkedList?.SiteIconTitle}</span> : ''} {`${checkedList != null && checkedList != undefined && checkedList?.Title != undefined && checkedList?.Title != null ? checkedList?.Title
-              + '- Create Child Component' : 'Create Component'}`}</>
-        </div>
-        <Tooltip ComponentId={checkedList?.Id} />
-      </>
-    );
+  
+    setData(updatedData);
   };
+  const Saverestruc = () => {
+    const web = new Web(ContextValue.siteUrl);
+    const ListId = 'ec34b38f-0669-480a-910c-f84e92e58adf';
 
+    checkedList1?.map((item: any) => {
+      if (item?.AssignedTo != undefined) {
+        item?.AssignedTo?.map((user: any) => {
+          user.Title = restructureLead?.AssignedTo;
+          user.Id = restructureLead?.AssignedToId
+        })
+      }
+      var postData: any = {
+
+        AssignedToId: {
+          results:
+            restructureLead?.AssignedToId != undefined
+              ? [restructureLead?.AssignedToId]
+              : [],
+        },
+      }
+      if (item?.Id != undefined) {
+        web.lists.getById(ListId).items.getById(item?.Id).update(postData)
+          .then((result: any) => {
+            console.log(result);
+            SetRestrucPopup(false);
+         //   refreshData();
+           
+           
+            
+            
+
+          })
+          .catch((err: any) => {
+            console.log(err)
+          })
+      }
+    })
+  }
+
+
+
+  const Cancelrestruc = () => {
+
+  }
   return (
     <>
       <div>
@@ -1080,30 +1094,16 @@ const onRenderCustomHeaderMain1 = () => {
                   <div className="col-sm-12 p-0 smart">
                     <div>
                       <div>
-                        {/* <button onClick={() => RestructureCsf(selecteditems)}>RESTRUCTURE</button> */}
-                        <GlobalCommanTable hideAddActivityBtn={true} hideShowingTaskCountToolTip={true} 
+
+                        <GlobalCommanTable hideAddActivityBtn={true} hideShowingTaskCountToolTip={true}
                           masterTaskData={allMasterTaskDataFlatLoadeViewBackup} precentComplete={precentComplete} AllMasterTasksData={AllMasterTasksData}
                           ref={childRef} callChildFunction={callChildFunction} columns={columns}
                           data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem}
-                          taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true}
-                          showCreationAllButton={true} customTableHeaderButtons ={Restructurebutton} customHeaderButtonAvailable={true}
+                          fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true}
+                          customTableHeaderButtons={Restructurebutton} customHeaderButtonAvailable={true}
                           setData={setData} setLoaded={setLoaded} AllListId={ContextValue} tableId="leadDashBoard"
                         />
-                        {/* <FluentAccordion expandMode="multiple">
-                          {data.map((item : any) => (
-                            <FluentAccordionItem
-                              key={item.id}
-                              size="medium"
-                              headingLevel={2}
-                              expandIconPosition="start"
-                              block={false}
-                              onClick={() => handleAccordionClick(item.id)}
-                            >
-                              <span slot="heading">{item.header}</span>
-                              {item.panel}
-                            </FluentAccordionItem>
-                          ))}
-                        </FluentAccordion> */}
+
                       </div>
                     </div>
                   </div>
@@ -1113,84 +1113,35 @@ const onRenderCustomHeaderMain1 = () => {
           </div>
         </section>
       </div>
-      {/* <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={AddStructureCallBackCall} >
-        <CreateAllStructureComponent
-                    CreatOpen={CreateOpenCall}
-                    Close={AddStructureCallBackCall}
-                    PortfolioType={IsUpdated}
-                    PropsValue={ContextValue}
-                    SelectedItem={
-                        checkedList != null && checkedList?.Id != undefined
-                            ? checkedList
-                            : props
-                    }
-                />
-        <CreateAllStructureComponent
-          Close={AddStructureCallBackCall}
-          taskUser={AllUsers}
-          portfolioTypeData={portfolioTypeData}
-          PropsValue={ContextValue}
-          SelectedItem={
-            checkedList != null && checkedList?.Id != undefined
-              ? checkedList
-              : SelectedProp?.SelectedItem
-          }
-        />
-      </Panel> */}
-      {RestrucPopup === true   ? (
-        <Panel
-          isOpen={RestrucPopup}
-          onRenderHeader={onRenderCustomCalculateSCmulti}
-          isBlocking={false}
-          type={PanelType.medium}
-          onDismiss={closePanel}
-        >
-          <div className="mt-2">
-          These all Porfolios will restructuring inside {restructureLead.AssignedTo}.
-        
-          
 
-           
+      {RestrucPopup === true ? (
+        <Panel isOpen={RestrucPopup} onRenderHeader={onRenderCustomCalculateSCmulti} isBlocking={false}
+          type={PanelType.medium}
+          onDismiss={closePanel} >
+          <div className="mt-2">
+            These all Porfolios will restructuring inside {restructureLead.AssignedTo}.
             <div>
-            <table className="my-2 border" style={{width:"100%"}}>
+              {/* <table className="my-2 border" style={{ width: "100%" }}>
                 <tr className="bg-ee border">
-                  <th className="p-1" style={{width:"25px"}}></th>
-                  <th className="p-1" style={{width:"40px"}}>Icon</th>
-                  <th className="p-1" style={{width:"120px"}}>Id</th>
-                  <th className="p-1">Title</th>  
+                  <th className="p-1" style={{ width: "25px" }}></th>
+                  <th className="p-1" style={{ width: "40px" }}>Icon</th>
+                  <th className="p-1" style={{ width: "120px" }}>Id</th>
+                  <th className="p-1">Title</th>
                 </tr>
-               
-            </table>
+              </table> */}
             </div>
           </div>
-
-          
           <footer className="mt-2 text-end">
             <button
-              className="me-2 btn btn-primary" 
-              onClick={()=> Saverestruc()}
-             
-            >
-              Save
-            </button>
-            <button className="me-2 btn btn-default"  onClick={()=> Cancelrestruc()}>
-              Cancel
-            </button>
+              className="me-2 btn btn-primary" onClick={() => Saverestruc()} > Save </button>
+            <button className="me-2 btn btn-default" onClick={() => Cancelrestruc()}>Cancel</button>
           </footer>
         </Panel>
       ) : (
         ""
       )}
-
-      {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp} />}
       {IsComponent && (
-        <EditInstituton
-          item={SharewebComponent}
-          Calls={Call}
-          SelectD={SelectedProp}
-          portfolioTypeData={portfolioTypeData}
-        >
-        </EditInstituton>
+        <EditInstituton item={SharewebComponent} Calls={Call} SelectD={SelectedProp} portfolioTypeData={portfolioTypeData}></EditInstituton>
       )}
       {!loaded && <PageLoader />}
     </>

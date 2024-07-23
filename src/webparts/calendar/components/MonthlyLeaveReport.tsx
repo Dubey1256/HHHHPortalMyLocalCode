@@ -51,7 +51,7 @@ export const MonthlyLeaveReport = (props: any) => {
     if (selectedMonth || selectedYear || selectedUserId) {
       setdisabl(true)
     }
-  }, [selectedMonth, selectedYear, selectedUserId ])
+  }, [selectedMonth, selectedYear, selectedUserId])
 
   const getTaskUser = async () => {
     let web = new Web(props.props.siteUrl);
@@ -88,7 +88,7 @@ export const MonthlyLeaveReport = (props: any) => {
       const results: any = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.select(
         "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,Created,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type,Approved,Rejected"
       ).expand("Author,Editor,Employee").getAll();
-      const FilterRejectedData = results.filter((item:any)=> item.Rejected !== true)
+      const FilterRejectedData = results.filter((item: any) => item.Rejected !== true)
       setLeaveData(FilterRejectedData);
     } catch (err) {
       console.log(err);
@@ -203,7 +203,7 @@ export const MonthlyLeaveReport = (props: any) => {
     console.log(item);
     //console.log(Parent);
     let ImageSelectedUser = ImageSelectedUsers
-  
+
     const collection = document.getElementsByClassName("AssignUserPhoto mr-5");
     for (let i = 0; i < collection.length; i++) {
       collection[i].classList.remove('seclected-Image');
@@ -216,7 +216,7 @@ export const MonthlyLeaveReport = (props: any) => {
       ev.currentTarget.classList.add('seclected-Image'); // add element
       if (currentUser) {
         let userExists = false;
-      
+
         currentUser.forEach((user: any) => {
           if (user.Id == item.Id) {
             userExists = true;
@@ -225,7 +225,7 @@ export const MonthlyLeaveReport = (props: any) => {
             ImageSelectedUser = ImageSelectedUser.filter((sel: any) => sel.Id != item.Id);
           }
         });
-      
+
         if (!userExists) {
           item.IsSelected = true;
           ImageSelectedUser.push(item);
@@ -251,7 +251,7 @@ export const MonthlyLeaveReport = (props: any) => {
           []);
       }
     }
-  
+
     AllTaskuser.forEach((taskItem: any) => {
       if (taskItem.SelectedGroup === true) {
         SelectGroupName = SelectGroupName + taskItem.Title + ' ,';
@@ -259,7 +259,7 @@ export const MonthlyLeaveReport = (props: any) => {
     });
     SelectGroupName = SelectGroupName.replace(/.$/, "");
     setSelectGroupName(SelectGroupName);
-  
+
     // Logging updated state will not reflect the immediate change due to state being asynchronous
     setImageSelectedUsers(ImageSelectedUser);
   };
@@ -396,30 +396,30 @@ export const MonthlyLeaveReport = (props: any) => {
         settypes('AllTime')
         break;
 
-    case 'Pre-set':
-      let storedDataStartDate: string | null = localStorage.getItem('startDate');
-      let storedDataEndDate: string | null = localStorage.getItem('endDate');
-      try {
-        if (storedDataStartDate && storedDataEndDate) {
-          const parsedStartDate = new Date(JSON.parse(storedDataStartDate));
-          const parsedEndDate = new Date(JSON.parse(storedDataEndDate));
+      case 'Pre-set':
+        let storedDataStartDate: string | null = localStorage.getItem('startDate');
+        let storedDataEndDate: string | null = localStorage.getItem('endDate');
+        try {
+          if (storedDataStartDate && storedDataEndDate) {
+            const parsedStartDate = new Date(JSON.parse(storedDataStartDate));
+            const parsedEndDate = new Date(JSON.parse(storedDataEndDate));
 
-          if (!isNaN(parsedStartDate.getTime()) && !isNaN(parsedEndDate.getTime())) {
-            startdt = parsedStartDate;
-            enddt = parsedEndDate;
-            settypes('Pre-set')
-        break;
+            if (!isNaN(parsedStartDate.getTime()) && !isNaN(parsedEndDate.getTime())) {
+              startdt = parsedStartDate;
+              enddt = parsedEndDate;
+              settypes('Pre-set')
+              break;
+            }
           }
+
+        } catch (error) {
+          console.error("Failed to parse dates from localStorage", error);
         }
-        
-      } catch (error) {
-        console.error("Failed to parse dates from localStorage", error);
-      }
-      // If parsing fails, fall through to the default case
-      startdt = null;
-      enddt = null;
-      //settypes('Pre-set')
-      break;
+        // If parsing fails, fall through to the default case
+        startdt = null;
+        enddt = null;
+        //settypes('Pre-set')
+        break;
       default:
     }
 
@@ -571,24 +571,24 @@ export const MonthlyLeaveReport = (props: any) => {
   const PreSetPikerCallBack = React.useCallback((preSetStartDate: any, preSetEndDate) => {
     if (preSetStartDate != undefined) {
 
-        setStartDate(preSetStartDate);
+      setStartDate(preSetStartDate);
     }
     if (preSetEndDate != undefined) {
-        setEndDate(preSetEndDate);
+      setEndDate(preSetEndDate);
     }
-    if(preSetStartDate != undefined||preSetEndDate != undefined){
+    if (preSetStartDate != undefined || preSetEndDate != undefined) {
       settypes("Pre-set");
     }
     // setselectedType(true)
-    
+
     setPreSetPanelIsOpen(false)
-}, []);
+  }, []);
   const preSetIconClick = () => {
     // setPreSet(true);
     setPreSetPanelIsOpen(true);
-   
-    
-}
+
+
+  }
 
   const isWeekend = (startDate: Date, endDate: Date) => {
     const startDay = startDate.getDay();
@@ -643,6 +643,7 @@ export const MonthlyLeaveReport = (props: any) => {
   };
 
   const handleSubmit = () => {
+    setleaveset(false);
     if (ImageSelectedUsers != null && ImageSelectedUsers != undefined) {
       ImageSelectedUsers.forEach((users: any, Index: any) => {
         let user: any = {};
@@ -654,7 +655,7 @@ export const MonthlyLeaveReport = (props: any) => {
         user.Id = users.Id;
         const PlanedEventDates = matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Planned Leave") {
-         
+
             let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
             let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
             // if (item.fAllDayEvent == false) {
@@ -670,7 +671,7 @@ export const MonthlyLeaveReport = (props: any) => {
           }
         }).filter((date: any) => date);
         let leavediscriptionPlanned: any = []
-          matchedData.map((item: any) => {
+        matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Planned Leave" && item.Title != undefined) {
             let eventDateFormat: any = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
             leavediscriptionPlanned.push({ Short_x0020_Description_x0020_On: item.Title, eventDate: eventDateFormat })
@@ -682,7 +683,7 @@ export const MonthlyLeaveReport = (props: any) => {
           if (item.Event_x002d_Type === "Un-Planned" || item.Event_x002d_Type === "Sick") {
             let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
             let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
-           // if (item.fAllDayEvent == false) {
+            // if (item.fAllDayEvent == false) {
             //   endDateFirst = endDateFirst.subtract(3, 'hours')
             //   item.EndDate = endDateFirst.utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
             // }
@@ -717,7 +718,7 @@ export const MonthlyLeaveReport = (props: any) => {
           item.EventDate = eventDate
         })
         const HalfdayEventDates = MyHalfdayData.map((item: any) => {
-          
+
           if (item.HalfDay === true || item.HalfDayTwo === true) {
             return moment(item.EventDate).format('DD/MM/YYYY');
           }
@@ -751,21 +752,21 @@ export const MonthlyLeaveReport = (props: any) => {
         }).filter((date: any) => date);
         let leavediscriptionRh: any = []
         matchedData.map((item: any) => {
-        if (item.Event_x002d_Type === "Restricted Holiday" && item.Title != undefined) {
+          if (item.Event_x002d_Type === "Restricted Holiday" && item.Title != undefined) {
             let eventDateFormat: any = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
             leavediscriptionRh.push({ Short_x0020_Description_x0020_On: item.Title, eventDate: eventDateFormat })
-        }
-      })
+          }
+        })
         let RhplannedLeaveString = `${MyRHdayData.join(', ')}`;
 
         user.Plannedleave = calculatePlannedLeave(matchedData, "Planned Leave");
         user.Plannedleave = `${user.Plannedleave} ${plannedLeaveString.length != 0 ? ` ${plannedLeaveString} ` : ''} `
-        
+
         user.PlanedEventDates = PlanedEventDates
         user.leavediscriptionPlanned = leavediscriptionPlanned != undefined ? leavediscriptionPlanned : ''
-  
+
         user.unplannedleave = calculatePlannedLeave(matchedData, ["Un-Planned", "Sick"]);
-       // user.unplannedleave = [...unplannedLeave, ...sickLeave].map(item => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
+        // user.unplannedleave = [...unplannedLeave, ...sickLeave].map(item => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
         //user.unplannedleave = user.unplannedleave.map((item:any) => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
         user.unplannedleave = `${user.unplannedleave}${UnplannedLeaveString.length != 0 ? `[ ${UnplannedLeaveString} ]` : ''} `
         user.UnPlanedEventDates = UnPlanedEventDates
@@ -784,9 +785,27 @@ export const MonthlyLeaveReport = (props: any) => {
           allReportData.push(user)
         }
       });
+      if (allReportData?.length > 0) {
+        allReportData = allReportData.reduce(function (
+          previous: any,
+          current: any
+        ) {
+          var alredyExists =
+            previous.filter(function (item: any) {
+              return item.Title === current.Title;
+            }).length > 0;
+          if (!alredyExists) {
+            previous.push(current);
+          }
+          return previous;
+        },
+          []);
+      }
     }
-    //setImageSelectedUsers([])
-    setleaveset(true)
+      setleaveset(false); // Ensure the flag is set to false before setting it to true
+      setTimeout(() => {
+        setleaveset(true); // Set the flag to true after a short delay
+      }, 0);
   };
   const handleclose = () => {
     setopendate(false)
@@ -847,7 +866,7 @@ export const MonthlyLeaveReport = (props: any) => {
                               <input style={{ display: 'none' }} className="" type="checkbox" onClick={(e) => SelectedGroup(e, users)} />
                               {users?.ItemType == "Group" && users.Title != "User Experience Team" &&
                                 <>
-                                 
+
                                   {users.Title}
                                 </>
                               }
@@ -931,7 +950,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           <label>Last Month</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => selectDate('Last3Month')}  checked={types === "Last3Month"} className="radio" />
+                          <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => selectDate('Last3Month')} checked={types === "Last3Month"} className="radio" />
                           <label>Last 3 Months</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
@@ -947,8 +966,8 @@ export const MonthlyLeaveReport = (props: any) => {
                           <label>All Time</label>
                         </span>
                         <span className='SpfxCheckRadio me-2'>
-                          <input type="radio" name="dateSelection" value="Presettime" onClick={() => selectDate('Pre-set')}  className="radio" 
-                          checked={types === "Pre-set"} />
+                          <input type="radio" name="dateSelection" value="Presettime" onClick={() => selectDate('Pre-set')} className="radio"
+                            checked={types === "Pre-set"} />
                           {/* <label>Pre-set</label>
                           <img className="hreflink " title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /> */}
                           <label className='ms-1'>Pre-set <span onClick={() => preSetIconClick()} className="svg__iconbox svg__icon--editBox alignIcon hreflink"></span></label>
@@ -1010,17 +1029,17 @@ export const MonthlyLeaveReport = (props: any) => {
                           return (
                             entry?.leavediscriptionPlanned?.map((item: any) => {
                               return (
-                          dateEvent?.includes(item?.eventDate) ? 
-                          <span> {dateEvent} 
-                          <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
-                          
-                          </InfoIconsToolTip> 
+                                dateEvent?.includes(item?.eventDate) ?
+                                  <span> {dateEvent}
+                                    <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
+
+                                    </InfoIconsToolTip>
                                   </span> : ''
+                              )
+                            })
                           )
-                        })
-                        )
-                       })}
-                       </>
+                        })}
+                        </>
 
                         </td>
                         {/* <td className='py-2 text-break'>{entry.Plannedleave}
@@ -1032,17 +1051,17 @@ export const MonthlyLeaveReport = (props: any) => {
                           return (
                             entry?.leavediscriptionUnPlanned?.map((item: any) => {
                               return (
-                          dateEvent?.includes(item?.eventDate) ? 
-                          <span> {dateEvent} 
-                          <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
-                          
-                          </InfoIconsToolTip> 
+                                dateEvent?.includes(item?.eventDate) ?
+                                  <span> {dateEvent}
+                                    <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
+
+                                    </InfoIconsToolTip>
                                   </span> : ''
+                              )
+                            })
                           )
-                        })
-                        )
-                       })}
-                       </>
+                        })}
+                        </>
 
                         </td>
                         {/* <td className='py-2 text-break'>{entry.RestrictedHoliday}
@@ -1052,16 +1071,16 @@ export const MonthlyLeaveReport = (props: any) => {
                             entry?.leavediscriptionRh?.map((item: any) => {
                               return (
                                 dateEvent == item?.eventDate ?
-                          <span> {item?.eventDate} 
-                          <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
-                          
-                          </InfoIconsToolTip> 
+                                  <span> {item?.eventDate}
+                                    <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
+
+                                    </InfoIconsToolTip>
                                   </span> : ''
+                              )
+                            })
                           )
-                        })
-                        )
-                       })}
-                       </>
+                        })}
+                        </>
 
                         </td>
                         {/* <td className='py-2 text-break'>{entry.Halfdayleave}</td> */}
@@ -1070,16 +1089,16 @@ export const MonthlyLeaveReport = (props: any) => {
                             entry?.leavediscriptionHalfday?.map((item: any) => {
                               return (
                                 dateEvent == item?.eventDate ?
-                          <span> {item?.eventDate} 
-                          <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
-                          
-                          </InfoIconsToolTip> 
+                                  <span> {item?.eventDate}
+                                    <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
+
+                                    </InfoIconsToolTip>
                                   </span> : ''
+                              )
+                            })
                           )
-                        })
-                        )
-                       })}
-                       </>
+                        })}
+                        </>
 
                         </td>
                         <td className='py-2'>{entry.TotalLeave}</td>
@@ -1094,7 +1113,7 @@ export const MonthlyLeaveReport = (props: any) => {
 
         </Modal.Body>
       </Modal>
- <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} selectedType={selectedType} />}</>
+      <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} selectedType={selectedType} />}</>
 
     </div>
   );

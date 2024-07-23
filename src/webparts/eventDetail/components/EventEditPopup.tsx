@@ -709,7 +709,7 @@ const Editpopup = (props: any) => {
                 >
                     <Tab eventKey="BASICINFORMATION" title="BASIC INFORMATION" className='p-0'>
 
-                        <div className='border border-top-0 p-2'>                            
+                        <div className='border border-top-0 p-2 mb-5'>                            
                             <div className='d-flex'>
                                 <div className="input-group"><label className=" full-width ">Title </label>
                                     <input type="text" className="form-control" value={EventItem?.Title} onChange={(e) => setEventItem({ ...EventItem, Title: e.target.value })} />
@@ -729,18 +729,18 @@ const Editpopup = (props: any) => {
                                     </select>
                                 </div>                                  
                             </div>
-                            <div className='d-flex'>
+                            <div className='d-flex mb-2'>
                                 <div className="input-group">
                                     <label className="full-width">Start date</label>
                                     {/* Format the date before setting it in the state */}
                                     <input type="date" className="form-control" value={EventItem?.EventDate != undefined ? moment(EventItem?.EventDate).format('YYYY-MM-DD') : null} onChange={(e) => setEventItem({ ...EventItem, EventDate: moment(e.target.value).format('YYYY-MM-DD') })} />
                                 </div>
 
-                                <div className="input-group mx-4 ms-5">
+                                <div className="input-group mx-4">
                                     <label className="full-width">End date</label>                                   
                                     <input type="date" className="form-control" value={EventItem?.EndDate != undefined ? moment(EventItem?.EndDate).format('YYYY-MM-DD') : null} onChange={(e) => setEventItem({ ...EventItem, EndDate: moment(e.target.value).format('YYYY-MM-DD') })} />
                                 </div>  
-                                <div className="input-group mx-4">
+                                <div className="input-group">
                                     <label className="full-width">Event Type</label>
                                     <select className={`${EventItem?.Event_x002d_Type === null ? 'colLight form-select' : 'form-select'}`} value={EventItem?.Event_x002d_Type} onChange={(e) => setEventItem({ ...EventItem, Event_x002d_Type: e.target.value })}>
                                         <option value={""}> Select</option>
@@ -753,10 +753,10 @@ const Editpopup = (props: any) => {
                             <div className="mt-2">
                                 <details>
                                     <summary><span>Event Tags</span></summary>
-                                    <div className="expand-AccordionContent clearfix">
-                                        <div className='col-sm-12 d-flex'>
-                                            <div className="col-sm-4 me-3">
-                                                <div className='input-group ms-1'>
+                                    <div className="expand-AccordionContent AccordionContent clearfix">
+                                        <div className='mb-2 px-2 py-2 row'>
+                                            <div className="col-sm-4">
+                                                <div className='input-group'>
                                                         <div className='form-label alignCenter full-width gap-1'>
                                                             <label className="form-label">Main Activity</label>
                                                             {/* <CustomToolTip Description={'Tag the available Activities'} /> */}
@@ -863,8 +863,8 @@ const Editpopup = (props: any) => {
                                                         </span>                                                   
                                                 </div>
                                             </div>
-                                            <div className="col-sm-4 me-3">
-                                                <div className='input-group ms-1'>
+                                            <div className="col-sm-4">
+                                                <div className='input-group'>
                                                     <div className='form-label alignCenter full-width gap-1'>
                                                         <label className="form-label">Main Topic</label>
                                                         {/* <CustomToolTip Description={'Tag the available Topics'} /> */}
@@ -964,7 +964,7 @@ const Editpopup = (props: any) => {
                                                     </span>                                                    
                                                 </div>
                                             </div>
-                                            <div className="col-sm-4 me-3">
+                                            <div className="col-sm-4">
                                                 <div className='input-group'>
                                                     <div className='form-label alignCenter full-width gap-1'>
                                                         <label className="form-label">Smart Pages</label>
@@ -1080,7 +1080,7 @@ const Editpopup = (props: any) => {
                         </div>
                     </Tab>                   
                     <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" className='p-0'  >
-                        <div className='border border-top-0 p-2'>
+                    <div className='border border-top-0 p-2 mb-5'>    
                             {isOpenImageTab && <ImageInformation EventItem={EventItem} setData={setEventItem} Context={props?.Context} callBack={imageTabCallBack} />}
                         </div>
                     </Tab>
