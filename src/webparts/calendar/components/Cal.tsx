@@ -507,13 +507,12 @@ const Apps = (props: any) => {
             windowEndDate = createenddate;
           }
         } else if (repeatInstance && repeatInstance > 0) {
-          let repeatInstanceEndDate =new Date(recurrenceData?.EventDate);
+          let repeatInstanceEndDate = new Date(recurrenceData?.EventDate);
           repeatInstanceEndDate.setHours(0, 0, 0, 0);
-          if(recurrenceData?.RecurrenceData?.includes('daily')){
-          repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() + repeatInstance);
+          if (recurrenceData?.RecurrenceData?.includes('daily')) {
+            repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() + repeatInstance);
           }
-          repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() + repeatInstance);
-          repeatInstanceEndDate.setHours(0, 0, 0, 0);
+          repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() - 1); // Subtract one day
           windowEndDate = repeatInstanceEndDate;
         }
         else {
@@ -584,57 +583,37 @@ const Apps = (props: any) => {
 
 
   function handleDailyRecurrence(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any, repeatInstance: any) {
-    const dayFrequency = parseInt(frequency?.dayFrequency != undefined ? frequency?.dayFrequency : 1);
+    const dayFrequency = parseInt(frequency.dayFrequency);
+    const nextDate = new Date(currentDate);
+    nextDate.setDate(nextDate.getDate() + 1);
+    currentDate.setHours(0, 0, 0, 0);
     let count = 0;
+    let result = '';
+    if (frequency?.weekday == 'TRUE') {
+      let AllWeekDaysOfWeek = getWeekDays(nextDate)
+      AllWeekDaysOfWeek?.map((DayOfWeek: any) => {
 
-    if (frequency?.weekday === 'TRUE') {
-      // Function to get the next weekday date
-      const getNextWeekday = (date: any) => {
-        let nextDate = new Date(date);
-        nextDate.setDate(date.getDate() + 1);
-        while (nextDate.getDay() === 0 || nextDate.getDay() === 6) { // Skip Sunday (0) and Saturday (6)
-          nextDate.setDate(nextDate.getDate() + 1);
+        const endDate = new Date(windowEndDate);
+        if (new Date(eventDetails?.EventDate).setHours(0, 0, 0, 0) <= new Date(DayOfWeek).setHours(0, 0, 0, 0) && new Date(DayOfWeek).setHours(0, 0, 0, 0) < endDate.setDate(endDate.getDate() + 1)) {
+          const event = eventDataForBinding(eventDetails, DayOfWeek);
+          AllEvents.push(event);
+          dates.push(new Date(DayOfWeek));
+        } else if (new Date(DayOfWeek).setHours(0, 0, 0, 0) >= new Date(windowEndDate).setHours(0, 0, 0, 0)) {
+          result = 'break';
         }
-        return nextDate;
-      };
+      })
 
-      while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
-        currentDate = getNextWeekday(currentDate);
-        if (new Date(currentDate).setHours(0, 0, 0, 0) >= windowEndDate) break;
-
-        const event = eventDataForBinding(eventDetails, currentDate);
-        AllEvents.push(event);
-        dates.push(new Date(currentDate));
-        count++;
-      }
-
-      // Add the next date after windowEndDate
-      let nextDate: any = currentDate;
-      nextDate.setDate(nextDate.getDate() + dayFrequency);
-      const event = eventDataForBinding(eventDetails, nextDate);
-      AllEvents.push(event);
-      dates.push(new Date(nextDate));
     } else {
       while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
         currentDate.setDate(currentDate.getDate() + dayFrequency);
-        if (new Date(currentDate).setHours(0, 0, 0, 0) >= windowEndDate) break;
-
         const event = eventDataForBinding(eventDetails, currentDate);
         AllEvents.push(event);
         dates.push(new Date(currentDate));
         count++;
       }
-
-      // Add the next date after windowEndDate
-      let nextDate: any = new Date(currentDate);
-      nextDate.setDate(nextDate.getDate() + dayFrequency);
-      const event = eventDataForBinding(eventDetails, nextDate);
-      AllEvents.push(event);
-      dates.push(new Date(nextDate));
     }
-    return '';
+    return result;
   }
-
 
   function getWeekDays(today: any) {
     const currentDay = today.getDay();
@@ -892,8 +871,8 @@ const Apps = (props: any) => {
         HalfDayTwo: item.HalfDayTwo,
         clickable: item.clickable,
         Color: item.Color,
-        Rejected:item.Rejected,
-        Approved:item.Approved
+        Rejected: item.Rejected,
+        Approved: item.Approved
       };
 
       return dataEvent;
@@ -1413,6 +1392,7 @@ const Apps = (props: any) => {
       };
 
       const results = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.add(addEventItem);
+      getEvents();
       return results;
     } catch (error) {
       return Promise.reject(error);
@@ -1450,6 +1430,7 @@ const Apps = (props: any) => {
       const results = await web.lists.getById(props.props.SmalsusLeaveCalendar)
         .items.getById(eventPass.Id)
         .update(editedEventItem);
+      getEvents();
       return results;
     } catch (error) {
       return Promise.reject(error);
@@ -2152,7 +2133,7 @@ const Apps = (props: any) => {
   const isAllowedUser = allowedUserIds.indexOf(userId) !== -1;
 
   const result = isAllowedUser && !disabl && !(leaveapproved || leaverejected);
-  
+
 
 
 
