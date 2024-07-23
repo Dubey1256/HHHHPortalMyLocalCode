@@ -30,8 +30,8 @@ let Allteamoforganization = 0;
 let leaveallteammemebrstoday = 0;
 let availableteammeberstoday = 0;
 const EmailComponenet = (props: any) => {
-  let data = props?.data?.filter((item:any)=> item?.eventType !== "Work From Home");
-  
+  let mydata = props?.data?.filter((item:any)=> item?.eventType !== "Work From Home" || item?.Rejected != true);
+  let data = mydata.filter((item:any)=> item?.Rejected !== true);
   const [AllTaskuser, setAllTaskuser] = React.useState([]);
   const [leaveData, setleaveData] = React.useState([]);
   const [nameidTotals, setNameidTotals] = useState<NameIdData>({});

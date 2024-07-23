@@ -32,6 +32,8 @@ CurrentMatchableDate.setHours(0, 0, 0, 0)
 const EmployeProfile = (props: any) => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
+  if (DashboardId == undefined || DashboardId == '')
+    DashboardId = params.get('dashBoardId');
   const [progressBar, setprogressBar] = useState(true)
   const [AllSite, setAllSite] = useState([]);
   const [data, setData]: any = React.useState({ AllTaskUser: [] });
@@ -819,7 +821,7 @@ const EmployeProfile = (props: any) => {
     const currentDate = todayDate;
     currentDate.setDate(today.getDate());
     currentDate.setHours(0, 0, 0, 0);
-    if (DashboardId == 1) {
+    if (DashboardId == 1 || DashboardId == 27) {
       for (const items of array ?? []) {
         for (const config of DashboardConfig ?? []) {
           if (config?.Tasks == undefined) {
@@ -886,7 +888,7 @@ const EmployeProfile = (props: any) => {
                     }
                   }
                 }
-                if (config.TileName == 'AssignedTask' && !isTaskItemExists(config?.Tasks, items))
+                if (config?.IsAssignedTask === true && !isTaskItemExists(config?.Tasks, items))
                   config?.Tasks.push(items);
               }
             }
@@ -961,7 +963,7 @@ const EmployeProfile = (props: any) => {
   const getAllData = async (IsLoad: any) => {
     if (IsLoad != undefined && IsLoad == true) {
       await globalCommon?.loadAllSiteTasks(props?.props, undefined).then((data: any) => {
-        if (DashboardId == 1)
+        if (DashboardId == 1 || DashboardId == 27)
           loadAllTimeEntry();
         data?.map((items: any) => {
           items.descriptionsSearch = '';
@@ -1180,7 +1182,7 @@ const EmployeProfile = (props: any) => {
       if (Array.isArray(data[ItemProperty])) {
         return data[ItemProperty]?.some((item: any) => filterArray.some((filter: any) => filter.Title == item.Title));
       } else {
-        return filterArray.some((filter: any) => data[ItemProperty] != undefined && data[ItemProperty] != '' && filter[FilterProperty] == data[ItemProperty]);
+        return filterArray.some((filter: any) => data[ItemProperty] !== undefined && data[ItemProperty] !== '' && filter[FilterProperty] === data[ItemProperty]);
       }
     } catch (error) { }
   };

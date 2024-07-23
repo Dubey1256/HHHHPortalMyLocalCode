@@ -15,12 +15,13 @@ import { IContactSearchProps } from './components/IContactSearchProps';
 export interface IContactSearchWebPartProps {
   description: string;
   ContractListID:'',
-  HHHHContactListId:'0fb52a5f-e68a-48c4-9d42-99c81fc58f85',
+  HHHHContactListId:'',
   HHHHInstitutionListId:'',
-  MAIN_SMARTMETADATA_LISTID:'0af5c538-1190-4fe5-8644-d01252e79d4b',
+  MAIN_SMARTMETADATA_LISTID:'',
   MAIN_HR_LISTID:'',
   GMBH_CONTACT_SEARCH_LISTID:'',
   HR_EMPLOYEE_DETAILS_LIST_ID:'',
+  SitePagesList:''
 }
 export default class ContactSearchWebPart extends BaseClientSideWebPart<IContactSearchWebPartProps> {
   private _isDarkTheme: boolean = false;
@@ -32,18 +33,18 @@ export default class ContactSearchWebPart extends BaseClientSideWebPart<IContact
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         Context: this.context,
-        ContractListID:'',
-        HHHHContactListId:'0fb52a5f-e68a-48c4-9d42-99c81fc58f85',
-        HHHHInstitutionListId:'',
-        MAIN_SMARTMETADATA_LISTID:'0af5c538-1190-4fe5-8644-d01252e79d4b',
-        MAIN_HR_LISTID:'',
-        GMBH_CONTACT_SEARCH_LISTID:'',
-        HR_EMPLOYEE_DETAILS_LIST_ID:'',
+        ContractListID:this.properties.ContractListID,
+        HHHHContactListId:this.properties.HHHHContactListId,
+        HHHHInstitutionListId:this.properties.HHHHInstitutionListId,
+        MAIN_SMARTMETADATA_LISTID:this.properties.MAIN_SMARTMETADATA_LISTID,
+        MAIN_HR_LISTID:this.properties.MAIN_HR_LISTID,
+        GMBH_CONTACT_SEARCH_LISTID:this.properties.GMBH_CONTACT_SEARCH_LISTID,
+        HR_EMPLOYEE_DETAILS_LIST_ID:this.properties.HR_EMPLOYEE_DETAILS_LIST_ID,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.loginName,
-        SitePagesList: 'd0874cde-43f3-4fc0-88b3-a1980d1f0b91',
-        siteUrl:'https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP'
+        SitePagesList: this.properties.SitePagesList,
+        siteUrl:this.context.pageContext.web.absoluteUrl
       }
     );
 
@@ -141,6 +142,9 @@ export default class ContactSearchWebPart extends BaseClientSideWebPart<IContact
                 }),
                 PropertyPaneTextField('ContractListID', {
                   label: "ContractListID"
+                }),
+                PropertyPaneTextField('SitePagesList', {
+                  label: "SitePagesList"
                 })
               ]
             }

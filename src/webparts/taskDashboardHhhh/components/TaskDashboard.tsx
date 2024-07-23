@@ -549,15 +549,8 @@ const TaskDashboard = (props: any) => {
 
                         if (task?.WorkingAction?.length > 0) {
                             task?.WorkingAction?.forEach((data: any) => {
-                                if (data?.Title === "Bottleneck") {
+                                if (data?.Title === "Bottleneck" && data?.InformationData.length > 0) {
                                     isBottleneckTask = true;
-                                    // data?.InformationData?.forEach((userBottleneckTasks:any) => {
-                                    //      if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currenUserAssignedToUserId) {
-                                    //             // userBottleneckTasks.TaggedUsers.isBottleneck = true;
-                                    //             // AllBottleNeckTasks.push(userBottleneckTasks)
-                                    //             isBottleneckTask=true;
-                                    //         }
-                                    //   });
                                 }
                             });
                         }

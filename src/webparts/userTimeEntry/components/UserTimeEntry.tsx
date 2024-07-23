@@ -4664,7 +4664,7 @@ validSites = validSites.filter((site:any) => {
                       </div>
                     </Row>
                     <Row className="ps-30 mb-2">
-                      <div className="col-2">
+                      <div className="col-1 pe-0" style={{width:"160px"}}>
                         <div className="input-group">
                           <label className="full-width">Start Date</label>
                           <span>
@@ -4680,7 +4680,7 @@ validSites = validSites.filter((site:any) => {
                           </span>
                         </div>
                       </div>
-                      <div className="col-2">
+                      <div className="col-1 pe-0" style={{width:"160px"}}>
                         <div className="input-group">
                           <label className="full-width">End Date</label>
                           <span>
