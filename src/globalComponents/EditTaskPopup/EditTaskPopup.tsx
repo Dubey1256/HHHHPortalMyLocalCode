@@ -3987,7 +3987,8 @@ const EditTaskPopup = (Items: any) => {
             DueDate: FunctionsType == 'Copy-Task' ? null : (EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null),
             StartDate: FunctionsType == 'Copy-Task' ? null : (EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null),
             Status: FunctionsType == 'Copy-Task' ? null : EditData.Status,
-            PercentComplete: FunctionsType == 'Move-Task' ? (EditData.PercentComplete / 100) : 0,
+            WorkingAction: FunctionsType == 'Copy-Task' ? null : EditData.WorkingAction,
+            PercentComplete: FunctionsType == 'Move-Task' ? (EditData.PercentComplete / 100) : 0.0001,
             TotalTime: FunctionsType == 'Copy-Task' ? 0 : EditData?.TotalTime,
             SmartInformationId: {
                 results:
