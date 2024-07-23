@@ -24,6 +24,7 @@ import { Panel } from '@fluentui/react';
 import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import AddEditWebpartTemplate from "../../../globalComponents/AddEditWebpartTemplate";
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
+import EditInstituton from "../../EditPopupFiles/EditComponent";
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -35,6 +36,7 @@ let IsShowConfigBtn = false;
 let dragItem: any;
 let DragDropType: any = '';
 let isUpdateTask: any = true;
+let portfolioColor: any = '';
 let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1, taskStatusComment: "For Approval" }, { value: 2, taskStatusComment: "Follow Up" }, { value: 3, taskStatusComment: "Approved" },
 { value: 4, taskStatusComment: "Checking" }, { value: 5, taskStatusComment: "Acknowledged" }, { value: 8, taskStatusComment: "Priority Check" }, { value: 9, taskStatusComment: "Ready To Go" },
 { value: 10, taskStatusComment: "working on it" }, { value: 70, taskStatusComment: "Re-Open" }, { value: 75, taskStatusComment: "Deployment Pending" }, { value: 80, taskStatusComment: "In QA Review" },
@@ -47,8 +49,9 @@ const TaskStatusTbl = (Tile: any) => {
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
   const [editPopup, setEditPopup]: any = useState(false);
+  const [EditProjectPopup, setEditProjectPopup]: any = useState(false);
   const [EditCompPopup, setEditCompPopup]: any = useState(false);
-  const [result, setResult]: any = useState(false);
+  const [result, setResult]: any = useState<any>(false);
   const [CompResult, setCompResult]: any = useState(false);
   const [ActiveTile, setActiveTile] = useState(Tile?.activeTile);
   const [dateRange, setDateRange] = useState<any>([]);
@@ -58,6 +61,8 @@ const TaskStatusTbl = (Tile: any) => {
   const [bulkUpdateDataTableId, setBulkUpdateDataTableId] = useState('')
   const [IsTimeEntry, setIsTimeEntry] = useState(false);
   const [TimeComponent, setTimeComponent] = useState(undefined);
+  const [portfolioTyped, setPortfolioTypeData] = React.useState([]);
+  const [SelectedUser, setSelectedUser] = React.useState<any>({});
   const dashBoardbulkUpdateCallBack = React.useCallback(async (configTableId: any, data: any) => {
     setBulkUpdateDataCallBack(data);
     setBulkUpdateDataTableId(configTableId);
@@ -134,7 +139,7 @@ const TaskStatusTbl = (Tile: any) => {
     if (ContextData?.DataRange != undefined && ContextData?.DataRange?.length > 0) {
       setDateRange(ContextData?.DataRange)
     }
-  }, [ContextData?.DashboardConfig]); 
+  }, [ContextData?.DashboardConfig]);
   const ShowWorkingTask = (config: any, User: any, Time: any, ShowHideTable: any) => {
     DashboardConfig.forEach((configuration: any) => {
       if (configuration?.WebpartTitle == config?.WebpartTitle && configuration?.Tasks != undefined && configuration?.Tasks?.length > 0) {
@@ -1117,9 +1122,15 @@ const TaskStatusTbl = (Tile: any) => {
         accessorFn: (row: any) => row?.Title,
         cell: ({ row, getValue }: any) => (
           <div draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)}>
-            <a className="hreflink" target='_blank' style={{ textDecoration: 'none', cursor: 'pointer' }} href={`${ContextData.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
+            {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (<a className="hreflink" target='_blank' style={{ textDecoration: 'none', cursor: 'pointer' }} href={`${ContextData.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
               rel='noopener noreferrer' data-interception="off" > {row?.original?.Title}
             </a>
+            )}
+            {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
+              <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
+                href={ContextData?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.Id} > {row?.original?.Title}
+              </a>
+            )}
             {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != "" && (
               <span className="alignIcon mt--5"> <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
             )}
@@ -1591,7 +1602,7 @@ const TaskStatusTbl = (Tile: any) => {
     }
   }
   if (Tile.activeTile != undefined && DashboardConfigCopy != undefined && DashboardConfigCopy?.length > 0)
-    DashboardConfig = DashboardConfigCopy.filter((config: any) => config?.TileName == '' || config?.TileName == Tile.activeTile);  
+    DashboardConfig = DashboardConfigCopy.filter((config: any) => config?.TileName == '' || config?.TileName == Tile.activeTile);
   const updatedDashboardConfig = DashboardConfig?.map((item: any, index: any) => {
     let columnss: any = [];
     columnss = generateDynamicColumns(item, index);
@@ -1604,15 +1615,25 @@ const TaskStatusTbl = (Tile: any) => {
       setResult(item)
     }
     else {
-      item['siteUrl'] = `${AllListId?.siteUrl}`;
-      item['listName'] = 'Master Tasks';
-      setEditCompPopup(true);
-      setCompResult(item)
+      if (item?.Item_x0020_Type == "Component" || item?.Item_x0020_Type == "SubComponent" || item?.Item_x0020_Type == "Feature") {
+        item['siteUrl'] = `${AllListId?.siteUrl}`;
+        item['listName'] = `${AllListId?.MasterTaskListID}`;
+        setEditCompPopup(true);
+        setCompResult(item)
+      }
+      else {
+        item['siteUrl'] = `${AllListId?.siteUrl}`;
+        item['listName'] = 'Master Tasks';
+        setEditProjectPopup(true);
+        setCompResult(item)
+      }
+
     }
   }
   function CallBack() {
-    setEditCompPopup(false);
+    setEditProjectPopup(false);
     setEditPopup(false);
+    setEditCompPopup(false);
   }
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
     if (elem != undefined) {
@@ -1855,9 +1876,66 @@ const TaskStatusTbl = (Tile: any) => {
     setActiveTile((prevString: any) => Tile?.activeTile);
     rerender();
   }
+  const SelectUserImage = (ev: any, item: any) => {
+
+  }
   const generateDashboard = () => {
     const rows: any = [];
     let currentRow: any = [];
+    {
+      ContextData?.DashboardId == 27 && ContextData?.GroupByUsers != null && ContextData?.GroupByUsers > 0 && <details open className="p-0 m-0">
+        <summary>
+          <span className="fw-semibold f-15 fw-semibold">
+            Team members
+          </span>
+        </summary>
+        <hr style={{ width: "98%", marginLeft: "30px" }}></hr>
+        <div style={{ display: "block" }}>
+          <div className="taskTeamBox ps-30 my-2">
+            {ContextData?.GroupByUsers > 0 &&
+              ContextData?.GroupByUsers?.map((users: any, i: number) => {
+                //  return (
+                users?.childs?.length > 0 && (
+                  <div className="top-assign">
+                    <div className="team ">
+                      <label className="BdrBtm">
+                        {users.childs.length > 0 && (
+                          <> {users.Title} </>
+                        )}
+                      </label>
+                      <div className="d-flex">
+                        {users.childs.length > 0 &&
+                          users.childs.map((item: any, i: number) => {
+                            // return (
+                            item.AssingedToUser != undefined && (
+                              <div className="alignCenter">
+                                {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ? (
+                                  <span>
+                                    <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == SelectedUser?.AssingedToUserId ? "activeimg seclected-Image ProirityAssignedUserPhoto" : "ProirityAssignedUserPhoto"}
+                                      onClick={(e) => SelectUserImage(e, item)} title={item.AssingedToUser.Title} src={item?.Item_x0020_Cover?.Url
+                                      }
+                                    />
+                                  </span>
+                                ) : (
+                                  <span id={"UserImg" + item.Id} className={item?.AssingedToUserId == SelectedUser?.AssingedToUserId ? "activeimg newDynamicUserIcon" : "newDynamicUserIcon"} title={item.Title} onClick={(e) => SelectUserImage(e, item)} >
+                                    {item?.Suffix}
+                                  </span>
+                                )}
+                              </div>
+                            )
+                            // );
+                          }
+                          )}
+                      </div>
+                    </div>
+                  </div>
+                )
+                // );
+              })}
+          </div>
+        </div>
+      </details>
+    }
     DashboardConfig.forEach((config: any, index: any) => {
       let smartFavTableConfig: any = [];
       if (config?.configurationData != undefined && config?.configurationData?.length > 0 && config?.configurationData[0]?.smartFabBasedColumnsSetting != undefined && config?.configurationData[0]?.smartFabBasedColumnsSetting != '' && Object.keys(config?.configurationData[0]?.smartFabBasedColumnsSetting).length !== 0) {
@@ -1868,6 +1946,7 @@ const TaskStatusTbl = (Tile: any) => {
         if (config?.DataSource != undefined && config?.DataSource != '') {
           const box = (
             <div className={`col-${12 / config.highestColumn} px-1 mb-2 `} key={index}>
+
               {config?.ShowWebpart == true && config?.GroupByView != undefined && <section>
                 {(config?.DataSource == 'Tasks' || config?.DataSource == 'Project') && <div className="workingSec empAllSec clearfix">
                   <div className="alignCenter mb-2 justify-content-between">
@@ -2073,7 +2152,12 @@ const TaskStatusTbl = (Tile: any) => {
           {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
         </span>
         <span>
-          {EditCompPopup && <EditProjectPopup props={CompResult} AllListId={AllListId} Call={() => { CallBack() }} />}
+          {EditProjectPopup && <EditProjectPopup props={CompResult} AllListId={AllListId} Call={() => { CallBack() }} />}
+        </span>
+        <span>
+          {EditCompPopup && (
+            <EditInstituton item={CompResult} SelectD={AllListId} Calls={CallBack} portfolioTypeData={portfolioTyped} portfolioColor={portfolioColor}  ></EditInstituton>
+          )}
         </span>
         <span>
           {IsManageConfigPopup && <AddEditWebpartTemplate props={ContextData?.propsValue} DashboardPage={true} DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}

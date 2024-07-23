@@ -642,7 +642,7 @@ const EditEventCardPopup = (props: any) => {
                     </ul>
 
 
-                    <div className="border-top-0 clearfix p-3 tab-content " id="myTabContent">
+                    <div className="border-top-0 clearfix p-3 tab-content mb-5" id="myTabContent">
                         <div className={`tab-pane show  ${imagetab == false ? "active" : ""}`} id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
                             <div className='general-section'>
                                 <div className="col-md-12">
