@@ -296,7 +296,7 @@ const SmartInformation = (props: any, ref: any) => {
               // MovefolderItemUrl2 = `/${tagsmartinfo.Id}_.000`
             }
             if (tagsmartinfo?.Id == items?.Id) {
-              tagsmartinfo.Description = tagsmartinfo?.Description?.replace(/<span[^>]*>(.*?)<\/span>/gi, '$1');
+              // tagsmartinfo.Description = tagsmartinfo?.Description?.replace(/<span[^>]*>(.*?)<\/span>/gi, '$1');
               allSmartInformationglobal.push(tagsmartinfo);
             }
           })

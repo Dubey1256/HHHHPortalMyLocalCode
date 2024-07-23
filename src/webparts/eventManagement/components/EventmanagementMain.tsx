@@ -155,7 +155,7 @@ const EventManagementmain = (props: any) => {
             setImageFolderItem(data?.data);
             setimagefoldercreated(true)
             setopenpopup(false)
-            alert("All folders has been created cuccessfully!")
+            alert("All folders has been created successfully!")
         } catch (error) {
             console.error('Error creating image folder:', error);
             return Promise.reject(error);
