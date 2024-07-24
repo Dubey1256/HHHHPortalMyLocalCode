@@ -25,6 +25,7 @@ import SmartInformation from "../../taskprofile/components/SmartInformation";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import { BiCommentDetail } from "react-icons/bi";
 import { BsTag, BsTagFill } from "react-icons/bs";
+import { BsClock } from "react-icons/bs";
 import PageLoader from "../../../globalComponents/pageLoader";
 import AddProject from "../../projectmanagementOverviewTool/components/AddProject";
 import CreateActivity from "../../../globalComponents/CreateActivity";
@@ -78,6 +79,9 @@ let taggedPortfolioItem: any
 let taskTypeDataItem: any;
 let keyTaggedDocs: any;
 let tempmetadata: any;
+let weekTotalTime: any = 0
+let monthTotalTime: any = 0
+let totalTime: any
 const ProjectManagementMain = (props: any) => {
   const [openServiceComponent, setopenServiceComponent]= React.useState(false)
   relevantDocRef = React.useRef();
@@ -133,6 +137,7 @@ const ProjectManagementMain = (props: any) => {
   const [keyTaggedDoc, setKeyTaggedDoc] = React.useState([])
   const [filteredTask, setFilteredTasks] = React.useState([])
   const [taggedPortfolio, setTaggedPortfolio] = React.useState([])
+  const [timeEntries, setTimeEntries] = React.useState([])
   const childRef = React.useRef<any>();
   const StatusArray = [
     { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
@@ -314,7 +319,7 @@ const ProjectManagementMain = (props: any) => {
         await web.lists
           .getById(AllListId?.MasterTaskListID)
           .items.select("ComponentCategory/Id", "ComponentLink", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "PortfoliosId", "Portfolios/Id", "Portfolios/Title", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
-          .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers", "Portfolios", "TaskCategories", "Parent")
+          .expand("ClientCategory", "ComponentCategory", "TeamsGroup", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers", "Portfolios", "TaskCategories", "Parent")
           .getById(QueryId)
           .get().then((fetchedProject: any) => {
             fetchedProject.siteUrl = props?.siteUrl;
@@ -443,13 +448,42 @@ const ProjectManagementMain = (props: any) => {
     }
   };
   const timeEntryIndex: any = {};
-  const smartTimeTotal = async () => {
-    setPageLoader(true);
-    try {
-      let AllTimeEntries = [];
-      if (timeSheetConfig?.Id !== undefined) {
-        AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
-      }
+
+  function getStartingDate(startDateOf: any) {
+    const startingDate = new Date();
+    let formattedDate = startingDate;
+    if (startDateOf == 'This Week') {
+        startingDate.setDate(startingDate.getDate() - startingDate.getDay());
+        formattedDate = startingDate;
+    } else if (startDateOf == 'This Month') {
+        startingDate.setDate(1);
+        formattedDate = startingDate;
+    } 
+
+    return formattedDate;
+}
+function getEndingDate(startDateOf: any): Date {
+  const endingDate = new Date();
+  let formattedDate = endingDate;
+
+  if (startDateOf === 'This Week') {
+      endingDate.setDate(endingDate.getDate() + (6 - endingDate.getDay()));
+      formattedDate = endingDate;
+  } else if (startDateOf === 'This Month') {
+      endingDate.setMonth(endingDate.getMonth() + 1, 0);
+      formattedDate = endingDate;
+  } 
+
+  return formattedDate;
+}
+
+const smartTimeTotal = async () => {
+  setPageLoader(true);
+  try {
+    let AllTimeEntries = [];
+    if (timeSheetConfig?.Id !== undefined) {
+      AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
+    }
 
       AllTimeEntries?.forEach((entry: any) => {
         siteConfig.forEach((site: any) => {
@@ -491,6 +525,74 @@ const ProjectManagementMain = (props: any) => {
       setPageLoader(false)
     }
   };
+  const handleMouseEnter = (event: any) => {
+    const target = event.target;
+    const hasOverflow = target.scrollWidth > target.clientWidth;
+  
+    if (hasOverflow) {
+        target.style.whiteSpace = 'normal';
+        target.style.overflow = 'visible';
+        target.style.textOverflow = 'unset';
+    }
+  };
+  
+  const handleMouseLeave = (event: any) => {
+    const target = event.target;
+    target.style.whiteSpace = 'nowrap';
+    target.style.overflow = 'hidden';
+    target.style.textOverflow = 'ellipsis';
+  };
+  
+    const loadAllPXTimeEntries = async () => {
+      let PXtimeEntries: any = []
+      let startingWeekDate = getStartingDate("This Week")
+      let endingWeekDate = getEndingDate("This Week")
+      let startingMonthDate = getStartingDate("This Month")
+      let endingMonthDate = getEndingDate("This Month")
+      setPageLoader(true);
+  
+      let flatTableData = globalCommon.deepCopy(backupTableData)
+      let flatData = flattenData(flatTableData)
+      let allPXTasks = flatData.filter((item: any) => item.TaskType)
+      try {
+        let AllTimeEntries = [];
+        if (timeSheetConfig?.Id !== undefined) {
+          AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
+        }
+  
+        AllTimeEntries?.map((entry: any) => {
+            const timeEntryDetails = JSON.parse(entry.AdditionalTimeEntry)
+            if (timeEntryDetails?.length > 0){
+              timeEntryDetails?.map((timeEntry: any) => {
+                allPXTasks?.map((task: any) => {
+                  if(entry[`Task${task?.siteType}`] != undefined && entry[`Task${task?.siteType}`].Id == task?.Id){
+                    task.TaskTime = parseFloat(timeEntry?.TaskTime);
+                    task.TimeDate = timeEntry.TaskDate;
+                    task.TimeDescription = timeEntry.Description;
+                    task.TimeFillDate = timeEntry?.TaskDate;let parts = timeEntry?.TaskDate?.split('/');
+                    let timeEntryDate: any = new Date(parts[2], parts[1] - 1, parts[0]);
+                    if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingWeekDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingWeekDate.setHours(0, 0, 0, 0)) {
+                      weekTotalTime += Number(timeEntry?.TaskTime)
+                    }
+                    else if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingMonthDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingMonthDate.setHours(0, 0, 0, 0)) {
+                      monthTotalTime += Number(timeEntry?.TaskTime)
+                    }
+                  PXtimeEntries.push(task)
+                }  
+              })                
+            })
+          }
+        });
+        totalTime = allPXTasks?.reduce((total: any, time: any) => total + time.TotalTime, 0);
+        totalTime = totalTime/60;
+        totalTime = totalTime.toFixed(1)
+        setTimeEntries(PXtimeEntries)
+        setPageLoader(false)
+      } catch (error) {
+        console.log(error)
+        setPageLoader(false)
+      }
+    };
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
     if (elem?.TaskType != undefined) {
       setCheckedList(elem);
@@ -1417,8 +1519,183 @@ const ProjectManagementMain = (props: any) => {
       childRef.current.callChildFunction(items);
     }
   };
-
-
+  const isUserExists = function (arr: any, Email: any) {
+    var isExists = false;
+    arr.forEach((item: any) => {
+      if (item?.toLowerCase() == Email?.toLowerCase()) {
+        isExists = true;
+        return false;
+      }
+    });
+    return isExists;
+  }
+  const ShowTeamFunc = async () => {
+    let mention_To: any = [];
+    Masterdata?.AssignedTo?.map((item_data: any) => {
+      let email: any = item_data?.EMail !== undefined && item_data?.EMail !== '' ? item_data?.EMail : item_data?.Email;
+      if (email !== undefined && email !== '') {
+        if (!isUserExists(mention_To, email))
+          mention_To.push(email);
+      }
+    });
+    Masterdata?.TeamMembers?.map((team_data: any) => {
+      let email: any = team_data?.EMail !== undefined && team_data?.EMail !== '' ? team_data?.EMail : team_data?.Email;
+      if (email !== undefined && email !== '') {
+        if (!isUserExists(mention_To, email))
+          mention_To.push(email);
+      }
+    });
+    Masterdata?.ResponsibleTeam.map((resmemb_data: any) => {
+      let email: any = resmemb_data?.EMail !== undefined && resmemb_data?.EMail !== '' ? resmemb_data?.EMail : resmemb_data?.Email;
+      if (email !== undefined && email !== '') {
+        if (!isUserExists(mention_To, email))
+          mention_To.push(email);
+      }
+    });
+    mention_To?.map((main_data: any, index: any) => {
+      if (main_data.toLowerCase() === CurrentUserData?.Email?.toLowerCase())
+        mention_To.splice(index, 1);
+    });
+    let Group_Title: any = `${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`;
+    let TeamsMessage = `<span> You have been added in this Group ${Group_Title} </span> `;
+    SendTeamMessageforPXProject(mention_To, TeamsMessage, props?.Context, AllListId, Group_Title);
+  }
+  const SendTeamMessageforPXProject = async (mention_To: any, txtComment: any, Context: any, AllListId: any, Group_Title: any) => {
+    let currentUser: any = {};
+    let ExistingGrp: any = {};
+    let user:any=[];
+    try {
+      let pageContent = await globalCommon.pageContext()
+      let web = new Web(pageContent?.WebFullUrl);
+      currentUser.Email = Context.pageContext._legacyPageContext.userPrincipalName
+      const client = await Context.msGraphClientFactory.getClient();
+      let res = await client.api(`/users`).version("v1.0").get();
+      if(Masterdata?.TeamsGroup !== undefined && Masterdata?.TeamsGroup !== '' && Masterdata?.TeamsGroup !== null){
+        ExistingGrp = await client.api('/chats/' + Masterdata?.TeamsGroup).get();
+        user= await client.api('/chats/' + Masterdata?.TeamsGroup + '/members').get();
+      }
+      let TeamUser: any[] = [];
+      let participants: any = [];
+      TeamUser = res?.value;
+      let CurrentUserChatInfo = TeamUser.filter((items: any) => {
+        if (items.userPrincipalName != undefined && currentUser.Email != undefined && items.userPrincipalName?.toLowerCase() == currentUser?.Email?.toLowerCase())
+          return items
+      })
+      currentUser.ChatId = CurrentUserChatInfo[0]?.id;
+      var SelectedUser: any[] = [];
+      for (let index = 0; index < mention_To?.length; index++) {
+        for (let TeamUserIndex = 0; TeamUserIndex < TeamUser?.length; TeamUserIndex++) {
+          if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == TeamUser[TeamUserIndex].userPrincipalName?.toLowerCase())
+            SelectedUser.push(TeamUser[TeamUserIndex])
+          if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
+            SelectedUser.push(TeamUser[TeamUserIndex])
+        }
+      }
+      let obj = {
+        "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${currentUser?.ChatId}')`
+      }
+      participants.push(obj)
+      if (SelectedUser != undefined && SelectedUser.length > 0) {
+        SelectedUser?.forEach((item: any) => {
+          let obj = {
+            "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${item?.id}')`
+          }
+          participants.push(obj)
+        })
+      }
+      let IsSendTeamMessage = 0;
+      if (mention_To != undefined && AllUser != undefined && AllUser?.length > 0 && mention_To?.length > 0) {
+        mention_To?.map((TeamUser: any) => {
+          AllUser?.map((User: any) => {
+            if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser?.toLowerCase()) {
+              IsSendTeamMessage += 1;
+            }
+          });
+        });
+      }
+      if (IsSendTeamMessage == mention_To?.length) {
+        if (ExistingGrp !== undefined && Object.keys(ExistingGrp).length > 0 && ExistingGrp !== '' ){
+          let RemoveCurrentUser: any = user?.value?.filter((itemexists: any) => { return itemexists.email.toLowerCase() !== CurrentUserData?.Email?.toLowerCase() });
+          RemoveCurrentUser?.map(async (check_mail: any) => {
+            SelectedUser?.map(async (exist_user: any, index: any) => {
+              exist_user.userFound = false;
+              if (check_mail?.email?.toLowerCase() === exist_user?.userPrincipalName?.toLowerCase()) {
+                exist_user.userFound = true;
+                SelectedUser.splice(index, 1);
+              }
+            });
+          });
+          let count: any = 0;
+          if(SelectedUser?.length>0){
+            Context.msGraphClientFactory.getClient()
+            .then((client: any) => {
+              SelectedUser?.map((item_iter: any) => {
+                client.api(`/chats/${ExistingGrp?.id}/members`).version('beta').post({
+                  '@odata.id': `https://graph.microsoft.com/beta/users/${item_iter?.id}`,
+                  "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                  "roles": ["owner"],
+                  "user@odata.bind": `https://graph.microsoft.com/beta/users('${item_iter?.id}')`
+                })
+                  .then((response: any) => {
+                    console.log('User added to group chat:', response);
+                    count++;
+                    if (SelectedUser.length === count) {
+                      alert('User added successfully in ' + ExistingGrp.topic)
+                    }
+                  })
+                  .catch((error: any) => {
+                    count++;
+                    console.error('Error adding user to group chat:', error);
+                    if (SelectedUser.length === count) {
+                      alert('User not added in ' + ExistingGrp.topic)
+                    }
+                  });
+              });
+            });
+          }
+          else{
+            alert('Assigned Users and group are already exists')
+          }
+        }
+        if (Object.keys(ExistingGrp).length == 0 || (ExistingGrp === undefined || ExistingGrp === '' || ExistingGrp === null)) {
+          const chat_payload: any = {
+            "members": participants,
+          }
+          if (Group_Title !== undefined && Group_Title !== '') {
+            chat_payload.topic = Group_Title;
+          }
+          mention_To != undefined && mention_To?.length == 1 ? chat_payload.chatType = 'oneOnOne' : chat_payload.chatType = 'group'
+          let new_chat_resp = await client.api('/chats').version('v1.0').post(chat_payload);
+          var PostData = {
+            TeamsGroup: new_chat_resp.id
+          }
+          web.lists.getById(AllListId?.MasterTaskListID).items.getById(Masterdata?.Id).update(PostData)
+            .then(async (updatedFile: any) => {
+              console.log('Item Saved Successfully');
+              const message_payload = {
+                "body": {
+                  contentType: 'html',
+                  content: `${txtComment}`,
+                  //content: 'test',
+                }
+              }
+              let result = await client.api('/chats/' + new_chat_resp?.id + '/messages').post(message_payload)
+              if(!result)
+                alert('Group created successfully' + Group_Title);
+              return result;
+            }).catch((e) => {
+              console.log(e);
+              alert('Group is not created for this' + Group_Title);
+            })
+        }
+      }
+      else {
+        console.log("Error In Global Common SendTeamMessage Function")
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
   const projectTopIcon = (items: any) => {
     if (childRef.current) {
       childRef.current.projectTopIcon(items);
@@ -2476,12 +2753,16 @@ const ProjectManagementMain = (props: any) => {
                                             <span className="svg__iconbox svg__icon--editBox alignIcon"  ></span>
                                             </a>
                                         </dd>
-                                      </dl>
-                                              
+                                      </dl>         
                                     </div>
                                     <div className="col-md-6 p-0">
                                       <dl>
-                                        <dt className="bg-fxdark">Project Team</dt>
+                                        <dt className="bg-fxdark">Project Team
+                                          <a className="teamIcon hover-text m-0 ms-2" onClick={() => ShowTeamFunc()}>
+                                            <span style={{ backgroundColor: "sky-blue" }} className="svg__iconbox svg__icon--team"></span>
+                                            <span className='tooltip-text pop-right'>Create Teams Group</span>
+                                          </a>
+                                        </dt>
                                         <dd className="bg-light">
                                           <InlineEditingcolumns
                                             AllListId={AllListId}
