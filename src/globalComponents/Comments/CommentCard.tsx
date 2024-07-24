@@ -860,7 +860,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       <div className={color ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1 "}>
         <div className='subheading'>
           <span className="siteColor">
-            Comment:{Title}{commentlength}
+            Comment : <span className='mx-1'>{Title}</span> <span>({commentlength})</span>
           </span>
         </div>
         <Tooltip ComponentId="588" />
