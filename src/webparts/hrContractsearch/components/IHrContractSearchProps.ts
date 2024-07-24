@@ -1,7 +1,7 @@
 export interface IHrContractSearchProps {
  ContractListID:any
   siteUrl:any
-description: string;
+  description: string;
   isDarkTheme: boolean;
   Context: any
   HHHHContactListId:any,

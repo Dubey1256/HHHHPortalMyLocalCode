@@ -185,7 +185,7 @@ const EmployeProfile = (props: any) => {
       if (DashboardConfig != undefined && DashboardConfig?.length > 0) {
         let TotalCSmartFav = DashboardConfig?.filter((x: any) => x.smartFevId != undefined && x.smartFevId != '')
         let countCall = 0;
-        DashboardConfig.map(async (item: any) => {
+        DashboardConfig.map(async (item: any, index: any) => {
           item.configurationData = []
           if (item?.smartFevId != undefined && item?.smartFevId != '') {
             try {
@@ -207,7 +207,7 @@ const EmployeProfile = (props: any) => {
               }
               if (IsLoadTask != false && TotalCSmartFav?.length == countCall) {
                 setprogressBar(true);
-                if (Type != false)
+                if (Type != false && Type != "OtherUserSelected")
                   smartTimeTotal();
                 else
                   getAllData(Type)
@@ -217,12 +217,14 @@ const EmployeProfile = (props: any) => {
             }
           }
           else {
-            if (IsLoadTask != false) {
-              setprogressBar(true);
-              if (Type != false)
-                smartTimeTotal();
-              else
-                getAllData(Type)
+            if (index == DashboardConfig?.length - 1) {
+              if (IsLoadTask != false) {
+                setprogressBar(true);
+                if (Type != false && Type != "OtherUserSelected")
+                  smartTimeTotal();
+                else
+                  getAllData(Type)
+              }
             }
           }
         })
@@ -680,6 +682,9 @@ const EmployeProfile = (props: any) => {
           config.Tasks = LoginUserTeamMembers;
           config.BackupTask = LoginUserTeamMembers;
           config.AllUserTask = AllUsers;
+        }
+        else if (config.selectFilterType === 'GroupByUser') {
+          config.Tasks = GroupByUsers;
         }
         if (!filteredConfig) {
           setIsCallContext(true);
@@ -1149,7 +1154,14 @@ const EmployeProfile = (props: any) => {
     }
 
   };
-  const callbackFunction = (Type: any) => {
+  const callbackFunction = (Type: any, UserId: any) => {
+    if (Type == "OtherUserSelected") {
+      currentUserId = UserId;
+      taskUsers?.map((item: any) => {
+        if (currentUserId == item?.AssingedToUser?.Id && currentUserId != undefined)
+          currentUserData = item;
+      })
+    }
     LoadAdminConfiguration(true, Type)
   }
   /*smartFavId filter functionaloity*/
@@ -1671,7 +1683,7 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, todaysDrafTimeEntry: todaysDrafTimeEntry, CurrentConfigItem: CurrentConfigItem, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, DashboardValue: DashboardValue, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      <myContextValue.Provider value={{ ...myContextValue, currentUserId: currentUserId, todaysDrafTimeEntry: todaysDrafTimeEntry, CurrentConfigItem: CurrentConfigItem, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, DashboardValue: DashboardValue, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div> <Header /></div>
         {IsCallContext == true && <TaskStatusTbl />}
       </myContextValue.Provider >
