@@ -2990,8 +2990,12 @@ const RestructuringCom = (props: any, ref: any) => {
           }
         });
       }
-      let array: any = [...allData];
-      let count: number = 0;
+      let array: any =[];
+      array = allData.reduce((acc:any, value:any) => {
+        acc.push(value);
+        return acc;
+      }, []);
+      let count = 0;
       let activityCount = 0;
 
       restructureItem?.map(async (items: any) => {
@@ -3063,7 +3067,7 @@ const RestructuringCom = (props: any, ref: any) => {
             let TaskId =
               newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
 
-            count = count + 1;
+            count++;
             let backupCheckedList: any = [];
             let latestCheckedList: any = [];
 
@@ -3169,19 +3173,27 @@ const RestructuringCom = (props: any, ref: any) => {
           }
         });
       }
-      let array: any = [...allData];
-      let count: number = 0;
-      let PortfolioStructureID1 : any;
+      let array: any =[];
+      array = allData.reduce((acc:any, value:any) => {
+        acc.push(value);
+        return acc;
+      }, []);
+      let count:number;
+      count=0;
+      let PortfolioStructureID1: any;
+      
       restructureItem?.map(async (items: any, index: any) => {
         PortfolioLevel = PortfolioLevel + 1;
         let level: number = PortfolioLevel;
-        if(newItemBackUp == null && props?.queryItems == undefined && (restructureItem[0]?.Item_x0020_Type  == "SubComponent" || restructureItem[0]?.Item_x0020_Type  == "Feature")){
-          PortfolioStructureID1 = "C" + level
-          SiteIconTitle = 'C'
-          }else{
-            SiteIconTitle = SiteIconTitle;
-            PortfolioStructureID1 =  PortfolioStructureID + "-" + SiteIconTitle + level
-          }
+      
+        if (newItemBackUp == null && props?.queryItems == undefined && (restructureItem[0]?.Item_x0020_Type == "SubComponent" || restructureItem[0]?.Item_x0020_Type == "Feature")) {
+          PortfolioStructureID1 = "C" + level;
+          SiteIconTitle = 'C';
+        } else {
+          SiteIconTitle = SiteIconTitle;
+          PortfolioStructureID1 = PortfolioStructureID + "-" + SiteIconTitle + level;
+        }
+      
         let web = new Web(props?.contextValue?.siteUrl);
         var postData: any = {
           ParentId: ParentTask,
@@ -3189,74 +3201,80 @@ const RestructuringCom = (props: any, ref: any) => {
           Item_x0020_Type: Item_x0020_Type,
           PortfolioStructureID: PortfolioStructureID1,
         };
-        await web.lists
-          .getById(props?.contextValue?.MasterTaskListID)
-          .items.getById(items.Id)
-          .update(postData)
-          .then(async (res: any) => {
-            // let checkUpdate: number = 1;
-            PortfolioLevel = PortfolioLevel + 1;
-            if(newItemBackUp == null && props?.queryItems == undefined && (restructureItem[0]?.Item_x0020_Type  == "SubComponent" || restructureItem[0]?.Item_x0020_Type  == "Feature")){
-              PortfolioStructureID1 = "C" + level
-              SiteIconTitle = 'C'
-              }else{
-                SiteIconTitle = SiteIconTitle;
-                PortfolioStructureID1 =  PortfolioStructureID + "-" + SiteIconTitle + level
-              }
-            let backupCheckedList: any = [];
-            let latestCheckedList: any = [];
-            latestCheckedList?.push({ ...items });
-            backupCheckedList?.push({ ...items });
-            count = count + 1;
-            latestCheckedList?.map((items: any) => {
-              (items.Parent = { Id: ParentTask }),
-                (items.PortfolioLevel = PortfolioLevel),
-                (items.Item_x0020_Type = Item_x0020_Type),
-                (items.SiteIconTitle = SiteIconTitle),
-                (items.PortfolioStructureID =
-                  PortfolioStructureID1 ),
-                (items.TaskID =
-                  PortfolioStructureID1 );
-            });
-
-            function processArray(arr: any, pushData: any, spliceData: any) {
-              arr?.map((obj: any, index: any) => {
-                if (!spliceData || !pushData) {
-                  obj.isRestructureActive = false;
-
-                  if ( !spliceData && obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type ===   backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title ===   backupCheckedList[0]?.TaskType?.Title && obj.Parent?.Id == backupCheckedList[0]?.Parent?.Id && obj.Portfolio?.Id == backupCheckedList[0]?.Portfolio?.Id) {
-                    arr.splice(index, 1);
-                    spliceData = true;
-                  }
-
-                  if ( !pushData && obj.Title != 'Others' && obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && obj.Parent?.Id == newItemBackUp?.Parent?.Id ) {
-                    obj.subRows?.push(...latestCheckedList);
-                    pushData = true;
-                  }
-
-                  if ( !pushData && obj.Title != 'Others' && newItemBackUp == null && props?.queryItems == undefined ) {
-                    array?.push(...latestCheckedList);
-                    pushData = true;
-                  }
-
-                  if (obj.subRows != undefined && obj.subRows?.length > 0) {
-                    processArray(obj.subRows, pushData, spliceData);
-                  }
+      
+        await web.lists.getById(props?.contextValue?.MasterTaskListID).items.getById(items.Id).update(postData).then(async (res: any) => {
+          PortfolioLevel = PortfolioLevel + 1;
+      
+          if (newItemBackUp == null && props?.queryItems == undefined && (restructureItem[0]?.Item_x0020_Type == "SubComponent" || restructureItem[0]?.Item_x0020_Type == "Feature")) {
+            PortfolioStructureID1 = "C" + level;
+            SiteIconTitle = 'C';
+          } else {
+            SiteIconTitle = SiteIconTitle;
+            PortfolioStructureID1 = PortfolioStructureID + "-" + SiteIconTitle + level;
+          }
+      
+          let backupCheckedList: any = [];
+          let latestCheckedList: any = [];
+          latestCheckedList?.push({ ...items });
+          backupCheckedList?.push({ ...items });
+          count++;
+      
+          latestCheckedList?.map((item: any) => {
+            item.Parent = { Id: ParentTask };
+            item.PortfolioLevel = PortfolioLevel;
+            item.Item_x0020_Type = Item_x0020_Type;
+            item.SiteIconTitle = SiteIconTitle;
+            item.PortfolioStructureID = PortfolioStructureID1;
+            item.TaskID = PortfolioStructureID1;
+          });
+      
+          function processArray(arr: any, pushData: any, spliceData: any) {
+            arr?.map((obj: any, index: any) => {
+              if (!spliceData || !pushData) {
+                obj.isRestructureActive = false;
+      
+                if (!spliceData && obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && obj.Parent?.Id == backupCheckedList[0]?.Parent?.Id && obj.Portfolio?.Id == backupCheckedList[0]?.Portfolio?.Id) {
+                  arr.splice(index, 1);
+                  spliceData = true;
                 }
-              });
-            }
-
-            processArray(array, false, false);
+      
+                if (!pushData && obj.Title != 'Others' && obj.Id === latestCheckedList[0]?.Id && obj.Item_x0020_Type === latestCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === latestCheckedList[0]?.TaskType?.Title && obj.Parent?.Id == latestCheckedList[0]?.Parent?.Id) {
+                  obj.subRows?.push(...latestCheckedList);
+                  pushData = true;
+                }
+      
+                if (!pushData && obj.Title != 'Others' && newItemBackUp == null ) {
+                  array?.push(...latestCheckedList);
+                  pushData = true;
+                }
+      
+                if (obj.subRows != undefined && obj.subRows?.length > 0) {
+                  processArray(obj.subRows, pushData, spliceData);
+                }
+              }
+            });
+          }
+      
+          processArray(array, false, false);
+      
+          // Ensure the array is properly updated and not undefined
+          if (Array.isArray(array)) {
             const sortedArray = array.sort((a: any, b: any) => {
-              if (a.Title === "Others") return 1;
-              if (b.Title === "Others") return -1;
+              if (a.Title === "Others" && b.Title !== "Others") return 1;
+              if (a.Title !== "Others" && b.Title === "Others") return -1;
               return 0;
             });
+      
             if (count === restructureItem?.length) {
               setResturuningOpen(false);
               restructureCallBack(sortedArray, false);
             }
-          });
+          } else {
+            console.error('Array is not defined or not an array', array);
+          }
+        }).catch((error: any) => {
+          console.error('Error updating item', error);
+        });
       });
     }
   };
@@ -3388,7 +3406,10 @@ const RestructuringCom = (props: any, ref: any) => {
 
   const trueTopIcon = (items: any) => {
     if(RestructureChecked?.length > 1 || selectedItems?.length > 1 || RestructureChecked?.length >= 0){
-       OpenModal(selectedItems[0]);
+     if(selectedItems?.length==1)
+      {
+        OpenModal(selectedItems[0]);
+      }
           setResturuningOpen(true);
     }else{
       setTrueTopCompo(items);
@@ -3470,7 +3491,7 @@ const RestructuringCom = (props: any, ref: any) => {
           .items.getById(items?.Id)
           .update(postData)
           .then(async (res: any) => {
-            count = count+1;
+            count++;
             let pushData : any = false;
             let spliceData : any = false;
             let array: any = [...allData];
@@ -4670,8 +4691,12 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             }
           });
         }
-        let array: any = [...allData];
-        let count: number = 0;
+        let array: any =[];
+        array = allData.reduce((acc:any, value:any) => {
+          acc.push(value);
+          return acc;
+        }, []);
+        let count = 0;
   
         restructureItem?.map(async (items: any, index: any) => {
           let TaskId = newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
@@ -4706,7 +4731,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
               let TaskId =
                 newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
   
-              count = count + 1;
+              count++;
               let backupCheckedList: any = [];
               let latestCheckedList: any = [];
   
@@ -5432,6 +5457,8 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
       ) : (
         ""
       )}
+
+      {/* -------------------Popup to Restructure selected items to particular Component, SubComponent, Feature, Activity, WorkStream or Task---------------------- */}
 
       {ResturuningOpen === true  && selectedItems?.length > 1 ? (
         <Panel

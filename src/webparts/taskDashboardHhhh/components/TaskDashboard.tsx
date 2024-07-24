@@ -268,7 +268,7 @@ const TaskDashboard = (props: any) => {
                         const data = await web.lists
                             .getById(list?.listId)
                             .items.select(list?.query)
-                            .filter(`(Modified ge '${startDate}') and (TimesheetTitle/Id ne null)`)
+                            .filter(`(Author/Id eq ${currentUserId}) and (Modified ge datetime'${startDate}')`)
                             .getAll();
 
                         data?.forEach((item: any) => {
@@ -1487,7 +1487,8 @@ const TaskDashboard = (props: any) => {
                 currentUserId = user?.AssingedToUserId;
                 setSelectedUser(user);
                 filterCurrentUserTask();
-                currentUserTimeEntry('This Week');
+                loadAllTimeEntry()
+                //currentUserTimeEntry('This Week');
             } else {
                 unSelectUser();
             }
