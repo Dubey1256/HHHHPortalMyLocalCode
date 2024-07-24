@@ -174,6 +174,9 @@ const ImageViewPanel = (props: any) => {
 
     // ==================save Function strat============
     const saveImageView = async () => {
+        allImageData?.map((imageData:any)=>{
+            imageData.showMore =false;
+        })
         let web = new Web(props?.AllListId?.siteUrl);
         const i = await web.lists
             .getByTitle(props?.AllListId?.listName)
@@ -216,9 +219,11 @@ const ImageViewPanel = (props: any) => {
 
             };
             if (selectedData["Comments"]?.length > 0) {
+                selectedData.showMore =false;
                 selectedData["Comments"].unshift(temp)
             } else {
                 selectedData["Comments"] = [temp];
+                selectedData.showMore =false;
             }
 
             let selectedIndex = CopyAllImageData.findIndex((item: any) => item.ImageName === selectedData?.ImageName);
@@ -453,7 +458,7 @@ const ImageViewPanel = (props: any) => {
                                                     <div className="col">
                                                         {slide?.Comments != null && slide?.Comments?.length > 0 && slide?.Comments?.map((fbComment: any, k: any) => {
                                                             return <> <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col bg-f5f5 p-2  my-1 ${fbComment.isShowLight}` : "col bg-f5f5 p-2  my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
-                                                                <div className="" style={{ display: (k > 1 && slide?.showMore==undefined)? 'none ' : 'block' }}>
+                                                                <div className="" style={{ display: (k > 1 && (slide?.showMore==undefined || slide?.showMore==false))? 'none ' : 'block' }}>
                                                                     <div className="d-flex p-0">
                                                                         <div className="col-1 p-0 wid30">
                                                                             {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink" onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)}
@@ -628,7 +633,7 @@ const ImageViewPanel = (props: any) => {
                                     <div className="col">
                                         {slide?.Comments != null && slide?.Comments?.length > 0 && slide?.Comments?.map((fbComment: any, k: any) => {
                                             return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col bg-f5f5 p-2  my-1 ${fbComment.isShowLight}` : "col bg-f5f5 p-2  my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
-                                                <div className="" style={{ display: (k > 1 && slide?.showMore==undefined)? 'none ' : 'block' }}>
+                                                <div className="" style={{ display: (k > 1 && (slide?.showMore==undefined || slide?.showMore==false ))? 'none ' : 'block' }}>
                                                     <div className="d-flex p-0">
                                                         <div className="col-1 p-0 wid30">
                                                             {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)}
