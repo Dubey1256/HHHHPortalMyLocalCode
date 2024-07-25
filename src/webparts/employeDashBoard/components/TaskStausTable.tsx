@@ -1291,7 +1291,7 @@ const TaskStatusTbl = (Tile: any) => {
                 {row?.original?.EstimatedTime}
               </span>
             </span>
-            <span className="alignIcon mt--5">{row?.original?.EstimatedTime != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"EstimatedTimeDescr"} />}</span>
+            <span className="alignIcon mt--5">{row?.original?.EstimatedTime != "" && row?.original?.EstimatedTimeDescr != undefined && row?.original?.EstimatedTimeDescr != '' && <InfoIconsToolTip row={row?.original} SingleColumnData={"EstimatedTimeDescr"} />}</span>
           </div>
         ),
         id: "TotalEstimatedTime",
