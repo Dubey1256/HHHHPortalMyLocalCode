@@ -12,7 +12,8 @@ import { BsHeart, BsFillHeartFill } from "react-icons/bs";
 import { CiFilter } from "react-icons/ci";
 import Rating from 'react-rating';
 import { Web } from 'sp-pnp-js';
-import {makeStyles,Button,Popover,PopoverTrigger,PopoverSurface,} from "@fluentui/react-components";
+import TooltipBuger from '../../../globalComponents/Tooltip';
+import {Popover,PopoverTrigger,PopoverSurface,} from "@fluentui/react-components";
 import { MdOutlineStarBorder, MdOutlineStar  } from 'react-icons/Md';
  let checkDataImage:any=[];
  let copyAllImage:any=[];
@@ -50,7 +51,8 @@ const ImageViewPanel = (props: any) => {
     const [replyCommentData, setReplyCommentData] = useState("");
     const [isPopoverFilterOpen, setIsPopoverFilterOpen] = useState(false);
     const [isPopoverShortByOpen, setIsPopoverShortByOpen] = useState(false);
-    const [seeMore, setSeeMore] = useState({status:false,index:null});
+    const [isPopoverReplyOpen, setIsPopoverReplyOpen] = useState("");
+
 
        //============= Open image right side function Start=============
     const openImageSection = (selectedTitle: any) => {
@@ -117,6 +119,9 @@ const ImageViewPanel = (props: any) => {
         else if (label == 'Restore') {
             selectedData.Exclude =false;
         }
+        else if(label == 'showMore'){
+            selectedData.showMore =true;   
+        }
 
         let selectedIndex = CopyAllImageData.findIndex((item: any) => item.ImageName === selectedData?.ImageName);
         let rightSectionIndex = rightSectionImage?.findIndex((item: any) => item.ImageName === selectedData?.ImageName)
@@ -139,7 +144,7 @@ const ImageViewPanel = (props: any) => {
         return (
             <div className="d-flex full-width pb-1">
                 <div className="subheading siteColor"></div>
-                {/* <Tooltip ComponentId="6776" isServiceTask={ServicesTaskCheck} /> */}
+                <TooltipBuger ComponentId="8591"/>
             </div>
         );
     };
@@ -171,6 +176,9 @@ const ImageViewPanel = (props: any) => {
 
     // ==================save Function strat============
     const saveImageView = async () => {
+        allImageData?.map((imageData:any)=>{
+            imageData.showMore =false;
+        })
         let web = new Web(props?.AllListId?.siteUrl);
         const i = await web.lists
             .getByTitle(props?.AllListId?.listName)
@@ -213,9 +221,11 @@ const ImageViewPanel = (props: any) => {
 
             };
             if (selectedData["Comments"]?.length > 0) {
+                selectedData.showMore =false;
                 selectedData["Comments"].unshift(temp)
             } else {
                 selectedData["Comments"] = [temp];
+                selectedData.showMore =false;
             }
 
             let selectedIndex = CopyAllImageData.findIndex((item: any) => item.ImageName === selectedData?.ImageName);
@@ -268,6 +278,7 @@ const ImageViewPanel = (props: any) => {
 
         }
         setCommentData("")
+        setIsPopoverReplyOpen("")
         setCommentStatus({ status: false, index: 0 })
     }
     const updateCommentFunction=()=>{
@@ -450,7 +461,7 @@ const ImageViewPanel = (props: any) => {
                                                     <div className="col">
                                                         {slide?.Comments != null && slide?.Comments?.length > 0 && slide?.Comments?.map((fbComment: any, k: any) => {
                                                             return <> <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col bg-f5f5 p-2  my-1 ${fbComment.isShowLight}` : "col bg-f5f5 p-2  my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
-                                                                <div className="" style={{ display: (k > 0 && seeMore?.status==false && seeMore?.index !=index)? 'none ' : 'block' }}>
+                                                                <div className="" style={{ display: (k > 1 && (slide?.showMore==undefined || slide?.showMore==false))? 'none ' : 'block' }}>
                                                                     <div className="d-flex p-0">
                                                                         <div className="col-1 p-0 wid30">
                                                                             {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink" onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)}
@@ -461,7 +472,7 @@ const ImageViewPanel = (props: any) => {
                                                                             <div className='d-flex justify-content-between align-items-center'>
                                                                                 {fbComment?.AuthorName} - {fbComment?.Created}
                                                                                 <span className='d-flex'>
-                                                                                    <Popover withArrow >
+                                                                                    <Popover withArrow  open={isPopoverReplyOpen== `${index}${k}imageSlider`} onOpenChange={(e, data) => setIsPopoverReplyOpen(`${index}${k}imageSlider`)}>
                                                                                         <PopoverTrigger disableButtonEnhancement>
                                                                                             <span className="svg__iconbox svg__icon--reply"></span>
                                                                                         </PopoverTrigger>
@@ -475,7 +486,7 @@ const ImageViewPanel = (props: any) => {
                                                                                            </div>
                                                                                            <div className='footer text-end'>
                                                                                             <button className='btnCol btn me-2 btn-primary' onClick={()=>PostReplyComment(slide,k)}>Save</button>
-                                                                                            <button className='btnCol btn btn-default'>Cancel</button>
+                                                                                            <button className='btnCol btn btn-default'onClick={()=>setIsPopoverReplyOpen('')}>Cancel</button>
                                                                                            </div>
                                                                                         </PopoverSurface>
                                                                                     </Popover>
@@ -523,9 +534,10 @@ const ImageViewPanel = (props: any) => {
 
 
                                                             </div>
-                                                         { k > 0 && <button type="button" className="btn btn-primary btnCol ms-2" onClick={() => setSeeMore({...seeMore,status:true,index:index})}>See More</button>}
+                                                        
                                                              </>
                                                         })}
+                                                         { (slide?.Comments != null && slide?.Comments?.length > 2) && <button type="button" className="btn btn-primary btnCol ms-2" onClick={() => changeFunction(true, slide, "showMore")}>See More</button>}
                                                     </div>
                                                     {commentStatus?.status && commentStatus?.index === index && <div className="align-items-center d-flex" >
                                                         <textarea id="txtComment" onChange={(e) => setCommentData(e.target?.value)} className="form-control full-width"></textarea>
@@ -624,7 +636,7 @@ const ImageViewPanel = (props: any) => {
                                     <div className="col">
                                         {slide?.Comments != null && slide?.Comments?.length > 0 && slide?.Comments?.map((fbComment: any, k: any) => {
                                             return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col bg-f5f5 p-2  my-1 ${fbComment.isShowLight}` : "col bg-f5f5 p-2  my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
-                                                <div className="">
+                                                <div className="" style={{ display: (k > 1 && (slide?.showMore==undefined || slide?.showMore==false ))? 'none ' : 'block' }}>
                                                     <div className="d-flex p-0">
                                                         <div className="col-1 p-0 wid30">
                                                             {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)}
@@ -636,7 +648,7 @@ const ImageViewPanel = (props: any) => {
                                                                 {fbComment?.AuthorName} - {fbComment?.Created}
                                                              
                                                                 <span className='d-flex'>
-                                                                    <Popover withArrow >
+                                                                    <Popover withArrow open={isPopoverReplyOpen== `${index}${k}singleImageView`} onOpenChange={(e, data) => setIsPopoverReplyOpen(`${index}${k}singleImageView`)} >
                                                                         <PopoverTrigger disableButtonEnhancement>
                                                                             <span className="svg__iconbox svg__icon--reply"></span>
                                                                         </PopoverTrigger>
@@ -650,7 +662,7 @@ const ImageViewPanel = (props: any) => {
                                                                             </div>
                                                                             <div className='footer text-end'>
                                                                                 <button className='btnCol btn me-2 btn-primary' onClick={() => PostReplyComment(slide, k)}>Save</button>
-                                                                                <button className='btnCol btn btn-default'  >Cancel</button>
+                                                                                <button className='btnCol btn btn-default'  onClick={()=>setIsPopoverReplyOpen('')} >Cancel</button>
                                                                             </div>
                                                                         </PopoverSurface>
                                                                     </Popover>
@@ -709,6 +721,7 @@ const ImageViewPanel = (props: any) => {
 
 
                                         })}
+                                          { (slide?.Comments != null && slide?.Comments?.length > 2) && <button type="button" className="btn btn-primary btnCol ms-2" onClick={() => changeFunction(true, slide, "showMore")}>See More</button>}
                                     </div>
                                     {commentStatus?.status && commentStatus?.index === index && <div className="align-items-center d-flex" >
                                         <textarea id="txtComment" onChange={(e) => setCommentData(e.target?.value)} className="form-control full-width"></textarea>
@@ -749,7 +762,7 @@ const ImageViewPanel = (props: any) => {
                                             relationship="label" positioning="below"
                                         >
 
-                                            <span onClick={() => openImageSection("fullScreen")} className={`svg__iconbox svg__icon--fullScreen ${checkedImageData?.length <= 1 ? 'siteColor' : ""}`}></span>
+                                            <span onClick={() => openImageSection("fullScreen")} className={`svg__iconbox svg__icon--${checkedImageData?.length <= 1 ? 'FilledfullScreen siteColor' : "fullScreen"}`}></span>
                                            
                                         </Tooltip>
                                         <Tooltip
@@ -758,7 +771,7 @@ const ImageViewPanel = (props: any) => {
                                             relationship="label"
                                             positioning="below"
                                         >
-                                            <span onClick={() => openImageSection("compare2")} className={`svg__iconbox svg__icon--compare2 ${checkedImageData?.length == 2 ? 'siteColor' : ""}`}></span>
+                                            <span onClick={() => openImageSection("compare2")} className={`svg__iconbox svg__icon--${checkedImageData?.length == 2 ? 'Filledcompare2 siteColor ' : "compare2"}`}></span>
                                         </Tooltip>
                                         <Tooltip
                                             withArrow
@@ -766,7 +779,7 @@ const ImageViewPanel = (props: any) => {
                                             relationship="label" positioning="below"
                                         >
 
-                                            <span onClick={() => openImageSection("compareSeveral")} className={`svg__iconbox svg__icon--compareSeveral ${(checkedImageData?.length == 3 || checkedImageData?.length == 4) ? 'siteColor' : ""}`}></span>
+                                            <span onClick={() => openImageSection("compareSeveral")} className={`svg__iconbox svg__icon--${(checkedImageData?.length == 3 || checkedImageData?.length == 4) ? 'FilledcompareSeveral siteColor' : "compareSeveral"}`}></span>
                                         </Tooltip>
                                         <Tooltip
                                             withArrow
@@ -774,7 +787,7 @@ const ImageViewPanel = (props: any) => {
                                             relationship="label" positioning="below"
                                         >
 
-                                            <span onClick={() => openImageSection("viewAll")} className={`svg__iconbox svg__icon--viewAll ${(checkedImageData?.length > 4) ? 'siteColor' : ""}`}></span>
+                                            <span onClick={() => openImageSection("viewAll")} className={`svg__iconbox svg__icon--${(checkedImageData?.length > 4) ? 'FilledviewAll siteColor' : "viewAll"}`}></span>
                                         </Tooltip>
                                         <span onClick={()=>SetHideLeftSection(true)} className="svg__iconbox svg__icon--arrowCollapse"></span>
                                     </div>

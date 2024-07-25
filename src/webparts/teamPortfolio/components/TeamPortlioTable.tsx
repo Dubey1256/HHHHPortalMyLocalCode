@@ -2754,7 +2754,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 500,
-                isColumnVisible: true
+                isColumnVisible: true,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.projectStructerId + " " + row?.ProjectTitle,
@@ -2771,7 +2772,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 70,
-                isColumnVisible: true
+                isColumnVisible: true,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.TaskTypeValue,
@@ -2827,7 +2829,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 size: 130,
                 id: "Admin",
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.Actions,
@@ -2998,7 +3001,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsHelpInformationSarch,
@@ -3013,7 +3017,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsShortDescriptionSearch,
@@ -3028,7 +3033,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsTechnicalExplanationsSearch,
@@ -3043,7 +3049,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsBodySearch,
@@ -3058,7 +3065,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsAdminNotesSearch,
@@ -3073,7 +3081,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsValueAddedSearch,
@@ -3088,7 +3097,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsIdeaSearch,
@@ -3103,7 +3113,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsBackgroundSearch,
@@ -3118,7 +3129,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 80,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.HelpInformationVerified,
@@ -3266,7 +3278,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 id: "descriptionsSearch",
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorKey: "commentsSearch",
@@ -3274,7 +3287,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 id: "commentsSearch",
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorKey: "timeSheetsDescriptionSearch",
@@ -3282,7 +3296,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 id: "timeSheetsDescriptionSearch",
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorKey: "TotalTaskTime",

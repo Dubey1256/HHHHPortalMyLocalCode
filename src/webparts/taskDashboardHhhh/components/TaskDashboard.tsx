@@ -268,7 +268,7 @@ const TaskDashboard = (props: any) => {
                         const data = await web.lists
                             .getById(list?.listId)
                             .items.select(list?.query)
-                            .filter(`(Modified ge '${startDate}') and (TimesheetTitle/Id ne null)`)
+                            .filter(`(Author/Id eq ${currentUserId}) and (Modified ge datetime'${startDate}')`)
                             .getAll();
 
                         data?.forEach((item: any) => {
@@ -1487,7 +1487,8 @@ const TaskDashboard = (props: any) => {
                 currentUserId = user?.AssingedToUserId;
                 setSelectedUser(user);
                 filterCurrentUserTask();
-                currentUserTimeEntry('This Week');
+                loadAllTimeEntry()
+                //currentUserTimeEntry('This Week');
             } else {
                 unSelectUser();
             }
@@ -1970,6 +1971,7 @@ const TaskDashboard = (props: any) => {
 
     }
     const sendAllWorkingTodayTasks = async () => {
+
         let text = '';
         let emailRecipients: any = await workingEmailRecipients();
         let workingTodayEmails = emailRecipients.map((recipient: any) => { return recipient?.Email })
@@ -1985,6 +1987,37 @@ const TaskDashboard = (props: any) => {
         let totalTime = 0;
         let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
         if (confirmation) {
+            todaysDrafTimeEntry=[]
+            if (timesheetListConfig?.length > 0) {
+                let timesheetLists: any = [];
+                let startDate = getStartingDate('Yesterday').toISOString();
+                timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
+    
+                if (timesheetLists?.length > 0) {
+                    const fetchPromises = timesheetLists.map(async (list: any) => {
+                        let web = new Web(list?.siteUrl);
+                        try {
+                            let todayDateToCheck = new Date().setHours(0, 0, 0, 0,)
+                            const data = await web.lists
+                                .getById(list?.listId)
+                                .items.select(list?.query)
+                                .filter(`(Modified ge datetime'${startDate}')`)
+                                .getAll();
+    
+                            data?.forEach((item: any) => {
+                                let entryDate = new Date(item?.Modified).setHours(0, 0, 0, 0)
+                                if (entryDate == todayDateToCheck) {
+                                    todaysDrafTimeEntry?.push(item);
+                                }
+                                item.taskDetails = checkTimeEntrySite(item);
+                            });
+                        } catch (error) {
+                            console.log(error, 'HHHH Time');
+                        }
+                    });
+                    await Promise.all(fetchPromises)
+                }
+            }
             var subject = `Today's Working Tasks of All Team Members: ${Moment(new Date()).zone('Asia/Kolkata').format('DD/MM/YYYY')}`;
             taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
@@ -2134,8 +2167,6 @@ const TaskDashboard = (props: any) => {
             SendEmailFinal(to, subject, sendAllTasks.replaceAll(",", "  "));
 
         }
-
-
     }
 
     //end

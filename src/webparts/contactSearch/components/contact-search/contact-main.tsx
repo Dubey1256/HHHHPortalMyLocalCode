@@ -64,7 +64,8 @@ const ContactMainPage = (props: any) => {
             HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
             siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
             HR_SMARTMETADATA_LISTID: props?.props?.HR_SMARTMETADATA_LISTID,
-            jointSiteUrl: "https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP"
+            SMALSUS_CONTACT_SEARCH_LISTID: props?.props?.SMALSUS_CONTACT_SEARCH_LISTID,
+            jointSiteUrl: props?.props.Context.pageContext._site.absoluteUrl
         }
         if (allSite?.MainSite == true) {
             oldTaskLink = "https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP/SitePages/Contacts-Search-Old.aspx"
@@ -80,7 +81,7 @@ const ContactMainPage = (props: any) => {
     const getSmartMetaData = async () => {
 
         try {
-            let web = new Web(allListId?.jointSiteUrl);
+            let web = new Web(allListId?.siteUrl);
             await web.lists.getById(allListId?.MAIN_SMARTMETADATA_LISTID)
                 .items.getAll().then((smartmetadata: any) => {
                     countryData.current = smartmetadata
@@ -183,7 +184,7 @@ const ContactMainPage = (props: any) => {
             let web = new Web(allListId?.siteUrl);
             await web.lists.getById(allSite?.GMBHSite ? props?.props?.GMBH_CONTACT_SEARCH_LISTID : props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID)
                 .items
-                .select("Id", "Title", "FirstName", "FullName", "SmartCountriesId", "DOJ", "DOE", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
+                .select("Id", "Title", "FirstName", "FullName", "SmartCountriesId", "DOJ", "DOE", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
                 .expand("EmployeeID", "Division", "Author", "Editor", "Institution")
                 .orderBy("Created", true)
                 .getAll().then((data: any) => {
@@ -328,7 +329,7 @@ const ContactMainPage = (props: any) => {
             {
                 cell: ({ row }: any) => (
                     <>
-                        <img className='workmember ' src={`${row.original.Item_x0020_Cover != null && row.original.Item_x0020_Cover.Url != null ? row.original.Item_x0020_Cover.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg'}`} />
+                        <img className='workmember ' src={`${row.original.Item_x0020_Cover != null && row.original.Item_x0020_Cover.Url != null ? row.original.Item_x0020_Cover.Url : `${allListId?.jointSiteUrl}/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg`}`} />
                     </>
                 ),
                 accessorFn: '',

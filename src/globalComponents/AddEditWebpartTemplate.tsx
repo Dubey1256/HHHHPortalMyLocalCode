@@ -143,48 +143,58 @@ const AddEditWebpartTemplate = (props: any) => {
             else if (props?.DashboardPage === true) {
                 await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").orderBy("Created", false).getAll().then(async (data: any) => {
                     let FilteredData = data?.filter((config: any) => config?.Value == DashboardId)[0];
-                    if (props?.DashboardConfigBackUp) {
-                        props.DashboardConfigBackUp.forEach((item: any) => {
-                            if (item?.WebpartId !== undefined && item.WebpartId === UpdatedItem[0].WebpartId) {
-                                Object.keys(UpdatedItem[0]).forEach((key) => {
-                                    if (key in item) {
-                                        item[key] = UpdatedItem[0][key];
-                                        if (key == 'TileName') {
-                                            if (IsShowTileCopy === true)
-                                                item.TileName = item.WebpartTitle.replaceAll(" ", "")
-                                            else if (IsShowTileCopy != true)
-                                                item.TileName = '';
-                                        }
-                                        if (key == 'smartFevId') {
-                                            if (CreatedSmartFavId && item?.IsDashboardFav != true) {
-                                                item[key] = CreatedSmartFavId;
-                                                item['IsDashboardFav'] = true;
+                    if (FilteredData?.Id != 828) {
+                        if (props?.DashboardConfigBackUp) {
+                            props.DashboardConfigBackUp.forEach((item: any) => {
+                                if (item?.WebpartId !== undefined && item.WebpartId === UpdatedItem[0].WebpartId) {
+                                    Object.keys(UpdatedItem[0]).forEach((key) => {
+                                        if (key in item) {
+                                            item[key] = UpdatedItem[0][key];
+                                            if (key == 'TileName') {
+                                                if (IsShowTileCopy === true)
+                                                    item.TileName = item.WebpartTitle.replaceAll(" ", "")
+                                                else if (IsShowTileCopy != true)
+                                                    item.TileName = '';
                                             }
-                                            item['WebpartTitle'] = SmartFavDashboardTitle
+                                            if (key == 'smartFevId') {
+                                                if (CreatedSmartFavId && item?.IsDashboardFav != true) {
+                                                    item[key] = CreatedSmartFavId;
+                                                    item['IsDashboardFav'] = true;
+                                                }
+                                                item['WebpartTitle'] = SmartFavDashboardTitle
+                                            }
+                                            if (key == 'onDropAction')
+                                                item['onDropAction'] = onDropAction;
+                                            else if (item.onDropAction == undefined || item.onDropAction == '')
+                                                item['onDropAction'] = onDropAction;
                                         }
-                                        if (key == 'onDropAction')
-                                            item['onDropAction'] = onDropAction;
-                                        else if (item.onDropAction == undefined || item.onDropAction == '')
-                                            item['onDropAction'] = onDropAction;
-                                    }
-                                });
-                            }
-                            delete item?.UpdatedId
-                        });
+                                    });
+                                }
+                                delete item?.UpdatedId
+                            });
+                        }
+                        await web.lists.getById(props?.props?.AdminConfigurationListId).items.getById(FilteredData?.Id).update({ Title: FilteredData?.Title, Configurations: JSON.stringify(props?.DashboardConfigBackUp) })
+                            .then(async (res: any) => {
+                                onDropAction = [];
+                                CreatedSmartFavId = undefined
+                                SmartFavDashboardTitle = undefined;
+                                setNewItem([]);
+                                props?.CloseConfigPopup(true)
+                                if (ContextData != undefined && ContextData?.callbackFunction != undefined)
+                                    ContextData?.callbackFunction(false);
+                            }).catch((err: any) => {
+                                console.log(err);
+                            })
                     }
-                    await web.lists.getById(props?.props?.AdminConfigurationListId).items.getById(FilteredData?.Id).update({ Title: FilteredData?.Title, Configurations: JSON.stringify(props?.DashboardConfigBackUp) })
-                        .then(async (res: any) => {
-                            onDropAction = [];
-                            CreatedSmartFavId = undefined
-                            SmartFavDashboardTitle = undefined;
-                            setNewItem([]);
-                            props?.CloseConfigPopup(true)
-                            if (ContextData != undefined && ContextData?.callbackFunction != undefined)
-                                ContextData?.callbackFunction(false);
-                        }).catch((err: any) => {
-                            console.log(err);
-                        })
-
+                    else {
+                        onDropAction = [];
+                        CreatedSmartFavId = undefined
+                        props.EditItem.WebpartTitle = SmartFavDashboardTitle;
+                        setNewItem([]);
+                        props?.CloseConfigPopup(true);
+                        if (ContextData != undefined && ContextData?.callbackFunction != undefined)
+                            ContextData?.callbackFunction(false);
+                    }
                 }).catch((err: any) => {
                     console.log(err);
                 })
@@ -1142,12 +1152,13 @@ const AddEditWebpartTemplate = (props: any) => {
                                                 </Col>
                                             </Row>
                                             <Row className="Metadatapannel">
-                                                {items.DataSource != 'TimeSheet' &&
-                                                    <Col sm="12" md="12" lg="12">
-                                                        <div className="togglecontent mt-1">
-                                                            <TeamSmartFilter portfolioColor={portfolioColor} ContextValue={props?.props} smartFiltercallBackData={smartFiltercallBackData} webPartTemplateSmartFilter={true} IsSmartfavoriteId={props?.EditItem?.smartFevId ? props?.EditItem?.smartFevId : ""} />
-                                                        </div>
-                                                    </Col>}
+                                                {/* {items.DataSource != 'TimeSheet' && */}
+                                                <Col sm="12" md="12" lg="12">
+                                                    <div className="togglecontent mt-1">
+                                                        <TeamSmartFilter portfolioColor={portfolioColor} ContextValue={props?.props} smartFiltercallBackData={smartFiltercallBackData} webPartTemplateSmartFilter={true} IsSmartfavoriteId={props?.EditItem?.smartFevId ? props?.EditItem?.smartFevId : ""} />
+                                                    </div>
+                                                </Col>
+                                                {/* } */}
                                             </Row>
                                         </div >
                                     </>

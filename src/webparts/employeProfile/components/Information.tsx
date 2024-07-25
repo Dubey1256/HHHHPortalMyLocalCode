@@ -102,20 +102,20 @@ const Information = (props: any) => {
                     </div>
                     <div className="alignCenter mb-3">
                         <span className="f-20">
-                            <img title="Country" src="/sites/HHHH/GmBH/SiteCollectionImages/ICONS/24/Website.svg" data-themekey="#" />
+                            <img title="Country" src={`${props?.allListId?.jointSiteUrl}/GmBH/SiteCollectionImages/ICONS/24/Website.svg`} data-themekey="#" />
                         </span>
                         <span className="full_widivh ms-2 mt-1 ">{EmployeeData?.SmartCountries?.length > 0 ? EmployeeData?.SmartCountries[0]?.Title : null}</span>
                     </div>
 
                     <div className="alignCenter mb-3">
                         <span className="f-20">
-                            <img title="Fedral State" src="/sites/HHHH/GmBH/SiteCollectionImages/ICONS/24/state.svg" data-themekey="#" />
+                            <img title="Fedral State" src={`${props?.allListId?.jointSiteUrl}/GmBH/SiteCollectionImages/ICONS/24/state.svg`} data-themekey="#" />
                         </span>
                         <span className="full_widivh ms-2 mt-1 "></span>
                     </div>
                     <div className="alignCenter mb-3">
                         <span className="f-20">
-                            <img title="Adivress" src="/sites/HHHH/GmBH/SiteCollectionImages/ICONS/24/location.svg" data-themekey="#" />
+                            <img title="Adivress" src={`${props?.allListId?.jointSiteUrl}/GmBH/SiteCollectionImages/ICONS/24/location.svg`} data-themekey="#" />
                         </span>
                         <span className="full_widivh ms-2 mt-1 ">
                             {EmployeeData?.WorkAdivress}
@@ -126,13 +126,13 @@ const Information = (props: any) => {
                     <div className="siteBdrBottom sectionHead siteColor pe-0 mb-2">Bank Information</div>
                     <div className="alignCenter mb-3">
                         <span className="f-20">
-                            <img title="BIC" src="/sites/HHHH/GmBH/SiteCollectionImages/ICONS/24/BIC.svg" data-themekey="#" />
+                            <img title="BIC" src={`${props?.allListId?.jointSiteUrl}/GmBH/SiteCollectionImages/ICONS/24/BIC.svg`} data-themekey="#" />
                         </span>
                         <span className="full_widivh ms-2 mt-1 ">{hrUpdateData?.BIC}</span>
                     </div>
                     <div className="alignCenter mb-3">
                         <span className="f-20">
-                            <img title="IBAN" src="/sites/HHHH/GmBH/SiteCollectionImages/ICONS/24/IBAN.svg" data-themekey="#" />
+                            <img title="IBAN" src={`${props?.allListId?.jointSiteUrl}/GmBH/SiteCollectionImages/ICONS/24/IBAN.svg`} data-themekey="#" />
                         </span>
                         <span className="full_widivh ms-2 mt-1 ">{hrUpdateData?.IBAN}</span>
                     </div>

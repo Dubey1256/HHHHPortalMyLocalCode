@@ -15,12 +15,14 @@ import { IContactSearchProps } from './components/IContactSearchProps';
 export interface IContactSearchWebPartProps {
   description: string;
   ContractListID:'',
-  HHHHContactListId:'0fb52a5f-e68a-48c4-9d42-99c81fc58f85',
+  HHHHContactListId:'',
   HHHHInstitutionListId:'',
-  MAIN_SMARTMETADATA_LISTID:'0af5c538-1190-4fe5-8644-d01252e79d4b',
+  MAIN_SMARTMETADATA_LISTID:'',
   MAIN_HR_LISTID:'',
   GMBH_CONTACT_SEARCH_LISTID:'',
   HR_EMPLOYEE_DETAILS_LIST_ID:'',
+  SMALSUS_CONTACT_SEARCH_LISTID:'',
+  SitePagesList:''
 }
 export default class ContactSearchWebPart extends BaseClientSideWebPart<IContactSearchWebPartProps> {
   private _isDarkTheme: boolean = false;
@@ -32,17 +34,18 @@ export default class ContactSearchWebPart extends BaseClientSideWebPart<IContact
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         Context: this.context,
-        ContractListID:'',
+        ContractListID:this.properties.ContractListID,
         HHHHContactListId:this.properties.HHHHContactListId,
         HHHHInstitutionListId:this.properties.HHHHInstitutionListId,
         MAIN_SMARTMETADATA_LISTID:this.properties.MAIN_SMARTMETADATA_LISTID,
         MAIN_HR_LISTID:this.properties.MAIN_HR_LISTID,
         GMBH_CONTACT_SEARCH_LISTID:this.properties.GMBH_CONTACT_SEARCH_LISTID,
         HR_EMPLOYEE_DETAILS_LIST_ID:this.properties.HR_EMPLOYEE_DETAILS_LIST_ID,
+        SMALSUS_CONTACT_SEARCH_LISTID:this.properties.SMALSUS_CONTACT_SEARCH_LISTID,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.loginName,
-        SitePagesList: this.properties.HR_EMPLOYEE_DETAILS_LIST_ID,
+        SitePagesList: this.properties.SitePagesList,
         siteUrl:this.context.pageContext.web.absoluteUrl
       }
     );
@@ -138,6 +141,9 @@ export default class ContactSearchWebPart extends BaseClientSideWebPart<IContact
                 }),
                 PropertyPaneTextField('HR_EMPLOYEE_DETAILS_LIST_ID', {
                   label: "Hr Employee Details ListId"
+                }),
+                PropertyPaneTextField('SMALSUS_CONTACT_SEARCH_LISTID', {
+                  label: "Smalsus Contact Search ListId"
                 }),
                 PropertyPaneTextField('ContractListID', {
                   label: "ContractListID"
