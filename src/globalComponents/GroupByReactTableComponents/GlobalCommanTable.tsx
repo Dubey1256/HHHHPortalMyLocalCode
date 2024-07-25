@@ -579,7 +579,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     if (updatedSortDec.placeholder != "" && updatedSortDec.placeholder != undefined) {
                         updatedSelectedFilterPannelData[updatedSortDec.id] = {
                             [updatedSortDec.id]: updatedSortDec.id,
-                            Selected: updatedSortDec.isColumnVisible,
+                            Selected: updatedSortDec.isAdvanceSearchVisible,
                             lebel: updatedSortDec.placeholder
                         };
                     }

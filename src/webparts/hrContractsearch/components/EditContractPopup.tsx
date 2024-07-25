@@ -135,7 +135,7 @@ const EditContractPopup = (props: any) => {
                         <div className="footer-right">
 
                             <a target="_blank" className="mx-2" data-interception="off"
-                                href={`${props.AllListId?.siteUrl}/Lists/${props?.props?.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
+                                href={`${props.AllListId?.siteUrl}/Lists/Contracts/EditForm.aspx?ID=${EditData.ID}`}>
                                 Open Out-Of-The-Box Form
                             </a>
                             <span >

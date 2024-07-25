@@ -204,6 +204,10 @@ const Header = () => {
                     )
                   ))}
                 </div>
+                {DashboardId == '27' && <div className="row pt-4">
+                  {ContextData?.CurrentUserInfo != undefined && ContextData?.CurrentUserInfo?.Title != undefined && <h5 className="d-inline-block p-0 px-2"> {`${ContextData?.CurrentUserInfo?.Title} (${ContextData?.CurrentUserInfo?.UserGroup?.Title}) - WorkingTasks (${ContextData?.CurrentUserWorkingToday?.length}), Projects (${ContextData?.CurrentUserProjectData?.length})`}</h5>}
+                </div>
+                }
               </>
             )}
           </div>
