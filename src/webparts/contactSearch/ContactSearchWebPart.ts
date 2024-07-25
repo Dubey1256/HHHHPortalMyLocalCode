@@ -21,6 +21,7 @@ export interface IContactSearchWebPartProps {
   MAIN_HR_LISTID:'',
   GMBH_CONTACT_SEARCH_LISTID:'',
   HR_EMPLOYEE_DETAILS_LIST_ID:'',
+  SMALSUS_CONTACT_SEARCH_LISTID:'',
   SitePagesList:''
 }
 export default class ContactSearchWebPart extends BaseClientSideWebPart<IContactSearchWebPartProps> {
@@ -40,6 +41,7 @@ export default class ContactSearchWebPart extends BaseClientSideWebPart<IContact
         MAIN_HR_LISTID:this.properties.MAIN_HR_LISTID,
         GMBH_CONTACT_SEARCH_LISTID:this.properties.GMBH_CONTACT_SEARCH_LISTID,
         HR_EMPLOYEE_DETAILS_LIST_ID:this.properties.HR_EMPLOYEE_DETAILS_LIST_ID,
+        SMALSUS_CONTACT_SEARCH_LISTID:this.properties.SMALSUS_CONTACT_SEARCH_LISTID,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.loginName,
@@ -139,6 +141,9 @@ export default class ContactSearchWebPart extends BaseClientSideWebPart<IContact
                 }),
                 PropertyPaneTextField('HR_EMPLOYEE_DETAILS_LIST_ID', {
                   label: "Hr Employee Details ListId"
+                }),
+                PropertyPaneTextField('SMALSUS_CONTACT_SEARCH_LISTID', {
+                  label: "Smalsus Contact Search ListId"
                 }),
                 PropertyPaneTextField('ContractListID', {
                   label: "ContractListID"
