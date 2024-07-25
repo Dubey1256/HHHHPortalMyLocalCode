@@ -1152,12 +1152,13 @@ const AddEditWebpartTemplate = (props: any) => {
                                                 </Col>
                                             </Row>
                                             <Row className="Metadatapannel">
-                                                {items.DataSource != 'TimeSheet' &&
-                                                    <Col sm="12" md="12" lg="12">
-                                                        <div className="togglecontent mt-1">
-                                                            <TeamSmartFilter portfolioColor={portfolioColor} ContextValue={props?.props} smartFiltercallBackData={smartFiltercallBackData} webPartTemplateSmartFilter={true} IsSmartfavoriteId={props?.EditItem?.smartFevId ? props?.EditItem?.smartFevId : ""} />
-                                                        </div>
-                                                    </Col>}
+                                                {/* {items.DataSource != 'TimeSheet' && */}
+                                                <Col sm="12" md="12" lg="12">
+                                                    <div className="togglecontent mt-1">
+                                                        <TeamSmartFilter portfolioColor={portfolioColor} ContextValue={props?.props} smartFiltercallBackData={smartFiltercallBackData} webPartTemplateSmartFilter={true} IsSmartfavoriteId={props?.EditItem?.smartFevId ? props?.EditItem?.smartFevId : ""} />
+                                                    </div>
+                                                </Col>
+                                                {/* } */}
                                             </Row>
                                         </div >
                                     </>
