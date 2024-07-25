@@ -1,9 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
 import JoditEditor from 'jodit-react';
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import Collapse from "bootstrap/js/dist/collapse";
 
 export default function HtmlEditorCard(Props: any) {
     const callBack = Props?.HtmlEditorStateChange;
@@ -16,6 +13,9 @@ export default function HtmlEditorCard(Props: any) {
         uploader: {
             insertImageAsBase64URI: true
         },
+        buttons: [
+            'bold', 'italic', 'underline', 'eraser','|', 'ul','ol','|','font','fontsize','|','table', 'image','link','|','undo','redo','preview','|','source',
+        ],
         extraButtons: [
             {
                 name: 'insertAccordion',

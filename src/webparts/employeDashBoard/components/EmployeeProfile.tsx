@@ -10,7 +10,11 @@ import { map } from "jquery";
 var taskUsers: any;
 let GroupByUsers: any = [];
 let AllUsers: any = [];
-let AllMasterTasks: any[] = [];
+let AllMasterTasks: any = [];
+let AllProjectData: any = [];
+let CurrentUserProjectData: any = [];
+let CurrentUserWorkingToday: any = [];
+let CurrentUserInfo: any = {};
 var currentUserData: any = {};
 let DashboardConfig: any = [];
 let DashboardConfigBackUp: any = [];
@@ -42,6 +46,7 @@ const EmployeProfile = (props: any) => {
   const [timesheetListConfig, setTimesheetListConfig] = React.useState<any>()
   const [smartmetaDataDetails, setSmartmetaDataDetails] = React.useState([])
   const [IsCallContext, setIsCallContext] = React.useState(false)
+  const [LoadHeaderSection, setLoadHeaderSection] = React.useState<any>('')
   try {
     $("#spPageCanvasContent").removeClass();
     $("#spPageCanvasContent").addClass("hundred");
@@ -240,10 +245,54 @@ const EmployeProfile = (props: any) => {
       return ''; // or any other default value you prefer
     }
   }
-
+  const LoggedinUserInfo = () => {
+    CurrentUserProjectData = [];
+    CurrentUserWorkingToday = [];
+    let currentDate: any = new Date();
+    currentDate.setDate(currentDate.getDate());
+    currentDate.setHours(0, 0, 0, 0);
+    AllProjectData?.map((item: any) => {
+      if (item?.ResponsibleTeam != undefined && item?.ResponsibleTeam?.length) {
+        item?.ResponsibleTeam?.map((Assigned: any) => {
+          if (currentUserId != undefined && currentUserId == Assigned?.Id) {
+            CurrentUserProjectData.push(item);
+          }
+        })
+      }
+    })
+    taskUsers?.map((item: any) => {
+      if (currentUserId != undefined && currentUserId == item?.AssingedToUser?.Id) {
+        CurrentUserInfo = item;
+      }
+    })
+    let FilteredTask: any = allData.filter((person: any) => person.WorkingAction != undefined && person.WorkingAction != '' && person.WorkingAction != null)
+    if (FilteredTask != undefined && FilteredTask?.length) {
+      FilteredTask?.map((items: any) => {
+        if (items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
+          for (const workingDetails of items.WorkingAction ?? []) {
+            if (workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title == "WorkingDetails" && workingDetails?.InformationData.length > 0) {
+              for (const workingTask of workingDetails?.InformationData ?? []) {
+                if (workingTask?.WorkingMember != undefined && workingTask?.WorkingMember?.length > 0) {
+                  for (const assign of workingTask?.WorkingMember ?? []) {
+                    let WorkingDate: any = Moment(workingTask?.WorkingDate, 'DD/MM/YYYY');
+                    WorkingDate?._d.setHours(0, 0, 0, 0);
+                    if (assign != undefined && assign?.Id == currentUserId && WorkingDate?._d.getTime() == currentDate?.getTime() && !isTaskItemExists(CurrentUserWorkingToday, items)) {
+                      CurrentUserWorkingToday.push(items);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      })
+    }
+    setLoadHeaderSection(true);
+  }
   const loadMasterTask = () => {
     globalCommon.GetServiceAndComponentAllData(props?.props).then((data: any) => {
       AllMasterTasks = data?.AllData;
+      AllProjectData = data?.ProjectData;
       AllMasterTasks = AllMasterTasks.concat(data?.ProjectData)
       AllMasterTasks?.map((items: any) => {
         items.descriptionsSearch = '';
@@ -408,7 +457,7 @@ const EmployeProfile = (props: any) => {
           getChilds(item, taskUsers);
           GroupByUsers.push(item);
         }
-        if (currentUserId == item?.AssingedToUser?.Id && currentUserId != undefined) {
+        if (currentUserId != undefined && currentUserId == item?.AssingedToUser?.Id) {
           currentUserData = item;
           if (item?.Approver?.length > 0 && item?.Approver?.length != undefined && item?.Approver?.length != null)
             mailApprover = item?.Approver[0];
@@ -1143,6 +1192,7 @@ const EmployeProfile = (props: any) => {
           }
           allData.push(items);
         })
+        LoggedinUserInfo();
         smartTimeUseLocalStorage()
         MakeFinalData()
       }).catch((err: any) => {
@@ -1150,6 +1200,7 @@ const EmployeProfile = (props: any) => {
       });
     }
     else {
+      LoggedinUserInfo();
       MakeFinalData()
     }
 
@@ -1158,9 +1209,10 @@ const EmployeProfile = (props: any) => {
     if (Type == "OtherUserSelected") {
       currentUserId = UserId;
       taskUsers?.map((item: any) => {
-        if (currentUserId == item?.AssingedToUser?.Id && currentUserId != undefined)
+        if (currentUserId != undefined && currentUserId == item?.AssingedToUser?.Id)
           currentUserData = item;
       })
+      LoggedinUserInfo();
     }
     LoadAdminConfiguration(true, Type)
   }
@@ -1683,8 +1735,10 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, currentUserId: currentUserId, todaysDrafTimeEntry: todaysDrafTimeEntry, CurrentConfigItem: CurrentConfigItem, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, DashboardValue: DashboardValue, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
-        <div> <Header /></div>
+      <myContextValue.Provider value={{ ...myContextValue, CurrentUserProjectData: CurrentUserProjectData, CurrentUserInfo: CurrentUserInfo, CurrentUserWorkingToday: CurrentUserWorkingToday, currentUserId: currentUserId, todaysDrafTimeEntry: todaysDrafTimeEntry, CurrentConfigItem: CurrentConfigItem, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, DashboardValue: DashboardValue, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+        <div>
+          {LoadHeaderSection != undefined && (<Header />)}
+        </div>
         {IsCallContext == true && <TaskStatusTbl />}
       </myContextValue.Provider >
     </>
