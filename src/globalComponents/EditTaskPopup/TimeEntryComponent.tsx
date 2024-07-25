@@ -956,7 +956,13 @@ const TimeEntryPopup = (item: any) => {
         });
 
       });
-
+      finalData1?.forEach((val:any)=>{
+        val?.subRows?.forEach((childs:any)=>{
+          if(CurntUserId == '32' || CurntUserId == '49'){
+            childs.Status = "Draft"
+          }
+        })
+      })
       backupEdit = finalData1;
       setData(finalData1);
       setBackupData(finalData1);
