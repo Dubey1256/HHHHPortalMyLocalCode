@@ -233,12 +233,12 @@ const CommentBoxComponent = (commentData: any) => {
                                     onChange={handleChangeComment}
                                 >
                                     <div className="Task-panel d-flex justify-content-between">
-                                        <div className="d-flex">
+                                    <div className="">
                                             {ApprovalStatus ?
                                                 <div>
 
                                                     <div className={isCurrentUserApprover ? "alignCenter mt-1" : "alignCenter Disabled-Link mt-1"}>
-                                                        <span className="MR5">
+                                                        <span className="d-flex justify-content-between align-items-center">
                                                             <span title="Rejected" onClick={() => SmartLightUpdate(i, "Reject")}
                                                                 className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
                                                             >
@@ -247,21 +247,23 @@ const CommentBoxComponent = (commentData: any) => {
                                                             </span>
                                                             <span title="Approved" onClick={() => SmartLightUpdate(i, "Approve")} className={obj.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
                                                             </span>
-                                                        </span>
-                                                    </div>
-
-                                                </div>
-                                                : null
-                                            }
-                                             {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
-                                                <>
+                                                            {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
+                                                      <>
                                                    
                                                             <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(i, obj)}>
                                                             {obj?.ApproverData[obj?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={obj?.ApproverData[obj.ApproverData?.length - 1]?.Title}><span><a href={`${Context.pageContext.web.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${obj.ApproverData[obj.ApproverData?.length - 1]?.Id}&Name=${obj.ApproverData[obj.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={obj.ApproverData[obj.ApproverData?.length - 1]?.Title}> <img className='imgAuthor' src={obj.ApproverData[obj.ApproverData?.length - 1]?.ImageUrl} /></a></span></a></span>
                                                       
-                                                </> :
+                                                    </> :
                                                 null
                                             }
+                                                        </span>
+                                                    </div>
+                                                    
+
+                                                </div>
+                                                : null
+                                            }
+                                             
                                         </div>
 
                                         <div>

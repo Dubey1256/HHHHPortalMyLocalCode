@@ -1823,7 +1823,7 @@ const TaskStatusTbl = (Tile: any) => {
   const customTableHeaderButtons = (config: any) => {
     return (
       <span className="alignCenter CustomHeaderIcon">
-        {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
+        {IsShowConfigBtn && config?.IsEditWebpart != false && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
         {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink"
           target="_blank" data-interception="off" title="Create New Task" href={`${ContextData?.siteUrl}/SitePages/CreateTask.aspx`}>
           <span className="hreflink alignIcon svg__iconbox svg__icon--CNTask empBg"></span>
@@ -1903,7 +1903,7 @@ const TaskStatusTbl = (Tile: any) => {
                   <div className="Alltable" draggable={true} onDragStart={(e) => handleDragStart(e, config, '')} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
                       <GlobalCommanTable wrapperHeight="300px" showHeader={true}
-                        showingDataCoustom={`${config?.WebpartTitle} (${config?.Tasks?.length})`}
+                        showingDataCoustom={`${config?.WebpartTitle} ${config?.ShowTitleInHeader == true ? ' - ' + ContextData?.CurrentUserInfo?.Title : ''} (${config?.Tasks?.length})`}
                         customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                         pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                     )}
@@ -2037,7 +2037,7 @@ const TaskStatusTbl = (Tile: any) => {
                       <section className="bg-light border col mb-3 smartFilter">
                         <details open className="p-0 m-0">
                           <summary>
-                            <span className="fw-semibold f-15 fw-semibold">Team members</span>
+                            <span className="fw-semibold f-15 fw-semibold">{config?.WebpartTitle}</span>
                           </summary>
                           <hr style={{ width: "98%", marginLeft: "30px" }}></hr>
                           <div style={{ display: "block" }}>

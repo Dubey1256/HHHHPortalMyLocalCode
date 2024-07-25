@@ -101,7 +101,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
                 accessorFn: (row: any) => row?.WebpartTitle,
                 cell: ({ row }: any) => (
                     <div className="alignCenter">
-                        {row?.original?.WebpartTitle}
+                        {row?.original?.WebpartTitle} {row?.original?.ShowTitleInHeader == true ? ' - {User Name}' : ''}
                     </div>
                 ),
                 id: "WebpartTitle",
@@ -143,7 +143,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
             {
                 cell: ({ row }) => (
                     <>
-                        {row?.original?.IsTemplate != true && <div className='d-flex pull-right text-end'>
+                        {row?.original?.IsTemplate != true && row?.original?.IsEditWebpart != false && <div className='d-flex pull-right text-end'>
                             <a className="me-1" data-bs-toggle="tooltip" data-bs-placement="auto" title={'Edit ' + `${row?.original?.WebpartTitle}`}  >
                                 {" "}
                                 <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditTemplate(row?.original)} ></span>
