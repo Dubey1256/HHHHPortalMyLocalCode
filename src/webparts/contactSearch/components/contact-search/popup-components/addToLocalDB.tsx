@@ -52,7 +52,7 @@ const addToLocalDBComponent = (props: any) => {
                             let staffIdString: any;
                             if (items.isSelect == true) {
                                 const taggedSite = async (Item: any, taggedSite: any) => {
-                                    let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+                                    let web = new Web(`${myContextData2?.allListId?.jointSiteUrl}/HR`);
                                     let data = await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.select('Title,Id,staffID0').orderBy('staffID0', false).top(1).get();
                                     let tempStaffIdLength: number = 1;
                                     let tempStaffId: number = 1;
@@ -189,12 +189,12 @@ const addToLocalDBComponent = (props: any) => {
 
                                         }
                                         try {
-                                            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+                                            let web = new Web(`${myContextData2?.allListId?.jointSiteUrl}/HR`);
                                             await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.add(addData).then(async (e) => {
                                                 console.log("request success", e);
-                                                const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
+                                                const web = new Web(myContextData2?.allListId?.jointSiteUrl);
                                                 await web.lists
-                                                    .getById("6DD8038B-40D2-4412-B28D-1C86528C7842")
+                                                    .getById(myContextData2?.allListId?.MAIN_HR_LISTID)
                                                     .items.add({
                                                         Title: (Item?.FirstName) + " " + (Item?.Title),
                                                         SmartContactId: Item.Id
@@ -337,7 +337,7 @@ const addToLocalDBComponent = (props: any) => {
                                         }
 
                                         try {
-                                            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
+                                            let web = new Web(`${myContextData2?.allListId?.jointSiteUrl}/GmBH`);
                                             await web.lists.getById(myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.add(addData).then((e) => {
                                                 console.log("request success", e);
                                                 props.callBack()
@@ -364,8 +364,8 @@ const addToLocalDBComponent = (props: any) => {
             //     alert("This Contact already exists on SMALSUS site")
             // } else {
             siteArray.push('SMALSUS')
-            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
-            await web.lists.getById('edc879b9-50d2-4144-8950-5110cacc267a').items.getById(props.data[0].Id).update(
+            let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+            await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.getById(props.data[0].Id).update(
                 {
                     Site: {
                         results: siteArray
@@ -377,8 +377,7 @@ const addToLocalDBComponent = (props: any) => {
                         let staffIdString: any;
                         if (items.isSelect == true) {
                             const taggedSite = async (Item: any, taggedSite: any) => {
-
-                                let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/Smalsus');
+                                let web = new Web(`${myContextData2?.allListId?.jointSiteUrl}/Smalsus`);
                                 let data = await web.lists.getById('69e59417-fa02-4431-9d7d-100560cf3aff').items.select('Title,Id,staffID0').orderBy('staffID0', false).top(1).get();
                                 let tempStaffIdLength: number = 1;
                                 let tempStaffId: number = 1;
@@ -406,7 +405,7 @@ const addToLocalDBComponent = (props: any) => {
                                 }
                                 if (taggedSite == 'SMALSUS') {
                                     try {
-                                        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/Smalsus');
+                                        let web = new Web(`${myContextData2?.allListId?.jointSiteUrl}/Smalsus`);
                                         await web.lists.getById('69e59417-fa02-4431-9d7d-100560cf3aff').items.add({
                                             Title: (Item.Title ? Item.Title : ''),
                                             FirstName: (Item.FirstName ? Item.FirstName : ''),

@@ -121,7 +121,7 @@ const BackgroundCommentComponent = (Props: any) => {
                 Type: "EODReport",
                 isEodTask:false,
                 Title: taskInfo?.Title,
-                ProjectID: taskInfo?.Project.Id,
+                ProjectID: taskInfo?.Project?.Id,
                 ProjectName: taskInfo?.Project?.Title,
                 Achieved: EODAchiviedComment,
                 Pending: EODPendingComment,
@@ -131,6 +131,7 @@ const BackgroundCommentComponent = (Props: any) => {
             setBackgroundComments(BackgroundComments)
             setEODAchiviedComment('')
             setEODPendingComment('')
+            setOneEODReport(false)
             updateCommentFunction(BackgroundComments, "OffshoreComments");
         } else {
             alert("Please Enter Your Comment First!")
@@ -272,8 +273,14 @@ const BackgroundCommentComponent = (Props: any) => {
             if (editTypeUsedFor === "Achieved" || editTypeUsedFor === "Pending") {
                 if (editTypeUsedFor === "Achieved") {
                     BackgroundComments[CurrentIndex].Achieved = UpdateCommentData;
+                    BackgroundComments[CurrentIndex].Created= Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+                    BackgroundComments[CurrentIndex].AuthorImage=currentUserData[0]?.Item_x0020_Cover != null ? currentUserData[0]?.Item_x0020_Cover?.Url : null,
+                    BackgroundComments[CurrentIndex].AuthorName=currentUserData[0]?.Title != undefined ? currentUserData[0]?.Title : Context?.pageContext?._user.displayName
                 } else {
                     BackgroundComments[CurrentIndex].Pending = UpdateCommentData;
+                    BackgroundComments[CurrentIndex].Created= Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+                    BackgroundComments[CurrentIndex].AuthorImage=currentUserData[0]?.Item_x0020_Cover != null ? currentUserData[0]?.Item_x0020_Cover?.Url : null,
+                    BackgroundComments[CurrentIndex].AuthorName=currentUserData[0]?.Title != undefined ? currentUserData[0]?.Title : Context?.pageContext?._user.displayName
                 }
                 updateCommentFunction(BackgroundComments, "OffshoreComments");
                 setUpdateCommentData("");
@@ -414,7 +421,7 @@ const BackgroundCommentComponent = (Props: any) => {
                     Post Comment
                 </button>
                 {/* Code by Udbhav realted EOD report */}
-                {currentUserData[0]?.UserGroup?.Title=="Portfolio Lead Team" && 
+                {(currentUserData[0]?.UserGroup?.Title=="Portfolio Lead Team" ||currentUserData[0]?.UserGroup?.Title=="Smalsus Lead Team"||currentUserData[0]?.UserGroup?.Title=="Junior Task Management") && 
                <>
                <p className="siteColor mb-0">EOD Report</p>
                 {BackgroundComments != undefined && BackgroundComments.length > 0 ? BackgroundComments.map((dataItem: any, Index: any) => {

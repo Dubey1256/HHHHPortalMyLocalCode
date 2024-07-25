@@ -116,11 +116,11 @@ const CreateContactComponent = (props: any) => {
                         if(myContextData2?.allSite?.HrSite){
                             let staffIdData: any;
                             let staffIdString: any;
-                              let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+                              let web = new Web(`${myContextData2?.allListId?.jointSiteUrl}/HR`);
                                     let Hrdata = await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.select('Title,Id,staffID0').orderBy('staffID0', false).top(1).get();
                                     let tempStaffIdLength: number = 1;
                                     let tempStaffId: number = 1;
-                                    if (Hrdata[0].staffID0 != undefined) {
+                                    if (Hrdata[0]?.staffID0 != undefined) {
                                         tempStaffId = Hrdata[0].staffID0 + 1;
                                         tempStaffIdLength = (tempStaffId.toString()).length;
                                         staffIdData = (Hrdata[0].staffID0 + 1);
@@ -170,7 +170,6 @@ const CreateContactComponent = (props: any) => {
                                 Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
                                 FirstName: searchKey.FirstName[0],
                                 FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
-                               
                                 SmartContactId: data?.data?.Id
                             }
 
