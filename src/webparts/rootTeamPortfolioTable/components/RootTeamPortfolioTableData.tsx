@@ -7,7 +7,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import { FaCompressArrowsAlt, FaFilter, } from "react-icons/fa";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
-import InfoIconsToolTip from "../../../globalComponents/InfoIconsReactPopperToolTip/InfoIconsToolTip";
+import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
