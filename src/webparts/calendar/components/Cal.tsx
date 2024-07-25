@@ -507,13 +507,12 @@ const Apps = (props: any) => {
             windowEndDate = createenddate;
           }
         } else if (repeatInstance && repeatInstance > 0) {
-          let repeatInstanceEndDate =new Date(recurrenceData?.EventDate);
+          let repeatInstanceEndDate = new Date(recurrenceData?.EventDate);
           repeatInstanceEndDate.setHours(0, 0, 0, 0);
-          if(recurrenceData?.RecurrenceData?.includes('daily')){
-          repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() + repeatInstance);
+          if (recurrenceData?.RecurrenceData?.includes('daily')) {
+            repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() + repeatInstance);
           }
-          repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() + repeatInstance);
-          repeatInstanceEndDate.setHours(0, 0, 0, 0);
+          repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() - 1); // Subtract one day
           windowEndDate = repeatInstanceEndDate;
         }
         else {
@@ -584,57 +583,37 @@ const Apps = (props: any) => {
 
 
   function handleDailyRecurrence(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any, repeatInstance: any) {
-    const dayFrequency = parseInt(frequency?.dayFrequency != undefined ? frequency?.dayFrequency : 1);
+    const dayFrequency = parseInt(frequency.dayFrequency);
+    const nextDate = new Date(currentDate);
+    nextDate.setDate(nextDate.getDate() + 1);
+    currentDate.setHours(0, 0, 0, 0);
     let count = 0;
+    let result = '';
+    if (frequency?.weekday == 'TRUE') {
+      let AllWeekDaysOfWeek = getWeekDays(nextDate)
+      AllWeekDaysOfWeek?.map((DayOfWeek: any) => {
 
-    if (frequency?.weekday === 'TRUE') {
-      // Function to get the next weekday date
-      const getNextWeekday = (date: any) => {
-        let nextDate = new Date(date);
-        nextDate.setDate(date.getDate() + 1);
-        while (nextDate.getDay() === 0 || nextDate.getDay() === 6) { // Skip Sunday (0) and Saturday (6)
-          nextDate.setDate(nextDate.getDate() + 1);
+        const endDate = new Date(windowEndDate);
+        if (new Date(eventDetails?.EventDate).setHours(0, 0, 0, 0) <= new Date(DayOfWeek).setHours(0, 0, 0, 0) && new Date(DayOfWeek).setHours(0, 0, 0, 0) < endDate.setDate(endDate.getDate() + 1)) {
+          const event = eventDataForBinding(eventDetails, DayOfWeek);
+          AllEvents.push(event);
+          dates.push(new Date(DayOfWeek));
+        } else if (new Date(DayOfWeek).setHours(0, 0, 0, 0) >= new Date(windowEndDate).setHours(0, 0, 0, 0)) {
+          result = 'break';
         }
-        return nextDate;
-      };
+      })
 
-      while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
-        currentDate = getNextWeekday(currentDate);
-        if (new Date(currentDate).setHours(0, 0, 0, 0) >= windowEndDate) break;
-
-        const event = eventDataForBinding(eventDetails, currentDate);
-        AllEvents.push(event);
-        dates.push(new Date(currentDate));
-        count++;
-      }
-
-      // Add the next date after windowEndDate
-      let nextDate: any = currentDate;
-      nextDate.setDate(nextDate.getDate() + dayFrequency);
-      const event = eventDataForBinding(eventDetails, nextDate);
-      AllEvents.push(event);
-      dates.push(new Date(nextDate));
     } else {
       while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
         currentDate.setDate(currentDate.getDate() + dayFrequency);
-        if (new Date(currentDate).setHours(0, 0, 0, 0) >= windowEndDate) break;
-
         const event = eventDataForBinding(eventDetails, currentDate);
         AllEvents.push(event);
         dates.push(new Date(currentDate));
         count++;
       }
-
-      // Add the next date after windowEndDate
-      let nextDate: any = new Date(currentDate);
-      nextDate.setDate(nextDate.getDate() + dayFrequency);
-      const event = eventDataForBinding(eventDetails, nextDate);
-      AllEvents.push(event);
-      dates.push(new Date(nextDate));
     }
-    return '';
+    return result;
   }
-
 
   function getWeekDays(today: any) {
     const currentDay = today.getDay();
@@ -892,8 +871,8 @@ const Apps = (props: any) => {
         HalfDayTwo: item.HalfDayTwo,
         clickable: item.clickable,
         Color: item.Color,
-        Rejected:item.Rejected,
-        Approved:item.Approved
+        Rejected: item.Rejected,
+        Approved: item.Approved
       };
 
       return dataEvent;
@@ -1413,6 +1392,7 @@ const Apps = (props: any) => {
       };
 
       const results = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.add(addEventItem);
+      getEvents();
       return results;
     } catch (error) {
       return Promise.reject(error);
@@ -1450,6 +1430,7 @@ const Apps = (props: any) => {
       const results = await web.lists.getById(props.props.SmalsusLeaveCalendar)
         .items.getById(eventPass.Id)
         .update(editedEventItem);
+      getEvents();
       return results;
     } catch (error) {
       return Promise.reject(error);
@@ -1813,8 +1794,8 @@ const Apps = (props: any) => {
   
   const updateAndReplaceType = (input:any, newType:any, isFirstHalfDChecked:any, isSecondtHalfDChecked:any, leaveApproved:any, leaveRejected:any) => {
     const leaveTypes = [
-      "Half Day Un-Planned",
-      "Half Day Planned Leave",
+      "First Half Day",
+      "Second Half Day",
       "Un-Planned",
       "Sick",
       "Planned Leave",
@@ -1829,37 +1810,27 @@ const Apps = (props: any) => {
     let result = input;
     let normalizedNewType = normalize(newType);
   
-    // Determine if "Half Day" should be added
-    const shouldAddHalfDay = isFirstHalfDChecked || isSecondtHalfDChecked;
-  
-    if (shouldAddHalfDay) {
-      newType = "Half Day " + newType;
+    // Determine the correct "Half Day" prefix
+    if (isFirstHalfDChecked) {
+      newType = "First Half Day";
+      normalizedNewType = normalize(newType);
+    } else if (isSecondtHalfDChecked) {
+      newType = "Second Half Day";
       normalizedNewType = normalize(newType);
     }
   
-    const normalizedResult = normalize(result);
-    const regex = new RegExp(leaveTypes.map(normalize).join("|"), "gi");
   
-    result = result.replace((regex:any, matched:any) => {
-      const normalizedMatched = normalize(matched);
-      if (normalizedResult.includes(normalizedMatched)) {
-        return newType;
-      }
-      return matched;
-    });
+    console.log("Result after replace:", result); // Debugging step
   
     // Adjust "Half Day" prefix
-    if (shouldAddHalfDay) {
-      const halfDayRegex = /Half Day\s*/gi;
-      const hyphenIndex = result.indexOf('-');
-      result = result.replace(halfDayRegex, '').trim();
-      if (hyphenIndex >= 0) {
-        result = result.slice(0, hyphenIndex + 1) + " Half Day" + result.slice(hyphenIndex + 1);
-      }
-    } else {
-      const halfDayRegex = /Half Day\s*/gi;
-      result = result.replace(halfDayRegex, '').trim();
+    if (isFirstHalfDChecked) {
+      const regex = new RegExp(leaveTypes.join("|"), "g");
+      result = result.replace(regex, newType);
+    } else if (isSecondtHalfDChecked) {
+      const regex = new RegExp(leaveTypes.join("|"), "g");
+      result = result.replace(regex, newType);
     }
+ 
   
     // Append approval or rejection status if not already present
     if (leaveApproved && !result.includes("Approved")) {
@@ -1870,16 +1841,8 @@ const Apps = (props: any) => {
   
     // Handle non-"Half Day" newType and replacement
     if (!newType.includes("Half Day")) {
-      const normalizedNewResult = normalize(result);
-      const typeRegex = new RegExp(leaveTypes.map(normalize).join("|"), "gi");
-  
-      result = result.replace((typeRegex:any, matched:any) => {
-        const normalizedMatched = normalize(matched);
-        if (normalizedNewResult.includes(normalizedMatched)) {
-          return newType;
-        }
-        return matched;
-      });
+      const regex = new RegExp(leaveTypes.join("|"), "g");
+      result = result.replace(regex, newType);
   
       if (leaveApproved && !result.includes("Approved")) {
         result += " Approved";
@@ -1933,7 +1896,7 @@ const Apps = (props: any) => {
       (newEvent.halfdayevent || newEvent.halfdayeventT) ? "#6d36c5" :
         (newEvent.type === "Work From Home") ? "#e0a209" :
           ((newEvent.type === "Company Holiday") || (newEvent.type === "National Holiday")) ? "#228B22" :
-            (leaveapproved && newEvent.type !== "Work From Home" && !newEvent.halfdayevent && !newEvent.halfdayeventT) ? "#178c1f" : "#fe2e2e";
+            (leaveapproved && newEvent.type !== "Work From Home" && !newEvent.halfdayevent && !newEvent.halfdayeventT) ? "#178c1f" : "";
 
     await web.lists.getById(props.props.SmalsusLeaveCalendar)
       .items.getById(eventPass.Id)
@@ -2170,7 +2133,7 @@ const Apps = (props: any) => {
   const isAllowedUser = allowedUserIds.indexOf(userId) !== -1;
 
   const result = isAllowedUser && !disabl && !(leaveapproved || leaverejected);
-  
+
 
 
 
@@ -2472,7 +2435,7 @@ const Apps = (props: any) => {
                     <span className="svg__iconbox svg__icon--trash"></span>{" "}
                     Delete this Item
                   </a>
-               
+                
                   <VersionHistoryPopup
                     taskId={vId}
                     listId={props.props.SmalsusLeaveCalendar}
