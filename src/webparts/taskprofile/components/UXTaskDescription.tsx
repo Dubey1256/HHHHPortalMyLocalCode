@@ -957,43 +957,11 @@ const uxdescriptions = (props: any) => {
                                         <>
                                             <div className='bg-white p-2 rounded-1'>
                                                 <div className="col mb-2">
-                                                    <div className='justify-content-between d-flex'>
-                                                        <div className="alignCenter m-0">
-                                                            {props?.ApprovalStatus ?
-                                                                <span className="alignCenter">
-                                                                    <span title="Rejected"
-                                                                        onClick={() => changeTrafficLigth(i, "Reject",'objective')}
-                                                                        className={fbData['isShowLight'] == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
-                                                                    >
-                                                                    </span>
-                                                                    <span
-                                                                        onClick={() => changeTrafficLigth(i, "Maybe",'objective')}
-                                                                        title="Maybe" className={fbData['isShowLight'] == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
-                                                                    </span>
-                                                                    <span title="Approved"
-                                                                        onClick={() => changeTrafficLigth(i, "Approve",'objective')}
-                                                                        className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
-
-                                                                    </span>
-                                                                    {fbData["ApproverData"] != undefined && fbData.ApproverData?.length > 0 &&
-                                                                        <>
-                                                                            <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ShowApprovalHistory(fbData, i, null)}>
-                                                                                {fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={fbData.ApproverData[fbData.ApproverData.length - 1]?.Title}><span><a onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Id,)} target="_blank" data-interception="off" title={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Title}>
-                                                                                    <img className='imgAuthor hreflink ' src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl} />
-                                                                                </a>
-                                                                                </span></a></span>
-                                                                        </>
-
-                                                                    }
-                                                                </span>
-                                                                : null
-                                                            }
-                                                        </div>
-                                                        <div className='m-0'>
-                                                            <span className="d-block">
+                                                    <div className='text-end'>
+                                                       <span className="d-block">
                                                                 <a className="siteColor" style={{ cursor: 'pointer' }} onClick={(e) => showhideCommentBox(i,'objective')}>Add Comment</a>
                                                             </span>
-                                                        </div>
+                                                        
                                                     </div>
 
 
@@ -1105,14 +1073,10 @@ const uxdescriptions = (props: any) => {
                                                         </div>
                                                     </div>
                                                     {showhideCommentBoxIndex == i && objective && <div className='SpfxCheckRadio'>
-                                                        <div className="col-sm-12 mt-2 p-0" style={{ display: showcomment }} >
-                                                            {TaskFeedbackData["Approver"] != "" && TaskFeedbackData["Approver"] != undefined && (TaskFeedbackData["Approver"]?.AssingedToUser?.Id ==props?.currentUser[0]?.Id || (TaskFeedbackData["Approver"]?.Approver?.length > 0 && TaskFeedbackData["Approver"]?.Approver[0]?.Id ==props?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' name='approval' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target.checked)} />
-                                                                Mark as Approval Comment</label>}
-                                                        </div>
                                                         <div className="align-items-center d-flex"
                                                             style={{ display: showcomment }}
                                                         >  <textarea id="txtComment" onChange={(e) => handleInputChange(e)} className="form-control full-width"></textarea>
-                                                            <button type="button" className={TaskFeedbackData["Approver"] != undefined && TaskFeedbackData["Approver"] != "" && (TaskFeedbackData["Approver"]?.AssingedToUser?.Id ==props?.currentUser[0]?.Id || (TaskFeedbackData["Approver"]?.Approver?.length > 0 && TaskFeedbackData["Approver"]?.Approver[0]?.Id ==props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => PostButtonClick(fbData, i)}>Post</button>
+                                                            <button type="button" className={props?.Item["Approver"] != undefined && props?.Item["Approver"] != "" && (props?.Item["Approver"]?.AssingedToUser?.Id ==props?.currentUser[0]?.Id || (props?.Item["Approver"]?.Approver?.length > 0 && props?.Item["Approver"]?.Approver[0]?.Id ==props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => PostButtonClick(fbData, i)}>Post</button>
                                                         </div>
                                                     </div>}
 
@@ -1120,42 +1084,15 @@ const uxdescriptions = (props: any) => {
 
                                                 {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                                                     return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
-                                                        <div className='justify-content-between d-flex'>
-                                                            <div className='alignCenter m-0'>
-                                                                {props?.ApprovalStatus ?
-                                                                    <span className="alignCenter">
-                                                                        <span title="Rejected"
-                                                                            onClick={() => changeTrafficLigthsubtext(i, j, "Reject",'objective')}
-                                                                            className={fbSubData.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
-                                                                        >
-                                                                        </span>
-                                                                        <span title="Maybe"
-                                                                            onClick={() => changeTrafficLigthsubtext(i, j, "Maybe",'objective')}
-                                                                            className={fbSubData?.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
-                                                                        </span>
-                                                                        <span title="Approved"
-                                                                            onClick={() => changeTrafficLigthsubtext(i, j, "Approve",'objective')}
-                                                                            className={fbSubData?.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
-
-                                                                        </span>
-                                                                        {fbSubData?.ApproverData?.length > 0 &&
-                                                                            <>
-                                                                                <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ShowApprovalHistory(fbSubData, i, j)}>
-                                                                                    {fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.Title}><span><a onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.Id,)} target="_blank" data-interception="off" title={fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.Title}> <img className='imgAuthor hreflink ' src={fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.ImageUrl} /></a></span></a></span>
-                                                                            </>}
-
-
-                                                                    </span>
-                                                                    : null
-                                                                }
-                                                            </div>
-                                                            <div className='m-0'>
-                                                                <a className="d-block text-end">
+                                                        <div className='text-end'>
+                                                           
+                                                           
+                                                                <span className="d-block text-end">
                                                                     <a className='siteColor' style={{ cursor: 'pointer' }}
                                                                         onClick={(e) => showhideCommentBoxOfSubText(j, i,'objective')}
                                                                     >Add Comment</a>
-                                                                </a>
-                                                            </div>
+                                                                </span>
+                                                           
                                                         </div>
 
                                                         <div className="d-flex pe-0 FeedBack-comment">
@@ -1265,15 +1202,15 @@ const uxdescriptions = (props: any) => {
                                                             </div>
                                                         </div>
                                                         {subchildcomment == j && subchildParentIndex == i && objective ? <div className='SpfxCheckRadio' >
-                                                            <div className="col-sm-12 mt-2 p-0  ">
+                                                            {/* <div className="col-sm-12 mt-2 p-0  ">
                                                                 {TaskFeedbackData["Approver"] != "" && TaskFeedbackData["Approver"] != undefined && (TaskFeedbackData["Approver"]?.AssingedToUser?.Id == props?.currentUser[0]?.Id || (TaskFeedbackData["Approver"]?.Approver[0]?.Id == props?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target?.checked)} />Mark as Approval Comment</label>}
 
-                                                            </div>
+                                                            </div> */}
 
                                                             <div className="align-items-center d-flex"
 
                                                             >  <textarea id="txtCommentSubtext" onChange={(e) => handleInputChange(e)} className="form-control full-width" ></textarea>
-                                                                <button type="button" className={TaskFeedbackData["Approver"] != undefined && TaskFeedbackData["Approver"] != "" && (TaskFeedbackData["Approver"]?.AssingedToUser?.Id ==props?.currentUser[0]?.Id || (TaskFeedbackData["Approver"]?.Approver[0]?.Id ==props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => SubtextPostButtonClick(j, i)}>Post</button>
+                                                                <button type="button" className={props?.Item["Approver"] != undefined && props?.Item["Approver"] != "" && (props?.Item["Approver"]?.AssingedToUser?.Id ==props?.currentUser[0]?.Id || (props?.Item["Approver"]?.Approver[0]?.Id ==props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => SubtextPostButtonClick(j, i)}>Post</button>
                                                             </div>
                                                         </div> : null}
 
@@ -1602,13 +1539,13 @@ const uxdescriptions = (props: any) => {
                                                                 </div>
                                                                 {showhideCommentBoxIndex == i && !objective && <div className='SpfxCheckRadio'>
                                                                     <div className="col-sm-12 mt-2 p-0" style={{ display: showcomment }} >
-                                                                        {TaskFeedbackData["Approver"] != "" && TaskFeedbackData["Approver"] != undefined && (TaskFeedbackData["Approver"]?.AssingedToUser?.Id == props?.currentUser[0]?.Id || (TaskFeedbackData["Approver"]?.Approver?.length > 0 && TaskFeedbackData["Approver"]?.Approver[0]?.Id == props?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' name='approval' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target.checked)} />
+                                                                        {props?.Item["Approver"] != "" && props?.Item["Approver"] != undefined && (props?.Item["Approver"]?.AssingedToUser?.Id == props?.currentUser[0]?.Id || (props?.Item["Approver"]?.Approver?.length > 0 && props?.Item["Approver"]?.Approver[0]?.Id == props?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' name='approval' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target.checked)} />
                                                                             Mark as Approval Comment</label>}
                                                                     </div>
                                                                     <div className="align-items-center d-flex"
                                                                         style={{ display: showcomment }}
                                                                     >  <textarea id="txtComment" onChange={(e) => handleInputChange(e)} className="form-control full-width"></textarea>
-                                                                        <button type="button" className={TaskFeedbackData["Approver"] != undefined && TaskFeedbackData["Approver"] != "" && (TaskFeedbackData["Approver"]?.AssingedToUser?.Id ==props?.currentUser[0]?.Id || (TaskFeedbackData["Approver"]?.Approver?.length > 0 && TaskFeedbackData["Approver"]?.Approver[0]?.Id ==props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => PostButtonClick(fbData, i)}>Post</button>
+                                                                        <button type="button" className={props?.Item["Approver"] != undefined && props?.Item["Approver"] != "" && (props?.Item["Approver"]?.AssingedToUser?.Id ==props?.currentUser[0]?.Id || (props?.Item["Approver"]?.Approver?.length > 0 && props?.Item["Approver"]?.Approver[0]?.Id ==props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => PostButtonClick(fbData, i)}>Post</button>
                                                                     </div>
                                                                 </div>}
 
@@ -1760,14 +1697,14 @@ const uxdescriptions = (props: any) => {
                                                                     </div>
                                                                     {subchildcomment == j && subchildParentIndex == i && !objective ? <div className='SpfxCheckRadio' >
                                                                         <div className="col-sm-12 mt-2 p-0  ">
-                                                                            {TaskFeedbackData["Approver"] != "" && TaskFeedbackData["Approver"] != undefined && (TaskFeedbackData["Approver"]?.AssingedToUser?.Id == props?.currentUser[0]?.Id || (TaskFeedbackData["Approver"]?.Approver[0]?.Id == props?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target?.checked)} />Mark as Approval Comment</label>}
+                                                                            {props?.Item["Approver"] != "" && props?.Item["Approver"] != undefined && (props?.Item["Approver"]?.AssingedToUser?.Id == props?.currentUser[0]?.Id || (props?.Item["Approver"]?.Approver[0]?.Id == props?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target?.checked)} />Mark as Approval Comment</label>}
 
                                                                         </div>
 
                                                                         <div className="align-items-center d-flex"
 
                                                                         >  <textarea id="txtCommentSubtext" onChange={(e) => handleInputChange(e)} className="form-control full-width" ></textarea>
-                                                                            <button type="button" className={TaskFeedbackData["Approver"] != undefined && TaskFeedbackData["Approver"] != "" && (TaskFeedbackData["Approver"]?.AssingedToUser?.Id ==props?.currentUser[0]?.Id || (TaskFeedbackData["Approver"]?.Approver[0]?.Id ==props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => SubtextPostButtonClick(j, i)}>Post</button>
+                                                                            <button type="button" className={props?.Item["Approver"] != undefined && props?.Item["Approver"] != "" && (props?.Item["Approver"]?.AssingedToUser?.Id ==props?.currentUser[0]?.Id || (props?.Item["Approver"]?.Approver[0]?.Id ==props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => SubtextPostButtonClick(j, i)}>Post</button>
                                                                         </div>
                                                                     </div> : null}
 

@@ -12,7 +12,8 @@ import { BsHeart, BsFillHeartFill } from "react-icons/bs";
 import { CiFilter } from "react-icons/ci";
 import Rating from 'react-rating';
 import { Web } from 'sp-pnp-js';
-import {makeStyles,Button,Popover,PopoverTrigger,PopoverSurface,} from "@fluentui/react-components";
+import TooltipBuger from '../../../globalComponents/Tooltip';
+import {Popover,PopoverTrigger,PopoverSurface,} from "@fluentui/react-components";
 import { MdOutlineStarBorder, MdOutlineStar  } from 'react-icons/Md';
  let checkDataImage:any=[];
  let copyAllImage:any=[];
@@ -50,6 +51,7 @@ const ImageViewPanel = (props: any) => {
     const [replyCommentData, setReplyCommentData] = useState("");
     const [isPopoverFilterOpen, setIsPopoverFilterOpen] = useState(false);
     const [isPopoverShortByOpen, setIsPopoverShortByOpen] = useState(false);
+    const [isPopoverReplyOpen, setIsPopoverReplyOpen] = useState("");
 
 
        //============= Open image right side function Start=============
@@ -142,7 +144,7 @@ const ImageViewPanel = (props: any) => {
         return (
             <div className="d-flex full-width pb-1">
                 <div className="subheading siteColor"></div>
-                {/* <Tooltip ComponentId="6776" isServiceTask={ServicesTaskCheck} /> */}
+                <TooltipBuger ComponentId="8591"/>
             </div>
         );
     };
@@ -276,6 +278,7 @@ const ImageViewPanel = (props: any) => {
 
         }
         setCommentData("")
+        setIsPopoverReplyOpen("")
         setCommentStatus({ status: false, index: 0 })
     }
     const updateCommentFunction=()=>{
@@ -469,7 +472,7 @@ const ImageViewPanel = (props: any) => {
                                                                             <div className='d-flex justify-content-between align-items-center'>
                                                                                 {fbComment?.AuthorName} - {fbComment?.Created}
                                                                                 <span className='d-flex'>
-                                                                                    <Popover withArrow >
+                                                                                    <Popover withArrow  open={isPopoverReplyOpen== `${index}${k}imageSlider`} onOpenChange={(e, data) => setIsPopoverReplyOpen(`${index}${k}imageSlider`)}>
                                                                                         <PopoverTrigger disableButtonEnhancement>
                                                                                             <span className="svg__iconbox svg__icon--reply"></span>
                                                                                         </PopoverTrigger>
@@ -483,7 +486,7 @@ const ImageViewPanel = (props: any) => {
                                                                                            </div>
                                                                                            <div className='footer text-end'>
                                                                                             <button className='btnCol btn me-2 btn-primary' onClick={()=>PostReplyComment(slide,k)}>Save</button>
-                                                                                            <button className='btnCol btn btn-default'>Cancel</button>
+                                                                                            <button className='btnCol btn btn-default'onClick={()=>setIsPopoverReplyOpen('')}>Cancel</button>
                                                                                            </div>
                                                                                         </PopoverSurface>
                                                                                     </Popover>
@@ -645,7 +648,7 @@ const ImageViewPanel = (props: any) => {
                                                                 {fbComment?.AuthorName} - {fbComment?.Created}
                                                              
                                                                 <span className='d-flex'>
-                                                                    <Popover withArrow >
+                                                                    <Popover withArrow open={isPopoverReplyOpen== `${index}${k}singleImageView`} onOpenChange={(e, data) => setIsPopoverReplyOpen(`${index}${k}singleImageView`)} >
                                                                         <PopoverTrigger disableButtonEnhancement>
                                                                             <span className="svg__iconbox svg__icon--reply"></span>
                                                                         </PopoverTrigger>
@@ -659,7 +662,7 @@ const ImageViewPanel = (props: any) => {
                                                                             </div>
                                                                             <div className='footer text-end'>
                                                                                 <button className='btnCol btn me-2 btn-primary' onClick={() => PostReplyComment(slide, k)}>Save</button>
-                                                                                <button className='btnCol btn btn-default'  >Cancel</button>
+                                                                                <button className='btnCol btn btn-default'  onClick={()=>setIsPopoverReplyOpen('')} >Cancel</button>
                                                                             </div>
                                                                         </PopoverSurface>
                                                                     </Popover>

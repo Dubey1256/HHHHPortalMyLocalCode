@@ -2805,7 +2805,7 @@ const smartTimeTotal = async () => {
                                     {/* <div className="col-md-12 url"><div className="d-flex p-0"><div className="bg-fxdark p-2"><label>Url</label></div><div className="bg-light p-2 text-break full-width"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></div></div></div> */}
                                     <div className="col-md-12 pe-1"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField" style={{ width: '93.9%' }}><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
                                     {
-                                      Masterdata?.Body != undefined ? <div className="mt-2 col-md-12  detailsbox">
+                                      Masterdata?.Body != undefined ? <div className="col-md-12 detailsbox mt-2 pe-1">
                                         <details className="pe-0" open>
                                           <summary>Description</summary>
                                           <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Body }}></div>
@@ -2815,7 +2815,7 @@ const smartTimeTotal = async () => {
                                     }
 
                                     {
-                                      Masterdata?.Background != undefined ? <div className="mt-2 col-md-12  detailsbox">
+                                      Masterdata?.Background != undefined ? <div className="mt-2 col-md-12  detailsbox pe-1">
                                         <details className="pe-0">
                                           <summary>Background</summary>
                                           <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Background }}></div>
@@ -2825,7 +2825,7 @@ const smartTimeTotal = async () => {
                                     }
 
                                     {
-                                      Masterdata?.Idea != undefined ? <div className="mt-2 col-md-12  detailsbox">
+                                      Masterdata?.Idea != undefined ? <div className="mt-2 col-md-12  detailsbox pe-1">
                                         <details className="pe-0">
                                           <summary>Idea</summary>
                                           <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Idea }}></div>
@@ -2835,7 +2835,7 @@ const smartTimeTotal = async () => {
                                     }
 
                                     {
-                                      Masterdata?.Deliverables != undefined ? <div className="mt-2 col-md-12  detailsbox 41_
+                                      Masterdata?.Deliverables != undefined ? <div className="mt-2 col-md-12 pe-1 detailsbox  41_
                                 0=][9\
                                 -p/\otyty5/">
                                         <details className="pe-0">
@@ -2847,7 +2847,7 @@ const smartTimeTotal = async () => {
 
                                   </div>
                                 </div>
-                                <div className='col-md-12 bg-white'> 
+                                <div className='col-md-12 bg-white pe-1'> 
                                   {keyTaggedDoc.length > 0 && (
                                     <KeyDocuments
                                       keyTaggedDocs={keyTaggedDoc}
@@ -2864,7 +2864,7 @@ const smartTimeTotal = async () => {
                                       keyDoc={true}
                                     ></KeyDocuments>
                                   )}
-                                <div className='col-md-12 bg-white'>
+                                <div className='col-md-12 bg-white  pe-1'>
                                 <details>
                                     <summary> Working This Week {'(' + filteredTask?.length + ')'} </summary>
                                     <div className='AccordionContent'  >
