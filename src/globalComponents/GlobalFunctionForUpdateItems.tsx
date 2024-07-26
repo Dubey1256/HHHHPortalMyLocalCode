@@ -1419,7 +1419,7 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
                 `You have been tagged <b>${ActionType == "Phone" ? "for the discussion" : "as " + ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}` : ''}
             <p></p>
             ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
-                `<div style="background-color: #fff; padding:16px; margin-top:10px; display:block;" title=${ReasonStatement}>
+                `<div style="background-color: #fff; color:#333; padding:16px; margin-top:10px; display:block;" title=${ReasonStatement}>
             <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? " Discussion Point" : " Comment"} </b>: <span>${ReduceTheContentLines(ReasonStatement, 450)}</span> ` : ''}
             </div>
             <div style="margin-top: 16px;">  <b style="font-weight:600; font-size: 16px;">Task Link: </b>
@@ -1457,7 +1457,7 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         <div style="margin-top:16px; font-size:16px;"> ${ActionType} reminder for task: ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}</div>
         <p>
         <br/>
-        <div style="background-color: #fff; padding:16px; display:block;">
+        <div style="background-color: #fff; padding:16px; display:block; color: #333; ">
         <div style="font-size:18px;" title=${ReasonStatement}><b>Comment</b>: ${ReduceTheContentLines(ReasonStatement, 450)}</div>
         </div>
         </br>
@@ -1487,6 +1487,7 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
 export const GenerateMSTeamsNotification = (RequiredData: any) => {
     try {
         let TaskDescriptionFlatView: any = [];
+        let TaskCommentFlatViewCount: any = 0;
         RequiredData["FeedBack"][0]?.FeedBackDescriptions.map((ItemDetails: any, IndexValue: number) => {
             ItemDetails.ViewIndex = IndexValue + 1;
             TaskDescriptionFlatView.push(ItemDetails);
@@ -1497,6 +1498,8 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                 })
             }
         })
+      
+
         if (RequiredData?.Title?.length > 0) {
             return (
                 <div style={{ backgroundColor: 'transparent' }}>
@@ -1620,7 +1623,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                             <div style={{ wordBreak: "break-all", padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '11.0pt' }}>
                                     {RequiredData["ComponentLink"] != null &&
-                                        <a href={RequiredData["ComponentLink"].Url} target="_blank">{RequiredData["ComponentLink"].Url}</a>
+                                        <a href={RequiredData["ComponentLink"].Url} target="_blank">{ReduceTheContentLines(RequiredData["ComponentLink"].Url, 90)}</a>
                                     }</span>
                             </div>
                         </div>
@@ -1637,13 +1640,13 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                             TaskDescriptionFlatView.map((fbData: any, i: any) => {
                                                 if (i < 5) {
                                                     return (<>
-                                                        <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff' }}>
+                                                        <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff', color: '#333' }}>
                                                             <div style={{ width: '100%' }}>
-                                                                <div style={{ display: 'flex' }} title={fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")}>
-                                                                    <span style={{ fontSize: "10pt", display: "flex", color: "#333", marginRight: '5px', fontWeight: '600' }}>
+                                                                <div style={{ display: "flex" }} title={fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")}>
+                                                                    <div style={{ fontSize: "10pt", display: "flex", color: "#333", marginRight: '5px', fontWeight: '600', width: "4%" }}>
                                                                         {fbData.ViewIndex}.
-                                                                    </span>
-                                                                    <div>{removeHtmlTagsFromString(fbData['Title'])}</div>
+                                                                    </div>
+                                                                    <div style={{ color: '#333', width: "96%" }}>{removeHtmlTagsFromString(fbData['Title'])}</div>
                                                                 </div>
 
                                                                 {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
@@ -1668,11 +1671,11 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                 })}
                                                             </div>
                                                         </div>
-                                                      
+
                                                     </>)
                                                 }
                                             })}
-                                        {RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length >= 5 ? <span>There are more Task Points in this task. <a href={`${RequiredData?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${RequiredData?.ID}&Site=${RequiredData?.siteType}`}>
+                                        {TaskDescriptionFlatView >= 5 ? <span>There are more Task Points in this task. <a href={`${RequiredData?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${RequiredData?.ID}&Site=${RequiredData?.siteType}`}>
                                             Go to Task Page.</a> </span> : ""}
                                     </div>
                                 </div>
@@ -1683,15 +1686,14 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         {RequiredData?.CommentsArray?.length > 0 ?
                             <div style={{ width: '232px' }}>
                                 <div className="">
-                                    <div>
-                                        <b style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}> Comments ({RequiredData["CommentsArray"]?.length}):</b>
-                                    </div>
+                                    <div><b style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}> Comments ({RequiredData["CommentsArray"]?.length})</b></div>
                                     <div style={{ width: '100%' }}>
                                         {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
-                                            if (i < 5) {
+                                            if (TaskCommentFlatViewCount < 5) {
+                                                TaskCommentFlatViewCount++;
                                                 return (
                                                     <>
-                                                        <div style={{ backgroundColor: '#fff', width: '100%', padding: '8px 12px', marginBottom: "8px" }}>
+                                                        <div style={{ backgroundColor: '#fff', width: '100%', padding: '8px 12px', marginBottom: "8px", color: '#333' }}>
                                                             <div style={{ marginBottom: "8px", width: '100%' }}>
                                                                 <div>
                                                                     <span style={{ fontWeight: '600' }}>{cmtData.AuthorName}</span> - {cmtData.Created}
@@ -1702,6 +1704,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                 </div>
                                                             </div>
                                                             {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
+                                                                TaskCommentFlatViewCount++;
                                                                 return (
                                                                     <div style={{ backgroundColor: '#f5f5f5', padding: '8px 12px', width: '100%' }}>
                                                                         <div style={{ marginBottom: '8px' }}>
@@ -1715,7 +1718,6 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                             })}
 
                                                         </div>
-
                                                     </>
                                                 )
                                             }
@@ -2309,7 +2311,64 @@ export const SendDynamicEmailNotification = async (requiredData: any) => {
     }
 };
 
+// This is used for Send Email Notification for the Information Request Category Tasks 
 
+export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredData: any) => {
+    try {
+        const { ItemDetails, ReceiverEmail, Context, usedFor, ReceiverName } = requiredData || {};
+        const emailMessage = GenerateMSTeamsNotification(ItemDetails);
+        const containerDiv = document.createElement('div');
+        const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
+        ReactDOM.render(reactElement, containerDiv);
+
+        let emailSubject = '';
+        let messageContent = '';
+
+        if (usedFor === "Information-Request") {
+            emailSubject = `[Information Request - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title} - Request is completed`;
+            messageContent = 'Task created from your end for Information Request has been completed. Please take necessary action';
+        }
+        if (usedFor === "Priority-Check") {
+            emailSubject = `[Task Priority Check - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title}. Please have a look`;
+            messageContent = 'Task created from your end has been set to 8%. Please take necessary action';
+        }
+
+        const emailBodyContent = `
+        <div style="border-top: 5px solid #2f5596;">
+            <p style="margin-top:16px;">${messageContent}</p>
+            <p style="font-size:16px;">Task Link: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
+            ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></p>
+            <span>${containerDiv.innerHTML}</span>
+            </div>
+            `;
+
+        const emailProps = {
+            To: ReceiverEmail,
+            Subject: emailSubject,
+            Body: emailBodyContent
+        };
+
+        if (ReceiverEmail?.length > 0) {
+            const sp = spfi().using(spSPFx(Context));
+            const data = await sp.utility.sendEmail({
+                Body: emailProps.Body,
+                Subject: emailProps.Subject,
+                To: emailProps.To,
+                AdditionalHeaders: {
+                    "content-type": "text/html"
+                },
+            });
+            console.log("Email Sent!");
+            console.log(data);
+            return data;
+        } else {
+            throw new Error("Receiver email not provided");
+        }
+    } catch (error) {
+        console.error("Error:", error.message);
+        throw error;
+    }
+};
 // Instructions for Using this Global Common Functions 
 
 { /**
