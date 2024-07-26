@@ -14,8 +14,8 @@ const BackgroundCommentComponent = (Props: any) => {
     const [BackgroundComments, setBackgroundComments] = useState(Props.TaskData?.BackgroundComments != undefined ? Props.TaskData?.BackgroundComments : []);
     const [EODPendingComment, setEODPendingComment] = useState('');
     const [EODAchiviedComment, setEODAchiviedComment] = useState('');
-    const [taskInfo, setTaskInfo] = useState(Props.TaskData)
-    
+    const [oneEODReport,setOneEODReport]=useState(true)
+    const [taskInfo, setTaskInfo] = useState(Props.TaskData) 
     const [uploadImageContainer, setuploadImageContainer] = useState(false);
     const [UpdateCommentData, setUpdateCommentData] = useState('');
     const [CurrentIndex, setCurrentIndex] = useState<any>();
@@ -25,6 +25,11 @@ const BackgroundCommentComponent = (Props: any) => {
     const [BackgroundImageJSON, setBackgroundImageJSON] = useState(BackgroundImageData)
     const Context = Props.Context;
     const siteUrls = Props.siteUrls;
+
+    React.useEffect(()=>{
+        CheckOneEodReport()
+    },[])
+
     // This is used for Upload Background Images section and callback functions
     const FlorarImageReplaceComponentCallBack = (dt: any) => {
         let DataObject: any = {
@@ -111,12 +116,12 @@ const BackgroundCommentComponent = (Props: any) => {
             let CommentJSON = {
                 AuthorId: CurrentUser?.AssingedToUserId != undefined ? CurrentUser?.AssingedToUserId : 0,
                 Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
-                Body: "",
                 AuthorImage: CurrentUser?.Item_x0020_Cover != null ? CurrentUser?.Item_x0020_Cover?.Url : null,
                 AuthorName: CurrentUser?.Title != undefined ? CurrentUser?.Title : Context?.pageContext?._user.displayName,
                 Type: "EODReport",
+                isEodTask:false,
                 Title: taskInfo?.Title,
-                ProjectID: taskInfo?.Project.Id,
+                ProjectID: taskInfo?.Project?.Id,
                 ProjectName: taskInfo?.Project?.Title,
                 Achieved: EODAchiviedComment,
                 Pending: EODPendingComment,
@@ -126,6 +131,7 @@ const BackgroundCommentComponent = (Props: any) => {
             setBackgroundComments(BackgroundComments)
             setEODAchiviedComment('')
             setEODPendingComment('')
+            setOneEODReport(false)
             updateCommentFunction(BackgroundComments, "OffshoreComments");
         } else {
             alert("Please Enter Your Comment First!")
@@ -243,13 +249,38 @@ const BackgroundCommentComponent = (Props: any) => {
         setUpdateCommentData(Body);
         setCurrentIndex(Index);
     }
+    const CheckOneEodReport=()=>{
+        const currentDate = Moment();
+        let taskDetail=[];
+        try{
+            taskDetail=JSON.parse(taskInfo?.OffshoreComments);
+        }
+        catch{
+            console.log("undefined json")
+        }
+        
+        const hasTodayEODReport = taskDetail?.some((item: any) =>{
+            return(item.Type=="EODReport" && Moment(currentDate)?.format('DD/MM/YYYY')==Moment(item?.Created)?.format('DD/MM/YYYY'))
+        }   
+        );
+    
+        if (hasTodayEODReport) {
+            setOneEODReport(false);
+        }
+    } 
     const ChangeCommentFunction = () => {
         if (BackgroundComments != undefined && BackgroundComments.length > 0) {
             if (editTypeUsedFor === "Achieved" || editTypeUsedFor === "Pending") {
                 if (editTypeUsedFor === "Achieved") {
                     BackgroundComments[CurrentIndex].Achieved = UpdateCommentData;
+                    BackgroundComments[CurrentIndex].Created= Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+                    BackgroundComments[CurrentIndex].AuthorImage=currentUserData[0]?.Item_x0020_Cover != null ? currentUserData[0]?.Item_x0020_Cover?.Url : null,
+                    BackgroundComments[CurrentIndex].AuthorName=currentUserData[0]?.Title != undefined ? currentUserData[0]?.Title : Context?.pageContext?._user.displayName
                 } else {
                     BackgroundComments[CurrentIndex].Pending = UpdateCommentData;
+                    BackgroundComments[CurrentIndex].Created= Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+                    BackgroundComments[CurrentIndex].AuthorImage=currentUserData[0]?.Item_x0020_Cover != null ? currentUserData[0]?.Item_x0020_Cover?.Url : null,
+                    BackgroundComments[CurrentIndex].AuthorName=currentUserData[0]?.Title != undefined ? currentUserData[0]?.Title : Context?.pageContext?._user.displayName
                 }
                 updateCommentFunction(BackgroundComments, "OffshoreComments");
                 setUpdateCommentData("");
@@ -274,6 +305,7 @@ const BackgroundCommentComponent = (Props: any) => {
             </div>
         )
     }
+
     return (
         <div className="d-flex justify-content-between">
             <div className="Background_Image col-4">
@@ -389,7 +421,7 @@ const BackgroundCommentComponent = (Props: any) => {
                     Post Comment
                 </button>
                 {/* Code by Udbhav realted EOD report */}
-                {currentUserData[0]?.UserGroup?.Title=="Portfolio Lead Team" && 
+                {(currentUserData[0]?.UserGroup?.Title=="Portfolio Lead Team" ||currentUserData[0]?.UserGroup?.Title=="Smalsus Lead Team"||currentUserData[0]?.UserGroup?.Title=="Junior Task Management") && 
                <>
                <p className="siteColor mb-0">EOD Report</p>
                 {BackgroundComments != undefined && BackgroundComments.length > 0 ? BackgroundComments.map((dataItem: any, Index: any) => {
@@ -424,7 +456,7 @@ const BackgroundCommentComponent = (Props: any) => {
 
                                             {dataItem.Achieved != undefined &&
                                                 <div className="d-flex gap-2">
-                                                    <span className="col-1"> Completed- </span>
+                                                    <span  style={{ minWidth: '75px' }}> Completed- </span>
                                                     <span>{dataItem.Achieved}</span>
                                                     <span className="d-flex">
                                                     <span onClick={() => openEditModal(Index, dataItem.Achieved, "Achieved")} title="Edit Comment" className="svg__iconbox svg__icon--edit"></span>
@@ -434,7 +466,7 @@ const BackgroundCommentComponent = (Props: any) => {
                                             }
                                             {dataItem.Pending != undefined &&
                                            <div className="d-flex gap-2">
-                                                <span className="col-1"> Pending-</span>
+                                                <span  style={{ minWidth: '75px' }}> Pending-</span>
                                                 <span>{dataItem.Pending}</span>
                                                 <span className="d-flex">
                                                 <span onClick={() => openEditModal(Index, dataItem.Pending, "Pending")} title="Edit Comment" className="svg__iconbox svg__icon--edit"></span>
@@ -460,6 +492,8 @@ const BackgroundCommentComponent = (Props: any) => {
                 There is no EOD comments
             </div>
                 }
+
+              {oneEODReport &&<>
                 <p className="siteColor mb-0">PENDING COMMENT</p>
                 <div className="enter-comment-data-section">
                     <textarea
@@ -468,6 +502,7 @@ const BackgroundCommentComponent = (Props: any) => {
                         placeholder="Enter  what is pending in Task ?"
                     >
                     </textarea>
+                   {EODPendingComment==''&& <p style={{color:"red"}} className="mb-0">Please fill the Pending comment </p>}
                 </div>
                 <p className="siteColor mb-0">ACHIEVED COMMENT</p>
                 <div className="enter-comment-data-section">
@@ -477,10 +512,14 @@ const BackgroundCommentComponent = (Props: any) => {
                         placeholder="'Enter  What has been Completed in task ?'"
                     >
                     </textarea>
+                    {EODAchiviedComment==''&& <p style={{color:"red"}} className="mb-0">Please fill the complete comment </p>}
+
                 </div>
-                <button className="btn btn-primary float-end" onClick={AddEODComent}>
-                    Post EOD Comment
-                </button>
+                <button className="btn btn-primary float-end" onClick={AddEODComent} disabled={EODAchiviedComment === "" || EODPendingComment === ""}>
+  Post EOD Comment
+</button>
+                </>
+                }
                </> 
                 }
                 

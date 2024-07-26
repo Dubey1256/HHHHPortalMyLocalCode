@@ -872,14 +872,13 @@ export const MonthlyLeaveReport = (props: any) => {
                               }
 
                             </label>
-
                             <div className='d-flex'>
                               {users?.childs?.length > 0 && users?.childs.map((item: any, i: number) => {
                                 return <div className="alignCenter">
                                   {item.Item_x0020_Cover != undefined ? (
                                     <Avatar
                                       id={"UserImg" + item?.Id}
-                                      className={item?.AssingedToUserId == users?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'}
+                                      className={ImageSelectedUsers.some((i) => i?.Id === item?.Id) ? 'activeimg ProirityAssignedUserPhoto seclected-Image' : 'ProirityAssignedUserPhoto'}
                                       onClick={(e: any) => SelectUserImage(e, item)}
                                       draggable="true"
                                       onDrop={(e: any) => dropSuccessHandler(e, item, users.childs)}
