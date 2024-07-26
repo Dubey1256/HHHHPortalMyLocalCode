@@ -398,7 +398,7 @@ const EmployeProfileMain = (props: any) => {
                                         <Col sm={10} className='p-0'>
                                             <Tab.Content>
                                                 <Tab.Pane eventKey="Information2" className='ps-3 border' >
-                                                    <Information EmployeeData={EmployeeData} siteTaggedHR={siteTaggedHR} hrUpdateData={hrUpdateData} />
+                                                    <Information EmployeeData={EmployeeData} siteTaggedHR={siteTaggedHR} hrUpdateData={hrUpdateData} allListId={allListId}/>
                                                 </Tab.Pane>
                                                 <Tab.Pane eventKey="TaxAndInsurance2" className='border ps-3'>
                                                     <div className='mt-3'>
