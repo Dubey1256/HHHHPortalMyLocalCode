@@ -60,7 +60,7 @@ import CentralizedSiteComposition from "../SiteCompositionComponents/Centralized
 import SmartPriorityHover from "./SmartPriorityHover";
 import UXDesignPopupTemplate from "./UXDesignPopupTemplate";
 import ReactPopperTooltipSingleLevel from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
-
+import RecurringTask from "../RecurringTask";
 let PortfolioItemColor: any = "";
 let taskUsers: any = [];
 let AllTaskUser: any = [];
@@ -5035,6 +5035,7 @@ const EditTaskPopup = (Items: any) => {
                             }`}
                     </span>
                 </div>
+                <RecurringTask props={Items}/>
                 <Tooltip ComponentId="1683" isServiceTask={false} />
             </>
         );
