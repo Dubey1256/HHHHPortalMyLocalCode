@@ -653,7 +653,7 @@ const EditConfiguration = (props: any) => {
                         <label className='form-label full-width fw-semibold'>Drag and drop tiles between columns in any vertical order.</label></div>
                     <div className="Metadatapannel border p-2 mb-2">
                         <div className="row">
-                            <div className="col-sm-9 pe-0" draggable>
+                            <div className="col-md-8  col-lg-9 pe-0" draggable>
                                 <div className="row">
                                     {NewItem != undefined && NewItem?.length > 0 && NewItem.map((item: any, index: any) => {
                                         return (
@@ -707,7 +707,7 @@ const EditConfiguration = (props: any) => {
                                             </>
                                         )
                                     })}</div ></div>
-                            <div className="col-sm-3 text-end">
+                            <div className="col-md-4  col-lg-3 text-end">
                                 <div className='form-label full-width mb-1 alignCenter' onClick={(e) => AddColumn('')}><a className="alignCenter hreflink ml-auto siteColor"><span className="svg__iconbox svg__icon--Plus mini"></span> Add Column</a></div>
                                 <div className='form-label full-width alignCenter' onClick={(e) => AddWebpartPopup()}><a className="alignCenter hreflink ml-auto siteColor"> <span className="svg__iconbox svg__icon--Plus mini"></span> Add WebPart</a></div>
                                 <div className='form-label full-width alignCenter' onClick={(e) => AddTemplatePopup()}><a className="alignCenter hreflink ml-auto siteColor"> <span className="svg__iconbox svg__icon--Plus mini"></span> Add Template</a></div>
