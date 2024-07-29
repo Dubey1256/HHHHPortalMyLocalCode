@@ -903,6 +903,7 @@ const EmployeProfile = (props: any) => {
                         if (assign != undefined && assign?.Id == currentUserData?.AssingedToUser?.Id && WorkingDate?._d.getTime() == currentDate?.getTime() && !isTaskItemExists(config?.Tasks, items)) {
                           items.WorkingDate = workingTask?.WorkingDate;
                           config?.Tasks.push(items);
+                          items.IsPushAssignedTask = false;
                         }
                       }
                     }
@@ -942,7 +943,7 @@ const EmployeProfile = (props: any) => {
                     }
                   }
                 }
-                if (config?.IsAssignedTask === true && !isTaskItemExists(config?.Tasks, items))
+                if (config?.IsAssignedTask === true && items?.IsPushAssignedTask != false && !isTaskItemExists(config?.Tasks, items))
                   config?.Tasks.push(items);
               }
             }
@@ -1735,7 +1736,7 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, CurrentUserProjectData: CurrentUserProjectData, CurrentUserInfo: CurrentUserInfo, CurrentUserWorkingToday: CurrentUserWorkingToday, currentUserId: currentUserId, todaysDrafTimeEntry: todaysDrafTimeEntry, CurrentConfigItem: CurrentConfigItem, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, DashboardValue: DashboardValue, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      <myContextValue.Provider value={{ ...myContextValue, smartmetaDataDetails: smartmetaDataDetails, CurrentUserProjectData: CurrentUserProjectData, CurrentUserInfo: CurrentUserInfo, CurrentUserWorkingToday: CurrentUserWorkingToday, currentUserId: currentUserId, todaysDrafTimeEntry: todaysDrafTimeEntry, CurrentConfigItem: CurrentConfigItem, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, DashboardValue: DashboardValue, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div>
           {LoadHeaderSection != undefined && (<Header />)}
         </div>

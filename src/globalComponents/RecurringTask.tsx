@@ -107,14 +107,41 @@ const RecurringTask = (props: any) => {
                         windowEndDate = createenddate;
                     }
                 } else if (repeatInstance && repeatInstance > 0) {
-                    let repeatInstanceEndDate = new Date(recurrenceData?.EventDate);
+                    let repeatInstanceEndDate =new Date(recurrenceData?.EventDate);
                     repeatInstanceEndDate.setHours(0, 0, 0, 0);
-                    if (recurrenceData?.RecurrenceData?.includes('daily')) {
+                    if (recurrenceData?.RecurrenceData) {
+                      if (recurrenceData.RecurrenceData.includes('daily')) {
                         repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() + repeatInstance);
+                      } else if (recurrenceData.RecurrenceData.includes('weekly')) {
+                        repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() + repeatInstance * 7);
+                      } else if (recurrenceData.RecurrenceData.includes('monthly')) {
+                        repeatInstanceEndDate.setMonth(repeatInstanceEndDate.getMonth() + repeatInstance);
+                      } else if (recurrenceData.RecurrenceData.includes('yearly')) {
+                        repeatInstanceEndDate.setFullYear(repeatInstanceEndDate.getFullYear() + repeatInstance);
+                      } else if (recurrenceData.RecurrenceData.includes('monthlyByDay')) {
+                        // Custom logic for monthlyByDay
+                        // Example: set to the same day of the month, incremented by `repeatInstance` months
+                        const day = repeatInstanceEndDate.getDate();
+                        repeatInstanceEndDate.setMonth(repeatInstanceEndDate.getMonth() + repeatInstance);
+                        if (repeatInstanceEndDate.getDate() !== day) {
+                          repeatInstanceEndDate.setDate(0); // Handle overflow to the last day of the month
+                        }
+                      } else if (recurrenceData.RecurrenceData.includes('yearlyByDay')) {
+                        // Custom logic for yearlyByDay
+                        // Example: set to the same day of the year, incremented by `repeatInstance` years
+                        const month = repeatInstanceEndDate.getMonth();
+                        const day = repeatInstanceEndDate.getDate();
+                        repeatInstanceEndDate.setFullYear(repeatInstanceEndDate.getFullYear() + repeatInstance);
+                        if (repeatInstanceEndDate.getMonth() !== month || repeatInstanceEndDate.getDate() !== day) {
+                          repeatInstanceEndDate.setMonth(month, day); // Handle overflow if necessary
+                        }
+                      }
+                    
+                      repeatInstanceEndDate.setHours(0, 0, 0, 0);
+                      windowEndDate = repeatInstanceEndDate;
                     }
-                    repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() - 1); // Subtract one day
-                    windowEndDate = repeatInstanceEndDate;
-                }
+                    
+                  }
                 else {
                     windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(recurrenceData?.EndDate).setHours(0, 0, 0, 0);
                 }
@@ -388,16 +415,21 @@ const RecurringTask = (props: any) => {
                     break;
                 case 'monthly':
                     let { monthFrequency, dayOfMonth } = frequency;
-                    if (dayOfMonth == undefined && frequency?.day != undefined) {
-                        dayOfMonth = frequency?.day;
+                    if (dayOfMonth === undefined && frequency?.day !== undefined) {
+                      dayOfMonth = frequency?.day;
                     }
                     currentDate.setDate(Number(dayOfMonth));
-                    currentDate = currentDate.setMonth(currentDate.getMonth() + Number(monthFrequency));
-
-                    event = eventDataForBinding(eventDetails, currentDate);
-                    AllEvents?.push(event);
-                    dates.push(new Date(currentDate));
-                    console.log("Recuurence Verify" + dates)
+                  
+                    while (true) {
+                      if (currentDate > endDate) {
+                        break;
+                      }
+                      event = eventDataForBinding(eventDetails, currentDate);
+                      AllEvents?.push(event);
+                      dates.push(new Date(currentDate));
+                      currentDate.setMonth(currentDate.getMonth() + Number(monthFrequency));
+                      currentDate.setDate(Number(dayOfMonth));
+                    }
                     break;
                 case 'monthlyByDay':
                     handleMonthlyByDay(frequency, currentDate, dates, AllEvents, eventDetails, endDate);
@@ -476,9 +508,7 @@ const RecurringTask = (props: any) => {
     return (
         <>
         <div
-            className="bdr-radius"
-            
-        >
+            className="bdr-radius" >
             <Toggle
                 className="rounded-pill"
                 defaultChecked={false}
