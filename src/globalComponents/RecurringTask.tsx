@@ -477,23 +477,15 @@ const RecurringTask = (props: any) => {
         <>
         <div
             className="bdr-radius"
-            style={{
-                display: "inline-block",
-                verticalAlign: "top",
-                width: "200px",
-                marginBottom: "10px",
-                padding: "10px",
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                backgroundColor: "#f9f9f9"
-            }}
+            
         >
             <Toggle
                 className="rounded-pill"
                 defaultChecked={false}
                 checked={showRecurrenceSeriesInfo}
                 inlineLabel
-                label="Recurrence"
+                title='Recurrence'
+                // label="Recurrence"
                 onChange={handleRecurrenceCheck}
                 styles={{
                     root: { marginBottom: "10px" },
