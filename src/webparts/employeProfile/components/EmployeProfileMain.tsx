@@ -5,9 +5,13 @@ import { useEffect, useState } from 'react';
 import { Web } from 'sp-pnp-js';
 import moment, * as Moment from "moment";
 import { ColumnDef } from '@tanstack/react-table';
+import { Calendar, momentLocalizer } from 'react-big-calendar'
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import { myContextValue } from '../../../globalComponents/globalCommon'
+import App from '../../calendar/components/Cal';
 import HHHHEditComponent from '../../contactSearch/components/contact-search/popup-components/HHHHEditcontact';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import EmployeTasks from './EmployeTasks';
 import CreateContract from '../../hrContractsearch/components/CreateContract';
 let allListId: any = {};
 let allSite: any = {
@@ -24,6 +28,12 @@ const EmployeProfileMain = (props: any) => {
     const[createContractPopup,setCreateContractPopup]=useState(false);
     const [hrUpdateData, setHrUpdateData]: any = useState()
     const [EditContactStatus, setEditContactStatus] = useState(false);
+    const [leaveInformation, setLeaveInformation] = useState([]
+    )
+    // Udbhav code Start
+    const [leaveCalenderIds, setLeaveCalenderIds] = useState({})
+    const [tabName, setTabName] = React.useState("BASICINFORMATION2");
+    //Udbhav code end 
     const urlQuery = new URLSearchParams(window.location.search)
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -70,6 +80,24 @@ const EmployeProfileMain = (props: any) => {
             let employeeId = params.get('employeeId')
             HrGmbhEmployeDeatails(employeeId)
         }
+        // Code by Udbhav Start
+        const leaveCalendarListId: any = {
+            description:"Calendar",
+            TaskUserListID: props.props.TaskUserListID,
+            siteUrl: props?.props.Context?._pageContext?.web?.absoluteUrl + "/sp",
+            SmalsusLeaveCalendar: props.props.SmalsusLeaveCalendar,
+            SmartMetadataListID: props.props.SP_SMARTMETADATA_LISTID,
+            context: props.props.Context,
+            employeeProfilePage: true
+        }
+        leaveCalendarListId.context._pageContext.web.absoluteUrl = leaveCalendarListId.siteUrl
+        leaveCalendarListId.context.absoluteUrl=leaveCalendarListId.siteUrl
+        setLeaveCalenderIds(leaveCalendarListId)
+        // Code by Udbhav end
+
+
+
+
     }, [])
 
     const EmployeeDetails = async (Id: any) => {
@@ -296,9 +324,16 @@ const EmployeProfileMain = (props: any) => {
 
         ],
         [contractData]);
-        const callBackData = () => {
-            setCreateContractPopup(false)
-        }
+    const callBackData = () => {
+        setCreateContractPopup(false)
+    }
+
+    //  ****UDBHAV******
+        const tabChange = (tabName: any) => {
+        setTabName(tabName)
+    }
+
+
     return (
 
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName }}>
@@ -348,7 +383,7 @@ const EmployeProfileMain = (props: any) => {
                 {siteTaggedHR ? <div className="my-3">
                     <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
                         <button
-                            className="nav-link active"
+                            className={tabName === "BASIC-INFORMATION2" ? "nav-link active" : "nav-link"}
                             id="BASIC-INFORMATION2"
                             data-bs-toggle="tab"
                             data-bs-target="#BASICINFORMATION2"
@@ -356,26 +391,58 @@ const EmployeProfileMain = (props: any) => {
                             role="tab"
                             aria-controls="BASICINFORMATION2"
                             aria-selected="true"
+                            onClick={() => tabChange("BASICINFORMATION2")}
+
                         >
                             BASIC INFORMATION
                             {/* TASK INFORMATION */}
                         </button>
                         <button
-                            className="nav-link"
-                            id="CONTRACTS-Tab"
+                            className={tabName === "DOCUMENTS" ? "nav-link active" : "nav-link"}
+                            id="DOCUMENTS-Tab"
                             data-bs-toggle="tab"
-                            data-bs-target="#CONTRACTS"
+                            data-bs-target="#DOCUMENTS"
                             type="button"
                             role="tab"
-                            aria-controls="CONTRACTS"
+                            aria-controls="DOCUMENTS"
                             aria-selected="true"
+                            onClick={() => tabChange("DOCUMENTS")}
                         >
-                            CONTRACTS
-                            {/* TASK INFORMATION */}
+                            DOCUMENTS
+
                         </button>
+                        <button
+                            className={tabName === "LEAVES" ? "nav-link active" : "nav-link"}
+                            id="LEAVES-Tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#LEAVES"
+                            type="button"
+                            role="tab"
+                            aria-controls="LEAVES"
+                            aria-selected="true"
+                            onClick={() => tabChange("LEAVES")}
+                        >
+                            LEAVES
+                        </button>
+                        <button
+                            className={tabName === "TASKS" ? "nav-link active" : "nav-link"}
+                            id="TASKS-Tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#TASKS"
+                            type="button"
+                            role="tab"
+                            aria-controls="TASKS"
+                            aria-selected="true"
+                            onClick={() => tabChange("TASKS")}
+                        >
+                            TASKS
+                        </button>
+
                     </ul>
-                    <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
-                        <div className="tab-pane show active" id="BASICINFORMATION2" role="tabpanel" aria-labelledby="BASICINFORMATION2">
+                    <div className="border border-top-0 clearfix p-3 tab-content" id="myTabContent">
+
+
+                        <div className={tabName === "BASICINFORMATION2" ? "tab-pane active" : "tab-pane"} id="BASICINFORMATION2" role="tabpanel" aria-labelledby="BASICINFORMATION2">
 
                             <div className="col-sm-12 imgTab">
                                 <Tab.Container id="left-tabs-example" defaultActiveKey="Information2">
@@ -510,18 +577,38 @@ const EmployeProfileMain = (props: any) => {
                             </div>
                         </div>
 
-                        <div className="tab-pane" id="CONTRACTS" role="tabpanel" aria-labelledby="CONTRACTS">
+
+                        {/* UDBHAV CODE FOR LEAVES */}
+
+                        <div className={tabName === "LEAVES" ? "tab-pane active" : "tab-pane"} id="LEAVES" role="tabpanel" aria-labelledby="LEAVES">
                             <div className='siteBdrBottom siteColor alignCenter sectionHead mb-2 p-0'>
-                                Contract Details
-                           
-                                <button type='button' className='btnCol btn btn-primary ml-auto mb-2' onClick={() => setCreateContractPopup(true)}>Create-Contract</button>
-                            
+                                LEAVES
+                            </div>
+                            <div className='Alltable'>
+                                <App props={leaveCalenderIds} />
+                            </div>
+                        </div>
+
+                        {/*DOCUMENTS*/}
+
+                        <div className="tab-pane" id=" DOCUMENTS" role="tabpanel" aria-labelledby=" DOCUMENTS">
+                            <div className='siteBdrBottom siteColor alignCenter sectionHead mb-2 p-0'>
+                                DOCUMENTS
                             </div>
                             <div className='Alltable'>
 
                                 <GlobalCommanTable columns={columns} data={contractData} showHeader={true} callBackData={callBackData} />
                             </div>
                         </div>
+
+                        <div className={tabName === "TASKS" ? "tab-pane active" : "tab-pane"} id="TASKS" role="tabpanel" aria-labelledby="TASKS">
+                            <div className='Alltable'>
+
+                                <EmployeTasks props={leaveCalenderIds}/>
+                            </div>
+                        </div>
+
+
                     </div>
                 </div> : <Information EmployeeData={EmployeeData} siteTaggedHR={siteTaggedHR} allListId={allListId}/>}
                 {EditContactStatus ? <HHHHEditComponent props={EmployeeData} callBack={ClosePopup} /> : null}
