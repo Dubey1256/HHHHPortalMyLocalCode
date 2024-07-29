@@ -1214,34 +1214,11 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                         <label className="toggler full_width active">
                                             <span className='full_width'>
                                                 <div className='alignCenter'>
-                                                    <span className='f-15 fw-semibold'>Team Members</span>
+                                                    <span className='f-15 fw-semibold'>Team</span>
                                                 </div>
                                             </span>
                                         </label>
                                         <div className="togglecontent mb-3 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #bdbdbd" }}>
-                                            <Col className='mb-2 '>
-                                                <label className='me-3'>
-                                                    <input className='form-check-input' type="checkbox" value="isSelectAll" checked={isSelectAll} onChange={handleSelectAllChangeTeamSection} /> Select All
-                                                </label>
-                                                <label className='me-3'>
-                                                    <input className='form-check-input' type="checkbox" value="isCretaedBy" checked={isCreatedBy} onChange={() => setIsCreatedBy(!isCreatedBy)} /> Created by
-                                                </label>
-                                                <label className='me-3'>
-                                                    <input className='form-check-input' type="checkbox" value="isModifiedBy" checked={isModifiedby} onChange={() => setIsModifiedby(!isModifiedby)} /> Modified by
-                                                </label>
-                                                <label className='me-3'>
-                                                    <input className='form-check-input' type="checkbox" value="isAssignedBy" checked={isAssignedto} onChange={() => setIsAssignedto(!isAssignedto)} /> Working Member
-                                                </label>
-                                                <label className='me-3'>
-                                                    <input className='form-check-input' type="checkbox" value="isTeamLead" checked={isTeamLead} onChange={() => setIsTeamLead(!isTeamLead)} /> Team Lead
-                                                </label>
-                                                <label className='me-3'>
-                                                    <input className='form-check-input' type="checkbox" value="isTeamMember" checked={isTeamMember} onChange={() => setIsTeamMember(!isTeamMember)} /> Team Member
-                                                </label>
-                                                <label className='me-3'>
-                                                    <input className='form-check-input' type="checkbox" value="isTodaysTask" checked={isTodaysTask} onChange={() => setIsTodaysTask(!isTodaysTask)} /> Working Today
-                                                </label>
-                                            </Col>
                                             <div className="col-sm-12 pad0">
                                                 <div className="togglecontent mt-1">
                                                     <table width="100%" className="indicator_search">
@@ -1302,6 +1279,46 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                     </table>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+
+                            <section className="smartFilterSection p-0 mb-1">
+                                <div className="px-2">
+                                    <div className="togglebox">
+                                        <label className="toggler full_width active">
+                                            <span className='full_width'>
+                                                <div className='alignCenter'>
+                                                    <span className='f-15 fw-semibold'>Team Member Activities</span>
+                                                    <div className='me-3 d-end'>
+                                                        <input className='form-check-input' type="checkbox" value="isSelectAll" checked={isSelectAll} onChange={handleSelectAllChangeTeamSection} /> Select All
+                                                    </div>
+                                                </div>
+                                            </span>
+                                        </label>
+                                        <div className="togglecontent mb-3 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #bdbdbd" }}>
+                                            <Col className='mb-2 '>
+                                                <label className='me-3'>
+                                                    <input className='form-check-input' type="checkbox" value="isCretaedBy" checked={isCreatedBy} onChange={() => setIsCreatedBy(!isCreatedBy)} /> Created by
+                                                </label>
+                                                <label className='me-3'>
+                                                    <input className='form-check-input' type="checkbox" value="isModifiedBy" checked={isModifiedby} onChange={() => setIsModifiedby(!isModifiedby)} /> Modified by
+                                                </label>
+                                                <label className='me-3'>
+                                                    <input className='form-check-input' type="checkbox" value="isAssignedBy" checked={isAssignedto} onChange={() => setIsAssignedto(!isAssignedto)} /> Working Member
+                                                </label>
+                                                <label className='me-3'>
+                                                    <input className='form-check-input' type="checkbox" value="isTeamLead" checked={isTeamLead} onChange={() => setIsTeamLead(!isTeamLead)} /> Team Lead
+                                                </label>
+                                                <label className='me-3'>
+                                                    <input className='form-check-input' type="checkbox" value="isTeamMember" checked={isTeamMember} onChange={() => setIsTeamMember(!isTeamMember)} /> Team Member
+                                                </label>
+                                                <label className='me-3'>
+                                                    <input className='form-check-input' type="checkbox" value="isTodaysTask" checked={isTodaysTask} onChange={() => setIsTodaysTask(!isTodaysTask)} /> Working Today
+                                                </label>
+                                            </Col>
                                         </div>
                                     </div>
                                 </div>
