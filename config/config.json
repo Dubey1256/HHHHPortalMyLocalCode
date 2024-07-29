@@ -562,6 +562,14 @@
           "manifest": "./src/webparts/manageWebpartTemplate/ManageWebpartTemplateWebPart.manifest.json"
         }
       ]
+    },
+    "eod-report-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/eodReport/EodReportWebPart.js",
+          "manifest": "./src/webparts/eodReport/EodReportWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -655,6 +663,10 @@
     "ContentEditingNewsWebPartStrings": "lib/webparts/contentEditingNews/loc/{locale}.js",
     "ContentEditingDocumentsWebPartStrings": "lib/webparts/contentEditingDocuments/loc/{locale}.js",
     "ManageWebpartTemplateWebPartStrings": "lib/webparts/manageWebpartTemplate/loc/{locale}.js",
-    "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js"
+    "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js",
+    "EodReportWebPartStrings": "lib/webparts/eodReport/loc/{locale}.js"
+
+
+
   }
 }
