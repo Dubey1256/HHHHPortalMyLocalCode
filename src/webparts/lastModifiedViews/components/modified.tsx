@@ -135,7 +135,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
   const getMasterTaskList = () => {
     var web = new Web(baseUrl);
     try {
-      web.lists.getById(props?.props?.MasterTaskListID).items.select("Id,Title,PortfolioStructureID,ComponentCategory/Id,ComponentCategory/Title,PortfolioType/Id,PortfolioType/Title").expand('PortfolioType,ComponentCategory').getAll().then((masterValue: any) => {
+      web.lists.getById(props?.props?.MasterTaskListID).items.select("Id,Title,Item_x0020_Type,PortfolioStructureID,ComponentCategory/Id,ComponentCategory/Title,Parent/Id,PortfolioType/Id,PortfolioType/Title").expand('Parent,PortfolioType,ComponentCategory').getAll().then((masterValue: any) => {
         if (masterValue.length > 0) {
           masterTaskData = masterValue;
           getCurrentData(ActualSites[0])
@@ -225,6 +225,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
       if (allSite.TabName == 'DOCUMENTS' || allSite.TabName == 'FOLDERS' || allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES' || allSite.TabName == 'TEAM-PORTFOLIO' || allSite.TabName == "WEB PAGES") {
         data?.map((item: any) => {
           item.siteType = allSite.TabName
+          
           if(allSite.TabName == 'DOCUMENTS'&& item?.Title==undefined || allSite.TabName=="WEB PAGES"){
             item.Title=item?.FileLeafRef
           }
@@ -322,6 +323,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
             }
           })
           item.siteType = allSite?.TabName
+          item.siteuse=allSite.DisplaySiteName
           item.listId = allSite.ListId;
           item.siteUrl = baseUrl;
           item.GmBHSiteCheck = item.siteUrl.includes("/GmBH");

@@ -51,10 +51,10 @@ const EmployeProfileMain = (props: any) => {
             ContractListID: props?.props?.ContractListID,
             HR_SMARTMETADATA_LISTID:props?.props?.HR_SMARTMETADATA_LISTID,
             siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
-            jointSiteUrl: "https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP"
+            jointSiteUrl: props?.props.Context.pageContext._site.absoluteUrl
         }
         if (allSite?.MainSite == true) {
-            OldEmployeeProfile = `https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP/SitePages/Contact-Profile.aspx?contactId=${params.get('contactId')}`
+            OldEmployeeProfile = `${allListId?.jointSiteUrl}/SP/SitePages/Contact-Profile.aspx?contactId=${params.get('contactId')}`
             if (allSite?.MainSite) {
                 EmployeeDetails(params.get('contactId'));
             }
@@ -63,10 +63,10 @@ const EmployeProfileMain = (props: any) => {
         else if (allSite?.GMBHSite) {
             let contactId = params.get('contactId')
             HrGmbhEmployeDeatails(contactId)
-            OldEmployeeProfile = `https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/GmBH/SitePages/Contact-Profile.aspx?contactId=${params.get('contactId')}`
+            OldEmployeeProfile = `${allListId?.jointSiteUrl}/GmBH/SitePages/Contact-Profile.aspx?contactId=${params.get('contactId')}`
         }
         else if (allSite?.HrSite) {
-            OldEmployeeProfile = `https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/HR/SitePages/EmployeeInfo-old.aspx?employeeId=${params.get('employeeId')}`
+            OldEmployeeProfile = `${allListId?.jointSiteUrl}/HR/SitePages/EmployeeInfo-old.aspx?employeeId=${params.get('employeeId')}`
             let employeeId = params.get('employeeId')
             HrGmbhEmployeDeatails(employeeId)
         }
@@ -398,7 +398,7 @@ const EmployeProfileMain = (props: any) => {
                                         <Col sm={10} className='p-0'>
                                             <Tab.Content>
                                                 <Tab.Pane eventKey="Information2" className='ps-3 border' >
-                                                    <Information EmployeeData={EmployeeData} siteTaggedHR={siteTaggedHR} hrUpdateData={hrUpdateData} />
+                                                    <Information EmployeeData={EmployeeData} siteTaggedHR={siteTaggedHR} hrUpdateData={hrUpdateData} allListId={allListId}/>
                                                 </Tab.Pane>
                                                 <Tab.Pane eventKey="TaxAndInsurance2" className='border ps-3'>
                                                     <div className='mt-3'>
@@ -523,7 +523,7 @@ const EmployeProfileMain = (props: any) => {
                             </div>
                         </div>
                     </div>
-                </div> : <Information EmployeeData={EmployeeData} siteTaggedHR={siteTaggedHR} />}
+                </div> : <Information EmployeeData={EmployeeData} siteTaggedHR={siteTaggedHR} allListId={allListId}/>}
                 {EditContactStatus ? <HHHHEditComponent props={EmployeeData} callBack={ClosePopup} /> : null}
             </div>
             {createContractPopup && <CreateContract callBack={() => {HrContractDetails(urlQuery.get('employeeId')); setCreateContractPopup(false)}} closeContracts={() => callBackData()} AllListId={allListId} updateData={EmployeeData} pageName="Recruiting-Tool" />}

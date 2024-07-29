@@ -126,7 +126,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
             <>
                 <div className='subheading alignCenter'>
                 <img className='workmember' 
-                    src={updateData?.ItemImage != undefined ? updateData?.ItemImage.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg"}
+                    src={updateData?.ItemImage != undefined ? updateData?.ItemImage.Url : `${myContextData2?.allListId?.jointSiteUrl}/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg`}
                      />
                 Edit Institution- {updateData?.FullName}
                      
@@ -298,7 +298,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
 
 //*****************save function End *************** */
 const updateHrDetails = async (postData: any) => {
-    let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/hr');
+    let web = new Web(`${myContextData2?.allListId?.jointSiteUrl}/hr`);
         await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).update(postData).then((e: any) => {
             console.log("request success", e);
             callBack();
@@ -309,8 +309,8 @@ const updateHrDetails = async (postData: any) => {
 
 
 const UpdateGmbhDetails = async (postData: any) => {
-let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
-    await web.lists.getById('6CE99A82-F577-4467-9CDA-613FADA2296F').items.getById(updateData.Id).update(postData).then((e: any) => {
+let web = new Web(`${myContextData2?.allListId?.jointSiteUrl}/GmBH`);
+    await web.lists.getById(myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.getById(updateData.Id).update(postData).then((e: any) => {
         console.log("request success", e);
         callBack();
     }).catch((error: any) => {
