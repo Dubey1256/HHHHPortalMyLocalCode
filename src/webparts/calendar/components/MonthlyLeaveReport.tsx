@@ -801,6 +801,8 @@ export const MonthlyLeaveReport = (props: any) => {
         },
           []);
       }
+      allReportData = allReportData.filter((item: any) => ImageSelectedUsers.some((user: any) =>
+        item.Id === user.Id));
     }
       setleaveset(false); // Ensure the flag is set to false before setting it to true
       setTimeout(() => {
