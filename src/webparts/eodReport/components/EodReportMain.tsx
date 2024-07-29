@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
-
+// import '../../../index.css'
 
 import { ColumnDef } from "@tanstack/react-table";
 import Moment from "moment";
@@ -286,7 +286,7 @@ export const EodReportMain = (props: any) => {
                     ${projectTitleCell}
                     <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">
                         <p style="margin:0px; color:#333;">
-                            <a style="text-decoration: none;" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}">
+                            <a style="text-decoration: none;" href="${siteURL}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}">
                                 ${item?.Title ?? ''}
                             </a>
                         </p>
@@ -446,7 +446,7 @@ export const EodReportMain = (props: any) => {
                 cell: ({ row, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&
-                            <span className=""><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${"https://hhhhteams.sharepoint.com/sites/HHHH/SP/"}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                            <span className=""><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${siteURL}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 {row?.original?.ProjectTitle}</a></span>
                         }
                     </>
@@ -464,7 +464,7 @@ export const EodReportMain = (props: any) => {
                     <>
 
                         {row?.original?.Title != (null || undefined) &&
-                            <span className=""><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${"https://hhhhteams.sharepoint.com/sites/HHHH/SP/"}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} >
+                            <span className=""><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${siteURL}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} >
                                 {row?.original?.Title}</a></span>
                         }
                     </>),
@@ -556,7 +556,7 @@ export const EodReportMain = (props: any) => {
                 accessorFn: (row) => row?.ProjectTitle,
                 cell: ({ row, getValue }) => (
                     <> {row?.original?.ProjectTitle != (null || undefined) &&
-                        <span className=""><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${"https://hhhhteams.sharepoint.com/sites/HHHH/SP/"}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                        <span className=""><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${siteURL}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
                             {row?.original?.ProjectTitle}</a></span>
                     }
                     </>
@@ -573,7 +573,7 @@ export const EodReportMain = (props: any) => {
                 cell: ({ row, getValue }) => (
                     <>
                         {row?.original?.Title != (null || undefined) &&
-                            <span className=""><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${"https://hhhhteams.sharepoint.com/sites/HHHH/SP/"}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} >
+                            <span className=""><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${siteURL}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} >
                                 {row?.original?.Title}</a></span>
                         }
                     </>),
@@ -658,35 +658,35 @@ export const EodReportMain = (props: any) => {
 
 
 
-    const loadAllMasterTaskData = async () => {
-        let data = [];
-        console.log(props?.props.userDisplayName, "props")
+    // const loadAllMasterTaskData = async () => {
+    //     let data = [];
+    //     console.log(props?.props.userDisplayName, "props")
 
-        try {
-            let web = new Web(siteURL);
-            data = await web.lists
-                .getById(AllListId?.MasterTaskId).items
-                .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "HelpInformationVerifiedJson", "HelpInformationVerified",
-                    "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
-                    "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
-                    "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                    "Created", "Modified", "Deliverables", "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "Sitestagging", "FeatureType/Title", "FeatureType/Id"
-                )
-                .expand(
-                    "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam", "Editor", "Author", "FeatureType"
-                )
-                .top(4999)
-                .get();
-            const filterData = data?.filter((metadata: any) => metadata?.Item_x0020_Type == 'Project' || metadata?.Item_x0020_Type == 'Sprint');
+    //     try {
+    //         let web = new Web(siteURL);
+    //         data = await web.lists
+    //             .getById(AllListId?.MasterTaskId).items
+    //             .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "HelpInformationVerifiedJson", "HelpInformationVerified",
+    //                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
+    //                 "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
+    //                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
+    //                 "Created", "Modified", "Deliverables", "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "Sitestagging", "FeatureType/Title", "FeatureType/Id"
+    //             )
+    //             .expand(
+    //                 "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam", "Editor", "Author", "FeatureType"
+    //             )
+    //             .top(4999)
+    //             .get();
+    //         const filterData = data?.filter((metadata: any) => metadata?.Item_x0020_Type == 'Project' || metadata?.Item_x0020_Type == 'Sprint');
 
 
 
-        }
-        catch (error) {
-            return Promise.reject(error);
-        }
+    //     }
+    //     catch (error) {
+    //         return Promise.reject(error);
+    //     }
 
-    }
+    // }
 
     const loadLoginUserData = async () => {
         let data = [];
@@ -1126,7 +1126,7 @@ export const EodReportMain = (props: any) => {
             await loadAllUser();
             await loadLoginUserData();
             await loadSmartMetaDataList();
-            await loadAllMasterTaskData();
+            // await loadAllMasterTaskData();
         };
         // Call the async function
         fetchData();
@@ -1223,7 +1223,7 @@ export const EodReportMain = (props: any) => {
 
 
 
-    function getTodayAchievedOrPending(offshoreComments: any | null | undefined, type: number) {
+    function getTodayAchievedOrPending(offshoreComments: any | null | undefined, type: number): string {
         if (offshoreComments == null) {
             return '';
         }
@@ -1231,7 +1231,8 @@ export const EodReportMain = (props: any) => {
         const commentsArray = JSON.parse(offshoreComments);
         console.log(commentsArray, "commentsArray");
 
-        const filteredComments = commentsArray?.filter((comment: { Type: string; Achieved: string; Pending: string; Created: string; ProjectName: string, ID: string }) => {
+        // Filter comments based on type and creation date
+        const filteredComments = commentsArray?.filter((comment: { Type: string; Achieved: string; Pending: string; Created: string; ProjectName: string; ID: string }) => {
             if (comment?.Type === "EODReport") {
                 if (type === 1 && comment?.Achieved && isTodayCreated(comment?.Created)) {
                     return true;
@@ -1246,21 +1247,24 @@ export const EodReportMain = (props: any) => {
             return false;
         });
 
+        // Map filtered comments to the desired values
         const results = filteredComments?.map((comment: { Achieved: string; Pending: string; ProjectName: string; ID: string }) => {
             if (type === 1) {
-                return comment?.Achieved;
+                return comment?.Achieved || '';
             } else if (type === 2) {
-                return comment?.Pending;
+                return comment?.Pending || '';
             } else if (type === 3) {
-                return comment?.ProjectName;
+                return comment?.ProjectName || '';
             } else if (type === 4) {
-                return comment?.ID;
+                return comment?.ID || '';
             }
             return ''; // Default return if type is not 1, 2, 3, or 4
         });
 
-        return results;
+        // Join results into a single string
+        return results?.join(', ') || ''; // You can choose a different delimiter if needed
     }
+
 
     const callBackData = React.useCallback((checkData: any) => {
         console.log(checkData, "checkData");
