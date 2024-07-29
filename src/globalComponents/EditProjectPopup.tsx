@@ -1309,7 +1309,7 @@ function EditProjectPopup(item: any) {
     let selectCats = CategoriesData;
     if (!selectCats?.some((cat: any) => cat?.Id == item.Id)) {
       selectCats?.push(item)
-    }else{
+    } else {
       selectCats = selectCats?.filter((cat: any) => cat?.Id != item.Id)
     }
     setCategoriesData(selectCats)
@@ -1699,13 +1699,67 @@ function EditProjectPopup(item: any) {
                                 <label className="form-label  full-width">
                                   Categories{" "}
                                 </label>
-                                <input
+                                {/* <input
                                   type="text"
                                   className="ui-autocomplete-input form-control"
                                   id="txtCategories"
                                   onChange={(e) => autoSuggestionsForCategory(e)}
                                   value={categorySearchKey}
-                                />
+                                /> */}
+                                {CategoriesData != undefined && CategoriesData?.length == 1 ? (
+                                  CategoriesData?.map((type: any, index: any) => {
+
+                                    return (
+                                      <div
+                                        className="full-width replaceInput alignCenter"
+                                        key={index}
+                                      >
+                                        <a
+                                          href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${type.Id}`}
+                                          className="textDotted hreflink"
+                                          data-interception="off"
+                                          target="_blank"
+                                        >
+                                          {type?.Title}
+                                        </a>
+                                        <span
+                                          className="input-group-text"
+                                          placeholder="Categories"
+                                        >
+                                          <span
+                                            className="bg-dark svg__icon--cross svg__iconbox"
+                                            onClick={() =>                                      
+                                              deleteCategories(type.Id)
+                                            }
+                                          ></span>
+                                          <span
+                                            title="Portfolio"
+                                            onClick={(e) => EditComponentPicker(EditData, "Categories")
+
+                                            }
+                                            className="svg__iconbox svg__icon--editBox"
+                                          ></span>
+                                        </span>
+                                      </div>
+                                    )
+                                  })
+                                ) :
+                                  (<>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      placeholder="Enter Categories"
+                                    />
+                                    <span className="input-group-text" placeholder="Categories">
+                                      <span
+                                        title="Categories"
+                                        onClick={(e) => EditComponentPicker(EditData, "Categories")}
+                                        className="svg__iconbox svg__icon--editBox"
+                                      ></span>
+                                    </span>
+                                  </>
+                                  )
+                                } 
 
                                 <span className="input-group-text">
                                   <svg
@@ -1771,7 +1825,7 @@ function EditProjectPopup(item: any) {
                                   );
                                 })}
 
-                                {CategoriesData != undefined ? (
+                                {CategoriesData != undefined  && CategoriesData?.length > 1 ? (
                                   <div>
                                     {CategoriesData?.map(
                                       (type: any, index: number) => {
@@ -1872,21 +1926,68 @@ function EditProjectPopup(item: any) {
                             </li>
                           </ul>
                           <div className="col mt-2">
+                  
                             <div className="input-group full-width">
                               <label className="form-label full-width">
                                 Portfolio Items
                               </label>
+                                {projectTaggedPortfolios != undefined && projectTaggedPortfolios?.length == 1 ? (
+                                  projectTaggedPortfolios?.map((com: any, index: any) => {
+
+                                    return (
+                                      <div
+                                        className="full-width replaceInput alignCenter"
+                                        key={index}
+                                      >
+                                        <a
+                                          href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
+                                          className="textDotted hreflink"
+                                          data-interception="off"
+                                          target="_blank"
+                                        >
+                                          {com?.Title}
+                                        </a>
+                                        <span
+                                          className="input-group-text"
+                                          placeholder="Portfolio"
+                                        >
+                                          <span
+                                            className="bg-dark svg__icon--cross svg__iconbox"
+                                            onClick={() =>                                      
+                                              RemoveSelectedServiceComponent(com.Id, "Portfolios")
+                                            }
+                                          ></span>
+                                          <span
+                                            title="Portfolio"
+                                            onClick={(e) => EditPortfolio(EditData, "Portfolios")
+                                            }
+                                            className="svg__iconbox svg__icon--editBox"
+                                          ></span>
+                                        </span>
+                                      </div>
+                                    )
+                                  })
+                                ) :
+                                  (<>
                               <input
                                 type="text"
                                 className="form-control"
-                              />
-                              <span className="input-group-text">
-                                <span onClick={(e) => EditPortfolio(EditData, "Portfolios")} title="Edit Portfolios" className="svg__iconbox svg__icon--editBox"></span>
+                                      placeholder="Enter Portfolio Items"
+                                    />
+                                    <span className="input-group-text" placeholder="Portfolios">
+                                      <span
+                                        title="Portfolio"
+                                        onClick={(e) => EditPortfolio(EditData, "Portfolios")}
+                                        className="svg__iconbox svg__icon--editBox"
+                                      ></span>
                               </span>
+                                  </>
+                                  )
+                                }                            
                             </div>
 
                               <div className="  inner-tabb">
-                                {projectTaggedPortfolios?.length > 0 ?
+                                {projectTaggedPortfolios?.length > 1 ?
                                   <span className='full-width'>
                                     {
                                       projectTaggedPortfolios?.map((com: any, index: any) => {
@@ -1903,9 +2004,6 @@ function EditProjectPopup(item: any) {
                                   }
                                 </span> : ''
                               }
-
-
-
                             </div>
 
                           </div>
@@ -1954,7 +2052,7 @@ function EditProjectPopup(item: any) {
                               }
                             >
                               <button
-                                className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                  className="alignCenter py-2 w-100"
                                 data-bs-toggle="collapse"
                               >
                                 <span className="fw-medium font-sans-serif text-900">
@@ -1967,6 +2065,16 @@ function EditProjectPopup(item: any) {
                                   </span>{" "}
                                   Description
                                 </span>
+                                  <span className="ml-auto">
+                                    <input
+                                      className="form-check-input"
+                                      type="checkbox"
+                                      defaultChecked={
+                                        EditData.descriptionVerified === true
+                                      }
+                                    ></input>
+                                    <span className="ps-1 hreflink">Verified</span>
+                                  </span>
                               </button>
                             </div>
                             <div className="accordion-collapse collapse show">
@@ -1975,16 +2083,7 @@ function EditProjectPopup(item: any) {
                                   className="accordion-body pt-1"
                                   id="testDiv1"
                                 >
-                                  <span className="text-end pull-right">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      defaultChecked={
-                                        EditData.descriptionVerified === true
-                                      }
-                                    ></input>
-                                    <span className="ps-1">Verified</span>
-                                  </span>
+
 
                                   <HtmlEditorCard
                                     editorValue={
