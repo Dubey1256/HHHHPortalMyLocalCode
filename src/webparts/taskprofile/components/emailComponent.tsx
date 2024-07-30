@@ -72,14 +72,81 @@ const EmailComponenet = (props: any) => {
     })
     console.log(feedback);
   };
+  const updateDataForUx = async (permission: any) => {
+    const feedback: any = props?.items?.FeedBack != null ? props.items?.FeedBack : null;
+    feedback?.map((items: any) => {
+      var approvalDataHistory = {
+        ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+        Id: props?.currentUser[0].Id,
+        ImageUrl: props?.currentUser[0].userImage,
+        Title: props?.currentUser[0].Title,
+        isShowLight: permission,
+        Status: permission == "Approve" ? 'Approved by' : "Rejected by"
+      }
+      if (items?.FeedBackDescriptions != undefined && items?.FeedBackDescriptions?.length > 0) {
+        items?.FeedBackDescriptions?.map((uxTempArray: any ,index:any) => {
+          if(index>0){
+            uxTempArray?. TemplatesArray?.map((feedback:any)=>{
+              if (feedback?.Subtext != undefined) {
+                feedback?.Subtext?.map((subtext: any) => {
+                  if (subtext?.isShowLight === "") {
+                    if (props?.items["PercentComplete"] == 1) {
+                      if (subtext.ApproverData != undefined) {
+                        subtext.ApproverData.push(approvalDataHistory)
+                      } else {
+                        subtext.ApproverData = [];
+                        subtext.ApproverData.push(approvalDataHistory);
+                      }
+                    }
+                    subtext.isShowLight = permission
+                  } else {
+    
+                    subtext.isShowLight = permission
+                  }
+                })
+              }
+              if (props?.items["PercentComplete"] == 1) {
+                if (feedback.ApproverData != undefined) {
+                  feedback.ApproverData.push(approvalDataHistory)
+                } else {
+                  feedback.ApproverData = [];
+                  feedback.ApproverData.push(approvalDataHistory);
+                }
+              }
+    
+              if (feedback.isShowLight === "") {
+    
+                feedback.isShowLight = permission
+              } else {
+    
+                feedback.isShowLight = permission
+              }
+            })
 
+          }
+          
+        })
+      }
+    })
+    console.log(feedback);
+  };
   const sendEmail = async (send: any) => {
 
     if (send == "Approved") {
-      await updateData("Approve");
+      if(props?.items?.Categories?.includes('UX-New')){
+        await updateDataForUx("Approve")
+      }else{
+        await updateData("Approve");
+      }
+      
     }
     else if (send == "Rejected") {
-      await updateData("Reject");
+      if(props?.items?.Categories?.includes('UX-New')){
+        await updateDataForUx("Approve")
+      }else{
+        await updateData("Reject");
+      }
+    
     }
     let percentageComplete;
     let taskStatus = "";
