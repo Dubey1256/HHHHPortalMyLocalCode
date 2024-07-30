@@ -55,9 +55,8 @@ let pageName: any = 'hierarchyPopperToolTip'
 export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTaskData, AllSitesTaskData, AllListId }: any) {
     let paddingCount: number = -1;
     let marginCount: number = 0;
-    
-    masterTaskData=masterTaskData?.concat(AllSitesTaskData)
-    masterTaskData=masterTaskData?.filter((removeUndefined:any)=>{return (removeUndefined!=undefined)})
+
+    masterTaskData = masterTaskData?.concat(AllSitesTaskData)
     // AllMatsterAndTaskData = [...masterTaskData];
     // AllMatsterAndTaskData = JSON.parse(JSON.stringify(AllMatsterAndTaskData?.concat(AllSitesTaskData)));
     const [controlledVisible, setControlledVisible] = React.useState(false);
@@ -84,7 +83,7 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
         onVisibleChange: setControlledVisible,
     });
 
-    React.useEffect(() => {
+    const colorChange = () => {
         let targetDiv: any = document?.querySelector('.ms-Panel-main');
         setTimeout(() => {
             if (targetDiv && row?.PortfolioType?.Color != undefined) {
@@ -92,7 +91,7 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
                 targetDiv?.style?.setProperty('--SiteBlue', row?.PortfolioType?.Color); // Change the color to your desired value
             }
         }, 1000)
-    }, [action]);
+    }
 
 
 
@@ -153,6 +152,7 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
 
 
     const handlAction = (newAction: any) => {
+
         if (newAction === "click" && newAction === "hover") return;
         setAction(newAction);
         setControlledVisible(true);
@@ -166,6 +166,9 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
         } else {
             rowOrg = { ...row };
         }
+        // if (newAction === "click") {
+        //     colorChange()
+        // }
         if (newAction === "click" && newAction === "hover") return;
         getTooltiphierarchyAllData(rowOrg).then((response: any) => {
 
@@ -175,7 +178,7 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
             setallValue(response);
         });
     };
-    
+
     const handleMouseLeave = () => {
         if (action === "click") return;
         setAction("");
@@ -234,28 +237,28 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
         return [];
     }, [action]);
 
-   
 
 
 
-    
-    const checkAllChilds=(data:any)=>{
-         const haveSubrows=data?.subRowsFirst?.length>0;
-         data.subRows=[]
-         data.openAllChilds = false;
-        data.subRows=masterTaskData?.filter((AllData:any)=> {
-            AllData.siteUrl=data?.siteUrl;  
-         return((data?.SiteIcon==undefined && AllData?.Parent?.Id==data?.Id)||
-         (( (data?.ParentTask?.Id==undefined || data?.ParentTask?.Id==null) &&(data?.Item_x0020_Type!=undefined && data?.Item_x0020_Type?.toLowerCase()!="tasks" && data?.Item_x0020_Type?.toLowerCase()!="task" && AllData?.Portfolio?.Id==data?.Id)))
-         ||(data?.SiteIcon!=undefined && AllData?.siteType==data?.siteType && AllData?.ParentTask?.Id ==data.Id) 
-         )
+
+
+    const checkAllChilds = (data: any) => {
+        const haveSubrows = data?.subRowsFirst?.length > 0;
+        data.subRows = []
+        data.openAllChilds = false;
+        data.subRows = masterTaskData?.filter((AllData: any) => {
+            AllData.siteUrl = data?.siteUrl;
+            return ((data?.SiteIcon == undefined && AllData?.Parent?.Id == data?.Id) ||
+                (((data?.ParentTask?.Id == undefined || data?.ParentTask?.Id == null) && (data?.Item_x0020_Type != undefined && data?.Item_x0020_Type?.toLowerCase() != "tasks" && AllData?.Portfolio?.Id == data?.Id)))
+                || (data?.SiteIcon != undefined && AllData?.siteType == data?.siteType && AllData?.ParentTask?.Id == data.Id)
+            )
         })
-        if(haveSubrows==true){
+        if (haveSubrows == true) {
             checkAllChilds(data?.subRowsFirst[0])
         }
     }
     const onToggle = (data: any, type: any) => {
-        if (type == "CurentHirearchy") {     
+        if (type == "CurentHirearchy") {
             data.isExpanded = !data.isExpanded
         }
         if (type == "AllHirearchy") {
@@ -265,24 +268,23 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
         setExpandDataTooltip(!expandDataTooltip)
 
     }
-    const childsAllHirearchy=(data:any)=>{
-        if(data?.subRows?.length>0){
-            data?.subRows.map((item:any)=>{
+    const childsAllHirearchy = (data: any) => {
+        if (data?.subRows?.length > 0) {
+            data?.subRows.map((item: any) => {
                 item.openAllChilds = false;
-                item.subRows=[];
-               item.subRows=masterTaskData.filter((AllData:any)=>(item?.SiteIcon==undefined && AllData?.Parent?.Id==item?.Id)||
-               ((AllData?.ParentTask?.Id==undefined || AllData?.ParentTask?.Id==null) && (item?.Item_x0020_Type!=undefined && item?.Item_x0020_Type?.toLowerCase()!="tasks" &&item?.Item_x0020_Type?.toLowerCase()!="task" && AllData?.Portfolio?.Id==item?.Id)) ||
-               (item?.SiteIcon!=undefined && AllData?.siteType==item?.siteType
-                && AllData?.ParentTask?.Id ==item.Id))
-                
-                
+                item.subRows = [];
+                item.subRows = masterTaskData.filter((AllData: any) => (item?.SiteIcon == undefined && AllData?.Parent?.Id == item?.Id) ||
+                    ((AllData?.ParentTask?.Id == undefined || AllData?.ParentTask?.Id == null) && (item?.Item_x0020_Type != undefined && item?.Item_x0020_Type?.toLowerCase() != "tasks" && AllData?.Portfolio?.Id == item?.Id)) ||
+                    (item?.SiteIcon != undefined && AllData?.siteType == item?.siteType
+                        && AllData?.ParentTask?.Id == item.Id))
+
+
             })
-            
-          
+
+
         }
-        console.log(data)
     }
-    
+
 
     const expandData = (itemData: any) => {
         const hasChildren = itemData?.subRowsFirst?.length > 0;
@@ -312,7 +314,7 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
                 <div className={itemData.Item_x0020_Type == "Component" ? ' d-flex p-1 f-bg borderBottomWhite' :
                     itemData.Item_x0020_Type == "SubComponent" ? 'd-flex p-1 a-bg borderBottomWhite' : itemData.Item_x0020_Type == 'Feature' ? "d-flex p-1 borderBottomWhite w-bg" : "d-flex p-1 border-top"}>
                     <div style={{ flex: "0 0 160px" }}>
-                        <div className={lastChild == true ? `alignCenter levelml-1 f-14` : `alignCenter f-14`}>
+                        <div className={lastChild == true ? `alignCenter levelml-1` : `alignCenter`}>
                             {hasChildren &&
                                 <span style={{ width: "20px" }} className="mt--3" onClick={() => onToggle(itemData, "CurentHirearchy")}>
                                     {hasChildren && (
@@ -322,13 +324,13 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
                                 </span>
                             }
 
-                            {haveAllChildren==true?
+                            {haveAllChildren == true ?
                                 <span style={{ width: "20px" }} className="mt--3" onClick={() => onToggle(itemData, "AllHirearchy")}>
-                                    {haveAllChildren&&(
-                                    itemData?.openAllChilds!=true?<MdAdd />:<MdRemove />
+                                    {haveAllChildren && (
+                                        itemData?.openAllChilds != true ? <MdAdd /> : <MdRemove />
                                     )}
                                 </span>
-                                :<span style={{ width: "20px" }} className="mt--3"></span>
+                                : <span style={{ width: "20px" }} className="mt--3"></span>
                             }
 
                             {itemData?.SiteIcon != undefined ? <>
@@ -347,7 +349,7 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
                     </div>
 
                     <div className={lastChild == true ? "lastlevel" : ''} style={{ flex: "0 0 330px" }}>
-                        <div className="aligncenter f-14 textDotted" style={{ width: "330px" }}>
+                        <div className="aligncenter textDotted" style={{ width: "330px" }}>
                             {itemData?.SiteIcon != undefined ? <>
 
                                 <a
@@ -364,14 +366,14 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
                                         {itemData?.Title}
                                     </a>
                                 </>
-                                 :itemData?.Item_x0020_Type == "Sprint" || itemData.Item_x0020_Type == "Project" ?
-                                 <a className="fw-normal hreflink" title={`${itemData?.Title}`} data-interception="off" target="blank"
-                                     href={`${itemData?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${itemData?.Id}`}>
-                                         {itemData?.Title}
-                                 </a>   : ""}</>}
+                                    : itemData?.Item_x0020_Type == "Sprint" || itemData.Item_x0020_Type == "Project" ?
+                                        <a className="fw-normal hreflink" title={`${itemData?.Title}`} data-interception="off" target="blank"
+                                            href={`${itemData?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${itemData?.Id}`}>
+                                            {itemData?.Title}
+                                        </a> : ""}</>}
                         </div>
                     </div>
-                    <div className={lastChild == true ? "roundRight lastlevel f-14" : 'f-14'} style={{ flex: "0 0 25px" }}>
+                    <div className={lastChild == true ? "roundRight lastlevel" : ''} style={{ flex: "0 0 25px" }}>
                         {itemData?.TaskType?.Title != 'Task' && itemData?.Item_x0020_Type != "Sprint" && itemData?.Item_x0020_Type != "Project" ?
                             <svg onClick={() => openActivityPopup(itemData)} className={lastChild == true ? "hreflink text-white" : "hreflink"} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48" fill="#333333">
                                 <title>Open Activity Popup</title>
@@ -384,7 +386,7 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
                     </div>
                 </div>
 
-                {hasChildren && itemData?.isExpanded && itemData?.openAllChilds!=true &&  (
+                {hasChildren && itemData?.isExpanded && itemData?.openAllChilds != true && (
 
                     itemData?.subRowsFirst.map((items: any) => (
                         expandData(items)
@@ -418,25 +420,25 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
             {action === "click" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container clickTooltip p-3 m-0" })}>
                     <div className="alignCenter mb-2">
-                        <span className="fw-normal f-14">{row?.Title}</span>
+                        <span className="fw-normal">{row?.Title}</span>
                         <span onClick={handleCloseClick} style={{ marginRight: "3px" }} title="Close" className="ml-auto hreflink svg__iconbox svg__icon--cross dark"></span>
                     </div>
                     <div className="maXh-300 scrollbar">
-                    {allValue != undefined && allValue != null &&
+                        {allValue != undefined && allValue != null &&
 
-                        expandData(allValue)
+                            expandData(allValue)
 
-                    }
+                        }
 
-                    <div {...getArrowProps({ className: "tooltip-arrow" })} />
-                </div>
+                        <div {...getArrowProps({ className: "tooltip-arrow" })} />
+                    </div>
                 </div>
             )}
             {action === "hover" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
                     <span>
                         <span>
-                            <a className="f-14 text-black">{hoverOverInfo}</a>
+                            <a>{hoverOverInfo}</a>
                         </span>
                     </span>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
@@ -449,7 +451,7 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
                     AllListId={AllListId}
                     context={AllListId?.Context}
                 ></CreateActivity>
-                
+
             )}
             {openWS && (
                 <CreateWS
@@ -458,7 +460,7 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
                     AllListId={AllListId}
                     context={AllListId?.Context}
                 ></CreateWS>
-                
+
             )}
         </>
     );
