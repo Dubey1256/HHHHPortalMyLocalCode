@@ -514,7 +514,8 @@ const RecurringTask = (props: any) => {
                 defaultChecked={false}
                 checked={showRecurrenceSeriesInfo}
                 inlineLabel
-                label="Recurrence"
+                title='Recurrence'
+                // label="Recurrence"
                 onChange={handleRecurrenceCheck}
                 styles={{
                     root: { marginBottom: "10px" },
