@@ -380,7 +380,14 @@ const ImageViewPanel = (props: any) => {
      }
 
     // ============== slider Image view function=====================
-
+    React.useEffect(() => {
+        if (isPopoverReplyOpen!='') {            
+            const elements = document.getElementsByClassName('fui-PopoverSurface ___15k6l07_4rk8gh0');
+            if (elements?.length > 1) {
+                (elements[1] as HTMLElement).style.display = 'none';
+            }
+        }
+    }, [isPopoverReplyOpen])
     const imageSlider = (allImageData: any) => {
         return (
             <div className="slider-container">
