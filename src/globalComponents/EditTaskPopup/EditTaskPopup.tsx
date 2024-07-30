@@ -25,21 +25,13 @@ import { FaExpandAlt } from "react-icons/fa";
 import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import { TbReplace } from "react-icons/tb";
-
-
-import { Label, makeStyles, mergeClasses, tokens, Tooltip as InfoToolTip, useId, } from "@fluentui/react-components";
-import { Info16Regular, Add16Regular } from "@fluentui/react-icons";
-const useStyles = makeStyles({
-    root: { display: "flex", columnGap: tokens.spacingVerticalS, },
-    visible: { color: tokens.colorNeutralForeground2BrandSelected, },
-});
 // Used Global Common functions imports
 
 import * as globalCommon from "../globalCommon";
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
 
 // Used Components imports 
-
+import LabelInfoIconToolTip from "../../globalComponents/labelInfoIconToolTip";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import ServiceComponentPortfolioPopup from "./ServiceComponentPortfolioPopup";
 import Picker from "./SmartMetaDataPicker";
@@ -104,18 +96,11 @@ let oldWorkingAction: any = []
 let linkedPortfolioPopup: any;
 let portfolioPopup: any;
 
-let ColumnDetails: any = [];
 const EditTaskPopup = (Items: any) => {
     // Task Popup Config Info 
     const Context = Items?.context;
     const AllListIdData = Items?.AllListId;
     AllListIdData.listId = Items?.Items?.listId;
-
-    const styles = useStyles();
-    const contentId = useId("content");
-    const [visible, setVisible] = useState(false);
-    const [visibleRank, setVisibleRank] = useState(false);
-    const [ItemRankval, setItemRankval] = useState<any>(null);
 
     // Items.Items.Id = Items?.Items?.ID;
     Items.Items.Id =
@@ -271,7 +256,6 @@ const EditTaskPopup = (Items: any) => {
 
     useEffect(() => {
         if (FeedBackCount == 0) {
-            loadColumnDetails();
             getTaskNotificationConfiguration();
             loadTaskUsers();
             GetExtraLookupColumnData();
@@ -5371,38 +5355,6 @@ const EditTaskPopup = (Items: any) => {
         updateFeedbackArray[0].FeedBackDescriptions = designFeedbackData
 
     }
-    const getColumnDetails = (name: string) => {
-        let rank: any = ''
-        if (!visibleRank) {
-            const res = globalCommon.GetColumnDetails(name, ColumnDetails);
-            if (res && res.Title) {
-                setVisibleRank(true);
-                rank =
-                    <label className="alignCenter form-label full-width gap-1">
-                        {res?.Title}
-                        {res?.Description != null && res?.Description != '' && <div className={styles.root}>
-                            <InfoToolTip
-                                content={{
-                                    children: <span dangerouslySetInnerHTML={{ __html: res?.Description }}></span>,
-                                    id: contentId,
-                                }}
-                                withArrow
-                                relationship="label"
-                                onVisibleChange={(e: any, data: any) => setVisible(data?.visible)} >
-                                <Info16Regular tabIndex={0} className={mergeClasses(visible && styles.visible)} />
-                            </InfoToolTip>
-                        </div>}
-                    </label>
-                setItemRankval(rank)
-            }
-        }
-        return rank;
-    };
-
-    const loadColumnDetails = async () => {
-        let getvalue = await globalCommon.getsiteConfig();
-        ColumnDetails = getvalue;
-    };
     return (
         <div
             className={`${EditData.Id}`}
@@ -5604,39 +5556,9 @@ const EditTaskPopup = (Items: any) => {
                                     <div className="col-md-5">
                                         <div className="col-12 ">
                                             <div className="input-group">
-                                                <div className="d-flex justify-content-between align-items-center mb-0  full-width">
-                                                    Title
-                                                    <span className="d-flex">
-                                                        {/* <span className="form-check mx-2">
-                                                            <input
-                                                                className="form-check-input rounded-0"
-                                                                type="checkbox"
-                                                                checked={EditData.workingThisWeek}
-                                                                value={EditData.workingThisWeek}
-                                                                onChange={(e) =>
-                                                                    changeStatus(e, "workingThisWeek")
-                                                                }
-                                                            />
-                                                            <label className="form-check-label">
-                                                                Working This Week
-                                                            </label>
-                                                        </span>
-                                                        <span className="form-check">
-                                                            <input
-                                                                className="form-check-input rounded-0"
-                                                                type="checkbox"
-                                                                checked={EditData.IsTodaysTask}
-                                                                value={EditData.IsTodaysTask}
-                                                                onChange={(e) =>
-                                                                    changeStatus(e, "IsTodaysTask")
-                                                                }
-                                                            />
-                                                            <label className="form-check-label">
-                                                                Working Today
-                                                            </label>
-                                                        </span> */}
-                                                    </span>
-                                                </div>
+                                            <LabelInfoIconToolTip columnName={"Title"} />
+                                                {/* <div className="d-flex justify-content-between align-items-center mb-0  full-width">
+                                                    Title </div> */}
                                                 <input
                                                     type="text"
                                                     className="form-control"
@@ -5654,22 +5576,11 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="mx-0 row taskdate ">
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
-                                                    {/* <CDatePicker date={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}/> */}
-                                                    {/* <DatePicker value={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : null} onChange={(date) => setEditData({
-                                                        ...EditData, StartDate: date
-                                                    })} /> */}
-                                                    <label className="form-label full-width">
-                                                        Start Date
-                                                    </label>
+                                                <LabelInfoIconToolTip columnName={"StartDate"} />                                                   
                                                     <input
                                                         type="date"
                                                         className="form-control"
                                                         max="9999-12-31"
-                                                        // min={
-                                                        //     EditData.Created
-                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                        //         : ""
-                                                        // }
                                                         value={
                                                             EditData.StartDate
                                                                 ? Moment(EditData.StartDate).format("YYYY-MM-DD")
@@ -5687,7 +5598,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col-6 ps-0 pe-0 mt-2">
                                                 <div className="input-group ">
                                                     <div className="form-label full-width">
-                                                        Due Date
+                                                    <LabelInfoIconToolTip columnName={"dueDate"} onlyText={"text"}/> 
                                                         <span title="Re-occurring Due Date">
                                                             <input
                                                                 type="checkbox"
@@ -5700,11 +5611,6 @@ const EditTaskPopup = (Items: any) => {
                                                         className="form-control"
                                                         placeholder="Enter Due Date"
                                                         max="9999-12-31"
-                                                        // min={
-                                                        //     EditData.Created
-                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                        //         : ""
-                                                        // }
                                                         value={
                                                             EditData.DueDate
                                                                 ? Moment(EditData.DueDate).format("YYYY-MM-DD")
@@ -5721,19 +5627,11 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
-                                                    <label className="form-label full-width">
-                                                        {" "}
-                                                        Completed Date{" "}
-                                                    </label>
+                                                <LabelInfoIconToolTip columnName={"CompletedDate"} />
                                                     <input
                                                         type="date"
                                                         className="form-control"
                                                         max="9999-12-31"
-                                                        // min={
-                                                        //     EditData.Created
-                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                        //         : ""
-                                                        // }
                                                         value={
                                                             EditData.CompletedDate
                                                                 ? Moment(EditData.CompletedDate).format("YYYY-MM-DD")
@@ -5753,7 +5651,7 @@ const EditTaskPopup = (Items: any) => {
                                                     {/* <label className="form-label full-width">
                                                         Item Rank
                                                     </label> */}
-                                                    {visibleRank ? ItemRankval : (getColumnDetails('Item_x0020_Rank'))}
+                                                    <LabelInfoIconToolTip columnName={"ItemRank"} />
                                                     <select
                                                         className="form-select"
                                                         defaultValue={EditData.ItemRank}
@@ -5782,9 +5680,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="mx-0 row mt-2 taskservices">
                                             <div className="col-md-6  ps-0">
                                                 <div className="input-group mb-2">
-                                                    <label className="form-label full-width">
-                                                        Portfolio Item
-                                                    </label>
+                                                <LabelInfoIconToolTip columnName={"PortfolioItem"} />
                                                     {TaggedPortfolioData?.length > 0 ? (
                                                         <div className="full-width">
                                                             {TaggedPortfolioData?.map((com: any) => {
@@ -5855,9 +5751,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
 
                                                 <div className="input-group mb-2">
-                                                    <label className="form-label full-width">
-                                                        Categories
-                                                    </label>
+                                                <LabelInfoIconToolTip columnName={"Categories"}/>  
                                                     {TaskCategoriesData?.length > 1 ? <>
                                                         <input
                                                             type="text"
@@ -5988,7 +5882,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="row">
                                                     <div className="time-status col-md-6">
                                                         <div className="input-group">
-                                                            <label className="form-label full-width">Priority</label>
+                                                        <LabelInfoIconToolTip columnName={"Priority"} />
                                                             <input
                                                                 type="text"
                                                                 className="form-control"
@@ -6069,7 +5963,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                     <div className="col-md-6">
                                                         <div className="input-group">
-                                                            <label className="form-label full-width">SmartPriority</label>
+                                                        <LabelInfoIconToolTip columnName={"SmartPriority"} />
                                                             <div className="bg-e9 w-100 py-1 px-2" style={{ border: '1px solid #CDD4DB' }}>
                                                                 <span className={EditData?.SmartPriority != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
                                                                     <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
@@ -6086,9 +5980,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-12 mb-2">
                                                     <div className="input-group ">
-                                                        <label className="form-label full-width">
-                                                            Client Activity
-                                                        </label>
+                                                    <LabelInfoIconToolTip columnName={"ClientActivity"} />
                                                         <input
                                                             type="text"
                                                             className="form-control"
@@ -6101,10 +5993,7 @@ const EditTaskPopup = (Items: any) => {
                                                     title="Relevant Portfolio Items"
                                                 >
                                                     <div className="input-group">
-                                                        <label className="form-label full-width ">
-                                                            {" "}
-                                                            Linked Component Task{" "}
-                                                        </label>
+                                                    <LabelInfoIconToolTip columnName={"LinkedComponentTask"}/>
                                                         <input
                                                             type="text"
                                                             readOnly
@@ -6125,9 +6014,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-12 mb-2 mt-2">
                                                     <div className="input-group mb-2">
-                                                        <label className="form-label full-width">
-                                                            Linked Portfolio Items
-                                                        </label>
+                                                    <LabelInfoIconToolTip columnName={"LinkedPortfolioItems"} />
                                                         <input
                                                             type="text"
                                                             className="form-control"
@@ -6212,9 +6099,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-12">
                                                     <div className="input-group">
-                                                        <label className="form-label full-width">
-                                                            Project
-                                                        </label>
+                                                    <LabelInfoIconToolTip columnName={"Project"} />
                                                         {selectedProject != undefined &&
                                                             selectedProject.length > 0 ? (
                                                             <>
@@ -6293,9 +6178,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                         <div className="col-12 mb-2 taskurl">
                                             <div className="input-group">
-                                                <label className="form-label full-width ">
-                                                    Relevant URL
-                                                </label>
+                                            <LabelInfoIconToolTip columnName={"RelevantURL"} />
                                                 <input
                                                     type="text"
                                                     className="form-control"
@@ -6353,7 +6236,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     <SlArrowRight />
                                                                 )}
                                                             </span>
-                                                            <span className="mx-2">Site Composition</span>
+                                                            <span className="mx-2">   <LabelInfoIconToolTip columnName={"SiteComposition"} onlyText={"text"} /></span>
                                                         </div>
                                                         <span
                                                             className="svg__iconbox svg__icon--editBox hreflink"
@@ -6426,7 +6309,7 @@ const EditTaskPopup = (Items: any) => {
 
                                         <div className="col mt-2 clearfix">
                                             <div className="input-group taskTime">
-                                                <label className="form-label full-width">Status</label>
+                                            <LabelInfoIconToolTip columnName={"Status"} />
                                                 <input
                                                     type="text"
                                                     maxLength={3}
@@ -6463,9 +6346,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col mt-2 time-status">
                                                 <div>
                                                     <div className="input-group">
-                                                        <label className="form-label full-width ">
-                                                            Time
-                                                        </label>
+                                                    <LabelInfoIconToolTip columnName={"Time"} />
                                                         <input
                                                             type="text"
                                                             maxLength={3}
@@ -6762,7 +6643,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="input-group">
                                                 {console.log("Working action default users data ==============", WorkingActionDefaultUsers)}
                                                 <label className="form-label full-width alignCenter mb-1">
-                                                    <b>Bottleneck: </b>
+                                                    <b><LabelInfoIconToolTip columnName={"Bottleneck"} onlyText={"text"} />: </b>
 
                                                     {WorkingActionDefaultUsers?.map((userDtl: any, index: number) => {
                                                         return (
@@ -6922,7 +6803,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col mt-2 ps-0">
                                             <div className="input-group">
                                                 <label className="form-label full-width alignCenter mb-1">
-                                                    <b>Attention: </b>
+                                                    <b><LabelInfoIconToolTip columnName={"Attention"} onlyText={"text"} />: </b>
                                                     {WorkingActionDefaultUsers?.map((userDtl: any, index: number) => {
                                                         return (
                                                             <div className="TaskUsers" key={index} onClick={() => SelectApproverFromAutoSuggestion(userDtl, "Attention")}>
@@ -7110,7 +6991,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col mt-2 ps-0">
                                             <div className="input-group">
                                                 <label className="form-label full-width alignCenter mb-1">
-                                                    <b>Phone: </b>
+                                                <b><LabelInfoIconToolTip columnName={"Phone"} onlyText={"text"} />: </b>
                                                     {WorkingActionDefaultUsers?.map((userDtl: any, index: number) => {
                                                         return (
                                                             <div className="TaskUsers" key={index} onClick={() => SelectApproverFromAutoSuggestion(userDtl, "Phone")}>
@@ -9249,16 +9130,14 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                     </div>
                                                     <div className="border p-2 mb-3">
-                                                        <div>Estimated Task Time Details</div>
+                                                        <div><LabelInfoIconToolTip columnName={"EstimatedTaskTime"} onlyText={"text"} /></div>
                                                         <div className="col-12">
                                                             <div
                                                                 onChange={UpdateEstimatedTimeDescriptions}
                                                                 className="full-width"
                                                             >
                                                                 <div className="input-group mt-2">
-                                                                    <label className="form-label full-width">
-                                                                        Select Category
-                                                                    </label>
+                                                                    <LabelInfoIconToolTip columnName={"SelectCategory"} />
                                                                     <input
                                                                         type="text"
                                                                         className="form-control"

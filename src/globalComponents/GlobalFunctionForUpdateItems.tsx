@@ -1419,7 +1419,7 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
                 `You have been tagged <b>${ActionType == "Phone" ? "for the discussion" : "as " + ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}` : ''}
             <p></p>
             ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
-                `<div style="background-color: #fff; color:#333; padding:16px; margin-top:10px; display:block;" title=${ReasonStatement}>
+                `<div style="background-color: #fff; color:#333; padding:16px; margin-top:10px; display:block;" title="${ReasonStatement}">
             <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? " Discussion Point" : " Comment"} </b>: <span>${ReduceTheContentLines(ReasonStatement, 450)}</span> ` : ''}
             </div>
             <div style="margin-top: 16px;">  <b style="font-weight:600; font-size: 16px;">Task Link: </b>
@@ -1458,7 +1458,7 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         <p>
         <br/>
         <div style="background-color: #fff; padding:16px; display:block; color: #333; ">
-        <div style="font-size:18px;" title=${ReasonStatement}><b>Comment</b>: ${ReduceTheContentLines(ReasonStatement, 450)}</div>
+        <div style="font-size:18px;" title="${ReasonStatement}"><b>Comment</b>: ${ReduceTheContentLines(ReasonStatement, 450)}</div>
         </div>
         </br>
         <p>
@@ -1675,7 +1675,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                     </>)
                                                 }
                                             })}
-                                        {TaskDescriptionFlatView >= 5 ? <span>There are more Task Points in this task. <a href={`${RequiredData?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${RequiredData?.ID}&Site=${RequiredData?.siteType}`}>
+                                        {TaskDescriptionFlatView?.length >= 5 ? <span>There are more Task Points in this task. <a href={`${RequiredData?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${RequiredData?.ID}&Site=${RequiredData?.siteType}`}>
                                             Go to Task Page.</a> </span> : ""}
                                     </div>
                                 </div>

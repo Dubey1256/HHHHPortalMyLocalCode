@@ -792,20 +792,24 @@ const HalfClientCategory = (props: any) => {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
                     <>
-
                         {row?.original?.siteType !== "Master Tasks" ? <div className='alignCenter'>
-                            <a className='hreflink'
-                                href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                                data-interception="off"
-                                target="_blank"
-                            >
-                                {row?.original?.Title}
-                            </a>
+                            <span className="columnFixedTitle">
+                                <a className='hreflink text-content'
+                                    title={row?.original?.Title}
+                                    href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                    data-interception="off"
+                                    target="_blank"
+                                >
+                                    {row?.original?.Title}
+                                </a>
+                            </span>
+
+
                             {row?.original?.descriptionsSearch?.length > 0 ? (
-                                    <InfoIconsToolTip
-                                        Discription={row?.original?.bodys}
-                                        row={row?.original}
-                                    />
+                                <InfoIconsToolTip
+                                    Discription={row?.original?.bodys}
+                                    row={row?.original}
+                                />
                             ) : (
                                 ""
                             )}
@@ -819,6 +823,7 @@ const HalfClientCategory = (props: any) => {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
+                size: 500,
             },
             {
                 accessorFn: (row) => row?.PercentComplete,
@@ -1005,10 +1010,10 @@ const HalfClientCategory = (props: any) => {
                             </a>
 
                             {row?.original?.descriptionsSearch?.length > 0 ? (
-                                    <InfoIconsToolTip
-                                        Discription={row?.original?.bodys}
-                                        row={row?.original}
-                                    />
+                                <InfoIconsToolTip
+                                    Discription={row?.original?.bodys}
+                                    row={row?.original}
+                                />
                             ) : (
                                 ""
                             )}
@@ -1282,11 +1287,11 @@ const HalfClientCategory = (props: any) => {
                             <div className='container p-0'>
                                 <div className="Alltable ">
                                     {selectedView == 'MasterTask' ? <div>
-                                        <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columnsMaster} data={AllMasterTasks} portfolioTypeData={portfolioTypeDataItem} showingAllPortFolioCount={true} showPagination={true} callBackData={TaskSiteComp} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
+                                        <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columnsMaster} data={AllMasterTasks} bulkEditIcon={true} columnSettingIcon={true} portfolioTypeData={portfolioTypeDataItem} showingAllPortFolioCount={true} showPagination={true} callBackData={TaskSiteComp} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
 
                                     </div> : ''}
                                     {selectedView == 'AllSiteTasks' ? <div>
-                                        <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columns} data={AllSiteTasks} showPagination={true} callBackData={TaskSiteComp} taskTypeDataItem={taskTypeDataItem} showingAllPortFolioCount={true} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
+                                        <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columns} data={AllSiteTasks} bulkEditIcon={true} columnSettingIcon={true} showPagination={true} callBackData={TaskSiteComp} taskTypeDataItem={taskTypeDataItem} showingAllPortFolioCount={true} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
 
 
                                     </div> : ''}

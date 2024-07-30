@@ -37,6 +37,7 @@ import KeyDocuments from '../../taskprofile/components/KeyDocument';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import WorkingActionInformation from '../../../globalComponents/WorkingActionInformation';
 import Tooltip from "../../../globalComponents/Tooltip";
+import { Avatar } from "@fluentui/react-components";
 
 //import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs";
 var QueryId: any = "";
@@ -83,7 +84,7 @@ let weekTotalTime: any = 0
 let monthTotalTime: any = 0
 let totalTime: any
 const ProjectManagementMain = (props: any) => {
-  const [openServiceComponent, setopenServiceComponent] = React.useState(false)
+  const [openServiceComponent, setopenServiceComponent]= React.useState(false)
   relevantDocRef = React.useRef();
   smartInfoRef = React.useRef();
   keyDocRef = React.useRef();
@@ -2249,7 +2250,7 @@ const ProjectManagementMain = (props: any) => {
       },
       {
         cell: ({ row }) => (
-          <div className="alignCenter ml-auto">
+          <div className="alignCenter">
             {row?.original?.TaskType != undefined &&
               (row?.original?.TaskType?.Title == "Activities" ||
                 row?.original?.TaskType?.Title == "Workstream" ||
@@ -2257,20 +2258,20 @@ const ProjectManagementMain = (props: any) => {
               <>
                 {showTimeEntryIcon && <span
                   onClick={(e) => EditDataTimeEntry(e, row.original)}
-                  className="svg__iconbox svg__icon--clock"
+                  className="svg__iconbox svg__icon--clock ml-auto"
                   title="Click To Edit Timesheet"
                 ></span>}
                 <span
                   title="Edit Task"
                   onClick={(e) => EditPopup(row?.original)}
-                  className="svg__iconbox svg__icon--edit hreflink"
+                  className="svg__iconbox svg__icon--edit hreflink ml-auto"
                 ></span>
               </>
             ) : (
               <span
                 title="Edit Project"
                 onClick={(e) => EditPopup(row?.original)}
-                className="svg__iconbox svg__icon--edit hreflink"
+                className="svg__iconbox svg__icon--edit hreflink ml-auto"
               ></span>
             )}
           </div>
@@ -2542,6 +2543,191 @@ const ProjectManagementMain = (props: any) => {
     ],
     [filteredTask]
   );
+
+  const columnTimeReport: any = React.useMemo<ColumnDef<any, any>[]>(
+    () => [
+      {
+        accessorKey: "TaskID",
+        placeholder: "Id",
+        id: "TaskID",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 100,
+        cell: ({ row }) => (
+          <>
+            <span className="alignCentre">{row?.original?.TaskID}</span>
+          </>
+        ),
+      },
+      {
+        accessorFn: (row) => row?.siteType,
+        cell: ({ row, getValue }) => (
+          <span>
+            {row?.original?.SiteIcon != undefined ? (
+              <img
+                title={row?.original?.siteType}
+                className="workmember"
+                src={row?.original?.SiteIcon}
+              />
+            ) : (
+              ""
+            )}
+          </span>
+        ),
+        id: "siteType",
+        placeholder: "Site",
+        resetColumnFilters: false,
+        resetSorting: false,
+        header: "",
+        size: 60,
+      },
+      {
+        accessorFn: (row) => row?.Title,
+        cell: ({ row, getValue }) => (
+          <div>
+            <a
+              className="hreflink"
+              href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+              data-interception="off"
+              target="_blank"
+            >
+              {row?.original?.Title}
+            </a>
+          </div>
+        ),
+        id: "Title",
+        placeholder: "Title",
+        resetColumnFilters: false,
+        resetSorting: false,
+        header: "",
+      },
+      {
+        accessorFn: (row) => row?.TimeDate,
+        cell: ({ row, getValue }) => (
+          <>
+            <span className="d-flex">
+              {row?.original?.TimeDate}
+              {row?.original?.TimeEntryAuthorImage ||
+              row?.original.Suffix ? (
+                <Avatar
+                  className="UserImage"
+                  title={row?.original?.TimeEntryAuthorName}
+                  name={row?.original?.TimeEntryAuthorName}
+                  image={{ src: row?.original?.TimeEntryAuthorImage }}
+                  initials={
+                    row?.original?.TimeEntryAuthorImage == undefined
+                      ? row.original?.Suffix
+                      : undefined
+                  }
+                />
+              ) : (
+                <Avatar
+                  title={row?.original?.TimeEntryAuthorName}
+                  name={row?.original?.TimeEntryAuthorName}
+                  className="UserImage"
+                />
+              )}
+            </span>
+          </>
+        ),
+        id: "TimeDate",
+        placeholder: "Entry Date",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 80,
+        header: "",
+      },
+      {
+        accessorFn: (row) => row?.TaskTime,
+        cell: ({ row, getValue }) => (
+          <>
+            <span className="d-flex">{row?.original?.TaskTime}</span>
+          </>
+        ),
+        id: "TaskTime",
+        placeholder: "Time",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 65,
+        header: "",
+      },
+      {
+        accessorFn: (row) => row?.TimeDescription,
+        cell: ({ row, getValue }) => (
+          <>
+            <div
+              className="column-description"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              {row?.original?.TimeDescription}
+            </div>
+          </>
+        ),
+        id: "TimeDescription",
+        placeholder: "Description",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 200,
+        header: "",
+      },
+      {
+        accessorFn: (row) => row?.PercentComplete,
+        cell: ({ row, getValue }) => (
+          <span>
+            {row?.original?.PercentComplete}
+            {/* <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} /> */}
+          </span>
+        ),
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          if (
+            row?.original?.PercentComplete?.toString().charAt(0) ==
+              filterValue.toString().charAt(0) &&
+            row?.original?.PercentComplete.toString()?.includes(filterValue)
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        },
+        id: "PercentComplete",
+        placeholder: "% Complete",
+        header: "",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 55,
+      },
+      {
+        cell: ({ row }) => (
+          <>
+            {showTimeEntryIcon && (
+              <a
+                onClick={(e) => EditDataTimeEntry(e, row.original)}
+                data-bs-toggle="tooltip"
+                data-bs-placement="auto"
+                title="Click To Edit Timesheet"
+              >
+                <span
+                  className="alignIcon  svg__iconbox svg__icon--clock"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="Click To Edit Timesheet"
+                ></span>
+              </a>
+            )}
+          </>
+        ),
+        id: "EditPopup",
+        canSort: false,
+        placeholder: "",
+        header: "",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 65,
+      },
+    ],
+    []
+  );
   const filterPotfolioTasks = (portfolio: any, clickedIndex: any, type: any) => {
     let projectData = Masterdata;
     let displayTasks = AllTasks;
@@ -2804,34 +2990,43 @@ const ProjectManagementMain = (props: any) => {
                                           pageName={'ProjectManagmentMaster'}
                                         />
 
-                                        <span className="pull-right">
-                                          <span className="pencil_icon">
-                                            <span
-                                              ng-show="isOwner"
-                                              className="hreflink"
-                                              title="Edit Inline"
-                                            >
-                                              <i
-                                                className="fa fa-pencil"
-                                                aria-hidden="true"
-                                              ></i>
+                                          <span className="pull-right">
+                                            <span className="pencil_icon">
+                                              <span
+                                                ng-show="isOwner"
+                                                className="hreflink"
+                                                title="Edit Inline"
+                                              >
+                                                <i
+                                                  className="fa fa-pencil"
+                                                  aria-hidden="true"
+                                                ></i>
+                                              </span>
                                             </span>
                                           </span>
-                                        </span>
-                                      </dd>
-                                    </dl>
-                                  </div>
-                                  {/* <div className="col-md-12 url"><div className="d-flex p-0"><div className="bg-fxdark p-2"><label>Url</label></div><div className="bg-light p-2 text-break full-width"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></div></div></div> */}
-                                  <div className="col-md-12 pe-1"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField" style={{ width: '93.9%' }}><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
-                                  {
-                                    Masterdata?.Body != undefined ? <div className="col-md-12 detailsbox mt-2 pe-1">
-                                      <details className="pe-0" open>
-                                        <summary>Description</summary>
-                                        <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Body }}></div>
-                                      </details>
+                                        </dd>
+                                      </dl>
+                                      <dl>
+                                        <dt className="bg-fxdark">Total PX Time</dt>
+                                        <dd className="bg-light">
+                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime} hrs; `}</span>}
+                                          {(monthTotalTime != undefined && weekTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime} hrs; `}</span>}
+                                          {totalTime != undefined && <span title="Total Time">{`${totalTime} hrs;`}</span>}
+                                          <a className="smartTotalTime hover-text m-0 float-end" onClick={() => loadAllPXTimeEntries()}><BsClock/><span className='tooltip-text pop-left'>Load Time Entries</span></a>
+                                        </dd>
+                                      </dl>
                                     </div>
-                                      : ''
-                                  }
+                                    {/* <div className="col-md-12 url"><div className="d-flex p-0"><div className="bg-fxdark p-2"><label>Url</label></div><div className="bg-light p-2 text-break full-width"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></div></div></div> */}
+                                    <div className="col-md-12 pe-1"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField" style={{ width: '93.9%' }}><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
+                                    {
+                                      Masterdata?.Body != undefined ? <div className="col-md-12 detailsbox mt-2 pe-1">
+                                        <details className="pe-0" open>
+                                          <summary>Description</summary>
+                                          <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Body }}></div>
+                                        </details>
+                                      </div>
+                                        : ''
+                                    }
 
                                   {
                                     Masterdata?.Background != undefined ? <div className="mt-2 col-md-12  detailsbox pe-1">
@@ -2896,8 +3091,21 @@ const ProjectManagementMain = (props: any) => {
                                           <span>No Working Tasks Available</span>
                                         </div>}
                                     </div>
-                                  </details>
-                                </div>
+                                </details>
+                                <details open={timeEntries.length > 0}>
+                                    <summary> Time Entries </summary>
+                                    <div className='AccordionContent'  >
+                                        {timeEntries?.length > 0 ?
+                                            <div className='Alltable border-0 dashboardTable' >
+                                                <>
+                                                    <GlobalCommanTable columns={columnTimeReport} data={timeEntries} wrapperHeight="175px" callBackData={callBackData}/>
+                                                </>
+                                            </div> : <div className='text-center full-width'>
+                                                <span>No Time Entries Available</span>
+                                            </div>}
+                                    </div>
+                                </details>
+                                </div>  
                               </div>
                             </div>
                           </section>

@@ -882,6 +882,15 @@ const Apps = (props: any) => {
 
 
   const getEvents = async () => {
+    // Code by Udbhav start
+    let filterUser:string=''
+    if(props?.props?.employeeProfilePage===true){
+      let userUniqueID = props.props.context.pageContext?.legacyPageContext?.userId
+      filterUser=`${userUniqueID} eq Employee/ID`
+    }else{
+      filterUser=''
+    }
+// end
     const web = new Web(props.props.siteUrl);
     const regionalSettings = await web.regionalSettings.get(); console.log(regionalSettings);
     const query =
@@ -891,7 +900,7 @@ const Apps = (props: any) => {
         .getById(props.props.SmalsusLeaveCalendar)
         .items.select(query)
         .expand("Author,Editor,Employee")
-        .top(500)
+        .top(500).filter(filterUser)
         .getAll();
       if (results && results.length > 0) {
         const NonRecurrenceData = results.filter((item) => item?.RecurrenceData == null);

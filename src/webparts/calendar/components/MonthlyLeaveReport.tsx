@@ -55,10 +55,15 @@ export const MonthlyLeaveReport = (props: any) => {
 
   const getTaskUser = async () => {
     let web = new Web(props.props.siteUrl);
+    let filterUser:string=''
+    if(props?.props?.employeeProfilePage===true){
+      let userUniqueID = props.props.context.pageContext?.legacyPageContext?.userId
+      filterUser=`${userUniqueID} eq AssingedToUserId`
+    }
     // let taskUsers = [];
     try {
       const Data: any[] = await web.lists.getById(props.props.TaskUserListID).items.select("Id,Title,TimeCategory,Team,CategoriesItemsJson,Suffix,SortOrder,IsApprovalMail,Item_x0020_Cover,ItemType,Created,Company,Role,Modified,IsActive,IsTaskNotifications,DraftCategory,UserGroup/Title,UserGroup/Id,AssingedToUser/Title,AssingedToUser/Name,AssingedToUser/Id,Author/Name,Author/Title,Editor/Name,Approver/Id,Approver/Title,Approver/Name,Editor/Title,Email")
-        .expand("Author,Editor,AssingedToUser,UserGroup,Approver").orderBy("Title", true).get();
+        .expand("Author,Editor,AssingedToUser,UserGroup,Approver").orderBy("Title", true).filter(filterUser).get();
 
       let filteredData = Data.filter((item: any) =>
         item.Title != 'HHHH Team' && item.Title != 'External Staff' && item.Title != 'Ex Staff' && item.Title != "Kristina Kovach" && item.Title != "Alina Chyhasova"
@@ -801,6 +806,8 @@ export const MonthlyLeaveReport = (props: any) => {
         },
           []);
       }
+      allReportData = allReportData.filter((item: any) => ImageSelectedUsers.some((user: any) =>
+        item.Id === user.Id));
     }
       setleaveset(false); // Ensure the flag is set to false before setting it to true
       setTimeout(() => {
