@@ -115,7 +115,7 @@ const Information = (props: any) => {
                     </div>
                     <div className="alignCenter mb-3">
                         <span className="f-20">
-                            <img title="Adivress" src={`${props?.allListId?.jointSiteUrl}/GmBH/SiteCollectionImages/ICONS/24/location.svg`} data-themekey="#" />
+                            <img title="Address" src={`${props?.allListId?.jointSiteUrl}/GmBH/SiteCollectionImages/ICONS/24/location.svg`} data-themekey="#" />
                         </span>
                         <span className="full_widivh ms-2 mt-1 ">
                             {EmployeeData?.WorkAdivress}

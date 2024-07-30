@@ -2,57 +2,43 @@ import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
+
   IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'EmployeProfileWebPartStrings';
-import EmployeProfile from './components/EmployeProfile';
-import { IEmployeProfileProps } from './components/IEmployeProfileProps';
+import * as strings from 'EodReportWebPartStrings';
+import EodReport from './components/EodReport';
+import { IEodReportProps } from './components/IEodReportProps';
 
-export interface IEmployeProfileWebPartProps {
+export interface IEodReportWebPartProps {
   description: string;
-  HHHHContactListId:any,
-  HHHHInstitutionListId:any,
-  MAIN_SMARTMETADATA_LISTID:any,
-  MAIN_HR_LISTID:any,
-  GMBH_CONTACT_SEARCH_LISTID:any,
-  HR_EMPLOYEE_DETAILS_LIST_ID:any,
-  ContractListID:any,
-  HR_SMARTMETADATA_LISTID:any,
-  TaskUserListID:any,
-  SmalsusLeaveCalendar:any,
-  SP_SMARTMETADATA_LISTID:any
+  MasterTaskId: string;
+  context: any;
+  SmartMetadataListID: string;
+  TaskUserListID: string
 }
 
-export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmployeProfileWebPartProps> {
+export default class EodReportWebPart extends BaseClientSideWebPart<IEodReportWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IEmployeProfileProps> = React.createElement(
-      EmployeProfile,
+    const element: React.ReactElement<IEodReportProps> = React.createElement(
+      EodReport,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
-        Context: this.context,
-        HHHHContactListId:this.properties.HHHHContactListId,
-        HHHHInstitutionListId:this.properties.HHHHInstitutionListId,
-        MAIN_SMARTMETADATA_LISTID:this.properties.MAIN_SMARTMETADATA_LISTID,
-        MAIN_HR_LISTID:this.properties.MAIN_HR_LISTID,
-        GMBH_CONTACT_SEARCH_LISTID:this.properties.GMBH_CONTACT_SEARCH_LISTID,
-        HR_EMPLOYEE_DETAILS_LIST_ID:this.properties.HR_EMPLOYEE_DETAILS_LIST_ID,
-        ContractListID:this.properties.ContractListID,
-        HR_SMARTMETADATA_LISTID:this.properties.HR_SMARTMETADATA_LISTID,
-        TaskUserListID:this.properties.TaskUserListID,
-        SmalsusLeaveCalendar:this.properties.SmalsusLeaveCalendar,
-        SP_SMARTMETADATA_LISTID:this.properties.SP_SMARTMETADATA_LISTID,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.loginName
+        userDisplayName: this.context.pageContext.user.displayName,
+        MasterTaskId: this.properties.MasterTaskId,
+        context: this.context,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
+        TaskUserListID: this.properties.TaskUserListID,
       }
     );
 
@@ -80,10 +66,8 @@ export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmploy
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
-              break;
             default:
-              throw new Error('Unknown host');
+              environmentMessage = strings.UnknownEnvironment;
           }
 
           return environmentMessage;
@@ -130,40 +114,15 @@ export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmploy
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('HHHHContactListId', {
-                  label: "HHHH Contact ListId"
+                PropertyPaneTextField('MasterTaskId', {
+                  label: 'MasterTaskId'
                 }),
-                PropertyPaneTextField('HHHHInstitutionListId', {
-                  label: "HHHH Institution ListId"
-                }),
-                PropertyPaneTextField('MAIN_SMARTMETADATA_LISTID', {
-                  label: "Main SmartMetadata ListId"
-                }),
-                PropertyPaneTextField('MAIN_HR_LISTID', {
-                  label: "Main Hr ListId"
-                }),
-                PropertyPaneTextField('GMBH_CONTACT_SEARCH_LISTID', {
-                  label: "Gmbh Contact Search ListId"
-                }),
-                PropertyPaneTextField('HR_EMPLOYEE_DETAILS_LIST_ID', {
-                  label: "Hr Employee Details ListId"
-                }),
-                PropertyPaneTextField('ContractListID', {
-                  label: 'ContractListID'
-                }),
-                PropertyPaneTextField('HR_SMARTMETADATA_LISTID', {
-                  label: 'HR_SMARTMETADATA_LISTID'
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: "SmartMetadataListID"
                 }),
                 PropertyPaneTextField('TaskUserListID', {
-                  label: 'TaskUserListID'
+                  label: "TaskUserListID"
                 }),
-                PropertyPaneTextField('SmalsusLeaveCalendar', {
-                  label: 'SmalsusLeaveCalendar'
-                }),
-                PropertyPaneTextField('SP_SMARTMETADATA_LISTID', {
-                  label: 'SP_SMARTMETADATA_LISTID'
-                }),
-
               ]
             }
           ]
