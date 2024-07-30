@@ -2245,7 +2245,7 @@ const smartTimeTotal = async () => {
       },
       {
         cell: ({ row }) => (
-          <div className="alignCenter ml-auto">
+          <div className="alignCenter">
             {row?.original?.TaskType != undefined &&
               (row?.original?.TaskType?.Title == "Activities" ||
                 row?.original?.TaskType?.Title == "Workstream" ||
@@ -2253,20 +2253,20 @@ const smartTimeTotal = async () => {
               <>
                 {showTimeEntryIcon && <span
                   onClick={(e) => EditDataTimeEntry(e, row.original)}
-                  className="svg__iconbox svg__icon--clock"
+                  className="svg__iconbox svg__icon--clock ml-auto"
                   title="Click To Edit Timesheet"
                 ></span>}
                 <span
                   title="Edit Task"
                   onClick={(e) => EditPopup(row?.original)}
-                  className="svg__iconbox svg__icon--edit hreflink"
+                  className="svg__iconbox svg__icon--edit hreflink ml-auto"
                 ></span>
               </>
             ) : (
               <span
                 title="Edit Project"
                 onClick={(e) => EditPopup(row?.original)}
-                className="svg__iconbox svg__icon--edit hreflink"
+                className="svg__iconbox svg__icon--edit hreflink ml-auto"
               ></span>
             )}
           </div>
