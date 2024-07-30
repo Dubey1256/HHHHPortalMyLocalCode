@@ -875,81 +875,82 @@ const EmployeProfile = (props: any) => {
     const currentDate = todayDate;
     currentDate.setDate(today.getDate());
     currentDate.setHours(0, 0, 0, 0);
-    if (DashboardId == 1 || DashboardId == 27) {
-      for (const items of array ?? []) {
-        for (const config of DashboardConfig ?? []) {
-          if (config?.Tasks == undefined) {
-            config.Tasks = [];
+    // if (DashboardId == 1 || DashboardId == 27) {
+    for (const items of array ?? []) {
+      for (const config of DashboardConfig ?? []) {
+        if (config?.Tasks == undefined) {
+          config.Tasks = [];
+        }
+        if (config?.LoadDefaultFilter !== false) {
+          if (config?.IsDraftTask != undefined && items.Categories?.toLowerCase().includes(config?.IsDraftTask.toLowerCase()) && items.Author?.Id == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
+            config?.Tasks.push(items);
           }
-          if (config?.LoadDefaultFilter !== false) {
-            if (config?.IsDraftTask != undefined && items.Categories?.toLowerCase().includes(config?.IsDraftTask.toLowerCase()) && items.Author?.Id == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
-              config?.Tasks.push(items);
-            }
-            if (items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
-              for (const workingDetails of items.WorkingAction ?? []) {
-                if (config?.IsBottleneckTask != undefined && workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title == config?.IsBottleneckTask && workingDetails?.InformationData.length > 0) {
-                  for (const botteleckInfo of workingDetails?.InformationData ?? []) {
-                    if (botteleckInfo?.TaggedUsers != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
-                      config?.Tasks.push(items);
-                    }
+          if (items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
+            for (const workingDetails of items.WorkingAction ?? []) {
+              if (config?.IsBottleneckTask != undefined && workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title == config?.IsBottleneckTask && workingDetails?.InformationData.length > 0) {
+                for (const botteleckInfo of workingDetails?.InformationData ?? []) {
+                  if (botteleckInfo?.TaggedUsers != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
+                    config?.Tasks.push(items);
                   }
                 }
-                if (config?.IsTodaysTask != undefined && workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title == "WorkingDetails" && workingDetails?.InformationData.length > 0) {
-                  for (const workingTask of workingDetails?.InformationData ?? []) {
-                    if (workingTask?.WorkingMember != undefined && workingTask?.WorkingMember?.length > 0) {
-                      for (const assign of workingTask?.WorkingMember ?? []) {
-                        let WorkingDate: any = Moment(workingTask?.WorkingDate, 'DD/MM/YYYY');
-                        WorkingDate?._d.setHours(0, 0, 0, 0);
-                        if (assign != undefined && assign?.Id == currentUserData?.AssingedToUser?.Id && WorkingDate?._d.getTime() == currentDate?.getTime() && !isTaskItemExists(config?.Tasks, items)) {
-                          items.WorkingDate = workingTask?.WorkingDate;
-                          config?.Tasks.push(items);
-                        }
+              }
+              if (config?.IsTodaysTask != undefined && workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title == "WorkingDetails" && workingDetails?.InformationData.length > 0) {
+                for (const workingTask of workingDetails?.InformationData ?? []) {
+                  if (workingTask?.WorkingMember != undefined && workingTask?.WorkingMember?.length > 0) {
+                    for (const assign of workingTask?.WorkingMember ?? []) {
+                      let WorkingDate: any = Moment(workingTask?.WorkingDate, 'DD/MM/YYYY');
+                      WorkingDate?._d.setHours(0, 0, 0, 0);
+                      if (assign != undefined && assign?.Id == currentUserData?.AssingedToUser?.Id && WorkingDate?._d.getTime() == currentDate?.getTime() && !isTaskItemExists(config?.Tasks, items)) {
+                        items.WorkingDate = workingTask?.WorkingDate;
+                        config?.Tasks.push(items);
+                        items.IsPushAssignedTask = false;
                       }
                     }
                   }
                 }
               }
             }
-            for (const assign of items.AssignedTo ?? []) {
-              if (assign && assign.Id == currentUserData?.AssingedToUser?.Id) {
-                if (config?.IsImmediateTask != undefined && items.Categories?.toLowerCase().includes(config?.IsImmediateTask.toLowerCase()) && items?.PercentComplete != undefined && items?.PercentComplete < 80 && !isTaskItemExists(config?.Tasks, items)) {
-                  config?.Tasks.push(items);
-                }
-                else if (config?.IsApprovalTask != undefined && items.percentage == config?.IsApprovalTask && !isTaskItemExists(config?.Tasks, items)) {
-                  config?.Tasks.push(items);
-                }
-                else if (config?.IsWorkingWeekTask != undefined && items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
-                  for (const workingDetails of items?.WorkingAction ?? []) {
-                    if (workingDetails?.InformationData?.length > 0) {
-                      for (const objDetails of workingDetails?.InformationData ?? []) {
-                        if (objDetails?.WorkingDate != undefined) {
-                          const givenDate = Moment(objDetails?.WorkingDate, "DD/MM/YYYY");
-                          const givenDateAsDate = givenDate.toDate();
-                          const greaterThanToday = givenDateAsDate > new Date();
-                          const startOfWeek: any = new Date();
-                          startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-                          const endOfWeek = new Date(startOfWeek);
-                          endOfWeek.setDate(startOfWeek.getDate() + 6);
-                          const inCurrentWeek = givenDateAsDate >= startOfWeek && givenDateAsDate <= endOfWeek;
-                          if (greaterThanToday && inCurrentWeek) {
-                            for (const user of objDetails?.WorkingMember ?? []) {
-                              if (user?.Id == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items))
-                                config?.Tasks.push(items);
-                            }
+          }
+          for (const assign of items.AssignedTo ?? []) {
+            if (assign && assign.Id == currentUserData?.AssingedToUser?.Id) {
+              if (config?.IsImmediateTask != undefined && items.Categories?.toLowerCase().includes(config?.IsImmediateTask.toLowerCase()) && items?.PercentComplete != undefined && items?.PercentComplete < 80 && !isTaskItemExists(config?.Tasks, items)) {
+                config?.Tasks.push(items);
+              }
+              else if (config?.IsApprovalTask != undefined && items.percentage == config?.IsApprovalTask && !isTaskItemExists(config?.Tasks, items)) {
+                config?.Tasks.push(items);
+              }
+              else if (config?.IsWorkingWeekTask != undefined && items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
+                for (const workingDetails of items?.WorkingAction ?? []) {
+                  if (workingDetails?.InformationData?.length > 0) {
+                    for (const objDetails of workingDetails?.InformationData ?? []) {
+                      if (objDetails?.WorkingDate != undefined) {
+                        const givenDate = Moment(objDetails?.WorkingDate, "DD/MM/YYYY");
+                        const givenDateAsDate = givenDate.toDate();
+                        const greaterThanToday = givenDateAsDate > new Date();
+                        const startOfWeek: any = new Date();
+                        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+                        const endOfWeek = new Date(startOfWeek);
+                        endOfWeek.setDate(startOfWeek.getDate() + 6);
+                        const inCurrentWeek = givenDateAsDate >= startOfWeek && givenDateAsDate <= endOfWeek;
+                        if (greaterThanToday && inCurrentWeek) {
+                          for (const user of objDetails?.WorkingMember ?? []) {
+                            if (user?.Id == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items))
+                              config?.Tasks.push(items);
                           }
                         }
                       }
                     }
                   }
                 }
-                if (config?.IsAssignedTask === true && !isTaskItemExists(config?.Tasks, items))
-                  config?.Tasks.push(items);
               }
+              if (config?.IsAssignedTask === true && items?.IsPushAssignedTask != false && !isTaskItemExists(config?.Tasks, items))
+                config?.Tasks.push(items);
             }
           }
         }
       }
     }
+    // }
     setprogressBar(false);
   };
   const smartTimeUseLocalStorage = () => {
@@ -1735,7 +1736,7 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, CurrentUserProjectData: CurrentUserProjectData, CurrentUserInfo: CurrentUserInfo, CurrentUserWorkingToday: CurrentUserWorkingToday, currentUserId: currentUserId, todaysDrafTimeEntry: todaysDrafTimeEntry, CurrentConfigItem: CurrentConfigItem, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, DashboardValue: DashboardValue, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      <myContextValue.Provider value={{ ...myContextValue, smartmetaDataDetails: smartmetaDataDetails, CurrentUserProjectData: CurrentUserProjectData, CurrentUserInfo: CurrentUserInfo, CurrentUserWorkingToday: CurrentUserWorkingToday, currentUserId: currentUserId, todaysDrafTimeEntry: todaysDrafTimeEntry, CurrentConfigItem: CurrentConfigItem, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, DashboardValue: DashboardValue, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div>
           {LoadHeaderSection != undefined && (<Header />)}
         </div>

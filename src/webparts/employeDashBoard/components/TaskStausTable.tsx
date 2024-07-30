@@ -25,6 +25,8 @@ import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import AddEditWebpartTemplate from "../../../globalComponents/AddEditWebpartTemplate";
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
+import { usePopperTooltip } from "react-popper-tooltip";
+//import { CustomToolTip } from "../../../globalComponents/customTooltip";
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -42,17 +44,36 @@ let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1,
 { value: 10, taskStatusComment: "working on it" }, { value: 70, taskStatusComment: "Re-Open" }, { value: 75, taskStatusComment: "Deployment Pending" }, { value: 80, taskStatusComment: "In QA Review" },
 { value: 90, taskStatusComment: "Task completed" }, { value: 100, taskStatusComment: "Closed" },]
 const TaskStatusTbl = (Tile: any) => {
+  //Tooltip -------------------
+  const [controlledVisible, setControlledVisible] = React.useState(false);
+  const {
+    getArrowProps,
+    getTooltipProps,
+    setTooltipRef,
+    setTriggerRef,
+    visible,
+  } = usePopperTooltip({
+    trigger: null,
+    interactive: true,
+    closeOnOutsideClick: false,
+    placement: "auto",
+    visible: controlledVisible,
+    onVisibleChange: setControlledVisible,
+  });
+  //End here
+
   const childRef = React.useRef<any>();
   const ContextData: any = React.useContext(myContextValue);
   const [IsShowAllUser, setIsShowAllUser] = useState(true);
   const [state, rerender] = React.useReducer(() => ({}), {});
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
-  const [editPopup, setEditPopup]: any = useState(false);
-  const [EditProjectPopup, setEditProjectPopup]: any = useState(false);
-  const [EditCompPopup, setEditCompPopup]: any = useState(false);
+  const [editPopup, setEditPopup] = useState(false);
+  const [EditPopupProjects, setEditPopupProjects] = useState<any>(false);
+  const [EditCompPopup, setEditCompPopup] = useState<any>(false);
   const [result, setResult]: any = useState<any>(false);
-  const [CompResult, setCompResult]: any = useState(false);
+  const [CompResult, setCompResult] = useState<any>(undefined);
+  const [ProjectResult, setProjectResult] = useState<any>({});
   const [ActiveTile, setActiveTile] = useState(Tile?.activeTile);
   const [dateRange, setDateRange] = useState<any>([]);
   const [isRejectItem, setisRejectItem] = useState<any>(undefined);
@@ -465,6 +486,21 @@ const TaskStatusTbl = (Tile: any) => {
       }
     }
   }
+  const getLastWeekdayOfCurrentWeek = () => {
+    const today: any = new Date();
+    const currentDay = today.getDay();
+    let daysToSubtract = 0;
+    if (currentDay === 6) {
+      daysToSubtract = 1;
+    } else if (currentDay === 0) {
+      daysToSubtract = 2;
+    } else {
+      daysToSubtract = (currentDay + 2) % 7;
+    }
+    const lastWeekday = new Date(today);
+    lastWeekday.setDate(today.getDate() - daysToSubtract);
+    return lastWeekday;
+  }
   const onDropTable = (e: any, Type: any, config: any) => {
     if (isUpdateTask == true) {
       let sourceUser = globalCommon.parseJSON(e.dataTransfer.getData("sourceUser"))
@@ -497,6 +533,7 @@ const TaskStatusTbl = (Tile: any) => {
           if (Item != undefined && Item != '') {
             let PostData: any = {};
             let web = new Web(ContextData?.propsValue?.siteUrl);
+
             if (config?.onDropAction != undefined && config?.onDropAction?.length) {
               config?.onDropAction.map((dropAction: any) => {
                 if (dropAction?.SelectedValue) {
@@ -699,12 +736,17 @@ const TaskStatusTbl = (Tile: any) => {
               })
             }
             else {
-              if (config?.TileName == 'WorkingToday') {
+              if (config?.TileName == 'WorkingToday' || config?.IsTodaysTask == true || config?.IsWorkingWeekTask == true) {
                 let today: any = new Date();
                 today.setDate(today.getDate());
                 today.setHours(0, 0, 0, 0);
                 let WorkingDate: any = Moment(today).format("DD/MM/YYYY");
                 Item.WorkingDate = WorkingDate
+                if (config?.IsWorkingWeekTask == true) {
+                  let LastDayOfCurrentWeek: any = getLastWeekdayOfCurrentWeek();
+                  LastDayOfCurrentWeek.setHours(0, 0, 0, 0);
+                  WorkingDate = Moment(LastDayOfCurrentWeek).format("DD/MM/YYYY");
+                }
                 if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0) {
                   let IsAddNew: boolean = true;
                   let IsWorkingDetailsExist = false;
@@ -738,6 +780,64 @@ const TaskStatusTbl = (Tile: any) => {
                 }
                 Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item?.WorkingAction))
               }
+              else if (config?.IsBottleneckTask == "Bottleneck") {
+                let UserToBeTagged: any = {};
+                let CreatorData: any = {};
+                if (ContextData?.AllTaskUser != undefined && ContextData?.AllTaskUser?.length) {
+                  UserToBeTagged = ContextData?.AllTaskUser.filter((e: any) => e.AssingedToUserId == Item?.Author?.Id)[0];
+                  CreatorData = ContextData?.AllTaskUser.filter((e: any) => e.AssingedToUserId == ContextData?.currentUserId)[0];
+                }
+                if (Item?.WorkingAction == undefined || Item?.WorkingAction == '')
+                  Item.WorkingAction = [];
+                if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0) {
+                  let IsAddUserTagged: boolean = true;
+                  let IsBottleneckExist: any = false;
+                  let Object: any = {
+                    CreatorName: CreatorData?.Title,
+                    CreatorImage: CreatorData?.Item_x0020_Cover?.Url,
+                    CreatorID: CreatorData?.Id,
+                    TaggedUsers: {
+                      Title: UserToBeTagged?.Title,
+                      Email: UserToBeTagged?.Email,
+                      AssingedToUserId: UserToBeTagged?.AssingedToUserId,
+                      userImage: UserToBeTagged?.Item_x0020_Cover?.Url,
+                    },
+                    NotificationSend: false,
+                    Comment: '',
+                    CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
+                  }
+                  Item?.WorkingAction?.map((bottleneck: any) => {
+                    if (bottleneck?.InformationData != undefined && bottleneck?.Title != undefined && bottleneck?.Title == 'Bottleneck') {
+                      bottleneck?.InformationData?.map((BottleneckTaggedUser: any) => {
+                        if (BottleneckTaggedUser?.TaggedUsers?.AssingedToUserId == UserToBeTagged?.AssingedToUserId) {
+                          IsAddUserTagged = false;
+                        }
+                      })
+                    }
+                  })
+                  if (IsAddUserTagged == true) {
+                    if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0) {
+                      Item?.WorkingAction?.map((bottleneck: any) => {
+                        if (bottleneck?.InformationData != undefined && bottleneck?.Title != undefined && bottleneck?.Title == 'Bottleneck') {
+                          IsBottleneckExist = true;
+                          Object.Id = bottleneck?.InformationData?.length
+                          bottleneck?.InformationData?.push(Object)
+                        }
+                      })
+                    }
+                    if (IsBottleneckExist == false) {
+                      Item?.WorkingAction.push({ 'Title': "Bottleneck", 'InformationData': [] })
+                      Item?.WorkingAction?.map((bottleneck: any) => {
+                        if (bottleneck?.Title != undefined && bottleneck?.Title == 'Bottleneck') {
+                          Object.Id = bottleneck?.InformationData?.length
+                          bottleneck?.InformationData.push(Object)
+                        }
+                      })
+                    }
+                  }
+                }
+                Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item?.WorkingAction))
+              }
               else {
                 if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0)
                   Item.WorkingAction = Item?.WorkingAction.filter((Category: any) => Category?.Title !== 'WorkingDetails')
@@ -746,13 +846,43 @@ const TaskStatusTbl = (Tile: any) => {
                 PercentComplete: Status / 100,
                 Status: Item?.Status,
                 WorkingAction: Item?.WorkingAction?.length > 0 ? JSON.stringify(Item?.WorkingAction) : '',
-                AssignedToId: { results: config?.TileName == 'WorkingToday' ? [ContextData?.currentUserData?.AssingedToUserId] : [], },
                 IsTodaysTask: false,
               }
+              if (config?.TileName == 'WorkingToday' || config?.IsTodaysTask == true || config?.IsWorkingWeekTask == true)
+                PostData.AssignedToId = { results: [ContextData?.currentUserData?.AssingedToUserId] }
               if (DragDropType == "Un-Assigned")
                 PostData.ResponsibleTeamId = { results: [ContextData?.currentUserData?.AssingedToUserId] }
+              if (config?.IsImmediateTask == "Immediate") {
+                let CategoriesIds: any = [];
+                let TaskCategoriesTite = '';
+                if (Item?.TaskCategories == undefined)
+                  Item.TaskCategories = [];
+                Item?.TaskCategories.map((cate: any) => {
+                  CategoriesIds.push(cate?.Id)
+                  TaskCategoriesTite += TaskCategoriesTite + ';' + cate?.Title
+                })
+                if (config?.ImmediateId != undefined && config?.ImmediateId != '') {
+                  if (ContextData?.smartmetaDataDetails != undefined && ContextData?.smartmetaDataDetails?.length) {
+                    let ImmediateCategory: any = ContextData?.smartmetaDataDetails.filter((e: any) => e.Id == config?.ImmediateId);
+                    ImmediateCategory?.map((ImmeCategory: any) => {
+                      CategoriesIds.push(ImmeCategory?.Id)
+                      if (TaskCategoriesTite.toLowerCase().indexOf('immediate') == -1)
+                        TaskCategoriesTite += TaskCategoriesTite + ';' + ImmeCategory?.Title
+                      if (Item?.TaskCategories) {
+                        Item?.TaskCategories?.push(ImmeCategory)
+                      }
+                      else {
+                        Item.TaskCategories = []
+                        Item?.TaskCategories?.push(ImmeCategory)
+                      }
+                    });
+                  }
+                }
+                Item.TaskTypeValue = TaskCategoriesTite;
+                PostData.TaskCategoriesId = { results: CategoriesIds }
+                PostData.Categories = TaskCategoriesTite;
+              }
             }
-
             web.lists.getById(Item.listId).items.getById(Item?.Id).update(PostData).then((res: any) => {
               console.log('Drop successfuly');
               count++;
@@ -795,8 +925,8 @@ const TaskStatusTbl = (Tile: any) => {
                         }
                         //}
                       });
-                      if ((sourceUser?.AssingedToUserId == undefined || sourceUser?.AssingedToUserId == '') && config?.TileName != 'WorkingToday') {
-                        item.Tasks = item?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                      if ((sourceUser?.AssingedToUserId == undefined || sourceUser?.AssingedToUserId == '') && config?.TileName != 'WorkingToday' && config?.IsImmediateTask != "Immediate" && config?.IsBottleneckTask != "Bottleneck") {
+                        item.Tasks = item?.Tasks?.filter((Task: any) => Task?.Id != Item.Id);
                       }
                       if (DragDropType == "Un-Assigned" && item?.Tasks[0] != undefined && item?.Tasks[0]?.dates?.length > 0 && item?.Tasks[0]?.dates[0]?.Tasks != undefined && item?.Tasks[0]?.dates[0]?.Tasks?.length > 0) {
                         item.Tasks[0].dates[0].Tasks = item?.Tasks[0]?.dates[0]?.Tasks?.filter((Task: any) => Task?.Id != Item.Id);
@@ -1626,14 +1756,14 @@ const TaskStatusTbl = (Tile: any) => {
       else {
         item['siteUrl'] = `${AllListId?.siteUrl}`;
         item['listName'] = 'Master Tasks';
-        setEditProjectPopup(true);
-        setCompResult(item)
+        setEditPopupProjects(true);
+        setProjectResult(item)
       }
 
     }
   }
   function CallBack() {
-    setEditProjectPopup(false);
+    setEditPopupProjects(false);
     setEditPopup(false);
     setEditCompPopup(false);
   }
@@ -1823,6 +1953,7 @@ const TaskStatusTbl = (Tile: any) => {
   const customTableHeaderButtons = (config: any) => {
     return (
       <span className="alignCenter CustomHeaderIcon">
+        <span></span>
         {IsShowConfigBtn && config?.IsEditWebpart != false && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
         {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink"
           target="_blank" data-interception="off" title="Create New Task" href={`${ContextData?.siteUrl}/SitePages/CreateTask.aspx`}>
@@ -1882,6 +2013,41 @@ const TaskStatusTbl = (Tile: any) => {
     setSelectedUserId(item?.AssingedToUserId)
     ContextData?.callbackFunction('OtherUserSelected', item?.AssingedToUserId)
   }
+  const ShowCustomDataHeader = (config: any) => {
+    return (
+      <div>
+        {config?.WebpartTitle}
+        {config?.ShowTitleInHeader === true && (
+          <>  {' - '}
+            <span>
+              <img id="UserImg63" className="ProirityAssignedUserPhoto" title={ContextData?.CurrentUserInfo?.Title} src={ContextData?.CurrentUserInfo?.Item_x0020_Cover?.Url} alt={ContextData?.CurrentUserInfo?.Title} />
+            </span>
+          </>
+        )}
+        {` (${config?.Tasks?.length})`}
+      </div>
+    );
+  }
+  const handlAction = () => {
+    setControlledVisible(true);
+  }
+  const handleMouseLeave = () => {
+    setControlledVisible(false)
+  }
+
+  const tableCall = (config: any, smartFavTableConfig: any) => {
+
+    return (
+      <>
+        <GlobalCommanTable wrapperHeight="300px" showHeader={true}
+          showingDataCoustom={ShowCustomDataHeader(config)}
+          customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+          pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
+      </>
+    )
+  }
+
+
   const generateDashboard = () => {
     const rows: any = [];
     let currentRow: any = [];
@@ -1895,18 +2061,23 @@ const TaskStatusTbl = (Tile: any) => {
         if (config?.DataSource != undefined && config?.DataSource != '') {
           const box = (
             <div className={`col-${12 / config.highestColumn} px-1 mb-2 `} key={index}>
-
               {config?.ShowWebpart == true && config?.GroupByView != undefined && <section>
                 {(config?.DataSource == 'Tasks' || config?.DataSource == 'Project') && <div className="workingSec empAllSec clearfix">
                   <div className="alignCenter mb-2 justify-content-between">
+                    {/* <span ref={setTriggerRef} onMouseEnter={() => handlAction()} onMouseLeave={() => handleMouseLeave()} className=" svg__iconbox svg__icon--info dark"></span>
+                    {visible && (<div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
+                      <span className="tableTooltip" dangerouslySetInnerHTML={{ __html: config?.onDropAction != undefined && config?.onDropAction?.length > 0 ? config?.onDropAction[0]?.SelectedField : 'Test Status' }}></span>
+                      <div {...getArrowProps({ className: "tooltip-arrow" })} />
+                    </div>)} */}
+                    {/* <CustomToolTip Description={`Test data ${index}`} /> */}
                   </div>
                   <div className="Alltable" draggable={true} onDragStart={(e) => handleDragStart(e, config, '')} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
-                    {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="300px" showHeader={true}
-                        showingDataCoustom={`${config?.WebpartTitle} ${config?.ShowTitleInHeader == true ? ' - ' + ContextData?.CurrentUserInfo?.Title : ''} (${config?.Tasks?.length})`}
-                        customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
-                        pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
-                    )}
+                    {config?.Tasks != undefined && config?.Tasks?.length > 0 &&
+                      tableCall(config, smartFavTableConfig)
+                    }
+                    {config?.Tasks != undefined && config?.Tasks?.length === 0 &&
+                      tableCall(config, smartFavTableConfig)
+                    }
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
                       {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={AllListId} emailStatus={"Approved"} items={approveItem} />}
                     </span>}
@@ -2144,6 +2315,9 @@ const TaskStatusTbl = (Tile: any) => {
     });
     return rows;
   };
+  const showProgressBar = () => {
+
+  }
   const onRenderCustomHeadereditcomment = () => {
     return (
       <>
@@ -2161,7 +2335,7 @@ const TaskStatusTbl = (Tile: any) => {
           {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
         </span>
         <span>
-          {EditProjectPopup && <EditProjectPopup props={CompResult} AllListId={AllListId} Call={() => { CallBack() }} />}
+          {EditPopupProjects && <EditProjectPopup AllListId={AllListId} props={ProjectResult} Call={CallBack} showProgressBar={showProgressBar} />}
         </span>
         <span>
           {EditCompPopup && (

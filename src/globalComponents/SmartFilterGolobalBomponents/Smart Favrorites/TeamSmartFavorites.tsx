@@ -10,7 +10,7 @@ const TeamSmartFavorites = (items: any) => {
         return (
             <div className="d-flex full-width pb-1">
                 <div className="alignCenter subheading">
-                    <span className="siteColor">Smart Favorite</span>
+                    <span className="siteColor">Add New SmartFavorite</span>
                     <span className="ms-3"><Tooltip ComponentId={0} /></span>
                 </div>
             </div>

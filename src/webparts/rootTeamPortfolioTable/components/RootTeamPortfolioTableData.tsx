@@ -7,7 +7,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import { FaCompressArrowsAlt, FaFilter, } from "react-icons/fa";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
-import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
+ import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
@@ -195,7 +195,8 @@ const RootTeamPortfolioTableData = (props: any) => {
 
     };
     const getTaskType = async (config: any) => {
-        let web = new Web(config.siteUrl);
+        try{
+            let web = new Web(config.siteUrl);
         let taskTypeData = [];
         let typeData: any = [];
         taskTypeData = await web.lists
@@ -223,8 +224,11 @@ const RootTeamPortfolioTableData = (props: any) => {
             console.log("Task Type retrieved:", typeData);
             typeData = typeData.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
             AllSubSiteTaskTypeDataItem.current = { ...AllSubSiteTaskTypeDataItem.current, [config?.siteName]: typeData }
-
         }
+        }catch(error){
+            console.log(error)
+                }
+        
     };
 
     React.useEffect(() => {
@@ -287,7 +291,8 @@ const RootTeamPortfolioTableData = (props: any) => {
         }
     }
     const GetComponents = async (config: any) => {
-        let filtercomponent: any = '';
+        try{
+            let filtercomponent: any = '';
         if (portfolioTypeData.length > 0) {
             portfolioTypeData?.map((elem: any) => {
                 if (filtercomponent === "") {
@@ -502,10 +507,16 @@ const RootTeamPortfolioTableData = (props: any) => {
         }
         // AllComponetsData = componentDetails;
         // ComponetsData["allComponets"] = componentDetails;
+
+        }catch(error){
+            console.log(error)
+        }
+        
     };
 
     const LoadAllSiteTasks = async (config3: any) => {
-        let AllTasksData: any = [];
+       try{
+let AllTasksData: any = [];
         let Counter = 0;
         let AllTasks: any = []
         if (siteConfigForAllSubSite.current[config3?.siteName] != undefined && siteConfigForAllSubSite.current[config3?.siteName]?.length > 0) {
@@ -751,6 +762,12 @@ const RootTeamPortfolioTableData = (props: any) => {
             }));
             // GetComponents();
         }
+
+       }catch(error){
+
+       }
+        
+    
     };
 
     const DataPrepareForCSFAWT = async () => {
@@ -766,13 +783,18 @@ const RootTeamPortfolioTableData = (props: any) => {
         // setAllSmartFilterDataBackup(structuredClone(AllMasterTasksData));
         await Promise.all(AllSiteSubSiteListDeatails?.current?.map(async (config: any) => {
             componentData = [];
-            await Promise.all(
-                portfolioTypeData[config?.siteName]?.map(async (port: any, index: any) => {
-                    count = count + 1;
-                    await Promise.all([componentGrouping(port?.Id, index, config)]);
-                })
-            )
-
+            if(portfolioTypeData[config?.siteName]!=undefined){
+                await Promise.all(
+                
+                    portfolioTypeData[config?.siteName]?.map(async (port: any, index: any) => {
+                        count = count + 1;
+                     await Promise.all([componentGrouping(port?.Id, index,config)])   ;
+                    })
+                   
+                  )      
+            }
+           
+          
         }))
 
         console.log(AllSubSiteFinalComponent?.current)
@@ -1705,6 +1727,9 @@ const RootTeamPortfolioTableData = (props: any) => {
                     </section>
                 </div>
             </section>
+
+
+
             {IsTimeEntry && (
                 <TimeEntryPopup
                     props={timeComponentData}

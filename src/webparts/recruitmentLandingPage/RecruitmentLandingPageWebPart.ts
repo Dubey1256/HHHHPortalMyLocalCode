@@ -29,7 +29,7 @@ export default class RecruitmentLandingPageWebPart extends BaseClientSideWebPart
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         Context: this.context,
-        SkillsPortfolioListID:"e79dfd6d-18aa-40e2-8d6e-930a37fe54e4",
+        SkillsPortfolioListID: this.properties.SkillsPortfolioListID,
         siteUrl: this.context.pageContext.web.absoluteUrl
       }
     );
