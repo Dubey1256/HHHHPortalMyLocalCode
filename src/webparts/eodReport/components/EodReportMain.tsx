@@ -340,7 +340,7 @@ export const EodReportMain = (props: any) => {
 
         let subject = `[EOD Report] ${Moment(new Date()).format('YYYY-MM-DD')} - ${allTodayModifiedTask?.length ?? 0} Tasks`;
         SendEmailFinal(
-            ["vansh.raj@hochhuth-consulting.de"],
+            ["prashant.kumar@hochhuth-consulting.de"],
             subject,
             sendAllTasks.replace(/,/g, "  ")
         );
