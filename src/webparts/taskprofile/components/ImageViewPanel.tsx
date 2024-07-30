@@ -881,10 +881,10 @@ const ImageViewPanel = (props: any) => {
                                                 <span className='svg__iconbox svg__icon--cross dark' onClick={()=>setIsPopoverShortByOpen(false)} ></span>
                                             </div>
                                             <div className='mt-2'>
-                                               <div onClick={()=>shortByFunction("Rating(L-H)")} className='hreflink'>Rating(Lowest to Highest)</div>
-                                               <div onClick={()=>shortByFunction("Rating(H-L)")} className='my-2 hreflink'>Rating(Highest to Lowest)</div>
-                                               <div onClick={()=>shortByFunction("Date(Old-New)")}className='hreflink'>Date(Oldest to Newest)</div>
-                                               <div onClick={()=>shortByFunction("Date(New-Old)")}className='mt-2 hreflink'>Date(Newest to Oldest)</div>
+                                               <div onClick={()=>shortByFunction("Rating(L-H)")} className='hreflink'>Rating (Lowest to Highest)</div>
+                                               <div onClick={()=>shortByFunction("Rating(H-L)")} className='my-2 hreflink'>Rating (Highest to Lowest)</div>
+                                               <div onClick={()=>shortByFunction("Date(Old-New)")}className='hreflink'>Date (Oldest to Newest)</div>
+                                               <div onClick={()=>shortByFunction("Date(New-Old)")}className='mt-2 hreflink'>Date (Newest to Oldest)</div>
                                             </div>
                                         </div>
                                        
