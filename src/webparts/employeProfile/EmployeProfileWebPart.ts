@@ -14,14 +14,17 @@ import { IEmployeProfileProps } from './components/IEmployeProfileProps';
 
 export interface IEmployeProfileWebPartProps {
   description: string;
-  HHHHContactListId:'0fb52a5f-e68a-48c4-9d42-99c81fc58f85',
-  HHHHInstitutionListId:'',
-  MAIN_SMARTMETADATA_LISTID:'0af5c538-1190-4fe5-8644-d01252e79d4b',
-  MAIN_HR_LISTID:'',
-  GMBH_CONTACT_SEARCH_LISTID:'',
-  HR_EMPLOYEE_DETAILS_LIST_ID:'',
-  ContractListID:'',
-  HR_SMARTMETADATA_LISTID:''
+  HHHHContactListId:any,
+  HHHHInstitutionListId:any,
+  MAIN_SMARTMETADATA_LISTID:any,
+  MAIN_HR_LISTID:any,
+  GMBH_CONTACT_SEARCH_LISTID:any,
+  HR_EMPLOYEE_DETAILS_LIST_ID:any,
+  ContractListID:any,
+  HR_SMARTMETADATA_LISTID:any,
+  TaskUserListID:any,
+  SmalsusLeaveCalendar:any,
+  SP_SMARTMETADATA_LISTID:any
 }
 
 export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmployeProfileWebPartProps> {
@@ -36,14 +39,17 @@ export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmploy
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         Context: this.context,
-        HHHHContactListId:'0fb52a5f-e68a-48c4-9d42-99c81fc58f85',
-        HHHHInstitutionListId:'',
-        MAIN_SMARTMETADATA_LISTID:'0af5c538-1190-4fe5-8644-d01252e79d4b',
-        MAIN_HR_LISTID:'',
-        GMBH_CONTACT_SEARCH_LISTID:'',
-        HR_EMPLOYEE_DETAILS_LIST_ID:'',
-        ContractListID:'',
-        HR_SMARTMETADATA_LISTID:'',
+        HHHHContactListId:this.properties.HHHHContactListId,
+        HHHHInstitutionListId:this.properties.HHHHInstitutionListId,
+        MAIN_SMARTMETADATA_LISTID:this.properties.MAIN_SMARTMETADATA_LISTID,
+        MAIN_HR_LISTID:this.properties.MAIN_HR_LISTID,
+        GMBH_CONTACT_SEARCH_LISTID:this.properties.GMBH_CONTACT_SEARCH_LISTID,
+        HR_EMPLOYEE_DETAILS_LIST_ID:this.properties.HR_EMPLOYEE_DETAILS_LIST_ID,
+        ContractListID:this.properties.ContractListID,
+        HR_SMARTMETADATA_LISTID:this.properties.HR_SMARTMETADATA_LISTID,
+        TaskUserListID:this.properties.TaskUserListID,
+        SmalsusLeaveCalendar:this.properties.SmalsusLeaveCalendar,
+        SP_SMARTMETADATA_LISTID:this.properties.SP_SMARTMETADATA_LISTID,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.loginName
@@ -148,6 +154,16 @@ export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmploy
                 PropertyPaneTextField('HR_SMARTMETADATA_LISTID', {
                   label: 'HR_SMARTMETADATA_LISTID'
                 }),
+                PropertyPaneTextField('TaskUserListID', {
+                  label: 'TaskUserListID'
+                }),
+                PropertyPaneTextField('SmalsusLeaveCalendar', {
+                  label: 'SmalsusLeaveCalendar'
+                }),
+                PropertyPaneTextField('SP_SMARTMETADATA_LISTID', {
+                  label: 'SP_SMARTMETADATA_LISTID'
+                }),
+
               ]
             }
           ]

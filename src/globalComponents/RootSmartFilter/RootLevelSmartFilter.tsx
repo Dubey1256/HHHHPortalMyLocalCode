@@ -4,35 +4,25 @@ import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import * as globalCommon from "../../globalComponents/globalCommon";
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
-import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col'
-import Form from 'react-bootstrap/Form';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { AiFillCheckSquare, AiFillMinusSquare, AiOutlineBorder, AiOutlineUp } from 'react-icons/ai';
+import { AiOutlineUp } from 'react-icons/ai';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import '../../globalComponents/SmartFilterGolobalBomponents/Style.css'
 import Tooltip from '../Tooltip';
-import ShowTaskTeamMembers from '../ShowTaskTeamMembers';
-import { Panel, PanelType } from 'office-ui-fabric-react';
-import { ColumnDef } from '@tanstack/react-table';
-import GlobalCommanTable from '../GroupByReactTableComponents/GlobalCommanTable';
-import PreSetDatePikerPannel from './PreSetDatePiker';
-import { usePopperTooltip } from "react-popper-tooltip";
-import "react-popper-tooltip/dist/styles.css";
-// import TeamSmartFavorites from './Smart Favrorites/TeamSmartFavorites';
-import TeamSmartFavoritesCopy from './Smart Favrorites/TeamSmartFavoritesCopy';
-import { GlobalConstants } from '../LocalCommon';
+import PreSetDatePikerPannel from '../SmartFilterGolobalBomponents/PreSetDatePiker';
+import TeamSmartFavoritesCopy from '../SmartFilterGolobalBomponents/Smart Favrorites/TeamSmartFavoritesCopy';
 import { myContextValue } from '../globalCommon';
 import * as Moment from "moment";
 import ServiceComponentPortfolioPopup from '../EditTaskPopup/ServiceComponentPortfolioPopup';
-import SmartfilterSettingTypePanel from './SmartfilterSettingTypePanel';
+import SmartfilterSettingTypePanel from '../SmartFilterGolobalBomponents/SmartfilterSettingTypePanel';
 
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
 let timeSheetConfig: any = {};
-const TeamSmartFilter = (item: any) => {
+const RootLevelSmartFilter = (item: any) => {
     let MyContextdata: any = React.useContext(myContextValue);
     let web = new Web(item?.ContextValue?.Context?.pageContext?._web?.absoluteUrl + '/');
     let allMasterTasksData: any = item?.AllMasterTasksData;
@@ -40,7 +30,7 @@ const TeamSmartFilter = (item: any) => {
     let AllSiteTasksDataLoadAll = item?.AllSiteTasksDataLoadAll;
     let smartFiltercallBackData = item?.smartFiltercallBackData;
     let ContextValue = item?.ContextValue;
-    let portfolioColor: any = item?.portfolioColor
+    let portfolioColor: any = item?.portfolioColor ? item?.portfolioColor : "#2f5596"
     let AllProjectBackupArray: any = []
     try {
         if (item?.ProjectData == undefined)
@@ -82,7 +72,6 @@ const TeamSmartFilter = (item: any) => {
     const [isEveryOneShow, setIsEveryOneShow] = React.useState(false);
     const [isOnlyMeShow, setIsOnlyMeShow] = React.useState(false);
     const [isActionsExpendShow, setIsActionsExpendShow] = React.useState(false);
-    const [isTeamMemberActivities, setIsTeamMemberActivities] = React.useState(false);
 
     const [collapseAll, setcollapseAll] = React.useState(true);
     const [iconIndex, setIconIndex] = React.useState(0);
@@ -161,9 +150,7 @@ const TeamSmartFilter = (item: any) => {
             year.push(i);
         }
         setYear(year);
-
-    }, [])
-
+    }, []);
     React.useEffect(() => {
         setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
@@ -173,87 +160,122 @@ const TeamSmartFilter = (item: any) => {
             }
         }, 1000)
     }, [PreSetPanelIsOpen, selectedFilterPanelIsOpenUpdate, selectedFilterPanelIsOpen, ProjectManagementPopup]);
-
     ///// Year Range Using Piker end////////
-
     const getTaskUsers = async () => {
-        let web = new Web(ContextValue?.siteUrl);
-        let taskUsers = [];
-        let results = await web.lists
-            .getById(ContextValue.TaskUserListID)
-            .items
-            .select('Id', 'Role', 'SortOrder', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', "AssingedToUser/Name", 'UserGroupId', 'UserGroup/Id', "ItemType")
-            // .filter('IsActive eq 1')
-            .expand('AssingedToUser', 'UserGroup')
-            .get();
-        // setTaskUsers(results);
-        for (let index = 0; index < results.length; index++) {
-            let element = results[index];
+        let AllRootUserData = [];
+        for (let site in item?.AllRootUsersData) {
+            AllRootUserData.push(...item?.AllRootUsersData[site]);
+        }
+        AllRootUserData?.map((elem: any, index: any) => {
+            elem.Id = index++;
+        })
+        const groups = AllRootUserData?.filter((e: any) => e.ItemType === "Group");
+        const uniqueGroupsMap: any = new Map();
+        let uniqueGroupsMapValue: any = []
+        const duplicateGroupIds = [];
+        groups.forEach((group: any) => {
+            const key = group.Title;
+            const existingGroup = uniqueGroupsMap.get(key);
+            if (existingGroup) {
+                if (existingGroup.siteName !== group.siteName) {
+                    duplicateGroupIds.push(group.ID);
+                    existingGroup.Ids.push(group.ID);
+                }
+            } else {
+                group.Ids = [group.ID];
+                uniqueGroupsMap.set(key, group);
+                uniqueGroupsMapValue.push(group);
+            }
+        });
+        const users = AllRootUserData?.filter((e: any) => e.ItemType !== "Group");
+        const uniqueUsersMap: any = new Map();
+        let uniqueUsers: any = [];
+        const duplicateUserIds = [];
+        users.forEach((user: any) => {
+            const key = user.AssingedToUser?.Id !== undefined ? user.AssingedToUser.Id : user.ID;
+            const existingUser = uniqueUsersMap.get(key);
+
+            if (existingUser) {
+                if (existingUser.siteName !== user.siteName) {
+                    duplicateUserIds.push(user.AssingedToUser?.Id);
+                }
+            } else {
+                user.Ids = [];
+                uniqueUsersMap.set(key, user);
+                uniqueUsers.push(user)
+            }
+        });
+        const uniqueItems = uniqueGroupsMapValue?.concat(uniqueUsers);
+        let taskUsers: any = uniqueItems?.reduce((acc: any, element: any) => {
             element.value = element.Id;
             element.label = element.Title;
-            if (element.UserGroupId == undefined && element.Title != "QA" && element.Title != "Design") {
-                element.values = [],
-                    element.checked = [],
-                    element.checkedObj = [],
-                    element.expanded = []
-                getChilds(element, results);
-                taskUsers.push(element);
+            if (!element.UserGroup?.Id && element.Title !== "QA" && element.Title !== "Design") {
+                element.values = [];
+                element.checked = [];
+                element.checkedObj = [];
+                element.expanded = [];
+                getChildsValueRoot(element, uniqueItems);
+                acc.push(element);
             }
-        }
+            return acc;
+        }, []);
         taskUsers = taskUsers?.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
-        setTaskUser(results);
+        setTaskUser(AllRootUserData);
         setTaskUsersData(taskUsers);
     }
-    const getChilds = (item: any, items: any) => {
-        for (let index = 0; index < items.length; index++) {
-            let childItem = items[index];
-            if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
+    const getChildsValueRoot = (item: any, items: any) => {
+        items.forEach((childItem: any) => {
+            if (childItem.UserGroup?.Id && item.Ids.includes(parseInt(childItem.UserGroup.Id))) {
                 childItem.value = childItem.Id;
                 childItem.label = childItem.Title;
-                item.values.push(childItem)
-                getChilds(childItem, items);
+                item.values.push(childItem);
+                getChildsValueRoot(childItem, items);
             }
-        }
-    }
-
-    const GetSmartmetadata = async () => {
-        let siteConfigSites: any = []
-        let web = new Web(ContextValue?.siteUrl);
-        let smartmetaDetails = await web.lists
-            .getById(ContextValue.SmartMetadataListID)
-            .items
-            .select('Id', 'Title', 'IsVisible', 'ParentID', 'SmartSuggestions', 'TaxType', "Configurations", 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
-            .top(4999)
-            .expand('Parent')
-            .get();
-
-        smartmetaDetails?.map((newtest: any) => {
-            // if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
-            if (newtest.Title == "SDC Sites" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
-                newtest.DataLoadNew = false;
-            else if (newtest.TaxType == 'Sites') {
-                siteConfigSites.push(newtest)
-            }
-            if (newtest?.TaxType == 'timesheetListConfigrations') {
-                timeSheetConfig = newtest;
-            }
-        })
-        if (smartmetaDetails.length > 0) {
-            const catogryValue: any = {
-                Title: "Other",
-                TaxType: 'Categories',
-                ParentID: 0,
-                Id: 0,
-            };
-            smartmetaDetails.push(catogryValue);
-        }
-        if (siteConfigSites?.length > 0) {
-            setSiteConfig(siteConfigSites)
-        }
-        setSmartmetaDataDetails(smartmetaDetails);
-        smartTimeUseLocalStorage();
-    }
-
+        });
+    };
+    // const GetSmartmetadata = async () => {
+    //     let siteConfigSites: any = []
+    //     let web = new Web(ContextValue?.siteUrl);
+    //     let smartmetaDetails = await web.lists
+    //         .getById(ContextValue.SmartMetadataListID)
+    //         .items
+    //         .select('Id', 'Title', 'IsVisible', 'ParentID', 'SmartSuggestions', 'TaxType', "Configurations", 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
+    //         .top(4999).expand('Parent').get();
+    //     smartmetaDetails?.map((newtest: any) => {
+    //         // if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
+    //         if (newtest.Title == "SDC Sites" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
+    //             newtest.DataLoadNew = false;
+    //         else if (newtest.TaxType == 'Sites') {
+    //             siteConfigSites.push(newtest)
+    //         }
+    //         if (newtest?.TaxType == 'timesheetListConfigrations') {
+    //             timeSheetConfig = newtest;
+    //         }
+    //     })
+    //     if (smartmetaDetails.length > 0) {
+    //         const catogryValue: any = {
+    //             Title: "Other",
+    //             TaxType: 'Categories',
+    //             ParentID: 0,
+    //             Id: 0,
+    //         };
+    //         smartmetaDetails.push(catogryValue);
+    //     }
+    //     if (smartmetaDetails.length > 0) {
+    //         const PriorityValue: any = {
+    //             Title: "Other",
+    //             TaxType: 'Priority',
+    //             ParentID: 0,
+    //             Id: 0,
+    //         };
+    //         smartmetaDetails.push(PriorityValue);
+    //     }
+    //     if (siteConfigSites?.length > 0) {
+    //         setSiteConfig(siteConfigSites)
+    //     }
+    //     setSmartmetaDataDetails(smartmetaDetails);
+    //     smartTimeUseLocalStorage();
+    // }
     const loadAdminConfigurationsId = async (itemId: any) => {
         try {
             let configurationData: any[] = [];
@@ -301,14 +323,20 @@ const TeamSmartFilter = (item: any) => {
             loadAdminConfigurationsId(item?.IsSmartfavoriteId);
         } else {
             getTaskUsers();
-            GetSmartmetadata();
+            // GetSmartmetadata();
         }
     }, [])
+    // React.useEffect(() => {
+    //     if (smartmetaDataDetails.length > 0) {
+    //         GetfilterGroups();
+    //     }
+    // }, [smartmetaDataDetails])
+
     React.useEffect(() => {
-        if (smartmetaDataDetails.length > 0) {
+        if (Object.keys(item?.allMetaRootMeteData)?.length > 0) {
             GetfilterGroups();
         }
-    }, [smartmetaDataDetails])
+    }, [item?.allMetaRootMeteData])
 
     React.useEffect(() => {
         if (filterGroupsData[0]?.checked?.length > 0 && firstTimecallFilterGroup === true) {
@@ -377,7 +405,8 @@ const TeamSmartFilter = (item: any) => {
                 headerCountData();
             }
         }
-    }, [itemsQueryBasedCall, filterGroupsData])
+    }, [itemsQueryBasedCall, filterGroupsData]);
+
     const fetchAllDataAboveNinty = async () => {
         const fetchAllData = await item?.LoadAllSiteTasksAllData();
         if (fetchAllData != undefined) {
@@ -393,12 +422,6 @@ const TeamSmartFilter = (item: any) => {
 
 
     let filterGroups: any = [{ Title: 'Type', values: [], checked: [], checkedObj: [], expanded: [], selectAllChecked: true, ValueLength: 0 },
-    // {
-    //     Title: 'Task Type', values: [], checked: [], checkedObj: [], expanded: []
-    // },
-    // {
-    //     Title: 'Client Category', values: [], checked: [], checkedObj: [], expanded: []
-    // }, 
     {
         Title: 'Status', values: [], checked: [], checkedObj: [], expanded: [], ValueLength: 0
     }, {
@@ -406,9 +429,6 @@ const TeamSmartFilter = (item: any) => {
     }, {
         Title: 'Categories', values: [], checked: [], checkedObj: [], expanded: [], selectAllChecked: false, ValueLength: 0
     }
-        // , {
-        //     Title: 'Portfolio Type', values: [], checked: [], checkedObj: [], expanded: []
-        // }
     ];
     let portfolioTypeHeading: any = [];
     let AllSites: any = [];
@@ -428,20 +448,25 @@ const TeamSmartFilter = (item: any) => {
         let Categories: any = [];
         let Type: any = [];
         let portfolioTypeHeadingData: any = [];
-        smartmetaDataDetails.forEach((element: any) => {
+        let allMetaDataValue: any = []
+        for (let site in item?.allMetaRootMeteData) {
+            allMetaDataValue.push(...item?.allMetaRootMeteData[site]);
+        }
+        allMetaDataValue?.forEach((element: any, index: any) => {
+            element.Id = index + 1;
             element.label = element.Title;
             element.value = element.Id;
             if (element.TaxType == 'Task Types') {
-                portfolioTypeHeadingData.push(element)
+                portfolioTypeHeadingData.push(element);
             }
             if (element.TaxType == 'Type') {
-                portfolioTypeHeadingData.push(element)
+                portfolioTypeHeadingData.push(element);
             }
             if (element.TaxType == 'Task Types') {
-                Type.push(element)
+                Type.push(element);
             }
             if (element.TaxType == 'Type') {
-                Type.push(element)
+                Type.push(element);
             }
             if (element.TaxType == 'Sites' || element.TaxType == 'Sites Old') {
                 SitesData.push(element);
@@ -459,16 +484,174 @@ const TeamSmartFilter = (item: any) => {
                 Categories.push(element);
             }
         });
+        if (Categories.length > 0) {
+            const catogryValue: any = {
+                Title: "Other",
+                TaxType: 'Categories',
+                ParentID: 0,
+                Id: 0,
+            };
+            Categories.push(catogryValue);
+        }
+        SitesData?.forEach((element: any) => {
+            if (element.Title != 'Master Tasks' && (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined))) {
+                element.values = [],
+                    element.checked = [],
+                    element.checkedObj = [],
+                    // element.selectAllChecked = true,
+                    element.expanded = []
+                AllSites.push(element);
+                getChildsSites(element, SitesData);
+            }
+        });
+        if (AllSites?.some((e: any) => e?.values?.length === 0)) {
+            let collectOtherValue: any = {
+                "Title": "Others",
+                "checkedObj": [],
+                "expanded": [],
+                "values": [],
+                "checked": [],
+                "ValueLength": 0,
+            };
+            AllSites.push(collectOtherValue);
+        }
+        let AllSitesMixData = AllSites.map((e: any) => {
+            if (e.Title === "Others") {
+                const filteredSites = AllSites.filter((x: any) => x.values?.length === 0 && x.Title !== "Others");
+                return {
+                    ...e,
+                    values: filteredSites,
+                    checked: filteredSites.map((x: any) => x.Id).filter((id: any) => id !== null && id !== undefined)
+                };
+            } else if (e.Title !== "Others" && e.values.length > 0) {
+                return e;
+            }
+            return null;
+        }).filter((e: any) => e !== null);
+
         PriorityData = PriorityData?.sort((elem1: any, elem2: any) => parseInt(elem2.SortOrder) - parseInt(elem1.SortOrder));
+        const filteredUniqueRootPriorityData = PriorityData?.reduce((acc: any, current: any) => {
+            const existingItem = acc.find((item: any) => item.Title === current.Title);
+            let currentId = current.Parent?.Id
+            if (existingItem) {
+                existingItem.allPriorityIds.push(currentId);
+            } else {
+                acc.push({ ...current, allPriorityIds: [currentId] });
+            }
+            return acc;
+        }, []);
+        let filteredRootPriorityData = filteredUniqueRootPriorityData.map((item: any) => ({
+            ...item,
+            allPriorityIds: [...item.allPriorityIds]
+        }));
+        filteredRootPriorityData?.forEach((element: any) => {
+            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+                element.value = element.Id;
+                element.label = element.Title;
+                filterGroups[2].ValueLength = filteredRootPriorityData?.length;
+                getChildsBasedOnRootPriorty(element, filteredRootPriorityData);
+                filterGroups[2].values.push(element);
+            }
+        })
+        const filteredUniqueRootStatusData = PrecentComplete.reduce((acc: any, current: any) => {
+            const existingItem = acc.find((item: any) => item.Title === current.Title);
+            let currentId = current.Parent?.Id
+            if (existingItem) {
+                existingItem.allPriorityIds.push(currentId);
+            } else {
+                acc.push({ ...current, allPriorityIds: [currentId] });
+            }
+            return acc;
+        }, []);
+        let filteredRootStatusData = filteredUniqueRootStatusData.map((item: any) => ({
+            ...item,
+            allPriorityIds: [...item.allPriorityIds]
+        }));
+        filteredRootStatusData?.forEach((element: any) => {
+            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+                element.value = element.Id;
+                element.label = element.Title;
+                filterGroups[1].ValueLength = filteredRootStatusData?.length;
+                getChildsBasedOnRootPriorty(element, filteredRootStatusData);
+                filterGroups[1].values.push(element);
+            }
+        })
         Type = Type?.sort((elem1: any, elem2: any) => parseInt(elem1.SortOrder) - parseInt(elem2.SortOrder));
-        ClientCategory?.forEach((elem: any) => {
-            if (elem?.Title != 'Master Tasks' && (elem?.ParentID == 0 || (elem?.Parent != undefined && elem?.Parent?.Id == undefined))) {
-                elem.values = [],
-                    elem.checked = [],
-                    elem.checkedObj = [],
-                    elem.expanded = []
-                clintCategoryGroupedData.push(elem);
-                getChildsBasedOn(elem, ClientCategory);
+        const filteredUniqueRootTypeData = Type?.reduce((acc: any, current: any) => {
+            const existingItem = acc.find((item: any) => item.Title === current.Title);
+            let currentId = current.Parent?.Id
+            if (existingItem) {
+                existingItem.allPriorityIds.push(currentId);
+            } else {
+                acc.push({ ...current, allPriorityIds: [currentId] });
+            }
+            return acc;
+        }, []);
+
+        let filteredRootTypeData = filteredUniqueRootTypeData.map((item: any) => ({
+            ...item,
+            allPriorityIds: [...item.allPriorityIds]
+        }));
+
+        filteredRootTypeData?.forEach((element: any) => {
+            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+                element.value = element.Id;
+                element.label = element.Title;
+                filterGroups[0].ValueLength = filteredRootTypeData?.length;
+                getChildsBasedOnRootPriorty(element, filteredRootTypeData);
+                filterGroups[0].values.push(element);
+            }
+        })
+
+        let uniqueCatMap: any = new Map();
+        let duplicateCatIds = [];
+        let filteredRootCategoriesData: any = [];
+        Categories?.forEach((user: any) => {
+            let key = user.Title;
+            let existingUser = uniqueCatMap.get(key);
+            if (existingUser) {
+                if (existingUser.siteName !== user.siteName) {
+                    duplicateCatIds.push(user.Parent?.Id);
+                    user.allPriorityIds = [user.Parent?.Id];
+                }
+            } else {
+                user.allPriorityIds = [user.Parent?.Id];
+                uniqueCatMap.set(key, user);
+                filteredRootCategoriesData.push(user);
+            }
+        });
+
+        filteredRootCategoriesData?.forEach((element: any) => {
+            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+                element.value = element.Id;
+                element.label = element.Title;
+                filterGroups[3].ValueLength = filteredRootCategoriesData?.length;
+                getChildsBasedOnRootPriorty(element, filteredRootCategoriesData);
+                filterGroups[3].values.push(element);
+            }
+        })
+        const filteredUniqueRootClientCategoryData = ClientCategory?.reduce((acc: any, current: any) => {
+            const existingItem = acc.find((item: any) => item.Title === current.Title && item?.siteName != current?.siteName);
+            let currentId = current.Parent?.Id
+            if (existingItem) {
+                existingItem.allPriorityIds.push(currentId);
+            } else {
+                acc.push({ ...current, allPriorityIds: [currentId] });
+            }
+            return acc;
+        }, []);
+        let filteredRootClientCategoryData = filteredUniqueRootClientCategoryData.map((item: any) => ({
+            ...item,
+            allPriorityIds: [...item.allPriorityIds]
+        }));
+        filteredRootClientCategoryData?.forEach((element: any) => {
+            if (element?.Title != 'Master Tasks' && (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined))) {
+                element.values = [],
+                    element.checked = [],
+                    element.checkedObj = [],
+                    element.expanded = []
+                clintCategoryGroupedData.push(element);
+                getChildsBasedOnRootPriorty(element, filteredRootClientCategoryData);
             }
         })
 
@@ -482,23 +665,22 @@ const TeamSmartFilter = (item: any) => {
                     "ValueLength": 0,
                 };
                 if (e.children !== undefined && e.children.length > 0) {
-                    catogryValue.values = e.children.filter((child: any) => child.Id !== undefined);
+                    catogryValue.values = e.children.filter((child: any) => child.ID !== undefined);
                 }
-                catogryValue.ValueLength = countNestedChildren(e.children); // Count all nested children
+                catogryValue.ValueLength = countNestedChildren(e.children);
                 clintCatogryData.push(catogryValue);
             })
         }
         function countNestedChildren(children: any) {
             let count = 0;
             children?.forEach((child: any) => {
-                count += 1; // Increment for the current child
+                count += 1;
                 if (child.children && child.children.length > 0) {
-                    count += countNestedChildren(child.children); // Recursively count nested children
+                    count += countNestedChildren(child.children);
                 }
             });
             return count;
         }
-
         if (clintCatogryData?.length > 0) {
             clintCatogryData.forEach((elem: any) => {
                 if (elem.Title === "Other") {
@@ -509,70 +691,74 @@ const TeamSmartFilter = (item: any) => {
             });
         }
 
-        SitesData?.forEach((element: any) => {
-            if (element.Title != 'Master Tasks' && (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined))) {
-                element.values = [],
-                    element.checked = [],
-                    element.checkedObj = [],
-                    // element.selectAllChecked = true,
-                    element.expanded = []
-                AllSites.push(element);
-                getChildsSites(element, SitesData);
-            }
-        })
-        portfolioTypeHeadingData?.forEach((element: any) => {
-            if (element.Title != 'Master Tasks' && (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined))) {
-                element.values = [],
-                    element.checked = [],
-                    element.checkedObj = [],
-                    element.expanded = []
-                portfolioTypeHeading.push(element);
-                getChildsSites(element, portfolioTypeHeadingData);
-            }
-        })
-        PrecentComplete = PrecentComplete?.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
-        PrecentComplete?.forEach((element: any) => {
-            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
-                element.value = element.Id;
-                element.label = element.Title;
-                filterGroups[1].ValueLength = PrecentComplete?.length;
-                getChildsBasedOn(element, PrecentComplete);
-                filterGroups[1].values.push(element);
-            }
-        })
-        Type?.forEach((element: any) => {
-            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
-                element.value = element.Id;
-                element.label = element.Title;
-                element.selectAllChecked = true;
-                filterGroups[0].ValueLength = Type?.length;
-                getChildsBasedOn(element, Type);
-                filterGroups[0].values.push(element);
-            }
-        })
-        PriorityData?.forEach((element: any) => {
-            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
-                element.value = element.Id;
-                element.label = element.Title;
-                filterGroups[2].ValueLength = PriorityData?.length;
-                getChildsBasedOn(element, PriorityData);
-                filterGroups[2].values.push(element);
-            }
-        })
 
-        Categories?.forEach((element: any) => {
-            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
-                element.value = element.Id;
-                element.label = element.Title;
-                filterGroups[3].ValueLength = Categories?.length;
-                getChildsBasedOn(element, Categories);
-                filterGroups[3].values.push(element);
-            }
-        })
+
+
+
+        // ClientCategory?.forEach((elem: any) => {
+        //     if (elem?.Title != 'Master Tasks' && (elem?.ParentID == 0 || (elem?.Parent != undefined && elem?.Parent?.Id == undefined))) {
+        //         elem.values = [],
+        //             elem.checked = [],
+        //             elem.checkedObj = [],
+        //             elem.expanded = []
+        //         clintCategoryGroupedData.push(elem);
+        //         getChildsBasedOn(elem, ClientCategory);
+        //     }
+        // })
+
+
+        // portfolioTypeHeadingData?.forEach((element: any) => {
+        //     if (element.Title != 'Master Tasks' && (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined))) {
+        //         element.values = [],
+        //             element.checked = [],
+        //             element.checkedObj = [],
+        //             element.expanded = []
+        //         portfolioTypeHeading.push(element);
+        //         getChildsSites(element, portfolioTypeHeadingData);
+        //     }
+        // })
+        // PrecentComplete = PrecentComplete?.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
+        // PrecentComplete?.forEach((element: any) => {
+        //     if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+        //         element.value = element.Id;
+        //         element.label = element.Title;
+        //         filterGroups[1].ValueLength = PrecentComplete?.length;
+        //         getChildsBasedOn(element, PrecentComplete);
+        //         filterGroups[1].values.push(element);
+        //     }
+        // })
+        // Type?.forEach((element: any) => {
+        //     if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+        //         element.value = element.Id;
+        //         element.label = element.Title;
+        //         element.selectAllChecked = true;
+        //         filterGroups[0].ValueLength = Type?.length;
+        //         getChildsBasedOn(element, Type);
+        //         filterGroups[0].values.push(element);
+        //     }
+        // })
+        // PriorityData?.forEach((element: any) => {
+        //     if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+        //         element.value = element.Id;
+        //         element.label = element.Title;
+        //         filterGroups[2].ValueLength = PriorityData?.length;
+        //         getChildsBasedOn(element, PriorityData);
+        //         filterGroups[2].values.push(element);
+        //     }
+        // })
+        // Categories?.forEach((element: any) => {
+        //     if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+        //         element.value = element.Id;
+        //         element.label = element.Title;
+        //         filterGroups[3].ValueLength = Categories?.length;
+        //         getChildsBasedOn(element, Categories);
+        //         filterGroups[3].values.push(element);
+        //     }
+        // })
         filterGroups.forEach((element: any, index: any) => {
             element.checkedObj = GetCheckedObject(element.values, element.checked)
         });
-        AllSites?.forEach((element: any, index: any) => {
+        AllSitesMixData?.forEach((element: any, index: any) => {
             element.checkedObj = GetCheckedObject(element.values, element.checked)
         });
         portfolioTypeHeading?.forEach((element: any, index: any) => {
@@ -582,7 +768,7 @@ const TeamSmartFilter = (item: any) => {
             element.checkedObj = GetCheckedObject(element.values, element.checked)
         });
         setFilterClintCatogryData(clintCatogryData)
-        setAllStites(AllSites);
+        setAllStites(AllSitesMixData);
         setPortfolioTypeHeading(portfolioTypeHeading);
         SortOrderFunction(filterGroups);
         setFilterGroups(filterGroups);
@@ -594,39 +780,17 @@ const TeamSmartFilter = (item: any) => {
             setFirstTimecallFilterGroup(true);
         }
     }
-
-
-    const getChildsSites = (item: any, items: any) => {
-        for (let index = 0; index < items.length; index++) {
-            let childItem = items[index];
-            if (childItem.Parent != undefined && childItem.Parent.Id != undefined && parseInt(childItem.Parent.Id) == item.ID) {
-                item.values = item.values === undefined ? [] : item.values;
-                childItem.value = childItem.Id;
-                childItem.label = childItem.Title;
-                item.values.push(childItem)
-                if (item.TaxType == 'Sites' || item.TaxType == 'Sites Old') {
-                    if (childItem.Title == "Shareweb Old" || childItem.Title == "DRR" || childItem.Title == "Small Projects" || childItem.Title == "Offshore Tasks" || childItem.Title == "Health" || childItem.Title == "Gender" || childItem.Title == "QA" || childItem.Title == "DE" || childItem.Title == "Completed" || childItem.Title == "90%" || childItem.Title == "93%" || childItem.Title == "96%" || childItem.Title == "100%") {
-                    }
-                    else {
-                        item.checked.push(childItem.Id);
-                    }
-                } else {
-                    item.checked.push(childItem.Id);
-                }
-                // item.checked.push(childItem?.Id)
-                getChildsSites(childItem, items);
-            }
-        }
-    }
-    const getChildsBasedOn = (item: any, items: any) => {
+    const getChildsBasedOnRootPriorty = (item: any, items: any) => {
         item.children = [];
         for (let index = 0; index < items.length; index++) {
             let childItem = items[index];
-            if (childItem.Parent != undefined && childItem.Parent.Id != undefined && parseInt(childItem.Parent.Id) == item.ID) {
-                childItem.value = childItem.Id;
-                childItem.label = childItem.Title;
-                item.children.push(childItem);
-                getChildsBasedOn(childItem, items);
+            if (childItem.Parent != undefined && childItem.Parent.Id != undefined) {
+                if (childItem.allPriorityIds.some((e: any) => parseInt(e) == parseInt(item.ID))) {
+                    childItem.value = childItem.Id;
+                    childItem.label = childItem.Title;
+                    item.children.push(childItem);
+                    getChildsBasedOnRootPriorty(childItem, items);
+                }
             }
         }
         if (item.children.length == 0) {
@@ -653,6 +817,63 @@ const TeamSmartFilter = (item: any) => {
             filterGroups[0].checked.push(item.Id)
         }
     }
+    const getChildsSites = (item: any, items: any) => {
+        for (let index = 0; index < items.length; index++) {
+            let childItem = items[index];
+            if (childItem.Parent != undefined && childItem.Parent.Id != undefined && parseInt(childItem.Parent.Id) == item.ID) {
+                item.values = item.values === undefined ? [] : item.values;
+                childItem.value = childItem.Id;
+                childItem.label = childItem.Title;
+                item.values.push(childItem)
+                if (item.TaxType == 'Sites' || item.TaxType == 'Sites Old') {
+                    if (childItem.Title == "Shareweb Old" || childItem.Title == "DRR" || childItem.Title == "Small Projects" || childItem.Title == "Offshore Tasks" || childItem.Title == "Health" || childItem.Title == "Gender" || childItem.Title == "QA" || childItem.Title == "DE" || childItem.Title == "Completed" || childItem.Title == "90%" || childItem.Title == "93%" || childItem.Title == "96%" || childItem.Title == "100%") {
+                    }
+                    else {
+                        item.checked.push(childItem.Id);
+                    }
+                } else {
+                    item.checked.push(childItem.Id);
+                }
+                // item.checked.push(childItem?.Id)
+                getChildsSites(childItem, items);
+            }
+        }
+    }
+    // const getChildsBasedOn = (item: any, items: any) => {
+    //     item.children = [];
+    //     for (let index = 0; index < items.length; index++) {
+    //         let childItem = items[index];
+    //         if (childItem.Parent != undefined && childItem.Parent.Id != undefined && parseInt(childItem.Parent.Id) == item.ID) {
+    //             childItem.value = childItem.Id;
+    //             childItem.label = childItem.Title;
+    //             item.children.push(childItem);
+    //             getChildsBasedOn(childItem, items);
+    //         }
+    //     }
+    //     if (item.children.length == 0) {
+    //         delete item.children;
+    //     }
+    //     if (item.TaxType == 'Percent Complete') {
+    //         if (item.Title == "Completed" || item.Title == "90% Task completed" || item.Title == "93% For Review" || item.Title == "96% Follow-up later" || item.Title == "100% Closed" || item.Title == "99% Completed") {
+    //         }
+    //         else {
+    //             filterGroups[1].checked.push(item.Id);
+    //         }
+    //     }
+    //     if (item.TaxType == 'Priority') {
+    //         filterGroups[2].checked.push(item.Id)
+    //     }
+    //     if (item.TaxType == 'Categories') {
+    //         if (item.Title == "Draft") {
+
+    //         } else {
+    //             filterGroups[3].checked.push(item.Id)
+    //         }
+    //     }
+    //     if (item.TaxType == 'Task Types' || item.TaxType == "Type") {
+    //         filterGroups[0].checked.push(item.Id)
+    //     }
+    // }
     const headerCountData = (() => {
         let filterInfo = '';
         let CategoriesandStatus = "";
@@ -854,7 +1075,7 @@ const TeamSmartFilter = (item: any) => {
             arr?.forEach((element: any) => {
                 if (value == element.Id) {
                     checkObj.push({
-                        Id: element.ItemType === "User" ? element?.AssingedToUser?.Id : element.Id,
+                        Id: element.ItemType === "User" ? element?.AssingedToUser?.Id : element.ID,
                         Title: element.Title,
                         TaxType: element.TaxType ? element.TaxType : ''
                     })
@@ -863,7 +1084,7 @@ const TeamSmartFilter = (item: any) => {
                     element.children.forEach((chElement: any) => {
                         if (value == chElement.Id) {
                             checkObj.push({
-                                Id: chElement.ItemType === "User" ? chElement?.AssingedToUser?.Id : chElement.Id,
+                                Id: chElement.ItemType === "User" ? chElement?.AssingedToUser?.Id : chElement.ID,
                                 Title: chElement.Title,
                                 TaxType: element.TaxType ? element.TaxType : ''
                             })
@@ -1083,7 +1304,7 @@ const TeamSmartFilter = (item: any) => {
                 return true;
             }
             if (data?.ClientCategory?.length > 0 && data?.ClientCategory != undefined && data?.ClientCategory != null) {
-                let result = data?.ClientCategory?.some((item: any) => clientCategory.some((filter: any) => filter.Title === item.Title));
+                let result = data?.ClientCategory?.some((item1: any) => clientCategory.some((filter: any) => filter.Title === item1.Title));
                 if (result === true) {
                     return true;
                 }
@@ -1104,7 +1325,7 @@ const TeamSmartFilter = (item: any) => {
                 return true;
             }
             if (Array.isArray(data[ItemProperty])) {
-                return data[ItemProperty]?.some((item: any) => filterArray.some((filter: any) => filter.Title === item.Title));
+                return data[ItemProperty]?.some((item1: any) => filterArray.some((filter: any) => filter.Title === item1.Title));
             } else {
                 return filterArray.some((filter: any) => filter[FilterProperty] === data[ItemProperty]);
             }
@@ -1119,7 +1340,7 @@ const TeamSmartFilter = (item: any) => {
                 return true;
             }
             if (data?.TaskCategories?.length > 0 && data?.TaskCategories != undefined && data?.TaskCategories != null) {
-                let result = data?.TaskCategories?.some((item: any) => Categories.some((filter: any) => filter.Title === item.Title));
+                let result = data?.TaskCategories?.some((item1: any) => Categories.some((filter: any) => filter.Title === item1.Title));
                 if (result === true) {
                     return true;
                 }
@@ -1258,7 +1479,7 @@ const TeamSmartFilter = (item: any) => {
                 try {
                     if (data?.WorkingAction) {
                         const workingActionValue = JSON.parse(data?.WorkingAction);
-                        const workingDetails = workingActionValue?.find((item: any) => item.Title === 'WorkingDetails');
+                        const workingDetails = workingActionValue?.find((item1: any) => item1.Title === 'WorkingDetails');
                         if (workingDetails) {
                             const isWithinDateRange = (date: any) => {
                                 let startDates = startDateWorkingAction?.setHours(0, 0, 0, 0);
@@ -1464,7 +1685,6 @@ const TeamSmartFilter = (item: any) => {
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
             setIsActionsExpendShow(false)
-            setIsTeamMemberActivities(false)
             setIsDateExpendShow(false);
             setIsDateExpendShowWorkingAction(false)
             setIsSmartfilter(false);
@@ -1482,7 +1702,6 @@ const TeamSmartFilter = (item: any) => {
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
             setIsActionsExpendShow(false);
-            setIsTeamMemberActivities(false)
             setIsDateExpendShow(false);
             setIsDateExpendShowWorkingAction(false)
             setIsSmartfilter(false);
@@ -1611,15 +1830,6 @@ const TeamSmartFilter = (item: any) => {
 
             }
         }
-        if (value == "isTeamMemberActivities") {
-            if (isTeamMemberActivities == true) {
-                setIsTeamMemberActivities(false)
-
-            } else {
-                setIsTeamMemberActivities(true)
-
-            }
-        }
         if (value == "isDateExpendShow") {
             if (isDateExpendShow == true) {
                 setIsDateExpendShow(false)
@@ -1659,7 +1869,6 @@ const TeamSmartFilter = (item: any) => {
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
             setIsActionsExpendShow(false)
-            setIsTeamMemberActivities(false)
             setIsDateExpendShow(false);
             setIsDateExpendShowWorkingAction(false)
             setIsSmartfilter(false);
@@ -1672,7 +1881,6 @@ const TeamSmartFilter = (item: any) => {
             setIscategoriesAndStatusExpendShow(true);
             setIsTeamMembersExpendShow(true);
             setIsActionsExpendShow(true)
-            setIsTeamMemberActivities(true)
             setIsDateExpendShow(true);
             setIsDateExpendShowWorkingAction(true)
             setIsSmartfilter(true);
@@ -1684,8 +1892,7 @@ const TeamSmartFilter = (item: any) => {
             setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
-            setIsActionsExpendShow(false);
-            setIsTeamMemberActivities(false)
+            setIsActionsExpendShow(false)
             setIsDateExpendShow(false);
             setIsDateExpendShowWorkingAction(false)
             setIsSmartfilter(false);
@@ -1698,8 +1905,7 @@ const TeamSmartFilter = (item: any) => {
             setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
-            setIsActionsExpendShow(false)
-            setIsTeamMemberActivities(false)
+            setIsActionsExpendShow(true)
             setIsDateExpendShow(false);
             setIsDateExpendShowWorkingAction(false)
             setIsSmartfilter(false);
@@ -2079,8 +2285,8 @@ const TeamSmartFilter = (item: any) => {
     const SelectProjectFunction = (selectedData: any) => {
         let selectedTempArray: any = [];
         AllProjectBackupArray?.map((ProjectData: any) => {
-            selectedData.map((item: any) => {
-                if (ProjectData.Id == item.Id) {
+            selectedData.map((item1: any) => {
+                if (ProjectData.Id == item1.Id) {
                     ProjectData.Checked = true;
                     selectedTempArray.push(ProjectData);
                 } else {
@@ -2414,14 +2620,14 @@ const TeamSmartFilter = (item: any) => {
     ///////////////////////////////+++++++++++++++++++++ team User Selection end + ///////////////////////////////////////////////////
     return (
         <>
-            {item?.webPartTemplateSmartFilter != true && <div className='justify-content-end d-flex'>
+            {/* {item?.webPartTemplateSmartFilter != true && <div className='justify-content-end d-flex'>
                 {isSmartFevShowHide === true && <div>
                     <a className='hreflink' onClick={() => OpenSmartfavorites('goToSmartFilter')}>Go to Smart Filter</a>
                 </div>}
                 {isSmartFevShowHide === false && <div>
                     <a className='hreflink' onClick={() => OpenSmartfavorites('goToSmartFavorites')}>Go to Smart Favorites</a>
                 </div>}
-            </div>}
+            </div>} */}
 
             <section className='smartFilter bg-light border mb-2 col'>
                 {isSmartFevShowHide === false && <>
@@ -2435,13 +2641,13 @@ const TeamSmartFilter = (item: any) => {
                                     </div>
                                     <div className='alignCenter col-sm-4'>
                                         <div className='ml-auto alignCenter'>
-                                            <a className="hreflink" onClick={() => setSmartFilterTypePannel(true)}><div className="svg__iconbox svg__icon--setting hreflink me-2"></div></a>
+                                            {/* <a className="hreflink" onClick={() => setSmartFilterTypePannel(true)}><div className="svg__iconbox svg__icon--setting hreflink me-2"></div></a> */}
                                             <span style={{ color: `${portfolioColor}` }} className='me-1'>Flat View</span>
                                             <label className="switch me-2" htmlFor="checkbox">
                                                 <input checked={flatView} onChange={handleSwitchToggle} type="checkbox" id="checkbox" />
                                                 {flatView === true ? <div className="slider round" title='Switch to Groupby View' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div title='Switch to Flat-View' className="slider round"></div>}
                                             </label>
-                                            <div className="ml-auto" ><a className="hreflink" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a></div>
+                                            {/* <div className="ml-auto" ><a className="hreflink" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a></div> */}
                                             <div className="ms-1">
                                                 <Tooltip ComponentId={1651} />
                                             </div>
@@ -2495,7 +2701,7 @@ const TeamSmartFilter = (item: any) => {
                         </div >
                     </section> : ''}
 
-                    {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
+                    {/* {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
                         <div className="px-2">
                             <div className="togglebox">
                                 <label className="toggler full_width active">
@@ -2559,7 +2765,7 @@ const TeamSmartFilter = (item: any) => {
                                 </div> : ''}
                             </div>
                         </div >
-                    </section> : ''}
+                    </section> : ''} */}
 
                     {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
                         <div className="px-2">
@@ -2848,7 +3054,7 @@ const TeamSmartFilter = (item: any) => {
                                         <div className='alignCenter'>
                                             {isTeamMembersExpendShow === true ?
                                                 <SlArrowDown style={{ color: "#555555", width: '12px' }} onClick={() => showSmartFilter("isTeamMembersExpendShow")} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} onClick={() => showSmartFilter("isTeamMembersExpendShow")} />}
-                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold me-2'>Team</span>
+                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold me-2'>Team Members</span>
                                             <div className="f-14 me-2" style={{ color: "#333333" }}>{TaskUsersData?.some((e) => e.checked?.length > 0) ? '- ' : ''}</div>
                                             {
                                                 TaskUsersData?.map((Group: any, index: any) => {
@@ -2877,10 +3083,32 @@ const TeamSmartFilter = (item: any) => {
                                                     )
                                                 })
                                             }
+
+                                            <div className='me-3 d-end'>
+                                                <input className='form-check-input' type="checkbox" value="isSelectAll" checked={isSelectAll} onChange={handleSelectAllChangeTeamSection} /> Select All
+                                            </div>
                                         </div>
+
                                     </span>
                                 </div>
                                 {isTeamMembersExpendShow === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
+                                    <Col className='mb-2 '>
+                                        <label className='me-3'>
+                                            <input className='form-check-input' type="checkbox" value="isCretaedBy" checked={isCreatedBy} onChange={() => setIsCreatedBy(!isCreatedBy)} /> Created by
+                                        </label>
+                                        <label className='me-3'>
+                                            <input className='form-check-input' type="checkbox" value="isModifiedBy" checked={isModifiedby} onChange={() => setIsModifiedby(!isModifiedby)} /> Modified by
+                                        </label>
+                                        <label className='me-3'>
+                                            <input className='form-check-input' type="checkbox" value="isAssignedBy" checked={isAssignedto} onChange={() => setIsAssignedto(!isAssignedto)} /> Working Member
+                                        </label>
+                                        <label className='me-3'>
+                                            <input className='form-check-input' type="checkbox" value="isTeamLead" checked={isTeamLead} onChange={() => setIsTeamLead(!isTeamLead)} /> Team Lead
+                                        </label>
+                                        <label className='me-3'>
+                                            <input className='form-check-input' type="checkbox" value="isTeamMember" checked={isTeamMember} onChange={() => setIsTeamMember(!isTeamMember)} /> Team Member
+                                        </label>
+                                    </Col>
                                     <div className="col-sm-12 pad0">
                                         <div className="togglecontent mt-1">
                                             <table width="100%" className="indicator_search">
@@ -2939,45 +3167,7 @@ const TeamSmartFilter = (item: any) => {
                                             </table>
                                         </div>
                                     </div>
-                                </div> : ""}
-                            </div>
-                        </div >
-                    </section> : ''}
 
-                    {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
-                        <div className="px-2">
-                            <div className="togglebox">
-                                <div className="toggler full_width active">
-                                    <span className='full_width' style={{ color: `${portfolioColor}` }}>
-                                        <div className='alignCenter'>
-                                            {isTeamMemberActivities === true ?
-                                                <SlArrowDown style={{ color: "#555555", width: '12px' }} onClick={() => showSmartFilter("isTeamMemberActivities")} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} onClick={() => showSmartFilter("isTeamMemberActivities")} />}
-                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Team Member Activities</span>
-                                            <div className="ms-2 f-14" style={{ color: "#333333" }}>{(isCreatedBy || isModifiedby || isAssignedto || isTeamLead || isTeamMember) ? `- (${(isCreatedBy && isModifiedby && isAssignedto && isTeamLead && isTeamMember) ? "All" : [isCreatedBy ? "Created by" : "", isModifiedby ? "Modified by" : "", isAssignedto ? "Working Member" : "", isTeamLead ? "Team Lead" : "", isTeamMember ? "Team Member" : ""].filter(Boolean).join(', ')})` : ""}</div>
-                                            <div className='me-3 d-end'>
-                                                <input className='form-check-input' type="checkbox" value="isSelectAll" checked={isSelectAll} onChange={handleSelectAllChangeTeamSection} /> Select All
-                                            </div>
-                                        </div>
-                                    </span>
-                                </div>
-                                {isTeamMemberActivities === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
-                                    <Col className='mb-2 '>
-                                        <label className='me-3'>
-                                            <input className='form-check-input' type="checkbox" value="isCretaedBy" checked={isCreatedBy} onChange={() => setIsCreatedBy(!isCreatedBy)} /> Created by
-                                        </label>
-                                        <label className='me-3'>
-                                            <input className='form-check-input' type="checkbox" value="isModifiedBy" checked={isModifiedby} onChange={() => setIsModifiedby(!isModifiedby)} /> Modified by
-                                        </label>
-                                        <label className='me-3'>
-                                            <input className='form-check-input' type="checkbox" value="isAssignedBy" checked={isAssignedto} onChange={() => setIsAssignedto(!isAssignedto)} /> Working Member
-                                        </label>
-                                        <label className='me-3'>
-                                            <input className='form-check-input' type="checkbox" value="isTeamLead" checked={isTeamLead} onChange={() => setIsTeamLead(!isTeamLead)} /> Team Lead
-                                        </label>
-                                        <label className='me-3'>
-                                            <input className='form-check-input' type="checkbox" value="isTeamMember" checked={isTeamMember} onChange={() => setIsTeamMember(!isTeamMember)} /> Team Member
-                                        </label>
-                                    </Col>
                                 </div> : ""}
                             </div>
                         </div >
@@ -3214,7 +3404,7 @@ const TeamSmartFilter = (item: any) => {
                             </div>
                         </div >
                         {item?.webPartTemplateSmartFilter != true ? <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'>
-                            <a className="hreflink mx-1" data-interception="off" target="_blank" href={item?.ContextValue?.siteUrl + "/SitePages/UserTimeEntry.aspx"}>User-Time-Entry</a>
+                            {/* <a className="hreflink mx-1" data-interception="off" target="_blank" href={item?.ContextValue?.siteUrl + "/SitePages/UserTimeEntry.aspx"}>User-Time-Entry</a> */}
                             <button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Update Filter</button>
                             <button className='btn  btn-default px-3 py-1' onClick={ClearFilter}> Clear Filters</button></div> : <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'><button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Save Filter</button></div>}
                     </section> : ''}
@@ -3352,4 +3542,4 @@ const TeamSmartFilter = (item: any) => {
         </>
     )
 }
-export default TeamSmartFilter;
+export default RootLevelSmartFilter;

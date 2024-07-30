@@ -532,13 +532,28 @@ const GraphData = (data: any) => {
       });
       console.log(formattedTotal);
       finaldata = formattedTotal;
+      var siteTimeMap: { [key: string]: number } = {};
       finaldata.forEach((entry: any) => {
+        siteTimeMap={}
         let totalTime = 0;
         entry.SiteData.forEach((site: any) => {
-          totalTime += site.Time;
+          if (siteTimeMap[site.Site]) {
+            // If the site is already in the map, add the time
+            siteTimeMap[site.Site] += site.Time;
+          } else {
+            // If the site is not in the map, add it with the current time
+            siteTimeMap[site.Site] = site.Time;
+          }
         });
+      
+        // Convert the map back to an array format for SiteData
+        entry.SiteData = Object.keys(siteTimeMap).map(site => ({
+          Site: site,
+          Time: siteTimeMap[site]
+    }));
         entry.TotalTime = totalTime;
       });
+      console.log(finaldata)
       setCount(count + 1)
     }
 
@@ -686,39 +701,39 @@ const GraphData = (data: any) => {
   const CustomTick = ({ x, y, payload }: any) => {
     const item = transformedData?.find((item: any) => item.Day === payload.value);
     const fill = item && item?.isWeekend == true ? 'red' : 'black';
-
+  
     return (
       <text x={x} y={y + 10} textAnchor="middle" fill={fill}>
         {payload.value}
       </text>
     );
   };
-
+  
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      const keysToDisplay = ['HHHH', 'Education', 'EPS', 'EI', 'Migration', 'Gruene', 'OffShoreTasks'];
+      const keysToDisplay = ['HHHH', 'Education', 'PSE', 'E+E', 'Migration', 'Gruene', 'OffShoreTasks'];
       const colorMap: any = {
         HHHH: '#2f5596',
         Education: '#990077',
-        EPS: '#dc0018',
-        EI: '#243a4a',
+        PSE: '#dc0018',
+        'E+E': '#243a4a',
         Migration: '#1199bb',
         Gruene: '#008839',
         OffShoreTasks: '#c1722e'
       };
-
+  
       const filteredData = keysToDisplay
         .filter(key => data[key] !== undefined && data[key] > 0)
         .map(key => ({ key, value: data[key], color: colorMap[key] }));
-
+  
       if (filteredData.length === 0) {
         return null; // No data to display
       }
-
+  
       return (
         <div className="custom-tooltip" style={{ backgroundColor: '#fff', border: '1px solid #ccc', padding: '10px' }}>
-          <p className="label">{`Day : ${label}`}</p>
+          <p className="label">{`${checkType} : ${label}`}</p>
           {filteredData.map((entry, index) => (
             <div key={`item-${index}`} style={{ display: 'flex', alignItems: 'center' }}>
               <div
@@ -736,33 +751,10 @@ const GraphData = (data: any) => {
         </div>
       );
     }
-
+  
     return null;
   };
-
-  const styles = {
-    chartContainer: {
-      width: "100%",
-      overflowX: "auto"
-    },
-    legendContainer: {
-      textAlign: "center",
-      marginTop: 10,
-      display: "flex",
-      justifyContent: "center"
-    },
-    legendItem: {
-      display: "flex",
-      alignItems: "center",
-      marginRight: 20
-    },
-    legendColorBox: {
-      width: 20,
-      height: 20,
-      marginRight: 5
-    }
-  };
-
+  
   const CustomLegend = () => {
     return (
       <div style={{ textAlign: "center", marginTop: 10, display: "flex", justifyContent: "center" }}>
@@ -780,7 +772,7 @@ const GraphData = (data: any) => {
         </div>
         <div style={{ display: "flex", alignItems: "center", marginRight: 20 }}>
           <div style={{ width: 20, height: 20, marginRight: 5, backgroundColor: "#1199bb" }} />
-          <span>Migartion</span>
+          <span>Migration</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", marginRight: 20 }}>
           <div style={{ width: 20, height: 20, marginRight: 5, backgroundColor: "#990077" }} />
@@ -795,9 +787,9 @@ const GraphData = (data: any) => {
           <span>OffShoreTasks</span>
         </div>
       </div>
-
     );
   };
+  
   return (
     <div>
       <Panel
@@ -814,14 +806,11 @@ const GraphData = (data: any) => {
             <span className={`Week` === checkType ? 'siteBdrBottom' : ''} onClick={() => changeDateType('Week')}>Week</span>
             <span className={`Month` === checkType ? 'siteBdrBottom' : ''} onClick={() => changeDateType('Month')}>Month</span>
           </div>
-          {/* <ReactApexChart options={chartData?.options} series={chartData?.series} type="bar" height={350} /> */}
-
-          <div style={{  width: "100%", overflowX: 'auto' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <ResponsiveContainer width={(checkType !== 'Month' && checkType !== 'Week') ? transformedData.length * 60 : '100%'} height={350}>
+  
+          <div style={{ width: "100%", overflowX: 'auto' }}>
+            <div style={{ width: (checkType !== 'Month' && checkType !== 'Week') ? transformedData.length * 60 : '100%' }}>
+              <ResponsiveContainer width="100%" height={350}>
                 <BarChart
-                  width={1000}
-                  height={350}
                   data={transformedData}
                   barGap={16}
                 >
@@ -832,11 +821,10 @@ const GraphData = (data: any) => {
                   />
                   <YAxis />
                   <Tooltip content={<CustomTooltip />} />
-                  {/* <Legend verticalAlign="bottom" wrapperStyle={{ paddingTop: 10 }} /> */}
                   <Bar dataKey="HHHH" stackId="a" fill="#2f5596" />
                   <Bar dataKey="PSE" stackId="a" fill="#dc0018" />
                   <Bar dataKey="E+E" stackId="a" fill="#243a4a" />
-                  <Bar dataKey="Migartion" stackId="a" fill="#1199bb" />
+                  <Bar dataKey="Migration" stackId="a" fill="#1199bb" />
                   <Bar dataKey="Education" stackId="a" fill="#990077" />
                   <Bar dataKey="Gruene" stackId="a" fill="#008839" />
                   <Bar dataKey="OffShoreTasks" stackId="a" fill="#c1722e" />

@@ -273,12 +273,12 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                     <div className="Task-panel alignCenter justify-content-between">
                                         <div className="alignCenter">
                                             <span className="me-1">{`${SubTextItemsArray?.SetChar!=undefined? SubTextItemsArray?.SetChar:""}${SubTextItemsArray.index + 1}.${index + 1}`}</span>
-                                            <div className="d-flex">
+                                            <div>
                                                 {ApprovalStatus ?
                                                     <div>
                                                         {/* {isCurrentUserApprover ? */}
                                                         <div className={isCurrentUserApprover ? "alignCenter mt-1" : "alignCenter Disabled-Link mt-1"} >
-                                                            <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
+                                                            <span className="d-flex justify-content-between align-items-center " ng-disabled="Item.PercentComplete >= 80">
                                                                 <span title="Rejected" onClick={() => SmartLightUpdateSubChildComment(index, "Reject")}
                                                                     className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
                                                                 >
@@ -287,13 +287,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                                                 </span>
                                                                 <span title="Approved" onClick={() => SmartLightUpdateSubChildComment(index, "Approve")} className={obj.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
                                                                 </span>
-                                                            </span>
-                                                        </div>
-                                                        {/* : null} */}
-                                                    </div>
-                                                    : null
-                                                }
-                                               {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
+                                                                {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
                                                 <>
                                                    
                                                             <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(index, obj)}>
@@ -302,6 +296,13 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                                 </> :
                                                 null
                                             }
+                                                            </span>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                    : null
+                                                }
+                                               
                                             </div>
                                         </div>
                                         <div>

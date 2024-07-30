@@ -1,4 +1,4 @@
-declare interface ITaskProfileTemplateWebPartStrings {
+declare interface IEodReportWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -13,7 +13,7 @@ declare interface ITaskProfileTemplateWebPartStrings {
   UnknownEnvironment: string;
 }
 
-declare module 'TaskProfileTemplateWebPartStrings' {
-  const strings: ITaskProfileTemplateWebPartStrings;
+declare module 'EodReportWebPartStrings' {
+  const strings: IEodReportWebPartStrings;
   export = strings;
 }

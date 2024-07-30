@@ -1498,8 +1498,6 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                 })
             }
         })
-
-
         if (RequiredData?.Title?.length > 0) {
             return (
                 <div style={{ backgroundColor: 'transparent' }}>

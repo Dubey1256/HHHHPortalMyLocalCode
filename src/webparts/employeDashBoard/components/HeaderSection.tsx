@@ -111,6 +111,7 @@ const Header = () => {
         <div className='siteColor subheading'>
           Portfolio Leads
         </div>
+        <a className="hreflink mt-2 px-3" data-interception="off" target="_blank" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/TaskUser-Management.aspx"}>Task User Management</a>
       </>
     );
   };
@@ -204,6 +205,10 @@ const Header = () => {
                     )
                   ))}
                 </div>
+                {DashboardId == '27' && <div className="row pt-4">
+                  {ContextData?.CurrentUserInfo != undefined && ContextData?.CurrentUserInfo?.Title != undefined && <h5 className="d-inline-block p-0 px-3"> {`${ContextData?.CurrentUserInfo?.Title} (${ContextData?.CurrentUserInfo?.UserGroup?.Title}) - WorkingTasks (${ContextData?.CurrentUserWorkingToday?.length}), Projects (${ContextData?.CurrentUserProjectData?.length})`}</h5>}
+                </div>
+                }
               </>
             )}
           </div>

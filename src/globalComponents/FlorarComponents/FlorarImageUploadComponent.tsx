@@ -3,6 +3,7 @@ import JoditEditor from 'jodit-react';
 
 export default function ImageUploadContainer(Props: any) {
     const callBack = Props?.callBack;
+    const imageIndex=Props?.imageIndex;
     const editor = useRef(null);
     const [content, setContent] = useState(Props?.editorValue);
 
@@ -28,7 +29,7 @@ export default function ImageUploadContainer(Props: any) {
             src = img.getAttribute('src');
         })
         if(src?.length > 0){
-            callBack(src);
+            callBack(src,imageIndex);
         } 
     };
 

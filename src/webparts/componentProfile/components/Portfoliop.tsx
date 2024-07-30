@@ -1896,7 +1896,7 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
                           <details open className="border">
                             <summary className="alignCenter">
                               <label className="toggler full_width">
-                                HHHH Project Management
+                                HHHH Px Management
                               </label>
                             </summary>
                             {renderPortfolioProjectManagement()}

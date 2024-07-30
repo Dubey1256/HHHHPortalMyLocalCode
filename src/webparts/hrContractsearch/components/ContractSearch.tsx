@@ -39,7 +39,7 @@ let allSite: any = {
             GMBH_CONTACT_SEARCH_LISTID: props?.GMBH_CONTACT_SEARCH_LISTID,
             HR_EMPLOYEE_DETAILS_LIST_ID: props?.HR_EMPLOYEE_DETAILS_LIST_ID,
             siteUrl: props?.Context.pageContext.web.absoluteUrl,
-            jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
+            jointSiteUrl: props?.Context.pageContext._site.absoluteUrl
         }
     getData()
     },[])

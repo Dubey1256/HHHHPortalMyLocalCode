@@ -19,7 +19,7 @@ interface NameIdData {
 let message: any;
 let count: any = 1;
 let counts = 0;
-let membersWorkfromHome:any = []
+let membersWorkfromHome: any = []
 let Juniordevavailabel = 0;
 let smalsusleadavailabel = 0;
 let hhhhteamavailabel = 0;
@@ -30,8 +30,8 @@ let Allteamoforganization = 0;
 let leaveallteammemebrstoday = 0;
 let availableteammeberstoday = 0;
 const EmailComponenet = (props: any) => {
-  let mydata = props?.data?.filter((item:any)=> item?.eventType !== "Work From Home" || item?.Rejected != true);
-  let data = mydata.filter((item:any)=> item?.Rejected !== true);
+  let mydata = props?.data?.filter((item: any) => item?.eventType !== "Work From Home" || item?.Rejected != true);
+  let data = mydata.filter((item: any) => item?.Rejected !== true);
   const [AllTaskuser, setAllTaskuser] = React.useState([]);
   const [leaveData, setleaveData] = React.useState([]);
   const [nameidTotals, setNameidTotals] = useState<NameIdData>({});
@@ -41,7 +41,7 @@ const EmailComponenet = (props: any) => {
       "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type,Approved,Rejected"
     ).expand("Author,Editor,Employee").top(500).getAll()
       .then((results: any) => {
-        const FilterRejectedData = results.filter((item:any)=> item.Rejected !== true)
+        const FilterRejectedData = results.filter((item: any) => item.Rejected !== true)
         setleaveData(FilterRejectedData);
       })
       .catch((err: any) => {
@@ -216,15 +216,29 @@ const EmailComponenet = (props: any) => {
   // arr.map((item:any)=>{})
 
   // For prepare the property
-  
+
   {
     data?.map((item: any, index: any) => {
       let condate = new Date(item.end);
       let updatereason = item?.shortD?.split('-');
       if (updatereason.length > 2) {
         // Getting the text after the last dash
-        item.reason = updatereason.slice(-1)[0].trim();
+        let lastIndex = updatereason?.length - 1;
+
+        // Remove "Approved" only if it exists at the end
+        if (updatereason[lastIndex].endsWith('Approved')) {
+          item.reason = updatereason[lastIndex] = updatereason[lastIndex].replace(/Approved\s*$/, '').trim();
+        }else{
+          item.reason = updatereason.slice(-1)[0].trim();
+        }
       }
+      item.EventsTypes = item?.eventType == 'Half Day'
+        ? item?.HalfDay
+          ? "First Half Day"
+          : item?.HalfDayTwo
+            ? "Second Half Day"
+            : item?.eventType
+        : item?.eventType;
       // item.enddate = moment(condate, 'MM/DD/YYYY').format('DD/MM/YYYY');
       item.enddate = moment(condate, 'ddd MMM DD YYYY HH:mm:ss [GMT]ZZ').format('DD/MM/YYYY');
 
@@ -323,7 +337,7 @@ const EmailComponenet = (props: any) => {
 
   // {Object?.keys(nameidTotals)?.length === 0 ? `The ${formattedDate} is a great Day! All ${Allteamoforganization} are in Office today!` : `${formattedDate}: ${(Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length)} are on leave, ${Allteamoforganization - (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length)} are working`}
   // </div>
-  
+
   const AllStaff = SPfxtotal?.length + Mobiletotal?.length + Managementtotal?.length + TotalEmployees?.length + qatotal?.length + designtotal?.length + HRtotal?.length + JTMTotal?.length;
   const AllStaffLeave = SPfxtotalLeave?.length + MobiletotalLeave?.length + ManagementtotalLeave?.length + TotalEmployeesLeave?.length + qatotalLeave?.length + designtotalLeave?.length + HRtotalLeave?.length + JTMTotalLeave?.length;
   const AllTrainees = SPFxTrainee?.length + ManagementTrainee?.length + MobileTrainee?.length + Totalsmalsustrainee?.length + DesignTrainee?.length + QATrainee?.length + HRTrainee?.length + JTMTrainee?.length;
@@ -471,7 +485,7 @@ const EmailComponenet = (props: any) => {
              <td width="40px" height="40px" style="color: #333;height:40px;width:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;border-left: 1px solid #EEE;padding: 0px 8px;">${index + 1}</td>
              <td width="136px" height="40px" style="color: #333;height:40px;width:136px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;text-decoration-line: underline;color: #2F5596;"><a style="color: #2F5596;" href='${props.Listdata.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${item?.NameId}&Name=${item?.Name}'> ${item?.Name}</a></td>
              <td width="112px" height="40px" style="color: #333;height:40px;width:112px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;"> ${item?.Staff?.length > 0 ? "Staff" : "Trainee"}</td>
-             <td width="112px" height="40px" style="color: #333;height:40px;width:112px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;${item.eventType === "Un-Planned" ? "background: #FFEAEA;color: #A10101;" : "background: #FFF6E8;color: #AA6700;"}"> ${item.eventType}</td>
+             <td width="112px" height="40px" style="color: #333;height:40px;width:112px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;${item.EventsTypes === "Un-Planned" ? "background: #FFEAEA;color: #A10101;" : "background: #FFF6E8;color: #AA6700;"}"> ${item.EventsTypes}</td>
              <td width="184px" height="40px" style="color: #333;height:40px;width:184px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;">${item?.reason}</td>
              <td width="104px" height="40px" style="color: #333;height:40px;width:104px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;text-decoration-line: underline;color: #2F5596;"><a style="color: #2F5596;" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">
                  <span style="color: #2F5596;">${item?.enddate}</span></td>

@@ -2,58 +2,43 @@ import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
-  type IPropertyPaneConfiguration,
+
+  IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'TaskProfileTemplateWebPartStrings';
-import TaskProfileTemplate from './components/TaskProfileTemplate';
-import { ITaskProfileTemplateProps } from './components/ITaskProfileTemplateProps';
+import * as strings from 'EodReportWebPartStrings';
+import EodReport from './components/EodReport';
+import { IEodReportProps } from './components/IEodReportProps';
 
-export interface ITaskProfileTemplateWebPartProps {
+export interface IEodReportWebPartProps {
   description: string;
-  MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
-  TaskUserListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
-  SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
-  SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd';
-  DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
-  TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f';
-  TaskTypeID:"21b55c7b-5748-483a-905a-62ef663972dc";
-  PortFolioTypeID: "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
-  TimeEntry: any;
-  SiteCompostion: any;
+  MasterTaskId: string;
+  context: any;
+  SmartMetadataListID: string;
+  TaskUserListID: string
 }
 
-export default class TaskProfileTemplateWebPart extends BaseClientSideWebPart<ITaskProfileTemplateWebPartProps> {
+export default class EodReportWebPart extends BaseClientSideWebPart<IEodReportWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<ITaskProfileTemplateProps> = React.createElement(
-      TaskProfileTemplate,
+    const element: React.ReactElement<IEodReportProps> = React.createElement(
+      EodReport,
       {
-       
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        siteUrl: this.context.pageContext.web.absoluteUrl,
-        // loginName:this.context.pageContext.user.loginName,
-        Context: this.context,
-        MasterTaskListID: this.properties.MasterTaskListID,
-        TaskUserListID: this.properties.TaskUserListID,
+        MasterTaskId: this.properties.MasterTaskId,
+        context: this.context,
         SmartMetadataListID: this.properties.SmartMetadataListID,
-        SmartInformationListID: this.properties.SmartInformationListID,
-        PortFolioTypeID:this.properties.PortFolioTypeID,
-        DocumentsListID: this.properties.DocumentsListID,
-        TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
-        TaskTypeID:this.properties.TaskTypeID,
-        TimeEntry: this.properties.TimeEntry,
-        SiteCompostion: this.properties.SiteCompostion
+        TaskUserListID: this.properties.TaskUserListID,
       }
     );
 
@@ -81,7 +66,6 @@ export default class TaskProfileTemplateWebPart extends BaseClientSideWebPart<IT
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-           
             default:
               environmentMessage = strings.UnknownEnvironment;
           }
@@ -130,40 +114,15 @@ export default class TaskProfileTemplateWebPart extends BaseClientSideWebPart<IT
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
-                }),
-                PropertyPaneTextField('MasterTaskListID', {
-                  label: "MasterTaskListID"
-                }),
-                PropertyPaneTextField('TaskUserListID', {
-                  label: "TaskUserListID"
+                PropertyPaneTextField('MasterTaskId', {
+                  label: 'MasterTaskId'
                 }),
                 PropertyPaneTextField('SmartMetadataListID', {
                   label: "SmartMetadataListID"
                 }),
-                PropertyPaneTextField('SmartInformationListID', {
-                  label: 'SmartInformationListID'
+                PropertyPaneTextField('TaskUserListID', {
+                  label: "TaskUserListID"
                 }),
-                PropertyPaneTextField('PortFolioTypeID', {
-                  label: "PortFolioTypeID"
-                }),
-                PropertyPaneTextField('DocumentsListID', {
-                  label: "DocumentsListID"
-                }),
-                PropertyPaneTextField('TaskTimeSheetListID', {
-                  label: "TaskTimeSheetListID"
-                }),
-                PropertyPaneTextField('TaskTypeID', {
-                  label: "TaskTypeID"
-                }),
-                PropertyPaneTextField('TimeEntry', {
-                  label: "TimeEntry"
-                }),
-                PropertyPaneTextField('SiteCompostion', {
-                  label: "SiteCompostion"
-                }),
-                
               ]
             }
           ]
