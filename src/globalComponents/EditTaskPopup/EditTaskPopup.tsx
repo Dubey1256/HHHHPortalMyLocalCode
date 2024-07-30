@@ -51,10 +51,10 @@ import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 import FlorarImageUploadComponent from "../FlorarComponents/FlorarImageUploadComponent";
 import PageLoader from "../pageLoader";
-import EmailComponent from "../EmailComponents";
+// import EmailComponent from "../EmailComponents";
 import SmartTotalTime from "./SmartTimeTotal";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
-import EmailNotificationMail from "./EmailNotificationMail";
+// import EmailNotificationMail from "./EmailNotificationMail";
 import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import SmartPriorityHover from "./SmartPriorityHover";
@@ -342,10 +342,10 @@ const EditTaskPopup = (Items: any) => {
         taskUsers = await web.lists
             .getById(AllListIdData?.TaskUserListID)
             .items.select(
-                "Id,UserGroupId,TimeCategory,CategoriesItemsJson,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,UserGroup/Id,UserGroup/Title,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name"
+                "Id,UserGroupId,TimeCategory,CategoriesItemsJson,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name"
             )
             .filter("IsActive eq 1")
-            .expand("AssingedToUser,Approver,UserGroup")
+            .expand("AssingedToUser,Approver")
             .orderBy("SortOrder", true)
             .orderBy("Title", true)
             .getAll();
@@ -1719,20 +1719,35 @@ const EditTaskPopup = (Items: any) => {
 
     // This is used for on hold comment card callback 
 
-    const editTaskPopupCallBack = useCallback((usedFor: any) => {
+    const editTaskPopupCallBack = useCallback(async (usedFor: any) => {
         setOnHoldPanel(false);
         if (usedFor == "Save") {
-            let uniqueIds: any = {};
-            BackupTaskCategoriesData.push(onHoldCategory[0]);
-            const result: any = BackupTaskCategoriesData.filter((item: any) => {
-                if (!uniqueIds[item.Id]) {
-                    uniqueIds[item.Id] = true;
-                    return true;
-                }
-                return false;
-            });
-            BackupTaskCategoriesData = result;
-            setTaskCategoriesData(result);
+            if (onHoldCategory?.length > 0) {
+                let uniqueIds: any = {};
+                BackupTaskCategoriesData.push(onHoldCategory[0]);
+                const result: any = BackupTaskCategoriesData.filter((item: any) => {
+                    if (!uniqueIds[item.Id]) {
+                        uniqueIds[item.Id] = true;
+                        return true;
+                    }
+                    return false;
+                });
+                BackupTaskCategoriesData = result;
+                setTaskCategoriesData(result);
+            } else {
+                let DynamicAssignmentInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Auto-Assignment", SiteURL: siteUrls, ItemDetails: EditData, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: 70 })
+                console.log("Dynamic Assignment Information All Details from backend  ==================", DynamicAssignmentInformation);
+                StatusOptions?.map((item: any) => {
+                    if (70 == item.value) {
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+                        setUpdateTaskInfo({
+                            ...UpdateTaskInfo,
+                            PercentCompleteStatus: "70",
+                        });
+                    }
+                });
+            }
         }
         onHoldCategory = [];
     }, []);
@@ -2048,6 +2063,11 @@ const EditTaskPopup = (Items: any) => {
         } else {
             if (!sendEmailStatus && (StatusData.value == 2 || StatusData.value == 3)) {
                 alert("Please approve or reject first to update the status.")
+            } else if (StatusData.value == 70) {
+                setOnHoldPanel(true);
+                setSendCategoryName("Reopen");
+
+
             } else {
                 setUpdateTaskInfo({
                     ...UpdateTaskInfo,
@@ -2057,17 +2077,15 @@ const EditTaskPopup = (Items: any) => {
                 setTaskStatus(StatusData.taskStatusComment);
                 setPercentCompleteCheck(false);
                 setIsTaskStatusUpdated(true);
-                let DynamicAssignmentInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({usedFor:"Auto-Assignment", SiteURL: siteUrls, ItemDetails: EditData, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: StatusData.value })
+                let DynamicAssignmentInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Auto-Assignment", SiteURL: siteUrls, ItemDetails: EditData, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: StatusData.value })
                 console.log("Dynamic Assignment Information All Details from backend  ==================", DynamicAssignmentInformation);
                 const assignmentUser = EditData.TaskAssignedUsers;
                 if (assignmentUser?.length) {
                     setTaskAssignedTo(assignmentUser);
                 }
-
                 if (StatusData.value == 0) {
                     updateWAForApproval(ApprovalStatus, "isChekedfor0%")
                 }
-
                 if (StatusData.value == 1) {
                     updateWAForApproval(ApprovalStatus, "isChekedfor1%")
                     let tempArray: any = [];
@@ -2146,7 +2164,6 @@ const EditTaskPopup = (Items: any) => {
                 setSmartMetaDataUsedPanel("");
             }
         }
-
     };
 
     //  ###################### This is Common Function for Change The Team Members According to Change Status ######################
@@ -2392,9 +2409,14 @@ const EditTaskPopup = (Items: any) => {
                                     UpdatedDataObject: UpdatedDataObject,
                                     RequiredListIds: AllListIdData
                                 }
-                                await GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                    console.log("Ms Teams Notifications send")
-                                })
+                                if (ItemData?.Title == "Approval") {
+                                    await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Notification", SiteURL: siteUrls, ItemDetails: UpdatedDataObject, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: UpdatedDataObject.PercentComplete, SendUserEmail: DataForNotification.sendUserEmail })
+                                } else {
+                                    await GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                        console.log("Ms Teams Notifications send")
+                                    })
+                                }
+
                             }
                         })
                     })
@@ -2424,7 +2446,7 @@ const EditTaskPopup = (Items: any) => {
                                 });
                             }
                         }
-                        let TaskConfigurationInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({usedFor:"Notification", SiteURL: siteUrls, ItemDetails: UpdatedDataObject, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: UpdatedDataObject.PercentComplete })
+                        let TaskConfigurationInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Notification", SiteURL: siteUrls, ItemDetails: UpdatedDataObject, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: UpdatedDataObject.PercentComplete })
                         console.log("Task Configuration Information All Details from backend  ==================", TaskConfigurationInformation);
                     }
                     if (ApproverData != undefined && ApproverData.length > 0) {
@@ -3263,7 +3285,6 @@ const EditTaskPopup = (Items: any) => {
                     ApprovedGlobalCount++;
                     setSendEmailGlobalCount(sendEmailGlobalCount + 1);
                     if (Status <= 3) {
-
                         setStatusOnChangeSmartLight(3);
                     }
                 }
@@ -3358,9 +3379,6 @@ const EditTaskPopup = (Items: any) => {
                     setTaskTeamMembers(teamMember);
                     setApprovalTaskStatus(true);
                 }
-
-
-
             }
         }
         if (PhoneCount > 0) {
@@ -4313,6 +4331,15 @@ const EditTaskPopup = (Items: any) => {
 
     const UpdateApproverFunction = () => {
         let data: any = ApproverData;
+        if (useFor == "Approval") {
+            setTaskAssignedTo([...ApproverData])
+            setTaskTeamMembers([...ApproverData])
+            ApproverData.map((item) => {
+                TaskAssignedTo.filter((assignItems) => assignItems.Id != item.Id)
+                TaskTeamMembers.filter((assignItems) => assignItems.Id != item.Id)
+            })
+
+        }
         if (useFor == "Bottleneck" || useFor == "Attention" || useFor == "Phone" || useFor == "Approval") {
             let CreatorData: any = currentUserBackupArray[0];
             setTaskAssignedTo(ApproverData)
@@ -4374,13 +4401,12 @@ const EditTaskPopup = (Items: any) => {
                     }
                 })
             }
-            oldWorkingAction = []
-            oldWorkingAction = [...copyWorkAction]
+            oldWorkingAction = [...copyWorkAction];
             setWorkingAction([...copyWorkAction, ...workingDetail]);
-            console.log("Bottleneck All Details:", copyWorkAction)
+            console.log("Bottleneck All Details:", copyWorkAction);
             setUseFor("")
             setApproverPopupStatus(false)
-            setApproverData([])
+           
         }
         else {
             setApproverPopupStatus(false);
@@ -4467,14 +4493,16 @@ const EditTaskPopup = (Items: any) => {
     };
 
 
+    
     // this is used for update working action JSOn for Approval Secanrios 
+    
     const updateWAForApproval = (Value: any, key: string) => {
         let copyWorkAction: any = [...WorkingAction];
         const usedFor: string = "Approval";
         let CreatorData: any = currentUserBackupArray[0];
         let ApproverDataInfo: any = [];
         let CreateObject: any = {};
- 
+
         if (taskUsers?.length > 0) {
             taskUsers?.forEach((UserItem: any) => {
                 CreatorData?.Approver?.forEach((RecipientsItem: any) => {
@@ -4484,7 +4512,7 @@ const EditTaskPopup = (Items: any) => {
                 });
             });
         }
- 
+
         if (key == "IsChecked") {
             if (Value == true) {
                 setApprovalStatus(false);
@@ -4494,13 +4522,26 @@ const EditTaskPopup = (Items: any) => {
                             DataItem.InformationData = [];
                             DataItem[key] = false;
                             DataItem.Type = "";
+                            SmartMetaDataAllItems
+                           
+                            
+                            StatusOptions?.map((item: any) => {
+                                if (0 == item.value) {
+                                    setPercentCompleteStatus(item.status);
+                                    setTaskStatus(item.taskStatusComment);
+                                    setUpdateTaskInfo({
+                                        ...UpdateTaskInfo,
+                                        PercentCompleteStatus: "0",
+                                    });
+                                }
+                            });
                         }
                     });
                 }
             } else {
                 setApprovalStatus(true);
                 isApprovalByStatus = true;
- 
+
                 const dataArray = ApproverDataInfo.map((approver: any) => ({
                     CreatorName: CreatorData?.Title,
                     CreatorImage: CreatorData?.UserImage,
@@ -4515,14 +4556,18 @@ const EditTaskPopup = (Items: any) => {
                     Comment: '',
                     CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
                 }));
- 
+
                 if (copyWorkAction?.length > 0) {
                     copyWorkAction?.forEach((DataItem: any) => {
                         if (DataItem.Title == usedFor) {
                             if (DataItem.InformationData.length > 0) {
-                                let aproveInfoData=dataArray.concat(DataItem.InformationData)
+                                let aproveInfoData = dataArray.concat(DataItem.InformationData)
                                 DataItem.InformationData = aproveInfoData;
                                 DataItem[key] = Value;
+                                // if(usedFor=="Approval"){
+                                //     setTaskAssignedTo([...ApproverData])
+                                //     setTaskTeamMembers([...ApproverData])
+                                // }
                             } else {
                                 DataItem.InformationData = dataArray;
                                 DataItem[key] = Value;
@@ -4557,7 +4602,7 @@ const EditTaskPopup = (Items: any) => {
                     })
                     copyWorkAction = TempArrya;
                 }
- 
+
                 let tempArray: any = [];
                 if (currentUserData != undefined && currentUserData.length > 0) {
                     currentUserData.map((dataItem: any) => {
@@ -4589,8 +4634,8 @@ const EditTaskPopup = (Items: any) => {
                 });
             }
         }
-        else if(key=="isChekedfor1%"){
-           
+        else if (key == "isChekedfor1%") {
+
             if (Value == true) {
                 setApprovalStatus(true)
                 if (copyWorkAction?.length > 0) {
@@ -4605,7 +4650,7 @@ const EditTaskPopup = (Items: any) => {
             } else {
                 setApprovalStatus(true);
                 isApprovalByStatus = true;
- 
+
                 const dataArray = ApproverDataInfo.map((approver: any) => ({
                     CreatorName: CreatorData?.Title,
                     CreatorImage: CreatorData?.UserImage,
@@ -4620,12 +4665,12 @@ const EditTaskPopup = (Items: any) => {
                     Comment: '',
                     CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
                 }));
- 
+
                 if (copyWorkAction?.length > 0) {
                     copyWorkAction?.forEach((DataItem: any) => {
                         if (DataItem.Title == usedFor) {
                             if (DataItem.InformationData.length > 0) {
-                                let aproveInfoData=dataArray.concat(DataItem.InformationData)
+                                let aproveInfoData = dataArray.concat(DataItem.InformationData)
                                 DataItem.InformationData = aproveInfoData;
                                 DataItem[key] = Value;
                             } else {
@@ -4662,7 +4707,7 @@ const EditTaskPopup = (Items: any) => {
                     })
                     copyWorkAction = TempArrya;
                 }
- 
+
                 let tempArray: any = [];
                 if (currentUserData != undefined && currentUserData.length > 0) {
                     currentUserData.map((dataItem: any) => {
@@ -4694,24 +4739,24 @@ const EditTaskPopup = (Items: any) => {
                 });
             }
         }
-        else if(key=="isChekedfor0%"){
- 
+        else if (key == "isChekedfor0%") {
+
             if (Value == true) {
                 setApprovalStatus(false)
                 if (copyWorkAction?.length > 0) {
                     copyWorkAction?.forEach((DataItem: any) => {
                         if (DataItem.Title == usedFor) {
-                             DataItem.InformationData = [];
-                             DataItem[key] = false;
-                             DataItem.Type = "";
-                         }
+                            DataItem.InformationData = [];
+                            DataItem[key] = false;
+                            DataItem.Type = "";
+                        }
                     });
                 }
             }
- 
+
         }
-       
-       
+
+
         else {
             if (copyWorkAction?.length > 0) {
                 copyWorkAction?.map((DataItem: any) => {
@@ -4720,9 +4765,9 @@ const EditTaskPopup = (Items: any) => {
                             DataItem[key] = Value;
                         } else {
                             alert("You haven’t checked the approval. First, check the approval checkbox, and then select the approval type.")
- 
+
                         }
- 
+
                     }
                 })
             } else {
@@ -4988,10 +5033,23 @@ const EditTaskPopup = (Items: any) => {
             console.log("Updated Data after removing User:", TempWorkingActionData);
             setWorkingAction([...EditData.WorkingAction])
         }
+
+        let currentApprover: any = []
+         WorkingAction?.map((items: any) => {
+            if (items.Title === "Approval") {
+                 items?.InformationData?.map((infoItem: any) => {
+                    let updateApprover: any = ApproverData.filter((assignItems) => infoItem?.TaggedUsers?.Title && assignItems.Title.includes(infoItem.TaggedUsers.Title));
+                   currentApprover = [...currentApprover, ...updateApprover]
+                })
+             }
+         })
+         if(ActionType == "Approval")
+         setTaskAssignedTo(currentApprover)  
+         setTaskTeamMembers(currentApprover)
+         setApproverData( currentApprover)
     }
 
     //    This is used to remove the Tagged User Data form Bottleneck and attention
-
     function removeDataFromInformationData(dataArray: any, titleToRemove: any, indexToRemove: any) {
         return dataArray.map((item: any) => {
             if (item.Title === titleToRemove && Array.isArray(item.InformationData)) {
@@ -7903,7 +7961,7 @@ const EditTaskPopup = (Items: any) => {
                             ColorCode={PortfolioItemColor}
                         />
                     ) : null}
-                    {sendEmailComponentStatus ? (
+                    {/* {sendEmailComponentStatus ? (
                         <EmailComponent
                             AllTaskUser={AllTaskUser}
                             CurrentUser={currentUserData}
@@ -7917,8 +7975,8 @@ const EditTaskPopup = (Items: any) => {
                             ApprovalTaskStatus={ApprovalTaskStatus}
                             callBack={SendEmailNotificationCallBack}
                         />
-                    ) : null}
-                    {sendEmailNotification ? (
+                    ) : null} */}
+                    {/* {sendEmailNotification ? (
                         <EmailNotificationMail
                             AllTaskUser={AllTaskUser}
                             CurrentUser={currentUserData}
@@ -7933,7 +7991,7 @@ const EditTaskPopup = (Items: any) => {
                             callBack={SendEmailNotificationCallBack}
                             statusValue={ValueStatus}
                         />
-                    ) : null}
+                    ) : null} */}
                     {/* {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} siteUrl={siteUrls} Context={Context} Callback={EODReportComponentCallback} /> : null} */}
                 </div>
             </Panel>
@@ -10446,3 +10504,4 @@ export default React.memo(EditTaskPopup);
 
 // step-2B :
 // <EditTaskPopup Items={Items} ></EditTaskPopup>
+//  this s my code
