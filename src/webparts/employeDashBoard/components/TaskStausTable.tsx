@@ -1991,6 +1991,21 @@ const TaskStatusTbl = (Tile: any) => {
     setSelectedUserId(item?.AssingedToUserId)
     ContextData?.callbackFunction('OtherUserSelected', item?.AssingedToUserId)
   }
+  const ShowCustomDataHeader = (config: any) => {
+    return (
+      <div>
+        {config?.WebpartTitle}
+        {config?.ShowTitleInHeader === true && (
+          <>  {' - '}
+            <span>
+              <img id="UserImg63" className="ProirityAssignedUserPhoto" title={ContextData?.CurrentUserInfo?.Title} src={ContextData?.CurrentUserInfo?.Item_x0020_Cover?.Url} alt={ContextData?.CurrentUserInfo?.Title} />
+            </span>
+          </>
+        )}
+        {` (${config?.Tasks?.length})`}
+      </div>
+    );
+  }
   const generateDashboard = () => {
     const rows: any = [];
     let currentRow: any = [];
@@ -2011,7 +2026,7 @@ const TaskStatusTbl = (Tile: any) => {
                   <div className="Alltable" draggable={true} onDragStart={(e) => handleDragStart(e, config, '')} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
                       <GlobalCommanTable wrapperHeight="300px" showHeader={true}
-                        showingDataCoustom={`${config?.WebpartTitle} ${config?.ShowTitleInHeader == true ? ' - ' + ContextData?.CurrentUserInfo?.Title : ''} (${config?.Tasks?.length})`}
+                        showingDataCoustom={ShowCustomDataHeader(config)}
                         customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                         pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                     )}

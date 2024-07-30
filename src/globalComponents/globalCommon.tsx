@@ -860,7 +860,8 @@ export const loadAllTaskUsers = async (AllListId: any) => {
         taskUser = await web.lists
             .getById(AllListId?.TaskUserListID)
             .items
-            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name,UserGroup/Id,UserGroup/Title,TeamLeader/Id,TeamLeader/Title&$expand=UserGroup,AssingedToUser,Approver,TeamLeader").get();
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name,UserGroup/Id,UserGroup/Title,TeamLeader/Id,TeamLeader/Title&$expand=UserGroup,AssingedToUser,Approver,TeamLeader").orderBy("SortOrder", true)
+            .orderBy("Title", true).get();
     }
     catch (error) {
         return Promise.reject(error);
@@ -1925,7 +1926,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
     // let TaskUsers: any = [];
     let AllMasterTaskData: any = [];
     const deepCopy = (obj: any) => {
-      return JSON.parse(JSON.stringify(obj));
+        return JSON.parse(JSON.stringify(obj));
     };
     try {
         let ProjectData: any = [];
@@ -2171,7 +2172,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
         );
 
         let dataObject = {
-          GetAllMasterTaskData: AllMasterTaskDataCopy,
+            GetAllMasterTaskData: AllMasterTaskDataCopy,
             GroupByData: ComponentsData,
             AllData: AllPathGeneratedData,
             ProjectData: ProjectData,
@@ -2446,7 +2447,7 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                                 console.log(error)
                             }
                             task.workingActionTitle = ""; task.workingActionIcon = {};
-                            if( task?.workingActionValue != undefined && task?.workingActionValue != null && Array.isArray(task?.workingActionValue)){
+                            if (task?.workingActionValue != undefined && task?.workingActionValue != null && Array.isArray(task?.workingActionValue)) {
                                 task?.workingActionValue?.forEach((elem: any) => {
                                     if (elem.Title === "Bottleneck" || elem.Title === "Attention" || elem.Title === "Phone" || elem.Title === "Approval") {
                                         task.workingActionTitle = task.workingActionTitle ? task.workingActionTitle + " " + elem.Title : elem.Title;
@@ -2807,7 +2808,7 @@ export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, A
     }
     return { findGrouping, flatdata };
 }
-export const replaceURLsWithAnchorTags = (text:any) => {
+export const replaceURLsWithAnchorTags = (text: any) => {
     // Regular expression to match URLs
     var urlRegex = /(https?:\/\/[^\s<>"]+)(?=["'\s.,]|$)/g;
     // Replace URLs with anchor tags
@@ -3257,7 +3258,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
 
             if (item?.AuthorId == val?.AssingedToUserId) {
 
-                if (val?.UserGroup?.Title == 'Developers Team' || val?.UserGroup?.Title == 'Portfolio Lead Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff'){
+                if (val?.UserGroup?.Title == 'Developers Team' || val?.UserGroup?.Title == 'Portfolio Lead Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff') {
                     item.Department = 'Developer';
                     item.userName = val?.Title
                 }
@@ -3265,19 +3266,19 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
                     item.Department = 'Management'
                     item.userName = val?.Title
                 }
-                   
 
-                if (val?.UserGroup?.Title == 'Design Team'){
+
+                if (val?.UserGroup?.Title == 'Design Team') {
                     item.Department = 'Design';
                     item.userName = val?.Title
                 }
-                   
 
-                if (val?.UserGroup?.Title == 'QA Team'){
+
+                if (val?.UserGroup?.Title == 'QA Team') {
                     item.Department = 'QA';
                     item.userName = val?.Title
                 }
-                    
+
 
             }
         })
@@ -3353,20 +3354,20 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
 
     })
 
-    const sortUsersByName = (usersArray:any) => {
-        return usersArray.sort((a:any, b:any) => {
-          const nameA = a.userName ? a.userName.toLowerCase() : ''; // Handle undefined or null userName
-          const nameB = b.userName ? b.userName.toLowerCase() : ''; // Handle undefined or null userName
-          
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
-          }
-          return 0;
+    const sortUsersByName = (usersArray: any) => {
+        return usersArray.sort((a: any, b: any) => {
+            const nameA = a.userName ? a.userName.toLowerCase() : ''; // Handle undefined or null userName
+            const nameB = b.userName ? b.userName.toLowerCase() : ''; // Handle undefined or null userName
+
+            if (nameA < nameB) {
+                return -1;
+            }
+            if (nameA > nameB) {
+                return 1;
+            }
+            return 0;
         });
-      };
+    };
     const sortedUsers = sortUsersByName(AllTimeEntry);
     sortedUsers?.forEach((item: any) => {
 
@@ -3396,7 +3397,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
         if (item.Department == undefined || item.Department == '') {
             item.Department = ''
         }
-         if (item.userName == undefined || item.userName == '') {
+        if (item.userName == undefined || item.userName == '') {
             item.userName = ''
         }
         if (item.ProjectID == undefined || item.ProjectID == '') {
@@ -3413,7 +3414,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Effort + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PercentComplete + '%' + '</td>'
             + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Status + '</td>'
-            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' +  '<p style="margin:0px;">' + `<a href ='https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/UserTimeEntry.aspx??userId=${item.AuthorId}&Date=${item?.TaskDate}'>`+'<span style="font-size:13px">' + item?.userName + '</span></a>' + '</p>' + '</td>'
+            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + '<p style="margin:0px;">' + `<a href ='https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/UserTimeEntry.aspx??userId=${item.AuthorId}&Date=${item?.TaskDate}'>` + '<span style="font-size:13px">' + item?.userName + '</span></a>' + '</p>' + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Department + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.ClientCategorySearch + '</td>'
             + '</tr>'
@@ -3637,25 +3638,25 @@ export const getWorkingActionJSON = (teamConfigData: any) => {
 
 export const getsiteConfig = async () => {
     let columnManagement = sessionStorage.getItem("ColumnsInfo");
-    if (columnManagement != undefined && columnManagement?.length > 0){
-        columnManagement=JSON.parse(columnManagement)
+    if (columnManagement != undefined && columnManagement?.length > 0) {
+        columnManagement = JSON.parse(columnManagement)
         return columnManagement;
     }
     else {
         try {
-            let siteUrl='https://hhhhteams.sharepoint.com/sites/HHHH';
-            let listId='fb4b4ae0-fb2d-4623-bffd-a7172e12cd09';
-            if (window?.location?.href?.toLowerCase()?.indexOf('hhhhqa')>-1) {
-                 siteUrl='https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP';
-                listId='69a5eee2-8ab3-45af-b9a5-363086ddc122';          
+            let siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH';
+            let listId = 'fb4b4ae0-fb2d-4623-bffd-a7172e12cd09';
+            if (window?.location?.href?.toLowerCase()?.indexOf('hhhhqa') > -1) {
+                siteUrl = 'https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP';
+                listId = '69a5eee2-8ab3-45af-b9a5-363086ddc122';
             }
             else {
-                 siteUrl='https://hhhhteams.sharepoint.com/sites/HHHH';
-                 listId='fb4b4ae0-fb2d-4623-bffd-a7172e12cd09';
+                siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH';
+                listId = 'fb4b4ae0-fb2d-4623-bffd-a7172e12cd09';
             }
             let web = new Web(siteUrl);
-            let getdata:any =[];
-             getdata = await web.lists.getById(listId).items.select("Id", "Title", "InternalName", "Description").getAll();
+            let getdata: any = [];
+            getdata = await web.lists.getById(listId).items.select("Id", "Title", "InternalName", "Description").getAll();
             if (getdata != undefined && getdata.length > 0) {
                 sessionStorage.setItem("ColumnsInfo", JSON.stringify(getdata));
                 return getdata
@@ -3669,7 +3670,7 @@ export const getsiteConfig = async () => {
 }
 export const GetColumnDetails = (name: any, Columns: any) => {
     let columnDetail: any = null;
-    if (Columns!=undefined && Columns?.length > 0) {
+    if (Columns != undefined && Columns?.length > 0) {
         Columns?.forEach(function (column: any) {
             if (column.InternalName == name) {
                 columnDetail = column;
@@ -3679,7 +3680,7 @@ export const GetColumnDetails = (name: any, Columns: any) => {
     }
     if (columnDetail != undefined)
         return columnDetail;
-    else  return columnDetail;
+    else return columnDetail;
 
-   
+
 }

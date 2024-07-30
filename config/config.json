@@ -2,54 +2,6 @@
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
   "version": "2.0",
   "bundles": {
-    "alert-management-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/alertManagement/AlertManagementWebPart.js",
-          "manifest": "./src/webparts/alertManagement/AlertManagementWebPart.manifest.json"
-        }
-      ]
-    },
-    "smart-connect-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/smartConnect/SmartConnectWebPart.js",
-          "manifest": "./src/webparts/smartConnect/SmartConnectWebPart.manifest.json"
-        }
-      ]
-    },
-    "data-tool-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/dataTool/DataToolWebPart.js",
-          "manifest": "./src/webparts/dataTool/DataToolWebPart.manifest.json"
-        }
-      ]
-    },
-    "hhhh-quick-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/hhhhQuick/HhhhQuickWebPart.js",
-          "manifest": "./src/webparts/hhhhQuick/HhhhQuickWebPart.manifest.json"
-        }
-      ]
-    },
-    "component-profile-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/componentProfile/ComponentProfileWebPart.js",
-          "manifest": "./src/webparts/componentProfile/ComponentProfileWebPart.manifest.json"
-        }
-      ]
-    },
-    "contact-search-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/contactSearch/ContactSearchWebPart.js",
-          "manifest": "./src/webparts/contactSearch/ContactSearchWebPart.manifest.json"
-        }
-      ]
-    },
     "taskprofile-web-part": {
       "components": [
         {
