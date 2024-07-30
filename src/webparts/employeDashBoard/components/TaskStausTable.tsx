@@ -25,6 +25,8 @@ import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import AddEditWebpartTemplate from "../../../globalComponents/AddEditWebpartTemplate";
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
+import { usePopperTooltip } from "react-popper-tooltip";
+//import { CustomToolTip } from "../../../globalComponents/customTooltip";
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -42,17 +44,36 @@ let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1,
 { value: 10, taskStatusComment: "working on it" }, { value: 70, taskStatusComment: "Re-Open" }, { value: 75, taskStatusComment: "Deployment Pending" }, { value: 80, taskStatusComment: "In QA Review" },
 { value: 90, taskStatusComment: "Task completed" }, { value: 100, taskStatusComment: "Closed" },]
 const TaskStatusTbl = (Tile: any) => {
+  //Tooltip -------------------
+  const [controlledVisible, setControlledVisible] = React.useState(false);
+  const {
+    getArrowProps,
+    getTooltipProps,
+    setTooltipRef,
+    setTriggerRef,
+    visible,
+  } = usePopperTooltip({
+    trigger: null,
+    interactive: true,
+    closeOnOutsideClick: false,
+    placement: "auto",
+    visible: controlledVisible,
+    onVisibleChange: setControlledVisible,
+  });
+  //End here
+
   const childRef = React.useRef<any>();
   const ContextData: any = React.useContext(myContextValue);
   const [IsShowAllUser, setIsShowAllUser] = useState(true);
   const [state, rerender] = React.useReducer(() => ({}), {});
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
-  const [editPopup, setEditPopup]: any = useState(false);
-  const [EditProjectPopup, setEditProjectPopup]: any = useState(false);
-  const [EditCompPopup, setEditCompPopup]: any = useState(false);
+  const [editPopup, setEditPopup] = useState(false);
+  const [EditPopupProjects, setEditPopupProjects] = useState<any>(false);
+  const [EditCompPopup, setEditCompPopup] = useState<any>(false);
   const [result, setResult]: any = useState<any>(false);
-  const [CompResult, setCompResult]: any = useState(false);
+  const [CompResult, setCompResult] = useState<any>(undefined);
+  const [ProjectResult, setProjectResult] = useState<any>({});
   const [ActiveTile, setActiveTile] = useState(Tile?.activeTile);
   const [dateRange, setDateRange] = useState<any>([]);
   const [isRejectItem, setisRejectItem] = useState<any>(undefined);
@@ -1735,14 +1756,14 @@ const TaskStatusTbl = (Tile: any) => {
       else {
         item['siteUrl'] = `${AllListId?.siteUrl}`;
         item['listName'] = 'Master Tasks';
-        setEditProjectPopup(true);
-        setCompResult(item)
+        setEditPopupProjects(true);
+        setProjectResult(item)
       }
 
     }
   }
   function CallBack() {
-    setEditProjectPopup(false);
+    setEditPopupProjects(false);
     setEditPopup(false);
     setEditCompPopup(false);
   }
@@ -1932,6 +1953,7 @@ const TaskStatusTbl = (Tile: any) => {
   const customTableHeaderButtons = (config: any) => {
     return (
       <span className="alignCenter CustomHeaderIcon">
+        <span></span>
         {IsShowConfigBtn && config?.IsEditWebpart != false && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
         {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink"
           target="_blank" data-interception="off" title="Create New Task" href={`${ContextData?.siteUrl}/SitePages/CreateTask.aspx`}>
@@ -2006,6 +2028,26 @@ const TaskStatusTbl = (Tile: any) => {
       </div>
     );
   }
+  const handlAction = () => {
+    setControlledVisible(true);
+  }
+  const handleMouseLeave = () => {
+    setControlledVisible(false)
+  }
+
+  const tableCall = (config: any, smartFavTableConfig: any) => {
+
+    return (
+      <>
+        <GlobalCommanTable wrapperHeight="300px" showHeader={true}
+          showingDataCoustom={ShowCustomDataHeader(config)}
+          customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+          pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
+      </>
+    )
+  }
+
+
   const generateDashboard = () => {
     const rows: any = [];
     let currentRow: any = [];
@@ -2022,14 +2064,20 @@ const TaskStatusTbl = (Tile: any) => {
               {config?.ShowWebpart == true && config?.GroupByView != undefined && <section>
                 {(config?.DataSource == 'Tasks' || config?.DataSource == 'Project') && <div className="workingSec empAllSec clearfix">
                   <div className="alignCenter mb-2 justify-content-between">
+                    {/* <span ref={setTriggerRef} onMouseEnter={() => handlAction()} onMouseLeave={() => handleMouseLeave()} className=" svg__iconbox svg__icon--info dark"></span>
+                    {visible && (<div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
+                      <span className="tableTooltip" dangerouslySetInnerHTML={{ __html: config?.onDropAction != undefined && config?.onDropAction?.length > 0 ? config?.onDropAction[0]?.SelectedField : 'Test Status' }}></span>
+                      <div {...getArrowProps({ className: "tooltip-arrow" })} />
+                    </div>)} */}
+                    {/* <CustomToolTip Description={`Test data ${index}`} /> */}
                   </div>
                   <div className="Alltable" draggable={true} onDragStart={(e) => handleDragStart(e, config, '')} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
-                    {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="300px" showHeader={true}
-                        showingDataCoustom={ShowCustomDataHeader(config)}
-                        customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
-                        pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
-                    )}
+                    {config?.Tasks != undefined && config?.Tasks?.length > 0 &&
+                      tableCall(config, smartFavTableConfig)
+                    }
+                    {config?.Tasks != undefined && config?.Tasks?.length === 0 &&
+                      tableCall(config, smartFavTableConfig)
+                    }
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
                       {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={AllListId} emailStatus={"Approved"} items={approveItem} />}
                     </span>}
@@ -2267,6 +2315,9 @@ const TaskStatusTbl = (Tile: any) => {
     });
     return rows;
   };
+  const showProgressBar = () => {
+
+  }
   const onRenderCustomHeadereditcomment = () => {
     return (
       <>
@@ -2284,7 +2335,7 @@ const TaskStatusTbl = (Tile: any) => {
           {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
         </span>
         <span>
-          {EditProjectPopup && <EditProjectPopup props={CompResult} AllListId={AllListId} Call={() => { CallBack() }} />}
+          {EditPopupProjects && <EditProjectPopup AllListId={AllListId} props={ProjectResult} Call={CallBack} showProgressBar={showProgressBar} />}
         </span>
         <span>
           {EditCompPopup && (
