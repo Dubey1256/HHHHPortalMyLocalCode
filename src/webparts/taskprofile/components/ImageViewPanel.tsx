@@ -15,6 +15,7 @@ import { Web } from 'sp-pnp-js';
 import TooltipBuger from '../../../globalComponents/Tooltip';
 import {Popover,PopoverTrigger,PopoverSurface,} from "@fluentui/react-components";
 import { MdOutlineStarBorder, MdOutlineStar  } from 'react-icons/Md';
+import { set } from '@microsoft/sp-lodash-subset';
  let checkDataImage:any=[];
  let copyAllImage:any=[];
 const ImageViewPanel = (props: any) => {
@@ -52,8 +53,8 @@ const ImageViewPanel = (props: any) => {
     const [isPopoverFilterOpen, setIsPopoverFilterOpen] = useState(false);
     const [isPopoverShortByOpen, setIsPopoverShortByOpen] = useState(false);
     const [isPopoverReplyOpen, setIsPopoverReplyOpen] = useState("");
-
-
+    const [shortByFilterSelection, setShortByFilterSelection] = useState(false);
+    
        //============= Open image right side function Start=============
     const openImageSection = (selectedTitle: any) => {
         SetRightSectionImage([...checkedImageData])
@@ -344,6 +345,7 @@ const ImageViewPanel = (props: any) => {
    //========================== shorting and Filter Functionality Start =======================
 
      const shortByFunction=(selectedShortBy:any)=>{
+        setShortByFilterSelection(true)
         let CopyAllImageData: any = [...allImageData] 
      let RightImageSection: any = [...rightSectionImage]
         if(selectedShortBy=="Rating(L-H)"){
@@ -380,7 +382,14 @@ const ImageViewPanel = (props: any) => {
      }
 
     // ============== slider Image view function=====================
-
+    React.useEffect(() => {
+        if (isPopoverReplyOpen!='') {            
+            const elements = document.getElementsByClassName('fui-PopoverSurface');
+            if (elements?.length > 1) {
+                (elements[1] as HTMLElement).style.display = 'none';
+            }
+        }
+    }, [isPopoverReplyOpen])
     const imageSlider = (allImageData: any) => {
         return (
             <div className="slider-container">
@@ -860,7 +869,7 @@ const ImageViewPanel = (props: any) => {
                                    
                                 </div>
                                 <span className='alignCenter ml-auto'>
-                                <div className={`${rightSectionImage?.length==1?'alignCenter me-5 DisableFilterSorting':'alignCenter me-5'}`}>
+                                <div className={`${(rightSectionImage?.length==1 && shortByFilterSelection==false)?'alignCenter me-5 DisableFilterSorting':'alignCenter me-5'}`}>
                              <Popover withArrow open={isPopoverShortByOpen} onOpenChange={(e, data) => setIsPopoverShortByOpen(data.open)} >
                                     <PopoverTrigger disableButtonEnhancement>
                                     <span className='alignCenter  me-4'> <span className="svg__iconbox svg__icon--Switcher" title="Sort by"></span>Sort by</span>
@@ -872,10 +881,10 @@ const ImageViewPanel = (props: any) => {
                                                 <span className='svg__iconbox svg__icon--cross dark' onClick={()=>setIsPopoverShortByOpen(false)} ></span>
                                             </div>
                                             <div className='mt-2'>
-                                               <div onClick={()=>shortByFunction("Rating(L-H)")} className='hreflink'>Rating (Lowest to Highest)</div>
-                                               <div onClick={()=>shortByFunction("Rating(H-L)")} className='my-2 hreflink'>Rating (Highest to Lowest)</div>
-                                               <div onClick={()=>shortByFunction("Date(Old-New)")}className='hreflink'>Date (Oldest to Newest)</div>
-                                               <div onClick={()=>shortByFunction("Date(New-Old)")}className='mt-2 hreflink'>Date (Newest to Oldest)</div>
+                                               <div onClick={()=>shortByFunction("Rating(L-H)")} className='hreflink'>Rating(Lowest to Highest)</div>
+                                               <div onClick={()=>shortByFunction("Rating(H-L)")} className='my-2 hreflink'>Rating(Highest to Lowest)</div>
+                                               <div onClick={()=>shortByFunction("Date(Old-New)")}className='hreflink'>Date(Oldest to Newest)</div>
+                                               <div onClick={()=>shortByFunction("Date(New-Old)")}className='mt-2 hreflink'>Date(Newest to Oldest)</div>
                                             </div>
                                         </div>
                                        
@@ -917,7 +926,7 @@ const ImageViewPanel = (props: any) => {
                                        
                                     </PopoverSurface>
                                 </Popover></div>
-                               {iconSeleted != "compareSeveral" && <div className='playpausebutton'>
+                               {checkedImageData?.length <=2 && <div className='playpausebutton'>
                                     <span onClick={previous} className='svg__icon--arrowLeft svg__iconbox'></span>
                                     <span className="svg__icon--arrowRight svg__iconbox" onClick={next}></span>
                                 </div>}
