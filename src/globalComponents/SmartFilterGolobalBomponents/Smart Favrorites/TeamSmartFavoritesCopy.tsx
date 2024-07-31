@@ -707,7 +707,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
         return (
             <div className="d-flex full-width pb-1">
                 <div className="alignCenter subheading">
-                    <span className="siteColor">Smart Favorite</span>
+                    <span className="siteColor">Add New SmartFavorite</span>
                 </div>
                 <span style={{ marginTop: '2.3px' }}><Tooltip ComponentId={1636} /></span>
             </div>
@@ -834,7 +834,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 isBlocking={false}
             >
                 <div className="modal-body p-0 mb-3">
-                    <section className='smartFilter bg-light border mb-2 col'>
+                    <section className='smartFilter bg-f5f5  border mb-2 col'>
                         <section className='mt-2 px-2'>
                             <div className='justify-content-between'>
                                 <label className='SpfxCheckRadio'>
