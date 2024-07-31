@@ -441,7 +441,7 @@ const GraphData = (data: any) => {
       <div className="subheading">
         Project hours per day during - {data.DateType}
       </div>
-       <div><Tooltips ComponentId="1126" /></div>
+       <div><Tooltips ComponentId="1716" /></div>
        </>
       
     );
