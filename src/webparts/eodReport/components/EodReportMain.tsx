@@ -343,7 +343,7 @@ export const EodReportMain = (props: any) => {
             ["prashant.kumar@hochhuth-consulting.de"],
             subject,
             sendAllTasks.replace(/,/g, "  ")
-        );
+        );      
     };
 
 
@@ -1010,6 +1010,9 @@ export const EodReportMain = (props: any) => {
                         filteredData = [];
                     }
                     else if (loginUserInfo[0]?.UserGroup?.Title == "Junior Task Management") {
+                        filteredData = res;
+                    }
+                    else if (loginUserInfo[0]?.UserGroup?.Title == "QA Team") {
                         filteredData = res;
                     }
                     else if (loginUserInfo[0]?.UserGroup?.Title == "Portfolio Lead Team") {
