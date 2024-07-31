@@ -5071,7 +5071,7 @@ const EditTaskPopup = (Items: any) => {
                             }`}
                     </span>
                 </div>
-                <RecurringTask props={Items}WorkingAction={WorkingAction}setWorkingAction={setWorkingAction}/>
+                <RecurringTask props={Items} WorkingAction={WorkingAction} setWorkingAction={setWorkingAction} />
                 <Tooltip ComponentId="1683" isServiceTask={false} />
             </>
         );
@@ -10336,21 +10336,23 @@ const EditTaskPopup = (Items: any) => {
                             </ul>
                         </div>
                     </div>
-                    <footer className="modal-footer">
-                        <button
-                            type="button"
-                            className="btn btn-primary px-3 mx-1"
-                            onClick={UpdateApproverFunction}
-                        >
-                            Save
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-default px-3"
-                            onClick={closeApproverPopup}
-                        >
-                            Cancel
-                        </button>
+                    <footer className="bg-f4 fixed-bottom position-absolute">
+                        <div className="d-flex ml-auto pull-right px-4 py-2">
+                            <button
+                                type="button"
+                                className="btn btn-primary px-3 mx-1"
+                                onClick={UpdateApproverFunction}
+                            >
+                                Save
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-default px-3"
+                                onClick={closeApproverPopup}
+                            >
+                                Cancel
+                            </button>
+                        </div>
                     </footer>
                 </div>
             </Panel>
