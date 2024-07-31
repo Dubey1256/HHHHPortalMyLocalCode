@@ -1419,7 +1419,7 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
                 `You have been tagged <b>${ActionType == "Phone" ? "for the discussion" : "as " + ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}` : ''}
             <p></p>
             ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
-                `<div style="background-color: #fff; color:#333; padding:16px; margin-top:10px; display:block;" title="${ReasonStatement}">
+                `<div style="background-color: #fff; color:#333; padding:16px; margin-top:10px; display:block;" title="${removeHtmlTagsFromString(ReasonStatement)}">
             <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? " Discussion Point" : " Comment"} </b>: <span>${ReduceTheContentLines(ReasonStatement, 450)}</span> ` : ''}
             </div>
             <div style="margin-top: 16px;">  <b style="font-weight:600; font-size: 16px;">Task Link: </b>
@@ -1458,7 +1458,7 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         <p>
         <br/>
         <div style="background-color: #fff; padding:16px; display:block; color: #333; ">
-        <div style="font-size:18px;" title="${ReasonStatement}"><b>Comment</b>: ${ReduceTheContentLines(ReasonStatement, 450)}</div>
+        <div style="font-size:18px;" title="${removeHtmlTagsFromString(ReasonStatement)}"><b>Comment</b>: ${ReduceTheContentLines(ReasonStatement, 450)}</div>
         </div>
         </br>
         <p>
@@ -1498,6 +1498,8 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                 })
             }
         })
+
+
         if (RequiredData?.Title?.length > 0) {
             return (
                 <div style={{ backgroundColor: 'transparent' }}>
@@ -1640,7 +1642,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                     return (<>
                                                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff', color: '#333' }}>
                                                             <div style={{ width: '100%' }}>
-                                                                <div style={{ display: "flex" }} title={fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")}>
+                                                                <div style={{ display: "flex" }} title={removeHtmlTagsFromString(fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, ""))}>
                                                                     <div style={{ fontSize: "10pt", display: "flex", color: "#333", marginRight: '5px', fontWeight: '600', width: "4%" }}>
                                                                         {fbData.ViewIndex}.
                                                                     </div>
@@ -1652,7 +1654,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                         <div style={{ marginBottom: '8px' }}>
                                                                             <div style={{ fontWeight: '600' }}>{fbComment.AuthorName} - {fbComment.Created}</div>
                                                                         </div>
-                                                                        <div title={fbComment['Title']}><span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbComment['Title'], 225) }}></span></div>
+                                                                        <div title={removeHtmlTagsFromString(fbComment['Title'])}><span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbComment['Title'], 225) }}></span></div>
 
                                                                         {fbComment?.ReplyMessages?.length > 0 && fbComment?.ReplyMessages?.map((replycom: any) => {
                                                                             return (
@@ -1660,7 +1662,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                                     <div style={{ marginBottom: '8px' }}>
                                                                                         <div style={{ fontWeight: '600' }}><span>{replycom.AuthorName} - {replycom.Created}</span></div>
                                                                                     </div>
-                                                                                    <div title={replycom['Title']}><span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
+                                                                                    <div title={removeHtmlTagsFromString(replycom['Title'])}><span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
                                                                                 </div>
                                                                             )
                                                                         })}
@@ -1696,7 +1698,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                 <div>
                                                                     <span style={{ fontWeight: '600' }}>{cmtData.AuthorName}</span> - {cmtData.Created}
                                                                 </div>
-                                                                <div style={{ wordWrap: 'break-word' }} title={cmtData.Description}>
+                                                                <div style={{ wordWrap: 'break-word' }} title={removeHtmlTagsFromString(cmtData.Description)}>
 
                                                                     <span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(cmtData.Description, 115) }}></span>
                                                                 </div>
@@ -2107,6 +2109,7 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                                         }
                                                     })
                                                 }
+                                                
                                             });
 
                                         }
