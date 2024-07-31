@@ -928,9 +928,9 @@ function CreateTaskComponent(props: any) {
             if (CategoryTitle !== undefined) {
                 CategoryTitle.split(';')?.map((cat: any) => {
                     if (cat === 'User Experience - UX' || cat === 'UX-New') {
-                        AssignedToIds.push(298)
-                        TeamMembersIds.push(298);
-                        ResponsibleIds.push(49);
+                        AssignedToIds.push(301)
+                        TeamMembersIds.push(301);
+                        ResponsibleIds.push(298);
                         taskUsers?.map((User: any) => {
                             if (User.Title === 'User Experience - UX' && burgerMenuTaskDetails.TaskType != "User Experience - UX" && TeamMembersIds.length === 0 && User.AssingedToUserId != null && User.AssingedToUserId != '' && User.AssingedToUserId != undefined) {
                                 TeamMembersIds.push(User.AssingedToUserId);
