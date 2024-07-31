@@ -233,15 +233,19 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     const GetComponents = async () => {
         if (groupedData?.length > 0) {
             setData(groupedData);
-            if (props.Portfolios?.length > 0) {
-                let BackupData = globalCommon?.deepCopy(props.Portfolios);
-                BackupData.map((elem: any) => {
-                    elem.isChecked = true;
-                    if (elem?.subRows?.length > 0) {
-                        elem.subRows = []
-                    }
-                })
-                setdataUpper(BackupData);
+            try {
+                if (props.Portfolios?.length > 0) {
+                    let BackupData = globalCommon?.deepCopy(props.Portfolios);
+                    BackupData.map((elem: any) => {
+                        elem.isChecked = true;
+                        if (elem?.subRows?.length > 0) {
+                            elem.subRows = []
+                        }
+                    })
+                    setdataUpper(BackupData);
+                }
+            } catch (e) {
+                console.log(e)
             }
 
             LinkedServicesBackupArray = groupedData;
