@@ -324,6 +324,7 @@ const CopyTaskProfile = (props: any) => {
             let Bottleneck: any = [];
             let Attention: any = [];
             let Phone: any = [];
+            let Approval: any = [];
             taskDetails["IsTodaysTask"] = false;
 
             if (WorkingAction?.length > 0) {
@@ -338,10 +339,8 @@ const CopyTaskProfile = (props: any) => {
                         Phone = Action?.InformationData;
                     }
                     if (Action?.Title == "Approval") {
-                        if(Action?.InformationData?.length>0){
-                            setApprovalStatus(true)
-                        }
-                       
+                        Approval = Action?.InformationData;
+                        setApprovalStatus(true)
                     }
                     if (Action?.Title == "WorkingDetails") {
                         let currentDate = moment(new Date()).format("DD/MM/YYYY")
@@ -370,6 +369,7 @@ const CopyTaskProfile = (props: any) => {
                 Bottleneck: Bottleneck,
                 Attention: Attention,
                 Phone: Phone,
+                Approval: Approval,
                 SmartPriority: globalCommon.calculateSmartPriority(taskDetails),
                 TaskTypeValue: '',
                 projectPriorityOnHover: '',
@@ -2128,23 +2128,54 @@ const CopyTaskProfile = (props: any) => {
                                                                                         {PhoneData.Comment}
                                                                                     </span>
                                                                                 </span>}
-                                                                            <span className="hover-text me-1" >
-                                                                                <span className=' svg__icon--info svg__iconbox mt-1'></span>
-                                                                                <span className="tooltip-text pop-left">
+
+                                                                        </div>
+                                                                    </div>
+                                                                )
+
+                                                            })}
+
+                                                        </dd>
+                                                    </dl>
+                                                    {/* ////////////////this is Approval section/////////////// */}
+                                                    <dl>
+                                                        <dt className='bg-Fa'>Approval</dt>
+                                                        <dd className='bg-Ff'>
+                                                            {state?.Result?.Approval?.length > 0 && state?.Result?.Approval?.map((ApprovalData: any) => {
+                                                                return (
+                                                                    <div className="align-content-center alignCenter justify-content-between py-1">
                                                                                     <div className="alignCenter">
-                                                                                        <span className='me-2'>  By </span>
-                                                                                        {PhoneData.CreatorImage != undefined && PhoneData.CreatorImage.length > 0 ? <img
+                                                                            {ApprovalData.TaggedUsers.userImage != undefined && ApprovalData.TaggedUsers.userImage.length > 0 ? <img
                                                                                             className="ProirityAssignedUserPhoto m-0"
-                                                                                            title={PhoneData.CreatorName}
-                                                                                            src={PhoneData.CreatorImage} />
+                                                                                title={ApprovalData.TaggedUsers?.Title}
+                                                                                src={ApprovalData.TaggedUsers.userImage} />
                                                                                             :
-                                                                                            <span title={PhoneData.CreatorName != undefined ? PhoneData.CreatorName : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                                                                <span title={ApprovalData.TaggedUsers?.Title != undefined ? ApprovalData.TaggedUsers?.Title : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
                                                                                         }
-                                                                                        <span className="mx-1">{PhoneData?.CreatorName}</span>
-                                                                                        <span>{PhoneData?.CreatedOn}</span>
+                                                                            <span className="ms-1">{ApprovalData?.TaggedUsers?.Title}</span>
                                                                                     </div>
+
+                                                                        <div className="alignCenter">
+                                                                            <span
+                                                                                className="hover-text me-1"
+                                                                                onClick={() =>
+                                                                                    SendRemindernotifications(ApprovalData, "Approval")}
+                                                                            >
+                                                                                <LuBellPlus />
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    Send reminder notifications
                                                                                 </span>
                                                                             </span>
+                                                                            {ApprovalData.Comment != undefined &&
+                                                                                ApprovalData.Comment?.length > 1 && <span
+                                                                                    className="m-0 img-info hover-text"
+
+                                                                                >
+                                                                                    <span className="svg__iconbox svg__icon--comment"></span>
+                                                                                    <span className="tooltip-text pop-left">
+                                                                                        {ApprovalData.Comment}
+                                                                                    </span>
+                                                                                </span>}
 
                                                                         </div>
                                                                     </div>
