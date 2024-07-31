@@ -12,7 +12,7 @@ const RecurringTask = (props: any) => {
     const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] = React.useState(false);
     const [TaskData, SetTaskData]:any = React.useState({});
     const WorkingAction= React.useRef([])
-
+     WorkingAction.current=  JSON.parse(JSON.stringify( props?.WorkingAction));
     // Function Convert date
     function convertToISO(dateString:any) {
         let match = dateString.match(/(\d{2})\/(\d{2})\/(\d{4})/);
@@ -53,7 +53,7 @@ const RecurringTask = (props: any) => {
     React.useEffect(() => {
         if(props?.props?.AllListId?.siteUrl){
             web = new Web(props?.props?.AllListId?.siteUrl);
-            WorkingAction.current=  JSON.parse(JSON.stringify( props?.WorkingAction));
+           
             LoadTaskData()
         }
        
