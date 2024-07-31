@@ -4323,8 +4323,6 @@ const EditTaskPopup = (Items: any) => {
         }
         if (useFor == "Bottleneck" || useFor == "Attention" || useFor == "Phone" || useFor == "Approval") {
             let CreatorData: any = currentUserBackupArray[0];
-            setTaskAssignedTo(ApproverData)
-            setTaskTeamMembers(ApproverData)
             let workingDetail: any = WorkingAction?.filter((type: any) => type?.Title == "WorkingDetails");
             let copyWorkAction: any = [...WorkingAction]
             copyWorkAction = WorkingAction?.filter((type: any) => type?.Title != "WorkingDetails");
