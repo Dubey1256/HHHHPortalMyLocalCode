@@ -3,7 +3,7 @@ import { parseString } from 'xml2js';
 import { EventRecurrenceInfo } from '../webparts/calendar/components/EventRecurrenceControls/EventRecurrenceInfo/EventRecurrenceInfo';
 import { Panel, PanelType, Toggle } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
-
+let web :any
 const RecurringTask = (props: any) => {
     
     const [returnedRecurrenceInfo, setReturnedRecurrenceInfo] = React.useState(null);
@@ -30,7 +30,7 @@ const RecurringTask = (props: any) => {
         return isoDate;
     }
     // Load the task
-    let web :any
+ 
     const LoadTaskData = async () => {
       await web.lists
             .getById(props?.props?.Items?.listId)
@@ -66,7 +66,8 @@ const RecurringTask = (props: any) => {
             await web.lists
                 .getById(props?.props?.Items?.listId)
                 .items.getById(props?.props?.Items?.Id)
-                .update({ WorkingAction: DataForUpdate?.length > 0 ? JSON.stringify(DataForUpdate) : null,RecurrenceData:returnedRecurrenceInfo?.recurrenceData })
+                .update({ WorkingAction: DataForUpdate?.length > 0 ? JSON.stringify(DataForUpdate) : null,
+                    RecurrenceData:returnedRecurrenceInfo?.recurrenceData })
                 .then((response:any) => {
                     console.log('Update successful:', response);
                     props?.setWorkingAction(WorkingAction.current);
@@ -521,7 +522,7 @@ const RecurringTask = (props: any) => {
                 { "Title": "Phone", "InformationData": [] },
                 { "Title": "WorkingDetails", "InformationData": WorkingDetails }
             ];
-            if (!Array.isArray(Taskobject.WorkingAction)) {
+            if (!Array?.isArray(Taskobject?.WorkingAction)) {
                 Taskobject.WorkingAction = [];
             }
              if(WorkingAction.current?.length>0){
