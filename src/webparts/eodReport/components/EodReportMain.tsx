@@ -2,15 +2,13 @@ import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
 // import '../../../index.css'
-import { faPencilAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import { ColumnDef } from "@tanstack/react-table";
 import Moment from "moment";
 import { Panel, PanelType } from "office-ui-fabric-react";
 
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
-import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
-import { setDefaultTarget } from '@fluentui/react/lib/components/Layer/Layer.notification';
+
 let forceAllAditionalTaskCall: any = [];
 let copyAllAditionalTaskData: any = [];
 let forceAllTodayModifiedTaskCall = [];
@@ -340,10 +338,10 @@ export const EodReportMain = (props: any) => {
 
         let subject = `[EOD Report] ${Moment(new Date()).format('YYYY-MM-DD')} - ${allTodayModifiedTask?.length ?? 0} Tasks`;
         SendEmailFinal(
-            ["vansh.raj@hochhuth-consulting.de"],
+            ["prashant.kumar@hochhuth-consulting.de"],
             subject,
             sendAllTasks.replace(/,/g, "  ")
-        );
+        );      
     };
 
 
@@ -1010,6 +1008,9 @@ export const EodReportMain = (props: any) => {
                         filteredData = [];
                     }
                     else if (loginUserInfo[0]?.UserGroup?.Title == "Junior Task Management") {
+                        filteredData = res;
+                    }
+                    else if (loginUserInfo[0]?.UserGroup?.Title == "QA Team") {
                         filteredData = res;
                     }
                     else if (loginUserInfo[0]?.UserGroup?.Title == "Portfolio Lead Team") {

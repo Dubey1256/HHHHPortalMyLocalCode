@@ -505,7 +505,7 @@ const GroupByDashboard = (SelectedProp: any) => {
     return a.localeCompare(b);
   };
   const Restructurebutton = (
-    <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => RestructureCsf(selecteditems)}>RESTRUCTURE</button>
+    <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => RestructureCsf(selecteditems)}>Restructure</button>
 
 
   )
@@ -1082,7 +1082,7 @@ const GroupByDashboard = (SelectedProp: any) => {
         <section className="row p-0">
           <div className="col-sm-12 clearfix p-0">
             <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active heading ">
-              <div>PortfolioLead-Dashboard</div>
+              <div>Portfolio Lead - Dashboard</div>
             </h2>
           </div>
         </section>

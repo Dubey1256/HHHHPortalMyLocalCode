@@ -43,10 +43,10 @@ import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 import FlorarImageUploadComponent from "../FlorarComponents/FlorarImageUploadComponent";
 import PageLoader from "../pageLoader";
-import EmailComponent from "../EmailComponents";
+// import EmailComponent from "../EmailComponents";
 import SmartTotalTime from "./SmartTimeTotal";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
-import EmailNotificationMail from "./EmailNotificationMail";
+// import EmailNotificationMail from "./EmailNotificationMail";
 import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import SmartPriorityHover from "./SmartPriorityHover";
@@ -326,10 +326,10 @@ const EditTaskPopup = (Items: any) => {
         taskUsers = await web.lists
             .getById(AllListIdData?.TaskUserListID)
             .items.select(
-                "Id,UserGroupId,TimeCategory,CategoriesItemsJson,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,UserGroup/Id,UserGroup/Title,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name"
+                "Id,UserGroupId,TimeCategory,CategoriesItemsJson,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name"
             )
             .filter("IsActive eq 1")
-            .expand("AssingedToUser,Approver,UserGroup")
+            .expand("AssingedToUser,Approver")
             .orderBy("SortOrder", true)
             .orderBy("Title", true)
             .getAll();
@@ -827,15 +827,7 @@ const EditTaskPopup = (Items: any) => {
                     setOnlyCompletedStatus(item.TaskCategories?.some((category: any) => category.Title === "Only Completed"));
                     setDesignStatus(item.TaskCategories?.some((category: any) => category.Title === "Design" || category.Title === "User Experience - UX"));
                     setDesignNewTemplates(item.TaskCategories?.some((category: any) => category.Title === "UX-New"))
-                    let checkForApproval: any = item.TaskCategories?.some((category: any) => category.Title === "Approval")
-                    if (checkForApproval) {
-                        setApprovalStatus(true);
-                        ApprovalStatusGlobal = true;
-                    } else {
-                        setApprovalStatus(false);
-                        ApprovalStatusGlobal = false;
-                        setApproverData([]);
-                    }
+
                 }
                 if (item.Portfolio != undefined && item.Portfolio?.Title != undefined) {
                     let PortfolioId: any = item.Portfolio.Id;
@@ -1703,20 +1695,39 @@ const EditTaskPopup = (Items: any) => {
 
     // This is used for on hold comment card callback 
 
-    const editTaskPopupCallBack = useCallback((usedFor: any) => {
+    const editTaskPopupCallBack = useCallback(async (usedFor: any) => {
         setOnHoldPanel(false);
         if (usedFor == "Save") {
-            let uniqueIds: any = {};
-            BackupTaskCategoriesData.push(onHoldCategory[0]);
-            const result: any = BackupTaskCategoriesData.filter((item: any) => {
-                if (!uniqueIds[item.Id]) {
-                    uniqueIds[item.Id] = true;
-                    return true;
-                }
-                return false;
-            });
-            BackupTaskCategoriesData = result;
-            setTaskCategoriesData(result);
+            if (onHoldCategory?.length > 0) {
+                let uniqueIds: any = {};
+                BackupTaskCategoriesData.push(onHoldCategory[0]);
+                const result: any = BackupTaskCategoriesData.filter((item: any) => {
+                    if (!uniqueIds[item.Id]) {
+                        uniqueIds[item.Id] = true;
+                        return true;
+                    }
+                    return false;
+                });
+                BackupTaskCategoriesData = result;
+                setTaskCategoriesData(result);
+            } else {
+                let DynamicAssignmentInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Auto-Assignment", SiteURL: siteUrls, ItemDetails: EditData, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: 70 })
+                console.log("Dynamic Assignment Information All Details from backend  ==================", DynamicAssignmentInformation);
+                StatusOptions?.map((item: any) => {
+                    if (70 == item.value) {
+                        if (EditDataBackup != undefined) {
+                            setTaskAssignedTo(EditDataBackup.TaskAssignedUsers);
+                        }
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+
+                        setUpdateTaskInfo({
+                            ...UpdateTaskInfo,
+                            PercentCompleteStatus: "70",
+                        });
+                    }
+                });
+            }
         }
         onHoldCategory = [];
     }, []);
@@ -2032,6 +2043,11 @@ const EditTaskPopup = (Items: any) => {
         } else {
             if (!sendEmailStatus && (StatusData.value == 2 || StatusData.value == 3)) {
                 alert("Please approve or reject first to update the status.")
+            } else if (StatusData.value == 70) {
+                setOnHoldPanel(true);
+                setSendCategoryName("Reopen");
+
+
             } else {
                 setUpdateTaskInfo({
                     ...UpdateTaskInfo,
@@ -2041,17 +2057,15 @@ const EditTaskPopup = (Items: any) => {
                 setTaskStatus(StatusData.taskStatusComment);
                 setPercentCompleteCheck(false);
                 setIsTaskStatusUpdated(true);
-                let DynamicAssignmentInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({usedFor:"Auto-Assignment", SiteURL: siteUrls, ItemDetails: EditData, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: StatusData.value })
+                let DynamicAssignmentInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Auto-Assignment", SiteURL: siteUrls, ItemDetails: EditData, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: StatusData.value })
                 console.log("Dynamic Assignment Information All Details from backend  ==================", DynamicAssignmentInformation);
                 const assignmentUser = EditData.TaskAssignedUsers;
                 if (assignmentUser?.length) {
                     setTaskAssignedTo(assignmentUser);
                 }
-
                 if (StatusData.value == 0) {
                     updateWAForApproval(ApprovalStatus, "isChekedfor0%")
                 }
-
                 if (StatusData.value == 1) {
                     updateWAForApproval(ApprovalStatus, "isChekedfor1%")
                     let tempArray: any = [];
@@ -2130,7 +2144,6 @@ const EditTaskPopup = (Items: any) => {
                 setSmartMetaDataUsedPanel("");
             }
         }
-
     };
 
     //  ###################### This is Common Function for Change The Team Members According to Change Status ######################
@@ -2376,9 +2389,14 @@ const EditTaskPopup = (Items: any) => {
                                     UpdatedDataObject: UpdatedDataObject,
                                     RequiredListIds: AllListIdData
                                 }
-                                await GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
-                                    console.log("Ms Teams Notifications send")
-                                })
+                                if (ItemData?.Title == "Approval") {
+                                    await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Notification", SiteURL: siteUrls, ItemDetails: UpdatedDataObject, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: UpdatedDataObject.PercentComplete, SendUserEmail: DataForNotification.sendUserEmail })
+                                } else {
+                                    await GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                        console.log("Ms Teams Notifications send")
+                                    })
+                                }
+
                             }
                         })
                     })
@@ -2408,7 +2426,7 @@ const EditTaskPopup = (Items: any) => {
                                 });
                             }
                         }
-                        let TaskConfigurationInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({usedFor:"Notification", SiteURL: siteUrls, ItemDetails: UpdatedDataObject, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: UpdatedDataObject.PercentComplete })
+                        let TaskConfigurationInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Notification", SiteURL: siteUrls, ItemDetails: UpdatedDataObject, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: UpdatedDataObject.PercentComplete })
                         console.log("Task Configuration Information All Details from backend  ==================", TaskConfigurationInformation);
                     }
                     if (ApproverData != undefined && ApproverData.length > 0) {
@@ -3247,7 +3265,6 @@ const EditTaskPopup = (Items: any) => {
                     ApprovedGlobalCount++;
                     setSendEmailGlobalCount(sendEmailGlobalCount + 1);
                     if (Status <= 3) {
-
                         setStatusOnChangeSmartLight(3);
                     }
                 }
@@ -3342,9 +3359,6 @@ const EditTaskPopup = (Items: any) => {
                     setTaskTeamMembers(teamMember);
                     setApprovalTaskStatus(true);
                 }
-
-
-
             }
         }
         if (PhoneCount > 0) {
@@ -4298,10 +4312,17 @@ const EditTaskPopup = (Items: any) => {
 
     const UpdateApproverFunction = () => {
         let data: any = ApproverData;
+        if (useFor == "Approval") {
+            setTaskAssignedTo([...ApproverData])
+            setTaskTeamMembers([...ApproverData])
+            ApproverData.map((item) => {
+                TaskAssignedTo.filter((assignItems) => assignItems.Id != item.Id)
+                TaskTeamMembers.filter((assignItems) => assignItems.Id != item.Id)
+            })
+
+        }
         if (useFor == "Bottleneck" || useFor == "Attention" || useFor == "Phone" || useFor == "Approval") {
             let CreatorData: any = currentUserBackupArray[0];
-            setTaskAssignedTo(ApproverData)
-            setTaskTeamMembers(ApproverData)
             let workingDetail: any = WorkingAction?.filter((type: any) => type?.Title == "WorkingDetails");
             let copyWorkAction: any = [...WorkingAction]
             copyWorkAction = WorkingAction?.filter((type: any) => type?.Title != "WorkingDetails");
@@ -4359,13 +4380,12 @@ const EditTaskPopup = (Items: any) => {
                     }
                 })
             }
-            oldWorkingAction = []
-            oldWorkingAction = [...copyWorkAction]
+            oldWorkingAction = [...copyWorkAction];
             setWorkingAction([...copyWorkAction, ...workingDetail]);
-            console.log("Bottleneck All Details:", copyWorkAction)
+            console.log("Bottleneck All Details:", copyWorkAction);
             setUseFor("")
             setApproverPopupStatus(false)
-            setApproverData([])
+
         }
         else {
             setApproverPopupStatus(false);
@@ -4452,14 +4472,16 @@ const EditTaskPopup = (Items: any) => {
     };
 
 
+
     // this is used for update working action JSOn for Approval Secanrios 
+
     const updateWAForApproval = (Value: any, key: string) => {
         let copyWorkAction: any = [...WorkingAction];
         const usedFor: string = "Approval";
         let CreatorData: any = currentUserBackupArray[0];
         let ApproverDataInfo: any = [];
         let CreateObject: any = {};
- 
+
         if (taskUsers?.length > 0) {
             taskUsers?.forEach((UserItem: any) => {
                 CreatorData?.Approver?.forEach((RecipientsItem: any) => {
@@ -4469,7 +4491,7 @@ const EditTaskPopup = (Items: any) => {
                 });
             });
         }
- 
+
         if (key == "IsChecked") {
             if (Value == true) {
                 setApprovalStatus(false);
@@ -4479,13 +4501,26 @@ const EditTaskPopup = (Items: any) => {
                             DataItem.InformationData = [];
                             DataItem[key] = false;
                             DataItem.Type = "";
+                            SmartMetaDataAllItems
+
+
+                            StatusOptions?.map((item: any) => {
+                                if (0 == item.value) {
+                                    setPercentCompleteStatus(item.status);
+                                    setTaskStatus(item.taskStatusComment);
+                                    setUpdateTaskInfo({
+                                        ...UpdateTaskInfo,
+                                        PercentCompleteStatus: "0",
+                                    });
+                                }
+                            });
                         }
                     });
                 }
             } else {
                 setApprovalStatus(true);
                 isApprovalByStatus = true;
- 
+
                 const dataArray = ApproverDataInfo.map((approver: any) => ({
                     CreatorName: CreatorData?.Title,
                     CreatorImage: CreatorData?.UserImage,
@@ -4500,14 +4535,18 @@ const EditTaskPopup = (Items: any) => {
                     Comment: '',
                     CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
                 }));
- 
+
                 if (copyWorkAction?.length > 0) {
                     copyWorkAction?.forEach((DataItem: any) => {
                         if (DataItem.Title == usedFor) {
                             if (DataItem.InformationData.length > 0) {
-                                let aproveInfoData=dataArray.concat(DataItem.InformationData)
+                                let aproveInfoData = dataArray.concat(DataItem.InformationData)
                                 DataItem.InformationData = aproveInfoData;
                                 DataItem[key] = Value;
+                                // if(usedFor=="Approval"){
+                                //     setTaskAssignedTo([...ApproverData])
+                                //     setTaskTeamMembers([...ApproverData])
+                                // }
                             } else {
                                 DataItem.InformationData = dataArray;
                                 DataItem[key] = Value;
@@ -4542,7 +4581,7 @@ const EditTaskPopup = (Items: any) => {
                     })
                     copyWorkAction = TempArrya;
                 }
- 
+
                 let tempArray: any = [];
                 if (currentUserData != undefined && currentUserData.length > 0) {
                     currentUserData.map((dataItem: any) => {
@@ -4574,8 +4613,8 @@ const EditTaskPopup = (Items: any) => {
                 });
             }
         }
-        else if(key=="isChekedfor1%"){
-           
+        else if (key == "isChekedfor1%") {
+
             if (Value == true) {
                 setApprovalStatus(true)
                 if (copyWorkAction?.length > 0) {
@@ -4590,7 +4629,7 @@ const EditTaskPopup = (Items: any) => {
             } else {
                 setApprovalStatus(true);
                 isApprovalByStatus = true;
- 
+
                 const dataArray = ApproverDataInfo.map((approver: any) => ({
                     CreatorName: CreatorData?.Title,
                     CreatorImage: CreatorData?.UserImage,
@@ -4605,12 +4644,12 @@ const EditTaskPopup = (Items: any) => {
                     Comment: '',
                     CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
                 }));
- 
+
                 if (copyWorkAction?.length > 0) {
                     copyWorkAction?.forEach((DataItem: any) => {
                         if (DataItem.Title == usedFor) {
                             if (DataItem.InformationData.length > 0) {
-                                let aproveInfoData=dataArray.concat(DataItem.InformationData)
+                                let aproveInfoData = dataArray.concat(DataItem.InformationData)
                                 DataItem.InformationData = aproveInfoData;
                                 DataItem[key] = Value;
                             } else {
@@ -4647,7 +4686,7 @@ const EditTaskPopup = (Items: any) => {
                     })
                     copyWorkAction = TempArrya;
                 }
- 
+
                 let tempArray: any = [];
                 if (currentUserData != undefined && currentUserData.length > 0) {
                     currentUserData.map((dataItem: any) => {
@@ -4679,24 +4718,24 @@ const EditTaskPopup = (Items: any) => {
                 });
             }
         }
-        else if(key=="isChekedfor0%"){
- 
+        else if (key == "isChekedfor0%") {
+
             if (Value == true) {
                 setApprovalStatus(false)
                 if (copyWorkAction?.length > 0) {
                     copyWorkAction?.forEach((DataItem: any) => {
                         if (DataItem.Title == usedFor) {
-                             DataItem.InformationData = [];
-                             DataItem[key] = false;
-                             DataItem.Type = "";
-                         }
+                            DataItem.InformationData = [];
+                            DataItem[key] = false;
+                            DataItem.Type = "";
+                        }
                     });
                 }
             }
- 
+
         }
-       
-       
+
+
         else {
             if (copyWorkAction?.length > 0) {
                 copyWorkAction?.map((DataItem: any) => {
@@ -4705,9 +4744,9 @@ const EditTaskPopup = (Items: any) => {
                             DataItem[key] = Value;
                         } else {
                             alert("You haven’t checked the approval. First, check the approval checkbox, and then select the approval type.")
- 
+
                         }
- 
+
                     }
                 })
             } else {
@@ -4716,7 +4755,7 @@ const EditTaskPopup = (Items: any) => {
         }
         setWorkingAction([...copyWorkAction]);
     }
- 
+
     // this is a common function for auto suggetions for the Task Users also used for workingAction
 
     const SelectApproverFromAutoSuggestion = (ApproverData: any, usedFor: string) => {
@@ -4973,10 +5012,23 @@ const EditTaskPopup = (Items: any) => {
             console.log("Updated Data after removing User:", TempWorkingActionData);
             setWorkingAction([...EditData.WorkingAction])
         }
+        let currentApprover: any = [];
+        WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
+            if (WAItemData.Title == "Approval" && WAItemData?.InformationData?.length > 0) {
+                WAItemData?.InformationData?.map((item: any) => {
+                    currentApprover.push(item?.TaggedUsers)
+                })
+            }
+        })
+        if (ActionType == "Approval") {
+            setTaskAssignedTo(currentApprover)
+            setTaskTeamMembers(currentApprover)
+            setApproverData([...currentApprover])
+        }
+        console.log(ApproverData, "approverDta updated")
     }
 
     //    This is used to remove the Tagged User Data form Bottleneck and attention
-
     function removeDataFromInformationData(dataArray: any, titleToRemove: any, indexToRemove: any) {
         return dataArray.map((item: any) => {
             if (item.Title === titleToRemove && Array.isArray(item.InformationData)) {
@@ -5019,7 +5071,7 @@ const EditTaskPopup = (Items: any) => {
                             }`}
                     </span>
                 </div>
-                <RecurringTask props={Items}/>
+                <RecurringTask props={Items} WorkingAction={WorkingAction} setWorkingAction={setWorkingAction} />
                 <Tooltip ComponentId="1683" isServiceTask={false} />
             </>
         );
@@ -5556,7 +5608,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div className="col-md-5">
                                         <div className="col-12 ">
                                             <div className="input-group">
-                                            <LabelInfoIconToolTip columnName={"Title"} />
+                                                <LabelInfoIconToolTip columnName={"Title"} />
                                                 {/* <div className="d-flex justify-content-between align-items-center mb-0  full-width">
                                                     Title </div> */}
                                                 <input
@@ -5576,7 +5628,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="mx-0 row taskdate ">
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
-                                                <LabelInfoIconToolTip columnName={"StartDate"} />                                                   
+                                                    <LabelInfoIconToolTip columnName={"StartDate"} />
                                                     <input
                                                         type="date"
                                                         className="form-control"
@@ -5598,7 +5650,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col-6 ps-0 pe-0 mt-2">
                                                 <div className="input-group ">
                                                     <div className="form-label full-width">
-                                                    <LabelInfoIconToolTip columnName={"dueDate"} onlyText={"text"}/> 
+                                                        <LabelInfoIconToolTip columnName={"dueDate"} onlyText={"text"} />
                                                         <span title="Re-occurring Due Date">
                                                             <input
                                                                 type="checkbox"
@@ -5627,7 +5679,7 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
-                                                <LabelInfoIconToolTip columnName={"CompletedDate"} />
+                                                    <LabelInfoIconToolTip columnName={"CompletedDate"} />
                                                     <input
                                                         type="date"
                                                         className="form-control"
@@ -5680,7 +5732,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="mx-0 row mt-2 taskservices">
                                             <div className="col-md-6  ps-0">
                                                 <div className="input-group mb-2">
-                                                <LabelInfoIconToolTip columnName={"PortfolioItem"} />
+                                                    <LabelInfoIconToolTip columnName={"PortfolioItem"} />
                                                     {TaggedPortfolioData?.length > 0 ? (
                                                         <div className="full-width">
                                                             {TaggedPortfolioData?.map((com: any) => {
@@ -5751,7 +5803,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
 
                                                 <div className="input-group mb-2">
-                                                <LabelInfoIconToolTip columnName={"Categories"}/>  
+                                                    <LabelInfoIconToolTip columnName={"Categories"} />
                                                     {TaskCategoriesData?.length > 1 ? <>
                                                         <input
                                                             type="text"
@@ -5882,7 +5934,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="row">
                                                     <div className="time-status col-md-6">
                                                         <div className="input-group">
-                                                        <LabelInfoIconToolTip columnName={"Priority"} />
+                                                            <LabelInfoIconToolTip columnName={"Priority"} />
                                                             <input
                                                                 type="text"
                                                                 className="form-control"
@@ -5963,7 +6015,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                     <div className="col-md-6">
                                                         <div className="input-group">
-                                                        <LabelInfoIconToolTip columnName={"SmartPriority"} />
+                                                            <LabelInfoIconToolTip columnName={"SmartPriority"} />
                                                             <div className="bg-e9 w-100 py-1 px-2" style={{ border: '1px solid #CDD4DB' }}>
                                                                 <span className={EditData?.SmartPriority != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
                                                                     <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
@@ -5980,7 +6032,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-12 mb-2">
                                                     <div className="input-group ">
-                                                    <LabelInfoIconToolTip columnName={"ClientActivity"} />
+                                                        <LabelInfoIconToolTip columnName={"ClientActivity"} />
                                                         <input
                                                             type="text"
                                                             className="form-control"
@@ -5993,7 +6045,7 @@ const EditTaskPopup = (Items: any) => {
                                                     title="Relevant Portfolio Items"
                                                 >
                                                     <div className="input-group">
-                                                    <LabelInfoIconToolTip columnName={"LinkedComponentTask"}/>
+                                                        <LabelInfoIconToolTip columnName={"LinkedComponentTask"} />
                                                         <input
                                                             type="text"
                                                             readOnly
@@ -6014,7 +6066,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-12 mb-2 mt-2">
                                                     <div className="input-group mb-2">
-                                                    <LabelInfoIconToolTip columnName={"LinkedPortfolioItems"} />
+                                                        <LabelInfoIconToolTip columnName={"LinkedPortfolioItems"} />
                                                         <input
                                                             type="text"
                                                             className="form-control"
@@ -6099,7 +6151,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-12">
                                                     <div className="input-group">
-                                                    <LabelInfoIconToolTip columnName={"Project"} />
+                                                        <LabelInfoIconToolTip columnName={"Project"} />
                                                         {selectedProject != undefined &&
                                                             selectedProject.length > 0 ? (
                                                             <>
@@ -6178,7 +6230,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                         <div className="col-12 mb-2 taskurl">
                                             <div className="input-group">
-                                            <LabelInfoIconToolTip columnName={"RelevantURL"} />
+                                                <LabelInfoIconToolTip columnName={"RelevantURL"} />
                                                 <input
                                                     type="text"
                                                     className="form-control"
@@ -6309,7 +6361,7 @@ const EditTaskPopup = (Items: any) => {
 
                                         <div className="col mt-2 clearfix">
                                             <div className="input-group taskTime">
-                                            <LabelInfoIconToolTip columnName={"Status"} />
+                                                <LabelInfoIconToolTip columnName={"Status"} />
                                                 <input
                                                     type="text"
                                                     maxLength={3}
@@ -6346,7 +6398,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col mt-2 time-status">
                                                 <div>
                                                     <div className="input-group">
-                                                    <LabelInfoIconToolTip columnName={"Time"} />
+                                                        <LabelInfoIconToolTip columnName={"Time"} />
                                                         <input
                                                             type="text"
                                                             maxLength={3}
@@ -6991,7 +7043,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col mt-2 ps-0">
                                             <div className="input-group">
                                                 <label className="form-label full-width alignCenter mb-1">
-                                                <b><LabelInfoIconToolTip columnName={"Phone"} onlyText={"text"} />: </b>
+                                                    <b><LabelInfoIconToolTip columnName={"Phone"} onlyText={"text"} />: </b>
                                                     {WorkingActionDefaultUsers?.map((userDtl: any, index: number) => {
                                                         return (
                                                             <div className="TaskUsers" key={index} onClick={() => SelectApproverFromAutoSuggestion(userDtl, "Phone")}>
@@ -7786,7 +7838,7 @@ const EditTaskPopup = (Items: any) => {
                             ColorCode={PortfolioItemColor}
                         />
                     ) : null}
-                    {sendEmailComponentStatus ? (
+                    {/* {sendEmailComponentStatus ? (
                         <EmailComponent
                             AllTaskUser={AllTaskUser}
                             CurrentUser={currentUserData}
@@ -7800,8 +7852,8 @@ const EditTaskPopup = (Items: any) => {
                             ApprovalTaskStatus={ApprovalTaskStatus}
                             callBack={SendEmailNotificationCallBack}
                         />
-                    ) : null}
-                    {sendEmailNotification ? (
+                    ) : null} */}
+                    {/* {sendEmailNotification ? (
                         <EmailNotificationMail
                             AllTaskUser={AllTaskUser}
                             CurrentUser={currentUserData}
@@ -7816,7 +7868,7 @@ const EditTaskPopup = (Items: any) => {
                             callBack={SendEmailNotificationCallBack}
                             statusValue={ValueStatus}
                         />
-                    ) : null}
+                    ) : null} */}
                     {/* {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} siteUrl={siteUrls} Context={Context} Callback={EODReportComponentCallback} /> : null} */}
                 </div>
             </Panel>
@@ -10284,21 +10336,23 @@ const EditTaskPopup = (Items: any) => {
                             </ul>
                         </div>
                     </div>
-                    <footer className="modal-footer">
-                        <button
-                            type="button"
-                            className="btn btn-primary px-3 mx-1"
-                            onClick={UpdateApproverFunction}
-                        >
-                            Save
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-default px-3"
-                            onClick={closeApproverPopup}
-                        >
-                            Cancel
-                        </button>
+                    <footer className="bg-f4 fixed-bottom position-absolute">
+                        <div className="d-flex ml-auto pull-right px-4 py-2">
+                            <button
+                                type="button"
+                                className="btn btn-primary px-3 mx-1"
+                                onClick={UpdateApproverFunction}
+                            >
+                                Save
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-default px-3"
+                                onClick={closeApproverPopup}
+                            >
+                                Cancel
+                            </button>
+                        </div>
                     </footer>
                 </div>
             </Panel>

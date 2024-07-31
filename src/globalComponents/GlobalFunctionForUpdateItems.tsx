@@ -1419,7 +1419,7 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
                 `You have been tagged <b>${ActionType == "Phone" ? "for the discussion" : "as " + ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}` : ''}
             <p></p>
             ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
-                `<div style="background-color: #fff; color:#333; padding:16px; margin-top:10px; display:block;" title=${ReasonStatement}>
+                `<div style="background-color: #fff; color:#333; padding:16px; margin-top:10px; display:block;" title="${ReasonStatement}">
             <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? " Discussion Point" : " Comment"} </b>: <span>${ReduceTheContentLines(ReasonStatement, 450)}</span> ` : ''}
             </div>
             <div style="margin-top: 16px;">  <b style="font-weight:600; font-size: 16px;">Task Link: </b>
@@ -1458,7 +1458,7 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         <p>
         <br/>
         <div style="background-color: #fff; padding:16px; display:block; color: #333; ">
-        <div style="font-size:18px;" title=${ReasonStatement}><b>Comment</b>: ${ReduceTheContentLines(ReasonStatement, 450)}</div>
+        <div style="font-size:18px;" title="${ReasonStatement}"><b>Comment</b>: ${ReduceTheContentLines(ReasonStatement, 450)}</div>
         </div>
         </br>
         <p>
@@ -1498,8 +1498,6 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                 })
             }
         })
-      
-
         if (RequiredData?.Title?.length > 0) {
             return (
                 <div style={{ backgroundColor: 'transparent' }}>
@@ -1675,7 +1673,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                     </>)
                                                 }
                                             })}
-                                        {TaskDescriptionFlatView >= 5 ? <span>There are more Task Points in this task. <a href={`${RequiredData?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${RequiredData?.ID}&Site=${RequiredData?.siteType}`}>
+                                        {TaskDescriptionFlatView?.length >= 5 ? <span>There are more Task Points in this task. <a href={`${RequiredData?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${RequiredData?.ID}&Site=${RequiredData?.siteType}`}>
                                             Go to Task Page.</a> </span> : ""}
                                     </div>
                                 </div>
@@ -2045,13 +2043,12 @@ export const ReduceTheContentLines: any = (Content: String, sliceFrom: number) =
 }
 
 
-
 // This is used for getting information from TaskNotificationConfiguration  when  Category and status selected
 
 export const TaskNotificationConfiguration = async (requiredData: any) => {
-    const { usedFor, SiteURL, ItemDetails, Context, RequiredListIds, AllTaskUser, Status }: any = requiredData || {};
+    const { usedFor, SiteURL, ItemDetails, Context, RequiredListIds, AllTaskUser, Status, SendUserEmail }: any = requiredData || {};
     const filterData: any = [];
-    const UserArray: any = []
+    let UserArray: any = []
     try {
         const web = new Web(SiteURL)
         let ResponseData: any = await web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').expand('Author,Editor,Recipients ,PortfolioType').get();
@@ -2067,38 +2064,54 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                             if (TNC.percentComplete == ItemDetails.PercentComplete) {
                                 TNC.Category?.map((TNCCategory: any) => {
                                     ItemDetails.TaskCategories?.map(async (ItemDetailsCat: any) => {
-                                        if (TNCCategory == ItemDetailsCat.Title) {
+                                        if (TNCCategory == ItemDetailsCat.Title || TNC?.Category?.includes('All')) {
                                             filterNotificationData.push(TNC);
                                             if (TNC.NotificationType == "Teams") {
-                                                await SendDynamicMSTeamsNotification({ Configuration: TNC, ItemDetails: ItemDetails, Context: Context, RequiredListIds: RequiredListIds });
+                                                await SendDynamicMSTeamsNotification({ Configuration: TNC, ItemDetails: ItemDetails, Context: Context, RequiredListIds: RequiredListIds, UserEmail: SendUserEmail });
                                             }
                                             if (TNC.NotificationType == "Email") {
-                                                await SendDynamicEmailNotification({ Configuration: TNC, ItemDetails: ItemDetails, Context: Context });
+                                                await SendDynamicEmailNotification({ Configuration: TNC, ItemDetails: ItemDetails, Context: Context, UserEmail: SendUserEmail });
                                             }
                                             console.log(filterNotificationData);
                                         }
                                     })
                                 })
                             }
-                        }
-                        if (usedFor == "Auto-Assignment") {
+                        } else if (usedFor == "Auto-Assignment") {
                             if (TNC?.percentComplete == Status && TNC?.NotificationType == 'Assigned To') {
                                 ItemDetails?.TaskCategories?.map((item: any) => {
                                     if ((TNC.Category?.includes(item.Title) || TNC?.Category?.includes('All')) && TNC?.notifygroupname != undefined) {
                                         const groupArray = TNC?.notifygroupname.split(',').map((item: any) => item.trim());
-
                                         if (ItemDetails?.TeamMembers != undefined) {
-                                            ItemDetails?.TeamMembers?.map((teamMembersData: any) => {
-                                                AllTaskUser?.map((TaskUserData: any) => {
+                                            AllTaskUser?.map((TaskUserData: any) => {
+                                                ItemDetails?.TeamMembers?.map((teamMembersData: any) => {
                                                     groupArray?.map((groupArrayData: any) => {
                                                         if (teamMembersData.Id == TaskUserData.AssingedToUserId && groupArrayData == TaskUserData.TimeCategory) {
                                                             UserArray.push(TaskUserData);
                                                         }
+
                                                     });
                                                 });
+                                                if (TNC.Notify == "Approval") {
+                                                    ItemDetails?.Approvee?.Approver?.map((approverMembersData: any) => {
+                                                        if (approverMembersData.Id == TaskUserData.AssingedToUserId) {
+                                                            UserArray.push(TaskUserData);
+                                                        }
+                                                    })
+
+                                                }
+                                                if (TNC.Notify == "Creator") {
+                                                    ItemDetails?.Approvee?.Approver?.map((approverMembersData: any) => {
+                                                        if (approverMembersData.Id == TaskUserData.AssingedToUserId) {
+                                                            UserArray.push(TaskUserData);
+                                                        }
+                                                    })
+                                                }
                                             });
-                                            ItemDetails.TaskAssignedUsers = UserArray;
+
                                         }
+
+                                        ItemDetails.TaskAssignedUsers = UserArray;
                                     }
                                     if (!TNC?.Category?.includes('All') && TNC.Category?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
                                         //Kristina
@@ -2158,7 +2171,7 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
 
 export const SendDynamicMSTeamsNotification = async (RequiredData: any) => {
     try {
-        const { Configuration, ItemDetails, Context, RequiredListIds } = RequiredData || {};
+        const { Configuration, ItemDetails, Context, RequiredListIds, UserEmail } = RequiredData || {};
         const TaskInformation = GenerateMSTeamsNotification(ItemDetails);
         const sendUserEmail: any = [];
 
@@ -2172,6 +2185,11 @@ export const SendDynamicMSTeamsNotification = async (RequiredData: any) => {
             });
             return isExists;
         };
+        if (Configuration.Notify == "Approval") {
+            UserEmail?.map(async (email: any) => {
+                sendUserEmail.push(email);
+            })
+        }
         if (Configuration.Notify == "Creator") {
             ItemDetails.TaskCreatorData?.map(async (CreatorEmail: any) => {
                 sendUserEmail.push(CreatorEmail.Email);
@@ -2182,8 +2200,6 @@ export const SendDynamicMSTeamsNotification = async (RequiredData: any) => {
                 sendUserEmail.push(NotifierEmail.Email);
             });
         }
-
-
         if (Configuration.Notify == "Group") {
             if (ItemDetails != undefined) {
                 const assignedTo = ItemDetails.AssignedTo;
@@ -2243,17 +2259,28 @@ export const SendDynamicMSTeamsNotification = async (RequiredData: any) => {
 
 export const SendDynamicEmailNotification = async (requiredData: any) => {
     try {
-        const { Configuration, ItemDetails, Context } = requiredData || {};
+        const { Configuration, ItemDetails, Context, UserEmail } = requiredData || {};
         const emailMessage = GenerateEmailNotification(ItemDetails);
         const containerDiv = document.createElement('div');
         const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
         ReactDOM.render(reactElement, containerDiv);
         const ReceiverEmail: any = [];
+        if (Configuration.Notify == "Approval") {
+            UserEmail?.map(async (email: any) => {
+                ReceiverEmail.push(email);
+            })
+        }
         if (Configuration.Notify == "Creator") {
             ItemDetails.TaskCreatorData?.map(async (CreatorEmail: any) => {
                 ReceiverEmail.push(CreatorEmail.Email);
             });
         }
+        if (Configuration.Notify == "Group") {
+            ItemDetails.TaskCreatorData?.map(async (CreatorEmail: any) => {
+                ReceiverEmail.push(CreatorEmail.Email);
+            });
+        }
+
         if (Configuration.Notify == "Specific") {
             Configuration.Notifier?.map(async (NotifierEmail: any) => {
                 ReceiverEmail.push(NotifierEmail.Email);
@@ -2272,6 +2299,18 @@ export const SendDynamicEmailNotification = async (requiredData: any) => {
         let messageContent = Configuration.notifyContent;
         if (messageContent?.includes('taskStatus')) {
             messageContent = messageContent?.replace('taskStatus', `${ItemDetails.PercentComplete}%`)
+        }
+        if (messageContent?.includes('ApproverName')) {
+            ItemDetails?.Approvee?.Approver?.map(async (ApproverInfo: any) => {
+                messageContent = messageContent?.replace('ApproverName', `${ApproverInfo.Title}`)
+            });
+
+        }
+        if (messageContent?.includes('CreatorName')) {
+            ItemDetails.TaskCreatorData?.map(async (Creator: any) => {
+                messageContent = messageContent?.replace('CreatorName', `${Creator.Title}`)
+            });
+
         }
         const emailBodyContent = `
         <div>
