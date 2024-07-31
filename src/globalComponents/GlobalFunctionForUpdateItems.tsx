@@ -2107,9 +2107,6 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                                         }
                                                     })
                                                 }
-                                                if (TNC.Notify == "Group") {
-                                                    UserArray = [];
-                                                }
                                             });
 
                                         }
