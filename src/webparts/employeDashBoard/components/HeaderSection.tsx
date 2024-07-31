@@ -257,7 +257,7 @@ const Header = () => {
             {DashboardId == '5' && <span title='Open leads popup' className="svg__iconbox svg__icon--editBox" onClick={(e) => openPortfolioLeadsPopup()} ></span>}
           </div>
         </div>
-        {DashboardConfig?.length > 0 && activeTile != undefined && <div><TaskStatusTbl activeTile={activeTile} smartFavTableConfig={smartFavTableConfig} /></div>}
+        {DashboardConfig?.length > 0 && activeTile != undefined  && <div><TaskStatusTbl activeTile={activeTile} smartFavTableConfig={smartFavTableConfig} /></div>}
       </section>
       <span>
         {IsOpenTimeSheetPopup == true && <EmployeePieChart IsOpenTimeSheetPopup={IsOpenTimeSheetPopup} Call={() => { CallBack() }} />}

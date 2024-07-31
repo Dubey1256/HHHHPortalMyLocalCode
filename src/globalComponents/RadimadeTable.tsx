@@ -1893,7 +1893,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 500,
-                isColumnVisible: true
+                isColumnVisible: true,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
@@ -1910,7 +1911,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 70,
-                isColumnVisible: true
+                isColumnVisible: true,
+                isAdvanceSearchVisible:true
             },
            
             {
@@ -2039,7 +2041,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsHelpInformationSarch,
@@ -2054,7 +2057,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsShortDescriptionSearch,
@@ -2069,7 +2073,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsTechnicalExplanationsSearch,
@@ -2084,7 +2089,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsBodySearch,
@@ -2099,7 +2105,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsAdminNotesSearch,
@@ -2114,7 +2121,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsValueAddedSearch,
@@ -2129,7 +2137,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsIdeaSearch,
@@ -2144,7 +2153,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 56,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.descriptionsBackgroundSearch,
@@ -2159,7 +2169,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 80,
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.HelpInformationVerified,
@@ -2245,7 +2256,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 size: 130,
                 id: "Admin",
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorFn: (row) => row?.Actions,
@@ -2380,7 +2392,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 id: "descriptionsSearch",
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorKey: "commentsSearch",
@@ -2388,7 +2401,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 id: "commentsSearch",
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorKey: "timeSheetsDescriptionSearch",
@@ -2396,7 +2410,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 id: "timeSheetsDescriptionSearch",
-                isColumnVisible: false
+                isColumnVisible: false,
+                isAdvanceSearchVisible:true
             },
             {
                 accessorKey: "TotalTaskTime",
