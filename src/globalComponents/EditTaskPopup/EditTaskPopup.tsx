@@ -827,15 +827,7 @@ const EditTaskPopup = (Items: any) => {
                     setOnlyCompletedStatus(item.TaskCategories?.some((category: any) => category.Title === "Only Completed"));
                     setDesignStatus(item.TaskCategories?.some((category: any) => category.Title === "Design" || category.Title === "User Experience - UX"));
                     setDesignNewTemplates(item.TaskCategories?.some((category: any) => category.Title === "UX-New"))
-                    let checkForApproval: any = item.TaskCategories?.some((category: any) => category.Title === "Approval")
-                    if (checkForApproval) {
-                        setApprovalStatus(true);
-                        ApprovalStatusGlobal = true;
-                    } else {
-                        setApprovalStatus(false);
-                        ApprovalStatusGlobal = false;
-                        setApproverData([]);
-                    }
+
                 }
                 if (item.Portfolio != undefined && item.Portfolio?.Title != undefined) {
                     let PortfolioId: any = item.Portfolio.Id;
@@ -1723,8 +1715,12 @@ const EditTaskPopup = (Items: any) => {
                 console.log("Dynamic Assignment Information All Details from backend  ==================", DynamicAssignmentInformation);
                 StatusOptions?.map((item: any) => {
                     if (70 == item.value) {
+                        if (EditDataBackup != undefined) {
+                            setTaskAssignedTo(EditDataBackup.TaskAssignedUsers);
+                        }
                         setPercentCompleteStatus(item.status);
                         setTaskStatus(item.taskStatusComment);
+
                         setUpdateTaskInfo({
                             ...UpdateTaskInfo,
                             PercentCompleteStatus: "70",
@@ -4391,7 +4387,7 @@ const EditTaskPopup = (Items: any) => {
             console.log("Bottleneck All Details:", copyWorkAction);
             setUseFor("")
             setApproverPopupStatus(false)
-           
+
         }
         else {
             setApproverPopupStatus(false);
@@ -4478,9 +4474,9 @@ const EditTaskPopup = (Items: any) => {
     };
 
 
-    
+
     // this is used for update working action JSOn for Approval Secanrios 
-    
+
     const updateWAForApproval = (Value: any, key: string) => {
         let copyWorkAction: any = [...WorkingAction];
         const usedFor: string = "Approval";
@@ -4508,8 +4504,8 @@ const EditTaskPopup = (Items: any) => {
                             DataItem[key] = false;
                             DataItem.Type = "";
                             SmartMetaDataAllItems
-                           
-                            
+
+
                             StatusOptions?.map((item: any) => {
                                 if (0 == item.value) {
                                     setPercentCompleteStatus(item.status);
@@ -4761,7 +4757,7 @@ const EditTaskPopup = (Items: any) => {
         }
         setWorkingAction([...copyWorkAction]);
     }
- 
+
     // this is a common function for auto suggetions for the Task Users also used for workingAction
 
     const SelectApproverFromAutoSuggestion = (ApproverData: any, usedFor: string) => {
@@ -5018,20 +5014,20 @@ const EditTaskPopup = (Items: any) => {
             console.log("Updated Data after removing User:", TempWorkingActionData);
             setWorkingAction([...EditData.WorkingAction])
         }
-
-        let currentApprover: any = []
-         WorkingAction?.map((items: any) => {
-            if (items.Title === "Approval") {
-                 items?.InformationData?.map((infoItem: any) => {
-                    let updateApprover: any = ApproverData.filter((assignItems) => infoItem?.TaggedUsers?.Title && assignItems.Title.includes(infoItem.TaggedUsers.Title));
-                   currentApprover = [...currentApprover, ...updateApprover]
+        let currentApprover: any = [];
+        WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
+            if (WAItemData.Title == "Approval" && WAItemData?.InformationData?.length > 0) {
+                WAItemData?.InformationData?.map((item: any) => {
+                    currentApprover.push(item?.TaggedUsers)
                 })
-             }
-         })
-         if(ActionType == "Approval")
-         setTaskAssignedTo(currentApprover)  
-         setTaskTeamMembers(currentApprover)
-         setApproverData( currentApprover)
+            }
+        })
+        if (ActionType == "Approval") {
+            setTaskAssignedTo(currentApprover)
+            setTaskTeamMembers(currentApprover)
+            setApproverData([...currentApprover])
+        }
+        console.log(ApproverData, "approverDta updated")
     }
 
     //    This is used to remove the Tagged User Data form Bottleneck and attention
@@ -5614,7 +5610,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div className="col-md-5">
                                         <div className="col-12 ">
                                             <div className="input-group">
-                                            <LabelInfoIconToolTip columnName={"Title"} />
+                                                <LabelInfoIconToolTip columnName={"Title"} />
                                                 {/* <div className="d-flex justify-content-between align-items-center mb-0  full-width">
                                                     Title </div> */}
                                                 <input
@@ -5634,7 +5630,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="mx-0 row taskdate ">
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
-                                                <LabelInfoIconToolTip columnName={"StartDate"} />                                                   
+                                                    <LabelInfoIconToolTip columnName={"StartDate"} />
                                                     <input
                                                         type="date"
                                                         className="form-control"
@@ -5656,7 +5652,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col-6 ps-0 pe-0 mt-2">
                                                 <div className="input-group ">
                                                     <div className="form-label full-width">
-                                                    <LabelInfoIconToolTip columnName={"dueDate"} onlyText={"text"}/> 
+                                                        <LabelInfoIconToolTip columnName={"dueDate"} onlyText={"text"} />
                                                         <span title="Re-occurring Due Date">
                                                             <input
                                                                 type="checkbox"
@@ -5685,7 +5681,7 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
-                                                <LabelInfoIconToolTip columnName={"CompletedDate"} />
+                                                    <LabelInfoIconToolTip columnName={"CompletedDate"} />
                                                     <input
                                                         type="date"
                                                         className="form-control"
@@ -5738,7 +5734,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="mx-0 row mt-2 taskservices">
                                             <div className="col-md-6  ps-0">
                                                 <div className="input-group mb-2">
-                                                <LabelInfoIconToolTip columnName={"PortfolioItem"} />
+                                                    <LabelInfoIconToolTip columnName={"PortfolioItem"} />
                                                     {TaggedPortfolioData?.length > 0 ? (
                                                         <div className="full-width">
                                                             {TaggedPortfolioData?.map((com: any) => {
@@ -5809,7 +5805,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
 
                                                 <div className="input-group mb-2">
-                                                <LabelInfoIconToolTip columnName={"Categories"}/>  
+                                                    <LabelInfoIconToolTip columnName={"Categories"} />
                                                     {TaskCategoriesData?.length > 1 ? <>
                                                         <input
                                                             type="text"
@@ -5940,7 +5936,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="row">
                                                     <div className="time-status col-md-6">
                                                         <div className="input-group">
-                                                        <LabelInfoIconToolTip columnName={"Priority"} />
+                                                            <LabelInfoIconToolTip columnName={"Priority"} />
                                                             <input
                                                                 type="text"
                                                                 className="form-control"
@@ -6021,7 +6017,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                     <div className="col-md-6">
                                                         <div className="input-group">
-                                                        <LabelInfoIconToolTip columnName={"SmartPriority"} />
+                                                            <LabelInfoIconToolTip columnName={"SmartPriority"} />
                                                             <div className="bg-e9 w-100 py-1 px-2" style={{ border: '1px solid #CDD4DB' }}>
                                                                 <span className={EditData?.SmartPriority != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
                                                                     <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
@@ -6038,7 +6034,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-12 mb-2">
                                                     <div className="input-group ">
-                                                    <LabelInfoIconToolTip columnName={"ClientActivity"} />
+                                                        <LabelInfoIconToolTip columnName={"ClientActivity"} />
                                                         <input
                                                             type="text"
                                                             className="form-control"
@@ -6051,7 +6047,7 @@ const EditTaskPopup = (Items: any) => {
                                                     title="Relevant Portfolio Items"
                                                 >
                                                     <div className="input-group">
-                                                    <LabelInfoIconToolTip columnName={"LinkedComponentTask"}/>
+                                                        <LabelInfoIconToolTip columnName={"LinkedComponentTask"} />
                                                         <input
                                                             type="text"
                                                             readOnly
@@ -6072,7 +6068,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-12 mb-2 mt-2">
                                                     <div className="input-group mb-2">
-                                                    <LabelInfoIconToolTip columnName={"LinkedPortfolioItems"} />
+                                                        <LabelInfoIconToolTip columnName={"LinkedPortfolioItems"} />
                                                         <input
                                                             type="text"
                                                             className="form-control"
@@ -6157,7 +6153,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-12">
                                                     <div className="input-group">
-                                                    <LabelInfoIconToolTip columnName={"Project"} />
+                                                        <LabelInfoIconToolTip columnName={"Project"} />
                                                         {selectedProject != undefined &&
                                                             selectedProject.length > 0 ? (
                                                             <>
@@ -6236,7 +6232,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                         <div className="col-12 mb-2 taskurl">
                                             <div className="input-group">
-                                            <LabelInfoIconToolTip columnName={"RelevantURL"} />
+                                                <LabelInfoIconToolTip columnName={"RelevantURL"} />
                                                 <input
                                                     type="text"
                                                     className="form-control"
@@ -6367,7 +6363,7 @@ const EditTaskPopup = (Items: any) => {
 
                                         <div className="col mt-2 clearfix">
                                             <div className="input-group taskTime">
-                                            <LabelInfoIconToolTip columnName={"Status"} />
+                                                <LabelInfoIconToolTip columnName={"Status"} />
                                                 <input
                                                     type="text"
                                                     maxLength={3}
@@ -6404,7 +6400,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col mt-2 time-status">
                                                 <div>
                                                     <div className="input-group">
-                                                    <LabelInfoIconToolTip columnName={"Time"} />
+                                                        <LabelInfoIconToolTip columnName={"Time"} />
                                                         <input
                                                             type="text"
                                                             maxLength={3}
@@ -7049,7 +7045,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col mt-2 ps-0">
                                             <div className="input-group">
                                                 <label className="form-label full-width alignCenter mb-1">
-                                                <b><LabelInfoIconToolTip columnName={"Phone"} onlyText={"text"} />: </b>
+                                                    <b><LabelInfoIconToolTip columnName={"Phone"} onlyText={"text"} />: </b>
                                                     {WorkingActionDefaultUsers?.map((userDtl: any, index: number) => {
                                                         return (
                                                             <div className="TaskUsers" key={index} onClick={() => SelectApproverFromAutoSuggestion(userDtl, "Phone")}>
