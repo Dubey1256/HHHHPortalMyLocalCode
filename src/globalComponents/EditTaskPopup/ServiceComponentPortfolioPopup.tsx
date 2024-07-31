@@ -267,7 +267,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                         }
                         return false;
                     });
-                } else if (props?.Portfolio) {
+                } else if (props?.Portfolio?.Id != undefined) {
                     Selecteddata = GlobalArray?.AllData.filter((item: any) => {
                         if (props?.Portfolio && props?.Portfolio?.Id != null) {
                             return props?.Portfolio?.Id === item.Id;
@@ -343,7 +343,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 LinkedServicesBackupArray = GlobalArray.ProjectData;
                 setdataUpper(BackupData)
                 renderupperData = true;
-                setInitialRender(true)
+                setInitialRender(true)  
             }
         }
         // setModalIsOpen(true);
@@ -461,10 +461,10 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                             </>
                         )}
                         {
-                            <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.PortfolioStructureID} AllListId={Dynamic} row={row?.original} singleLevel={true} masterTaskData={allMaster} />
+                        <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.PortfolioStructureID} AllListId={Dynamic} row={row?.original} singleLevel={true} masterTaskData={allMaster} />
                         }
                     </div>
-
+                
                 ),
             },
             {
