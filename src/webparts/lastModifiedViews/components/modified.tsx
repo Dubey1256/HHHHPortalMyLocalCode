@@ -314,7 +314,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
       }
       else {
         data?.map((item: any) => {
-          item.fontColorTask = '#000066';
+          item.fontColorTask = '#2F5596';
             masterTaskData?.map((masterTaskValue: any) => {
             if (item?.Portfolio?.Id == masterTaskValue?.Id) {
               if (masterTaskValue?.PortfolioType?.Title == 'Service') {

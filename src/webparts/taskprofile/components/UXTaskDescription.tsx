@@ -93,7 +93,7 @@ const uxdescriptions = (props: any) => {
     const changeTrafficLigth = async (index: any, item: any,obj:any) => {
         console.log(index);
         console.log(item);
-        if ((Result?.Approver?.AssingedToUser?.Id == props?.currentUser[0]?.Id) || (Result?.Approver?.Approver[0]?.Id == props?.currentUser[0]?.Id)) {
+        if (Result?.checkIsApproval) {
             if (obj === 'objective') {                
                 var tempData: any = TaskFeedbackData[index];
             }
@@ -152,7 +152,7 @@ const uxdescriptions = (props: any) => {
         console.log(parentindex);
         console.log(subchileindex);
         console.log(status);
-        if ((Result?.Approver?.AssingedToUser?.Id == props?.currentUser[0]?.Id) || (Result?.Approver?.Approver[0]?.Id == props?.currentUser[0]?.Id)) {
+        if (Result?.checkIsApproval) {
             if (obj === 'objective') {
                 var tempData: any = TaskFeedbackData[parentindex];
             }

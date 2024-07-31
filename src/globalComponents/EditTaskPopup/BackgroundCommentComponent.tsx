@@ -421,7 +421,7 @@ const BackgroundCommentComponent = (Props: any) => {
                     Post Comment
                 </button>
                 {/* Code by Udbhav realted EOD report */}
-                {(currentUserData[0]?.UserGroup?.Title=="Portfolio Lead Team" ||currentUserData[0]?.UserGroup?.Title=="Smalsus Lead Team"||currentUserData[0]?.UserGroup?.Title=="Junior Task Management") && 
+                {(currentUserData[0]?.UserGroup?.Title=="Portfolio Lead Team" ||currentUserData[0]?.UserGroup?.Title=="Smalsus Lead Team"||currentUserData[0]?.UserGroup?.Title=="Junior Task Management"||currentUserData[0]?.UserGroup?.Title=="QA Team") && 
                <>
                <p className="siteColor mb-0">EOD Report</p>
                 {BackgroundComments != undefined && BackgroundComments.length > 0 ? BackgroundComments.map((dataItem: any, Index: any) => {

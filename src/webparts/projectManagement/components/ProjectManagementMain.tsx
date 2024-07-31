@@ -82,7 +82,7 @@ let keyTaggedDocs: any;
 let tempmetadata: any;
 let weekTotalTime: any = 0
 let monthTotalTime: any = 0
-let totalTime: any
+let totalTime: any = 0
 const ProjectManagementMain = (props: any) => {
   const [openServiceComponent, setopenServiceComponent]= React.useState(false)
   relevantDocRef = React.useRef();
