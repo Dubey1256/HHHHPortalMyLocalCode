@@ -4319,7 +4319,6 @@ const EditTaskPopup = (Items: any) => {
                 TaskAssignedTo.filter((assignItems) => assignItems.Id != item.Id)
                 TaskTeamMembers.filter((assignItems) => assignItems.Id != item.Id)
             })
-
         }
         if (useFor == "Bottleneck" || useFor == "Attention" || useFor == "Phone" || useFor == "Approval") {
             let CreatorData: any = currentUserBackupArray[0];
@@ -4385,13 +4384,13 @@ const EditTaskPopup = (Items: any) => {
             console.log("Bottleneck All Details:", copyWorkAction);
             setUseFor("")
             setApproverPopupStatus(false)
-
         }
         else {
             setApproverPopupStatus(false);
-            setTaskAssignedTo(ApproverData);
             setApproverData(data);
-            setTaskTeamMembers(ApproverData);
+            if(useFor == "Approval"){
+            setTaskAssignedTo(ApproverData);
+            setTaskTeamMembers(ApproverData);}
             StatusOptions?.map((item: any) => {
                 if (item.value == 1) {
                     Items.sendApproverMail = true;
@@ -4401,7 +4400,7 @@ const EditTaskPopup = (Items: any) => {
                 }
             });
         }
-
+ 
     };
 
     const selectApproverFunction = (selectedData: any) => {
