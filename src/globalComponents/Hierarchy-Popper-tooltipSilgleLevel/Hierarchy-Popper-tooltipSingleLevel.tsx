@@ -55,8 +55,9 @@ let pageName: any = 'hierarchyPopperToolTip'
 export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTaskData, AllSitesTaskData, AllListId }: any) {
     let paddingCount: number = -1;
     let marginCount: number = 0;
-
-    masterTaskData = masterTaskData?.concat(AllSitesTaskData)
+    
+    masterTaskData=masterTaskData?.concat(AllSitesTaskData)
+    masterTaskData=masterTaskData?.filter((removeUndefined:any)=>{return (removeUndefined!=undefined)})
     // AllMatsterAndTaskData = [...masterTaskData];
     // AllMatsterAndTaskData = JSON.parse(JSON.stringify(AllMatsterAndTaskData?.concat(AllSitesTaskData)));
     const [controlledVisible, setControlledVisible] = React.useState(false);
@@ -314,7 +315,7 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
                 <div className={itemData.Item_x0020_Type == "Component" ? ' d-flex p-1 f-bg borderBottomWhite' :
                     itemData.Item_x0020_Type == "SubComponent" ? 'd-flex p-1 a-bg borderBottomWhite' : itemData.Item_x0020_Type == 'Feature' ? "d-flex p-1 borderBottomWhite w-bg" : "d-flex p-1 border-top"}>
                     <div style={{ flex: "0 0 160px" }}>
-                        <div className={lastChild == true ? `alignCenter levelml-1` : `alignCenter`}>
+                        <div className={lastChild == true ? `alignCenter levelml-1 f-14` : `alignCenter f-14`}>
                             {hasChildren &&
                                 <span style={{ width: "20px" }} className="mt--3" onClick={() => onToggle(itemData, "CurentHirearchy")}>
                                     {hasChildren && (
@@ -349,7 +350,7 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
                     </div>
 
                     <div className={lastChild == true ? "lastlevel" : ''} style={{ flex: "0 0 330px" }}>
-                        <div className="aligncenter textDotted" style={{ width: "330px" }}>
+                        <div className="aligncenter f-14 textDotted" style={{ width: "330px" }}>
                             {itemData?.SiteIcon != undefined ? <>
 
                                 <a
@@ -373,7 +374,7 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
                                         </a> : ""}</>}
                         </div>
                     </div>
-                    <div className={lastChild == true ? "roundRight lastlevel" : ''} style={{ flex: "0 0 25px" }}>
+                    <div className={lastChild == true ? "roundRight lastlevel f-14" : 'f-14'} style={{ flex: "0 0 25px" }}>
                         {itemData?.TaskType?.Title != 'Task' && itemData?.Item_x0020_Type != "Sprint" && itemData?.Item_x0020_Type != "Project" ?
                             <svg onClick={() => openActivityPopup(itemData)} className={lastChild == true ? "hreflink text-white" : "hreflink"} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48" fill="#333333">
                                 <title>Open Activity Popup</title>
@@ -420,7 +421,7 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
             {action === "click" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container clickTooltip p-3 m-0" })}>
                     <div className="alignCenter mb-2">
-                        <span className="fw-normal">{row?.Title}</span>
+                        <span className="fw-normal f-14">{row?.Title}</span>
                         <span onClick={handleCloseClick} style={{ marginRight: "3px" }} title="Close" className="ml-auto hreflink svg__iconbox svg__icon--cross dark"></span>
                     </div>
                     <div className="maXh-300 scrollbar">
@@ -438,7 +439,7 @@ export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTa
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
                     <span>
                         <span>
-                            <a>{hoverOverInfo}</a>
+                            <a className="f-14 text-black">{hoverOverInfo}</a>
                         </span>
                     </span>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
