@@ -183,6 +183,18 @@ const EmployeProfile = (props: any) => {
         config.UpdatedId = data?.Id
       })
       DashboardConfig.forEach((config: any) => {
+        if (config?.onDropAction != undefined && config?.onDropAction?.length > 0) {
+          config?.onDropAction?.map((filterColumn: any) => {
+            filterColumn.SelectedEmail = [];
+            if (filterColumn?.SelectedField == 'TeamLeader' || filterColumn?.SelectedField == 'TeamMember' || filterColumn?.SelectedField == 'WorkingMember') {
+              if (filterColumn?.SelectedValue != undefined && filterColumn?.SelectedValue?.length) {
+                filterColumn?.SelectedValue?.map((User: any) => {
+                  filterColumn?.SelectedEmail?.push(User?.email)
+                })
+              }
+            }
+          });
+        }
         if (config?.AdditonalHeader != undefined && config?.AdditonalHeader == true)
           ActiveTile = config?.TileName
         config.highestColumn = addHighestColumnToObject(config, DashboardConfig)
