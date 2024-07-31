@@ -217,8 +217,10 @@ export default function SmartMetadataEditPopup(props: any) {
     const handleChangeCategories = (ChangeCategoryItem: any) => {
         setSelectedChangedCategories(ChangeCategoryItem.target.value);
         if (ChangeCategoryItem.target.value) {
-            ChangedTopCategories = props?.MetadataItems?.filter((meta: any) => meta?.Title === ChangeCategoryItem.target.value)
-                .map((meta: any) => meta?.subRows);
+            if (ChangeCategoryItem.target.value === 'Admin')
+                ChangedTopCategories = props?.MetadataItems?.filter((meta: any) => meta?.ParentID === 0 && meta?.Title === ChangeCategoryItem.target.value).map((meta: any) => meta?.subRows);
+            else
+                ChangedTopCategories = props?.MetadataItems?.filter((meta: any) => meta?.Title === ChangeCategoryItem.target.value).map((meta: any) => meta?.subRows);
         }
         console.log(ChangedTopCategories);
     }
