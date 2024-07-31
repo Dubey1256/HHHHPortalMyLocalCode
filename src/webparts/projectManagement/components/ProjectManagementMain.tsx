@@ -584,9 +584,6 @@ const ProjectManagementMain = (props: any) => {
           })
         }
       });
-      totalTime = allPXTasks?.reduce((total: any, time: any) => total + time.TotalTime, 0);
-      totalTime = totalTime / 60;
-      totalTime = totalTime.toFixed(1)
       setTimeEntries(PXtimeEntries)
       setPageLoader(false)
     } catch (error) {
@@ -910,7 +907,9 @@ const ProjectManagementMain = (props: any) => {
           AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id ne null`)
         }
       }
-
+      totalTime = AllProjectTasks?.reduce((total: any, time: any) => total + time.TotalTime, 0);
+      totalTime = totalTime/60;
+      totalTime = totalTime.toFixed(2)
       AllProjectTasks.map((items: any) => {
         items.SmartPriority = globalCommon.calculateSmartPriority(items);
         if (items?.SmartInformation?.length > 0) {
@@ -3009,9 +3008,9 @@ const ProjectManagementMain = (props: any) => {
                                       <dl>
                                         <dt className="bg-fxdark">Total PX Time</dt>
                                         <dd className="bg-light">
-                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime} hrs; `}</span>}
+                                          {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime} hrs;`}</span>}
                                           {(monthTotalTime != undefined && weekTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime} hrs; `}</span>}
-                                          {totalTime != undefined && <span title="Total Time">{`${totalTime} hrs;`}</span>}
+                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime} hrs; `}</span>}
                                           <a className="smartTotalTime hover-text m-0 float-end" onClick={() => loadAllPXTimeEntries()}><BsClock/><span className='tooltip-text pop-left'>Load Time Entries</span></a>
                                         </dd>
                                       </dl>
