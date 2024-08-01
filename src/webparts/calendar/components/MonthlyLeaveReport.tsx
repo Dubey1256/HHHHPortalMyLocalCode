@@ -623,8 +623,8 @@ export const MonthlyLeaveReport = (props: any) => {
   // let formattedMonth = month < 10 ? `0${month}` : `${month}`;
   let CurrentMonthData = leaveData.filter((item: any) => {
     let itemDate = new Date(item?.EventDate);
-    let selectedstartdate = startDate.toISOString().substring(0, 19).replace('T', ' ');
-    let selectedenddate = endDate.toISOString().substring(0, 19).replace('T', ' ');
+    let selectedstartdate = startDate?.toISOString().substring(0, 19).replace('T', ' ');
+    let selectedenddate = endDate?.toISOString().substring(0, 19).replace('T', ' ');
     itemDate.setHours(0, 0, 0, 0);
     let startdate = new Date(selectedstartdate);
     startdate.setHours(0, 0, 0, 0);
