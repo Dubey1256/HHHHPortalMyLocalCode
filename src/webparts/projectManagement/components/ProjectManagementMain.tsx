@@ -584,6 +584,22 @@ const ProjectManagementMain = (props: any) => {
           })
         }
       });
+      if (PXtimeEntries?.length > 0) {
+        PXtimeEntries = PXtimeEntries.reduce(function (
+            previous: any,
+            current: any
+        ) {
+            var alredyExists =
+                previous.filter(function (item: any) {
+                    return item.Id === current.Id;
+                }).length > 0;
+            if (!alredyExists) {
+                previous.push(current);
+            }
+            return previous;
+        },
+            []);
+    }
       setTimeEntries(PXtimeEntries)
       setPageLoader(false)
     } catch (error) {
