@@ -538,7 +538,7 @@ export default function SmartMetadataEditPopup(props: any) {
     const onRenderCustomHeaderMetadata = () => {
         return (
             <>
-                <div className='ps-4 siteColor subheading'>
+                <div className='siteColor subheading'>
                     Update SmartMetadata Item
                 </div>
                 <Tooltip ComponentId={'1630'} />
@@ -548,7 +548,7 @@ export default function SmartMetadataEditPopup(props: any) {
     const onRenderMetadataChangeParent = () => {
         return (
             <>
-                <div className='ps-4 siteColor subheading'>
+                <div className='siteColor subheading'>
                     Select Parent
                 </div>
                 <Tooltip ComponentId={'1630'} />
@@ -633,12 +633,13 @@ export default function SmartMetadataEditPopup(props: any) {
                             closeButtonAriaLabel="Close"
                         >
                             <div className="modal-body">
-                                <div className="col-sm-12 tab-content bdrbox pad10">
+                                <div>
                                     {props?.TabSelected === "Categories" && <div className="form-group">
-                                        <div className="col-xs-3">
+                                      
+                                        <div className="input-group mb-1">
+                                        <label className='full-width'>
                                             Change Categories:<b className="span-error">*</b>
-                                        </div>
-                                        <div className="col-xs-9">
+                                        </label>
                                             <select
                                                 className="form-control"
                                                 value={selectedChangedCategories}
@@ -652,12 +653,13 @@ export default function SmartMetadataEditPopup(props: any) {
                                                 ))}
                                             </select>
                                         </div>
-                                        <div className="clearfix"></div>
+                                
                                     </div>
                                     }
                                     {props?.TabSelected !== 'Categories' && <div className="form-group">
-                                        <div className="col-xs-3">Top Level:</div>
-                                        <div className="col-xs-9">
+                                      
+                                        <div className="input-group mb-1">
+                                        <label className="full-width">Top Level:</label>
                                             <select
                                                 className="form-control"
                                                 value={selectedOptionTop}
@@ -671,13 +673,14 @@ export default function SmartMetadataEditPopup(props: any) {
                                                 ))}
                                             </select>
                                         </div>
-                                        <div className="clearfix"></div>
+                                    
                                     </div>}
                                     <div className="form-group">
-                                        <div className="col-xs-3">
+                                        
+                                        <div className="input-group mb-1">
+                                        <label className='full-width'>
                                             Second Level:<b className="span-error">*</b>
-                                        </div>
-                                        <div className="col-xs-9">
+                                        </label>
                                             <select
                                                 className="form-control"
                                                 value={selectedOptionSecond}
@@ -697,7 +700,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                                     ))}
                                             </select>
                                         </div>
-                                        <div className="clearfix"></div>
+                                       
                                     </div>
                                 </div>
                             </div>
@@ -753,8 +756,8 @@ export default function SmartMetadataEditPopup(props: any) {
                             <div className="modal-body">
                                 <form name="NewForm" noValidate role="form">
                                     <div className="" style={{ background: '#f5f5f5 !important' }}>
-                                        <div id="parentdiv" className="row" style={{ marginBottom: '4px' }}>
-                                            <div className="col-xs-9">
+                                        <div id="parentdiv" className="mb-2 ps-2 row" >
+                                            <div className="col">
                                                 <ul className=" m-0 p-0 spfxbreadcrumb">
                                                     {metadatPopupBreadcrum.map((item: any) => {
                                                         return (<li>
@@ -1174,7 +1177,7 @@ export default function SmartMetadataEditPopup(props: any) {
                             left: "0px",
                         }}
                     >
-                        <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+                        <div className="align-items-center d-flex justify-content-between px-4 py-2">
                             <div>
                                 <div className="">
                                     Created{" "}
@@ -1203,7 +1206,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                     </span>
                                 </div>
                                 <div>
-                                    <a className="hreflink siteColor">
+                                    <a>
                                         <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
                                         <span
                                             onClick={() => deleteDataFunction(SmartTaxonomyItem)}
@@ -1212,16 +1215,16 @@ export default function SmartMetadataEditPopup(props: any) {
                                         </span>
                                     </a>
 
-                                    |
-                                    <span>
-                                        <div className="text-left" onClick={() => setVersionHistoryPopup(false)}>
+                                  <span> | </span>   
+                                    <span onClick={() => setVersionHistoryPopup(false)}>
+                                     
                                             {SmartTaxonomyItem?.Id && <VersionHistory listName='SmartMetadata'
                                                 taskId={SmartTaxonomyItem?.Id}
                                                 RequiredListIds={props?.AllList}
                                                 siteUrls={props?.AllList?.SPSitesListUrl}
                                                 listId={props?.AllList?.SmartMetadataListID}
                                             />}
-                                        </div>
+                                 
                                     </span>
                                 </div>
                             </div>
