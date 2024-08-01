@@ -4,6 +4,7 @@ import { EventRecurrenceInfo } from '../webparts/calendar/components/EventRecurr
 import { Panel, PanelType, Toggle } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
 let web :any
+let copyTaskData:any;
 const RecurringTask = (props: any) => {
     
     const [returnedRecurrenceInfo, setReturnedRecurrenceInfo] = React.useState(null);
@@ -39,6 +40,7 @@ const RecurringTask = (props: any) => {
             ).expand("AssignedTo,Author,TeamMembers,Editor,ResponsibleTeam")
             .get().then((TaskDetailsFromCall:any)=>{
                 SetTaskData([TaskDetailsFromCall]);
+                copyTaskData=TaskDetailsFromCall;
             }).catch((error:any)=>{
                 console.log(error)
                 props.props.Items.RecurrenceData="";
@@ -46,6 +48,7 @@ const RecurringTask = (props: any) => {
                 copyData.StartDate = convertToISO(copyData?.StartDate);
                 copyData.CompletedDate = convertToISO(copyData?.CompletedDate)
                 SetTaskData([copyData])
+                copyTaskData=copyData
             });
        
     }
@@ -528,7 +531,12 @@ const RecurringTask = (props: any) => {
              if(WorkingAction.current?.length>0){
                 WorkingAction.current?.map((workingData:any)=>{
                     if(workingData?.Title==="WorkingDetails"){
+                       if(copyTaskData?.RecurrenceData!=undefined && copyTaskData?.RecurrenceData?.length>0){
+                        workingData.InformationData=WorkingDetails
+                       }else{
                         workingData.InformationData=[... workingData.InformationData,...WorkingDetails]
+                       }
+                       
                     }
                 })
                 console.log(props?.WorkingAction)
