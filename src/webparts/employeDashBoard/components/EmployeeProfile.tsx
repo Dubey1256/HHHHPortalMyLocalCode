@@ -1029,7 +1029,8 @@ const EmployeProfile = (props: any) => {
   }
   const getAllData = async (IsLoad: any) => {
     if (IsLoad != undefined && IsLoad == true) {
-      await globalCommon?.loadAllSiteTasks(props?.props, undefined).then((data: any) => {
+      let filter = 'PercentComplete lt 0.81';
+      await globalCommon?.loadAllSiteTasks(props?.props, filter).then((data: any) => {
         if (DashboardId == 1 || DashboardId == 27)
           loadAllTimeEntry();
         data?.map((items: any) => {
