@@ -2,7 +2,142 @@
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
   "version": "2.0",
   "bundles": {
-  
+    "taskprofile-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/taskprofile/TaskprofileWebPart.js",
+          "manifest": "./src/webparts/taskprofile/TaskprofileWebPart.manifest.json"
+        }
+      ]
+    },
+    "component-comments-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/componentComments/ComponentCommentsWebPart.js",
+          "manifest": "./src/webparts/componentComments/ComponentCommentsWebPart.manifest.json"
+        }
+      ]
+    },
+    "task-steps-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/taskSteps/TaskStepsWebPart.js",
+          "manifest": "./src/webparts/taskSteps/TaskStepsWebPart.manifest.json"
+        }
+      ]
+    },
+    "project-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/projectManagement/ProjectManagementWebPart.js",
+          "manifest": "./src/webparts/projectManagement/ProjectManagementWebPart.manifest.json"
+        }
+      ]
+    },
+    "projectmanagement-overview-tool-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/projectmanagementOverviewTool/ProjectmanagementOverviewToolWebPart.js",
+          "manifest": "./src/webparts/projectmanagementOverviewTool/ProjectmanagementOverviewToolWebPart.manifest.json"
+        }
+      ]
+    },
+    "categories-weekly-multiple-report-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/categoriesWeeklyMultipleReport/CategoriesWeeklyMultipleReportWebPart.js",
+          "manifest": "./src/webparts/categoriesWeeklyMultipleReport/CategoriesWeeklyMultipleReportWebPart.manifest.json"
+        }
+      ]
+    },
+    "create-task-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/createTask/CreateTaskWebPart.js",
+          "manifest": "./src/webparts/createTask/CreateTaskWebPart.manifest.json"
+        }
+      ]
+    },
+    "permission-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/permissionManagement/PermissionManagementWebPart.js",
+          "manifest": "./src/webparts/permissionManagement/PermissionManagementWebPart.manifest.json"
+        }
+      ]
+    },
+    "my-pending-tasks-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/myPendingTasks/MyPendingTasksWebPart.js",
+          "manifest": "./src/webparts/myPendingTasks/MyPendingTasksWebPart.manifest.json"
+        }
+      ]
+    },
+    "document-search-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/documentSearch/DocumentSearchWebPart.js",
+          "manifest": "./src/webparts/documentSearch/DocumentSearchWebPart.manifest.json"
+        }
+      ]
+    },
+    "smart-meta-search-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/smartMetaSearch/SmartMetaSearchWebPart.js",
+          "manifest": "./src/webparts/smartMetaSearch/SmartMetaSearchWebPart.manifest.json"
+        }
+      ]
+    },
+    "tasks-view-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/tasksView/TasksViewWebPart.js",
+          "manifest": "./src/webparts/tasksView/TasksViewWebPart.manifest.json"
+        }
+      ]
+    },
+    "update-top-navigation-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/updateTopNavigation/UpdateTopNavigationWebPart.js",
+          "manifest": "./src/webparts/updateTopNavigation/UpdateTopNavigationWebPart.manifest.json"
+        }
+      ]
+    },
+    "employe-profile-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/employeProfile/EmployeProfileWebPart.js",
+          "manifest": "./src/webparts/employeProfile/EmployeProfileWebPart.manifest.json"
+        }
+      ]
+    },
+    "test-project-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/BackupData/TestProjectWebPart.js",
+          "manifest": "./src/webparts/BackupData/TestProjectWebPart.manifest.json"
+        }
+      ]
+    },
+    "task-dashboard-hhhh-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/taskDashboardHhhh/TaskDashboardHhhhWebPart.js",
+          "manifest": "./src/webparts/taskDashboardHhhh/TaskDashboardHhhhWebPart.manifest.json"
+        }
+      ]
+    },
+    "created-by-tables-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/createdByTables/CreatedByTablesWebPart.js",
+          "manifest": "./src/webparts/createdByTables/CreatedByTablesWebPart.manifest.json"
+        }
+      ]
+    },
     "calendar-web-part": {
       "components": [
         {

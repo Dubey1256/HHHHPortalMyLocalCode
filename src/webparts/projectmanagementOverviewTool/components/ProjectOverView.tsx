@@ -1046,13 +1046,13 @@ export default function ProjectOverview(props: any) {
             let sendAllTasks =
                 `<div style="margin-bottom: 20px;">
                
-                <strong style="color:#2f5596;font-size: 32px; font-family: Segoe UI;">Working Today Tasks by Project - ${Moment(new Date()).format("DD/MM/YYYY")}</strong>
+                <strong style="color:#2f5596;font-size: 24px; font-family: Segoe UI;">Working Today Tasks by Project - ${Moment(new Date()).format("DD/MM/YYYY")}</strong>
              
                 <div width="100%">
                     <table align="left" style="margin: 25px 0px;">
                         <tr>
                         <td width="260px" height="40px" align="center" style="background: #2F5596; display: flex; justify-content: center; align-items: center; gap: 8px; flex-shrink: 0; border-radius: 4px; font-family: Segoe UI; width: 260px; height: 40px; font-size: 14px; font-style: normal; font-weight: 600; line-height: normal">
-                            <a style="color: #fff; font-size: 14px; text-decoration: none" href ="${AllListId?.siteUrl}/SitePages/PX-Overview.aspx?SelectedView=ProjectsTask" target="_blank">
+                            <a style="color: #fff !important; font-size: 14px; text-decoration: none" href ="${AllListId?.siteUrl}/SitePages/PX-Overview.aspx?SelectedView=ProjectsTask" target="_blank">
                             View Tasks in Online Dashboard
                             </a>
                         </td>
@@ -1062,7 +1062,7 @@ export default function ProjectOverview(props: any) {
                 <div width="100%">
                 <table width="100%">
                     <tr>
-                        <td> <strong style="margin-top: 20px;font-size: 16px;font-family: Segoe UI;">Project Data</strong>
+                        <td> <strong style="margin-top: 20px;font-size: 16px;font-family: Segoe UI; color:#333333;">Project Data</strong>
                         </td>
                     </tr>
                 </table>
@@ -1182,14 +1182,14 @@ export default function ProjectOverview(props: any) {
                                     `<tr>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;border-left: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;">${siteNameOPen} </td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.TaskID} </td>
-                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"><p style="margin:0px; color:#333;"><a href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
+                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"><p style="margin:0px; color:#2F5596;"><a style="color:#2F5596;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
 
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.PercentComplete} </td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;">${item.TaskDueDatenew} </td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${(item?.AssignedTo?.length > 0 ? item?.AssignedTo?.map((AssignedUser: any) => {
                                         return (
-                                            '<p style="margin:0px;">' + '<a style="text-decoration: none;" href =' + AllListId.siteUrl + '/SitePages/UserTimeEntry.aspx?userId=' + AssignedUser?.Id + '><span>' + AssignedUser?.Title + '</span></a>' + '</p>'
+                                            '<p style="margin:0px;">' + '<a style="text-decoration: none;  color:#2F5596;" href =' + AllListId.siteUrl + '/SitePages/UserTimeEntry.aspx?userId=' + AssignedUser?.Id + '><span>' + AssignedUser?.Title + '</span></a>' + '</p>'
                                         )
                                     }) : '')} </td>
                                 <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;font-family: Segoe UI; padding: 8px;font-size: 13px;">${item.smartTime} </td>
@@ -1209,26 +1209,26 @@ export default function ProjectOverview(props: any) {
                 }
             })
             if (taskCount > 0) {
-                let bgColor = group?.Item_x0020_Type == 'Sprint' ? '#eef4ff' : '#fafafa';
+                let bgColor = group?.Item_x0020_Type == 'Sprint' ? '#eef4ff' : '#eee';
                 let textColor = '#ffffff'
                 body +=
                     `<table cellpadding="0" height="30px" cellspacing="0" style="height:30px;" border="0">
                         <tr>
-                            <td colspan="8" height="30px">&nbsp;</td>
+                            <td colspan="8" height="25px">&nbsp;</td>
                         </tr>
                         <tr>
-                            <td width="130px" height="12" align="left" valign="middle" bgcolor=${bgColor} style="padding: 5px 8px;border:0px;  font-family: Segoe UI;height:30px;"><strong style="font-size: 16px;margin-right: 4px;">${group?.Item_x0020_Type == 'Sprint' ? 'X' : 'P'}</strong><strong style="font-size: 14px;"> Title</strong></td>
-                            <td height="12" style="padding: 5px 8px; color: #2f5596; border: 0px;font-size: 14px;"><a style="margin-right:20px; font-family: Segoe UI;height:30px;" href =${AllListId.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${group?.Id}> ${group?.PortfolioStructureID} - ${group?.Title}</a></td>
+                            <td width="130px" height="12" align="left" valign="middle" bgcolor=${bgColor} style="padding: 5px 8px;border:0px;  font-family: Segoe UI;height:30px;"><span style="font-size: 14px;margin-right: 4px; font-weight: 600; color:#333;">${group?.Item_x0020_Type == 'Sprint' ? 'X' : 'P'}</span><span style="font-size: 14px; font-weight: 600; color:#333;"> Title</span></td>
+                            <td height="12" style="padding: 5px 8px; color: #2f5596; border: 0px;font-size: 14px;"><a style="margin-right:20px; font-family: Segoe UI;height:30px; font-weight: 600;  color:#2F5596;" href =${AllListId.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${group?.Id}> ${group?.PortfolioStructureID} - ${group?.Title}</a></td>
                             
-                            <td width="130px" height="12" align="left" valign="middle" bgcolor=${bgColor} style="padding: 5px 8px;border: 0px;  font-family: Segoe UI;font-size: 14px;height:30px;"><strong>Project Priority</strong></td>
+                            <td width="130px" height="12" align="left" valign="middle" bgcolor=${bgColor} style="padding: 5px 8px;border: 0px;  font-family: Segoe UI;font-size: 14px;height:30px; font-weight: 600; color:#333;">Project Priority</td>
                             <td height="12" style="padding: 5px 8px;border: 0px;"><span style="margin-right:20px; font-family: Segoe UI;font-size: 14px;height:30px;">${group?.PriorityRank}</span></td>
-                            <td width="130px" align="left" valign="middle" bgcolor=${bgColor} style="padding: 5px 8px;border: 0px;  font-family: Segoe UI;font-size: 14px;height:30px;"><strong>Due Date</strong></td>
+                            <td width="130px" align="left" valign="middle" bgcolor=${bgColor} style="padding: 5px 8px;border: 0px;  font-family: Segoe UI;font-size: 14px;height:30px; font-weight: 600; color:#333;">Due Date</td>
                             <td height="12" style="padding: 5px 8px;border: 0px;"> <span style="margin-right:20px; font-family: Segoe UI;font-size: 14px;height:30px;">${group?.DisplayDueDate} </span></td>
-                            <td width="130px" align="left" valign="middle" bgcolor=${bgColor} style="padding: 5px 8px;border: 0px;  font-family: Segoe UI;font-size: 14px;height:30px;"><strong>Team Leader</strong></td>
-                            <td height="12" style="padding: 5px 8px;border: 0px;color: #2f5596; "><a style="margin-right:20px; font-family: Segoe UI;font-size: 14px;height:30px;" href = ${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${projectLeaderId} >${projectLeaderTitle} </a></td>
+                            <td width="130px" align="left" valign="middle" bgcolor=${bgColor} style="padding: 5px 8px;border: 0px;  font-family: Segoe UI;font-size: 14px;height:30px; font-weight: 600; color:#333;">Team Leader</td>
+                            <td height="12" style="padding: 5px 8px;border: 0px;color: #2f5596; "><a style="margin-right:20px; font-family: Segoe UI;font-size: 14px;height:30px; color:#2F5596;" href = ${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${projectLeaderId} >${projectLeaderTitle} </a></td>
                         </tr>
                         <tr>
-                            <td colspan="8" height="30px">&nbsp;</td>
+                            <td colspan="8" height="15px">&nbsp;</td>
                         </tr>
                     </table >
                     <table cellpadding="0" cellspacing="0" align="left" width="100%" border="0">

@@ -45,8 +45,6 @@ import { IoHandRightOutline } from 'react-icons/io5';
 import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
 import * as GlobalFunctionForUpdateItems from '../../../globalComponents/GlobalFunctionForUpdateItems'
 import SmartPriorityHover from '../../../globalComponents/EditTaskPopup/SmartPriorityHover'; // Import your global common module
-import ImageViewPanel from './ImageViewPanel';
-import { VscIssueReopened } from 'react-icons/Vsc';
 
 var ClientTimeArray: any = [];
 
@@ -76,11 +74,8 @@ const CopyTaskProfile = (props: any) => {
     const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
     const [isShowSiteCompostion, setisShowSiteCompostion] = useState<any>('')
     const [showComposition, setshowComposition] = useState(true);
-    const [SiteIcon, setSiteIcon] = useState('');
     const [OffshoreImageUrl, setOffshoreImageUrl] = useState([]);
     const [ApprovalStatus, setApprovalStatus] = useState(false);
-    const [checkedImageData, SetCheckedImageData]: any = useState([])
-    const [openComparePopup, SetOpenComparePopup]: any = useState(false)
 
     const [state, setState] = useState<any>({
         Result: {},
@@ -227,18 +222,13 @@ const CopyTaskProfile = (props: any) => {
                 TaskTypeID: propsValue.TaskTypeID,
                 isShowTimeEntry: isShowTimeEntry,
                 isShowSiteCompostion: propsValue?.SiteCompostion !== "" ? JSON.parse(propsValue?.SiteCompostion) : "",
-                listName: listName
+                listName:listName
             };
 
             taskDetails["listName"] = listName;
             taskDetails["siteType"] = listName;
             taskDetails["siteUrl"] = propsValue?.siteUrl;
             taskDetails.TaskId = globalCommon.GetTaskId(taskDetails);
-            if (taskDetails?.TaskId != undefined && taskDetails?.Title != undefined) {
-                document.title = `${taskDetails?.TaskId}-${taskDetails?.Title}`
-            } else {
-                document.title = "Task Profile"
-            }
 
             let category = "";
             if (taskDetails["TaskCategories"] && taskDetails["TaskCategories"].length > 0) {
@@ -247,10 +237,6 @@ const CopyTaskProfile = (props: any) => {
                         category += item.Title;
                     } else {
                         category += item.Title + "; ";
-                    }
-
-                    if (category.search("Approval") >= 0) {
-                        setApprovalStatus(true)
                     }
                 });
             }
@@ -266,8 +252,6 @@ const CopyTaskProfile = (props: any) => {
                                 "https://www.hochhuth-consulting.de",
                                 "https://hhhhteams.sharepoint.com/sites/HHHH"
                             );
-                            OffshoreComments.push(items);
-                        } else {
                             OffshoreComments.push(items);
                         }
                     });
@@ -339,25 +323,21 @@ const CopyTaskProfile = (props: any) => {
                         Phone = Action?.InformationData;
                     }
                     if (Action?.Title == "Approval") {
-                        if(Action?.InformationData?.length>0){
-                            setApprovalStatus(true)
-                        }
-                       
+                        Approval = Action?.InformationData;
                     }
                     if (Action?.Title == "WorkingDetails") {
                         let currentDate = moment(new Date()).format("DD/MM/YYYY")
                         Action?.InformationData?.map((isworkingToday: any) => {
                             if (isworkingToday?.WorkingDate == currentDate && isworkingToday?.WorkingMember?.length > 0) {
                                 taskDetails["IsTodaysTask"] = true
-                                let workingTodayUser: any = [];
                                 isworkingToday?.WorkingMember?.map((itm: any) => {
-
-                                    let filterworkingTodayUser = copytaskuser.filter((x: any) => x.AssingedToUser?.Id == itm?.Id)
-                                    workingTodayUser = [...workingTodayUser, filterworkingTodayUser[0]]
+                                    taskDetails['workingTodayUser'] = copytaskuser.filter((x: any) => x.AssingedToUser?.Id == itm?.Id)
                                 })
-                                taskDetails['workingTodayUser'] = workingTodayUser;
                             }
                         })
+                    }
+                    if (Action?.Title == "Approval") {
+                        setApprovalStatus(true)
                     }
                 })
             }
@@ -388,7 +368,7 @@ const CopyTaskProfile = (props: any) => {
                 ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
                 OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
                 OffshoreImageUrl: taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
-                workingTodayUser: taskDetails['workingTodayUser'],
+
                 ClientCategory: taskDetails["ClientCategory"],
                 siteType: taskDetails["siteType"],
                 listName: taskDetails["listName"],
@@ -431,15 +411,10 @@ const CopyTaskProfile = (props: any) => {
                 Attachments: taskDetails["Attachments"],
                 AttachmentFiles: taskDetails["AttachmentFiles"],
                 SmartInformationId: taskDetails["SmartInformation"],
-                Approver: taskDetails?.Approver != undefined ? copytaskuser.filter((userData:any) => taskDetails?.Approver?.find((approver:any)=>userData?.AssingedToUser?.Id==approver?.Id )) : "",
+                Approver: taskDetails?.Approver != undefined ? copytaskuser.find((userData: any) => userData?.AssingedToUser?.Id == taskDetails?.Approver[0]?.Id) : "",
                 ParentTask: taskDetails?.ParentTask,
-                checkIsApproval:false
             };
-           
-            if(tempTask?.Approver?.length>0){
 
-                tempTask.checkIsApproval = tempTask?.Approver?.some((checkisApproval:any)=>checkisApproval.AssingedToUser?.Id==copycurrentuser[0].Id)
-            }
             if (tempTask?.FeedBack != null && tempTask?.FeedBack.length > 0) {
                 tempTask?.FeedBack[0]?.FeedBackDescriptions?.map((items: any) => {
                     if (items?.Comments?.length > 0) {
@@ -467,8 +442,6 @@ const CopyTaskProfile = (props: any) => {
             }
 
             console.log(tempTask);
-
-
 
             setState((prevState: any) => ({
                 ...prevState,
@@ -526,6 +499,9 @@ const CopyTaskProfile = (props: any) => {
             ...prevState,
             Result: taskDeatails,
         }))
+        // setState({
+        //     Result: taskDeatails,
+        // })
         copytaskuser = taskUsers
         setTaskUsers(taskUsers);
 
@@ -913,7 +889,115 @@ const CopyTaskProfile = (props: any) => {
 
     }
 
-    
+    const checkforMail = async (allfeedback: any, item: any, tempData: any) => {
+        var countApprove = 0;
+        var countreject = 0;
+        console.log(allfeedback);
+        if (allfeedback != null && allfeedback != undefined) {
+            var isShowLight = 0;
+            let ApproveCount = 0;
+            let RejectCount = 0;
+            var NotisShowLight = 0
+            if (allfeedback != undefined) {
+                allfeedback?.map((items: any) => {
+
+                    if (items?.isShowLight != undefined && items?.isShowLight != "") {
+                        isShowLight = isShowLight + 1;
+                        if (items.isShowLight == "Approve") {
+                            ApproveCount += 1;
+                            changespercentage = true;
+                            countApprove = countApprove + 1;
+                        }
+                        else {
+                            countreject = countreject + 1;
+                        }
+                        if (items?.isShowLight == "Reject") {
+                            RejectCount += 1;
+                        }
+
+                    }
+                    if (items?.Subtext != undefined && items?.Subtext?.length > 0) {
+                        items?.Subtext?.map((subtextItems: any) => {
+                            if (subtextItems?.isShowLight != undefined && subtextItems?.isShowLight != "") {
+                                isShowLight = isShowLight + 1;
+                                if (subtextItems?.isShowLight == "Approve") {
+                                    ApproveCount += 1;
+                                    changespercentage = true;
+                                    countApprove = countApprove + 1;
+                                } else {
+                                    countreject = countreject + 1;
+                                }
+                                if (subtextItems?.isShowLight == "Reject") {
+                                    RejectCount += 1;
+                                }
+
+                            }
+                        })
+                    }
+                })
+            }
+            if (state?.Result?.PercentComplete < 5) {
+                await changepercentageStatus(item, tempData, countApprove,);
+            }
+
+            if (isShowLight > NotisShowLight) {
+                if (RejectCount == 1 && item == "Reject") {
+                    countemailbutton = 0;
+                    setState((prevState: any) => ({
+                        ...prevState,
+                        emailcomponentopen: true,
+                        emailComponentstatus: item
+                    }))
+                }
+                if (countApprove == 0) {
+                    let TeamMembers: any = []
+                    TeamMembers.push(state?.Result?.TeamMembers[0]?.Id)
+                    TeamMembers.push(state?.Result?.Approvee != undefined ? state?.Result?.Approvee?.AssingedToUser?.Id : state?.Result?.Author[0]?.Id)
+                    let changeData: any = {
+
+                        TeamMembers: TeamMembers,
+                        AssignedTo: [state?.Result?.Approvee != undefined ? state?.Result?.Approvee?.AssingedToUser?.Id : state?.Result?.Author[0]?.Id]
+                    }
+                    ChangeApprovalMember(changeData);
+
+
+                }
+                if (countApprove == 1) {
+                    let TeamMembers: any = []
+                    TeamMembers.push(currentUser?.[0]?.Id)
+
+                    let changeData: any = {
+
+                        TeamMembers: TeamMembers,
+                        AssignedTo: []
+                    }
+                    ChangeApprovalMember(changeData).then((data: any) => {
+                        GetResult();
+                    }).catch((error: any) => {
+                        console.log(error)
+                    });
+
+
+                }
+                if (ApproveCount == 1 && item == "Approve") {
+                    countemailbutton = 0;
+                    setState((prevState: any) => ({
+                        ...prevState,
+                        emailcomponentopen: true,
+                        emailComponentstatus: item
+                    }))
+                } else {
+                    countemailbutton = 1;
+                    setState((prevState: any) => ({
+                        ...prevState,
+                        emailcomponentopen: false,
+                    }))
+
+                }
+
+            }
+        }
+    }
 
     const ChangeApprovalMember = (changeData: any) => {
         return new Promise<void>((resolve, reject) => {
@@ -1083,8 +1167,104 @@ const CopyTaskProfile = (props: any) => {
     }
     //================================ taskfeedbackcard End===============
 
-  
-    
+    //===============traffic light function ==================
+    const changeTrafficLigth = async (index: any, item: any) => {
+        console.log(index);
+        console.log(item);
+        if ((state?.Result?.Approver?.AssingedToUser?.Id == currentUser[0]?.Id) || (state?.Result?.Approver?.Approver[0]?.Id == currentUser[0]?.Id)) {
+            let tempData: any = state?.Result?.FeedBack[0]?.FeedBackDescriptions[index];
+            var approvalDataHistory = {
+                ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+                Id: currentUser[0].Id,
+                ImageUrl: currentUser[0].userImage,
+                Title: currentUser[0].Title,
+                isShowLight: item
+            }
+            tempData.isShowLight = item;
+            if (tempData.ApproverData != undefined && tempData.ApproverData.length > 0) {
+
+                tempData.ApproverData.push(approvalDataHistory);
+            } else {
+                tempData.ApproverData = [];
+                tempData.ApproverData.push(approvalDataHistory)
+            }
+
+            var data: any = state?.Result;
+
+            if (tempData?.ApproverData != undefined && tempData?.ApproverData?.length > 0) {
+                tempData?.ApproverData?.forEach((ba: any) => {
+                    if (ba.isShowLight == 'Reject') {
+                        ba.Status = 'Rejected by'
+                    }
+                    if (ba.isShowLight == 'Approve') {
+                        ba.Status = 'Approved by'
+
+                    }
+                    if (ba.isShowLight == 'Maybe') {
+                        ba.Status = 'For discussion with'
+                    }
+                })
+            }
+
+            console.log(tempData);
+            console.log(state?.Result?.FeedBack[0]?.FeedBackDescriptions);
+            await onPost();
+            if (state?.Result?.FeedBack != undefined) {
+                await checkforMail(state?.Result?.FeedBack[0].FeedBackDescriptions, item, tempData);
+
+            }
+        }
+    }
+
+    const changeTrafficLigthsubtext = async (parentindex: any, subchileindex: any, status: any) => {
+        console.log(parentindex);
+        console.log(subchileindex);
+        console.log(status);
+        if ((state?.Result?.Approver?.AssingedToUser?.Id == currentUser[0]?.Id) || (state?.Result?.Approver?.Approver[0]?.Id == currentUser[0]?.Id)) {
+            let tempData: any = state?.Result?.FeedBack[0]?.FeedBackDescriptions[parentindex];
+            var approvalDataHistory = {
+                ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+                Id: currentUser[0].Id,
+                ImageUrl: currentUser[0].userImage,
+                Title: currentUser[0].Title,
+                isShowLight: status
+            }
+            tempData.Subtext[subchileindex].isShowLight = status;
+            if (tempData?.Subtext[subchileindex]?.ApproverData != undefined && tempData?.Subtext[subchileindex]?.ApproverData?.length > 0) {
+
+                tempData.Subtext[subchileindex].ApproverData.push(approvalDataHistory);
+            } else {
+                tempData.Subtext[subchileindex].ApproverData = [];
+                tempData.Subtext[subchileindex].ApproverData.push(approvalDataHistory)
+            }
+            var data: any = state?.Result;
+            if (tempData?.Subtext[subchileindex] != undefined && tempData?.Subtext[subchileindex]?.ApproverData != undefined) {
+                tempData?.Subtext[subchileindex]?.ApproverData?.forEach((ba: any) => {
+                    if (ba.isShowLight == 'Reject') {
+                        ba.Status = 'Rejected by'
+                    }
+                    if (ba.isShowLight == 'Approve') {
+                        ba.Status = 'Approved by '
+                    }
+                    if (ba.isShowLight == 'Maybe') {
+                        ba.Status = 'For discussion with'
+                    }
+
+                })
+            }
+
+            console.log(tempData);
+            console.log(state?.Result?.FeedBack[0]?.FeedBackDescriptions);
+            console.log(state?.emailcomponentopen)
+            await onPost();
+
+            if (state?.Result?.FeedBack != undefined) {
+                await checkforMail(state?.Result?.FeedBack[0].FeedBackDescriptions, status, tempData?.Subtext[subchileindex]);
+            }
+        }
+    }
+    //===============traffic light function End ==================
+
     //================percentage changes ==========================
     const changepercentageStatus = async (percentageStatus: any, pervious: any, countApprove: any) => {
         console.log(percentageStatus)
@@ -1336,7 +1516,6 @@ const CopyTaskProfile = (props: any) => {
         let Priority: any;
 
         setState((prevState: any) => ({
-            ...prevState,
             Result: {
                 ...prevState.Result,
                 [fieldName]: fieldName == "ItemRank" ? e : e.target.value,
@@ -1351,7 +1530,6 @@ const CopyTaskProfile = (props: any) => {
         resultData.SmartPriority = ""
 
         setState((prevState: any) => ({
-            ...prevState,
             Result: {
                 ...prevState.Result,
                 PriorityRank: Number(priorityValue),
@@ -1366,13 +1544,12 @@ const CopyTaskProfile = (props: any) => {
         resultData.Categories = item?.Categories;
         resultData.SmartPriority = ""
         resultData.TaskCategories = item?.TaskCategories
-
         setState((prevState: any) => ({
-            ...prevState,
             Result: {
                 ...prevState.Result,
                 Categories: item?.Categories,
                 ["SmartPriority"]: globalCommon?.calculateSmartPriority(resultData),
+
             }
         }));
         console.log(item)
@@ -1497,7 +1674,6 @@ const CopyTaskProfile = (props: any) => {
                 })
 
                 setState((prevState: any) => ({
-                    ...prevState,
                     Result: {
                         ...prevState.Result,
                         Portfolio: DataItem[0],
@@ -1538,7 +1714,6 @@ const CopyTaskProfile = (props: any) => {
                         ProjectId: DataItem[0]?.Id
                     }
                     setState((prevState: any) => ({
-                        ...prevState,
                         Result: {
                             ...prevState.Result,
                             ["SmartPriority"]: globalCommon?.calculateSmartPriority(resultData),
@@ -1602,29 +1777,9 @@ const CopyTaskProfile = (props: any) => {
 
     //********** */ Inline editing End************
 
-    const CheckImageData = (value: boolean, imgeData: any) => {
-        console.log(value)
 
-        let copyCheckedImageData = checkedImageData
-        if (value) {
-            copyCheckedImageData.push(imgeData)
-        }
-        else {
-            copyCheckedImageData = copyCheckedImageData?.filter((data: any) => data.ImageName != imgeData.ImageName)
-        }
-
-        SetCheckedImageData([...copyCheckedImageData])
-    }
-
-    // const openImageCompare = ( clickIcon:any) => {
-    //     if(checkedImageData?.length>0){
-    //         SetOpenComparePopup(true)
-    //     }
-        
-
-    // }
     return (
-       <>
+        <>
             <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc: state.keydoc, FileDirRef: state.FileDirRef, user: taskUsers, ColorCode: state?.Result?.Portfolio?.PortfolioType?.Color }}>
                 <div className='taskprofilesection'>
                     <section className='ContentSection'> {state.breadCrumData != undefined &&
@@ -1637,8 +1792,6 @@ const CopyTaskProfile = (props: any) => {
                                             <li >
                                                 <a target="_blank" data-interception="off" href={`${state?.Result?.siteUrl}/SitePages/Dashboard.aspx`}> <span>Dashboard</span> </a> <span><SlArrowRight /></span>
                                             </li>
-
-
                                             <li>
                                                 <a  >
                                                     <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
@@ -1654,7 +1807,7 @@ const CopyTaskProfile = (props: any) => {
                                             {state?.Result?.Portfolio != null && state.breadCrumData.length > 0 &&
                                                 <li >
                                                     {state?.Result?.Portfolio != null &&
-                                                        <a className="fw-bold" style={{ color: state?.Result?.Portfolio?.PortfolioType?.Color }} target="_blank" data-interception="off" href={`${state?.Result?.siteUrl}/SitePages/Team-Portfolio.aspx`}>Team portfolio</a>
+                                                        <a className="fw-bold" style={{ color: state?.Result?.Portfolio?.PortfolioType?.Color }} target="_blank" data-interception="off" href={`${state?.Result?.siteUrl}/SitePages/Team-Portfolio.aspx`}>Team Portfolio</a>
                                                     }
                                                     <span><SlArrowRight /></span>
                                                 </li>
@@ -1704,7 +1857,7 @@ const CopyTaskProfile = (props: any) => {
                                     <a className="hreflink" title='Edit' onClick={() => OpenEditPopUp()}>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
                                     </a>
-                                    {state?.Result?.Approver != undefined && state?.Result?.Approver != ""  && ( state?.Result?.checkIsApproval)&& state?.Result?.Status == "For Approval" &&
+                                    {state?.Result?.Approver != undefined && state?.Result?.Approver != "" && ApprovalStatus && ((currentUser != undefined && currentUser?.length > 0 && state.Result?.Approver?.AssingedToUser?.Id == currentUser[0]?.Id) || (currentUser != undefined && currentUser?.length > 0 && state?.Result?.Approver?.Approver?.length > 0 && state?.Result?.Approver?.Approver[0]?.Id == currentUser[0]?.Id)) && state?.Result?.Status == "For Approval" &&
                                         state?.Result?.PercentComplete == 1 ? <span><button onClick={() => sendEmail("Approved")} className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger" onClick={() => sendEmail("Rejected")}>Reject</button></span></span> : null
                                     }
                                     {currentUser != undefined && state.sendMail && state.emailStatus != "" && <EmailComponenet approvalcallback={() => { approvalcallback() }} Context={propsValue.Context} emailStatus={state.emailStatus} currentUser={currentUser} items={state.Result} />}
@@ -1841,61 +1994,21 @@ const CopyTaskProfile = (props: any) => {
                                                     <dl>
                                                         <dt className='bg-Fa'>Status</dt>
                                                         <dd className='bg-Ff'>{state?.Result?.PercentComplete != undefined ? state?.Result?.PercentComplete?.toFixed(0) : 0} <span className='me-2'>%</span> {state?.Result?.Status}<br></br>
-                                                            {state?.Result?.ApproverHistory != undefined && state?.Result?.ApproverHistory.length > 1 && state?.Result?.Categories?.includes("Approval") ?
+                                                            {state?.Result?.ApproverHistory != undefined && state?.Result?.ApproverHistory.length > 1 && state?.Result?.Categories.includes("Approval") ?
                                                                 <span style={{ fontSize: "smaller" }}>Approved by
                                                                     <img className="workmember" title={state?.Result?.ApproverHistory[state.Result?.ApproverHistory.length - 2]?.ApproverName} src={(state.Result?.ApproverHistory[state.Result?.ApproverHistory?.length - 2]?.ApproverImage != null) ? (state.Result.ApproverHistory[state.Result.ApproverHistory.length - 2]?.ApproverImage) : (state.Result?.ApproverHistory[state.Result.ApproverHistory.length - 2]?.ApproverSuffix)}></img></span>
 
-                                                                : null}
-                                                            {state?.Result?.PercentComplete != undefined && state?.Result?.PercentComplete?.toFixed(0) == 70 ? <div className="hover-text">
-                                                                <VscIssueReopened
-                                                                    onMouseEnter={showOnHoldReason}
-                                                                    onMouseLeave={hideOnHoldReason}
-                                                                />
-                                                                <span className="tooltip-text tooltipboxs  pop-right">
-                                                                    {state.showOnHoldComment &&
-                                                                        comments.map((item: any, index: any) =>
-                                                                            item.CommentFor !== undefined &&
-                                                                                item.CommentFor === "Reopen" ? (
-                                                                                <div key={index}>
-                                                                                    <span className="siteColor H-overTitle">
-                                                                                        Task Reopened by{" "}
-                                                                                        <span>
-                                                                                            {
-                                                                                                item.AuthorName
-                                                                                            }
-                                                                                        </span>{" "}
-                                                                                        <span>
-                                                                                            {
-                                                                                                moment(item.Created).format('DD/MM/YY')
-                                                                                            }
-                                                                                        </span>
-                                                                                    </span>
-                                                                                    {item.CommentFor !== undefined &&
-                                                                                        item.CommentFor !== "" ? (
-                                                                                        <div key={index}>
-                                                                                            <span dangerouslySetInnerHTML={{ __html: cleanHTML(item?.Description, "folora", index) }}>
-                                                                                            </span>
-                                                                                        </div>
-                                                                                    ) : null}
-                                                                                </div>
-                                                                            ) : null
-                                                                        )}
-                                                                </span>
-                                                            </div> : null}
-                                                        </dd>
+                                                                : null}</dd>
                                                     </dl>
                                                     <dl>
                                                         <dt className='bg-Fa'>Working Today</dt>
                                                         <dd className='bg-Ff position-relative' >{state?.Result?.workingTodayUser != undefined && state?.Result?.workingTodayUser?.map((user: any) => {
                                                             return (
                                                                 <>
-
-                                                                    {user?.Item_x0020_Cover?.Url != undefined ? <span className='tooltipbox'><img className='workmember' title={user?.Title} src={user?.Item_x0020_Cover?.Url} /></span>
-                                                                        : <span title={`${user?.Title != undefined ? user?.Title : "Default user icons "}`} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser" onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, user?.AssingedToUser?.Id)}></span>
-                                                                    }
+                                                                    {user?.Item_x0020_Cover?.Url ? <span className='tooltipbox'><img className='workmember' title={user?.Title} src={user?.Item_x0020_Cover?.Url} /></span> :
+                                                                        <span className="suffix_Usericon">{user?.Suffix}</span>}
                                                                 </>
                                                             )
-
                                                         })}
                                                         </dd>
                                                     </dl>
@@ -1999,24 +2112,6 @@ const CopyTaskProfile = (props: any) => {
                                                                                     </span>
                                                                                 </span>}
 
-                                                                            <span className="hover-text me-1" >
-                                                                                <span className='svg__icon--info svg__iconbox mt-1'></span>
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    <div className="alignCenter">
-                                                                                        <span className='me-2'>  By </span>
-                                                                                        {BottleneckData.CreatorImage != undefined && BottleneckData.CreatorImage.length > 0 ? <img
-                                                                                            className="ProirityAssignedUserPhoto m-0"
-                                                                                            title={BottleneckData.CreatorName}
-                                                                                            src={BottleneckData.CreatorImage} />
-                                                                                            :
-                                                                                            <span title={BottleneckData.CreatorName != undefined ? BottleneckData.CreatorName : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
-                                                                                        }
-                                                                                        <span className="mx-1">{BottleneckData?.CreatorName}</span>
-                                                                                        <span>{BottleneckData?.CreatedOn}</span>
-                                                                                    </div>
-                                                                                </span>
-                                                                            </span>
-
                                                                         </div>
                                                                     </div>
                                                                 )
@@ -2065,23 +2160,6 @@ const CopyTaskProfile = (props: any) => {
                                                                                         {AttentionData.Comment}
                                                                                     </span>
                                                                                 </span>}
-                                                                            <span className="hover-text me-1" >
-                                                                                <span className='svg__icon--info svg__iconbox mt-1'></span>
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    <div className="alignCenter">
-                                                                                        <span className='me-2'>  By </span>
-                                                                                        {AttentionData.CreatorImage != undefined && AttentionData.CreatorImage.length > 0 ? <img
-                                                                                            className="ProirityAssignedUserPhoto m-0"
-                                                                                            title={AttentionData.CreatorName}
-                                                                                            src={AttentionData.CreatorImage} />
-                                                                                            :
-                                                                                            <span title={AttentionData.CreatorName != undefined ? AttentionData.CreatorName : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
-                                                                                        }
-                                                                                        <span className="mx-1">{AttentionData?.CreatorName}</span>
-                                                                                        <span>{AttentionData?.CreatedOn}</span>
-                                                                                    </div>
-                                                                                </span>
-                                                                            </span>
 
                                                                         </div>
                                                                     </div>
@@ -2146,16 +2224,16 @@ const CopyTaskProfile = (props: any) => {
                                                             {state?.Result?.Approval?.length > 0 && state?.Result?.Approval?.map((ApprovalData: any) => {
                                                                 return (
                                                                     <div className="align-content-center alignCenter justify-content-between py-1">
-                                                                                    <div className="alignCenter">
+                                                                        <div className="alignCenter">
                                                                             {ApprovalData.TaggedUsers.userImage != undefined && ApprovalData.TaggedUsers.userImage.length > 0 ? <img
-                                                                                            className="ProirityAssignedUserPhoto m-0"
+                                                                                className="ProirityAssignedUserPhoto m-0"
                                                                                 title={ApprovalData.TaggedUsers?.Title}
                                                                                 src={ApprovalData.TaggedUsers.userImage} />
-                                                                                            :
+                                                                                :
                                                                                 <span title={ApprovalData.TaggedUsers?.Title != undefined ? ApprovalData.TaggedUsers?.Title : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
-                                                                                        }
+                                                                            }
                                                                             <span className="ms-1">{ApprovalData?.TaggedUsers?.Title}</span>
-                                                                                    </div>
+                                                                        </div>
 
                                                                         <div className="alignCenter">
                                                                             <span
@@ -2344,45 +2422,9 @@ const CopyTaskProfile = (props: any) => {
                                                 {state?.Result?.BasicImageInfo != null && state?.Result?.BasicImageInfo?.length > 0 &&
                                                     <div className="bg-white col-sm-4 mt-2 p-0 boxshadow mb-3">
                                                         <label className='form-label full-width fw-semibold titleheading'>Images</label>
-                                                        <div className='alignCenter'>
-                                                            <div className='alignCenter ml-auto pt-1 gap-1 px-3'>
-                                                                <Tooltip
-                                                                    withArrow
-                                                                    content="Full-Screen View"
-                                                                    relationship="label" positioning="below"
-                                                                >
-                                                                    <span onClick={() => SetOpenComparePopup(checkedImageData?.length <= 1 ?true:false)} className={`svg__iconbox svg__icon--fullScreen ${checkedImageData?.length <= 1 ? 'siteColor' : ""}`}></span>
-                                                                </Tooltip>
-                                                                <Tooltip
-                                                                    withArrow
-                                                                    content="Compare 2 Images"
-                                                                    relationship="label"
-                                                                    positioning="below"
-                                                                >
-                                                                    <span onClick={() => SetOpenComparePopup(checkedImageData?.length == 2 ?true:false)} className={`svg__iconbox svg__icon--compare2 ${checkedImageData?.length == 2 ? 'siteColor' : ""}`}></span>
-                                                                </Tooltip>
-                                                                <Tooltip
-                                                                    withArrow
-                                                                    content="Compare Several Images"
-                                                                    relationship="label" positioning="below"
-                                                                >
-                                                                    <span onClick={() => SetOpenComparePopup((checkedImageData?.length == 3 || checkedImageData?.length == 4)?true:false)} className={`svg__iconbox svg__icon--compareSeveral ${(checkedImageData?.length == 3 || checkedImageData?.length == 4) ? 'siteColor' : ""}`}></span>
-                                                                </Tooltip>
-                                                                <Tooltip
-                                                                    withArrow
-                                                                    content="View All"
-                                                                    relationship="label" positioning="below"
-                                                                >
-                                                                    <span onClick={() => SetOpenComparePopup(checkedImageData?.length > 4? true:false)} className={`svg__iconbox svg__icon--viewAll ${(checkedImageData?.length > 4) ? 'siteColor' : ""}`}></span>
-                                                                </Tooltip>
-
-
-
-                                                            </div>
-                                                        </div>
                                                         {state?.Result?.BasicImageInfo != null && state?.Result?.BasicImageInfo?.map((imgData: any, i: any) => {
                                                             return <div className="taskimage  mb-3">
-                                                                <div className='input-group'><input type="checkbox" className='form-check-input me-1' onChange={(e) => CheckImageData(e.target.checked, imgData)} /> {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}</div>
+
 
                                                                 <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
                                                                     <img alt={imgData?.ImageName} src={imgData?.ImageUrl}
@@ -2468,17 +2510,16 @@ const CopyTaskProfile = (props: any) => {
                                                         })}
                                                     </div>
                                                 }
-                                                {state?.Result?.OffshoreComments != null && state?.Result?.OffshoreComments != undefined && state?.Result?.OffshoreComments?.length > 0 && state?.Result?.OffshoreComments?.some((item: any) => item?.Type !== "EODReport")  && <div className="col-sm-8 pe-0 mt-2">
+                                                {state?.Result?.OffshoreComments != null && state?.Result?.OffshoreComments != undefined && state?.Result?.OffshoreComments.length > 0 && <div className="col-sm-8 pe-0 mt-2">
                                                     <fieldset className='border p-1'>
                                                         <legend className="border-bottom fs-6">Background Comments</legend>
-                                                        {state?.Result?.OffshoreComments != null && state?.Result?.OffshoreComments?.length > 0 && state?.Result?.OffshoreComments?.map((item: any, index: any) => {
-                                                            return item?.Type !== "EODReport" && <div>
-                                                                <span className='round px-1'>
-                                                                    {item.AuthorImage != null ?
-                                                                        <img className='align-self-start hreflink ' title={item?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, item?.AuthorName, taskUsers)} src={item?.AuthorImage} />
+                                                        {state?.Result?.OffshoreComments != null && state?.Result?.OffshoreComments.length > 0 && state?.Result?.OffshoreComments?.map((item: any, index: any) => {
+                                                            return <div>
 
-                                                                        :
-                                                                        <span title={item?.AuthorName != undefined ? item?.AuthorName : "Default user icons"} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, item?.AuthorName, taskUsers)} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
+
+                                                                <span className='round px-1'>
+                                                                    {item.AuthorImage != null &&
+                                                                        <img className='align-self-start hreflink ' title={item?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, item?.AuthorName, taskUsers)} src={item?.AuthorImage} />
                                                                     }
                                                                 </span>
 
@@ -2638,7 +2679,6 @@ const CopyTaskProfile = (props: any) => {
                         callBack={() => ApprovalHistoryPopupCallBack()}
                     />
                         : null}
-                    {openComparePopup && <ImageViewPanel currentUser={currentUser} checkedImageData={checkedImageData} SetOpenComparePopup={SetOpenComparePopup} AllImageData={state?.Result?.BasicImageInfo} AllListId={AllListId} taskUsers={taskUsers} taskData={state?.Result} />}
 
                 </div>
             </myContextValue.Provider>

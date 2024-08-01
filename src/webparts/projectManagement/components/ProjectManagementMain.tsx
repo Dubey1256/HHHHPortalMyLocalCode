@@ -47,6 +47,7 @@ let AllFlatProject: any = [];
 var AllUser: any = [];
 let allBackupSprintAndTask: any = []
 var siteConfig: any = [];
+let Groupusers: any = [];
 let headerOptions: any = {
   openTab: true,
   teamsIcon: true
@@ -82,7 +83,7 @@ let keyTaggedDocs: any;
 let tempmetadata: any;
 let weekTotalTime: any = 0
 let monthTotalTime: any = 0
-let totalTime: any
+let totalTime: any = 0
 const ProjectManagementMain = (props: any) => {
   const [openServiceComponent, setopenServiceComponent]= React.useState(false)
   relevantDocRef = React.useRef();
@@ -454,37 +455,37 @@ const ProjectManagementMain = (props: any) => {
     const startingDate = new Date();
     let formattedDate = startingDate;
     if (startDateOf == 'This Week') {
-        startingDate.setDate(startingDate.getDate() - startingDate.getDay());
-        formattedDate = startingDate;
+      startingDate.setDate(startingDate.getDate() - startingDate.getDay());
+      formattedDate = startingDate;
     } else if (startDateOf == 'This Month') {
-        startingDate.setDate(1);
-        formattedDate = startingDate;
-    } 
+      startingDate.setDate(1);
+      formattedDate = startingDate;
+    }
 
     return formattedDate;
-}
-function getEndingDate(startDateOf: any): Date {
-  const endingDate = new Date();
-  let formattedDate = endingDate;
+  }
+  function getEndingDate(startDateOf: any): Date {
+    const endingDate = new Date();
+    let formattedDate = endingDate;
 
-  if (startDateOf === 'This Week') {
+    if (startDateOf === 'This Week') {
       endingDate.setDate(endingDate.getDate() + (6 - endingDate.getDay()));
       formattedDate = endingDate;
-  } else if (startDateOf === 'This Month') {
+    } else if (startDateOf === 'This Month') {
       endingDate.setMonth(endingDate.getMonth() + 1, 0);
       formattedDate = endingDate;
-  } 
-
-  return formattedDate;
-}
-
-const smartTimeTotal = async () => {
-  setPageLoader(true);
-  try {
-    let AllTimeEntries = [];
-    if (timeSheetConfig?.Id !== undefined) {
-      AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
     }
+
+    return formattedDate;
+  }
+
+  const smartTimeTotal = async () => {
+    setPageLoader(true);
+    try {
+      let AllTimeEntries = [];
+      if (timeSheetConfig?.Id !== undefined) {
+        AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
+      }
 
       AllTimeEntries?.forEach((entry: any) => {
         siteConfig.forEach((site: any) => {
@@ -529,79 +530,94 @@ const smartTimeTotal = async () => {
   const handleMouseEnter = (event: any) => {
     const target = event.target;
     const hasOverflow = target.scrollWidth > target.clientWidth;
-  
+
     if (hasOverflow) {
-        target.style.whiteSpace = 'normal';
-        target.style.overflow = 'visible';
-        target.style.textOverflow = 'unset';
+      target.style.whiteSpace = 'normal';
+      target.style.overflow = 'visible';
+      target.style.textOverflow = 'unset';
     }
   };
-  
+
   const handleMouseLeave = (event: any) => {
     const target = event.target;
     target.style.whiteSpace = 'nowrap';
     target.style.overflow = 'hidden';
     target.style.textOverflow = 'ellipsis';
   };
-  
-    const loadAllPXTimeEntries = async () => {
-      let PXtimeEntries: any = []
-      let startingWeekDate = getStartingDate("This Week")
-      let endingWeekDate = getEndingDate("This Week")
-      let startingMonthDate = getStartingDate("This Month")
-      let endingMonthDate = getEndingDate("This Month")
-      setPageLoader(true);
-  
-      let flatTableData = globalCommon.deepCopy(backupTableData)
-      let flatData = flattenData(flatTableData)
-      let allPXTasks = flatData.filter((item: any) => item.TaskType)
-      try {
-        let AllTimeEntries = [];
-        if (timeSheetConfig?.Id !== undefined) {
-          AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
-        }
-  
-        AllTimeEntries?.map((entry: any) => {
-            const timeEntryDetails = JSON.parse(entry.AdditionalTimeEntry)
-            if (timeEntryDetails?.length > 0){
-              timeEntryDetails?.map((timeEntry: any) => {
-                allPXTasks?.map((task: any) => {
-                  if(entry[`Task${task?.siteType}`] != undefined && entry[`Task${task?.siteType}`].Id == task?.Id){
-                    task.TaskTime = parseFloat(timeEntry?.TaskTime);
-                    task.TimeDate = timeEntry.TaskDate;
-                    task.TimeDescription = timeEntry.Description;
-                    task.TimeFillDate = timeEntry?.TaskDate;let parts = timeEntry?.TaskDate?.split('/');
-                    let timeEntryDate: any = new Date(parts[2], parts[1] - 1, parts[0]);
-                    if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingWeekDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingWeekDate.setHours(0, 0, 0, 0)) {
-                      weekTotalTime += Number(timeEntry?.TaskTime)
-                    }
-                    else if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingMonthDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingMonthDate.setHours(0, 0, 0, 0)) {
-                      monthTotalTime += Number(timeEntry?.TaskTime)
-                    }
-                  PXtimeEntries.push(task)
-                }  
-              })                
-            })
-          }
-        });
-        totalTime = allPXTasks?.reduce((total: any, time: any) => total + time.TotalTime, 0);
-        totalTime = totalTime/60;
-        totalTime = totalTime.toFixed(1)
-        setTimeEntries(PXtimeEntries)
-        setPageLoader(false)
-      } catch (error) {
-        console.log(error)
-        setPageLoader(false)
+
+  const loadAllPXTimeEntries = async () => {
+    let PXtimeEntries: any = []
+    let startingWeekDate = getStartingDate("This Week")
+    let endingWeekDate = getEndingDate("This Week")
+    let startingMonthDate = getStartingDate("This Month")
+    let endingMonthDate = getEndingDate("This Month")
+    setPageLoader(true);
+
+    let flatTableData = globalCommon.deepCopy(backupTableData)
+    let flatData = flattenData(flatTableData)
+    let allPXTasks = flatData.filter((item: any) => item.TaskType)
+    try {
+      let AllTimeEntries = [];
+      if (timeSheetConfig?.Id !== undefined) {
+        AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
       }
-    };
+
+      AllTimeEntries?.map((entry: any) => {
+        const timeEntryDetails = JSON.parse(entry.AdditionalTimeEntry)
+        if (timeEntryDetails?.length > 0) {
+          timeEntryDetails?.map((timeEntry: any) => {
+            allPXTasks?.map((task: any) => {
+              if (entry[`Task${task?.siteType}`] != undefined && entry[`Task${task?.siteType}`].Id == task?.Id) {
+                task.TaskTime = parseFloat(timeEntry?.TaskTime);
+                task.TimeDate = timeEntry.TaskDate;
+                task.TimeDescription = timeEntry.Description;
+                task.TimeEntryAuthorImage = timeEntry.AuthorImage
+                task.TimeEntryAuthorName = timeEntry.AuthorName
+                let parts = timeEntry?.TaskDate?.split('/');
+                let timeEntryDate: any = new Date(parts[2], parts[1] - 1, parts[0]);
+                if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingWeekDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingWeekDate.setHours(0, 0, 0, 0)) {
+                  weekTotalTime += Number(timeEntry?.TaskTime)
+                }
+                if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingMonthDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingMonthDate.setHours(0, 0, 0, 0)) {
+                  monthTotalTime += Number(timeEntry?.TaskTime)
+                }
+                PXtimeEntries.push(task)
+              }
+            })
+          })
+        }
+      });
+      if (PXtimeEntries?.length > 0) {
+        PXtimeEntries = PXtimeEntries.reduce(function (
+            previous: any,
+            current: any
+        ) {
+            var alredyExists =
+                previous.filter(function (item: any) {
+                    return item.Id === current.Id;
+                }).length > 0;
+            if (!alredyExists) {
+                previous.push(current);
+            }
+            return previous;
+        },
+            []);
+    }
+      setTimeEntries(PXtimeEntries)
+      setPageLoader(false)
+    } catch (error) {
+      console.log(error)
+      setPageLoader(false)
+    }
+  };
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
     if (elem?.TaskType != undefined) {
       setCheckedList(elem);
     }
-      else if (elem?.TaskType == undefined) {
-        selectedItem = elem
-      }
-       else {
+    else if (elem?.TaskType == undefined) {
+      selectedItem = elem
+    }
+    else {
       setCheckedList({});
     }
   }, []);
@@ -655,7 +671,7 @@ const smartTimeTotal = async () => {
 
     tempmetadata = JSON.parse(smartmetaDetails[0].Configurations)
   };
- 
+
   const loadTaggedDocuments = async () => {
     let taggedDocs: any = []
     let AllDocs: any
@@ -669,7 +685,7 @@ const smartTimeTotal = async () => {
         .then((Data: any) => {
           let flatTableData = globalCommon.deepCopy(backupTableData)
           let flatData = flattenData(flatTableData)
-          flatData.push(projectData)  
+          flatData.push(projectData)
           AllDocs = Data
           AllDocs.forEach((doc: any) => {
             flatData.forEach((item: any) => {
@@ -687,33 +703,33 @@ const smartTimeTotal = async () => {
                     doc.Reference = item
                     taggedDocs.push(doc);
                   }
-                  
+
                 });
               }
             });
           });
         })
-        taggedDocs = taggedDocs.filter((items: any) => {
-          if (!uniqueIds[items.Id]) {
-            uniqueIds[items.Id] = true;
-            return true;
-          }
-          return false;
-        })
-        console.log("All Tagged Documents", taggedDocs)
-        keyTaggedDocs = taggedDocs.filter((doc: any) => doc.ItemRank == 6)
+      taggedDocs = taggedDocs.filter((items: any) => {
+        if (!uniqueIds[items.Id]) {
+          uniqueIds[items.Id] = true;
+          return true;
+        }
+        return false;
+      })
+      console.log("All Tagged Documents", taggedDocs)
+      keyTaggedDocs = taggedDocs.filter((doc: any) => doc.ItemRank == 6)
 
-        if (keyTaggedDocs.length > 0) {
-          keyTaggedDocs.map((docs: any) => {
-            AllUser.map((user: any) => {
-              if (user?.AssingedToUser != undefined && user?.AssingedToUser?.Id != undefined) {
-                if (user?.AssingedToUser?.Id == docs?.Author?.Id) {
-                  docs.UserImage = user?.Item_x0020_Cover?.Url
-                }
-                if (user?.AssingedToUser?.Id == docs?.Editor?.Id) {
-                  docs.EditorImage = user?.Item_x0020_Cover?.Url
-                }
-                if (docs.Reference) {
+      if (keyTaggedDocs.length > 0) {
+        keyTaggedDocs.map((docs: any) => {
+          AllUser.map((user: any) => {
+            if (user?.AssingedToUser != undefined && user?.AssingedToUser?.Id != undefined) {
+              if (user?.AssingedToUser?.Id == docs?.Author?.Id) {
+                docs.UserImage = user?.Item_x0020_Cover?.Url
+              }
+              if (user?.AssingedToUser?.Id == docs?.Editor?.Id) {
+                docs.EditorImage = user?.Item_x0020_Cover?.Url
+              }
+              if (docs.Reference) {
                 if (docs.Reference.Item_x0020_Type == "Project" || docs.Reference.Item_x0020_Type == "Sprint") {
                   docs.ReferenceID = docs.Reference.PortfolioStructureID
                 }
@@ -722,11 +738,11 @@ const smartTimeTotal = async () => {
                 }
               }
             }
-            })
           })
-        }
-        console.log(keyTaggedDocs)
-        setKeyTaggedDoc(keyTaggedDocs)
+        })
+      }
+      console.log(keyTaggedDocs)
+      setKeyTaggedDoc(keyTaggedDocs)
 
     } catch (e: any) {
       console.log(e);
@@ -748,8 +764,8 @@ const smartTimeTotal = async () => {
         refreshData();
       }
       GetMasterData(false)
-    }else{
-      if(type == "UpdatedData"){
+    } else {
+      if (type == "UpdatedData") {
         setpassdata(item);
       }
       LoadAllSiteTasks();
@@ -910,7 +926,9 @@ const smartTimeTotal = async () => {
           AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id ne null`)
         }
       }
-
+      totalTime = AllProjectTasks?.reduce((total: any, time: any) => total + time.TotalTime, 0);
+      totalTime = totalTime/60;
+      totalTime = totalTime.toFixed(2)
       AllProjectTasks.map((items: any) => {
         items.SmartPriority = globalCommon.calculateSmartPriority(items);
         if (items?.SmartInformation?.length > 0) {
@@ -993,8 +1011,8 @@ const smartTimeTotal = async () => {
               }
             });
           });
-      }
-      
+        }
+
         items.TaskID = globalCommon.GetTaskId(items);
 
         AllUser?.map((user: any) => {
@@ -1212,28 +1230,32 @@ const smartTimeTotal = async () => {
   const filteredTasks = (filterType: any) => {
     let currentDate: any = Moment();
     let date: any = new Date();
-    if (filterType == "Week"){
+    if (filterType == "Week") {
       let weekDates: any = []
-            let startWeekDay = currentDate.day()
-            let conditionRun = 6 - startWeekDay;
-            while (conditionRun > 0) {
-                weekDates.push(currentDate.format('DD/MM/YYYY'))
-                currentDate.add(1, 'day');
-                conditionRun--;
-            }
+      let startWeekDay = currentDate.day()
+      let conditionRun = 6 - startWeekDay;
+      while (conditionRun > 0) {
+        weekDates.push(currentDate.format('DD/MM/YYYY'))
+        currentDate.add(1, 'day');
+        conditionRun--;
+      }
       let groupedDataItems = globalCommon.deepCopy(backupTableData);
       let flattenedData = flattenData(groupedDataItems)
       let tasksData = flattenedData.filter((item: any) => item.TaskType && item.WorkingAction != undefined)
-      let filterTasksinfo = tasksData.filter((task:any) => task.WorkingActionParsed.some((workingAct:any) => workingAct.Title == "WorkingDetails" && workingAct.InformationData.some((taskInfo:any) => weekDates.includes(taskInfo.WorkingDate))))
+      let filterTasksinfo = tasksData.filter((task: any) => task.WorkingActionParsed.some((workingAct: any) => workingAct.Title == "WorkingDetails" && workingAct.InformationData.some((taskInfo: any) => weekDates.includes(taskInfo.WorkingDate))))
+      const startingDate = new Date();
+      startingDate.setDate(startingDate.getDate() + 1);
       filterTasksinfo.map((tasks: any) => {
         tasks.WorkingActionParsed.map((workingAct: any) => {
           if (workingAct.Title == "WorkingDetails" && workingAct.InformationData) {
             workingAct.InformationData.map((taskInfo: any) => {
               if (taskInfo.WorkingDate == Moment(date).format('DD/MM/YYYY') && weekDates.includes(taskInfo.WorkingDate)) {
-                tasks.WorkingTitle = `${tasks.Title} - Working Today`
+                tasks.workingTaskDate = `Today`
+              } else if (taskInfo.WorkingDate == Moment(startingDate).format('DD/MM/YYYY') && weekDates.includes(taskInfo.WorkingDate)) {
+                tasks.workingTaskDate = `Tomorrow`
               }
               else if (taskInfo.WorkingDate != Moment(date).format('DD/MM/YYYY') && weekDates.includes(taskInfo.WorkingDate)) {
-                tasks.WorkingTitle = `${tasks.Title} - Working This Week`
+                tasks.workingTaskDate = `This Week`
               }
             })
           }
@@ -1336,8 +1358,8 @@ const smartTimeTotal = async () => {
       Masterdata.NoteCall = type;
     }
     if (checkedList?.TaskType === undefined) {
-        checkedList.NoteCall = type;
-        selectedItem.NoteCall = type;
+      checkedList.NoteCall = type;
+      selectedItem.NoteCall = type;
     }
     if (checkedList?.TaskType?.Id == 1) {
       checkedList.NoteCall = type;
@@ -1562,18 +1584,21 @@ const smartTimeTotal = async () => {
     SendTeamMessageforPXProject(mention_To, TeamsMessage, props?.Context, AllListId, Group_Title);
   }
   const SendTeamMessageforPXProject = async (mention_To: any, txtComment: any, Context: any, AllListId: any, Group_Title: any) => {
+    if(mention_To?.length === 0){
+      alert('Please select Group member to create a PX-Profile Group');
+      return false;
+    }
     let currentUser: any = {};
     let ExistingGrp: any = {};
-    let user:any=[];
     try {
       let pageContent = await globalCommon.pageContext()
       let web = new Web(pageContent?.WebFullUrl);
       currentUser.Email = Context.pageContext._legacyPageContext.userPrincipalName
       const client = await Context.msGraphClientFactory.getClient();
       let res = await client.api(`/users`).version("v1.0").get();
-      if(Masterdata?.TeamsGroup !== undefined && Masterdata?.TeamsGroup !== '' && Masterdata?.TeamsGroup !== null){
+      if (Masterdata?.TeamsGroup !== undefined && Masterdata?.TeamsGroup !== '' && Masterdata?.TeamsGroup !== null) {
         ExistingGrp = await client.api('/chats/' + Masterdata?.TeamsGroup).get();
-        user= await client.api('/chats/' + Masterdata?.TeamsGroup + '/members').get();
+        Groupusers = await client.api('/chats/' + Masterdata?.TeamsGroup + '/members').get();
       }
       let TeamUser: any[] = [];
       let participants: any = [];
@@ -1615,8 +1640,8 @@ const smartTimeTotal = async () => {
         });
       }
       if (IsSendTeamMessage == mention_To?.length) {
-        if (ExistingGrp !== undefined && Object.keys(ExistingGrp).length > 0 && ExistingGrp !== '' ){
-          let RemoveCurrentUser: any = user?.value?.filter((itemexists: any) => { return itemexists.email.toLowerCase() !== CurrentUserData?.Email?.toLowerCase() });
+        if (ExistingGrp !== undefined && Object.keys(ExistingGrp).length > 0 && ExistingGrp !== '') {
+          let RemoveCurrentUser: any = Groupusers?.value?.filter((itemexists: any) => { return itemexists.email.toLowerCase() !== CurrentUserData?.Email?.toLowerCase() });
           RemoveCurrentUser?.map(async (check_mail: any) => {
             SelectedUser?.map(async (exist_user: any, index: any) => {
               exist_user.userFound = false;
@@ -1627,34 +1652,34 @@ const smartTimeTotal = async () => {
             });
           });
           let count: any = 0;
-          if(SelectedUser?.length>0){
+          if (SelectedUser?.length > 0) {
             Context.msGraphClientFactory.getClient()
-            .then((client: any) => {
-              SelectedUser?.map((item_iter: any) => {
-                client.api(`/chats/${ExistingGrp?.id}/members`).version('beta').post({
-                  '@odata.id': `https://graph.microsoft.com/beta/users/${item_iter?.id}`,
-                  "@odata.type": "#microsoft.graph.aadUserConversationMember",
-                  "roles": ["owner"],
-                  "user@odata.bind": `https://graph.microsoft.com/beta/users('${item_iter?.id}')`
-                })
-                  .then((response: any) => {
-                    console.log('User added to group chat:', response);
-                    count++;
-                    if (SelectedUser.length === count) {
-                      alert('User added successfully in ' + ExistingGrp.topic)
-                    }
+              .then((client: any) => {
+                SelectedUser?.map((item_iter: any) => {
+                  client.api(`/chats/${ExistingGrp?.id}/members`).version('beta').post({
+                    '@odata.id': `https://graph.microsoft.com/beta/users/${item_iter?.id}`,
+                    "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                    "roles": ["owner"],
+                    "user@odata.bind": `https://graph.microsoft.com/beta/users('${item_iter?.id}')`
                   })
-                  .catch((error: any) => {
-                    count++;
-                    console.error('Error adding user to group chat:', error);
-                    if (SelectedUser.length === count) {
-                      alert('User not added in ' + ExistingGrp.topic)
-                    }
-                  });
+                    .then((response: any) => {
+                      console.log('User added to group chat:', response);
+                      count++;
+                      if (SelectedUser.length === count) {
+                        alert('User added successfully in ' + ExistingGrp.topic)
+                      }
+                    })
+                    .catch((error: any) => {
+                      count++;
+                      console.error('Error adding user to group chat:', error);
+                      if (SelectedUser.length === count) {
+                        alert('User not added in ' + ExistingGrp.topic)
+                      }
+                    });
+                });
               });
-            });
           }
-          else{
+          else {
             alert('Assigned Users and group are already exists')
           }
         }
@@ -1681,7 +1706,7 @@ const smartTimeTotal = async () => {
                 }
               }
               let result = await client.api('/chats/' + new_chat_resp?.id + '/messages').post(message_payload)
-              if(!result)
+              if (!result)
                 alert('Group created successfully' + Group_Title);
               return result;
             }).catch((e) => {
@@ -2089,14 +2114,14 @@ const smartTimeTotal = async () => {
       {
         accessorFn: (row) => row?.workingActionTitle,
         cell: ({ row }) => (
-            <div className="alignCenter">
+          <div className="alignCenter">
             {Array.isArray(row?.original?.workingActionValue) && row.original.workingActionValue.map((elem: any) => {
-                    const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+              const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
               return relevantTitles.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
-                        <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
-                    );
-                })}
-            </div>
+                <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
+              );
+            })}
+          </div>
         ),
         placeholder: "Working Actions",
         header: "",
@@ -2336,19 +2361,19 @@ const smartTimeTotal = async () => {
         isColumnVisible: true
       },
       {
-        accessorFn: (row) => row?.WorkingTitle,
+        accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
           <>
             <span>
-                <a
-                  className="hreflink"
-                  href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                  data-interception="off"
-                  target="_blank"
-                >
-                  {row?.original?.WorkingTitle}
-                </a>
-              </span>
+              <a
+                className="hreflink"
+                href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                data-interception="off"
+                target="_blank"
+              >
+                {row?.original?.Title}
+              </a>
+            </span>
           </>
         ),
         id: "Title",
@@ -2357,6 +2382,21 @@ const smartTimeTotal = async () => {
         resetSorting: false,
         header: "",
         isColumnVisible: true
+      },
+      {
+        accessorFn: (row) => row?.workingTaskDate,
+        cell: ({ row, column, getValue }) => (
+          <span>
+            {row?.original?.workingTaskDate}
+          </span>
+        ),
+        id: "workingTaskDate",
+        placeholder: "Working Date",
+        resetColumnFilters: false,
+        resetSorting: false,
+        header: "",
+        isColumnVisible: true,
+        size: 100,
       },
       {
         accessorFn: (row) => row?.PriorityRank,
@@ -2841,17 +2881,17 @@ const smartTimeTotal = async () => {
                                   >
                                     {Masterdata?.Item_x0020_Type !== "Sprint"
                                       ? `${Masterdata?.Item_x0020_Type?.charAt(
-                                          0
-                                        )}`
+                                        0
+                                      )}`
                                       : "X"}
                                   </div>
-                                  
-                                    {`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`}
-                                    <span
-                                      onClick={() => EditComponentPopup(Masterdata)}
-                                      className="mx-1 svg__iconbox svg__icon--edit hreflink" style={{width:'24px', height:'24px'}}
-                                      title="Edit Project"
-                                    ></span>
+
+                                  {`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`}
+                                  <span
+                                    onClick={() => EditComponentPopup(Masterdata)}
+                                    className="mx-1 svg__iconbox svg__icon--edit hreflink" style={{ width: '24px', height: '24px' }}
+                                    title="Edit Project"
+                                  ></span>
 
                                 </h2>
                                 <div>
@@ -2874,102 +2914,102 @@ const smartTimeTotal = async () => {
                             </div>
                           </section>
                           <section>
-                              <div className="row">
-                                <div className="col-md-12 bg-white">
-                                  <div className="team_member row  py-2">
-                                    <div className="col-md-6  pe-0">
-                                      <dl>
-                                        <dt className="bg-fxdark">Due Date</dt>
-                                        <dd className="bg-light">
-                                          <span>
-                                            <InlineEditingcolumns
-                                              AllListId={AllListId}
-                                              callBack={inlineCallBackMasterTask}
-                                              columnName='DueDate'
-                                              item={Masterdata}
-                                              TaskUsers={AllUser}
-                                              pageName={'ProjectManagmentMaster'}
-                                            />
-                                          </span>
-                                          {/* <span className="" >
+                            <div className="row">
+                              <div className="col-md-12 bg-white">
+                                <div className="team_member row  py-2">
+                                  <div className="col-md-6  pe-0">
+                                    <dl>
+                                      <dt className="bg-fxdark">Due Date</dt>
+                                      <dd className="bg-light">
+                                        <span>
+                                          <InlineEditingcolumns
+                                            AllListId={AllListId}
+                                            callBack={inlineCallBackMasterTask}
+                                            columnName='DueDate'
+                                            item={Masterdata}
+                                            TaskUsers={AllUser}
+                                            pageName={'ProjectManagmentMaster'}
+                                          />
+                                        </span>
+                                        {/* <span className="" >
                                           <span title="Edit Due Date" className="svg__iconbox svg__icon--editBox pull-right"></span>
                                         </span> */}
-                                        </dd>
-                                      </dl>
-                                      <dl>
-                                        <dt className="bg-fxdark">Priority</dt>
-                                        <dd className="bg-light">
-                                          <InlineEditingcolumns
-                                            mypriority={true}
-                                            AllListId={AllListId}
-                                            callBack={inlineCallBackMasterTask}
-                                            columnName='Priority'
-                                            item={Masterdata}
-                                            TaskUsers={AllUser}
-                                            pageName={'ProjectManagmentMaster'}
-                                          />
-                                          <span
-                                            className="hreflink pull-right"
-                                            title="Edit Inline"
-                                          >
-                                            <i
-                                              className="fa fa-pencil siteColor"
-                                              aria-hidden="true"
-                                            ></i>
-                                          </span>
-                                        </dd>
-                                      </dl>
-                                      <dl>
-                                        <dt className="bg-fxdark">Key Portfolio Items</dt>
-                                        <dd className="bg-light">
-                                            {openServiceComponent ? <ServiceComponentPortfolioPopup
-                                            props={CMSComponent}
-                                            Portfolios={Masterdata.taggedPortfolios}
-                                            Relevant={TaskTaggedPortfolios}
-                                            Suggested={suggestedPortfolioItems}
-                                            Dynamic={AllListId}
-                                            ComponentType={portfolioType}
-                                            Call={ComponentServicePopupCallBack}
-                                            selectionType={"Multi"}
-                                            groupedData={groupedComponentData}
-                                            pageName={"projectManagement"}
-                                            /> : null}  
-                                            {smartPortfoliosData?.map((component: any, index: any) =>(`${component?.Title};`))}                                     
-                                              <a className="ml-auto pull-right" onClick={()=>setopenServiceComponent(true)}>
-                                            <span className="svg__iconbox svg__icon--editBox alignIcon"  ></span>
-                                            </a>
-                                        </dd>
-                                      </dl>         
-                                    </div>
-                                    <div className="col-md-6 p-0">
-                                      <dl>
-                                        <dt className="bg-fxdark">Project Team
-                                          <a className="teamIcon hover-text m-0 ms-2" onClick={() => ShowTeamFunc()}>
-                                            <span style={{ backgroundColor: "sky-blue" }} className="svg__iconbox svg__icon--team"></span>
-                                            <span className='tooltip-text pop-right'>Create Teams Group</span>
-                                          </a>
-                                        </dt>
-                                        <dd className="bg-light">
-                                          <InlineEditingcolumns
-                                            AllListId={AllListId}
-                                            callBack={inlineCallBackMasterTask}
-                                            columnName='Team'
-                                            item={Masterdata}
-                                            TaskUsers={AllUser}
-                                            pageName={'ProjectManagmentMaster'}
-                                          /></dd>
-                                      </dl>
-                                      <dl>
-                                        <dt className="bg-fxdark">Status</dt>
-                                        <dd className="bg-light">
-                                          <InlineEditingcolumns
-                                            AllListId={AllListId}
-                                            callBack={inlineCallBackMasterTask}
-                                            columnName='PercentComplete'
-                                            item={Masterdata}
-                                            TaskUsers={AllUser}
-                                            pageName={'ProjectManagmentMaster'}
-                                          />
+                                      </dd>
+                                    </dl>
+                                    <dl>
+                                      <dt className="bg-fxdark">Priority</dt>
+                                      <dd className="bg-light">
+                                        <InlineEditingcolumns
+                                          mypriority={true}
+                                          AllListId={AllListId}
+                                          callBack={inlineCallBackMasterTask}
+                                          columnName='Priority'
+                                          item={Masterdata}
+                                          TaskUsers={AllUser}
+                                          pageName={'ProjectManagmentMaster'}
+                                        />
+                                        <span
+                                          className="hreflink pull-right"
+                                          title="Edit Inline"
+                                        >
+                                          <i
+                                            className="fa fa-pencil siteColor"
+                                            aria-hidden="true"
+                                          ></i>
+                                        </span>
+                                      </dd>
+                                    </dl>
+                                    <dl>
+                                      <dt className="bg-fxdark">Key Portfolio Items</dt>
+                                      <dd className="bg-light">
+                                        {openServiceComponent ? <ServiceComponentPortfolioPopup
+                                          props={{ Portfolios: Masterdata?.taggedPortfolios }}
+                                          Portfolios={Masterdata.taggedPortfolios}
+                                          Relevant={TaskTaggedPortfolios}
+                                          Suggested={suggestedPortfolioItems}
+                                          Dynamic={AllListId}
+                                          ComponentType={portfolioType}
+                                          Call={ComponentServicePopupCallBack}
+                                          selectionType={"Multi"}
+                                          groupedData={groupedComponentData}
+                                          pageName={"projectManagement"}
+                                        /> : null}
+                                        {smartPortfoliosData?.map((component: any, index: any) => (`${component?.Title};`))}
+                                        <a className="ml-auto pull-right" onClick={() => setopenServiceComponent(true)}>
+                                          <span className="svg__iconbox svg__icon--editBox alignIcon"  ></span>
+                                        </a>
+                                      </dd>
+                                    </dl>
+                                  </div>
+                                  <div className="col-md-6 p-0">
+                                    <dl>
+                                      <dt className="bg-fxdark">Project Team
+                                        <a className="teamIcon hover-text m-0 ms-2" onClick={() => ShowTeamFunc()}>
+                                          <span style={{ backgroundColor: "sky-blue" }} className="svg__iconbox svg__icon--team"></span>
+                                          <span className='tooltip-text pop-right'>Create Teams Group</span>
+                                        </a>
+                                      </dt>
+                                      <dd className="bg-light">
+                                        <InlineEditingcolumns
+                                          AllListId={AllListId}
+                                          callBack={inlineCallBackMasterTask}
+                                          columnName='Team'
+                                          item={Masterdata}
+                                          TaskUsers={AllUser}
+                                          pageName={'ProjectManagmentMaster'}
+                                        /></dd>
+                                    </dl>
+                                    <dl>
+                                      <dt className="bg-fxdark">Status</dt>
+                                      <dd className="bg-light">
+                                        <InlineEditingcolumns
+                                          AllListId={AllListId}
+                                          callBack={inlineCallBackMasterTask}
+                                          columnName='PercentComplete'
+                                          item={Masterdata}
+                                          TaskUsers={AllUser}
+                                          pageName={'ProjectManagmentMaster'}
+                                        />
 
                                           <span className="pull-right">
                                             <span className="pencil_icon">
@@ -2990,9 +3030,9 @@ const smartTimeTotal = async () => {
                                       <dl>
                                         <dt className="bg-fxdark">Total PX Time</dt>
                                         <dd className="bg-light">
-                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime} hrs; `}</span>}
+                                          {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime} hrs;`}</span>}
                                           {(monthTotalTime != undefined && weekTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime} hrs; `}</span>}
-                                          {totalTime != undefined && <span title="Total Time">{`${totalTime} hrs;`}</span>}
+                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime} hrs; `}</span>}
                                           <a className="smartTotalTime hover-text m-0 float-end" onClick={() => loadAllPXTimeEntries()}><BsClock/><span className='tooltip-text pop-left'>Load Time Entries</span></a>
                                         </dd>
                                       </dl>
@@ -3009,68 +3049,68 @@ const smartTimeTotal = async () => {
                                         : ''
                                     }
 
-                                    {
-                                      Masterdata?.Background != undefined ? <div className="mt-2 col-md-12  detailsbox pe-1">
-                                        <details className="pe-0">
-                                          <summary>Background</summary>
-                                          <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Background }}></div>
-                                          {/* <div className="AccordionContent">{Masterdata?.Background}</div> */}
-                                        </details>
-                                      </div> : ''
-                                    }
+                                  {
+                                    Masterdata?.Background != undefined ? <div className="mt-2 col-md-12  detailsbox pe-1">
+                                      <details className="pe-0">
+                                        <summary>Background</summary>
+                                        <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Background }}></div>
+                                        {/* <div className="AccordionContent">{Masterdata?.Background}</div> */}
+                                      </details>
+                                    </div> : ''
+                                  }
 
-                                    {
-                                      Masterdata?.Idea != undefined ? <div className="mt-2 col-md-12  detailsbox pe-1">
-                                        <details className="pe-0">
-                                          <summary>Idea</summary>
-                                          <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Idea }}></div>
-                                          {/* <div className="AccordionContent">{Masterdata?.Idea}</div> */}
-                                        </details>
-                                      </div> : ''
-                                    }
+                                  {
+                                    Masterdata?.Idea != undefined ? <div className="mt-2 col-md-12  detailsbox pe-1">
+                                      <details className="pe-0">
+                                        <summary>Idea</summary>
+                                        <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Idea }}></div>
+                                        {/* <div className="AccordionContent">{Masterdata?.Idea}</div> */}
+                                      </details>
+                                    </div> : ''
+                                  }
 
-                                    {
-                                      Masterdata?.Deliverables != undefined ? <div className="mt-2 col-md-12 pe-1 detailsbox  41_
+                                  {
+                                    Masterdata?.Deliverables != undefined ? <div className="mt-2 col-md-12 pe-1 detailsbox  41_
                                 0=][9\
                                 -p/\otyty5/">
-                                        <details className="pe-0">
-                                          <summary>Deliverables</summary>
-                                          <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Deliverables }}></div>
-                                        </details>
-                                      </div> : ''
-                                    }
+                                      <details className="pe-0">
+                                        <summary>Deliverables</summary>
+                                        <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Deliverables }}></div>
+                                      </details>
+                                    </div> : ''
+                                  }
 
-                                  </div>
                                 </div>
-                                <div className='col-md-12 bg-white pe-1'> 
-                                  {keyTaggedDoc.length > 0 && (
-                                    <KeyDocuments
-                                      keyTaggedDocs={keyTaggedDoc}
-                                      pageName={keydoc.length == 0 ? "ProjectManagement" : ""}
-                                      ref={relevantDocRef}
-                                      AllListId={AllListId}
-                                      Context={props?.Context}
-                                      siteUrl={AllListId?.siteUrl}
-                                      DocumentsListID={
-                                        AllListId.DocumentsListID
-                                      }
-                                      siteName={"Master Tasks"}
-                                      folderName={Masterdata?.Title}
-                                      keyDoc={true}
-                                    ></KeyDocuments>
-                                  )}
+                              </div>
+                              <div className='col-md-12 bg-white pe-1'>
+                                {keyTaggedDoc.length > 0 && (
+                                  <KeyDocuments
+                                    keyTaggedDocs={keyTaggedDoc}
+                                    pageName={keydoc.length == 0 ? "ProjectManagement" : ""}
+                                    ref={relevantDocRef}
+                                    AllListId={AllListId}
+                                    Context={props?.Context}
+                                    siteUrl={AllListId?.siteUrl}
+                                    DocumentsListID={
+                                      AllListId.DocumentsListID
+                                    }
+                                    siteName={"Master Tasks"}
+                                    folderName={Masterdata?.Title}
+                                    keyDoc={true}
+                                  ></KeyDocuments>
+                                )}
                                 <div className='col-md-12 bg-white  pe-1'>
-                                <details>
+                                  <details>
                                     <summary> Working This Week {'(' + filteredTask?.length + ')'} </summary>
                                     <div className='AccordionContent'  >
-                                        {filteredTask?.length > 0 ?
-                                            <div className='Alltable border-0 dashboardTable' >
-                                                <>
-                                                    <GlobalCommanTable columns={workingThisWeekColumns} data={filteredTask} wrapperHeight="175px" callBackData={callBackData}/>
-                                                </>
-                                            </div> : <div className='text-center full-width'>
-                                                <span>No Working Tasks Available</span>
-                                            </div>}
+                                      {filteredTask?.length > 0 ?
+                                        <div className='Alltable border-0 dashboardTable' >
+                                          <>
+                                            <GlobalCommanTable columns={workingThisWeekColumns} data={filteredTask} wrapperHeight="175px" callBackData={callBackData} />
+                                          </>
+                                        </div> : <div className='text-center full-width'>
+                                          <span>No Working Tasks Available</span>
+                                        </div>}
                                     </div>
                                 </details>
                                 <details open={timeEntries.length > 0}>
@@ -3110,12 +3150,15 @@ const smartTimeTotal = async () => {
                               <span>
                                 {Masterdata?.TeamsGroup && (
                                   <MSTeamsChat
-                                  AllListId={AllListId}
-                                  Context={props.Context}
-                                  siteUrl={props.siteUrl}
-                                  listName={"Master Tasks"}
-                                  itemID={QueryId}
-                                  ExistingGroup={Masterdata?.TeamsGroup}
+                                    AllListId={AllListId}
+                                    Context={props.Context}
+                                    siteUrl={props.siteUrl}
+                                    listName={"Master Tasks"}
+                                    itemID={QueryId}
+                                    Groupusers={Groupusers}
+                                    TaskUsers={AllUser}
+                                    Currentuser={CurrentUserData}
+                                    ExistingGroup={Masterdata?.TeamsGroup}
                                   />
                                 )}
                               </span>
@@ -3257,17 +3300,17 @@ const smartTimeTotal = async () => {
                         <div className="mt-4 clearfix">
                           <h4 className="titleBorder "> Type</h4>
                           <div className="col p-0 taskcatgoryPannel">
-                          <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Activities")} className={activeTile == "Activities" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                            <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Activities")} className={activeTile == "Activities" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
                               <span className="tasks-label">Activity</span>
                             </a>
-                          <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                            <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
                               <span className="tasks-label">Task</span>
                             </a>
                           </div>
-                       
+
                         </div>
                         <div className="clearfix col-12 mt-3 position-relative">
-                       <h4 className="titleBorder">Key/Relevant Portfolios</h4>
+                          <h4 className="titleBorder">Key/Relevant Portfolios</h4>
                           <div className="clearfix col-12">
                             {taggedPortfolio.length > 0 ? (
                               <span className="full-width">
@@ -3371,8 +3414,8 @@ const smartTimeTotal = async () => {
                   checkedList != null && checkedList.Id != null
                     ? checkedList
                     : selectedItem
-                    ? selectedItem
-                    : Masterdata
+                      ? selectedItem
+                      : Masterdata
                 }
                 taggedPortfolioItem={taggedPortfolioItem}
               ></CreateActivity>

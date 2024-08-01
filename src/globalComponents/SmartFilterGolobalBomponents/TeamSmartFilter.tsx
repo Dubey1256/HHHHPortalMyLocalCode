@@ -2423,19 +2423,19 @@ const TeamSmartFilter = (item: any) => {
                 </div>}
             </div>}
 
-            <section className='smartFilter bg-light border mb-2 col'>
+            <section className='smartFilter bg-f5f5 border mb-2 col'>
                 {isSmartFevShowHide === false && <>
                     <section className="p-0 smartFilterSection">
                         <div className="px-2 py-1">
                             <div className="togglebox">
                                 <div className='alignCenter justify-content-between col-sm-12'>
                                     <div className='alignCenter col-sm-8' style={{ color: `${portfolioColor}` }} onClick={() => { toggleIcon(); toggleAllExpendCloseUpDown(iconIndex) }}>
-                                        {icons[iconIndex]} <span className="f-16 fw-semibold hreflink ms-1 pe-1 allfilter">All Filters -</span>
+                                        {icons[iconIndex]} <span className="f-16 fw-semibold hreflink ms-2 pe-1 allfilter">All Filters -</span>
                                         <div className="f-14" style={{ color: "#333333" }}>{sitesCountInfo + ' ' + projectCountInfo + ' ' + CategoriesandStatusInfo + ' ' + clientCategoryCountInfo + ' ' + teamMembersCountInfo + ' ' + dateCountInfo}</div>
                                     </div>
                                     <div className='alignCenter col-sm-4'>
                                         <div className='ml-auto alignCenter'>
-                                            <a className="hreflink" onClick={() => setSmartFilterTypePannel(true)}><div className="svg__iconbox svg__icon--setting hreflink me-2"></div></a>
+                                            <a className="hreflink" onClick={() => setSmartFilterTypePannel(true)}><div className="alignIcon svg__iconbox svg__icon--setting hreflink me-2"></div></a>
                                             <span style={{ color: `${portfolioColor}` }} className='me-1'>Flat View</span>
                                             <label className="switch me-2" htmlFor="checkbox">
                                                 <input checked={flatView} onChange={handleSwitchToggle} type="checkbox" id="checkbox" />
@@ -2464,8 +2464,8 @@ const TeamSmartFilter = (item: any) => {
 
                                     </span>
                                 </label>
-                                {isKeywordsExpendShow === true ? <div className='mb-3 ms-20 mt-2 pt-2' style={{ borderTop: "1.5px solid #BDBDBD" }}>
-                                    <div className='col-7 p-0'>
+                                {isKeywordsExpendShow === true ? <div className='mb-3 ms-20 mt-2 pt-1' style={{ borderTop: "1.5px solid #BDBDBD" }}>
+                                    <div className='col-7 pt-2'>
                                         <div className='input-group alignCenter'>
                                             <label className="full-width form-label"></label>
                                             <input className="form-control" placeholder='Keywords' type='text' value={keyWordSearchTearm} onChange={handleInputChange}></input>
@@ -3101,8 +3101,8 @@ const TeamSmartFilter = (item: any) => {
                                         </div>
                                     </span>
                                 </label>
-                                {isDateExpendShow === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
-                                    <div className="col-sm-12">
+                                {isDateExpendShow === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-1" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
+                                    <div className="col-sm-12 pt-2">
                                         <Col className='mb-2'>
                                             <label className="me-3">
                                                 <input className="form-check-input" type="checkbox" value="isCretaedDate" checked={isCreatedDateSelected} onChange={() => setIsCreatedDateSelected(!isCreatedDateSelected)} />{" "}
@@ -3118,7 +3118,7 @@ const TeamSmartFilter = (item: any) => {
                                                 Due Date
                                             </label>
                                         </Col>
-                                        <Col className='my-2'>
+                                        <Col className='my-3'>
                                             <span className='SpfxCheckRadio  me-3'>
                                                 <input type="radio" name="dateFilter1" className='radio' value="today" checked={selectedFilter === "today"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>Today</label>
