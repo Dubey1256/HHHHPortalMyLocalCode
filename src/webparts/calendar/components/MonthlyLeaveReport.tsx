@@ -12,10 +12,12 @@ import { Avatar } from "@fluentui/react-components";
 import * as html2pdf from 'html2pdf.js';
 import * as XLSX from 'xlsx';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
-import { setMonth } from 'office-ui-fabric-react';
+import { setMonth, Panel, PanelType } from 'office-ui-fabric-react';
 import { end } from '@popperjs/core';
 import moment from 'moment';
 import { Start } from '@mui/icons-material';
+import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
+
 let currentUser: any
 let allReportData: any = [];
 let Short_x0020_Description_x0020_On: any = '';
@@ -25,7 +27,7 @@ export const MonthlyLeaveReport = (props: any) => {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectendDate, setselectendDate] = useState('');
   const [PreSetPanelIsOpen, setPreSetPanelIsOpen] = React.useState(false);
-  const [types, settypes] = React.useState("");
+  const [types, settypes] = React.useState("today");
   const [AllTaskuser, setAllTaskuser] = useState([]);
   const [leaveData, setLeaveData] = useState([]);
   const [opendate, setopendate] = useState(true);
@@ -40,6 +42,8 @@ export const MonthlyLeaveReport = (props: any) => {
   const [endDate, setendDate] = useState(new Date())
   const [selectedType, setselectedType] = useState(false)
   const [selectgroupName, setSelectGroupName] = useState("")
+  const [showingMonthlyPannelData, setshowingMonthlyPannelData] = useState(true);
+
   let dropSuccessHandler: any
 
   useEffect(() => {
@@ -269,6 +273,12 @@ export const MonthlyLeaveReport = (props: any) => {
     setImageSelectedUsers(ImageSelectedUser);
   };
 
+  const SelectUserImagee = (ev: any, item: any) => {
+    let ImageSelectedUser = ImageSelectedUsers.filter((user:any) => user?.Id !== item?.Id );
+    setImageSelectedUsers(ImageSelectedUser);
+
+  }
+
   const SelectedGroup = (ev: any, user: any) => {
     let SelectGroupName = '';
     console.log(ev.currentTarget.checked)
@@ -312,8 +322,9 @@ export const MonthlyLeaveReport = (props: any) => {
     })
     SelectGroupName = SelectGroupName.replace(/.$/, "")
     setSelectGroupName(SelectGroupName)
-    setImageSelectedUsers(ImageSelectedUser)
-    console.log(ImageSelectedUsers)
+    let removeDuplicate = ImageSelectedUser.filter((item , index) => ImageSelectedUser.indexOf(item) === index)
+    setImageSelectedUsers(removeDuplicate)
+    console.log(removeDuplicate)
 
   }
   const setStartDate = (dt: any) => {
@@ -828,22 +839,45 @@ export const MonthlyLeaveReport = (props: any) => {
       setopendate(true)
     }
   }, [])
+
+  const onRenderCustomHeader = () => {
+    return (
+      <div className="d-flex full-width pb-1">
+        <div className="subheading siteColor">
+          Employee Leave Report
+        </div>
+        <Tooltip ComponentId='9802' />
+      </div>
+    );
+  };
+
+
+
   return (
     <div>
-      <Modal className='rounded-0 monthlyLeaveReport' show={opendate} onHide={() => handleclose()} >
-        <Modal.Header closeButton>
-          <Modal.Title>Employee Leave Report</Modal.Title>
-          <Tooltip ComponentId='9802' />
-        </Modal.Header>
-        <Modal.Body className="p-2">
+      <Panel
+        type={PanelType.custom}
+        customWidth="1000px"
+        max-wi
+        isOpen={opendate}
+        onDismiss={() => handleclose()}
+        onRenderHeader={onRenderCustomHeader}
+        isBlocking={false}
+      // onRenderFooter={CustomFooter}
+      >
           <div className='smartFilter bg-light border mb-3 col'>
-            <details className='p-0 m-0' open>
-              <summary className='hyperlink'><a className="hreflink pull-left mr-5">All Filters - <span>Task User :</span> </a>
+          {showingMonthlyPannelData ?
+            (<>
+              <div className='p-0 m-0' >
+                < SlArrowDown onClick={() => setshowingMonthlyPannelData(false)}/>
+                All Filters - <a><span>Task User :</span></a>
                 {ImageSelectedUsers != null && ImageSelectedUsers.length > 0 && ImageSelectedUsers.map((user: any, i: number) => {
-                  return( <span className="ng-scope">
+                  return (
+                    <span>
                     <Avatar
-                      className="AssignUserPhoto me-1"
+                        className="AssignUserPhoto me-1 activeimg"
                       title={user?.AssingedToUser?.Title}
+                        onClick={(e: any) => SelectUserImagee(e, user)}
                       image={{ src: user?.Item_x0020_Cover?.Url }}
                       initials={user?.Item_x0020_Cover?.Url ? undefined : user?.AssingedToUser?.Suffix}
                     />
@@ -855,7 +889,7 @@ export const MonthlyLeaveReport = (props: any) => {
                   <input type="checkbox" className="form-check-input mx-1" onClick={(e) => SelectAllGroupMember(e)} />
                   <label>Select All </label>
                 </span>
-              </summary>
+              </div>
 
               <Col>
                 <details open className='p-0'>
@@ -995,14 +1029,60 @@ export const MonthlyLeaveReport = (props: any) => {
                   </Row>
                 </details>
               </Col>
-            </details>
+
+
+
+
+
+            </>) : (<> <div className='p-0 m-0' >
+              < SlArrowRight onClick={() => setshowingMonthlyPannelData(true)} />
+              All Filters -  <a><span>Task User :</span></a>
+              {ImageSelectedUsers != null && ImageSelectedUsers.length > 0 && ImageSelectedUsers.map((user: any, i: number) => {
+                return (
+                  <span>
+                    <Avatar
+                      className="AssignUserPhoto me-1 activeimg"
+                      title={user?.AssingedToUser?.Title}
+                      onClick={(e: any) => SelectUserImage(e, user)}
+                      image={{ src: user?.Item_x0020_Cover?.Url }}
+                      initials={user?.Item_x0020_Cover?.Url ? undefined : user?.AssingedToUser?.Suffix}
+                    />
+                  </span>
+                )
+              })
+              }
+              <span className="">
+                <input type="checkbox" className="form-check-input mx-1" onClick={(e) => SelectAllGroupMember(e)} />
+                <label>Select All </label>
+              </span>
+            </div></>)}
+          {/* <summary className='hyperlink'>All Filters - </summary>
+            <a><span>Task User :</span></a>
+            {ImageSelectedUsers != null && ImageSelectedUsers.length > 0 && ImageSelectedUsers.map((user: any, i: number) => {
+              return (
+                <span>
+                  <Avatar
+                    className="AssignUserPhoto me-1"
+                    title={user?.AssingedToUser?.Title}
+                    onClick={(e: any) => SelectUserImage(e, user)}
+                    image={{ src: user?.Item_x0020_Cover?.Url }}
+                    initials={user?.Item_x0020_Cover?.Url ? undefined : user?.AssingedToUser?.Suffix}
+                  />
+                </span>
+              )
+            })
+            }
+            <span className="">
+              <input type="checkbox" className="form-check-input mx-1" onClick={(e) => SelectAllGroupMember(e)} />
+              <label>Select All </label>
+            </span> */}
           </div>
-          <div className="mt-2 text-end modal-footer">
+
+        <footer className='modal-footer'>
             <Button onClick={() => handleSubmit()} variant="primary" className="btn btn-primary" type="submit">
               Submit
             </Button>
-
-          </div>
+        </footer>
 
           {(allReportData?.length > 0 && leaveset) &&
             <div id="contentToConvert">
@@ -1116,11 +1196,11 @@ export const MonthlyLeaveReport = (props: any) => {
 
             </div>
           }
-
-        </Modal.Body>
-      </Modal>
-      <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} selectedType={selectedType} />}</>
+      </Panel>
+      <>
+        {PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} selectedType={selectedType} />}</>
 
     </div>
+
   );
 };
