@@ -47,6 +47,7 @@ let AllFlatProject: any = [];
 var AllUser: any = [];
 let allBackupSprintAndTask: any = []
 var siteConfig: any = [];
+let Groupusers: any = [];
 let headerOptions: any = {
   openTab: true,
   teamsIcon: true
@@ -1565,9 +1566,12 @@ const ProjectManagementMain = (props: any) => {
     SendTeamMessageforPXProject(mention_To, TeamsMessage, props?.Context, AllListId, Group_Title);
   }
   const SendTeamMessageforPXProject = async (mention_To: any, txtComment: any, Context: any, AllListId: any, Group_Title: any) => {
+    if(mention_To?.length === 0){
+      alert('Please select Group member to create a PX-Profile Group');
+      return false;
+    }
     let currentUser: any = {};
     let ExistingGrp: any = {};
-    let user: any = [];
     try {
       let pageContent = await globalCommon.pageContext()
       let web = new Web(pageContent?.WebFullUrl);
@@ -1576,7 +1580,7 @@ const ProjectManagementMain = (props: any) => {
       let res = await client.api(`/users`).version("v1.0").get();
       if (Masterdata?.TeamsGroup !== undefined && Masterdata?.TeamsGroup !== '' && Masterdata?.TeamsGroup !== null) {
         ExistingGrp = await client.api('/chats/' + Masterdata?.TeamsGroup).get();
-        user = await client.api('/chats/' + Masterdata?.TeamsGroup + '/members').get();
+        Groupusers = await client.api('/chats/' + Masterdata?.TeamsGroup + '/members').get();
       }
       let TeamUser: any[] = [];
       let participants: any = [];
@@ -1619,7 +1623,7 @@ const ProjectManagementMain = (props: any) => {
       }
       if (IsSendTeamMessage == mention_To?.length) {
         if (ExistingGrp !== undefined && Object.keys(ExistingGrp).length > 0 && ExistingGrp !== '') {
-          let RemoveCurrentUser: any = user?.value?.filter((itemexists: any) => { return itemexists.email.toLowerCase() !== CurrentUserData?.Email?.toLowerCase() });
+          let RemoveCurrentUser: any = Groupusers?.value?.filter((itemexists: any) => { return itemexists.email.toLowerCase() !== CurrentUserData?.Email?.toLowerCase() });
           RemoveCurrentUser?.map(async (check_mail: any) => {
             SelectedUser?.map(async (exist_user: any, index: any) => {
               exist_user.userFound = false;
@@ -3133,6 +3137,9 @@ const ProjectManagementMain = (props: any) => {
                                     siteUrl={props.siteUrl}
                                     listName={"Master Tasks"}
                                     itemID={QueryId}
+                                    Groupusers={Groupusers}
+                                    TaskUsers={AllUser}
+                                    Currentuser={CurrentUserData}
                                     ExistingGroup={Masterdata?.TeamsGroup}
                                   />
                                 )}
