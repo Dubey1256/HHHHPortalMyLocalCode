@@ -571,7 +571,9 @@ const ProjectManagementMain = (props: any) => {
                 task.TaskTime = parseFloat(timeEntry?.TaskTime);
                 task.TimeDate = timeEntry.TaskDate;
                 task.TimeDescription = timeEntry.Description;
-                task.TimeFillDate = timeEntry?.TaskDate; let parts = timeEntry?.TaskDate?.split('/');
+                task.TimeEntryAuthorImage = timeEntry.AuthorImage
+                task.TimeEntryAuthorName = timeEntry.AuthorName
+                let parts = timeEntry?.TaskDate?.split('/');
                 let timeEntryDate: any = new Date(parts[2], parts[1] - 1, parts[0]);
                 if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingWeekDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingWeekDate.setHours(0, 0, 0, 0)) {
                   weekTotalTime += Number(timeEntry?.TaskTime)
