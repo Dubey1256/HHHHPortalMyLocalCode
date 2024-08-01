@@ -144,11 +144,11 @@ const AddCommentComponent = (FbData: any) => {
     const updateCommentFunction = (e: any, CommentData: any, usedFor: any) => {
         if (usedFor == "ParentComment") {
             FeedBackArray[CommentData.Index].Title = e.target.value;
-            FbData.callBack(true, FeedBackArray, FbData?.UXStatus ? CommentData?.SubTextIndex : FbData.Index);
+            FbData.callBack(true, FeedBackArray, FbData?.UXStatus ? CommentData?.SubTextIndex : FbData.index);
         }
         if (usedFor == "ReplyComment") {
             FeedBackArray[CommentData.SubTextIndex].ReplyMessages[CommentData.Index].Title = e.target.value;
-            FbData.callBack(true, FeedBackArray, FbData?.UXStatus ? CommentData?.SubTextIndex : FbData.Index);
+            FbData.callBack(true, FeedBackArray, FbData?.UXStatus ? CommentData?.SubTextIndex : FbData.index);
         }
     }
     const cancelCommentBtn = () => {
@@ -238,7 +238,7 @@ const AddCommentComponent = (FbData: any) => {
             FeedBackArray[currentDataIndex].ReplyMessages = [];
         }
         FeedBackArray[currentDataIndex].ReplyMessages.push(ReplyMessageObject);
-        FbData.callBack(true, FeedBackArray, 0);
+        FbData.callBack(true, FeedBackArray, FbData.index);
         setButtonId("")
     }
 
@@ -253,7 +253,7 @@ const AddCommentComponent = (FbData: any) => {
             }
         })
         setFeedBackArray(tempArray);
-        FbData.callBack(true, tempArray, 0);
+        FbData.callBack(true, tempArray, FbData.index);
         // FbData.callBack(isSubtextComment, tempArray, indexOfSubtext);
     }
     const styles = mergeStyleSets({

@@ -3,7 +3,8 @@ import { parseString } from 'xml2js';
 import { EventRecurrenceInfo } from '../webparts/calendar/components/EventRecurrenceControls/EventRecurrenceInfo/EventRecurrenceInfo';
 import { Panel, PanelType, Toggle } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
-
+let web :any
+let copyTaskData:any;
 const RecurringTask = (props: any) => {
     
     const [returnedRecurrenceInfo, setReturnedRecurrenceInfo] = React.useState(null);
@@ -12,7 +13,7 @@ const RecurringTask = (props: any) => {
     const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] = React.useState(false);
     const [TaskData, SetTaskData]:any = React.useState({});
     const WorkingAction= React.useRef([])
-
+     WorkingAction.current=  JSON.parse(JSON.stringify( props?.WorkingAction));
     // Function Convert date
     function convertToISO(dateString:any) {
         let match = dateString.match(/(\d{2})\/(\d{2})\/(\d{4})/);
@@ -30,7 +31,7 @@ const RecurringTask = (props: any) => {
         return isoDate;
     }
     // Load the task
-    let web :any
+ 
     const LoadTaskData = async () => {
       await web.lists
             .getById(props?.props?.Items?.listId)
@@ -39,6 +40,7 @@ const RecurringTask = (props: any) => {
             ).expand("AssignedTo,Author,TeamMembers,Editor,ResponsibleTeam")
             .get().then((TaskDetailsFromCall:any)=>{
                 SetTaskData([TaskDetailsFromCall]);
+                copyTaskData=TaskDetailsFromCall;
             }).catch((error:any)=>{
                 console.log(error)
                 props.props.Items.RecurrenceData="";
@@ -46,6 +48,7 @@ const RecurringTask = (props: any) => {
                 copyData.StartDate = convertToISO(copyData?.StartDate);
                 copyData.CompletedDate = convertToISO(copyData?.CompletedDate)
                 SetTaskData([copyData])
+                copyTaskData=copyData
             });
        
     }
@@ -53,7 +56,7 @@ const RecurringTask = (props: any) => {
     React.useEffect(() => {
         if(props?.props?.AllListId?.siteUrl){
             web = new Web(props?.props?.AllListId?.siteUrl);
-            WorkingAction.current=  JSON.parse(JSON.stringify( props?.WorkingAction));
+           
             LoadTaskData()
         }
        
@@ -66,7 +69,8 @@ const RecurringTask = (props: any) => {
             await web.lists
                 .getById(props?.props?.Items?.listId)
                 .items.getById(props?.props?.Items?.Id)
-                .update({ WorkingAction: DataForUpdate?.length > 0 ? JSON.stringify(DataForUpdate) : null,RecurrenceData:returnedRecurrenceInfo?.recurrenceData })
+                .update({ WorkingAction: DataForUpdate?.length > 0 ? JSON.stringify(DataForUpdate) : null,
+                    RecurrenceData:returnedRecurrenceInfo?.recurrenceData })
                 .then((response:any) => {
                     console.log('Update successful:', response);
                     props?.setWorkingAction(WorkingAction.current);
@@ -521,13 +525,18 @@ const RecurringTask = (props: any) => {
                 { "Title": "Phone", "InformationData": [] },
                 { "Title": "WorkingDetails", "InformationData": WorkingDetails }
             ];
-            if (!Array.isArray(Taskobject.WorkingAction)) {
+            if (!Array?.isArray(Taskobject?.WorkingAction)) {
                 Taskobject.WorkingAction = [];
             }
              if(WorkingAction.current?.length>0){
                 WorkingAction.current?.map((workingData:any)=>{
                     if(workingData?.Title==="WorkingDetails"){
+                       if(copyTaskData?.RecurrenceData!=undefined && copyTaskData?.RecurrenceData?.length>0){
+                        workingData.InformationData=WorkingDetails
+                       }else{
                         workingData.InformationData=[... workingData.InformationData,...WorkingDetails]
+                       }
+                       
                     }
                 })
                 console.log(props?.WorkingAction)
