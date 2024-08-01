@@ -575,7 +575,7 @@ const ProjectManagementMain = (props: any) => {
                 if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingWeekDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingWeekDate.setHours(0, 0, 0, 0)) {
                   weekTotalTime += Number(timeEntry?.TaskTime)
                 }
-                else if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingMonthDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingMonthDate.setHours(0, 0, 0, 0)) {
+                if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingMonthDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingMonthDate.setHours(0, 0, 0, 0)) {
                   monthTotalTime += Number(timeEntry?.TaskTime)
                 }
                 PXtimeEntries.push(task)
@@ -584,6 +584,22 @@ const ProjectManagementMain = (props: any) => {
           })
         }
       });
+      if (PXtimeEntries?.length > 0) {
+        PXtimeEntries = PXtimeEntries.reduce(function (
+            previous: any,
+            current: any
+        ) {
+            var alredyExists =
+                previous.filter(function (item: any) {
+                    return item.Id === current.Id;
+                }).length > 0;
+            if (!alredyExists) {
+                previous.push(current);
+            }
+            return previous;
+        },
+            []);
+    }
       setTimeEntries(PXtimeEntries)
       setPageLoader(false)
     } catch (error) {
