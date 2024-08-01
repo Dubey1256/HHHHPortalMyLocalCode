@@ -4,10 +4,11 @@ import { spfi, SPFx as spSPFx } from "@pnp/sp";
 // import '../../../index.css'
 
 import { ColumnDef } from "@tanstack/react-table";
-import Moment from "moment";
+import Moment from 'moment-timezone';
+
 import { Panel, PanelType } from "office-ui-fabric-react";
 
-import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 
 let forceAllAditionalTaskCall: any = [];
 let copyAllAditionalTaskData: any = [];
@@ -22,7 +23,7 @@ let todayAllEODTaskData: any = [];
 let body1: any = [];
 let body: any = '';
 let finalBody: any = [];
-
+let allUsers:any
 
 export const EodReportMain = (props: any) => {
     const [allTodayModifiedTask, setAllTodayModifiedTask]: any = React.useState([])
@@ -276,28 +277,26 @@ export const EodReportMain = (props: any) => {
             tasks.forEach((item: { Id: any; siteType: any; Title: any; Achieved: any; Pending: any; Lead: any; }, index: any) => {
                 let projectTitleCell = '';
                 if (firstTask) {
-                    projectTitleCell = `<td rowspan="${tasks.length}" height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; background-color: #ffffff;">
-                                            <strong style="color: #333;">${projectTitle ?? ''}</strong>
+                    projectTitleCell = `<tr><td height="48" align="left" width="180" valign="middle" style="background: #fff;color: #333;width:180px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-left: 1px solid #EEE; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                                            ${projectTitle ?? ''}
                                         </td>`;
                     firstTask = false;
                 }
 
-                let taskRow = `<tr>
+                let taskRow = `
                     ${projectTitleCell}
-                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">
-                        <p style="margin:0px; color:#333;">
-                            <a style="text-decoration: none;" href="${siteURL}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}">
-                                ${item?.Title ?? ''}
-                            </a>
-                        </p>
+                    <td height="48"  width="240" valign="middle" style="background: #fff;color: #2F5596;width:220px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                        <a style="color: #2F5596;" href="${siteURL}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}">
+                            ${item?.Title ?? ''}
+                        </a>
                     </td>
-                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">
+                    <td height="48"  width="400" align="left" valign="middle" style="background: #fff;color: #333;width:350px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                         ${item.Achieved ?? 'No data available'}
                     </td>
-                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">
+                    <td height="48"  width="400" align="left" valign="middle" style="background: #fff;color: #333;width:350px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                         ${item.Pending ?? 'No data available'}
                     </td>
-                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">
+                    <td height="48"  width="130" valign="middle" style="background: #fff;color: #333;width:130px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                         ${item.Lead ?? ''}
                     </td>
                 </tr>`;
@@ -307,33 +306,98 @@ export const EodReportMain = (props: any) => {
 
         let body = '';
         if (body1?.length > 0) {
-            body = `<table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style="border-color: #444; margin-bottom:10px">
-                <thead>
+            body = `<table width="100%" bgcolor="#FAFAFA" style="background-color:#FAFAFA;margin:-18px -10px;" align="center">
                 <tr>
-                    <th width="40" height="12" align="center" valign="middle" bgcolor="#ffff" style="padding:10px 5px; border-top: 0px; border-left: 0px;">  <strong style="color: #333;">Project</strong></th>
-                    <th width="400" height="12" align="center" valign="middle" bgcolor="#ffff" style="padding:10px 5px; border-top: 0px; border-left: 0px;">  <strong style="color: #333;">Title</strong></th>
-                    <th width="80" height="12" align="center" valign="middle" bgcolor="#ffff" style="padding:10px 5px; border-top: 0px; border-left: 0px;">  <strong style="color: #333;">Work Completed</strong></th>
-                    <th width="40" height="12" align="center" valign="middle" bgcolor="#ffff" style="padding:10px 5px; border-top: 0px; border-left: 0px;">  <strong style="color: #333;">Work  Pending</strong></th>
-                    <th width="70" height="12" align="center" valign="middle" bgcolor="#ffff" style="padding:10px 5px; border-top: 0px; border-left: 0px">  <strong style="color: #333;">Lead</strong></th>
+                    <td width="100%">
+                        <table width="900px" align="center" bgcolor="#fff" style="width:1350px;padding:0px 32px;background-color:#fff;">
+                            <tr>
+                                <td width="100%">
+                                    <div style="padding-top: 56px;" width="100%">
+                                        <table style="height: 50px;border-collapse: collapse;" border="0" align="left">
+                                            <tr>
+                                                <td width="48px" height="48px"><img width="100%" height="100%" src="https://hochhuth-consulting.de/images/icon_small_hhhh.png" style="width: 48px;height: 48px;border-radius: 50%;" alt="Site Icon"></td>
+                                                <td><div style="color: var(--black, #333);margin-left:4px;text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;">EOD Report</div></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div width="100%">
+                                        <table style="height: 56px;border-collapse: collapse;" border="0" width="100%" height="56px">
+                                            <tr>
+                                                <td width="100%" height="56px">&nbsp;</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        
+                <tr>
+                <td>
+                    <div>
+                        <table width="100%" style="border-collapse: collapse;">
+                            <tr>
+                                <td>
+                                    <div style="font-family: Segoe UI;color:#2F5596;font-weight:600;font-size:24px;margin-bottom:10px;">EOD Report ${Moment(new Date()).format('YYYY-MM-DD')}</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div>
+                        <table width="100%" style="border-collapse: collapse;">
+                            <tr>
+                                <td width="180" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">Project</td>
+                                <td width="220" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">Task Title</td>
+                                <td width="350" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">Work Completed</td>
+                                <td width="350" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">Work  Pending</td>
+                                <td width="130" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">Portfolio Lead</td>
+                            </tr>
+                    
+                            <body>
+                                ${body1.join('')}
+                            </body>
+                        </table>
+                    </div>
+                </td>
                 </tr>
-                </thead>
-                <tbody>
-                ${body1.join('')}
-                </tbody>
-            </table>`;
+                <tr>
+                    <td>
+                        <table>
+                            <tr>
+                                <td width="100%" height="32px">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td width="260px" height="40px" align="center" style="background: #2F5596;display: flex;justify-content: center;align-items: center;gap: 8px;flex-shrink: 0;border-radius: 4px;
+                                    font-family: Segoe UI;width:260px;height:40px;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">
+                                    <a width="260px" height="40px" style="color:#fff;text-decoration: none;" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/EodReport.aspx">
+                                        See EOD Tool Online
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="100%" height="88px">&nbsp;</td>
+                            </tr>
+                        </table>
+                        <table style="height: 50px;border-collapse: collapse;" border="0" align="left">
+                            <tr>
+                                <td width="56px" height="48px"><img src="https://hochhuth-consulting.de/images/logo_small2.png" style="width: 56px;height: 48px;" alt="Site Icon"></td>
+                                <td style="margin-left:4px;"><div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                    </td>
+                </tr>
+            </table>
+            
+            `;
         }
 
         console.log(body, "body1");
         finalBody.push(body);
 
         let sendAllTasks = `
-            <span style="font-size: 18px; margin-bottom: 10px;">
-                Hi there, <br><br>
-                Below is today's EOD Report:
-            </span>
+            
             ${body}
-            <h3>Thanks.</h3>
-            <h3>${props?.props.userDisplayName}</h3>
+            
         `;
 
         let subject = `[EOD Report] ${Moment(new Date()).format('YYYY-MM-DD')} - ${allTodayModifiedTask?.length ?? 0} Tasks`;
@@ -341,7 +405,7 @@ export const EodReportMain = (props: any) => {
             ["prashant.kumar@hochhuth-consulting.de"],
             subject,
             sendAllTasks.replace(/,/g, "  ")
-        );      
+        );
     };
 
 
@@ -372,7 +436,6 @@ export const EodReportMain = (props: any) => {
 
 
     }
-
     const onAddpress = () => {
         const filterarrray = selectedTaskForEod.map((item: any) => {
             let OffshoreCommentsArray;
@@ -419,6 +482,107 @@ export const EodReportMain = (props: any) => {
         })
         childRef?.current?.setRowSelection({});
     }
+
+
+    // const onAddpress = () => {
+    //     let isPendingEmpty:any=false
+    //     let isAcheviedEmpty:any =false
+    //     let bothEmpty:any =false  
+    //     selectedTaskForEod.map((items:any)=>{
+    //         let checkEmptyComment:any;
+           
+    //         if(items?.original?.OffshoreComments!=undefined){
+    //            if(typeof items.original.OffshoreComments === 'string'){
+    //             try {
+    //                 checkEmptyComment = JSON.parse(items?.original?.OffshoreComments)
+    //             } catch (error) {
+    //                 console.error('Error parsing OffshoreComments:', error);
+    //             }
+    //            }else{
+    //             checkEmptyComment=items.original.OffshoreComments
+    //            }
+                
+                
+    //             let EodRoprtAvialble = checkEmptyComment?.some((comment: any) => {
+    //                 if (comment?.Type=="EODReport") {
+    //                     return true;
+    //                 } 
+    //             })
+    //            if(EodRoprtAvialble!=undefined && EodRoprtAvialble==true){
+    //             checkEmptyComment.map((comment:any)=>{
+    //                 if(comment.Type=="EODReport"){
+    //                  if(comment?.Achieved==null||comment?.Achieved ==undefined || comment?.Achieved ==''){
+    //                     isAcheviedEmpty=true
+    //                  }
+    //                  else if(comment?.Pending==null||comment?.Pending ==undefined || comment?.Pending ==''){
+    //                      isPendingEmpty=true
+    //                  }
+    //                 }
+    //              })
+    //            }else{
+    //             bothEmpty=true
+    //            }
+                
+    //         } else{
+    //             bothEmpty=true
+    //         }
+    //     })
+    //     if( isPendingEmpty == false && isAcheviedEmpty==false && bothEmpty==false){
+    //         const filterarrray = selectedTaskForEod.map((item: any) => {
+    //             let OffshoreCommentsArray;
+    //             if (typeof item.original.OffshoreComments === 'string') {
+    //                 OffshoreCommentsArray = JSON.parse(item.original.OffshoreComments);
+    //             }
+    //             else {
+    //                 OffshoreCommentsArray = [item.original.OffshoreComments];
+    //             }
+    //             try {
+    //             } catch (error) {
+    //                 console.error('Error parsing OffshoreComments:', error);
+    //                 // Handle the error appropriately, e.g., provide a default value or log the error
+    //             }
+    //             const updatedOffshoreComments = OffshoreCommentsArray?.map((comment: any) => {
+    //                 if (comment.hasOwnProperty('isEodTask')) {
+    //                     return {
+    //                         ...comment,
+    //                         isEodTask: true
+    //                     };
+    //                 }
+    //                 return {
+    //                     ...comment,
+    //                     isEodTask: true
+    //                 };
+    //             });
+    
+    //             return {
+    //                 ...item.original,
+    //                 OffshoreComments: updatedOffshoreComments,
+    //                 oldOffshoreComments: updatedOffshoreComments
+    
+    //             };
+    //         });
+    //         const combinedArray = [...allTodayModifiedTask, ...filterarrray];
+    //         const removeFromAdditionalArray = allAditionalTask.filter((item1: { ID: any; }) => !filterarrray.some((item2: { ID: any; }) => item1.ID === item2.ID));
+    //         setallAditionalTask(removeFromAdditionalArray)
+    //         setAllTodayModifiedTask(combinedArray)
+    //         setSelectedTaskForEod([])
+    
+    //         combinedArray.map((item: any) => {
+    //             updateCommentFunctionForAddToEoD(item?.OffshoreComments[0], "OffshoreComments", item?.oldOffshoreComments, item);
+    //         })
+    //         childRef?.current?.setRowSelection({});
+
+    //     }else{
+    //      if(isPendingEmpty == true){
+    //         alert("Please fill the pending Comment")
+    //      }  else if(isAcheviedEmpty== true){
+    //         alert("Please fill the achived Comment")
+    //      } else if(bothEmpty == true){
+    //         alert("Please fill the achived and pending Comments")
+    //      }
+    //     }
+
+    // }
     // Pagination EOD Report
     const indexOfLastItem = currentPageEoDReport * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -730,7 +894,7 @@ export const EodReportMain = (props: any) => {
                 .getAll();
 
 
-
+                allUsers=data
             const teamMember = findDataByApproverId(data, currentUserData)
             AllProtFolioTeamMembers = teamMember
             setTeamMembers(teamMember)
@@ -966,11 +1130,25 @@ export const EodReportMain = (props: any) => {
                 site = task?.siteType;
             }
             if (timeEntry[`Task${site}`] != undefined && task?.Id == timeEntry[`Task${site}`]?.Id) {
+                task.Lead=getPortfolioLead(timeEntry)
                 return task;
             }
         });
         return result;
     }
+
+    //  Code by Udbahv
+     const getPortfolioLead=(timeEntry:any)=>{
+        let lead=''
+    
+        allUsers.map((user:any)=>{
+            if(timeEntry?.AuthorId==user?.AssingedToUser?.Id){
+           
+               return lead= user?.Approver?.map((teamMember: { Title: any; }) => teamMember.Title).join(', ');
+            }
+        })
+        return lead
+     }
 
     const getAllTodayModifiedTask = async (siteconfig: any[]) => {
         let filteredData: any = []
@@ -1010,7 +1188,10 @@ export const EodReportMain = (props: any) => {
                     else if (loginUserInfo[0]?.UserGroup?.Title == "Junior Task Management") {
                         filteredData = res;
                     }
-                    else if (loginUserInfo[0]?.UserGroup?.Title == "QA Team") {
+                    else if (loginUserInfo[0]?.UserGroup?.Title == "Developers Team") {
+                        filteredData = res;
+                    }
+                    else if (loginUserInfo[0]?.UserGroup?.Title == "Design Team") {
                         filteredData = res;
                     }
                     else if (loginUserInfo[0]?.UserGroup?.Title == "Portfolio Lead Team") {
@@ -1206,7 +1387,19 @@ export const EodReportMain = (props: any) => {
                 const filterTimesheetTask = AllTaskTimeEntries.flatMap((item: any) =>
                     checkTimeEntrySite(item, todayAllTaskData)
                 );
+                 todayAllEODTaskData = AllTaskTimeEntries.flatMap((item: any) =>
+                    checkTimeEntrySite(item, todayAllEODTaskData)
+                );
                 const uniqueTasks = filterTimesheetTask.reduce((acc: { find: (arg0: (item: any) => boolean) => any; concat: (arg0: any[]) => any; }, current: { ID: any; siteType: any }) => {
+                    // Check if the ID is already in the accumulator
+                    const x = acc.find((item: { ID: any; siteType: any }) => item.ID === current.ID && item.siteType === current.siteType);
+                    if (!x) {
+                        return acc.concat([current]);
+                    } else {
+                        return acc;
+                    }
+                }, []);
+                const uniqueTasks2 = todayAllEODTaskData.reduce((acc: { find: (arg0: (item: any) => boolean) => any; concat: (arg0: any[]) => any; }, current: { ID: any; siteType: any }) => {
                     // Check if the ID is already in the accumulator
                     const x = acc.find((item: { ID: any; siteType: any }) => item.ID === current.ID && item.siteType === current.siteType);
                     if (!x) {
@@ -1217,8 +1410,8 @@ export const EodReportMain = (props: any) => {
                 }, []);
                 // console.log(uniqueFilterTimesheetTask)
                 setallAditionalTask(uniqueTasks)
-
-                setAllTodayModifiedTask(todayAllEODTaskData)
+                
+                setAllTodayModifiedTask(uniqueTasks2)
             }
         }
     }

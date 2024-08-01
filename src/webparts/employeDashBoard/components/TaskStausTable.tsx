@@ -26,7 +26,9 @@ import AddEditWebpartTemplate from "../../../globalComponents/AddEditWebpartTemp
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
 import { usePopperTooltip } from "react-popper-tooltip";
-//import { CustomToolTip } from "../../../globalComponents/customTooltip";
+import { CustomToolTip } from "../../../globalComponents/customTooltip";
+import { Col, Row } from "react-bootstrap";
+import { PeoplePicker, PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -1950,11 +1952,73 @@ const TaskStatusTbl = (Tile: any) => {
     setIsManageConfigPopup(false);
     setSelectedItem('')
   }
+  const CustomOndropAction = (config: any) => {
+    return (
+      <Row className="Metadatapannel">
+        <Col sm="12" md="12" lg="12">
+          <div className="togglecontent mt-1">
+            <h4 className="heading">On-Drop Action</h4>
+            <section className="border px-2 py-2">
+              {config?.onDropAction != undefined && config?.onDropAction?.length > 0 && config?.onDropAction.map((column: any, ColumnIndex: any) => {
+                return (
+                  <>
+                    <Row>
+                      <Col sm="5">
+                        <input type="text" className="disabled-input input-group mb-1" id={`FiltersCustom${ColumnIndex}`} value={column?.SelectedField || ''} />
+                      </Col>
+                      <Col sm="7" className="onDrop-peoplePicker">
+                        <>
+                          {column?.SelectedField == "Status" && <input type="text" className="disabled-input input-group" id="FiltersCustomStatus" value={column?.SelectedValue || ''} />}
+                          {column?.SelectedField == "Priority" && <input type="text" className="disabled-input input-group" id="FiltersCustomPriority" value={column?.SelectedValue || ''} />}
+                          {column?.SelectedField == "WorkingMember" && <>
+                            <PeoplePicker context={ContextData?.propsValue?.Context} titleText="" personSelectionLimit={10} principalTypes={[PrincipalType.User]} resolveDelay={1000}
+                              defaultSelectedUsers={column?.SelectedEmail ? column?.SelectedEmail : []} disabled={true} />
+                          </>}
+                          {column?.SelectedField == "TeamLeader" && <>
+                            <PeoplePicker context={ContextData?.propsValue?.Context} titleText="" personSelectionLimit={10} principalTypes={[PrincipalType.User]} resolveDelay={1000}
+                              defaultSelectedUsers={column?.SelectedEmail ? column?.SelectedEmail : []} disabled={true} />
+                          </>}
+                          {column?.SelectedField == "TeamMember" && <>
+                            <PeoplePicker context={ContextData?.propsValue?.Context} titleText="" personSelectionLimit={10} principalTypes={[PrincipalType.User]} resolveDelay={1000}
+                              defaultSelectedUsers={column?.SelectedEmail ? column?.SelectedEmail : []} disabled={true} />
+                          </>}
+                          {column?.SelectedField == "Categories" && <>
+                            <div className="input-group">
+                              <>
+                                {column?.SelectedValue?.map(
+                                  (type: any, index: number) => {
+                                    return (
+                                      <div className="block w-100">
+                                        <a style={{ color: "#fff !important" }} className="textDotted">{type.Title} </a>
+                                      </div>
+                                    );
+                                  }
+                                )}
+                              </>
+                            </div>
+                          </>}
+                          {column?.SelectedField == "WorkingDate" && <>
+                            <input type="text" className="disabled-input input-group" id="FiltersWorkingDate" value={column?.SelectedValue || ''} />
+                          </>}
+                          {column?.SelectedField == "DueDate" && <>
+                            <input type="text" className="disabled-input input-group" id="FiltersDueDate" value={column?.SelectedValue || ''} />
+                          </>}
+                        </>
+                      </Col>
+                    </Row>
+                  </>
+                )
+              })}
+            </section>
+          </div>
+        </Col>
+      </Row>)
+  }
   const customTableHeaderButtons = (config: any) => {
     return (
       <span className="alignCenter CustomHeaderIcon">
-        <span></span>
-        {IsShowConfigBtn && config?.IsEditWebpart != false && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
+        {config?.onDropAction != undefined && config?.onDropAction?.length > 0 && <span className="mt-1"> <CustomToolTip Description={config?.onDropAction} CustomHtml={CustomOndropAction(config)} /> </span>}
+        {IsShowConfigBtn && config?.IsEditWebpart != false && <span className="svg__iconbox mt-1 svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
         {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink"
           target="_blank" data-interception="off" title="Create New Task" href={`${ContextData?.siteUrl}/SitePages/CreateTask.aspx`}>
           <span className="hreflink alignIcon svg__iconbox svg__icon--CNTask empBg"></span>
@@ -2034,9 +2098,7 @@ const TaskStatusTbl = (Tile: any) => {
   const handleMouseLeave = () => {
     setControlledVisible(false)
   }
-
   const tableCall = (config: any, smartFavTableConfig: any) => {
-
     return (
       <>
         <GlobalCommanTable wrapperHeight="300px" showHeader={true}
@@ -2046,8 +2108,6 @@ const TaskStatusTbl = (Tile: any) => {
       </>
     )
   }
-
-
   const generateDashboard = () => {
     const rows: any = [];
     let currentRow: any = [];
@@ -2064,12 +2124,6 @@ const TaskStatusTbl = (Tile: any) => {
               {config?.ShowWebpart == true && config?.GroupByView != undefined && <section>
                 {(config?.DataSource == 'Tasks' || config?.DataSource == 'Project') && <div className="workingSec empAllSec clearfix">
                   <div className="alignCenter mb-2 justify-content-between">
-                    {/* <span ref={setTriggerRef} onMouseEnter={() => handlAction()} onMouseLeave={() => handleMouseLeave()} className=" svg__iconbox svg__icon--info dark"></span>
-                    {visible && (<div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
-                      <span className="tableTooltip" dangerouslySetInnerHTML={{ __html: config?.onDropAction != undefined && config?.onDropAction?.length > 0 ? config?.onDropAction[0]?.SelectedField : 'Test Status' }}></span>
-                      <div {...getArrowProps({ className: "tooltip-arrow" })} />
-                    </div>)} */}
-                    {/* <CustomToolTip Description={`Test data ${index}`} /> */}
                   </div>
                   <div className="Alltable" draggable={true} onDragStart={(e) => handleDragStart(e, config, '')} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && config?.Tasks?.length > 0 &&
