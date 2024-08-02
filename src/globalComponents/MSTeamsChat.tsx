@@ -2,14 +2,15 @@ import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import { MentionsInput, Mention } from 'react-mentions';
 import { MentionProps as OriginalMentionProps } from 'react-mentions';
-import Picker from '@emoji-mart/react';
-import data from '@emoji-mart/data';
+// import Picker from '@emoji-mart/react';
+// import data from '@emoji-mart/data';
 import "@pnp/sp/sputilities";
 import * as moment from "moment-timezone";
 import mentionClass from '../globalComponents/Comments/mention.module.scss';
 import Tooltip from '../globalComponents/Tooltip';
 import * as globalCommon from '../globalComponents/globalCommon';
 import { MSGraphClientV3 } from '@microsoft/sp-http';
+import JoditEditor from 'jodit-react';
 import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Stack, Text, } from '@fluentui/react';
 import {
     AvatarGroup,
@@ -21,7 +22,6 @@ import {
     PopoverSurface,
     PopoverTrigger
 } from "@fluentui/react-components";
-import { Item } from '@pnp/sp/items';
 
 interface Mention extends OriginalMentionProps {
     onClick?: (e: any) => any;
@@ -41,7 +41,7 @@ let mentionUsers: any = [];
 let group_User: any = [];
 let partitionedItems: any = [];
 let TeamsMessage: any = [];
-let EmojiData: any = data;
+// let EmojiData: any = data;
 const useStyles = makeStyles({
     root: {
         display: "grid",
@@ -60,6 +60,9 @@ const MSTeamsChat = (props: any) => {
     const [replyCommentData, setReplyCommentData] = React.useState<any>('');
     const [isPickerVisible, setIsPickerVisible] = React.useState('');
     const [currentEmoji, setCurrentEmoji] = React.useState(null);
+    const editor = React.useRef(null);
+    const [content, setContent] = React.useState('');
+    const callBack: any = '';
     React.useEffect(() => {
         userdata();
         loadGroupChat();
@@ -113,13 +116,14 @@ const MSTeamsChat = (props: any) => {
                 }
                 try {
                     res?.value?.forEach((chat: any, index: any) => {
+                        chat.isPickerVisible = false;
+                        chat.openPopup = false;
                         if (chat.body != undefined && chat.body.contentType != undefined && chat.body.contentType == 'html' && chat.body.content !== '<systemEventMessage/>') {
                             if (chat.body.content.indexOf('<blockquote>') == -1 && chat.body.content.includes('<[^>]+>&nbsp;\s+') > -1) {
                                 chat.body.content = chat.body.content.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
                             }
                             else {
                                 let chatContent = chat.body.content.split('\n');
-                                chat.isPickerVisible = false;
                                 chat.body.content = chatContent[chatContent.length - 1];
                             }
                             chat.LastModified = moment(chat?.lastModifiedDateTime).tz("Europe/Berlin").format('DD MMM YYYY HH:mm');
@@ -132,19 +136,19 @@ const MSTeamsChat = (props: any) => {
                             });
                             if (chat?.reactions !== undefined && chat?.reactions?.length > 0) {
                                 chat?.reactions?.map((user_reaction: any) => {
-                                    if (user_reaction.reactionType !== '' && user_reaction.reactionType !== undefined) {
-                                        Object.keys(EmojiData.emojis).forEach((key, value) => {
-                                            if (key) {
-                                                let item: any = {};
-                                                item = EmojiData.emojis[key];
-                                                item?.keywords?.map((match_emoji: any) => {
-                                                    if (match_emoji.toLowerCase().indexOf(user_reaction.reactionType.toLowerCase()) > -1) {
-                                                        chat.EmojiData = item?.skins[0].native;
-                                                    }
-                                                });
-                                            }
-                                        });
-                                    }
+                                    // if (user_reaction.reactionType !== '' && user_reaction.reactionType !== undefined) {
+                                    //     Object.keys(EmojiData.emojis).forEach((key, value) => {
+                                    //         if (key) {
+                                    //             let item: any = {};
+                                    //             item = EmojiData.emojis[key];
+                                    //             item?.keywords?.map((match_emoji: any) => {
+                                    //                 if (match_emoji.toLowerCase().indexOf(user_reaction.reactionType.toLowerCase()) > -1) {
+                                    //                     chat.EmojiData = item?.skins[0].native;
+                                    //                 }
+                                    //             });
+                                    //         }
+                                    //     });
+                                    // }
                                 });
                             }
                             Items_Exclude.push(chat);
@@ -283,24 +287,24 @@ const MSTeamsChat = (props: any) => {
             return result;
         }
     }
-    const openEmojiPopup = (chat: any) => {
-        chat.isPickerVisible = !chat.isPickerVisible;
-        let MainData = Data;
-        setData(MainData);
-        rerender();
-        console.log(EmojiData);
-    }
-    const selectEmoji = (msg: any) => {
-        console.log(currentEmoji);
-        if (msg.emoji === undefined) {
-            msg.emoji = [];
-            msg.emoji.push(currentEmoji);
-        }
-        msg.isPickerVisible = !msg.isPickerVisible;
-        let MainData = Data;
-        setData(MainData);
-        rerender();
-    }
+    // const openEmojiPopup = (chat: any) => {
+    //     chat.isPickerVisible = !chat.isPickerVisible; 
+    //     let MainData = Data;
+    //     setData(MainData);
+    //     rerender();
+    //     console.log(EmojiData);
+    // }
+    // const selectEmoji = (msg: any) => {
+    //     console.log(currentEmoji);
+    //     if (msg.emoji === undefined) {
+    //         msg.emoji = [];
+    //         msg.emoji.push(currentEmoji);
+    //     }
+    //     msg.isPickerVisible = !msg.isPickerVisible;
+    //     let MainData = Data;
+    //     setData(MainData);
+    //     rerender();
+    // }
     const detectAndRenderLinks = (html: any) => {
         const div = document.createElement('div');
         div.innerHTML = html;
@@ -315,6 +319,29 @@ const MSTeamsChat = (props: any) => {
         const anchorTags = div.querySelectorAll('a');
         return globalCommon?.replaceURLsWithAnchorTags(div.innerHTML);
     };
+    const handleModelChange = (model: any) => {
+        setContent(model);
+        onModelChange(model);
+    };
+    const onModelChange = (model: any) => {
+        callBack(model);
+    };
+    const config = React.useMemo(
+        () => ({
+            readonly: false,
+            placeholder: '' || 'Start typing...',
+            uploader: {
+                insertImageAsBase64URI: true
+            }
+        }),
+        []
+    );
+    const openEditorPopup = (itemEditor:any) =>{
+        if(itemEditor.RichTextComments == undefined){
+            itemEditor.RichTextComments=[];
+            itemEditor.openPopup = !itemEditor.openPopup;
+        }
+    }
     return (
         <>
             {Data != null && Data != undefined && Data?.length > 0 &&
@@ -374,8 +401,20 @@ const MSTeamsChat = (props: any) => {
                                                             {avail_Msg?.LastModified}
                                                         </span>
                                                         <div className="d-flex ml-auto media-icons px-1">
-                                                            <a onClick={() => openEmojiPopup(avail_Msg)}>
+                                                            {/* <a onClick={() => openEditorPopup(avail_Msg)}>
                                                                 <span className='svg__iconbox svg__icon--edit'></span>
+                                                            </a>
+                                                            {avail_Msg.openPopup && <div className="jodit-container" style={{ width: '100%' }}>
+                                                                <JoditEditor
+                                                                    ref={editor}
+                                                                    value={content}
+                                                                    config={config}
+                                                                    onBlur={(newContent: any) => setContent(newContent)}
+                                                                    onChange={(newContent: any) => handleModelChange(newContent)}
+                                                                />
+                                                            </div>} */}
+                                                            {/* <a onClick={() => openEmojiPopup(avail_Msg)}>
+                                                                <span className='svg__iconbox svg__icon--emoji'></span>
                                                             </a>
                                                             {avail_Msg.isPickerVisible &&
                                                                 <div key={i} className={avail_Msg.isPickerVisible ? "d-block emoji-panel" : "d-none"}>
@@ -384,14 +423,14 @@ const MSTeamsChat = (props: any) => {
                                                                         !avail_Msg.isPickerVisible;
                                                                         selectEmoji(avail_Msg);
                                                                     }} />
-                                                                </div>}
+                                                                </div>} */}
                                                             <Popover withArrow open={isPopoverReplyOpen == `${i}`} onOpenChange={(e, data) => setIsPopoverReplyOpen(`${i}`)}>
                                                                 <PopoverTrigger disableButtonEnhancement>
                                                                     <span className="svg__iconbox svg__icon--reply"></span>
                                                                 </PopoverTrigger>
                                                                 <PopoverSurface tabIndex={-1}>
-                                                                    <div>
-                                                                        <div className='subheading m-0' style={{ minWidth: '250px' }}>Reply Comment</div>
+                                                                    <div >
+                                                                        <h5 className='siteColor m-0' style={{ minWidth: '250px' }}>Reply Comment</h5>
                                                                         <div className='my-2'>
                                                                             <textarea className='w-100' onChange={(e) => setReplyCommentData(e?.target?.value)}></textarea>
                                                                         </div>
@@ -405,7 +444,7 @@ const MSTeamsChat = (props: any) => {
                                                         </div>
                                                     </div>
                                                     <div className="media-text">
-                                                        <span dangerouslySetInnerHTML={{ __html: detectAndRenderLinks(avail_Msg?.body?.content) }}></span>
+                                                        <div dangerouslySetInnerHTML={{ __html: detectAndRenderLinks(avail_Msg?.body?.content) }}></div>
                                                         {(avail_Msg.EmojiData !== null && avail_Msg.EmojiData !== undefined) &&
                                                             <span className="emojireact">{avail_Msg.EmojiData}</span>
                                                         }
@@ -430,7 +469,7 @@ const MSTeamsChat = (props: any) => {
                                                                                     {ReplyMsg?.Created}</span>
                                                                             </div>
                                                                             <div className="media-text">
-                                                                                <span dangerouslySetInnerHTML={{ __html: detectAndRenderLinks(ReplyMsg?.Description) }}></span>
+                                                                                <div dangerouslySetInnerHTML={{ __html: detectAndRenderLinks(ReplyMsg?.Description) }}></div>
                                                                                 {(ReplyMsg.EmojiData !== null && ReplyMsg.EmojiData !== undefined) &&
                                                                                     <span className="emojireact">{ReplyMsg.EmojiData}</span>
                                                                                 }
