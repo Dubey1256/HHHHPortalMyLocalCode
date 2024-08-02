@@ -28,7 +28,7 @@ import AncTool from '../../../globalComponents/AncTool/AncTool'
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import GlobalTooltip from '../../../globalComponents/Tooltip';
 import { Tooltip } from "@fluentui/react-components";
-import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
+
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { ImReply } from 'react-icons/im';
 import KeyDocuments from './KeyDocument';
@@ -76,8 +76,6 @@ const CopyTaskProfile = (props: any) => {
     const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
     const [isShowSiteCompostion, setisShowSiteCompostion] = useState<any>('')
     const [showComposition, setshowComposition] = useState(true);
-    const [SiteIcon, setSiteIcon] = useState('');
-    const [OffshoreImageUrl, setOffshoreImageUrl] = useState([]);
     const [ApprovalStatus, setApprovalStatus] = useState(false);
     const [checkedImageData, SetCheckedImageData]: any = useState([])
     const [openComparePopup, SetOpenComparePopup]: any = useState(false)
@@ -340,6 +338,7 @@ const CopyTaskProfile = (props: any) => {
                     }
                     if (Action?.Title == "Approval") {
                         if(Action?.InformationData?.length>0){
+                            Approval=Action?.InformationData;
                             setApprovalStatus(true)
                         }
                        
@@ -1001,162 +1000,6 @@ const CopyTaskProfile = (props: any) => {
         }))
     }
 
-    const SubtextPostButtonClick = (j: any, parentIndex: any) => {
-        let txtComment = state.CommenttoPost;
-        if (txtComment != '') {
-            let temp: any = {
-                AuthorImage: currentUser != null && currentUser.length > 0 ? currentUser[0]['userImage'] : "",
-                AuthorName: currentUser != null && currentUser.length > 0 ? currentUser[0]['Title'] : "",
-
-                Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
-                Title: txtComment,
-
-            };
-            if (state.ApprovalCommentcheckbox) {
-                temp.isApprovalComment = state.ApprovalCommentcheckbox
-                temp.isShowLight = state?.Result?.FeedBack[0]?.FeedBackDescriptions[parentIndex]?.Subtext[j].isShowLight != undefined ? state?.Result?.FeedBack[0]?.FeedBackDescriptions[parentIndex]?.Subtext[j].isShowLight : ""
-                var approvalDataHistory = {
-                    ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
-                    Id: currentUser[0].Id,
-                    ImageUrl: currentUser[0].userImage,
-                    Title: currentUser[0].Title,
-                    isShowLight: state?.Result?.FeedBack[0]?.FeedBackDescriptions[parentIndex]?.Subtext[j].isShowLight != undefined ? state?.Result?.FeedBack[0]?.FeedBackDescriptions[parentIndex]?.Subtext[j].isShowLight : ""
-                }
-
-                if (temp.ApproverData != undefined) {
-                    temp.ApproverData.push(approvalDataHistory)
-                } else {
-                    temp.ApproverData = [];
-                    temp.ApproverData.push(approvalDataHistory);
-                }
-
-            }
-            //Add object in feedback
-
-            if (state?.Result?.FeedBack[0]?.FeedBackDescriptions[parentIndex]["Subtext"][j].Comments != undefined) {
-                state.Result.FeedBack[0].FeedBackDescriptions[parentIndex]["Subtext"][j].Comments.unshift(temp);
-            }
-            else {
-                state.Result.FeedBack[0].FeedBackDescriptions[parentIndex]["Subtext"][j]['Comments'] = [temp];
-            }
-            (document.getElementById('txtCommentSubtext') as HTMLTextAreaElement).value = '';
-            // setState({
-            //     ...state,
-            //     showcomment_subtext: 'none',
-            //     CommenttoPost: '',
-            // });           
-            setState((prevState: any) => ({
-                ...prevState,
-                showcomment_subtext: 'none',
-                CommenttoPost: '',
-                ApprovalCommentcheckbox: false,
-                subchildcomment: null,
-                subchildParentIndex: null
-            }))
-            onPost();
-        } else {
-            alert('Please input some text.')
-        }
-
-    }
-    const showhideCommentBoxOfSubText = (j: any, parentIndex: any) => {
-        if (state.showcomment_subtext == 'none') {
-            setState((prevState: any) => ({
-                ...prevState,
-                showcomment_subtext: 'block',
-                subchildcomment: j,
-                subchildParentIndex: parentIndex,
-                showcomment: 'none',
-                showhideCommentBoxIndex: null
-            }))
-        }
-        else {
-            setState((prevState: any) => ({
-                ...prevState,
-                showcomment_subtext: 'block',
-                subchildcomment: j,
-                subchildParentIndex: parentIndex,
-                showcomment: 'none',
-                showhideCommentBoxIndex: null
-            }))
-        }
-    }
-    //================================ taskfeedbackcard End===============
-
-  
-    
-    //================percentage changes ==========================
-    const changepercentageStatus = async (percentageStatus: any, pervious: any, countApprove: any) => {
-        console.log(percentageStatus)
-        console.log(pervious)
-        console.log(countApprove)
-        let percentageComplete;
-        let changespercentage1;
-        if ((countApprove == 1 && percentageStatus == "Approve" && (pervious?.isShowLight == "Approve" || pervious?.isShowLight != undefined))) {
-            changespercentage = true;
-        }
-        if ((countApprove == 0 && (percentageStatus == "Reject" || percentageStatus == "Maybe") && (pervious?.isShowLight == "Reject" && pervious?.isShowLight != undefined))) {
-            changespercentage = false;
-        }
-        if ((countApprove == 0 && percentageStatus == "Approve" && (pervious.isShowLight == "Reject" || pervious.isShowLight == "Maybe") && pervious.isShowLight != undefined)) {
-            changespercentage = true;
-        }
-        if ((countApprove == 0 && percentageStatus == "Maybe" && (pervious?.isShowLight == "Reject" || pervious?.isShowLight == "Maybe") && pervious.isShowLight != undefined)) {
-            changespercentage = false;
-        }
-
-        let taskStatus = "";
-        if (changespercentage == true) {
-            percentageComplete = 0.03;
-            changespercentage1 = 3
-            taskStatus = "Approved"
-
-        }
-        if (changespercentage == false) {
-            percentageComplete = 0.02;
-            changespercentage1 = 2
-            taskStatus = "Follow Up"
-        }
-        state.Result.PercentComplete = changespercentage1
-        state.Result.Status = taskStatus
-        const web = new Web(propsValue?.siteUrl);
-        await web.lists.getByTitle(state?.Result?.listName)
-            .items.getById(state?.Result?.Id).update({
-                PercentComplete: percentageComplete,
-                Status: taskStatus,
-            }).then((res: any) => {
-                console.log(res);
-            })
-            .catch((err: any) => {
-                console.log(err.message);
-            });
-    }
-    //================percentage changes End ==========================
-
-
-    // ========approval history popup and callback =================
-    const ShowApprovalHistory = (items: any, parentIndex: any, subChildIndex: any) => {
-        console.log("currentUser is a Approval function cxall ", items)
-        setState((prevState: any) => ({
-            ...prevState,
-            ApprovalHistoryPopup: true,
-            ApprovalPointUserData: items,
-            ApprovalPointCurrentParentIndex: parentIndex + 1,
-            currentArraySubTextIndex: subChildIndex != null ? subChildIndex + 1 : null
-        }))
-
-    }
-    const ApprovalHistoryPopupCallBack = () => {
-        setState((prevState: any) => ({
-            ...prevState,
-            ApprovalHistoryPopup: false,
-            ApprovalPointUserData: '',
-            ApprovalPointCurrentParentIndex: null,
-            currentArraySubTextIndex: null
-        }))
-    }
-    // ========approval history popup and callback End =================
-
     /// ==============reply comment function ====================
     const updateReplyMessagesFunction = (e: any) => {
         console.log(e.target.value)
@@ -1166,21 +1009,7 @@ const CopyTaskProfile = (props: any) => {
         }))
 
     }
-    const openReplycommentPopup = (i: any, k: any) => {
-        setState((prevState: any) => ({
-            ...prevState,
-            currentDataIndex: i + "" + k,
-            isCalloutVisible: true
-        }))
-    }
-    const openReplySubcommentPopup = (i: any, j: any, k: any) => {
-        setState((prevState: any) => ({
-            ...prevState,
-            currentDataIndex: +i + '' + j + k,
-            isCalloutVisible: true
-        }))
-    }
-
+   
     ///// ==========save reeply comment=======================
     const SaveReplyMessageFunction = () => {
         let txt: any = state.replyTextComment;
@@ -1241,38 +1070,7 @@ const CopyTaskProfile = (props: any) => {
         }
 
     }
-    // =========clearReplycomment===========
-    const clearReplycomment = (isSubtextComment: any, indexOfDeleteElement: any, indexOfSubtext: any, parentindex: any, replyIndex: any) => {
-        if (confirm("Are you sure, you want to delete currentUser?")) {
-            if (isSubtextComment) {
-                state?.Result?.FeedBack[0]?.FeedBackDescriptions[parentindex]["Subtext"][indexOfSubtext]?.Comments[indexOfDeleteElement]?.ReplyMessages?.splice(replyIndex, 1)
-            } else {
-                state?.Result?.FeedBack[0]?.FeedBackDescriptions[parentindex]["Comments"][indexOfDeleteElement]?.ReplyMessages?.splice(replyIndex, 1);
-            }
-            onPost();
-        }
-
-    }
-
-    //===========EditReplyComment===============
-
-    const EditReplyComment = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any, parentIndex: any, replyIndex: any) => {
-        setState((prevState: any) => ({
-            ...prevState,
-            isEditReplyModalOpen: true,
-            CommenttoUpdate: comment?.Title,
-            // replyTextComment:comment?.Title,
-            updateReplyCommentText: {
-                'comment': comment?.Title,
-                'indexOfUpdateElement': indexOfUpdateElement,
-                'indexOfSubtext': indexOfSubtext,
-                'isSubtextComment': isSubtextComment,
-                'replyIndex': replyIndex,
-                "data": comment,
-                "parentIndexOpeneditModal": parentIndex
-            }
-        }))
-    }
+    
     const onRenderCustomHeadereditcomment = () => {
         return (
             <>
@@ -1851,8 +1649,8 @@ const CopyTaskProfile = (props: any) => {
                                                                     onMouseEnter={showOnHoldReason}
                                                                     onMouseLeave={hideOnHoldReason}
                                                                 />
-                                                                <span className="tooltip-text tooltipboxs  pop-right">
-                                                                    {state.showOnHoldComment &&
+                                                                {state.showOnHoldComment && <span className="tooltip-text tooltipboxs  pop-right">
+                                                                    {
                                                                         comments.map((item: any, index: any) =>
                                                                             item.CommentFor !== undefined &&
                                                                                 item.CommentFor === "Reopen" ? (
@@ -1880,7 +1678,7 @@ const CopyTaskProfile = (props: any) => {
                                                                                 </div>
                                                                             ) : null
                                                                         )}
-                                                                </span>
+                                                                </span>}
                                                             </div> : null}
                                                         </dd>
                                                     </dl>
@@ -2178,6 +1976,24 @@ const CopyTaskProfile = (props: any) => {
                                                                                         {ApprovalData.Comment}
                                                                                     </span>
                                                                                 </span>}
+                                                                                <span className="hover-text me-1" >
+                                                                                <span className='svg__icon--info svg__iconbox mt-1'></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    <div className="alignCenter">
+                                                                                        <span className='me-2'>  By </span>
+                                                                                        {ApprovalData.CreatorImage != undefined && ApprovalData.CreatorImage.length > 0 ? <img
+                                                                                            className="ProirityAssignedUserPhoto m-0"
+                                                                                            title={ApprovalData.CreatorName}
+                                                                                            src={ApprovalData.CreatorImage} />
+                                                                                            :
+                                                                                            <span title={ApprovalData.CreatorName != undefined ? ApprovalData.CreatorName : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                                                                        }
+                                                                                        <span className="mx-1">{ApprovalData?.CreatorName}</span>
+                                                                                        <span>{ApprovalData?.CreatedOn}</span>
+                                                                                    </div>
+                                                                                </span>
+                                                                            </span>
+
 
                                                                         </div>
                                                                     </div>
@@ -2627,17 +2443,7 @@ const CopyTaskProfile = (props: any) => {
                             <button className='btn btn-default ms-1' onClick={Closecommentpopup}>Cancel</button>
                         </footer>
                     </Panel>}
-                    {state.ApprovalHistoryPopup ? <ApprovalHistoryPopup
-                        ApprovalPointUserData={state.ApprovalPointUserData}
-                        indexSHow={state.currentArraySubTextIndex != null ? state.ApprovalPointCurrentParentIndex + "." + state.currentArraySubTextIndex : state.ApprovalPointCurrentParentIndex}
-                        ApprovalPointCurrentIndex={state.ApprovalPointCurrentParentIndex - 1}
-                        ApprovalPointHistoryStatus={state.ApprovalHistoryPopup}
-                        currentArrayIndex={state.currentArraySubTextIndex - 1}
-                        usefor="TaskProfile"
-
-                        callBack={() => ApprovalHistoryPopupCallBack()}
-                    />
-                        : null}
+                    
                     {openComparePopup && <ImageViewPanel currentUser={currentUser} checkedImageData={checkedImageData} SetOpenComparePopup={SetOpenComparePopup} AllImageData={state?.Result?.BasicImageInfo} AllListId={AllListId} taskUsers={taskUsers} taskData={state?.Result} />}
 
                 </div>

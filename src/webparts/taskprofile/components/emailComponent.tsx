@@ -142,7 +142,7 @@ const EmailComponenet = (props: any) => {
     }
     else if (send == "Rejected") {
       if(props?.items?.Categories?.includes('UX-New')){
-        await updateDataForUx("Approve")
+        await updateDataForUx("Reject")
       }else{
         await updateData("Reject");
       }
