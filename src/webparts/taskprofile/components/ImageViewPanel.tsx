@@ -422,7 +422,7 @@ const ImageViewPanel = (props: any) => {
                                                 <a className='alignCenter mx-2 RestoreImage'onClick={() => changeFunction('Restore', slide, "Restore")}>
                                                     <span className='svg__icon--refresh svg__iconbox me-1'></span>Restore
                                                 </a>}
-                                                <a className='alignCenter mx-2 imageFavorite' onClick={() => changeFunction('fillHeart', slide, "fillHeart")}>
+                                                <a className='alignCenter ms-2 imageFavorite' onClick={() => changeFunction('fillHeart', slide, "fillHeart")}>
 
                                                     {slide?.fillHeart ? <BsFillHeartFill className='me-2 fillHeart'/> : <BsHeart className='me-1'  />}
                                                     Favorite</a>
@@ -447,7 +447,7 @@ const ImageViewPanel = (props: any) => {
                                                             : <span className='svg__icon--ProsCons svg__iconbox me-1'></span>
                                                         }
                                                         Add Pros/Cons</a>
-                                                    <a className="alignCenter mx-2 siteColor" onClick={() => setCommentStatus({ ...commentStatus, status: true, index: index })}>
+                                                    <a className="alignCenter ms-2 siteColor" onClick={() => setCommentStatus({ ...commentStatus, status: true, index: index })}>
                                                         <span className='svg__icon--comment svg__iconbox me-1'></span>
                                                         Add Comment</a>
                                                 </div>
@@ -597,7 +597,7 @@ const ImageViewPanel = (props: any) => {
                                                 <a className='alignCenter mx-2 RestoreImage'onClick={() => changeFunction('Restore', slide, "Restore")}>
                                                     <span className='svg__icon--refresh svg__iconbox me-1'></span>Restore
                                                 </a>}
-                                <a className='alignCenter mx-2 imageFavorite'>
+                                <a className='alignCenter ms-2 imageFavorite'>
 
                                     {slide?.fillHeart ? <BsFillHeartFill className='me-2 fillHeart' onClick={() => changeFunction('fillHeart', slide, "fillHeart")} /> : <BsHeart className='me-1' onClick={() => changeFunction('fillHeart', slide, "fillHeart")} />}
                                     Favorite</a>
@@ -622,7 +622,7 @@ const ImageViewPanel = (props: any) => {
                                             : <span className='svg__icon--ProsCons svg__iconbox me-1'></span>
                                         }
                                         Add Pros/Cons</a>
-                                    <a className="alignCenter mx-2" onClick={() => setCommentStatus({ ...commentStatus, status: true, index: index })}>
+                                    <a className="alignCenter ms-2" onClick={() => setCommentStatus({ ...commentStatus, status: true, index: index })}>
                                         <span className='svg__icon--comment svg__iconbox me-1'></span>
                                         Add Comment</a>
                                 </div>
