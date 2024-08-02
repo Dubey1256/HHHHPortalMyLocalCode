@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
 // import '../../../index.css'
+
 import { ColumnDef } from "@tanstack/react-table";
 import Moment from 'moment-timezone';
 
@@ -134,18 +135,19 @@ export const EodReportMain = (props: any) => {
     const findAndUpdateOffshoreComments = (objectToUpdate: any, newOffshoreComments: any) => {
         allTodayModifiedTask.map((item: any) => {
             if (item.ID === objectToUpdate.ID) {
-                item.OffshoreComments = newOffshoreComments;
-                item.Achieved = item.OffshoreComments?.Achieved;
-                item.Pending = item.OffshoreComments?.Pending;
+                item.OffshoreComments = [newOffshoreComments];
+                item.Achieved = newOffshoreComments?.Achieved;
+                item.Pending = newOffshoreComments?.Pending;
+              
             }
         });
 
         copyAllAditionalTaskData.map((item: any) => {
             if (item.ID === objectToUpdate.ID) {
-                item.OffshoreComments = newOffshoreComments;
-                item.Achieved = item.OffshoreComments?.Achieved;
-                item.Pending = item.OffshoreComments?.Pending;
-
+                item.OffshoreComments =[newOffshoreComments];
+                item.Achieved = newOffshoreComments?.Achieved;
+                item.Pending = newOffshoreComments?.Pending;
+                
             }
         });
         setAllTodayModifiedTask(allTodayModifiedTask);
@@ -174,7 +176,7 @@ export const EodReportMain = (props: any) => {
                 console.error('Error parsing OffshoreComments:', error);
             }
         } else {
-            OffshoreCommentsArray = [selectedTaskForEod.OffshoreComments];
+            OffshoreCommentsArray = selectedTaskForEod.OffshoreComments;
         }
         const updatedOffshoreComments = OffshoreCommentsArray.map((comment) => ({
             ...comment,
@@ -258,7 +260,6 @@ export const EodReportMain = (props: any) => {
     const onEmailSend = () => {
         console.log(allAditionalTask, "allAditionalTask");
         let body1: string[] = [];
-
         // Group tasks by ProjectTitle
         let groupedTasks = allTodayModifiedTask.reduce((acc: { [x: string]: any[]; }, item: { ProjectTitle: string; }) => {
             let title = item?.ProjectTitle ?? ' ';
@@ -268,7 +269,6 @@ export const EodReportMain = (props: any) => {
             acc[title].push(item);
             return acc;
         }, {});
-
         Object.keys(groupedTasks).forEach(projectTitle => {
             let tasks = groupedTasks[projectTitle];
             let firstTask = true;
@@ -435,153 +435,150 @@ export const EodReportMain = (props: any) => {
 
 
     }
-    const onAddpress = () => {
-        const filterarrray = selectedTaskForEod.map((item: any) => {
-            let OffshoreCommentsArray;
-            if (typeof item.original.OffshoreComments === 'string') {
-                OffshoreCommentsArray = JSON.parse(item.original.OffshoreComments);
-
-            }
-            else {
-                OffshoreCommentsArray = [item.original.OffshoreComments];
-            }
-            try {
-            } catch (error) {
-                console.error('Error parsing OffshoreComments:', error);
-                // Handle the error appropriately, e.g., provide a default value or log the error
-            }
-            const updatedOffshoreComments = OffshoreCommentsArray?.map((comment: any) => {
-                if (comment.hasOwnProperty('isEodTask')) {
-                    return {
-                        ...comment,
-                        isEodTask: true
-                    };
-                }
-                return {
-                    ...comment,
-                    isEodTask: true
-                };
-            });
-
-            return {
-                ...item.original,
-                OffshoreComments: updatedOffshoreComments,
-                oldOffshoreComments: updatedOffshoreComments
-
-            };
-        });
-        const combinedArray = [...allTodayModifiedTask, ...filterarrray];
-        const removeFromAdditionalArray = allAditionalTask.filter((item1: { ID: any; }) => !filterarrray.some((item2: { ID: any; }) => item1.ID === item2.ID));
-        setallAditionalTask(removeFromAdditionalArray)
-        setAllTodayModifiedTask(combinedArray)
-        setSelectedTaskForEod([])
-
-        combinedArray.map((item: any) => {
-            updateCommentFunctionForAddToEoD(item?.OffshoreComments[0], "OffshoreComments", item?.oldOffshoreComments, item);
-        })
-        childRef?.current?.setRowSelection({});
-    }
-
-
     // const onAddpress = () => {
-    //     let isPendingEmpty:any=false
-    //     let isAcheviedEmpty:any =false
-    //     let bothEmpty:any =false  
-    //     selectedTaskForEod.map((items:any)=>{
-    //         let checkEmptyComment:any;
-           
-    //         if(items?.original?.OffshoreComments!=undefined){
-    //            if(typeof items.original.OffshoreComments === 'string'){
-    //             try {
-    //                 checkEmptyComment = JSON.parse(items?.original?.OffshoreComments)
-    //             } catch (error) {
-    //                 console.error('Error parsing OffshoreComments:', error);
-    //             }
-    //            }else{
-    //             checkEmptyComment=items.original.OffshoreComments
-    //            }
-                
-                
-    //             let EodRoprtAvialble = checkEmptyComment?.some((comment: any) => {
-    //                 if (comment?.Type=="EODReport") {
-    //                     return true;
-    //                 } 
-    //             })
-    //            if(EodRoprtAvialble!=undefined && EodRoprtAvialble==true){
-    //             checkEmptyComment.map((comment:any)=>{
-    //                 if(comment.Type=="EODReport"){
-    //                  if(comment?.Achieved==null||comment?.Achieved ==undefined || comment?.Achieved ==''){
-    //                     isAcheviedEmpty=true
-    //                  }
-    //                  else if(comment?.Pending==null||comment?.Pending ==undefined || comment?.Pending ==''){
-    //                      isPendingEmpty=true
-    //                  }
-    //                 }
-    //              })
-    //            }else{
-    //             bothEmpty=true
-    //            }
-                
-    //         } else{
-    //             bothEmpty=true
+    //     const filterarrray = selectedTaskForEod.map((item: any) => {
+    //         let OffshoreCommentsArray;
+    //         if (typeof item.original.OffshoreComments === 'string') {
+    //             OffshoreCommentsArray = JSON.parse(item.original.OffshoreComments);
+
     //         }
-    //     })
-    //     if( isPendingEmpty == false && isAcheviedEmpty==false && bothEmpty==false){
-    //         const filterarrray = selectedTaskForEod.map((item: any) => {
-    //             let OffshoreCommentsArray;
-    //             if (typeof item.original.OffshoreComments === 'string') {
-    //                 OffshoreCommentsArray = JSON.parse(item.original.OffshoreComments);
-    //             }
-    //             else {
-    //                 OffshoreCommentsArray = [item.original.OffshoreComments];
-    //             }
-    //             try {
-    //             } catch (error) {
-    //                 console.error('Error parsing OffshoreComments:', error);
-    //                 // Handle the error appropriately, e.g., provide a default value or log the error
-    //             }
-    //             const updatedOffshoreComments = OffshoreCommentsArray?.map((comment: any) => {
-    //                 if (comment.hasOwnProperty('isEodTask')) {
-    //                     return {
-    //                         ...comment,
-    //                         isEodTask: true
-    //                     };
-    //                 }
+    //         else {
+    //             OffshoreCommentsArray = [item.original.OffshoreComments];
+    //         }
+    //         try {
+    //         } catch (error) {
+    //             console.error('Error parsing OffshoreComments:', error);
+    //             // Handle the error appropriately, e.g., provide a default value or log the error
+    //         }
+    //         const updatedOffshoreComments = OffshoreCommentsArray?.map((comment: any) => {
+    //             if (comment.hasOwnProperty('isEodTask')) {
     //                 return {
     //                     ...comment,
     //                     isEodTask: true
     //                 };
-    //             });
-    
+    //             }
     //             return {
-    //                 ...item.original,
-    //                 OffshoreComments: updatedOffshoreComments,
-    //                 oldOffshoreComments: updatedOffshoreComments
-    
+    //                 ...comment,
+    //                 isEodTask: true
     //             };
     //         });
-    //         const combinedArray = [...allTodayModifiedTask, ...filterarrray];
-    //         const removeFromAdditionalArray = allAditionalTask.filter((item1: { ID: any; }) => !filterarrray.some((item2: { ID: any; }) => item1.ID === item2.ID));
-    //         setallAditionalTask(removeFromAdditionalArray)
-    //         setAllTodayModifiedTask(combinedArray)
-    //         setSelectedTaskForEod([])
-    
-    //         combinedArray.map((item: any) => {
-    //             updateCommentFunctionForAddToEoD(item?.OffshoreComments[0], "OffshoreComments", item?.oldOffshoreComments, item);
-    //         })
-    //         childRef?.current?.setRowSelection({});
 
-    //     }else{
-    //      if(isPendingEmpty == true){
-    //         alert("Please fill the pending Comment")
-    //      }  else if(isAcheviedEmpty== true){
-    //         alert("Please fill the achived Comment")
-    //      } else if(bothEmpty == true){
-    //         alert("Please fill the achived and pending Comments")
-    //      }
-    //     }
+    //         return {
+    //             ...item.original,
+    //             OffshoreComments: updatedOffshoreComments,
+    //             oldOffshoreComments: updatedOffshoreComments
 
+    //         };
+    //     });
+    //     const combinedArray = [...allTodayModifiedTask, ...filterarrray];
+    //     const removeFromAdditionalArray = allAditionalTask.filter((item1: { ID: any; }) => !filterarrray.some((item2: { ID: any; }) => item1.ID === item2.ID));
+    //     setallAditionalTask(removeFromAdditionalArray)
+    //     setAllTodayModifiedTask(combinedArray)
+    //     setSelectedTaskForEod([])
+
+    //     combinedArray.map((item: any) => {
+    //         updateCommentFunctionForAddToEoD(item?.OffshoreComments[0], "OffshoreComments", item?.oldOffshoreComments, item);
+    //     })
+    //     childRef?.current?.setRowSelection({});
     // }
+
+
+    const onAddpress = () => {
+        let isPendingEmpty:any=false
+        let isAcheviedEmpty:any =false
+        let bothEmpty:any =false  
+        selectedTaskForEod.map((items:any)=>{
+            let checkEmptyComment:any; 
+            if(items?.original?.OffshoreComments!=undefined){
+               if(typeof items.original.OffshoreComments === 'string'){
+                try {
+                    checkEmptyComment = JSON.parse(items?.original?.OffshoreComments)
+                } catch (error) {
+                    console.error('Error parsing OffshoreComments:', error);
+                }
+               }else{
+                checkEmptyComment=items.original.OffshoreComments
+               }
+                let EodRoprtAvialble = checkEmptyComment?.some((comment: any) => {
+                    if (comment?.Type=="EODReport") {
+                        return true;
+                    } 
+                })
+               if(EodRoprtAvialble!=undefined && EodRoprtAvialble==true){
+                checkEmptyComment.map((comment:any)=>{
+                    if(comment.Type=="EODReport"){
+                     if(comment?.Achieved==null||comment?.Achieved ==undefined || comment?.Achieved ==''){
+                        isAcheviedEmpty=true
+                     }
+                     else if(comment?.Pending==null||comment?.Pending ==undefined || comment?.Pending ==''){
+                         isPendingEmpty=true
+                     }
+                    }
+                 })
+               }else{
+                bothEmpty=true
+               }
+                
+            } else{
+                bothEmpty=true
+            }
+        })
+        if( isPendingEmpty == false && isAcheviedEmpty==false && bothEmpty==false){
+            const filterarrray = selectedTaskForEod.map((item: any) => {
+                let OffshoreCommentsArray;
+                if (typeof item.original.OffshoreComments === 'string') {
+                    OffshoreCommentsArray = JSON.parse(item.original.OffshoreComments);
+                }
+                else {
+                    OffshoreCommentsArray = item.original.OffshoreComments;
+                }
+                try {
+                } catch (error) {
+                    console.error('Error parsing OffshoreComments:', error);
+                    // Handle the error appropriately, e.g., provide a default value or log the error
+                }
+                const updatedOffshoreComments = OffshoreCommentsArray?.map((comment: any) => {
+                    if (comment.hasOwnProperty('isEodTask')) {
+                        return {
+                            ...comment,
+                            isEodTask: true
+                        };
+                    }
+                    return {
+                        ...comment,
+                        isEodTask: true
+                    };
+                });
+    
+                return {
+                    ...item.original,
+                    OffshoreComments: updatedOffshoreComments,
+                    oldOffshoreComments: updatedOffshoreComments
+    
+                };
+            });
+            const combinedArray = [...allTodayModifiedTask, ...filterarrray];
+            const removeFromAdditionalArray = allAditionalTask.filter((item1: { ID: any; }) => !filterarrray.some((item2: { ID: any; }) => item1.ID === item2.ID));
+            setallAditionalTask(removeFromAdditionalArray)
+            setAllTodayModifiedTask(combinedArray)
+            setSelectedTaskForEod([])
+    
+            combinedArray.map((item: any) => {
+                updateCommentFunctionForAddToEoD(item?.OffshoreComments[0], "OffshoreComments", item?.oldOffshoreComments, item);
+            })
+            childRef?.current?.setRowSelection({});
+
+        }else{
+         if(isPendingEmpty == true){
+            alert("Please fill the pending Comment")
+         }  else if(isAcheviedEmpty== true){
+            alert("Please fill the achived Comment")
+         } else if(bothEmpty == true){
+            alert("Please fill the achived and pending Comments")
+         }
+        }
+
+    }
     // Pagination EOD Report
     const indexOfLastItem = currentPageEoDReport * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -1187,13 +1184,10 @@ export const EodReportMain = (props: any) => {
                     else if (loginUserInfo[0]?.UserGroup?.Title == "Junior Task Management") {
                         filteredData = res;
                     }
-                    else if (loginUserInfo[0]?.UserGroup?.Title == "Developers Team") {
+                    else if (loginUserInfo[0]?.UserGroup?.Title == "QA Team") {
                         filteredData = res;
                     }
-                    else if (loginUserInfo[0]?.UserGroup?.Title == "Design Team") {
-                        filteredData = res;
-                    }
-                    else if (loginUserInfo[0]?.UserGroup?.Title == "Portfolio Lead Team") {
+                    else if (loginUserInfo[0]?.UserGroup?.Title == "Portfolio Lead Team" || loginUserInfo[0]?.UserGroup?.Title == "Design Team") {
                         let filterIdsUserIds = AllProtFolioTeamMembers?.map((item: { AssingedToUserId: any; }) => item.AssingedToUserId);
                         filterIdsUserIds.push(currentUserData)
                         // Filter DATA based on AssignedTo array
