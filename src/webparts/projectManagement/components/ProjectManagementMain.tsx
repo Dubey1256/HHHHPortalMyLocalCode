@@ -571,7 +571,9 @@ const ProjectManagementMain = (props: any) => {
                 task.TaskTime = parseFloat(timeEntry?.TaskTime);
                 task.TimeDate = timeEntry.TaskDate;
                 task.TimeDescription = timeEntry.Description;
-                task.TimeFillDate = timeEntry?.TaskDate; let parts = timeEntry?.TaskDate?.split('/');
+                task.TimeEntryAuthorImage = timeEntry.AuthorImage
+                task.TimeEntryAuthorName = timeEntry.AuthorName
+                let parts = timeEntry?.TaskDate?.split('/');
                 let timeEntryDate: any = new Date(parts[2], parts[1] - 1, parts[0]);
                 if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingWeekDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingWeekDate.setHours(0, 0, 0, 0)) {
                   weekTotalTime += Number(timeEntry?.TaskTime)
@@ -1870,7 +1872,7 @@ const ProjectManagementMain = (props: any) => {
         cell: ({ row, column, getValue }) => (
           <>
             {row?.original?.Item_x0020_Type == "Sprint" ?
-              <span>
+              <div className="alignCenter">
                 <a
                   className="hreflink"
                   href={`${props?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Id}`}
@@ -1880,17 +1882,15 @@ const ProjectManagementMain = (props: any) => {
                   {row?.original?.Title}
                 </a>
                 {row?.original?.descriptionsSearch?.length > 0 ? (
-                  <span className="alignIcon">
                     <InfoIconsToolTip
                       Discription={row?.original?.bodys}
                       row={row?.original}
                     />
-                  </span>
                 ) : (
                   ""
                 )}
-              </span>
-              : <span>
+              </div>
+              : <div className="alignCenter">
                 <a
                   className="hreflink"
                   href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
@@ -1900,16 +1900,14 @@ const ProjectManagementMain = (props: any) => {
                   {row?.original?.Title}
                 </a>
                 {row?.original?.descriptionsSearch?.length > 0 ? (
-                  <span className="alignIcon">
                     <InfoIconsToolTip
                       Discription={row?.original?.bodys}
                       row={row?.original}
                     />
-                  </span>
                 ) : (
                   ""
                 )}
-              </span>}
+              </div>}
 
           </>
         ),
@@ -2277,20 +2275,20 @@ const ProjectManagementMain = (props: any) => {
               <>
                 {showTimeEntryIcon && <span
                   onClick={(e) => EditDataTimeEntry(e, row.original)}
-                  className="svg__iconbox svg__icon--clock ml-auto"
+                  className="ml-auto svg__iconbox svg__icon--clock"
                   title="Click To Edit Timesheet"
                 ></span>}
                 <span
                   title="Edit Task"
                   onClick={(e) => EditPopup(row?.original)}
-                  className="svg__iconbox svg__icon--edit hreflink ml-auto"
+                  className="ml-auto svg__iconbox svg__icon--edit hreflink"
                 ></span>
               </>
             ) : (
               <span
                 title="Edit Project"
                 onClick={(e) => EditPopup(row?.original)}
-                className="svg__iconbox svg__icon--edit hreflink ml-auto"
+                className="ml-auto svg__iconbox svg__icon--edit hreflink"
               ></span>
             )}
           </div>

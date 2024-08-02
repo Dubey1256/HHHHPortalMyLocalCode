@@ -969,7 +969,7 @@ const CreateAllStructureComponent = (props: any) => {
                                 }
 
                                 title="Add"
-                                className="svg__iconbox mx-1 svg__icon--Plus mini mt-1"
+                                className="svg__iconbox mx-1 svg__icon--Plus mini"
                               ></span>
                               {!(props?.SelectedItem?.Item_x0020_Type === "Component" && component.SubComponent.length === 1 && props?.SelectedItem === undefined) && (
                                 <div className="input-group-append alignCenter">

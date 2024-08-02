@@ -31,7 +31,7 @@ import * as globalCommon from "../globalCommon";
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
 
 // Used Components imports 
-import LabelInfoIconToolTip from "../labelInfoIconToolTip";
+import LabelInfoIconToolTip from "../../globalComponents/labelInfoIconToolTip";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import ServiceComponentPortfolioPopup from "./ServiceComponentPortfolioPopup";
 import Picker from "./SmartMetaDataPicker";
@@ -52,6 +52,7 @@ import CentralizedSiteComposition from "../SiteCompositionComponents/Centralized
 import SmartPriorityHover from "./SmartPriorityHover";
 import UXDesignPopupTemplate from "./UXDesignPopupTemplate";
 import ReactPopperTooltipSingleLevel from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
+import RecurringTask from "../RecurringTask";
 
 let PortfolioItemColor: any = "";
 let taskUsers: any = [];
@@ -634,7 +635,7 @@ const EditTaskPopup = (Items: any) => {
         items.forEach((childItem: any) => {
             if (childItem.ParentID !== undefined && parseInt(childItem.ParentID) === item.ID) {
                 childItem.isChild = true;
-                item?.childs?.push(childItem);
+                item.childs.push(childItem);
                 getChild(childItem, items);
             }
         });
@@ -834,15 +835,7 @@ const EditTaskPopup = (Items: any) => {
                     setOnlyCompletedStatus(item.TaskCategories?.some((category: any) => category.Title === "Only Completed"));
                     setDesignStatus(item.TaskCategories?.some((category: any) => category.Title === "Design" || category.Title === "User Experience - UX"));
                     setDesignNewTemplates(item.TaskCategories?.some((category: any) => category.Title === "UX-New"))
-                    let checkForApproval: any = item.TaskCategories?.some((category: any) => category.Title === "Approval")
-                    if (checkForApproval) {
-                        setApprovalStatus(true);
-                        ApprovalStatusGlobal = true;
-                    } else {
-                        setApprovalStatus(false);
-                        ApprovalStatusGlobal = false;
-                        setApproverData([]);
-                    }
+
                 }
                 if (item.Portfolio != undefined && item.Portfolio?.Title != undefined) {
                     let PortfolioId: any = item.Portfolio.Id;
@@ -2069,9 +2062,9 @@ const EditTaskPopup = (Items: any) => {
                 setTaskStatus(StatusData.taskStatusComment);
                 setPercentCompleteCheck(false);
                 setIsTaskStatusUpdated(true);
-                let DynamicAssignmentInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Auto-Assignment", SiteURL: siteUrls, ItemDetails: EditData, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: StatusData.value })
+                let DynamicAssignmentInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Auto-Assignment", SiteURL: siteUrls, ItemDetails: EditDataBackup, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: StatusData.value })
                 console.log("Dynamic Assignment Information All Details from backend  ==================", DynamicAssignmentInformation);
-                const assignmentUser = EditData.TaskAssignedUsers;
+                const assignmentUser = EditDataBackup.TaskAssignedUsers;
                 if (assignmentUser?.length && StatusData.value > 2) {
                     setTaskAssignedTo(assignmentUser);
                 }
@@ -2080,32 +2073,6 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (StatusData.value == 1) {
                     updateWAForApproval(false, "IsChecked");
-                    let tempArray: any = [];
-                    if (
-                        TaskApproverBackupArray != undefined &&
-                        TaskApproverBackupArray.length > 0
-                    ) {
-                        TaskApproverBackupArray.map((dataItem: any) => {
-                            tempArray.push(dataItem);
-                        });
-                    } else if (
-                        TaskCreatorApproverBackupArray != undefined &&
-                        TaskCreatorApproverBackupArray.length > 0
-                    ) {
-                        TaskCreatorApproverBackupArray.map((dataItem: any) => {
-                            tempArray.push(dataItem);
-                        });
-                    }
-                    const finalData = tempArray.filter((val: any, id: any, array: any) => {
-                        return array?.indexOf(val) == id;
-                    });
-                    setTaskAssignedTo(finalData);
-                    setTaskTeamMembers(finalData);
-                    setApproverData(finalData);
-                    let e: any = "false";
-                    EditData.TaskApprovers = finalData;
-                    EditData.CurrentUserData = currentUserData;
-                    CategoryChange(e, "Approval");
                 }
                 if (StatusData.value == 80) {
                     EditData.IsTodaysTask = false;
@@ -2157,6 +2124,7 @@ const EditTaskPopup = (Items: any) => {
             }
         }
     };
+
 
     //  ###################### This is Common Function for Change The Team Members According to Change Status ######################
 
@@ -2441,6 +2409,18 @@ const EditTaskPopup = (Items: any) => {
                         let TaskConfigurationInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Notification", SiteURL: siteUrls, ItemDetails: UpdatedDataObject, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: UpdatedDataObject.PercentComplete })
                         console.log("Task Configuration Information All Details from backend  ==================", TaskConfigurationInformation);
                     }
+                    if (TeamMemberChanged) {
+                        let PrepareObjectData: any = {
+                            Configuration: { Notify: "Group", notifyContent: "You have been marked as a working member on the below task. Please take necessary action (Analyze the points in the task, fill up the Estimation, Set to 10%)." },
+                            ItemDetails: UpdatedDataObject,
+                            Context: Context,
+                            RequiredListIds: AllListIdData,
+                            UserEmail: []
+                        }
+                        let MSSendStatus: any = await GlobalFunctionForUpdateItems?.SendDynamicMSTeamsNotification(PrepareObjectData);
+                        console.log("MS Teams Notification Send Successfully for Assignments", MSSendStatus);
+                    }
+
                     if (ApproverData != undefined && ApproverData.length > 0) {
                         taskUsers.forEach((val: any) => {
                             if (
@@ -4331,12 +4311,9 @@ const EditTaskPopup = (Items: any) => {
                 TaskAssignedTo.filter((assignItems) => assignItems.Id != item.Id)
                 TaskTeamMembers.filter((assignItems) => assignItems.Id != item.Id)
             })
-
         }
         if (useFor == "Bottleneck" || useFor == "Attention" || useFor == "Phone" || useFor == "Approval") {
             let CreatorData: any = currentUserBackupArray[0];
-            setTaskAssignedTo(ApproverData)
-            setTaskTeamMembers(ApproverData)
             let workingDetail: any = WorkingAction?.filter((type: any) => type?.Title == "WorkingDetails");
             let copyWorkAction: any = [...WorkingAction]
             copyWorkAction = WorkingAction?.filter((type: any) => type?.Title != "WorkingDetails");
@@ -4399,13 +4376,14 @@ const EditTaskPopup = (Items: any) => {
             console.log("Bottleneck All Details:", copyWorkAction);
             setUseFor("")
             setApproverPopupStatus(false)
-
         }
         else {
             setApproverPopupStatus(false);
-            setTaskAssignedTo(ApproverData);
             setApproverData(data);
-            setTaskTeamMembers(ApproverData);
+            if (useFor == "Approval") {
+                setTaskAssignedTo(ApproverData);
+                setTaskTeamMembers(ApproverData);
+            }
             StatusOptions?.map((item: any) => {
                 if (item.value == 1) {
                     Items.sendApproverMail = true;
@@ -4460,6 +4438,7 @@ const EditTaskPopup = (Items: any) => {
                     });
                 }
             });
+
             if (type == "OnTaskPopup" || type == "Approval") {
                 setApproverSearchedData(tempArray);
             }
@@ -4487,6 +4466,7 @@ const EditTaskPopup = (Items: any) => {
 
 
     // this is used for update working action JSOn for Approval Secanrios 
+
 
     const updateWAForApproval = (Value: any, key: string) => {
         let copyWorkAction: any = [...WorkingAction];
@@ -4894,15 +4874,16 @@ const EditTaskPopup = (Items: any) => {
             setWorkingAction([...EditData.WorkingAction])
         }
 
-        let currentApprover: any = []
-        WorkingAction?.map((items: any) => {
-            if (items.Title === "Approval") {
-                items?.InformationData?.map((infoItem: any) => {
-                    let updateApprover: any = ApproverData.filter((assignItems) => infoItem?.TaggedUsers?.Title && assignItems.Title.includes(infoItem.TaggedUsers.Title));
-                    currentApprover = [...currentApprover, ...updateApprover]
+        let currentApprover: any = [];
+
+        WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
+            if (WAItemData.Title == "Approval" && WAItemData?.InformationData?.length > 0) {
+                WAItemData?.InformationData?.map((item: any) => {
+                    currentApprover.push(item?.TaggedUsers)
                 })
             }
         })
+
         if (ActionType == "Approval") {
             if (currentApprover.length <= 0) {
                 updateWAForApproval(true, "IsChecked")
@@ -4914,6 +4895,7 @@ const EditTaskPopup = (Items: any) => {
 
 
     }
+
 
     //    This is used to remove the Tagged User Data form Bottleneck and attention
     function removeDataFromInformationData(dataArray: any, titleToRemove: any, indexToRemove: any) {
@@ -4958,7 +4940,7 @@ const EditTaskPopup = (Items: any) => {
                             }`}
                     </span>
                 </div>
-
+                <RecurringTask props={Items} WorkingAction={WorkingAction} setWorkingAction={setWorkingAction} />
                 <Tooltip ComponentId="1683" isServiceTask={false} />
             </>
         );
@@ -10223,21 +10205,23 @@ const EditTaskPopup = (Items: any) => {
                             </ul>
                         </div>
                     </div>
-                    <footer className="modal-footer">
-                        <button
-                            type="button"
-                            className="btn btn-primary px-3 mx-1"
-                            onClick={UpdateApproverFunction}
-                        >
-                            Save
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-default px-3"
-                            onClick={closeApproverPopup}
-                        >
-                            Cancel
-                        </button>
+                    <footer className="bg-f4 fixed-bottom position-absolute">
+                        <div className="d-flex ml-auto pull-right px-4 py-2">
+                            <button
+                                type="button"
+                                className="btn btn-primary px-3 mx-1"
+                                onClick={UpdateApproverFunction}
+                            >
+                                Save
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-default px-3"
+                                onClick={closeApproverPopup}
+                            >
+                                Cancel
+                            </button>
+                        </div>
                     </footer>
                 </div>
             </Panel>

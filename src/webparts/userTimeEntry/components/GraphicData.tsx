@@ -815,7 +815,7 @@ const GraphData = (data: any) => {
   
   const CustomLegend = () => {
     return (
-      <div style={{ textAlign: "center", marginTop: 10, display: "flex", justifyContent: "center" }}>
+      <div style={{ textAlign: "center", marginTop: 32, display: "flex", justifyContent: "center" }}>
         <div style={{ display: "flex", alignItems: "center", marginRight: 20 }}>
           <div style={{ width: 20, height: 20, marginRight: 5, backgroundColor: "#2f5596" }} />
           <span>HHHH</span>
@@ -859,20 +859,19 @@ const GraphData = (data: any) => {
         onRenderFooter={onRenderCustomFooterMain}
       >
         <div id="bar-chart border">
-          <div className='alignCenter fw-bold gap-5 justify-content-center'>
+          <div className='alignCenter fw-bold gap-5 justify-content-center' style={{marginBottom:'32px'}}>
             <span className={`Day` === checkType ? 'siteBdrBottom' : ''} onClick={() => changeDateType('Day')}>Day</span>
             <span className={`Week` === checkType ? 'siteBdrBottom' : ''} onClick={() => changeDateType('Week')} style={{marginLeft:'16px',marginRight:'16px'}}>Week</span>
             <span className={`Month` === checkType ? 'siteBdrBottom' : ''} onClick={() => changeDateType('Month')}>Month</span>
           </div>
   
           <div style={{ width: "100%", overflowX: 'auto' }}>
-            <div style={{ width: (checkType !== 'Month' && checkType !== 'Week' && transformedData.length > 20) ? transformedData.length * 60 : '100%' }}>
+            <div style={{ width: (checkType !== 'Month' && checkType !== 'Week' && transformedData.length > 20) ? transformedData.length * 60 : '100%',paddingBottom: '32px' }}>
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart
                   data={transformedData}
                   barGap={16}
                 >
-                  <CartesianGrid strokeDasharray="2 2" />
                   <XAxis
                     dataKey="Day"
                     tick={<CustomTick />}
@@ -898,7 +897,8 @@ const GraphData = (data: any) => {
               </ResponsiveContainer>
             </div>
           </div>
-          <CustomLegend />
+          <CustomLegend 
+      />
         </div>
       </Panel>
     </div>
