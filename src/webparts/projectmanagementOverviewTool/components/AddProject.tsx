@@ -282,9 +282,9 @@ const AddProject = (props: any) => {
     const onRenderCustomHeader = (
     ) => {
         return (
-            <div className=" full-width pb-1" >
+            <div className="full-width pb-1" >
                 {props?.items != undefined && props?.items?.length == 1 &&
-                    <div>
+                    <div className='alignCenter' style={{marginLeft:'24px'}}>
                         <ul className="spfxbreadcrumb mb-2 ms-2 p-0">
                             <li><a data-interception="off" target="_blank" href={`${props?.AllListId?.siteUrl}/SitePages/PX-Overview.aspx`}>PX Management Overview</a></li>
                             <li>
@@ -312,33 +312,30 @@ const AddProject = (props: any) => {
                 onDismiss={() => closePopup()}
                 isBlocking={false}>
 
-                <div className={IsComponent ? 'Create-Projectpoup border mb-2 mt-2 p-2' : 'Create-Projectpoup  border mb-2 mt-2 p-2'}>
-                    <span >
-                        <div>
-                            <span>
-                                <input type='text' className='form-control' placeholder='Enter Title' value={title} onChange={(e) => { settitle(e.target.value); autoSuggestionsForProject(e) }} />
-                                {projectData?.length > 0 ? (
-                                    <div>
-                                        <ul className="list-group">
-                                            {projectData?.map((Item: any) => {
-                                                return (
-                                                    <li
-                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
-                                                        key={Item.id}
-                                                        onClick={() => window.open(`${Item?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${Item?.Id}`, '_blank')}
-                                                    >
-                                                        <a>{Item.Title}</a>
-                                                    </li>
-                                                );
-                                            })}
-                                        </ul>
-                                    </div>
-                                ) : null}
-                            </span>
-                        </div>
-                    </span>
+                <div className={IsComponent ? 'Create-Projectpoup mb-16' : 'Create-Projectpoup mb-16'}>
+                    <div className='input-group mb-16'>
+                    <label className="form-label full-width">Title</label>
+                            <input type='text' className='form-control' placeholder='Enter Title' value={title} onChange={(e) => { settitle(e.target.value); autoSuggestionsForProject(e) }} />
+                            {projectData?.length > 0 ? (
+                                <div>
+                                    <ul className="list-group">
+                                        {projectData?.map((Item: any) => {
+                                            return (
+                                                <li
+                                                    className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                    key={Item.id}
+                                                    onClick={() => window.open(`${Item?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${Item?.Id}`, '_blank')}
+                                                >
+                                                    <a>{Item.Title}</a>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </div>
+                            ) : null}
+                    </div>
                     <div className="row">
-                        <div className="col-sm-12 input-group full-width">
+                        <div className="col-sm-12 mt--5 full-width">
                             <div className="input-group full-width">
                                 <label className="form-label full-width">
                                     Portfolios
@@ -374,8 +371,8 @@ const AddProject = (props: any) => {
                     </div>
                 </div>
                 <footer className='text-end'>
-                    <Button type="button" variant="primary" className='me-1' onClick={() => addFunction()}>Create</Button>
-                    <Button type="button" className="btn btn-default" variant="secondary" onClick={() => closePopup()}>Cancel</Button>
+                    <button type="button" className='btn btn-primary me-1' onClick={() => addFunction()}>Create</button>
+                    <button type="button" className="btn btn-default" onClick={() => closePopup()}>Cancel</button>
 
                 </footer>
             </Panel>
