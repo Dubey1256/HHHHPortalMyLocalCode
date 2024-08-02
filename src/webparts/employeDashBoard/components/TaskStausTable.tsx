@@ -25,7 +25,6 @@ import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import AddEditWebpartTemplate from "../../../globalComponents/AddEditWebpartTemplate";
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
-import { usePopperTooltip } from "react-popper-tooltip";
 import { CustomToolTip } from "../../../globalComponents/customTooltip";
 import { Col, Row } from "react-bootstrap";
 import { PeoplePicker, PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
@@ -46,24 +45,6 @@ let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1,
 { value: 10, taskStatusComment: "working on it" }, { value: 70, taskStatusComment: "Re-Open" }, { value: 75, taskStatusComment: "Deployment Pending" }, { value: 80, taskStatusComment: "In QA Review" },
 { value: 90, taskStatusComment: "Task completed" }, { value: 100, taskStatusComment: "Closed" },]
 const TaskStatusTbl = (Tile: any) => {
-  //Tooltip -------------------
-  const [controlledVisible, setControlledVisible] = React.useState(false);
-  const {
-    getArrowProps,
-    getTooltipProps,
-    setTooltipRef,
-    setTriggerRef,
-    visible,
-  } = usePopperTooltip({
-    trigger: null,
-    interactive: true,
-    closeOnOutsideClick: false,
-    placement: "auto",
-    visible: controlledVisible,
-    onVisibleChange: setControlledVisible,
-  });
-  //End here
-
   const childRef = React.useRef<any>();
   const ContextData: any = React.useContext(myContextValue);
   const [IsShowAllUser, setIsShowAllUser] = useState(true);
@@ -786,7 +767,7 @@ const TaskStatusTbl = (Tile: any) => {
                 let UserToBeTagged: any = {};
                 let CreatorData: any = {};
                 if (ContextData?.AllTaskUser != undefined && ContextData?.AllTaskUser?.length) {
-                  UserToBeTagged = ContextData?.AllTaskUser.filter((e: any) => e.AssingedToUserId == Item?.Author?.Id)[0];
+                  UserToBeTagged = ContextData?.AllTaskUser.filter((e: any) => e.AssingedToUserId == ContextData?.currentUserId)[0];
                   CreatorData = ContextData?.AllTaskUser.filter((e: any) => e.AssingedToUserId == ContextData?.currentUserId)[0];
                 }
                 if (Item?.WorkingAction == undefined || Item?.WorkingAction == '')
@@ -2091,12 +2072,6 @@ const TaskStatusTbl = (Tile: any) => {
         {` (${config?.Tasks?.length})`}
       </div>
     );
-  }
-  const handlAction = () => {
-    setControlledVisible(true);
-  }
-  const handleMouseLeave = () => {
-    setControlledVisible(false)
   }
   const tableCall = (config: any, smartFavTableConfig: any) => {
     return (
