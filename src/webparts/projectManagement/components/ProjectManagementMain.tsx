@@ -47,6 +47,7 @@ let AllFlatProject: any = [];
 var AllUser: any = [];
 let allBackupSprintAndTask: any = []
 var siteConfig: any = [];
+let Groupusers: any = [];
 let headerOptions: any = {
   openTab: true,
   teamsIcon: true
@@ -570,12 +571,14 @@ const ProjectManagementMain = (props: any) => {
                 task.TaskTime = parseFloat(timeEntry?.TaskTime);
                 task.TimeDate = timeEntry.TaskDate;
                 task.TimeDescription = timeEntry.Description;
-                task.TimeFillDate = timeEntry?.TaskDate; let parts = timeEntry?.TaskDate?.split('/');
+                task.TimeEntryAuthorImage = timeEntry.AuthorImage
+                task.TimeEntryAuthorName = timeEntry.AuthorName
+                let parts = timeEntry?.TaskDate?.split('/');
                 let timeEntryDate: any = new Date(parts[2], parts[1] - 1, parts[0]);
                 if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingWeekDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingWeekDate.setHours(0, 0, 0, 0)) {
                   weekTotalTime += Number(timeEntry?.TaskTime)
                 }
-                else if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingMonthDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingMonthDate.setHours(0, 0, 0, 0)) {
+                if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingMonthDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingMonthDate.setHours(0, 0, 0, 0)) {
                   monthTotalTime += Number(timeEntry?.TaskTime)
                 }
                 PXtimeEntries.push(task)
@@ -584,9 +587,22 @@ const ProjectManagementMain = (props: any) => {
           })
         }
       });
-      totalTime = allPXTasks?.reduce((total: any, time: any) => total + time.TotalTime, 0);
-      totalTime = totalTime / 60;
-      totalTime = totalTime.toFixed(1)
+      if (PXtimeEntries?.length > 0) {
+        PXtimeEntries = PXtimeEntries.reduce(function (
+            previous: any,
+            current: any
+        ) {
+            var alredyExists =
+                previous.filter(function (item: any) {
+                    return item.Id === current.Id;
+                }).length > 0;
+            if (!alredyExists) {
+                previous.push(current);
+            }
+            return previous;
+        },
+            []);
+    }
       setTimeEntries(PXtimeEntries)
       setPageLoader(false)
     } catch (error) {
@@ -910,7 +926,9 @@ const ProjectManagementMain = (props: any) => {
           AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id ne null`)
         }
       }
-
+      totalTime = AllProjectTasks?.reduce((total: any, time: any) => total + time.TotalTime, 0);
+      totalTime = totalTime/60;
+      totalTime = totalTime.toFixed(2)
       AllProjectTasks.map((items: any) => {
         items.SmartPriority = globalCommon.calculateSmartPriority(items);
         if (items?.SmartInformation?.length > 0) {
@@ -1566,9 +1584,12 @@ const ProjectManagementMain = (props: any) => {
     SendTeamMessageforPXProject(mention_To, TeamsMessage, props?.Context, AllListId, Group_Title);
   }
   const SendTeamMessageforPXProject = async (mention_To: any, txtComment: any, Context: any, AllListId: any, Group_Title: any) => {
+    if(mention_To?.length === 0){
+      alert('Please select Group member to create a PX-Profile Group');
+      return false;
+    }
     let currentUser: any = {};
     let ExistingGrp: any = {};
-    let user: any = [];
     try {
       let pageContent = await globalCommon.pageContext()
       let web = new Web(pageContent?.WebFullUrl);
@@ -1577,7 +1598,7 @@ const ProjectManagementMain = (props: any) => {
       let res = await client.api(`/users`).version("v1.0").get();
       if (Masterdata?.TeamsGroup !== undefined && Masterdata?.TeamsGroup !== '' && Masterdata?.TeamsGroup !== null) {
         ExistingGrp = await client.api('/chats/' + Masterdata?.TeamsGroup).get();
-        user = await client.api('/chats/' + Masterdata?.TeamsGroup + '/members').get();
+        Groupusers = await client.api('/chats/' + Masterdata?.TeamsGroup + '/members').get();
       }
       let TeamUser: any[] = [];
       let participants: any = [];
@@ -1620,7 +1641,7 @@ const ProjectManagementMain = (props: any) => {
       }
       if (IsSendTeamMessage == mention_To?.length) {
         if (ExistingGrp !== undefined && Object.keys(ExistingGrp).length > 0 && ExistingGrp !== '') {
-          let RemoveCurrentUser: any = user?.value?.filter((itemexists: any) => { return itemexists.email.toLowerCase() !== CurrentUserData?.Email?.toLowerCase() });
+          let RemoveCurrentUser: any = Groupusers?.value?.filter((itemexists: any) => { return itemexists.email.toLowerCase() !== CurrentUserData?.Email?.toLowerCase() });
           RemoveCurrentUser?.map(async (check_mail: any) => {
             SelectedUser?.map(async (exist_user: any, index: any) => {
               exist_user.userFound = false;
@@ -3009,9 +3030,9 @@ const ProjectManagementMain = (props: any) => {
                                       <dl>
                                         <dt className="bg-fxdark">Total PX Time</dt>
                                         <dd className="bg-light">
-                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime} hrs; `}</span>}
+                                          {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime} hrs;`}</span>}
                                           {(monthTotalTime != undefined && weekTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime} hrs; `}</span>}
-                                          {totalTime != undefined && <span title="Total Time">{`${totalTime} hrs;`}</span>}
+                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime} hrs; `}</span>}
                                           <a className="smartTotalTime hover-text m-0 float-end" onClick={() => loadAllPXTimeEntries()}><BsClock/><span className='tooltip-text pop-left'>Load Time Entries</span></a>
                                         </dd>
                                       </dl>
@@ -3134,6 +3155,9 @@ const ProjectManagementMain = (props: any) => {
                                     siteUrl={props.siteUrl}
                                     listName={"Master Tasks"}
                                     itemID={QueryId}
+                                    Groupusers={Groupusers}
+                                    TaskUsers={AllUser}
+                                    Currentuser={CurrentUserData}
                                     ExistingGroup={Masterdata?.TeamsGroup}
                                   />
                                 )}

@@ -339,8 +339,10 @@ const CopyTaskProfile = (props: any) => {
                         Phone = Action?.InformationData;
                     }
                     if (Action?.Title == "Approval") {
-                        Approval = Action?.InformationData;
-                        setApprovalStatus(true)
+                        if(Action?.InformationData?.length>0){
+                            setApprovalStatus(true)
+                        }
+                       
                     }
                     if (Action?.Title == "WorkingDetails") {
                         let currentDate = moment(new Date()).format("DD/MM/YYYY")

@@ -158,19 +158,37 @@ const getSmartMetadataItemsByTaxType = function (
 
 
 
-export const prepareGroupByDataForCategories = (items: any, parentLabel: any = "") => {
-    let PrepareGroupByData: any = []
-    items.forEach((item: any) => {
+// export const prepareGroupByDataForCategories = (items: any, parentLabel: any = "") => {
+//     let PrepareGroupByData: any = []
+//     items.forEach((item: any) => {
+//         if (item.newTitle !== undefined) {
+//             item["Newlabel"] = parentLabel ? `${parentLabel} > ${item.newTitle}` : item.newTitle;
+//             PrepareGroupByData.push(item);
+//             if (item.childs && item.childs.length > 0) {
+//                 prepareGroupByDataForCategories(item.childs, item["Newlabel"]);
+//             }
+//         }
+//     });
+//     return PrepareGroupByData;
+// }
+
+
+export const prepareGroupByDataForCategories = (categories: any[], parentLabel: string = ""): any[] => {
+    return categories.reduce((acc: any[], item: any) => {
         if (item.newTitle !== undefined) {
-            item["Newlabel"] = parentLabel ? `${parentLabel} > ${item.newTitle}` : item.newTitle;
-            PrepareGroupByData.push(item);
-            if (item.childs && item.childs.length > 0) {
-                prepareGroupByDataForCategories(item.childs, item["Newlabel"]);
+            const newLabel = parentLabel ? `${parentLabel} > ${item.newTitle}` : item.newTitle;
+            const newItem = { ...item, Newlabel: newLabel };
+            acc.push(newItem);
+
+            if (item?.childs && item?.childs?.length > 0) {
+                acc.push(...prepareGroupByDataForCategories(item.childs, newLabel));
             }
         }
-    });
-    return removeDuplicates(PrepareGroupByData, "Id");
-}
+        return acc;
+    }, []);
+};
+
+
 
 
 
@@ -1276,7 +1294,7 @@ export const SendEmailAndImmediateTaskNotificationBodyContent = (props: any) => 
     return (
         <div id='htmlMailBodyEmail'>
             <div style={{ backgroundColor: "#FAFAFA" }}>
-                <div style={{ width: "900px", backgroundColor: "#fff", padding: "0px 32px", margin: "0 auto" }}>
+                <div style={{ width: "900px", backgroundColor: "#DFDFDF", padding: "0px 32px", margin: "0 auto" }}>
                     <div style={{ display: "flex", alignItems: "center", padding: "56px 0px" }}>
                         <img src={props?.siteIcon} style={{ width: "48px", height: "48px", borderRadius: "50%" }}></img>
                         <div style={{ color: "var(--black, #333)", textAlign: "center", fontFamily: "Segoe UI", fontSize: "14px", fontStyle: "normal", fontWeight: "600", marginLeft: "4px" }}></div>
@@ -1292,9 +1310,9 @@ export const SendEmailAndImmediateTaskNotificationBodyContent = (props: any) => 
                     </div>
                     <div style={{ marginBottom: "40px" }}>
                         <div style={{
-                            display: "flex", padding: "8px", justifyContent: "center", alignItems: 'center', gap: "8px", flexShrink: "0", color: "#FFF", borderRadius: "4px",
+                            display: "flex", padding: "8px", justifyContent: "center", alignItems: 'center', gap: "8px", flexShrink: "0", color: "#DFDFDF", borderRadius: "4px",
                             background: " #2F5596", width: "260px", height: "40px", fontFamily: "Segoe UI", fontSize: "14px", fontStyle: "normal", fontWeight: "600", lineHeight: "normal"
-                        }}> <a style={{ color: "#fff", textDecorationLine: "underline" }} data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                        }}> <a style={{ color: "#DFDFDF", textDecorationLine: "underline" }} data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                             href={`${props.siteUrl}/SitePages/Task-Profile.aspx?taskId=` + props?.Id + '&Site=' + props?.siteType}
                         >Track the Task Status</a>
                         </div>
@@ -1419,7 +1437,7 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
                 `You have been tagged <b>${ActionType == "Phone" ? "for the discussion" : "as " + ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}` : ''}
             <p></p>
             ${(ActionType == "Bottleneck" || ActionType == "Attention" || ActionType == "Phone") ?
-                `<div style="background-color: #fff; color:#333; padding:16px; margin-top:10px; display:block;" title="${ReasonStatement}">
+                `<div style="background-color: #DFDFDF; color:#333; padding:16px; margin-top:10px; display:block;" title="${removeHtmlTagsFromString(ReasonStatement)}">
             <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType == "Phone" ? " Discussion Point" : " Comment"} </b>: <span>${ReduceTheContentLines(ReasonStatement, 450)}</span> ` : ''}
             </div>
             <div style="margin-top: 16px;">  <b style="font-weight:600; font-size: 16px;">Task Link: </b>
@@ -1457,8 +1475,8 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         <div style="margin-top:16px; font-size:16px;"> ${ActionType} reminder for task: ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}</div>
         <p>
         <br/>
-        <div style="background-color: #fff; padding:16px; display:block; color: #333; ">
-        <div style="font-size:18px;" title="${ReasonStatement}"><b>Comment</b>: ${ReduceTheContentLines(ReasonStatement, 450)}</div>
+        <div style="background-color: #DFDFDF; padding:16px; display:block; color: #333; ">
+        <div style="font-size:18px;" title="${removeHtmlTagsFromString(ReasonStatement)}"><b>Comment</b>: ${ReduceTheContentLines(ReasonStatement, 450)}</div>
         </div>
         </br>
         <p>
@@ -1498,19 +1516,21 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                 })
             }
         })
+
+
         if (RequiredData?.Title?.length > 0) {
             return (
                 <div style={{ backgroundColor: 'transparent' }}>
                     <div>
                         <div><b style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Task Details:</b></div>
                         <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginBottom: '8px' }}>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Task Id:</span>
+                            <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                                <span style={{ fontSize: 'DFDFDF10.0pt', fontWeight: '600', color: '#333' }}>Task Id:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '11.0pt' }}>{RequiredData?.TaskId}</span>
                             </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Component:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center', minHeight: '30px' }}>
@@ -1520,7 +1540,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                     </span>
                                 }
                             </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Priority:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
@@ -1528,19 +1548,19 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                             </div>
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Start Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '11.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD/MM/YYYY") : ""}</span>
                             </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Completion Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '11.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD/MM/YYYY") : ""}</span>
                             </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Due Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
@@ -1548,7 +1568,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                             </div>
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Team Members:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center', minHeight: '30px' }}>
@@ -1560,13 +1580,13 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 }
                                 </div>
                             </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Created:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '11.0pt' }}>{Moment(RequiredData["Created"]).format("DD/MM/YYYY")}</span>
                             </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Created By:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
@@ -1574,19 +1594,19 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                             </div>
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Categories:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '11.0pt' }} title={RequiredData["Categories"]}>{RequiredData["Categories"]?.length > 17 ? RequiredData["Categories"]?.slice(0, 14) + "..." : RequiredData["Categories"]}</span>
                             </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Status:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '11.0pt' }}> {RequiredData["Status"]}</span>
                             </div>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>% Complete:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
@@ -1595,7 +1615,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         </div>
 
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
-                            <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '120px', background: '#fff', padding: '5px', display: 'flex', alignItems: 'center' } : { width: '120px', background: '#fff', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '120px', background: '#DFDFDF', padding: '5px', display: 'flex', alignItems: 'center' } : { width: '120px', background: '#DFDFDF', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Smart Priority:</span>
                             </div>
                             <div style={{ padding: '5px', display: 'flex', alignItems: 'center' }}>
@@ -1615,7 +1635,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                             </div>
                         </div>
                         <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start' }}>
-                            <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>URL:</span>
                             </div>
                             <div style={{ wordBreak: "break-all", padding: '5px', display: 'flex', alignItems: 'center' }}>
@@ -1638,9 +1658,9 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                             TaskDescriptionFlatView.map((fbData: any, i: any) => {
                                                 if (i < 5) {
                                                     return (<>
-                                                        <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff', color: '#333' }}>
+                                                        <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#DFDFDF', color: '#333' }}>
                                                             <div style={{ width: '100%' }}>
-                                                                <div style={{ display: "flex" }} title={fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, "")}>
+                                                                <div style={{ display: "flex" }} title={removeHtmlTagsFromString(fbData['Title']?.replace(/<\/?[^>]+(>|$)/g, ""))}>
                                                                     <div style={{ fontSize: "10pt", display: "flex", color: "#333", marginRight: '5px', fontWeight: '600', width: "4%" }}>
                                                                         {fbData.ViewIndex}.
                                                                     </div>
@@ -1652,7 +1672,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                         <div style={{ marginBottom: '8px' }}>
                                                                             <div style={{ fontWeight: '600' }}>{fbComment.AuthorName} - {fbComment.Created}</div>
                                                                         </div>
-                                                                        <div title={fbComment['Title']}><span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbComment['Title'], 225) }}></span></div>
+                                                                        <div title={removeHtmlTagsFromString(fbComment['Title'])}><span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(fbComment['Title'], 225) }}></span></div>
 
                                                                         {fbComment?.ReplyMessages?.length > 0 && fbComment?.ReplyMessages?.map((replycom: any) => {
                                                                             return (
@@ -1660,7 +1680,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                                     <div style={{ marginBottom: '8px' }}>
                                                                                         <div style={{ fontWeight: '600' }}><span>{replycom.AuthorName} - {replycom.Created}</span></div>
                                                                                     </div>
-                                                                                    <div title={replycom['Title']}><span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
+                                                                                    <div title={removeHtmlTagsFromString(replycom['Title'])}><span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(replycom['Title'], 225) }}></span></div>
                                                                                 </div>
                                                                             )
                                                                         })}
@@ -1691,12 +1711,12 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                 TaskCommentFlatViewCount++;
                                                 return (
                                                     <>
-                                                        <div style={{ backgroundColor: '#fff', width: '100%', padding: '8px 12px', marginBottom: "8px", color: '#333' }}>
+                                                        <div style={{ backgroundColor: '#DFDFDF', width: '100%', padding: '8px 12px', marginBottom: "8px", color: '#333' }}>
                                                             <div style={{ marginBottom: "8px", width: '100%' }}>
                                                                 <div>
                                                                     <span style={{ fontWeight: '600' }}>{cmtData.AuthorName}</span> - {cmtData.Created}
                                                                 </div>
-                                                                <div style={{ wordWrap: 'break-word' }} title={cmtData.Description}>
+                                                                <div style={{ wordWrap: 'break-word' }} title={removeHtmlTagsFromString(cmtData.Description)}>
 
                                                                     <span style={{ wordWrap: 'break-word' }} dangerouslySetInnerHTML={{ __html: ReduceTheContentLines(cmtData.Description, 115) }}></span>
                                                                 </div>
@@ -1749,7 +1769,7 @@ export const GenerateEmailNotification = (RequiredData: any) => {
                         <table cellPadding="0" cellSpacing="0" width="99%" style={{ width: "99.0%", marginTop: "6px" }}>
                             <tbody>
                                 <tr>
-                                    <td style={{ border: 'none', background: '#fff', color: "#f333", padding: '.75pt .75pt .75pt .75pt' }}>
+                                    <td style={{ border: 'none', background: '#DFDFDF', color: "#f333", padding: '.75pt .75pt .75pt .75pt' }}>
                                         <b style={{ marginBottom: '1.25pt' }}><div style={{ fontFamily: 'Segoe UI Dark', fontSize: '10.0pt', color: 'black' }} >Task Details :</div></b>
                                     </td>
                                 </tr>
@@ -1890,7 +1910,7 @@ export const GenerateEmailNotification = (RequiredData: any) => {
                                                                 </div>
                                                                 {fbComment?.ReplyMessages?.length > 0 && fbComment?.ReplyMessages?.map((replyData: any) => {
                                                                     return (
-                                                                        <div style={{ padding: '7.0pt 7.0pt 7.0pt 7.0pt', background: '#fff', marginTop: '3.75pt' }}>
+                                                                        <div style={{ padding: '7.0pt 7.0pt 7.0pt 7.0pt', background: '#DFDFDF', marginTop: '3.75pt' }}>
                                                                             <div style={{ marginBottom: "3.75pt" }}>
                                                                                 <p style={{ margin: '0px' }}>
                                                                                     <span style={{ color: 'black' }}>{replyData.AuthorName} - {replyData.Created}</span></p>
@@ -1923,7 +1943,7 @@ export const GenerateEmailNotification = (RequiredData: any) => {
 
                                                                             {fbSubComment?.ReplyMessages?.length > 0 && fbSubComment?.ReplyMessages?.map((replyData: any) => {
                                                                                 return (
-                                                                                    <div style={{ padding: '7.0pt 7.0pt 7.0pt 7.0pt', background: '#fff', marginTop: '3.75pt' }}>
+                                                                                    <div style={{ padding: '7.0pt 7.0pt 7.0pt 7.0pt', background: '#DFDFDF', marginTop: '3.75pt' }}>
                                                                                         <div style={{ marginBottom: "3.75pt" }}>
                                                                                             <p style={{ margin: '0px' }}>
                                                                                                 <span style={{ color: 'black' }}>{replyData.AuthorName} - {replyData.Created}</span></p>
@@ -1954,7 +1974,7 @@ export const GenerateEmailNotification = (RequiredData: any) => {
                             <table className='table table-striped ' cellPadding={0} width="100%" style={{ width: '100.0%', borderRadius: '4px', }}>
                                 <tbody>
                                     <tr>
-                                        <td style={{ border: 'none', background: '#fff', color: "#f333", padding: '.75pt .75pt .75pt .75pt' }}>
+                                        <td style={{ border: 'none', background: '#DFDFDF', color: "#f333", padding: '.75pt .75pt .75pt .75pt' }}>
                                             <b style={{ marginBottom: '1.25pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }} >Comments:</span></b>
                                         </td>
                                     </tr>
@@ -1973,7 +1993,7 @@ export const GenerateEmailNotification = (RequiredData: any) => {
 
                                                             {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
                                                                 return (
-                                                                    <div style={{ padding: '7.0pt 7.0pt 7.0pt 7.0pt', background: '#fff', marginTop: '3.75pt' }}>
+                                                                    <div style={{ padding: '7.0pt 7.0pt 7.0pt 7.0pt', background: '#DFDFDF', marginTop: '3.75pt' }}>
                                                                         <div style={{ marginBottom: "3.75pt" }}>
                                                                             <p style={{ margin: '0px' }}>
                                                                                 <span style={{ color: 'black' }}>{replyData.AuthorName} - {replyData.Created}</span></p>
@@ -2107,6 +2127,7 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                                         }
                                                     })
                                                 }
+                                                
                                             });
 
                                         }

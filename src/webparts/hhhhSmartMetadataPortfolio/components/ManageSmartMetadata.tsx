@@ -541,7 +541,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         childRefdata?.current?.setRowSelection({});
     }
     const customTableHeaderButtons = (
-        <div>
+        <>
             <button type="button" title="Add" onClick={OpenCreateSmartMetadataPopup} className="btnCol btn btn-primary">Add +</button>
             {SmartmetadataCompareButton
                 ? <button type="button" title="Compare" onClick={openComparePopup} className='btnCol btn btn-primary'>Compare</button> : <button type="button" title="Compare" disabled={true} onClick={openComparePopup} className='btnCol btn btn-primary'>Compare</button>
@@ -549,7 +549,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             {SmartmetadataRestructureButton
                 ? <button type="button" title="Restructure" className="btnCol btn btn-primary" onClick={buttonRestructureCheck}>Restructure</button> : <button type="button" title="Restructure" className="btnCol btn btn-primary" disabled={true}>Restructure</button>
             }
-        </div>
+        </>
     )
     //-------------------------------------------------- GENERATE JSON FUNCTION end---------------------------------------------------------------
     return (

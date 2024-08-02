@@ -233,6 +233,21 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     const GetComponents = async () => {
         if (groupedData?.length > 0) {
             setData(groupedData);
+            try {
+                if (props.Portfolios?.length > 0) {
+                    let BackupData = globalCommon?.deepCopy(props.Portfolios);
+                    BackupData.map((elem: any) => {
+                        elem.isChecked = true;
+                        if (elem?.subRows?.length > 0) {
+                            elem.subRows = []
+                        }
+                    })
+                    setdataUpper(BackupData);
+                }
+            } catch (e) {
+                console.log(e)
+            }
+
             LinkedServicesBackupArray = groupedData;
         } else {
             if (props?.smartComponent != undefined && props?.smartComponent?.length > 0) {
@@ -343,7 +358,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 LinkedServicesBackupArray = GlobalArray.ProjectData;
                 setdataUpper(BackupData)
                 renderupperData = true;
-                setInitialRender(true)  
+                setInitialRender(true)
             }
         }
         // setModalIsOpen(true);
@@ -461,10 +476,10 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                             </>
                         )}
                         {
-                        <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.PortfolioStructureID} AllListId={Dynamic} row={row?.original} singleLevel={true} masterTaskData={allMaster} />
+                            <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.PortfolioStructureID} AllListId={Dynamic} row={row?.original} singleLevel={true} masterTaskData={allMaster} />
                         }
                     </div>
-                
+
                 ),
             },
             {
@@ -817,103 +832,103 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 < button type="button" className="btn btn-primary" title='Compare' style={{ color: '#fff' }} onClick={() => openCompareTool()}>Compare</button> :
                 <button type="button" className="btn btn-primary" style={{ color: '#fff' }} disabled={true} >Compare</button>
             }
-       
-            {IsSelectionsBelow === true ? (<span className="siteColor">{showProject ? 'Select multiple project':'Select multiple portfolio' }</span>) : (<span className="siteColor">{showProject == true ? 'Select single project':'Select single portfolio'}</span>)}
+
+            {IsSelectionsBelow === true ? (<span className="siteColor">{showProject ? 'Select multiple project' : 'Select multiple portfolio'}</span>) : (<span className="siteColor">{showProject == true ? 'Select single project' : 'Select single portfolio'}</span>)}
 
             <label className="switch me-2" htmlFor="checkbox5">
                 <input checked={IsSelectionsBelow} onChange={() => checkSelection1("SelectionsBelow")} type="checkbox" id="checkbox5" />
-                {IsSelectionsBelow === true ? <div className="slider round" title={showProject ? 'Select multiple project':'Select multiple portfolio' }></div> : (<div className="slider round" title={showProject ? 'Select single project':'Select single portfolio' } ></div>)}
-            </label> 
+                {IsSelectionsBelow === true ? <div className="slider round" title={showProject ? 'Select multiple project' : 'Select multiple portfolio'}></div> : (<div className="slider round" title={showProject ? 'Select single project' : 'Select single portfolio'} ></div>)}
+            </label>
         </>
     )
     const CreateOpenCall = React.useCallback((item) => { }, []);
     // Toogle for single multi
     const handleChange = (event: any) => {
         const uncheckdata = dataUpper.filter((item) => item.Id != event.Id)
-            setdataUpper(uncheckdata);
+        setdataUpper(uncheckdata);
     };
 
-            {/* // Condition to determine if checkbox should be checked
+    {/* // Condition to determine if checkbox should be checked
     // const isChecked = (item: any) => {
     //     // Example condition: Check if item.isChecked is true
     //     return item.isChecked === true;
     // }; */}
-            return (
-            <Panel
-                type={PanelType.custom}
-                customWidth="1100px"
-                isOpen={true}
-                onDismiss={(e: any) => closePanel(e)}
-                onRenderHeader={onRenderCustomHeader}
-                isBlocking={false}
-                onRenderFooter={CustomFooter}
-            >
-                <div className={ComponentType == "Service" ? "serviepannelgreena" : ""}>
-                    <div className="modal-body p-0 mt-2 mb-3 clearfix">
-                        <div className="Alltable mt-10">
-                            {dataUpper?.length > 0 &&
-                                <div className="col-sm-12 p-0 smart">
-                                    <div className="Alltable">
-                                        {/* <GlobalCommanTable columns={columns} wrapperHeight="240px" showHeader={true} customHeaderButtonAvailable={true} ref={portfolioSelectionTableRef} customTableHeaderButtons={customTableHeaderButtons} defultSelectedPortFolio={dataUpper} data={dataUpper} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelections} /> */}
-                                        <table className="m-0 table w-100">
-                                            <thead>
-                                                <tr>
-                                                    <th style={{ width: "20px" }} className="p-1">
+    return (
+        <Panel
+            type={PanelType.custom}
+            customWidth="1100px"
+            isOpen={true}
+            onDismiss={(e: any) => closePanel(e)}
+            onRenderHeader={onRenderCustomHeader}
+            isBlocking={false}
+            onRenderFooter={CustomFooter}
+        >
+            <div className={ComponentType == "Service" ? "serviepannelgreena" : ""}>
+                <div className="modal-body p-0 mt-2 mb-3 clearfix">
+                    <div className="Alltable mt-10">
+                        {dataUpper?.length > 0 &&
+                            <div className="col-sm-12 p-0 smart">
+                                <div className="Alltable">
+                                    {/* <GlobalCommanTable columns={columns} wrapperHeight="240px" showHeader={true} customHeaderButtonAvailable={true} ref={portfolioSelectionTableRef} customTableHeaderButtons={customTableHeaderButtons} defultSelectedPortFolio={dataUpper} data={dataUpper} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelections} /> */}
+                                    <table className="m-0 table w-100">
+                                        <thead>
+                                            <tr>
+                                                <th style={{ width: "20px" }} className="p-1">
 
-                                                    </th>
-                                                    <th style={{ width: "200px" }} className="p-1">ID</th>
-                                                    <th className="p-1">Title</th>
-                                                    <th style={{ width: "100px" }} className="p-1">Team</th>
-                                                    <th style={{ width: "100px" }} className="p-1">Created</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {dataUpper?.map((item: any, index: number) => (
-                                                    <tr key={index} className="w-bg" data-index={index}>
-                                                        <td>
-                                                            <div className="alignCenter">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    className="form-check-input"
-                                                                    onChange={() => handleChange(item)}
-                                                                    checked={true}
-                                                                />
-                                                            </div>
-                                                        </td>
+                                                </th>
+                                                <th style={{ width: "200px" }} className="p-1">ID</th>
+                                                <th className="p-1">Title</th>
+                                                <th style={{ width: "100px" }} className="p-1">Team</th>
+                                                <th style={{ width: "100px" }} className="p-1">Created</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {dataUpper?.map((item: any, index: number) => (
+                                                <tr key={index} className="w-bg" data-index={index}>
+                                                    <td>
+                                                        <div className="alignCenter">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="form-check-input"
+                                                                onChange={() => handleChange(item)}
+                                                                checked={true}
+                                                            />
+                                                        </div>
+                                                    </td>
 
-                                                        <td>
-                                                            <div className="alignCenter">
+                                                    <td>
+                                                        <div className="alignCenter">
 
-                                                                {item.PortfolioStructureID}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <a className="hreflink serviceColor_Active" data-interception="off" target="_blank" href={showProject == true ? `${Dynamic?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${item.Id}` : `${Dynamic?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item.Id}`}>
-                                                                <span>{item.Title}</span>
-                                                            </a>
+                                                            {item.PortfolioStructureID}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <a className="hreflink serviceColor_Active" data-interception="off" target="_blank" href={showProject == true ? `${Dynamic?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${item.Id}` : `${Dynamic?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item.Id}`}>
+                                                            <span>{item.Title}</span>
+                                                        </a>
 
-                                                        </td>
+                                                    </td>
 
-                                                        <td>
-                                                            <div>
-                                                                <div className="d-flex align-items-center full-width">
-                                                                    <div className="alignCenter">
-                                                                        <ShowTaskTeamMembers props={item} TaskUsers={AllUsers} />
-                                                                    </div>
+                                                    <td>
+                                                        <div>
+                                                            <div className="d-flex align-items-center full-width">
+                                                                <div className="alignCenter">
+                                                                    <ShowTaskTeamMembers props={item} TaskUsers={AllUsers} />
                                                                 </div>
                                                             </div>
-                                                        </td>
-                                                        <td>{item.DisplayCreateDate}</td>
+                                                        </div>
+                                                    </td>
+                                                    <td>{item.DisplayCreateDate}</td>
 
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
-                            }
+                            </div>
+                        }
 
-                            {/* {dataUpper?.length > 0 &&    
+                        {/* {dataUpper?.length > 0 &&    
     <div className="col-sm-12 p-0 smart">
         <div className="">
              <table>
@@ -942,43 +957,43 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     </div>
 } */}
 
-                            {showProject !== true &&
-                                <div className="tbl-headings p-2 bg-white">
-                                    <span className="leftsec">
-                                        {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
-                                            Showing {ShowingAllData[0].ComponentCopy}  of {Component} Components
-                                        </label> :
-                                            <label>
-                                                Showing {Component}  of {Component} Components
-                                            </label>}
+                        {showProject !== true &&
+                            <div className="tbl-headings p-2 bg-white">
+                                <span className="leftsec">
+                                    {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
+                                        Showing {ShowingAllData[0].ComponentCopy}  of {Component} Components
+                                    </label> :
+                                        <label>
+                                            Showing {Component}  of {Component} Components
+                                        </label>}
 
-                                        <label className="ms-1 me-1"> | </label>
-                                        {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
-                                            {ShowingAllData[0].SubComponentCopy} of {SubComponent} SubComponents
-                                        </label> :
-                                            <label>
-                                                {SubComponent} of {SubComponent} SubComponents
-                                            </label>}
-                                        <label className="ms-1 me-1"> | </label>
-                                        {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
-                                            {ShowingAllData[0].FeatureCopy}  of {Feature} Features
-                                        </label> :
-                                            <label>
-                                                {Feature}  of {Feature} Features
-                                            </label>}
-                                    </span>
-                                </div>
-                            }
+                                    <label className="ms-1 me-1"> | </label>
+                                    {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
+                                        {ShowingAllData[0].SubComponentCopy} of {SubComponent} SubComponents
+                                    </label> :
+                                        <label>
+                                            {SubComponent} of {SubComponent} SubComponents
+                                        </label>}
+                                    <label className="ms-1 me-1"> | </label>
+                                    {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
+                                        {ShowingAllData[0].FeatureCopy}  of {Feature} Features
+                                    </label> :
+                                        <label>
+                                            {Feature}  of {Feature} Features
+                                        </label>}
+                                </span>
+                            </div>
+                        }
 
-                            <div className="col-sm-12 p-0 smart">
-                                <div className="">
-                                    <GlobalCommanTable columns={columns} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons1} ref={portfolioSelectionTableRef} showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelectionsBelow} />
-                                </div>
+                        <div className="col-sm-12 p-0 smart">
+                            <div className="">
+                                <GlobalCommanTable columns={columns} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons1} ref={portfolioSelectionTableRef} showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelectionsBelow} />
                             </div>
                         </div>
                     </div>
                 </div>
-                {/* <Panel
+            </div>
+            {/* <Panel
                 onRenderHeader={onRenderCustomHeaderMain1}
                 type={PanelType.large}
                 isOpen={OpenAddStructurePopup}
@@ -998,42 +1013,42 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 />
              
             </Panel> */}
-                <Panel
-                    onRenderHeader={onRenderCustomHeaderMain1}
-                    type={PanelType.large}
-                    isOpen={OpenAddStructurePopup}
-                    isBlocking={false}
-                    onDismiss={callbackdataAllStructure}
+            <Panel
+                onRenderHeader={onRenderCustomHeaderMain1}
+                type={PanelType.large}
+                isOpen={OpenAddStructurePopup}
+                isBlocking={false}
+                onDismiss={callbackdataAllStructure}
+            >
+                <CreateAllStructureComponent
+                    Close={callbackdataAllStructure}
+                    taskUser={AllUsers}
+                    portfolioTypeData={PortfolitypeData}
+                    PropsValue={Dynamic}
+                    SelectedItem={
+                        checkedList != null && checkedList?.Id != undefined
+                            ? checkedList
+                            : undefined
+                    }
+                />
+
+            </Panel>
+            {isProjectopen && <AddProject CallBack={CallBack} items={checkedList} PageName={"ProjectOverview"} AllListId={Dynamic} data={data} />}
+            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={portfolioSelectionTableRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={Dynamic} />}
+
+            {IsComponent && (
+                <EditInstitution
+                    item={CMSToolComponent}
+                    Calls={Callbackfrompopup}
+                    SelectD={Dynamic}
+                    portfolioTypeData={PortfolitypeData}
                 >
-                    <CreateAllStructureComponent
-                        Close={callbackdataAllStructure}
-                        taskUser={AllUsers}
-                        portfolioTypeData={PortfolitypeData}
-                        PropsValue={Dynamic}
-                        SelectedItem={
-                            checkedList != null && checkedList?.Id != undefined
-                                ? checkedList
-                                : undefined
-                        }
-                    />
-
-                </Panel>
-                {isProjectopen && <AddProject CallBack={CallBack} items={checkedList} PageName={"ProjectOverview"} AllListId={Dynamic} data={data} />}
-                {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={portfolioSelectionTableRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={Dynamic} />}
-
-                {IsComponent && (
-                    <EditInstitution
-                        item={CMSToolComponent}
-                        Calls={Callbackfrompopup}
-                        SelectD={Dynamic}
-                        portfolioTypeData={PortfolitypeData}
-                    >
-                        {" "}
-                    </EditInstitution>
-                )}
-                {IsProjectPopup && <EditProjectPopup props={CMSToolComponent} AllListId={Dynamic} Call={Call} showProgressBar={"showProgressBar"}> </EditProjectPopup>}
-            </Panel >
-            )
+                    {" "}
+                </EditInstitution>
+            )}
+            {IsProjectPopup && <EditProjectPopup props={CMSToolComponent} AllListId={Dynamic} Call={Call} showProgressBar={"showProgressBar"}> </EditProjectPopup>}
+        </Panel >
+    )
 };
 
-            export default ServiceComponentPortfolioPopup;
+export default ServiceComponentPortfolioPopup;
