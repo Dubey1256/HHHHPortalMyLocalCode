@@ -25,6 +25,13 @@
           "manifest": "./src/webparts/componentComments/ComponentCommentsWebPart.manifest.json"
         }
       ]
+    }, "component-profile-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/componentProfile/ComponentProfileWebPart.js",
+          "manifest": "./src/webparts/componentProfile/ComponentProfileWebPart.manifest.json"
+        }
+      ]
     },
     "task-steps-web-part": {
       "components": [
