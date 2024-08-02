@@ -2409,6 +2409,18 @@ const EditTaskPopup = (Items: any) => {
                         let TaskConfigurationInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Notification", SiteURL: siteUrls, ItemDetails: UpdatedDataObject, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: UpdatedDataObject.PercentComplete })
                         console.log("Task Configuration Information All Details from backend  ==================", TaskConfigurationInformation);
                     }
+                    if (TeamMemberChanged) {
+                        let PrepareObjectData: any = {
+                            Configuration: { Notify: "Group", notifyContent: "You have been marked as a working member on the below task. Please take necessary action (Analyze the points in the task, fill up the Estimation, Set to 10%)." },
+                            ItemDetails: UpdatedDataObject,
+                            Context: Context,
+                            RequiredListIds: AllListIdData,
+                            UserEmail: []
+                        }
+                        let MSSendStatus: any = await GlobalFunctionForUpdateItems?.SendDynamicMSTeamsNotification(PrepareObjectData);
+                        console.log("MS Teams Notification Send Successfully for Assignments", MSSendStatus);
+                    }
+
                     if (ApproverData != undefined && ApproverData.length > 0) {
                         taskUsers.forEach((val: any) => {
                             if (
@@ -4368,9 +4380,10 @@ const EditTaskPopup = (Items: any) => {
         else {
             setApproverPopupStatus(false);
             setApproverData(data);
-            if(useFor == "Approval"){
-            setTaskAssignedTo(ApproverData);
-            setTaskTeamMembers(ApproverData);}
+            if (useFor == "Approval") {
+                setTaskAssignedTo(ApproverData);
+                setTaskTeamMembers(ApproverData);
+            }
             StatusOptions?.map((item: any) => {
                 if (item.value == 1) {
                     Items.sendApproverMail = true;
@@ -4380,7 +4393,7 @@ const EditTaskPopup = (Items: any) => {
                 }
             });
         }
- 
+
     };
 
     const selectApproverFunction = (selectedData: any) => {
@@ -4454,7 +4467,7 @@ const EditTaskPopup = (Items: any) => {
 
     // this is used for update working action JSOn for Approval Secanrios 
 
-    
+
     const updateWAForApproval = (Value: any, key: string) => {
         let copyWorkAction: any = [...WorkingAction];
         const usedFor: string = "Approval";
