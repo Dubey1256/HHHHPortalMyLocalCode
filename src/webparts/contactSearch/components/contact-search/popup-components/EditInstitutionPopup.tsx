@@ -76,7 +76,9 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
 
     const jointInstitutionDetails = async (id:any) => {
         try {
-            let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+            
+            // let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+            let web = new Web(myContextData2?.allListId?.siteUrl);
             await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId)
                 .items .getById(id)
                 .select("Id","Title","FirstName","Description","FullName","WorkPhone","SmartCountries/Id","SmartCountries/Title","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
@@ -126,7 +128,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
             <>
                 <div className='subheading alignCenter'>
                 <img className='workmember' 
-                    src={updateData?.ItemImage != undefined ? updateData?.ItemImage.Url : `${myContextData2?.allListId?.jointSiteUrl}/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg`}
+                    src={updateData?.ItemImage != undefined ? updateData?.ItemImage.Url : `${myContextData2?.allListId?.siteUrl}/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg`}
                      />
                 Edit Institution- {updateData?.FullName}
                      
@@ -188,7 +190,9 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
     try {
         if (confirm("Are you sure, you want to delete this?")) {
              if(myContextData2?.allSite?.MainSite){
-                let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+                
+                // let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+                let web = new Web(myContextData2?.allListId?.siteUrl);
                 await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.getById(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite?JointData?.Id:updateData?.Id).recycle().then(async(data:any)=>{
                     if(props?.allSite?.GMBHSite||props?.allSite?.HrSite){
                         let web = new Web(props?.allListId?.siteUrl);
@@ -268,7 +272,9 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
             }
         }
         if (updateData?.Id != undefined) {
-            let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+            
+            // let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+            let web = new Web(myContextData2?.allListId?.siteUrl);
             await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.getById(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite?JointData?.Id:updateData?.Id).update(postData).then((e) => {
                 console.log("Your information has been updated successfully");
            if(myContextData2.allSite?.GMBHSite){
@@ -298,7 +304,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
 
 //*****************save function End *************** */
 const updateHrDetails = async (postData: any) => {
-    let web = new Web(`${myContextData2?.allListId?.jointSiteUrl}/hr`);
+    let web = new Web(`${myContextData2?.allListId?.siteUrl}/hr`);
         await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).update(postData).then((e: any) => {
             console.log("request success", e);
             callBack();
@@ -309,7 +315,7 @@ const updateHrDetails = async (postData: any) => {
 
 
 const UpdateGmbhDetails = async (postData: any) => {
-let web = new Web(`${myContextData2?.allListId?.jointSiteUrl}/GmBH`);
+let web = new Web(`${myContextData2?.allListId?.siteUrl}/GmBH`);
     await web.lists.getById(myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.getById(updateData.Id).update(postData).then((e: any) => {
         console.log("request success", e);
         callBack();
@@ -389,7 +395,9 @@ const CreateDivision= async()=>{
                 console.log(error)
                 })
             } else {
-                let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+                
+                // let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+                let web = new Web(myContextData2?.allListId?.siteUrl);
            await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.add(jointData ).then(async (data) => {
             console.log("joint institution post sucessfully", data)
             data.data.Parent={
@@ -415,7 +423,9 @@ const CreateDivision= async()=>{
 const getSmartMetaData = async () => {
     let countryData:any=[];
     try {
-        let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+        
+        // let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+        let web = new Web(myContextData2?.allListId?.siteUrl);
         let data = await web.lists.getById(myContextData2?.allListId?.MAIN_SMARTMETADATA_LISTID)
             .items.top(4999).get()
         data.map((item: any, index: any) => {
@@ -714,13 +724,17 @@ return(
                         <div>
                            {myContextData2.allSite?.MainSite && <span>
                                 <a className="ForAll hreflink" target="_blank" data-interception="off"
-                                    href={`${myContextData2.allSite?.MainSite?myContextData2?.allListId?.jointSiteUrl:myContextData2?.allListId?.siteUrl}/SitePages/contact-Profile.aspx?contactId=${updateData.Id}`}>
+                                    // href={`${myContextData2.allSite?.MainSite?myContextData2?.allListId?.jointSiteUrl:myContextData2?.allListId?.siteUrl}/SitePages/contact-Profile.aspx?contactId=${updateData.Id}`}>
+                                    href={`${myContextData2.allSite?.MainSite?myContextData2?.allListId?.siteUrl:myContextData2?.allListId?.siteUrl}/SitePages/contact-Profile.aspx?contactId=${updateData.Id}`}>
+
                                     <img className="mb-3 icon_siz19" style={{ marginRight: '3px' }}
                                         src="/_layouts/15/images/ichtm.gif?rev=23" alt="icon" />Go to Profile page
                                 </a>
                             </span>}
                             {myContextData2.allSite?.MainSite && <span>|</span>}
-                          <a href={`${myContextData2.allSite?.MainSite?myContextData2?.allListId?.jointSiteUrl:myContextData2?.allListId?.siteUrl}/Lists/Institutions/EditForm.aspx?ID=${updateData?.Id}`}  data-interception="off"
+                          {/* <a href={`${myContextData2.allSite?.MainSite?myContextData2?.allListId?.jointSiteUrl:myContextData2?.allListId?.siteUrl}/Lists/Institutions/EditForm.aspx?ID=${updateData?.Id}`}  data-interception="off" */}
+                          <a href={`${myContextData2.allSite?.MainSite?myContextData2?.allListId?.siteUrl:myContextData2?.allListId?.siteUrl}/Lists/Institutions/EditForm.aspx?ID=${updateData?.Id}`}  data-interception="off"
+
                             target="_blank">Open out-of-the-box form</a> 
 
                             <button className='btn btn-primary ms-1  mx-2'
