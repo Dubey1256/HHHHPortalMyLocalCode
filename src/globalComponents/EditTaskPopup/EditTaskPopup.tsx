@@ -43,10 +43,8 @@ import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 import FlorarImageUploadComponent from "../FlorarComponents/FlorarImageUploadComponent";
 import PageLoader from "../pageLoader";
-// import EmailComponent from "../EmailComponents";
 import SmartTotalTime from "./SmartTimeTotal";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
-// import EmailNotificationMail from "./EmailNotificationMail";
 import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import SmartPriorityHover from "./SmartPriorityHover";
@@ -361,7 +359,7 @@ const EditTaskPopup = (Items: any) => {
                         ? user.Item_x0020_Cover?.Url
                         : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
                     currentUserBackupArray.push(user);
-                if (user.UserGroupId == 7) {
+                if (user.Company  == "HHHH") {
                     setIsUserFromHHHHTeam(true);
                 }
             }
@@ -2064,9 +2062,25 @@ const EditTaskPopup = (Items: any) => {
                 setIsTaskStatusUpdated(true);
                 let DynamicAssignmentInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Auto-Assignment", SiteURL: siteUrls, ItemDetails: EditDataBackup, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: StatusData.value })
                 console.log("Dynamic Assignment Information All Details from backend  ==================", DynamicAssignmentInformation);
+                const isItemExists = (arr: any, value: any) => {
+                    let isExists = false;
+                    arr.forEach((item: any) => {
+                        if (item == value) {
+                            isExists = true;
+                            return;
+                        }
+                    });
+                    return isExists;
+                };
                 const assignmentUser = EditDataBackup.TaskAssignedUsers;
-                if (assignmentUser?.length && StatusData.value > 2) {
-                    setTaskAssignedTo(assignmentUser);
+                const finalTaskAssignedTo: any = [];
+                assignmentUser?.map((finalEmail: any) => {
+                    if (finalEmail != undefined && !isItemExists(finalTaskAssignedTo, finalEmail)) {
+                        finalTaskAssignedTo.push(finalEmail)
+                    }
+                });
+                if (finalTaskAssignedTo?.length > 0 && StatusData.value > 2) {
+                    setTaskAssignedTo(finalTaskAssignedTo);
                 }
                 if (StatusData.value == 0) {
                     updateWAForApproval(true, "IsChecked");
@@ -2108,6 +2122,13 @@ const EditTaskPopup = (Items: any) => {
                             setTaskStatus(item.taskStatusComment);
                         }
                     });
+                    if (WorkingAction?.length > 0) {
+                        WorkingAction?.forEach((DataItem: any) => {
+                            if (DataItem.Title == "WorkingDetails") {
+                                DataItem.InformationData = []
+                            }
+                        })
+                    }
                 }
                 if (StatusData.value == 90) {
                     EditData.IsTodaysTask = false;
@@ -2119,6 +2140,13 @@ const EditTaskPopup = (Items: any) => {
                             setTaskStatus(item.taskStatusComment);
                         }
                     });
+                    if (WorkingAction?.length > 0) {
+                        WorkingAction?.forEach((DataItem: any) => {
+                            if (DataItem.Title == "WorkingDetails") {
+                                DataItem.InformationData = []
+                            }
+                        })
+                    }
                 }
                 setSmartMetaDataUsedPanel("");
             }
@@ -2393,21 +2421,22 @@ const EditTaskPopup = (Items: any) => {
                         return false;
                     });
                     // This used for send MS Teams and Email Notification according to Task Notification Configuration Tool
-                    if (IsTaskStatusUpdated || IsTaskCategoryUpdated) {
-                        if (UpdatedDataObject != undefined) {
-                            const assignedTo = UpdatedDataObject.AssignedTo;
-                            if (assignedTo != undefined) {
-                                assignedTo.map((assignedData: any) => {
-                                    taskUsers?.forEach((userData: any) => {
-                                        if (assignedData?.Id == userData?.AssingedToUserId) {
-                                            assignedData.Email = userData?.AssingedToUser?.EMail;
-                                        }
-                                    });
+
+                    if (UpdatedDataObject != undefined) {
+                        const assignedTo = UpdatedDataObject.AssignedTo;
+                        if (assignedTo != undefined) {
+                            assignedTo.map((assignedData: any) => {
+                                taskUsers?.forEach((userData: any) => {
+                                    if (assignedData?.Id == userData?.AssingedToUserId && userData?.AssingedToUserId != currentUserId) {
+                                        assignedData.Email = userData?.AssingedToUser?.EMail;
+                                    }
                                 });
-                            }
+                            });
                         }
+                    }
+                    if (IsTaskStatusUpdated || IsTaskCategoryUpdated) {
                         let TaskConfigurationInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Notification", SiteURL: siteUrls, ItemDetails: UpdatedDataObject, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: UpdatedDataObject.PercentComplete })
-                        console.log("Task Configuration Information All Details from backend  ==================", TaskConfigurationInformation);
+                        console.log("MS Teams Notification Send Successfully for Task Status and Category Change", TaskConfigurationInformation);
                     }
                     if (TeamMemberChanged) {
                         let PrepareObjectData: any = {
@@ -2420,6 +2449,7 @@ const EditTaskPopup = (Items: any) => {
                         let MSSendStatus: any = await GlobalFunctionForUpdateItems?.SendDynamicMSTeamsNotification(PrepareObjectData);
                         console.log("MS Teams Notification Send Successfully for Assignments", MSSendStatus);
                     }
+
 
                     if (ApproverData != undefined && ApproverData.length > 0) {
                         taskUsers.forEach((val: any) => {
@@ -4311,6 +4341,9 @@ const EditTaskPopup = (Items: any) => {
                 TaskAssignedTo.filter((assignItems) => assignItems.Id != item.Id)
                 TaskTeamMembers.filter((assignItems) => assignItems.Id != item.Id)
             })
+            if (ApproverData.length <= 0) {
+                updateWAForApproval(true, "IsChecked")
+            }
         }
         if (useFor == "Bottleneck" || useFor == "Attention" || useFor == "Phone" || useFor == "Approval") {
             let CreatorData: any = currentUserBackupArray[0];
@@ -10049,7 +10082,6 @@ const EditTaskPopup = (Items: any) => {
                                 <div className="card-footer">
                                     <button
                                         className="btn btn-primary px-3 float-end"
-                                        // onClick={() => alert("We are working on it. This feature will be live soon .....")}
                                         onClick={() => copyAndMoveTaskFunction(IsCopyOrMovePanel)}
                                     >
                                         Save

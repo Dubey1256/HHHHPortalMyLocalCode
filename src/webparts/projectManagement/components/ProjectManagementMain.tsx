@@ -84,6 +84,7 @@ let tempmetadata: any;
 let weekTotalTime: any = 0
 let monthTotalTime: any = 0
 let totalTime: any = 0
+let PXTasks: any
 const ProjectManagementMain = (props: any) => {
   const [openServiceComponent, setopenServiceComponent]= React.useState(false)
   relevantDocRef = React.useRef();
@@ -545,71 +546,94 @@ const ProjectManagementMain = (props: any) => {
     target.style.textOverflow = 'ellipsis';
   };
 
-  const loadAllPXTimeEntries = async () => {
-    let PXtimeEntries: any = []
-    let startingWeekDate = getStartingDate("This Week")
-    let endingWeekDate = getEndingDate("This Week")
-    let startingMonthDate = getStartingDate("This Month")
-    let endingMonthDate = getEndingDate("This Month")
-    setPageLoader(true);
-
-    let flatTableData = globalCommon.deepCopy(backupTableData)
-    let flatData = flattenData(flatTableData)
-    let allPXTasks = flatData.filter((item: any) => item.TaskType)
-    try {
-      let AllTimeEntries = [];
-      if (timeSheetConfig?.Id !== undefined) {
-        AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
-      }
-
-      AllTimeEntries?.map((entry: any) => {
-        const timeEntryDetails = JSON.parse(entry.AdditionalTimeEntry)
-        if (timeEntryDetails?.length > 0) {
-          timeEntryDetails?.map((timeEntry: any) => {
-            allPXTasks?.map((task: any) => {
-              if (entry[`Task${task?.siteType}`] != undefined && entry[`Task${task?.siteType}`].Id == task?.Id) {
-                task.TaskTime = parseFloat(timeEntry?.TaskTime);
-                task.TimeDate = timeEntry.TaskDate;
-                task.TimeDescription = timeEntry.Description;
-                task.TimeEntryAuthorImage = timeEntry.AuthorImage
-                task.TimeEntryAuthorName = timeEntry.AuthorName
-                let parts = timeEntry?.TaskDate?.split('/');
-                let timeEntryDate: any = new Date(parts[2], parts[1] - 1, parts[0]);
-                if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingWeekDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingWeekDate.setHours(0, 0, 0, 0)) {
-                  weekTotalTime += Number(timeEntry?.TaskTime)
-                }
-                if (timeEntryDate?.setHours(0, 0, 0, 0) >= startingMonthDate.setHours(0, 0, 0, 0) && timeEntryDate?.setHours(0, 0, 0, 0) <= endingMonthDate.setHours(0, 0, 0, 0)) {
-                  monthTotalTime += Number(timeEntry?.TaskTime)
-                }
-                PXtimeEntries.push(task)
-              }
-            })
-          })
+  const checkTimeEntrySite = (timeEntry: any) => {
+    let result: any
+    result = PXTasks?.filter((task: any) => {
+        let site = '';
+        if (task?.siteType == 'Offshore Tasks') {
+            site = 'OffshoreTasks'
+        } else {
+            site = task?.siteType;
         }
-      });
-      if (PXtimeEntries?.length > 0) {
-        PXtimeEntries = PXtimeEntries.reduce(function (
-            previous: any,
-            current: any
-        ) {
-            var alredyExists =
-                previous.filter(function (item: any) {
-                    return item.Id === current.Id;
-                }).length > 0;
-            if (!alredyExists) {
-                previous.push(current);
-            }
-            return previous;
-        },
-            []);
-    }
-      setTimeEntries(PXtimeEntries)
-      setPageLoader(false)
-    } catch (error) {
-      console.log(error)
-      setPageLoader(false)
-    }
+        if (timeEntry[`Task${site}`] != undefined && task?.Id == timeEntry[`Task${site}`]?.Id) {
+            return task;
+        }
+    });
+    return result;
+}
+  
+const loadAllPXTimeEntries = async () => {
+  let startingWeekDate = getStartingDate("This Week").setHours(0, 0, 0, 0);
+  let endingWeekDate = getEndingDate("This Week").setHours(0, 0, 0, 0);
+  let startingMonthDate = getStartingDate("This Month").setHours(0, 0, 0, 0);
+  let endingMonthDate = getEndingDate("This Month").setHours(0, 0, 0, 0);
+  setPageLoader(true);
+
+  const parseDate = (dateStr: any) => {
+    const parts = dateStr.split('/');
+    return new Date(parts[2], parts[1] - 1, parts[0]).setHours(0, 0, 0, 0);
   };
+
+  try {
+    let AllTimeEntries = [];
+    if (timeSheetConfig?.Id !== undefined) {
+      AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
+    }
+
+    AllTimeEntries?.map((entry: any) => {
+      entry.taskDetails = checkTimeEntrySite(entry)
+    });
+
+    const { PXtimeEntries, weekTime, monthTime } = AllTimeEntries?.reduce(
+      (acc: any, timeEntry: any) => {
+          try {
+              if (timeEntry?.AdditionalTimeEntry) {
+                  const AdditionalTime = JSON.parse(timeEntry.AdditionalTimeEntry);
+
+                  AdditionalTime?.forEach((filledTime: any) => {
+                      const [day, month, year] = filledTime?.TaskDate?.split('/');
+                      const timeFillDate = new Date(+year, +month - 1, +day);
+
+                      if (
+                          timeEntry.taskDetails[0]
+                      ) {
+                          const data = { ...timeEntry.taskDetails[0] } || {};
+
+                          data.TaskTime = parseFloat(filledTime?.TaskTime);
+                          data.TimeDate = filledTime.TaskDate;
+                          data.TimeDescription = filledTime.Description;
+                          data.TimeEntryAuthorImage = filledTime.AuthorImage
+                          data.TimeEntryAuthorName = filledTime.AuthorName
+                          acc.PXtimeEntries.push(data);
+
+                          if (timeFillDate?.setHours(0, 0, 0, 0) >= startingWeekDate && timeFillDate?.setHours(0, 0, 0, 0) <= endingWeekDate) {
+                            acc.weekTime += Number(filledTime?.TaskTime)
+                          }
+                          if (timeFillDate?.setHours(0, 0, 0, 0) >= startingMonthDate && timeFillDate?.setHours(0, 0, 0, 0) <= endingMonthDate) {
+                            acc.monthTime += Number(filledTime?.TaskTime)
+                          }
+                      }
+                  });
+              }
+
+          } catch (error) {
+              setPageLoader(false)
+          }
+          return acc;
+      },
+      { PXtimeEntries: [], weekTime: 0, monthTime: 0 }
+  );
+
+    PXtimeEntries.sort((a: any, b: any) => parseDate(b.TimeDate) - parseDate(a.TimeDate));
+    weekTotalTime = weekTime;
+    monthTotalTime = monthTime;
+    setTimeEntries(PXtimeEntries);
+    setPageLoader(false);
+  } catch (error) {
+    console.log(error);
+    setPageLoader(false);
+  }
+};
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
     if (elem?.TaskType != undefined) {
       setCheckedList(elem);
@@ -926,9 +950,6 @@ const ProjectManagementMain = (props: any) => {
           AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id ne null`)
         }
       }
-      totalTime = AllProjectTasks?.reduce((total: any, time: any) => total + time.TotalTime, 0);
-      totalTime = totalTime/60;
-      totalTime = totalTime.toFixed(2)
       AllProjectTasks.map((items: any) => {
         items.SmartPriority = globalCommon.calculateSmartPriority(items);
         if (items?.SmartInformation?.length > 0) {
@@ -1214,6 +1235,12 @@ const ProjectManagementMain = (props: any) => {
       countPoject(allRowInfo)
       setProjectTableData(allSprints);
       backupTableData = allSprints;
+      let groupedDataItems = globalCommon.deepCopy(backupTableData);
+      let flattenedData = flattenData(groupedDataItems)
+      PXTasks = flattenedData.filter((item: any) => item.TaskType)
+      totalTime = PXTasks?.reduce((total: any, time: any) => total + time.TotalTime, 0);
+      totalTime = totalTime/60;
+      totalTime = totalTime.toFixed(2)
       setTaskTaggedPortfolios(taskTaggedComponents)
       setSuggestedPortfolios(suggestedPortfolioItems)
       loadTaggedDocuments();
@@ -3027,7 +3054,7 @@ const ProjectManagementMain = (props: any) => {
                                         <dt className="bg-fxdark">Total PX Time</dt>
                                         <dd className="bg-light">
                                           {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime} hrs;`}</span>}
-                                          {(monthTotalTime != undefined && weekTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime} hrs; `}</span>}
+                                          {(monthTotalTime != undefined && monthTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime} hrs; `}</span>}
                                           {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime} hrs; `}</span>}
                                           <a className="smartTotalTime hover-text m-0 float-end" onClick={() => loadAllPXTimeEntries()}><BsClock/><span className='tooltip-text pop-left'>Load Time Entries</span></a>
                                         </dd>
