@@ -2259,7 +2259,7 @@ const loadAllPXTimeEntries = async () => {
           <span> {row?.original?.TotalTaskTime}</span>
         ),
         id: "TotalTaskTime",
-        placeholder: "Smart Time",
+        placeholder: "Estimated Time",
         header: "",
         resetColumnFilters: false,
         size: 49,
