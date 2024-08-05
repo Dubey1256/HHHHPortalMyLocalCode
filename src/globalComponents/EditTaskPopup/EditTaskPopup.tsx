@@ -359,7 +359,7 @@ const EditTaskPopup = (Items: any) => {
                         ? user.Item_x0020_Cover?.Url
                         : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
                     currentUserBackupArray.push(user);
-                if (user.UserGroupId == 7 || user.UserGroupId == 491) {
+                if (user.Company  == "HHHH") {
                     setIsUserFromHHHHTeam(true);
                 }
             }
@@ -7375,7 +7375,7 @@ const EditTaskPopup = (Items: any) => {
 
                                             />
                                         </div>
-                                        <div className="mb-3 pull-right">
+                                        <div className="pull-right">
                                             <span className="">
                                                 <label className="form-check-label mx-2">
                                                     Waiting for HHHH response
@@ -9660,7 +9660,7 @@ const EditTaskPopup = (Items: any) => {
                                                             Context={Context}
                                                         />
                                                     </div>
-                                                    <div className="mb-3 pull-right">
+                                                    <div className="pull-right">
                                                         <span className="">
                                                             <label className="form-check-label mx-2">
                                                                 Waiting for HHHH response
