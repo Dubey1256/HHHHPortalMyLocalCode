@@ -7,6 +7,7 @@ const OnHoldCommentCard = (Props: any) => {
     const ItemId: any = Props?.ItemId;
     const AllListIds: any = Props?.AllListIds;
     const context: any = Props?.Context;
+    const CommentFor: any = Props?.CommentFor;
     const callBack: any = Props?.callback;
     const usedFor:string = Props?.usedFor;
     const [IsPanelOpen, setIsPanelOpen] = useState(true);
@@ -25,7 +26,7 @@ const OnHoldCommentCard = (Props: any) => {
             >
                 <div className="alignCenter full-width pb-1">
                     <span className="boldClable f-19 ms-4 pb-2 siteColor">
-                        State the reason why Task is On-Hold
+                        State the reason why Task is {CommentFor}
                     </span>
                 </div>
             </div>
@@ -49,7 +50,7 @@ const OnHoldCommentCard = (Props: any) => {
                         AllListId={AllListIds}
                         Context={context}
                         onHoldCallBack={onHoldCallBack}
-                        commentFor="On-Hold"
+                        commentFor={CommentFor}
                     />
                 </div>
             </Panel>

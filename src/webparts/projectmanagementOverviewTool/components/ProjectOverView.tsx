@@ -1182,7 +1182,7 @@ export default function ProjectOverview(props: any) {
                                     `<tr>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;border-left: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;">${siteNameOPen} </td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.TaskID} </td>
-                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"><p style="margin:0px;  color:#2F5596;"><a  color:#2F5596; href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
+                            <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"><p style="margin:0px; color:#2F5596;"><a style="color:#2F5596;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
 
                             <td align="left" valign="middle" style="border-bottom: 1px solid #ccc;border-right: 1px solid #ccc; font-family: Segoe UI; padding: 8px;font-size: 13px;"> ${item.PercentComplete} </td>
@@ -1209,12 +1209,12 @@ export default function ProjectOverview(props: any) {
                 }
             })
             if (taskCount > 0) {
-                let bgColor = group?.Item_x0020_Type == 'Sprint' ? '#eef4ff' : '#fafafa';
+                let bgColor = group?.Item_x0020_Type == 'Sprint' ? '#eef4ff' : '#eee';
                 let textColor = '#ffffff'
                 body +=
                     `<table cellpadding="0" height="30px" cellspacing="0" style="height:30px;" border="0">
                         <tr>
-                            <td colspan="8" height="30px">&nbsp;</td>
+                            <td colspan="8" height="25px">&nbsp;</td>
                         </tr>
                         <tr>
                             <td width="130px" height="12" align="left" valign="middle" bgcolor=${bgColor} style="padding: 5px 8px;border:0px;  font-family: Segoe UI;height:30px;"><span style="font-size: 14px;margin-right: 4px; font-weight: 600; color:#333;">${group?.Item_x0020_Type == 'Sprint' ? 'X' : 'P'}</span><span style="font-size: 14px; font-weight: 600; color:#333;"> Title</span></td>
@@ -1228,7 +1228,7 @@ export default function ProjectOverview(props: any) {
                             <td height="12" style="padding: 5px 8px;border: 0px;color: #2f5596; "><a style="margin-right:20px; font-family: Segoe UI;font-size: 14px;height:30px; color:#2F5596;" href = ${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${projectLeaderId} >${projectLeaderTitle} </a></td>
                         </tr>
                         <tr>
-                            <td colspan="8" height="30px">&nbsp;</td>
+                            <td colspan="8" height="15px">&nbsp;</td>
                         </tr>
                     </table >
                     <table cellpadding="0" cellspacing="0" align="left" width="100%" border="0">
