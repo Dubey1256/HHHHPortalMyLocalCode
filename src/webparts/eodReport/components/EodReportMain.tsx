@@ -279,7 +279,7 @@ export const EodReportMain = (props: any) => {
                     projectTitleCell = `<tr><td height="48" align="left" width="180" valign="middle" style="background: #fff;color: #333;width:180px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-left: 1px solid #EEE; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                                             ${projectTitle ?? ''}
                                         </td>`;
-                    firstTask = false;
+                    // firstTask = false;
                 }
 
                 let taskRow = `
@@ -350,9 +350,9 @@ export const EodReportMain = (props: any) => {
                                 <td width="130" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">Portfolio Lead</td>
                             </tr>
                     
-                            <body>
+                            <tbody>
                                 ${body1.join('')}
-                            </body>
+                            </tbody>
                         </table>
                     </div>
                 </td>
@@ -1126,7 +1126,7 @@ export const EodReportMain = (props: any) => {
                 site = task?.siteType;
             }
             if (timeEntry[`Task${site}`] != undefined && task?.Id == timeEntry[`Task${site}`]?.Id) {
-                task.Lead=getPortfolioLead(timeEntry)
+                // task.Lead=getPortfolioLead(timeEntry)
                 return task;
             }
         });
@@ -1134,17 +1134,17 @@ export const EodReportMain = (props: any) => {
     }
 
     //  Code by Udbahv
-     const getPortfolioLead=(timeEntry:any)=>{
-        let lead=''
+    //  const getPortfolioLead=(timeEntry:any)=>{
+    //     let lead=''
     
-        allUsers.map((user:any)=>{
-            if(timeEntry?.AuthorId==user?.AssingedToUser?.Id){
+    //     allUsers.map((user:any)=>{
+    //         if(timeEntry?.AuthorId==user?.AssingedToUser?.Id){
            
-               return lead= user?.Approver?.map((teamMember: { Title: any; }) => teamMember.Title).join(', ');
-            }
-        })
-        return lead
-     }
+    //            return lead= user?.Approver?.map((teamMember: { Title: any; }) => teamMember.Title).join(', ');
+    //         }
+    //     })
+    //     return lead
+    //  }
 
     const getAllTodayModifiedTask = async (siteconfig: any[]) => {
         let filteredData: any = []
@@ -1185,6 +1185,9 @@ export const EodReportMain = (props: any) => {
                         filteredData = res;
                     }
                     else if (loginUserInfo[0]?.UserGroup?.Title == "QA Team") {
+                        filteredData = res;
+                    }
+                    else if (loginUserInfo[0]?.AssingedToUserId=='328') {
                         filteredData = res;
                     }
                     else if (loginUserInfo[0]?.UserGroup?.Title == "Portfolio Lead Team" || loginUserInfo[0]?.UserGroup?.Title == "Design Team") {
