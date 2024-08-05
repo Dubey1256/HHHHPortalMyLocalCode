@@ -2,6 +2,7 @@ import moment from 'moment';
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import * as globalCommon from '../../../globalComponents/globalCommon'
+import ApprovalHistoryPopupComponent from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
 import {
     mergeStyleSets,
     FocusTrapCallout,
@@ -39,7 +40,7 @@ const TaskDescriptions = (props: any) => {
     const [sendMail, setsendMail] = React.useState(false);
     const [emailStatus, setemailStatus] = React.useState('');
     const [emailComponentstatus, setemailComponentstatus] = React.useState('')
-    const [ApprovalHistoryPopup, setApprovalHistoryPopup] = React.useState(true);
+    const [ApprovalHistoryPopup, setApprovalHistoryPopup] = React.useState(false);
     const [ApprovalPointUserData, setApprovalPointUserData] = React.useState(null);
     const [ApprovalPointCurrentParentIndex, setApprovalPointCurrentParentIndex] = React.useState(null);
     const [currentArraySubTextIndex, setcurrentArraySubTextIndex] = React.useState(null);
@@ -1192,6 +1193,17 @@ const TaskDescriptions = (props: any) => {
                     <button className='btn btn-default ms-1' onClick={Closecommentpopup}>Cancel</button>
                 </footer>
             </Panel>}
+            {ApprovalHistoryPopup ? <ApprovalHistoryPopupComponent
+                        ApprovalPointUserData={ApprovalPointUserData}
+                        indexSHow={currentArraySubTextIndex != null ? ApprovalPointCurrentParentIndex + "." + currentArraySubTextIndex : ApprovalPointCurrentParentIndex}
+                        ApprovalPointCurrentIndex={ApprovalPointCurrentParentIndex - 1}
+                        ApprovalPointHistoryStatus={ApprovalHistoryPopup}
+                        currentArrayIndex={currentArraySubTextIndex - 1}
+                        usefor="TaskProfile"
+
+                        callBack={() => ApprovalHistoryPopupCallBack()}
+                    />
+                        : null}
         </>
     )
 }
