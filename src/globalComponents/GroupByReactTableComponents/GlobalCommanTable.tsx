@@ -29,6 +29,7 @@ import ShowTeamMembers from '../ShowTeamMember';
 import SelectFilterPanel from './selectFilterPannel';
 import ExpndTable from '../ExpandTable/Expandtable';
  import RestructuringCom from '../Restructuring/RestructuringCom';
+ import RestructureProject from '../../webparts/projectManagement/components/RestructureProject';
 import { SlArrowDown, SlArrowRight, SlArrowUp } from 'react-icons/sl';
 import { BsClockHistory, BsList, BsSearch } from 'react-icons/bs';
 import Tooltip from "../../globalComponents/Tooltip";
@@ -1477,13 +1478,53 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         {items?.protfolioProfileButton === true && items?.hideAddActivityBtn != true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" disabled={true} > Add Activity-Task</button>}</>}
                         
-                        {items?.showRestructureButton === true && <>
-                            {
-                                trueRestructuring == true ?
-                                    <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} projectmngmnt={items?.projectmngmnt} MasterdataItem={items?.MasterdataItem} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
-                                    : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
-                            }
-                        </>}
+                        {items?.showRestructureButton && (
+    <>
+        {items?.projectmngmnt === 'projectmngmnt' ? (
+            trueRestructuring ? (
+                <RestructureProject
+                    AllSitesTaskData={items?.AllSitesTaskData}
+                    AllMasterTasksData={items?.masterTaskData}
+                    projectmngmnt={items?.projectmngmnt}
+                    MasterdataItem={items?.MasterdataItem}
+                    queryItems={items.queryItems}
+                    restructureFunct={restructureFunct}
+                    ref={childRef}
+                    taskTypeId={items.TaskUsers}
+                    contextValue={items.AllListId}
+                    allData={data}
+                    restructureCallBack={items.restructureCallBack}
+                    restructureItem={table?.getSelectedRowModel()?.flatRows}
+                />
+            ) : (
+                <button type="button" title="Restructure" disabled className="btn btn-primary">
+                    Restructure P
+                </button>
+            )
+        ) : (
+            trueRestructuring ? (
+                <RestructuringCom
+                    AllSitesTaskData={items?.AllSitesTaskData}
+                    AllMasterTasksData={items?.masterTaskData}
+                    projectmngmnt={items?.projectmngmnt}
+                    MasterdataItem={items?.MasterdataItem}
+                    queryItems={items.queryItems}
+                    restructureFunct={restructureFunct}
+                    ref={childRef}
+                    taskTypeId={items.TaskUsers}
+                    contextValue={items.AllListId}
+                    allData={data}
+                    restructureCallBack={items.restructureCallBack}
+                    restructureItem={table?.getSelectedRowModel()?.flatRows}
+                />
+            ) : (
+                <button type="button" title="Restructure" disabled className="btn btn-primary">
+                    Restructure
+                </button>
+            )
+        )}
+    </>
+)}
 
                         {items?.showCompareButton === true && <div> {
                             ((table?.getSelectedRowModel()?.flatRows?.length === 2) && (table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Workstream" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task")) ?

@@ -2060,14 +2060,14 @@ validSites = validSites.filter((site:any) => {
         break;
 
       case "LastMonth":
-        DateType = "LastMonth";
+        DateType = "Last Month";
         this.setState({ showShareTimesheet: true });
         startdt = new Date(startdt.getFullYear(), startdt.getMonth() - 1);
         enddt = new Date(enddt.getFullYear(), enddt.getMonth(), 0);
         break;
 
       case "Last3Month":
-        DateType = "Last3Month";
+        DateType = "Last 3 Month";
         this.setState({ showShareTimesheet: true });
         startdt = new Date();
         startdt.setMonth(startdt.getMonth() - 3);
@@ -2085,7 +2085,7 @@ validSites = validSites.filter((site:any) => {
         break;
 
       case "LastYear":
-        DateType = "LastYear";
+        DateType = "Last Year";
         this.setState({ showShareTimesheet: true });
         startdt = new Date(new Date().getFullYear() - 1, 0, 1);
         enddt = new Date(new Date().getFullYear() - 1, 11, 31);
@@ -2222,7 +2222,10 @@ validSites = validSites.filter((site:any) => {
       DateType == "Last Week"
     ) {
       this.setState({ showShareTimesheet: true });
-      let startDate = this.getStartingDate("Last Month").toISOString();
+      let startDatess = this.getStartingDate(DateType).toISOString();
+      const date = new Date(startDatess);
+       date.setDate(date.getDate() - 2);
+       let startDate = date.toISOString();
 
       try {
         if (

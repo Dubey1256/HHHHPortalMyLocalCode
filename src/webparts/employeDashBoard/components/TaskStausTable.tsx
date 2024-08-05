@@ -25,6 +25,9 @@ import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import AddEditWebpartTemplate from "../../../globalComponents/AddEditWebpartTemplate";
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
+import { CustomToolTip } from "../../../globalComponents/customTooltip";
+import { Col, Row } from "react-bootstrap";
+import { PeoplePicker, PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -48,11 +51,12 @@ const TaskStatusTbl = (Tile: any) => {
   const [state, rerender] = React.useReducer(() => ({}), {});
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
-  const [editPopup, setEditPopup]: any = useState(false);
-  const [EditProjectPopup, setEditProjectPopup]: any = useState(false);
-  const [EditCompPopup, setEditCompPopup]: any = useState(false);
+  const [editPopup, setEditPopup] = useState(false);
+  const [EditPopupProjects, setEditPopupProjects] = useState<any>(false);
+  const [EditCompPopup, setEditCompPopup] = useState<any>(false);
   const [result, setResult]: any = useState<any>(false);
-  const [CompResult, setCompResult]: any = useState(false);
+  const [CompResult, setCompResult] = useState<any>(undefined);
+  const [ProjectResult, setProjectResult] = useState<any>({});
   const [ActiveTile, setActiveTile] = useState(Tile?.activeTile);
   const [dateRange, setDateRange] = useState<any>([]);
   const [isRejectItem, setisRejectItem] = useState<any>(undefined);
@@ -763,7 +767,7 @@ const TaskStatusTbl = (Tile: any) => {
                 let UserToBeTagged: any = {};
                 let CreatorData: any = {};
                 if (ContextData?.AllTaskUser != undefined && ContextData?.AllTaskUser?.length) {
-                  UserToBeTagged = ContextData?.AllTaskUser.filter((e: any) => e.AssingedToUserId == Item?.Author?.Id)[0];
+                  UserToBeTagged = ContextData?.AllTaskUser.filter((e: any) => e.AssingedToUserId == ContextData?.currentUserId)[0];
                   CreatorData = ContextData?.AllTaskUser.filter((e: any) => e.AssingedToUserId == ContextData?.currentUserId)[0];
                 }
                 if (Item?.WorkingAction == undefined || Item?.WorkingAction == '')
@@ -1735,14 +1739,14 @@ const TaskStatusTbl = (Tile: any) => {
       else {
         item['siteUrl'] = `${AllListId?.siteUrl}`;
         item['listName'] = 'Master Tasks';
-        setEditProjectPopup(true);
-        setCompResult(item)
+        setEditPopupProjects(true);
+        setProjectResult(item)
       }
 
     }
   }
   function CallBack() {
-    setEditProjectPopup(false);
+    setEditPopupProjects(false);
     setEditPopup(false);
     setEditCompPopup(false);
   }
@@ -1929,10 +1933,73 @@ const TaskStatusTbl = (Tile: any) => {
     setIsManageConfigPopup(false);
     setSelectedItem('')
   }
+  const CustomOndropAction = (config: any) => {
+    return (
+      <Row className="Metadatapannel">
+        <Col sm="12" md="12" lg="12">
+          <div className="togglecontent mt-1">
+            <h4 className="heading">On-Drop Action</h4>
+            <section className="border px-2 py-2">
+              {config?.onDropAction != undefined && config?.onDropAction?.length > 0 && config?.onDropAction.map((column: any, ColumnIndex: any) => {
+                return (
+                  <>
+                    <Row>
+                      <Col sm="5">
+                        <input type="text" className="disabled-input input-group mb-1" id={`FiltersCustom${ColumnIndex}`} value={column?.SelectedField || ''} />
+                      </Col>
+                      <Col sm="7" className="onDrop-peoplePicker">
+                        <>
+                          {column?.SelectedField == "Status" && <input type="text" className="disabled-input input-group" id="FiltersCustomStatus" value={column?.SelectedValue || ''} />}
+                          {column?.SelectedField == "Priority" && <input type="text" className="disabled-input input-group" id="FiltersCustomPriority" value={column?.SelectedValue || ''} />}
+                          {column?.SelectedField == "WorkingMember" && <>
+                            <PeoplePicker context={ContextData?.propsValue?.Context} titleText="" personSelectionLimit={10} principalTypes={[PrincipalType.User]} resolveDelay={1000}
+                              defaultSelectedUsers={column?.SelectedEmail ? column?.SelectedEmail : []} disabled={true} />
+                          </>}
+                          {column?.SelectedField == "TeamLeader" && <>
+                            <PeoplePicker context={ContextData?.propsValue?.Context} titleText="" personSelectionLimit={10} principalTypes={[PrincipalType.User]} resolveDelay={1000}
+                              defaultSelectedUsers={column?.SelectedEmail ? column?.SelectedEmail : []} disabled={true} />
+                          </>}
+                          {column?.SelectedField == "TeamMember" && <>
+                            <PeoplePicker context={ContextData?.propsValue?.Context} titleText="" personSelectionLimit={10} principalTypes={[PrincipalType.User]} resolveDelay={1000}
+                              defaultSelectedUsers={column?.SelectedEmail ? column?.SelectedEmail : []} disabled={true} />
+                          </>}
+                          {column?.SelectedField == "Categories" && <>
+                            <div className="input-group">
+                              <>
+                                {column?.SelectedValue?.map(
+                                  (type: any, index: number) => {
+                                    return (
+                                      <div className="block w-100">
+                                        <a style={{ color: "#fff !important" }} className="textDotted">{type.Title} </a>
+                                      </div>
+                                    );
+                                  }
+                                )}
+                              </>
+                            </div>
+                          </>}
+                          {column?.SelectedField == "WorkingDate" && <>
+                            <input type="text" className="disabled-input input-group" id="FiltersWorkingDate" value={column?.SelectedValue || ''} />
+                          </>}
+                          {column?.SelectedField == "DueDate" && <>
+                            <input type="text" className="disabled-input input-group" id="FiltersDueDate" value={column?.SelectedValue || ''} />
+                          </>}
+                        </>
+                      </Col>
+                    </Row>
+                  </>
+                )
+              })}
+            </section>
+          </div>
+        </Col>
+      </Row>)
+  }
   const customTableHeaderButtons = (config: any) => {
     return (
       <span className="alignCenter CustomHeaderIcon">
-        {IsShowConfigBtn && config?.IsEditWebpart != false && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
+        {config?.onDropAction != undefined && config?.onDropAction?.length > 0 && <span className="mt-1"> <CustomToolTip Description={config?.onDropAction} CustomHtml={CustomOndropAction(config)} /> </span>}
+        {IsShowConfigBtn && config?.IsEditWebpart != false && <span className="svg__iconbox mt-1 svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
         {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink"
           target="_blank" data-interception="off" title="Create New Task" href={`${ContextData?.siteUrl}/SitePages/CreateTask.aspx`}>
           <span className="hreflink alignIcon svg__iconbox svg__icon--CNTask empBg"></span>
@@ -1991,6 +2058,31 @@ const TaskStatusTbl = (Tile: any) => {
     setSelectedUserId(item?.AssingedToUserId)
     ContextData?.callbackFunction('OtherUserSelected', item?.AssingedToUserId)
   }
+  const ShowCustomDataHeader = (config: any) => {
+    return (
+      <div>
+        {config?.WebpartTitle}
+        {config?.ShowTitleInHeader === true && (
+          <>  {' - '}
+            <span>
+              <img id="UserImg63" className="ProirityAssignedUserPhoto" title={ContextData?.CurrentUserInfo?.Title} src={ContextData?.CurrentUserInfo?.Item_x0020_Cover?.Url} alt={ContextData?.CurrentUserInfo?.Title} />
+            </span>
+          </>
+        )}
+        {` (${config?.Tasks?.length})`}
+      </div>
+    );
+  }
+  const tableCall = (config: any, smartFavTableConfig: any) => {
+    return (
+      <>
+        <GlobalCommanTable wrapperHeight="300px" showHeader={true}
+          showingDataCoustom={ShowCustomDataHeader(config)}
+          customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+          pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
+      </>
+    )
+  }
   const generateDashboard = () => {
     const rows: any = [];
     let currentRow: any = [];
@@ -2009,12 +2101,12 @@ const TaskStatusTbl = (Tile: any) => {
                   <div className="alignCenter mb-2 justify-content-between">
                   </div>
                   <div className="Alltable" draggable={true} onDragStart={(e) => handleDragStart(e, config, '')} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
-                    {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="300px" showHeader={true}
-                        showingDataCoustom={`${config?.WebpartTitle} ${config?.ShowTitleInHeader == true ? ' - ' + ContextData?.CurrentUserInfo?.Title : ''} (${config?.Tasks?.length})`}
-                        customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons(config)} bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
-                        pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
-                    )}
+                    {config?.Tasks != undefined && config?.Tasks?.length > 0 &&
+                      tableCall(config, smartFavTableConfig)
+                    }
+                    {config?.Tasks != undefined && config?.Tasks?.length === 0 &&
+                      tableCall(config, smartFavTableConfig)
+                    }
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
                       {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={AllListId} emailStatus={"Approved"} items={approveItem} />}
                     </span>}
@@ -2252,6 +2344,9 @@ const TaskStatusTbl = (Tile: any) => {
     });
     return rows;
   };
+  const showProgressBar = () => {
+
+  }
   const onRenderCustomHeadereditcomment = () => {
     return (
       <>
@@ -2269,7 +2364,7 @@ const TaskStatusTbl = (Tile: any) => {
           {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
         </span>
         <span>
-          {EditProjectPopup && <EditProjectPopup props={CompResult} AllListId={AllListId} Call={() => { CallBack() }} />}
+          {EditPopupProjects && <EditProjectPopup AllListId={AllListId} props={ProjectResult} Call={CallBack} showProgressBar={showProgressBar} />}
         </span>
         <span>
           {EditCompPopup && (

@@ -2,6 +2,7 @@ import moment from 'moment';
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import * as globalCommon from '../../../globalComponents/globalCommon'
+import ApprovalHistoryPopupComponent from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
 import {
     mergeStyleSets,
     FocusTrapCallout,
@@ -39,7 +40,7 @@ const TaskDescriptions = (props: any) => {
     const [sendMail, setsendMail] = React.useState(false);
     const [emailStatus, setemailStatus] = React.useState('');
     const [emailComponentstatus, setemailComponentstatus] = React.useState('')
-    const [ApprovalHistoryPopup, setApprovalHistoryPopup] = React.useState(true);
+    const [ApprovalHistoryPopup, setApprovalHistoryPopup] = React.useState(false);
     const [ApprovalPointUserData, setApprovalPointUserData] = React.useState(null);
     const [ApprovalPointCurrentParentIndex, setApprovalPointCurrentParentIndex] = React.useState(null);
     const [currentArraySubTextIndex, setcurrentArraySubTextIndex] = React.useState(null);
@@ -61,7 +62,7 @@ const TaskDescriptions = (props: any) => {
     const changeTrafficLigth = async (index: any, item: any) => {
         console.log(index);
         console.log(item);
-        if ((Result?.Approver?.AssingedToUser?.Id == props?.currentUser[0]?.Id) || (Result?.Approver?.Approver[0]?.Id == props?.currentUser[0]?.Id)) {
+        if (Result?.checkIsApproval) {
             let tempData: any = TaskFeedbackData[index];
             var approvalDataHistory = {
                 ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
@@ -110,7 +111,7 @@ const TaskDescriptions = (props: any) => {
         console.log(parentindex);
         console.log(subchileindex);
         console.log(status);
-        if ((Result?.Approver?.AssingedToUser?.Id == props?.currentUser[0]?.Id) || (Result?.Approver?.Approver[0]?.Id == props?.currentUser[0]?.Id)) {
+        if (Result?.checkIsApproval) {
             let tempData: any = TaskFeedbackData[parentindex];
             var approvalDataHistory = {
                 ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
@@ -949,13 +950,13 @@ const TaskDescriptions = (props: any) => {
                                                     </div>
                                                     {showhideCommentBoxIndex == i && <div className='SpfxCheckRadio'>
                                                         <div className="col-sm-12 mt-2 p-0" style={{ display: showcomment }} >
-                                                            {Result?.Approver != "" && Result?.Approver != undefined && (Result?.Approver?.AssingedToUser?.Id == props?.currentUser?.[0]?.Id || (Result?.Approver?.Approver?.length > 0 && Result?.Approver?.Approver[0]?.Id == props?.currentUser?.[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' name='approval' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target.checked)} />
+                                                            {Result?.Approver != "" && Result?.Approver != undefined && (Result?.checkIsApproval) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' name='approval' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target.checked)} />
                                                                 Mark as Approval Comment</label>}
                                                         </div>
                                                         <div className="align-items-center d-flex"
                                                             style={{ display: showcomment }}
                                                         >  <textarea id="txtComment" onChange={(e) => handleInputChange(e)} className="form-control full-width"></textarea>
-                                                            <button type="button" className={Result?.Approver != undefined && Result?.Approver != "" && (Result?.Approver?.AssingedToUser?.Id == props?.currentUser?.[0]?.Id || (Result?.Approver?.Approver?.length > 0 && Result?.Approver?.Approver?.[0]?.Id == props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => PostButtonClick(fbData, i)}>Post</button>
+                                                            <button type="button" className={Result?.Approver != undefined && Result?.Approver != "" && (Result?.checkIsApproval) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => PostButtonClick(fbData, i)}>Post</button>
                                                         </div>
                                                     </div>}
 
@@ -1109,14 +1110,14 @@ const TaskDescriptions = (props: any) => {
                                                         </div>
                                                         {subchildcomment == j && subchildParentIndex == i ? <div className='SpfxCheckRadio' >
                                                             <div className="col-sm-12 mt-2 p-0  ">
-                                                                {Result?.Approver != "" && Result?.Approver != undefined && (Result?.Approver?.AssingedToUser?.Id == props?.currentUser[0]?.Id || (Result?.Approver?.Approver[0]?.Id == props?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target?.checked)} />Mark as Approval Comment</label>}
+                                                                {Result?.Approver != "" && Result?.Approver != undefined && (Result?.checkIsApproval) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target?.checked)} />Mark as Approval Comment</label>}
 
                                                             </div>
 
                                                             <div className="align-items-center d-flex"
 
                                                             >  <textarea id="txtCommentSubtext" onChange={(e) => handleInputChange(e)} className="form-control full-width" ></textarea>
-                                                                <button type="button" className={Result?.Approver != undefined && Result?.Approver != "" && (Result?.Approver?.AssingedToUser?.Id == props?.currentUser[0]?.Id || (Result?.Approver?.Approver[0]?.Id == props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => SubtextPostButtonClick(j, i)}>Post</button>
+                                                                <button type="button" className={Result?.Approver != undefined && Result?.Approver != "" && (Result?.checkIsApproval) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => SubtextPostButtonClick(j, i)}>Post</button>
                                                             </div>
                                                         </div> : null}
 
@@ -1188,10 +1189,21 @@ const TaskDescriptions = (props: any) => {
                     </div>
                 </div>
                 <footer className='modal-footer mt-2'>
-                    <button className="btn btn-primary ms-1"  disabled={CommenttoUpdate?.length===0?true:false} onClick={(e) => updateComment()}>Save</button>
+                    <button className="btn btn-primary ms-1" onClick={(e) => updateComment()}>Save</button>
                     <button className='btn btn-default ms-1' onClick={Closecommentpopup}>Cancel</button>
                 </footer>
             </Panel>}
+            {ApprovalHistoryPopup ? <ApprovalHistoryPopupComponent
+                        ApprovalPointUserData={ApprovalPointUserData}
+                        indexSHow={currentArraySubTextIndex != null ? ApprovalPointCurrentParentIndex + "." + currentArraySubTextIndex : ApprovalPointCurrentParentIndex}
+                        ApprovalPointCurrentIndex={ApprovalPointCurrentParentIndex - 1}
+                        ApprovalPointHistoryStatus={ApprovalHistoryPopup}
+                        currentArrayIndex={currentArraySubTextIndex - 1}
+                        usefor="TaskProfile"
+
+                        callBack={() => ApprovalHistoryPopupCallBack()}
+                    />
+                        : null}
         </>
     )
 }

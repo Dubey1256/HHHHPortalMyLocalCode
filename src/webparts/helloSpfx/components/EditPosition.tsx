@@ -100,7 +100,8 @@ const EditPosition = (props: any) => {
                 .then(() => {
                     const filteredItems = portfiloData.filter((data: { Id: any; }) => data.Id !== itm.Id);
                     setportfiloData(filteredItems)
-                    getListData();
+                    props?.callbackEdit();
+                    props?.closePopup();
                 })
                 .catch((error: any) => {
                     console.log(error);
@@ -121,7 +122,7 @@ const EditPosition = (props: any) => {
         } finally {
             setskillsOnlyAr([]);
             props?.closePopup()
-            props?.callbackEdit()
+            getListData();
         }
 
     };
@@ -141,7 +142,7 @@ return (
                 onRenderHeader={onRenderCustomHeaderMain6}
                 isOpen={props?.openPopup}
                 onDismiss={() => {props?.closePopup()}}
-                isBlocking={props?.openPopup}
+                isBlocking={false}
                 type={PanelType.medium}
                 closeButtonAriaLabel="Close"
             >
@@ -217,7 +218,7 @@ return (
                                 <a className="hreflink siteColor">
                                     <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
                                     <span
-                                        onClick={() => delPosition(edittableItem?.ID)}
+                                        onClick={() => delPosition(edittableItem)}
                                     >
                                         Delete This Item
                                     </span>

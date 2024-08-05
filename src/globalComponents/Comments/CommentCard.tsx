@@ -347,7 +347,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         ID: this.state.Result["Comments"] != undefined ? this.state.Result["Comments"].length + 1 : 1,
         Title: txtComment,
         editable: false,
-        CommentFor: this.props.commentFor == "On-Hold" ? "On-Hold" : ''
+        CommentFor: this.props.commentFor?.length > 0 ? this.props.commentFor : ''
       };
       if (this.state?.ChildLevel == true) {
         this.state?.Result?.Comments?.forEach((element: any) => {
@@ -792,7 +792,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           else {
             TeamsMessage = `<span> You have been tagged in comment in the below task. </span>
             <p></p>
-          <div style="background-color: #fff; padding:16px; margin-top:10px; display:block;">
+          <div style="background-color: #fff; padding:16px; margin-top:10px; color:#333; display:block;">
           <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">Comment</b>: <span>${txtComment}</span>
           </div>
           <p></p>
@@ -810,7 +810,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         }
       }
     }
-    if (this.props.commentFor == "On-Hold") {
+    if (this.props.commentFor?.length > 0) {
       this.state.onHoldCallBack("Save");
     }
   }
@@ -860,7 +860,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       <div className={color ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1 "}>
         <div className='subheading'>
           <span className="siteColor">
-             Comment : <span className='mx-1'>{Title}</span> <span>({commentlength})</span>
+            Comment:{Title}{commentlength}
           </span>
         </div>
         <Tooltip ComponentId="588" />
@@ -1000,6 +1000,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                         className="UserImage workmember"
                         title={topCmnt?.Title}
                         name={topCmnt?.Title}
+                        id={topCmnt?.id}
                         image={topCmnt?.ItemCoverURL != undefined ? {
                           src: topCmnt?.ItemCoverURL,
                         } : undefined}
@@ -1007,6 +1008,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                       /> : <Avatar
                         onClick={(e) => this.topCommentersClick(e)}
                         className="UserImage"
+                        id={topCmnt?.id}
                         title={topCmnt?.Title}
                         name={topCmnt?.Title}
                       />
@@ -1058,16 +1060,17 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               {cmtData.Created}</span>
                             <div className="d-flex ml-auto media-icons px-1 " >
                             <a onClick={() => this.openEditModal(cmtData, i, false)}>
+                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
                                 <span className='svg__iconbox svg__icon--edit'></span>
                               </a>
                               <a ><div data-toggle="tooltip" id={"Reply-" + i}
                                 onClick={() => this.openReplycommentPopup(cmtData, i)} data-placement="bottom"  >
                                 <span className="svg__iconbox svg__icon--reply"></span>
                               </div></a>
-                           
+                              {/* <a onClick={() => this.replyMailFunction(cmtData, i)}><span><ImReply /></span></a> */}
                              
                               <a title="Delete" onClick={() => this.clearComment(i, undefined, undefined)}>
-                       
+                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" /> */}
                                 <span className='svg__iconbox svg__icon--trash'></span>
                               </a>
                             </div>
@@ -1216,19 +1219,21 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               </span>
                               {cmtData.Created}</span>
                             <div className="d-flex ml-auto media-icons px-1 " >
+                            
+                              <a onClick={() => this.openEditModal(cmtData, i, false)}>
+                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
+                                <span className='svg__iconbox svg__icon--edit'></span>
+                              </a>
                               <a ><div data-toggle="tooltip" id={"Reply-" + i}
                                 onClick={() => this.openReplycommentPopup(cmtData, i)} data-placement="bottom"  >
                                 <span className="svg__iconbox svg__icon--reply"></span>
                               </div></a>
                               {/* <a onClick={() => this.replyMailFunction(cmtData, i)}><span><ImReply /></span></a> */}
-                              <a onClick={() => this.openEditModal(cmtData, i, false)}>
-                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
-                                <span className='svg__iconbox svg__icon--edit'></span>
-                              </a>
                               <a title="Delete" onClick={() => this.clearComment(i, undefined, undefined)}>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" /> */}
                                 <span className='svg__iconbox svg__icon--trash'></span>
                               </a>
+                              
                             </div>
                           </div>
                           <div className="media-text">

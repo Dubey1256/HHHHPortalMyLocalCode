@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Panel, PanelType } from "office-ui-fabric-react";
 import ReactApexChart from 'react-apexcharts';
 import * as Moment from "moment";
+import Tooltips from '../../../globalComponents/Tooltip';
 import {
   BarChart,
   Bar,
@@ -436,9 +437,13 @@ const GraphData = (data: any) => {
 
   const onRenderCustomHeaderMain = () => {
     return (
+      <>
       <div className="subheading">
         Project hours per day during - {data.DateType}
       </div>
+       <div><Tooltips ComponentId="1716" /></div>
+       </>
+      
     );
   };
 
@@ -709,6 +714,51 @@ const GraphData = (data: any) => {
     );
   };
   
+  // const CustomTooltip = ({ active, payload, label }: any) => {
+  //   if (active && payload && payload.length) {
+  //     const data = payload[0].payload;
+  //     const keysToDisplay = ['HHHH', 'Education', 'PSE', 'E+E', 'Migration', 'Gruene', 'OffShoreTasks'];
+  //     const colorMap: any = {
+  //       HHHH: '#2f5596',
+  //       Education: '#990077',
+  //       PSE: '#dc0018',
+  //       'E+E': '#243a4a',
+  //       Migration: '#1199bb',
+  //       Gruene: '#008839',
+  //       OffShoreTasks: '#c1722e'
+  //     };
+  
+  //     const filteredData = keysToDisplay
+  //       .filter(key => data[key] !== undefined && data[key] > 0)
+  //       .map(key => ({ key, value: data[key], color: colorMap[key] }));
+  
+  //     if (filteredData.length === 0) {
+  //       return null; // No data to display
+  //     }
+  
+  //     return (
+  //       <div className="custom-tooltip" style={{ backgroundColor: '#fff', border: '1px solid #ccc', padding: '10px' }}>
+  //         <p className="label">{`${checkType}: ${label}`}</p>
+  //         {filteredData.map((entry, index) => (
+  //           <div key={`item-${index}`} style={{ display: 'flex', alignItems: 'center' }}>
+  //             <div
+  //               style={{
+  //                 width: '10px',
+  //                 height: '10px',
+  //                 borderRadius: '50%',
+  //                 backgroundColor: entry.color,
+  //                 marginRight: '10px',
+  //               }}
+  //             ></div>
+  //             <p style={{ margin: 0 }}>{`${entry.key}: ${entry.value}`}</p>
+  //           </div>
+  //         ))}
+  //       </div>
+  //     );
+  //   }
+  
+  //   return null;
+  // };
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -727,13 +777,16 @@ const GraphData = (data: any) => {
         .filter(key => data[key] !== undefined && data[key] > 0)
         .map(key => ({ key, value: data[key], color: colorMap[key] }));
   
-      if (filteredData.length === 0) {
+      // Calculate Total Time
+      const totalTime = filteredData.reduce((total, item) => total + item.value, 0);
+  
+      if (filteredData.length === 0 && totalTime === 0) {
         return null; // No data to display
       }
   
       return (
         <div className="custom-tooltip" style={{ backgroundColor: '#fff', border: '1px solid #ccc', padding: '10px' }}>
-          <p className="label">{`${checkType} : ${label}`}</p>
+          <p className="label">{`${checkType}: ${label}`}</p>
           {filteredData.map((entry, index) => (
             <div key={`item-${index}`} style={{ display: 'flex', alignItems: 'center' }}>
               <div
@@ -745,9 +798,14 @@ const GraphData = (data: any) => {
                   marginRight: '10px',
                 }}
               ></div>
-              <p style={{ margin: 0 }}>{`${entry.key} : ${entry.value}`}</p>
+              <p style={{ margin: 0 }}>{`${entry.key}: ${entry.value}`}</p>
             </div>
           ))}
+          {totalTime > 0 && (
+            <div style={{ borderTop: '1px solid #ccc', marginTop: '10px', paddingTop: '5px' }}>
+              <strong>Total hours: {totalTime}</strong>
+            </div>
+          )}
         </div>
       );
     }
@@ -757,7 +815,7 @@ const GraphData = (data: any) => {
   
   const CustomLegend = () => {
     return (
-      <div style={{ textAlign: "center", marginTop: 10, display: "flex", justifyContent: "center" }}>
+      <div style={{ textAlign: "center", marginTop: 32, display: "flex", justifyContent: "center" }}>
         <div style={{ display: "flex", alignItems: "center", marginRight: 20 }}>
           <div style={{ width: 20, height: 20, marginRight: 5, backgroundColor: "#2f5596" }} />
           <span>HHHH</span>
@@ -801,25 +859,32 @@ const GraphData = (data: any) => {
         onRenderFooter={onRenderCustomFooterMain}
       >
         <div id="bar-chart border">
-          <div className='alignCenter fw-bold gap-5 justify-content-center'>
+          <div className='alignCenter fw-bold gap-5 justify-content-center' style={{marginBottom:'32px'}}>
             <span className={`Day` === checkType ? 'siteBdrBottom' : ''} onClick={() => changeDateType('Day')}>Day</span>
-            <span className={`Week` === checkType ? 'siteBdrBottom' : ''} onClick={() => changeDateType('Week')}>Week</span>
+            <span className={`Week` === checkType ? 'siteBdrBottom' : ''} onClick={() => changeDateType('Week')} style={{marginLeft:'16px',marginRight:'16px'}}>Week</span>
             <span className={`Month` === checkType ? 'siteBdrBottom' : ''} onClick={() => changeDateType('Month')}>Month</span>
           </div>
   
           <div style={{ width: "100%", overflowX: 'auto' }}>
-            <div style={{ width: (checkType !== 'Month' && checkType !== 'Week') ? transformedData.length * 60 : '100%' }}>
+            <div style={{ width: (checkType !== 'Month' && checkType !== 'Week' && transformedData.length > 20) ? transformedData.length * 60 : '100%',paddingBottom: '32px' }}>
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart
                   data={transformedData}
                   barGap={16}
                 >
-                  <CartesianGrid strokeDasharray="2 2" />
                   <XAxis
                     dataKey="Day"
                     tick={<CustomTick />}
                   />
-                  <YAxis />
+                  <YAxis label={{ 
+        value: 'Hours', 
+        angle: -90, 
+        position: 'insideLeft' ,
+        style: {
+          fontWeight: 'bold', // Make the label bold
+          fontSize: 14, // Optional: Adjust font size if needed
+        }
+      }}/>
                   <Tooltip content={<CustomTooltip />} />
                   <Bar dataKey="HHHH" stackId="a" fill="#2f5596" />
                   <Bar dataKey="PSE" stackId="a" fill="#dc0018" />
@@ -832,7 +897,8 @@ const GraphData = (data: any) => {
               </ResponsiveContainer>
             </div>
           </div>
-          <CustomLegend />
+          <CustomLegend 
+      />
         </div>
       </Panel>
     </div>
