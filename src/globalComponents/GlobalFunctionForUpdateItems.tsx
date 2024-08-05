@@ -156,23 +156,6 @@ const getSmartMetadataItemsByTaxType = function (
 };
 
 
-
-
-// export const prepareGroupByDataForCategories = (items: any, parentLabel: any = "") => {
-//     let PrepareGroupByData: any = []
-//     items.forEach((item: any) => {
-//         if (item.newTitle !== undefined) {
-//             item["Newlabel"] = parentLabel ? `${parentLabel} > ${item.newTitle}` : item.newTitle;
-//             PrepareGroupByData.push(item);
-//             if (item.childs && item.childs.length > 0) {
-//                 prepareGroupByDataForCategories(item.childs, item["Newlabel"]);
-//             }
-//         }
-//     });
-//     return PrepareGroupByData;
-// }
-
-
 export const prepareGroupByDataForCategories = (categories: any[], parentLabel: string = ""): any[] => {
     return categories.reduce((acc: any[], item: any) => {
         if (item.newTitle !== undefined) {
@@ -1641,7 +1624,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                             <div style={{ wordBreak: "break-all", padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '11.0pt' }}>
                                     {RequiredData["ComponentLink"] != null &&
-                                        <a href={RequiredData["ComponentLink"].Url} target="_blank">{ReduceTheContentLines(RequiredData["ComponentLink"].Url, 90)}</a>
+                                        <a href={RequiredData["ComponentLink"].Url} target="_blank">{ReduceTheContentLines(RequiredData["ComponentLink"].Url, 80)}</a>
                                     }</span>
                             </div>
                         </div>
@@ -1664,7 +1647,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                     <div style={{ fontSize: "10pt", display: "flex", color: "#333", marginRight: '5px', fontWeight: '600', width: "4%" }}>
                                                                         {fbData.ViewIndex}.
                                                                     </div>
-                                                                    <div style={{ color: '#333', width: "96%" }}>{removeHtmlTagsFromString(fbData['Title'])}</div>
+                                                                    <div style={{ color: '#333', width: "96%" }}>{removeHtmlTagsFromStringAndTrimText(fbData['Title'])}</div>
                                                                 </div>
 
                                                                 {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
@@ -2042,11 +2025,17 @@ export const PrepareDataAccordingToSortOrder = (SourceArray: any, currentArray: 
 
 // this is used for removing HTML tags from the string value 
 
-function removeHtmlTagsFromString(StringValue: string) {
+function removeHtmlTagsFromStringAndTrimText(StringValue: string) {
     let cleanStr = StringValue?.replace(/<[^>]*>/g, '');
     cleanStr = cleanStr?.replace(/&nbsp;/g, ' ');
     cleanStr = cleanStr?.trim();
     return ReduceTheContentLines(cleanStr, 225);
+}
+function removeHtmlTagsFromString(StringValue: string) {
+    let cleanStr = StringValue?.replace(/<[^>]*>/g, '');
+    cleanStr = cleanStr?.replace(/&nbsp;/g, ' ');
+    cleanStr = cleanStr?.trim();
+    return cleanStr;
 }
 
 
@@ -2127,7 +2116,7 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                                         }
                                                     })
                                                 }
-                                                
+
                                             });
 
                                         }
@@ -2429,6 +2418,12 @@ export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredD
         throw error;
     }
 };
+
+
+
+
+
+
 // Instructions for Using this Global Common Functions 
 
 { /**
