@@ -2259,7 +2259,7 @@ const loadAllPXTimeEntries = async () => {
           <span> {row?.original?.TotalTaskTime}</span>
         ),
         id: "TotalTaskTime",
-        placeholder: "Smart Time",
+        placeholder: "Estimated Time",
         header: "",
         resetColumnFilters: false,
         size: 49,
@@ -2940,7 +2940,7 @@ const loadAllPXTimeEntries = async () => {
                             <div className="row">
                               <div className="col-md-12 bg-white">
                                 <div className="team_member row  py-2">
-                                  <div className="col-md-6  pe-0">
+                                  <div className="col-md-4  pe-0">
                                     <dl>
                                       <dt className="bg-fxdark">Due Date</dt>
                                       <dd className="bg-light">
@@ -2983,28 +2983,16 @@ const loadAllPXTimeEntries = async () => {
                                       </dd>
                                     </dl>
                                     <dl>
-                                      <dt className="bg-fxdark">Key Portfolio Items</dt>
-                                      <dd className="bg-light">
-                                        {openServiceComponent ? <ServiceComponentPortfolioPopup
-                                          props={{ Portfolios: Masterdata?.taggedPortfolios }}
-                                          Portfolios={Masterdata.taggedPortfolios}
-                                          Relevant={TaskTaggedPortfolios}
-                                          Suggested={suggestedPortfolioItems}
-                                          Dynamic={AllListId}
-                                          ComponentType={portfolioType}
-                                          Call={ComponentServicePopupCallBack}
-                                          selectionType={"Multi"}
-                                          groupedData={groupedComponentData}
-                                          pageName={"projectManagement"}
-                                        /> : null}
-                                        {smartPortfoliosData?.map((component: any, index: any) => (`${component?.Title};`))}
-                                        <a className="ml-auto pull-right" onClick={() => setopenServiceComponent(true)}>
-                                          <span className="svg__iconbox svg__icon--editBox alignIcon"  ></span>
-                                        </a>
-                                      </dd>
-                                    </dl>
+                                        <dt className="bg-fxdark">Total PX Time</dt>
+                                        <dd className="bg-light">
+                                          {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime} hrs;`}</span>}
+                                          {(monthTotalTime != undefined && monthTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime} hrs; `}</span>}
+                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime} hrs; `}</span>}
+                                          <a className="smartTotalTime hover-text m-0 float-end" onClick={() => loadAllPXTimeEntries()}><BsClock/><span className='tooltip-text pop-left'>Load Time Entries</span></a>
+                                        </dd>
+                                      </dl>
                                   </div>
-                                  <div className="col-md-6 p-0">
+                                  <div className="col-md-4 p-0">
                                     <dl>
                                       <dt className="bg-fxdark">Project Team
                                         <a className="teamIcon hover-text m-0 ms-2" onClick={() => ShowTeamFunc()}>
@@ -3050,15 +3038,30 @@ const loadAllPXTimeEntries = async () => {
                                           </span>
                                         </dd>
                                       </dl>
-                                      <dl>
-                                        <dt className="bg-fxdark">Total PX Time</dt>
-                                        <dd className="bg-light">
-                                          {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime} hrs;`}</span>}
-                                          {(monthTotalTime != undefined && monthTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime} hrs; `}</span>}
-                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime} hrs; `}</span>}
-                                          <a className="smartTotalTime hover-text m-0 float-end" onClick={() => loadAllPXTimeEntries()}><BsClock/><span className='tooltip-text pop-left'>Load Time Entries</span></a>
-                                        </dd>
-                                      </dl>
+                                     
+                                    </div>
+                                    <div className="col-md-4 p-0">
+                                    <dl>
+                                      <dt className="bg-fxdark">Key Portfolio Items</dt>
+                                      <dd className="bg-light">
+                                        {openServiceComponent ? <ServiceComponentPortfolioPopup
+                                          props={{ Portfolios: Masterdata?.taggedPortfolios }}
+                                          Portfolios={Masterdata.taggedPortfolios}
+                                          Relevant={TaskTaggedPortfolios}
+                                          Suggested={suggestedPortfolioItems}
+                                          Dynamic={AllListId}
+                                          ComponentType={portfolioType}
+                                          Call={ComponentServicePopupCallBack}
+                                          selectionType={"Multi"}
+                                          groupedData={groupedComponentData}
+                                          pageName={"projectManagement"}
+                                        /> : null}
+                                        {smartPortfoliosData?.map((component: any, index: any) => (`${component?.Title};`))}
+                                        <a className="ml-auto pull-right" onClick={() => setopenServiceComponent(true)}>
+                                          <span className="svg__iconbox svg__icon--editBox alignIcon"  ></span>
+                                        </a>
+                                      </dd>
+                                    </dl>
                                     </div>
                                     {/* <div className="col-md-12 url"><div className="d-flex p-0"><div className="bg-fxdark p-2"><label>Url</label></div><div className="bg-light p-2 text-break full-width"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></div></div></div> */}
                                     <div className="col-md-12 pe-1"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField" style={{ width: '93.9%' }}><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>

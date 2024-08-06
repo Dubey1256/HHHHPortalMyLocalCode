@@ -1423,7 +1423,7 @@ const CompareTool = (props: any) => {
                     placeholder="DD/MM/YYYY"
                     value={value}
                 />
-                <span style={{ position: "absolute", top: "50%", right: "5px", transform: "translateY(-50%)", cursor: "pointer" }}>
+                <span style={{ position: "absolute", top: "17px", right: "5px", transform: "translateY(-50%)", cursor: "pointer" }}>
                     <span className="svg__iconbox svg__icon--calendar"></span>
                 </span>
             </div>
@@ -1446,7 +1446,7 @@ const CompareTool = (props: any) => {
     const CustomCompletedDateSecond = React.forwardRef(({ value, onClick }: any, ref: any) => (
         <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
             <input type="text" id="datepickerCompletedDateSecond" data-input-type="Completed Date" className="form-control date-picker" placeholder="DD/MM/YYYY" value={value} />
-            <span style={{ position: "absolute", top: "50%", right: "5px", transform: "translateY(-50%)", cursor: "pointer" }}>
+            <span style={{ position: "absolute", top: "17px", right: "5px", transform: "translateY(-50%)", cursor: "pointer" }}>
                 <span className="svg__iconbox svg__icon--calendar"></span>
             </span>
         </div>
@@ -2470,7 +2470,7 @@ const CompareTool = (props: any) => {
                                             href={`${data[0]?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${data[0]?.Id}`}>
                                             {data[0]?.Title}
                                         </a>}
-                                    </Label> <span className="svg__iconbox svg__icon--edit"
+                                    </Label> <span className="alignIcon ms-1 svg__iconbox svg__icon--edit"
                                         onClick={() => EditComponenetPopup(data[1])}
                                     ></span>
                                 </Col>
@@ -2478,7 +2478,7 @@ const CompareTool = (props: any) => {
                                     <span title="Switch Items" className="alignCenter comparePopupMainIcon" onClick={() => switchItems()}> <BsArrowsExpandVertical /></span> 
                                     {/* <span><img className="imgWid29" src={`${props?.contextValue?.siteUrl}/SiteCollectionImages/ICONS/Shareweb/SwitchItem_icon.png`} title="Switch Items" onClick={() => switchItems()} /></span> */}
                                 </Col>
-                                <Col sm="5" md="5" lg="5" className="alignCenter siteColor contentSec">
+                                <Col sm="5" md="5" lg="5" className="alignCenter siteColor contentSec justify-content-start">
                                     <span className="Dyicons me-1">{data[1]?.Item_x0020_Type.charAt(0)}</span> <Label>
                                         {data[0]?.Item_x0020_Type === "Project" || data[0]?.Item_x0020_Type === "Sprint" ? <a target="_blank" data-interception="off"
                                             href={`${data[1]?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${data[1]?.Id}`}>
@@ -2488,7 +2488,7 @@ const CompareTool = (props: any) => {
                                             {data[1]?.Title}
                                         </a>}
                                     </Label>
-                                    <span className="svg__iconbox svg__icon--edit"
+                                    <span className="alignIcon ms-1 svg__iconbox svg__icon--edit"
                                         onClick={() => EditComponenetPopup(data[1])}
                                     ></span>
                                 </Col>
@@ -2951,7 +2951,7 @@ const CompareTool = (props: any) => {
                         </Row>}
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
-                                <label className="fw-semibold form-label">Site Composition <span className="svg__iconbox svg__icon--editBox hreflink"
+                                <label className="fw-semibold form-label">Site Composition <span className="alignIcon  svg__iconbox svg__icon--editBox hreflink"
                                     title="Edit Site Composition"
                                     onClick={() => onClickSiteComposition(data[0])}
                                 ></span></label>
@@ -2985,7 +2985,7 @@ const CompareTool = (props: any) => {
                             </Col>
 
                             <Col sm="5" md="5" lg="5" className="contentSec">
-                                <label className="fw-semibold form-label">Site Composition <span className="svg__iconbox svg__icon--editBox hreflink"
+                                <label className="fw-semibold form-label">Site Composition <span className="alignIcon  svg__iconbox svg__icon--editBox hreflink"
                                     title="Edit Site Composition"
                                     onClick={() => onClickSiteComposition(data[1])}
                                 ></span></label>
@@ -4358,8 +4358,8 @@ const CompareTool = (props: any) => {
                     HtmlEditorStateChange={HtmlEditorCallBack}
                 ></HtmlEditorCard>
                 </div>
-                <footer className="modal-footer mt-2">
-                    <button className="btn btn-primary" type="button" onClick={() => { saveEditorData() }}>Save</button>
+                <footer className="modal-footer mt-2  px-0">
+                    <button className="btn btn-primary mx-1" type="button" onClick={() => { saveEditorData() }}>Save</button>
                     <button className="btn btn-default" type="button" onClick={closeHtmlEditor}>Cancel</button>
                 </footer>
             </Panel>
@@ -4387,7 +4387,7 @@ const CompareTool = (props: any) => {
                                     </div>
                                     <div className='text-end mt-1'>
                                         <footer className='text-end'>
-                                            <button type="button" className='btn btn-primary hreflink' onClick={() => PostComment('txtCommentModal')}>Post</button>
+                                            <button type="button" className='btn btn-primary hreflink  mx-1' onClick={() => PostComment('txtCommentModal')}>Post</button>
                                             <button type="button" className="btn btn-default" onClick={(e) => closeAllCommentModal(e)}>Cancel</button>
                                         </footer>
                                     </div>
