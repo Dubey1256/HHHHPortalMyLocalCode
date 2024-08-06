@@ -14,7 +14,10 @@ const GmbhHomePage = (props: any): any => {
 
     const loadSitePages = async () => {
     let web = new Web(props?.props?.siteUrl);
-    let valueAfterLastSlash = "TestHomePage.aspx"
+    const currentUrl = window.location.href;
+    var match = currentUrl.match(/\/([^/]+\.aspx)(\?.*)?$/);
+    checkValueAfterLastSlash = match ? match[1] : null;
+    let valueAfterLastSlash = checkValueAfterLastSlash;
     try {
       await web.lists
         .getById(props?.props?.SitePagesList)
