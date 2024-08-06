@@ -422,7 +422,7 @@ const ImageViewPanel = (props: any) => {
                                                 <a className='alignCenter mx-2 RestoreImage'onClick={() => changeFunction('Restore', slide, "Restore")}>
                                                     <span className='svg__icon--refresh svg__iconbox me-1'></span>Restore
                                                 </a>}
-                                                <a className='alignCenter mx-2 imageFavorite' onClick={() => changeFunction('fillHeart', slide, "fillHeart")}>
+                                                <a className='alignCenter imageFavorite' onClick={() => changeFunction('fillHeart', slide, "fillHeart")}>
 
                                                     {slide?.fillHeart ? <BsFillHeartFill className='me-2 fillHeart'/> : <BsHeart className='me-1'  />}
                                                     Favorite</a>
@@ -447,11 +447,15 @@ const ImageViewPanel = (props: any) => {
                                                             : <span className='svg__icon--ProsCons svg__iconbox me-1'></span>
                                                         }
                                                         Add Pros/Cons</a>
-                                                    <a className="alignCenter mx-2 siteColor" onClick={() => setCommentStatus({ ...commentStatus, status: true, index: index })}>
+                                                    <a className="alignCenter siteColor" onClick={() => setCommentStatus({ ...commentStatus, status: true, index: index })}>
                                                         <span className='svg__icon--comment svg__iconbox me-1'></span>
                                                         Add Comment</a>
                                                 </div>
                                             </div>
+                                            {commentStatus?.status && commentStatus?.index === index && <div className="align-items-center d-flex" >
+                                        <textarea id="txtComment" onChange={(e) => setCommentData(e.target?.value)} className="form-control full-width"></textarea>
+                                        <button type="button"className='btn btn-primary btnCol ms-2' onClick={() => PostButtonClick(slide)}>Post</button>
+                                    </div>}
                                             <div className='NotesSection'>
                                                 <textarea className='w-100' onChange={(e) => changeFunction(e?.target?.value, slide, "Notes")} value={slide?.ImageNotes} ></textarea>
                                             </div>
@@ -469,8 +473,8 @@ const ImageViewPanel = (props: any) => {
                                                 <div className='SpfxCheckRadio m-0'>
                                                     <div className="col">
                                                         {slide?.Comments != null && slide?.Comments?.length > 0 && slide?.Comments?.map((fbComment: any, k: any) => {
-                                                            return <> <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col bg-f5f5 p-2  my-1 ${fbComment.isShowLight}` : "col bg-f5f5 p-2  my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
-                                                                <div className="" style={{ display: (k > 1 && (slide?.showMore==undefined || slide?.showMore==false))? 'none ' : 'block' }}>
+                                                            return <> <div  style={{ display: (k > 1 && (slide?.showMore==undefined || slide?.showMore==false))? 'none ' : 'block' }} className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col bg-f5f5 p-2  my-1 ${fbComment.isShowLight}` : "col bg-f5f5 p-2  my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
+                                                                <div>
                                                                     <div className="d-flex p-0">
                                                                         <div className="col-1 p-0 wid30">
                                                                             {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink" onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)}
@@ -548,10 +552,7 @@ const ImageViewPanel = (props: any) => {
                                                         })}
                                                          { (slide?.Comments != null && slide?.Comments?.length > 2) && <button type="button" className="btn btn-primary btnCol ms-2" onClick={() => changeFunction(true, slide, "showMore")}>See More</button>}
                                                     </div>
-                                                    {commentStatus?.status && commentStatus?.index === index && <div className="align-items-center d-flex" >
-                                                        <textarea id="txtComment" onChange={(e) => setCommentData(e.target?.value)} className="form-control full-width"></textarea>
-                                                        <button type="button" className="btn btn-primary btnCol ms-2" onClick={() => PostButtonClick(slide)}>Post</button>
-                                                    </div>}
+                                                
                                                 </div>
 
                                             </div>
@@ -597,7 +598,7 @@ const ImageViewPanel = (props: any) => {
                                                 <a className='alignCenter mx-2 RestoreImage'onClick={() => changeFunction('Restore', slide, "Restore")}>
                                                     <span className='svg__icon--refresh svg__iconbox me-1'></span>Restore
                                                 </a>}
-                                <a className='alignCenter mx-2 imageFavorite'>
+                                <a className='alignCenter imageFavorite'>
 
                                     {slide?.fillHeart ? <BsFillHeartFill className='me-2 fillHeart' onClick={() => changeFunction('fillHeart', slide, "fillHeart")} /> : <BsHeart className='me-1' onClick={() => changeFunction('fillHeart', slide, "fillHeart")} />}
                                     Favorite</a>
@@ -622,11 +623,15 @@ const ImageViewPanel = (props: any) => {
                                             : <span className='svg__icon--ProsCons svg__iconbox me-1'></span>
                                         }
                                         Add Pros/Cons</a>
-                                    <a className="alignCenter mx-2" onClick={() => setCommentStatus({ ...commentStatus, status: true, index: index })}>
+                                    <a className="alignCenter" onClick={() => setCommentStatus({ ...commentStatus, status: true, index: index })}>
                                         <span className='svg__icon--comment svg__iconbox me-1'></span>
                                         Add Comment</a>
                                 </div>
                             </div>
+                            {commentStatus?.status && commentStatus?.index === index && <div className="align-items-center d-flex" >
+                                        <textarea id="txtComment" onChange={(e) => setCommentData(e.target?.value)} className="form-control full-width"></textarea>
+                                        <button type="button"className='btn btn-primary btnCol ms-2' onClick={() => PostButtonClick(slide)}>Post</button>
+                                    </div>}
                             <div className='NotesSection'>
                                 <textarea className='w-100' onChange={(e) => changeFunction(e?.target?.value, slide, "Notes")} value={slide?.ImageNotes} ></textarea>
                             </div>
@@ -644,8 +649,8 @@ const ImageViewPanel = (props: any) => {
                                 <div className='SpfxCheckRadio m-0'>
                                     <div className="col">
                                         {slide?.Comments != null && slide?.Comments?.length > 0 && slide?.Comments?.map((fbComment: any, k: any) => {
-                                            return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col bg-f5f5 p-2  my-1 ${fbComment.isShowLight}` : "col bg-f5f5 p-2  my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
-                                                <div className="" style={{ display: (k > 1 && (slide?.showMore==undefined || slide?.showMore==false ))? 'none ' : 'block' }}>
+                                            return <div  style={{ display: (k > 1 && (slide?.showMore==undefined || slide?.showMore==false ))? 'none ' : 'block' }} className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col bg-f5f5 p-2  my-1 ${fbComment.isShowLight}` : "col bg-f5f5 p-2  my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
+                                                <div className="" >
                                                     <div className="d-flex p-0">
                                                         <div className="col-1 p-0 wid30">
                                                             {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)}
@@ -732,10 +737,7 @@ const ImageViewPanel = (props: any) => {
                                         })}
                                           { (slide?.Comments != null && slide?.Comments?.length > 2) && <button type="button" className="btn btn-primary btnCol ms-2" onClick={() => changeFunction(true, slide, "showMore")}>See More</button>}
                                     </div>
-                                    {commentStatus?.status && commentStatus?.index === index && <div className="align-items-center d-flex" >
-                                        <textarea id="txtComment" onChange={(e) => setCommentData(e.target?.value)} className="form-control full-width"></textarea>
-                                        <button type="button"className='btn btn-primary btnCol ms-2' onClick={() => PostButtonClick(slide)}>Post</button>
-                                    </div>}
+                                  
                                 </div>
 
                             </div>
