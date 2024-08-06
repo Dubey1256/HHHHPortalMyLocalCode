@@ -4282,12 +4282,32 @@ validSites = validSites.filter((site:any) => {
           DateType
         );
       } else {
-        globalCommon.ShareTimeSheetMultiUser(
+        let TimeSheetDetails:any = {}
+        TimeSheetDetails['ManagementCount'] = ManagementCount,
+          TimeSheetDetails['managementMembers'] = managementMembers,
+          TimeSheetDetails['ManagementTime'] = ManagementTime,
+          TimeSheetDetails['managementleaveHours'] = managementleaveHours,
+          TimeSheetDetails['DevCount'] = DevCount,
+          TimeSheetDetails['DevelopmentMembers'] = DevelopmentMembers,
+          TimeSheetDetails['DevloperTime'] = DevloperTime,
+          TimeSheetDetails['DevelopmentleaveHours'] = DevelopmentleaveHours,
+          TimeSheetDetails['DesignCount'] = DesignCount,
+          TimeSheetDetails['DesignMembers'] = DesignMembers,
+          TimeSheetDetails['DesignTime'] = DesignTime,
+          TimeSheetDetails['DesignMemberleaveHours'] = DesignMemberleaveHours,
+          TimeSheetDetails['QACount'] = QACount,
+          TimeSheetDetails['QAMembers'] = QAMembers,
+          TimeSheetDetails['QATime'] = QATime,
+          TimeSheetDetails['QAleaveHours'] = QAleaveHours,
+          TimeSheetDetails['TotleTaskTime'] = TotleTaskTime,
+          TimeSheetDetails['TotalleaveHours'] = TotalleaveHours
+          globalCommon.ShareTimeSheetMultiUser(
           this.state.AllTimeEntry,
           AllTaskUser,
           this?.props?.Context,
           DateType,
-          this.state.ImageSelectedUsers
+          this.state.ImageSelectedUsers,
+          TimeSheetDetails
         );
       }
     }
