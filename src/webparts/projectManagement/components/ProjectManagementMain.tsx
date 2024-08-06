@@ -3217,7 +3217,8 @@ const loadAllPXTimeEntries = async () => {
                                   AllSitesTaskData={AllSitesAllTasks}
                                   MasterdataItem={Masterdata}
                                   columns={column2} data={ProjectTableData} callBackData={callBackData}
-                                  smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
+                                  smartTimeTotalFunction={smartTimeTotal} 
+                                  //  SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
                                   showCreationAllButton={true}
                                   flatViewDataAll={flatViewDataAll}
