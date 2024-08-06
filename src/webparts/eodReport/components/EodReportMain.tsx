@@ -5,9 +5,10 @@ import { spfi, SPFx as spSPFx } from "@pnp/sp";
 
 import { ColumnDef } from "@tanstack/react-table";
 import Moment from 'moment-timezone';
+import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 
 import { Panel, PanelType } from "office-ui-fabric-react";
-
+import { Avatar } from "@fluentui/react-components";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 
 let forceAllAditionalTaskCall: any = [];
@@ -23,7 +24,7 @@ let todayAllEODTaskData: any = [];
 let body1: any = [];
 let body: any = '';
 let finalBody: any = [];
-let allUsers:any
+let allUsers: any
 
 export const EodReportMain = (props: any) => {
     const [allTodayModifiedTask, setAllTodayModifiedTask]: any = React.useState([])
@@ -262,7 +263,7 @@ export const EodReportMain = (props: any) => {
         let body1: string[] = [];
         // Group tasks by ProjectTitle
         let groupedTasks = allTodayModifiedTask.reduce((acc: { [x: string]: any[]; }, item: { ProjectTitle: string; }) => {
-            let title = item?.ProjectTitle ?? ' ';
+            let title = item?.ProjectTitle ?? "Others";
             if (!acc[title]) {
                 acc[title] = [];
             }
@@ -272,17 +273,25 @@ export const EodReportMain = (props: any) => {
         Object.keys(groupedTasks).forEach(projectTitle => {
             let tasks = groupedTasks[projectTitle];
             let firstTask = true;
-
+            let lastTask = false
             tasks.forEach((item: { Id: any; siteType: any; Title: any; Achieved: any; Pending: any; Lead: any; }, index: any) => {
-                let projectTitleCell = '';
+                let projectTitleCell = `<tr>
+                    <td height="48" align="left" width="180" valign="middle" style="background: #fff;color: #333;width:180px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-left: 1px solid #EEE; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                                            ${''}
+                                        </td>`
                 if (firstTask) {
-                    projectTitleCell = `<tr><td height="48" align="left" width="180" valign="middle" style="background: #fff;color: #333;width:180px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-left: 1px solid #EEE; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                    projectTitleCell = ` <tr>
+                     
+                    <td height="48" align="left" width="180" valign="middle" style="background: #fff;color: #333;width:180px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-left: 1px solid #EEE; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                                             ${projectTitle ?? ''}
                                         </td>`;
-                    // firstTask = false;
+                    firstTask = false;
+                }
+                if (tasks?.length - 1 == 0) {
+                    lastTask = true
                 }
 
-                let taskRow = `
+                let taskRow = ` 
                     ${projectTitleCell}
                     <td height="48"  width="240" valign="middle" style="background: #fff;color: #2F5596;width:220px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                         <a style="color: #2F5596;" href="${siteURL}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}">
@@ -298,7 +307,9 @@ export const EodReportMain = (props: any) => {
                     <td height="48"  width="130" valign="middle" style="background: #fff;color: #333;width:130px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                         ${item.Lead ?? ''}
                     </td>
-                </tr>`;
+                </tr>
+               
+                `;
                 body1.push(taskRow);
             });
         });
@@ -615,7 +626,7 @@ export const EodReportMain = (props: any) => {
                 placeholder: "ProjectTitle",
                 header: "",
                 resetColumnFilters: false,
-                size: 100,
+                size: 140,
                 isColumnVisible: true
             },
             {
@@ -631,8 +642,22 @@ export const EodReportMain = (props: any) => {
                 id: "Title",
                 placeholder: "Title",
                 header: "",
-                size: 100,
+            
                 resetColumnFilters: false,
+                isColumnVisible: true
+            }
+            , {
+                accessorFn: (row) => row?.TaskCategories,
+                cell: ({ row, getValue }) => (
+                    <div>
+                        {row?.original?.TaskCategories}
+                    </div>
+                ),
+                id: "TaskCategories",
+                placeholder: "TaskCategories",
+                header: "",
+                resetColumnFilters: false,
+                size: 120,
                 isColumnVisible: true
             },
             {
@@ -679,8 +704,53 @@ export const EodReportMain = (props: any) => {
                 placeholder: "Lead",
                 header: "",
                 resetColumnFilters: false,
-                size: 80,
+                size: 140,
                 isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row, column }) => (
+                    <div className="alignCenter">
+                        {row?.original?.Created == null ? ("") : (
+                            <>
+                                <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayCreateDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
+                                {row?.original?.Author != undefined &&
+                                    <>
+
+                                        <a href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                            target="_blank" data-interception="off">
+                                            {row?.original?.Author?.autherImage || row?.original?.Author?.suffix ? <Avatar
+                                                className="UserImage"
+                                                title={row?.original?.Author?.Title}
+                                                name={row?.original?.Author?.Title}
+                                                image={{ src: row?.original?.Author?.autherImage }}
+                                                initials={row?.original?.Author?.autherImage == undefined ? row.original?.Author?.suffix : undefined}
+
+                                            /> :
+                                                <Avatar title={row?.original?.Author?.Title}
+                                                    name={row?.original?.Author?.Title} className="UserImage" />}
+                                        </a>
+                                    </>
+                                }
+                            </>
+                        )}
+                    </div>
+                ),
+                id: 'Created',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                isColumnVisible: true,
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 100,
+                fixedColumnWidth: true
             },
             {
                 cell: ({ row, getValue }) => (
@@ -744,6 +814,7 @@ export const EodReportMain = (props: any) => {
                 resetColumnFilters: false,
                 isColumnVisible: true
             },
+
             {
                 accessorFn: (row) => row?.Achieved,
                 cell: ({ row, getValue }) => (
@@ -791,6 +862,7 @@ export const EodReportMain = (props: any) => {
                 size: 80,
                 isColumnVisible: true
             },
+
             {
                 cell: ({ row, getValue }) => (
                     <>
@@ -888,9 +960,7 @@ export const EodReportMain = (props: any) => {
                 .orderBy("SortOrder", true)
                 .orderBy("Title", true)
                 .getAll();
-
-
-                allUsers=data
+            allUsers = data
             const teamMember = findDataByApproverId(data, currentUserData)
             AllProtFolioTeamMembers = teamMember
             setTeamMembers(teamMember)
@@ -901,7 +971,6 @@ export const EodReportMain = (props: any) => {
     }
     const findDataByApproverId = (data: any[], searchId: number) => {
         let allMembers: any[] = [];
-
         for (const item of data) {
             if (item.Approver && Array.isArray(item.Approver)) {
                 if (item.Approver.some((approver: { Id: number }) => approver.Id === searchId)) {
@@ -1145,7 +1214,27 @@ export const EodReportMain = (props: any) => {
     //     })
     //     return lead
     //  }
+    const findUserByName = (name: any) => {
+        const user = allUsers.filter(
+            (user: any) => user?.AssingedToUser?.Id === name
+        );
+        let authImg: any = { Image: "", Suffix: "" }
+        if (user[0]?.Item_x0020_Cover != undefined) {
+            authImg.Image = user[0]?.Item_x0020_Cover.Url;
+        } else { authImg.Suffix = user[0]?.Suffix }
+        return user ? authImg : null;
+    };
+    const getAllLeads=(alluser:any)=>{
+        let leads:any=[]
+        alluser?.map((user:any)=>{
+           if(user.app){
 
+           } 
+        }
+            
+        )
+
+    }
     const getAllTodayModifiedTask = async (siteconfig: any[]) => {
         let filteredData: any = []
         console.log(timesheetListConfig, "timesheetListConfig")
@@ -1221,16 +1310,27 @@ export const EodReportMain = (props: any) => {
                         item.ID = item?.ID;
                         item.listId = listIds?.listId;
                         item.siteType = listIds?.Title;
+
                         item.Achieved = getTodayAchievedOrPending(item?.OffshoreComments, 1)
                         item.Pending = getTodayAchievedOrPending(item?.OffshoreComments, 2)
                         // item.Lead = item.ResponsibleTeam?.[0]?.Title
                         item.Lead = item.ResponsibleTeam?.map((teamMember: { Title: any; }) => teamMember.Title).join(', ');
+                        item.TaskCategories = item?.TaskCategories?.map((categories: { Title: any; }) => categories?.Title).join(', ')
+                        item.DisplayCreateDate = Moment(item?.Created).format("DD/MM/YYYY");
+                        if (item.Author) {
+                            let authImg = findUserByName(item.Author?.Id);
+                            if (authImg.Image != undefined && authImg.Image != "") {
+                                item.Author.autherImage = authImg.Image
+                            } else {
+                                item.Author.suffix = authImg.Suffix
+                            }
+                        }
                         item.ProjectId = item?.Project?.Id
                         item.oldOffshoreComments = item?.OffshoreComments
 
                         if (item?.OffshoreComments != null) {
                             const offshoreCommentsArray = JSON.parse(item.OffshoreComments);
-                            const filteredComments = offshoreCommentsArray?.filter((comment: { Type: string, isEodTask: boolean }) => comment?.Type === "EODReport" && comment?.isEodTask);
+                            const filteredComments = offshoreCommentsArray?.filter((comment: { Type: string, isEodTask: boolean ,Created:any}) => comment?.Type === "EODReport" && comment?.isEodTask && isTodayCreated(comment?.Created) );
                             console.log(filteredComments, "filteredComments");
                             if (filteredComments.length > 0) {
                                 todayAllEODTaskData.push(item);
