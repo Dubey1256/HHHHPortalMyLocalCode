@@ -642,8 +642,5 @@
     "ManageWebpartTemplateWebPartStrings": "lib/webparts/manageWebpartTemplate/loc/{locale}.js",
     "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js",
     "EodReportWebPartStrings": "lib/webparts/eodReport/loc/{locale}.js"
-
-
-
   }
 }
