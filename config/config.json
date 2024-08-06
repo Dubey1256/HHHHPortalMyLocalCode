@@ -546,6 +546,14 @@
           "manifest": "./src/webparts/manageQuestion/ManageQuestionWebPart.manifest.json"
         }
       ]
+    },
+    "gmbh-home-page-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/gmbhHomePage/GmbhHomePageWebPart.js",
+          "manifest": "./src/webparts/gmbhHomePage/GmbhHomePageWebPart.manifest.json"
+        }
+      ]
     }
   },
   
@@ -642,6 +650,7 @@
     "ManageWebpartTemplateWebPartStrings": "lib/webparts/manageWebpartTemplate/loc/{locale}.js",
     "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js",
     "EodReportWebPartStrings": "lib/webparts/eodReport/loc/{locale}.js",
-    "ManageQuestionWebPartStrings": "lib/webparts/manageQuestion/loc/{locale}.js"
+    "ManageQuestionWebPartStrings": "lib/webparts/manageQuestion/loc/{locale}.js",
+    "GmbhHomePageWebPartStrings": "lib/webparts/gmbhHomePage/loc/{locale}.js"
   }
 }
