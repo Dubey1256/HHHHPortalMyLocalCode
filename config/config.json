@@ -562,6 +562,14 @@
           "manifest": "./src/webparts/manageWebpartTemplate/ManageWebpartTemplateWebPart.manifest.json"
         }
       ]
+    },
+    "import-task-portfolio-items-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/importTaskPortfolioItems/ImportTaskPortfolioItemsWebPart.js",
+          "manifest": "./src/webparts/importTaskPortfolioItems/ImportTaskPortfolioItemsWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -642,7 +650,6 @@
     "SMarttaskWebPartStrings": "lib/webparts/sMarttask/loc/{locale}.js",
     "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js",
     "SmartDynamicTableWebPartStrings": "lib/webparts/smartDynamicTable/loc/{locale}.js",
-  
     "EmployeeDashboardTemplatedWebPartStrings": "lib/webparts/employeeDashboardTemplated/loc/{locale}.js",
     "HhhhSmartPagesWebPartStrings": "lib/webparts/hhhhSmartPages/loc/{locale}.js",
     "HhhhSmartMetadataPortfolioWebPartStrings": "lib/webparts/hhhhSmartMetadataPortfolio/loc/{locale}.js",
@@ -655,6 +662,7 @@
     "ContentEditingNewsWebPartStrings": "lib/webparts/contentEditingNews/loc/{locale}.js",
     "ContentEditingDocumentsWebPartStrings": "lib/webparts/contentEditingDocuments/loc/{locale}.js",
     "ManageWebpartTemplateWebPartStrings": "lib/webparts/manageWebpartTemplate/loc/{locale}.js",
-    "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js"
+    "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js",
+    "ImportTaskPortfolioItemsWebPartStrings": "lib/webparts/importTaskPortfolioItems/loc/{locale}.js"
   }
 }
