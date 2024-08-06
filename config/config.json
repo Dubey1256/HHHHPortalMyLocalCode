@@ -523,6 +523,22 @@
         }
       ]
     },
+    "root-update-top-navigation-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/rootUpdateTopNavigation/RootUpdateTopNavigationWebPart.js",
+          "manifest": "./src/webparts/rootUpdateTopNavigation/RootUpdateTopNavigationWebPart.manifest.json"
+        }
+      ]
+    },
+    "gmbh-home-page-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/gmbhHomePage/GmbhHomePageWebPart.js",
+          "manifest": "./src/webparts/gmbhHomePage/GmbhHomePageWebPart.manifest.json"
+        }
+      ]
+    },
     "eod-report-web-part": {
       "components": [
         {
@@ -536,6 +552,14 @@
         {
           "entrypoint": "./lib/webparts/manageQuestion/ManageQuestionWebPart.js",
           "manifest": "./src/webparts/manageQuestion/ManageQuestionWebPart.manifest.json"
+        }
+      ]
+    },
+    "import-task-portfolio-items-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/importTaskPortfolioItems/ImportTaskPortfolioItemsWebPart.js",
+          "manifest": "./src/webparts/importTaskPortfolioItems/ImportTaskPortfolioItemsWebPart.manifest.json"
         }
       ]
     }
@@ -619,7 +643,7 @@
     "SMarttaskWebPartStrings": "lib/webparts/sMarttask/loc/{locale}.js",
     "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js",
     "SmartDynamicTableWebPartStrings": "lib/webparts/smartDynamicTable/loc/{locale}.js",
-  
+    "RootUpdateTopNavigationWebPartStrings": "lib/webparts/rootUpdateTopNavigation/loc/{locale}.js",
     "EmployeeDashboardTemplatedWebPartStrings": "lib/webparts/employeeDashboardTemplated/loc/{locale}.js",
     "HhhhSmartPagesWebPartStrings": "lib/webparts/hhhhSmartPages/loc/{locale}.js",
     "HhhhSmartMetadataPortfolioWebPartStrings": "lib/webparts/hhhhSmartMetadataPortfolio/loc/{locale}.js",
@@ -633,10 +657,8 @@
     "ContentEditingDocumentsWebPartStrings": "lib/webparts/contentEditingDocuments/loc/{locale}.js",
     "ManageWebpartTemplateWebPartStrings": "lib/webparts/manageWebpartTemplate/loc/{locale}.js",
     "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js",
+    "GmbhHomePageWebPartStrings": "lib/webparts/gmbhHomePage/loc/{locale}.js",
     "EodReportWebPartStrings": "lib/webparts/eodReport/loc/{locale}.js",
-    "ManageQuestionWebPartStrings": "lib/webparts/manageQuestion/loc/{locale}.js"
-
-
-
+    "ImportTaskPortfolioItemsWebPartStrings": "lib/webparts/importTaskPortfolioItems/loc/{locale}.js"
   }
 }

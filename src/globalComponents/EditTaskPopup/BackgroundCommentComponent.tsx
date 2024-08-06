@@ -86,6 +86,7 @@ const BackgroundCommentComponent = (Props: any) => {
     const AddBackgroundCommentFunction = async () => {
         if (BackgroundComment.length > 0) {
             let CurrentUser: any
+            let uniqueId=generateUniqueId()
             if (currentUserData?.length > 0) {
                 CurrentUser = currentUserData[0];
             }
@@ -96,7 +97,7 @@ const BackgroundCommentComponent = (Props: any) => {
                 Body: BackgroundComment,
                 AuthorImage: CurrentUser?.Item_x0020_Cover != null ? CurrentUser?.Item_x0020_Cover?.Url : null,
                 AuthorName: CurrentUser?.Title != undefined ? CurrentUser?.Title : Context?.pageContext?._user.displayName,
-                ID: (BackgroundComments != undefined ? BackgroundComments?.length + 1 : 0)
+                ID: (uniqueId != undefined ? uniqueId: BackgroundComments?.length + 1)
             }
             BackgroundComments.push(CommentJSON);
             setBackgroundComments(BackgroundComments);
@@ -107,10 +108,22 @@ const BackgroundCommentComponent = (Props: any) => {
         }
     }
     // Code by Udbhav related to the EOD report Comments Add
- 
+    function generateUniqueId() {
+        let newId = BackgroundComments?.length;
+    
+        BackgroundComments.forEach((uniqueId: any) => {
+            while (uniqueId.ID == newId) {
+                newId++;
+            }
+        });
+    
+        return newId;
+    }
+
     const AddEODComent = () => {
         if (EODPendingComment?.length > 0 || EODAchiviedComment?.length > 0) {
             let CurrentUser: any
+            let uniqueId=generateUniqueId()
             if (currentUserData?.length > 0) {
                 CurrentUser = currentUserData[0];
             }
@@ -126,7 +139,7 @@ const BackgroundCommentComponent = (Props: any) => {
                 ProjectName: taskInfo?.Project?.Title,
                 Achieved: EODAchiviedComment,
                 Pending: EODPendingComment,
-                ID: (BackgroundComments != undefined ? BackgroundComments?.length + 1 : 0)
+                ID: (uniqueId != undefined ? uniqueId: BackgroundComments?.length + 1)
             }
             BackgroundComments.push(CommentJSON);
             setBackgroundComments(BackgroundComments)
