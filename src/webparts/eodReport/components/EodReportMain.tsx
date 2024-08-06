@@ -2,11 +2,13 @@ import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
 // import '../../../index.css'
+
 import { ColumnDef } from "@tanstack/react-table";
 import Moment from 'moment-timezone';
+import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 
 import { Panel, PanelType } from "office-ui-fabric-react";
-
+import { Avatar } from "@fluentui/react-components";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 
 let forceAllAditionalTaskCall: any = [];
@@ -22,7 +24,7 @@ let todayAllEODTaskData: any = [];
 let body1: any = [];
 let body: any = '';
 let finalBody: any = [];
-let allUsers:any
+let allUsers: any
 
 export const EodReportMain = (props: any) => {
     const [allTodayModifiedTask, setAllTodayModifiedTask]: any = React.useState([])
@@ -134,18 +136,19 @@ export const EodReportMain = (props: any) => {
     const findAndUpdateOffshoreComments = (objectToUpdate: any, newOffshoreComments: any) => {
         allTodayModifiedTask.map((item: any) => {
             if (item.ID === objectToUpdate.ID) {
-                item.OffshoreComments = newOffshoreComments;
-                item.Achieved = item.OffshoreComments?.Achieved;
-                item.Pending = item.OffshoreComments?.Pending;
+                item.OffshoreComments = [newOffshoreComments];
+                item.Achieved = newOffshoreComments?.Achieved;
+                item.Pending = newOffshoreComments?.Pending;
+              
             }
         });
 
         copyAllAditionalTaskData.map((item: any) => {
             if (item.ID === objectToUpdate.ID) {
-                item.OffshoreComments = newOffshoreComments;
-                item.Achieved = item.OffshoreComments?.Achieved;
-                item.Pending = item.OffshoreComments?.Pending;
-
+                item.OffshoreComments =[newOffshoreComments];
+                item.Achieved = newOffshoreComments?.Achieved;
+                item.Pending = newOffshoreComments?.Pending;
+                
             }
         });
         setAllTodayModifiedTask(allTodayModifiedTask);
@@ -174,7 +177,7 @@ export const EodReportMain = (props: any) => {
                 console.error('Error parsing OffshoreComments:', error);
             }
         } else {
-            OffshoreCommentsArray = [selectedTaskForEod.OffshoreComments];
+            OffshoreCommentsArray = selectedTaskForEod.OffshoreComments;
         }
         const updatedOffshoreComments = OffshoreCommentsArray.map((comment) => ({
             ...comment,
@@ -258,31 +261,37 @@ export const EodReportMain = (props: any) => {
     const onEmailSend = () => {
         console.log(allAditionalTask, "allAditionalTask");
         let body1: string[] = [];
-
         // Group tasks by ProjectTitle
         let groupedTasks = allTodayModifiedTask.reduce((acc: { [x: string]: any[]; }, item: { ProjectTitle: string; }) => {
-            let title = item?.ProjectTitle ?? ' ';
+            let title = item?.ProjectTitle ?? "Others";
             if (!acc[title]) {
                 acc[title] = [];
             }
             acc[title].push(item);
             return acc;
         }, {});
-
         Object.keys(groupedTasks).forEach(projectTitle => {
             let tasks = groupedTasks[projectTitle];
             let firstTask = true;
-
+            let lastTask = false
             tasks.forEach((item: { Id: any; siteType: any; Title: any; Achieved: any; Pending: any; Lead: any; }, index: any) => {
-                let projectTitleCell = '';
+                let projectTitleCell = `<tr>
+                    <td height="48" align="left" width="180" valign="middle" style="background: #fff;color: #333;width:180px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-left: 1px solid #EEE; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                                            ${''}
+                                        </td>`
                 if (firstTask) {
-                    projectTitleCell = `<tr><td height="48" align="left" width="180" valign="middle" style="background: #fff;color: #333;width:180px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-left: 1px solid #EEE; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                    projectTitleCell = ` <tr>
+                     
+                    <td height="48" align="left" width="180" valign="middle" style="background: #fff;color: #333;width:180px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-left: 1px solid #EEE; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                                             ${projectTitle ?? ''}
                                         </td>`;
                     firstTask = false;
                 }
+                if (tasks?.length - 1 == 0) {
+                    lastTask = true
+                }
 
-                let taskRow = `
+                let taskRow = ` 
                     ${projectTitleCell}
                     <td height="48"  width="240" valign="middle" style="background: #fff;color: #2F5596;width:220px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                         <a style="color: #2F5596;" href="${siteURL}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}">
@@ -298,7 +307,9 @@ export const EodReportMain = (props: any) => {
                     <td height="48"  width="130" valign="middle" style="background: #fff;color: #333;width:130px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                         ${item.Lead ?? ''}
                     </td>
-                </tr>`;
+                </tr>
+               
+                `;
                 body1.push(taskRow);
             });
         });
@@ -350,9 +361,9 @@ export const EodReportMain = (props: any) => {
                                 <td width="130" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">Portfolio Lead</td>
                             </tr>
                     
-                            <body>
+                            <tbody>
                                 ${body1.join('')}
-                            </body>
+                            </tbody>
                         </table>
                     </div>
                 </td>
@@ -435,153 +446,150 @@ export const EodReportMain = (props: any) => {
 
 
     }
-    const onAddpress = () => {
-        const filterarrray = selectedTaskForEod.map((item: any) => {
-            let OffshoreCommentsArray;
-            if (typeof item.original.OffshoreComments === 'string') {
-                OffshoreCommentsArray = JSON.parse(item.original.OffshoreComments);
-
-            }
-            else {
-                OffshoreCommentsArray = [item.original.OffshoreComments];
-            }
-            try {
-            } catch (error) {
-                console.error('Error parsing OffshoreComments:', error);
-                // Handle the error appropriately, e.g., provide a default value or log the error
-            }
-            const updatedOffshoreComments = OffshoreCommentsArray?.map((comment: any) => {
-                if (comment.hasOwnProperty('isEodTask')) {
-                    return {
-                        ...comment,
-                        isEodTask: true
-                    };
-                }
-                return {
-                    ...comment,
-                    isEodTask: true
-                };
-            });
-
-            return {
-                ...item.original,
-                OffshoreComments: updatedOffshoreComments,
-                oldOffshoreComments: updatedOffshoreComments
-
-            };
-        });
-        const combinedArray = [...allTodayModifiedTask, ...filterarrray];
-        const removeFromAdditionalArray = allAditionalTask.filter((item1: { ID: any; }) => !filterarrray.some((item2: { ID: any; }) => item1.ID === item2.ID));
-        setallAditionalTask(removeFromAdditionalArray)
-        setAllTodayModifiedTask(combinedArray)
-        setSelectedTaskForEod([])
-
-        combinedArray.map((item: any) => {
-            updateCommentFunctionForAddToEoD(item?.OffshoreComments[0], "OffshoreComments", item?.oldOffshoreComments, item);
-        })
-        childRef?.current?.setRowSelection({});
-    }
-
-
     // const onAddpress = () => {
-    //     let isPendingEmpty:any=false
-    //     let isAcheviedEmpty:any =false
-    //     let bothEmpty:any =false  
-    //     selectedTaskForEod.map((items:any)=>{
-    //         let checkEmptyComment:any;
-           
-    //         if(items?.original?.OffshoreComments!=undefined){
-    //            if(typeof items.original.OffshoreComments === 'string'){
-    //             try {
-    //                 checkEmptyComment = JSON.parse(items?.original?.OffshoreComments)
-    //             } catch (error) {
-    //                 console.error('Error parsing OffshoreComments:', error);
-    //             }
-    //            }else{
-    //             checkEmptyComment=items.original.OffshoreComments
-    //            }
-                
-                
-    //             let EodRoprtAvialble = checkEmptyComment?.some((comment: any) => {
-    //                 if (comment?.Type=="EODReport") {
-    //                     return true;
-    //                 } 
-    //             })
-    //            if(EodRoprtAvialble!=undefined && EodRoprtAvialble==true){
-    //             checkEmptyComment.map((comment:any)=>{
-    //                 if(comment.Type=="EODReport"){
-    //                  if(comment?.Achieved==null||comment?.Achieved ==undefined || comment?.Achieved ==''){
-    //                     isAcheviedEmpty=true
-    //                  }
-    //                  else if(comment?.Pending==null||comment?.Pending ==undefined || comment?.Pending ==''){
-    //                      isPendingEmpty=true
-    //                  }
-    //                 }
-    //              })
-    //            }else{
-    //             bothEmpty=true
-    //            }
-                
-    //         } else{
-    //             bothEmpty=true
+    //     const filterarrray = selectedTaskForEod.map((item: any) => {
+    //         let OffshoreCommentsArray;
+    //         if (typeof item.original.OffshoreComments === 'string') {
+    //             OffshoreCommentsArray = JSON.parse(item.original.OffshoreComments);
+
     //         }
-    //     })
-    //     if( isPendingEmpty == false && isAcheviedEmpty==false && bothEmpty==false){
-    //         const filterarrray = selectedTaskForEod.map((item: any) => {
-    //             let OffshoreCommentsArray;
-    //             if (typeof item.original.OffshoreComments === 'string') {
-    //                 OffshoreCommentsArray = JSON.parse(item.original.OffshoreComments);
-    //             }
-    //             else {
-    //                 OffshoreCommentsArray = [item.original.OffshoreComments];
-    //             }
-    //             try {
-    //             } catch (error) {
-    //                 console.error('Error parsing OffshoreComments:', error);
-    //                 // Handle the error appropriately, e.g., provide a default value or log the error
-    //             }
-    //             const updatedOffshoreComments = OffshoreCommentsArray?.map((comment: any) => {
-    //                 if (comment.hasOwnProperty('isEodTask')) {
-    //                     return {
-    //                         ...comment,
-    //                         isEodTask: true
-    //                     };
-    //                 }
+    //         else {
+    //             OffshoreCommentsArray = [item.original.OffshoreComments];
+    //         }
+    //         try {
+    //         } catch (error) {
+    //             console.error('Error parsing OffshoreComments:', error);
+    //             // Handle the error appropriately, e.g., provide a default value or log the error
+    //         }
+    //         const updatedOffshoreComments = OffshoreCommentsArray?.map((comment: any) => {
+    //             if (comment.hasOwnProperty('isEodTask')) {
     //                 return {
     //                     ...comment,
     //                     isEodTask: true
     //                 };
-    //             });
-    
+    //             }
     //             return {
-    //                 ...item.original,
-    //                 OffshoreComments: updatedOffshoreComments,
-    //                 oldOffshoreComments: updatedOffshoreComments
-    
+    //                 ...comment,
+    //                 isEodTask: true
     //             };
     //         });
-    //         const combinedArray = [...allTodayModifiedTask, ...filterarrray];
-    //         const removeFromAdditionalArray = allAditionalTask.filter((item1: { ID: any; }) => !filterarrray.some((item2: { ID: any; }) => item1.ID === item2.ID));
-    //         setallAditionalTask(removeFromAdditionalArray)
-    //         setAllTodayModifiedTask(combinedArray)
-    //         setSelectedTaskForEod([])
-    
-    //         combinedArray.map((item: any) => {
-    //             updateCommentFunctionForAddToEoD(item?.OffshoreComments[0], "OffshoreComments", item?.oldOffshoreComments, item);
-    //         })
-    //         childRef?.current?.setRowSelection({});
 
-    //     }else{
-    //      if(isPendingEmpty == true){
-    //         alert("Please fill the pending Comment")
-    //      }  else if(isAcheviedEmpty== true){
-    //         alert("Please fill the achived Comment")
-    //      } else if(bothEmpty == true){
-    //         alert("Please fill the achived and pending Comments")
-    //      }
-    //     }
+    //         return {
+    //             ...item.original,
+    //             OffshoreComments: updatedOffshoreComments,
+    //             oldOffshoreComments: updatedOffshoreComments
 
+    //         };
+    //     });
+    //     const combinedArray = [...allTodayModifiedTask, ...filterarrray];
+    //     const removeFromAdditionalArray = allAditionalTask.filter((item1: { ID: any; }) => !filterarrray.some((item2: { ID: any; }) => item1.ID === item2.ID));
+    //     setallAditionalTask(removeFromAdditionalArray)
+    //     setAllTodayModifiedTask(combinedArray)
+    //     setSelectedTaskForEod([])
+
+    //     combinedArray.map((item: any) => {
+    //         updateCommentFunctionForAddToEoD(item?.OffshoreComments[0], "OffshoreComments", item?.oldOffshoreComments, item);
+    //     })
+    //     childRef?.current?.setRowSelection({});
     // }
+
+
+    const onAddpress = () => {
+        let isPendingEmpty:any=false
+        let isAcheviedEmpty:any =false
+        let bothEmpty:any =false  
+        selectedTaskForEod.map((items:any)=>{
+            let checkEmptyComment:any; 
+            if(items?.original?.OffshoreComments!=undefined){
+               if(typeof items.original.OffshoreComments === 'string'){
+                try {
+                    checkEmptyComment = JSON.parse(items?.original?.OffshoreComments)
+                } catch (error) {
+                    console.error('Error parsing OffshoreComments:', error);
+                }
+               }else{
+                checkEmptyComment=items.original.OffshoreComments
+               }
+                let EodRoprtAvialble = checkEmptyComment?.some((comment: any) => {
+                    if (comment?.Type=="EODReport") {
+                        return true;
+                    } 
+                })
+               if(EodRoprtAvialble!=undefined && EodRoprtAvialble==true){
+                checkEmptyComment.map((comment:any)=>{
+                    if(comment.Type=="EODReport"){
+                     if(comment?.Achieved==null||comment?.Achieved ==undefined || comment?.Achieved ==''){
+                        isAcheviedEmpty=true
+                     }
+                     else if(comment?.Pending==null||comment?.Pending ==undefined || comment?.Pending ==''){
+                         isPendingEmpty=true
+                     }
+                    }
+                 })
+               }else{
+                bothEmpty=true
+               }
+                
+            } else{
+                bothEmpty=true
+            }
+        })
+        if( isPendingEmpty == false && isAcheviedEmpty==false && bothEmpty==false){
+            const filterarrray = selectedTaskForEod.map((item: any) => {
+                let OffshoreCommentsArray;
+                if (typeof item.original.OffshoreComments === 'string') {
+                    OffshoreCommentsArray = JSON.parse(item.original.OffshoreComments);
+                }
+                else {
+                    OffshoreCommentsArray = item.original.OffshoreComments;
+                }
+                try {
+                } catch (error) {
+                    console.error('Error parsing OffshoreComments:', error);
+                    // Handle the error appropriately, e.g., provide a default value or log the error
+                }
+                const updatedOffshoreComments = OffshoreCommentsArray?.map((comment: any) => {
+                    if (comment.hasOwnProperty('isEodTask')) {
+                        return {
+                            ...comment,
+                            isEodTask: true
+                        };
+                    }
+                    return {
+                        ...comment,
+                        isEodTask: true
+                    };
+                });
+    
+                return {
+                    ...item.original,
+                    OffshoreComments: updatedOffshoreComments,
+                    oldOffshoreComments: updatedOffshoreComments
+    
+                };
+            });
+            const combinedArray = [...allTodayModifiedTask, ...filterarrray];
+            const removeFromAdditionalArray = allAditionalTask.filter((item1: { ID: any; }) => !filterarrray.some((item2: { ID: any; }) => item1.ID === item2.ID));
+            setallAditionalTask(removeFromAdditionalArray)
+            setAllTodayModifiedTask(combinedArray)
+            setSelectedTaskForEod([])
+    
+            combinedArray.map((item: any) => {
+                updateCommentFunctionForAddToEoD(item?.OffshoreComments[0], "OffshoreComments", item?.oldOffshoreComments, item);
+            })
+            childRef?.current?.setRowSelection({});
+
+        }else{
+         if(isPendingEmpty == true){
+            alert("Please fill the pending Comment")
+         }  else if(isAcheviedEmpty== true){
+            alert("Please fill the achived Comment")
+         } else if(bothEmpty == true){
+            alert("Please fill the achived and pending Comments")
+         }
+        }
+
+    }
     // Pagination EOD Report
     const indexOfLastItem = currentPageEoDReport * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -618,7 +626,7 @@ export const EodReportMain = (props: any) => {
                 placeholder: "ProjectTitle",
                 header: "",
                 resetColumnFilters: false,
-                size: 100,
+                size: 140,
                 isColumnVisible: true
             },
             {
@@ -634,8 +642,22 @@ export const EodReportMain = (props: any) => {
                 id: "Title",
                 placeholder: "Title",
                 header: "",
-                size: 100,
+            
                 resetColumnFilters: false,
+                isColumnVisible: true
+            }
+            , {
+                accessorFn: (row) => row?.TaskCategories,
+                cell: ({ row, getValue }) => (
+                    <div>
+                        {row?.original?.TaskCategories}
+                    </div>
+                ),
+                id: "TaskCategories",
+                placeholder: "TaskCategories",
+                header: "",
+                resetColumnFilters: false,
+                size: 120,
                 isColumnVisible: true
             },
             {
@@ -682,8 +704,53 @@ export const EodReportMain = (props: any) => {
                 placeholder: "Lead",
                 header: "",
                 resetColumnFilters: false,
-                size: 80,
+                size: 140,
                 isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row, column }) => (
+                    <div className="alignCenter">
+                        {row?.original?.Created == null ? ("") : (
+                            <>
+                                <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayCreateDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
+                                {row?.original?.Author != undefined &&
+                                    <>
+
+                                        <a href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                            target="_blank" data-interception="off">
+                                            {row?.original?.Author?.autherImage || row?.original?.Author?.suffix ? <Avatar
+                                                className="UserImage"
+                                                title={row?.original?.Author?.Title}
+                                                name={row?.original?.Author?.Title}
+                                                image={{ src: row?.original?.Author?.autherImage }}
+                                                initials={row?.original?.Author?.autherImage == undefined ? row.original?.Author?.suffix : undefined}
+
+                                            /> :
+                                                <Avatar title={row?.original?.Author?.Title}
+                                                    name={row?.original?.Author?.Title} className="UserImage" />}
+                                        </a>
+                                    </>
+                                }
+                            </>
+                        )}
+                    </div>
+                ),
+                id: 'Created',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                isColumnVisible: true,
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 100,
+                fixedColumnWidth: true
             },
             {
                 cell: ({ row, getValue }) => (
@@ -747,6 +814,7 @@ export const EodReportMain = (props: any) => {
                 resetColumnFilters: false,
                 isColumnVisible: true
             },
+
             {
                 accessorFn: (row) => row?.Achieved,
                 cell: ({ row, getValue }) => (
@@ -794,6 +862,7 @@ export const EodReportMain = (props: any) => {
                 size: 80,
                 isColumnVisible: true
             },
+
             {
                 cell: ({ row, getValue }) => (
                     <>
@@ -891,9 +960,7 @@ export const EodReportMain = (props: any) => {
                 .orderBy("SortOrder", true)
                 .orderBy("Title", true)
                 .getAll();
-
-
-                allUsers=data
+            allUsers = data
             const teamMember = findDataByApproverId(data, currentUserData)
             AllProtFolioTeamMembers = teamMember
             setTeamMembers(teamMember)
@@ -904,7 +971,6 @@ export const EodReportMain = (props: any) => {
     }
     const findDataByApproverId = (data: any[], searchId: number) => {
         let allMembers: any[] = [];
-
         for (const item of data) {
             if (item.Approver && Array.isArray(item.Approver)) {
                 if (item.Approver.some((approver: { Id: number }) => approver.Id === searchId)) {
@@ -1129,7 +1195,7 @@ export const EodReportMain = (props: any) => {
                 site = task?.siteType;
             }
             if (timeEntry[`Task${site}`] != undefined && task?.Id == timeEntry[`Task${site}`]?.Id) {
-                task.Lead=getPortfolioLead(timeEntry)
+                // task.Lead=getPortfolioLead(timeEntry)
                 return task;
             }
         });
@@ -1137,18 +1203,38 @@ export const EodReportMain = (props: any) => {
     }
 
     //  Code by Udbahv
-     const getPortfolioLead=(timeEntry:any)=>{
-        let lead=''
+    //  const getPortfolioLead=(timeEntry:any)=>{
+    //     let lead=''
     
-        allUsers.map((user:any)=>{
-            if(timeEntry?.AuthorId==user?.AssingedToUser?.Id){
+    //     allUsers.map((user:any)=>{
+    //         if(timeEntry?.AuthorId==user?.AssingedToUser?.Id){
            
-               return lead= user?.Approver?.map((teamMember: { Title: any; }) => teamMember.Title).join(', ');
-            }
-        })
-        return lead
-     }
+    //            return lead= user?.Approver?.map((teamMember: { Title: any; }) => teamMember.Title).join(', ');
+    //         }
+    //     })
+    //     return lead
+    //  }
+    const findUserByName = (name: any) => {
+        const user = allUsers.filter(
+            (user: any) => user?.AssingedToUser?.Id === name
+        );
+        let authImg: any = { Image: "", Suffix: "" }
+        if (user[0]?.Item_x0020_Cover != undefined) {
+            authImg.Image = user[0]?.Item_x0020_Cover.Url;
+        } else { authImg.Suffix = user[0]?.Suffix }
+        return user ? authImg : null;
+    };
+    const getAllLeads=(alluser:any)=>{
+        let leads:any=[]
+        alluser?.map((user:any)=>{
+           if(user.app){
 
+           } 
+        }
+            
+        )
+
+    }
     const getAllTodayModifiedTask = async (siteconfig: any[]) => {
         let filteredData: any = []
         console.log(timesheetListConfig, "timesheetListConfig")
@@ -1187,13 +1273,13 @@ export const EodReportMain = (props: any) => {
                     else if (loginUserInfo[0]?.UserGroup?.Title == "Junior Task Management") {
                         filteredData = res;
                     }
-                    else if (loginUserInfo[0]?.UserGroup?.Title == "Developers Team") {
+                    else if (loginUserInfo[0]?.UserGroup?.Title == "QA Team") {
                         filteredData = res;
                     }
-                    else if (loginUserInfo[0]?.UserGroup?.Title == "Design Team") {
+                    else if (loginUserInfo[0]?.AssingedToUserId=='328') {
                         filteredData = res;
                     }
-                    else if (loginUserInfo[0]?.UserGroup?.Title == "Portfolio Lead Team") {
+                    else if (loginUserInfo[0]?.UserGroup?.Title == "Portfolio Lead Team" || loginUserInfo[0]?.UserGroup?.Title == "Design Team") {
                         let filterIdsUserIds = AllProtFolioTeamMembers?.map((item: { AssingedToUserId: any; }) => item.AssingedToUserId);
                         filterIdsUserIds.push(currentUserData)
                         // Filter DATA based on AssignedTo array
@@ -1224,16 +1310,27 @@ export const EodReportMain = (props: any) => {
                         item.ID = item?.ID;
                         item.listId = listIds?.listId;
                         item.siteType = listIds?.Title;
+
                         item.Achieved = getTodayAchievedOrPending(item?.OffshoreComments, 1)
                         item.Pending = getTodayAchievedOrPending(item?.OffshoreComments, 2)
                         // item.Lead = item.ResponsibleTeam?.[0]?.Title
                         item.Lead = item.ResponsibleTeam?.map((teamMember: { Title: any; }) => teamMember.Title).join(', ');
+                        item.TaskCategories = item?.TaskCategories?.map((categories: { Title: any; }) => categories?.Title).join(', ')
+                        item.DisplayCreateDate = Moment(item?.Created).format("DD/MM/YYYY");
+                        if (item.Author) {
+                            let authImg = findUserByName(item.Author?.Id);
+                            if (authImg.Image != undefined && authImg.Image != "") {
+                                item.Author.autherImage = authImg.Image
+                            } else {
+                                item.Author.suffix = authImg.Suffix
+                            }
+                        }
                         item.ProjectId = item?.Project?.Id
                         item.oldOffshoreComments = item?.OffshoreComments
 
                         if (item?.OffshoreComments != null) {
                             const offshoreCommentsArray = JSON.parse(item.OffshoreComments);
-                            const filteredComments = offshoreCommentsArray?.filter((comment: { Type: string, isEodTask: boolean }) => comment?.Type === "EODReport" && comment?.isEodTask);
+                            const filteredComments = offshoreCommentsArray?.filter((comment: { Type: string, isEodTask: boolean ,Created:any}) => comment?.Type === "EODReport" && comment?.isEodTask && isTodayCreated(comment?.Created) );
                             console.log(filteredComments, "filteredComments");
                             if (filteredComments.length > 0) {
                                 todayAllEODTaskData.push(item);

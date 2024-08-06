@@ -25,10 +25,12 @@ import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import AddEditWebpartTemplate from "../../../globalComponents/AddEditWebpartTemplate";
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
-import { usePopperTooltip } from "react-popper-tooltip";
 import { CustomToolTip } from "../../../globalComponents/customTooltip";
-import { Col, Row } from "react-bootstrap";
+import { Col, Row, Modal } from "react-bootstrap";
 import { PeoplePicker, PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "react-datepicker/dist/react-datepicker-cssmodules.css";
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -40,30 +42,15 @@ let IsShowConfigBtn = false;
 let dragItem: any;
 let DragDropType: any = '';
 let isUpdateTask: any = true;
+let sourceUser: any;
+let UpdatedItem: any = [];
 let portfolioColor: any = '';
+let SelectedWorkingDates: any = [];
 let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1, taskStatusComment: "For Approval" }, { value: 2, taskStatusComment: "Follow Up" }, { value: 3, taskStatusComment: "Approved" },
 { value: 4, taskStatusComment: "Checking" }, { value: 5, taskStatusComment: "Acknowledged" }, { value: 8, taskStatusComment: "Priority Check" }, { value: 9, taskStatusComment: "Ready To Go" },
 { value: 10, taskStatusComment: "working on it" }, { value: 70, taskStatusComment: "Re-Open" }, { value: 75, taskStatusComment: "Deployment Pending" }, { value: 80, taskStatusComment: "In QA Review" },
 { value: 90, taskStatusComment: "Task completed" }, { value: 100, taskStatusComment: "Closed" },]
 const TaskStatusTbl = (Tile: any) => {
-  //Tooltip -------------------
-  const [controlledVisible, setControlledVisible] = React.useState(false);
-  const {
-    getArrowProps,
-    getTooltipProps,
-    setTooltipRef,
-    setTriggerRef,
-    visible,
-  } = usePopperTooltip({
-    trigger: null,
-    interactive: true,
-    closeOnOutsideClick: false,
-    placement: "auto",
-    visible: controlledVisible,
-    onVisibleChange: setControlledVisible,
-  });
-  //End here
-
   const childRef = React.useRef<any>();
   const ContextData: any = React.useContext(myContextValue);
   const [IsShowAllUser, setIsShowAllUser] = useState(true);
@@ -86,6 +73,9 @@ const TaskStatusTbl = (Tile: any) => {
   const [TimeComponent, setTimeComponent] = useState(undefined);
   const [portfolioTyped, setPortfolioTypeData] = React.useState([]);
   const [SelectedUserId, setSelectedUserId] = React.useState<any>();
+  const [ShowDateSelection, setShowDateSelection] = React.useState<any>(false);
+  const [SelectedWorkingDate, setSelectedWorkingDate] = React.useState<any>(false);
+  const [SelectedDateRange, setSelectedDateRange] = React.useState<any>([]);
   const dashBoardbulkUpdateCallBack = React.useCallback(async (configTableId: any, data: any) => {
     setBulkUpdateDataCallBack(data);
     setBulkUpdateDataTableId(configTableId);
@@ -163,6 +153,7 @@ const TaskStatusTbl = (Tile: any) => {
     }
     if (ContextData?.DataRange != undefined && ContextData?.DataRange?.length > 0) {
       setDateRange(ContextData?.DataRange)
+      setSelectedDateRange(ContextData?.DataRange)
     }
   }, [ContextData?.DashboardConfig]);
   const ShowWorkingTask = (config: any, User: any, Time: any, ShowHideTable: any) => {
@@ -503,23 +494,27 @@ const TaskStatusTbl = (Tile: any) => {
     lastWeekday.setDate(today.getDate() - daysToSubtract);
     return lastWeekday;
   }
-  const onDropTable = (e: any, Type: any, config: any) => {
+  const onDropTable = (e: any, Type: any, config: any, Callback: any) => {
+    let IsUpdateWorkingThisWeek = false;
     if (isUpdateTask == true) {
-      let sourceUser = globalCommon.parseJSON(e.dataTransfer.getData("sourceUser"))
+      if (Callback != true)
+        sourceUser = globalCommon.parseJSON(e.dataTransfer.getData("sourceUser"))
       let Status: any = 0;
       let count = 0;
       if (Type != undefined) {
         Status = Type
       }
       // let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
-      let UpdatedItem: any = []
-      if (RefSelectedItem != undefined && RefSelectedItem?.length > 0) {
-        RefSelectedItem?.map((DraggedItem: any) => {
-          UpdatedItem.push(DraggedItem?.original)
-        })
-      }
-      else {
-        UpdatedItem.push(globalCommon.parseJSON(e.dataTransfer.getData("DataId")))
+      if (Callback != true) {
+        UpdatedItem = []
+        if (RefSelectedItem != undefined && RefSelectedItem?.length > 0) {
+          RefSelectedItem?.map((DraggedItem: any) => {
+            UpdatedItem.push(DraggedItem?.original)
+          })
+        }
+        else {
+          UpdatedItem.push(globalCommon.parseJSON(e.dataTransfer.getData("DataId")))
+        }
       }
       if (UpdatedItem != undefined && UpdatedItem?.length > 0) {
         UpdatedItem?.map((item: any) => {
@@ -535,7 +530,6 @@ const TaskStatusTbl = (Tile: any) => {
           if (Item != undefined && Item != '') {
             let PostData: any = {};
             let web = new Web(ContextData?.propsValue?.siteUrl);
-
             if (config?.onDropAction != undefined && config?.onDropAction?.length) {
               config?.onDropAction.map((dropAction: any) => {
                 if (dropAction?.SelectedValue) {
@@ -739,17 +733,50 @@ const TaskStatusTbl = (Tile: any) => {
             }
             else {
               if (config?.TileName == 'WorkingToday' || config?.IsTodaysTask == true || config?.IsWorkingWeekTask == true) {
-                let today: any = new Date();
-                today.setDate(today.getDate());
-                today.setHours(0, 0, 0, 0);
-                let WorkingDate: any = Moment(today).format("DD/MM/YYYY");
-                Item.WorkingDate = WorkingDate
-                if (config?.IsWorkingWeekTask == true) {
-                  let LastDayOfCurrentWeek: any = getLastWeekdayOfCurrentWeek();
-                  LastDayOfCurrentWeek.setHours(0, 0, 0, 0);
-                  WorkingDate = Moment(LastDayOfCurrentWeek).format("DD/MM/YYYY");
+                if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0 && config?.IsWorkingWeekTask == true) {
+                  setShowDateSelection(true)
+                  if (SelectedWorkingDates?.length) {
+                    SelectedWorkingDates?.map((SelectedDate: any) => {
+                      let IsAddNew: boolean = true;
+                      let IsWorkingDetailsExist = false;
+                      SelectedDate?.ServerDate.setHours(0, 0, 0, 0);
+                      let WorkingDate: any = Moment(SelectedDate?.ServerDate).format("DD/MM/YYYY");
+                      Item?.WorkingAction?.map((workingMember: any) => {
+                        if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
+                          IsWorkingDetailsExist = true;
+                          workingMember?.InformationData?.map((workingDetails: any) => {
+                            if (workingDetails?.WorkingDate == SelectedDate?.DisplayDate) {
+                              IsAddNew = false;
+                              if (workingDetails?.WorkingMember == undefined)
+                                workingDetails.WorkingMember = []
+                              if (!IsUserIdExist(workingDetails?.WorkingMember, ContextData?.currentUserData))
+                                workingDetails?.WorkingMember.push({ 'Id': ContextData?.currentUserData?.AssingedToUserId, 'Title': ContextData?.currentUserData?.Title })
+                            }
+                          })
+                        }
+                      })
+                      if (IsAddNew == true) {
+                        if (IsWorkingDetailsExist == false) {
+                          Item?.WorkingAction.push({ 'Title': "WorkingDetails", 'InformationData': [] })
+                        }
+                        Item?.WorkingAction?.map((workingMember: any) => {
+                          if (workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails') {
+                            if (workingMember?.InformationData == undefined)
+                              workingMember.InformationData = [];
+                            workingMember.InformationData.push({ 'WorkingDate': WorkingDate, 'WorkingMember': [{ 'Id': ContextData?.currentUserData?.AssingedToUserId, 'Title': ContextData?.currentUserData?.Title }] })
+
+                          }
+                        })
+                      }
+                    })
+                  }
                 }
-                if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0) {
+                else if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0 && config?.IsTodaysTask == true) {
+                  let today: any = new Date();
+                  today.setDate(today.getDate());
+                  today.setHours(0, 0, 0, 0);
+                  let WorkingDate: any = Moment(today).format("DD/MM/YYYY");
+                  Item.WorkingDate = WorkingDate
                   let IsAddNew: boolean = true;
                   let IsWorkingDetailsExist = false;
                   Item?.WorkingAction?.map((workingMember: any) => {
@@ -786,7 +813,7 @@ const TaskStatusTbl = (Tile: any) => {
                 let UserToBeTagged: any = {};
                 let CreatorData: any = {};
                 if (ContextData?.AllTaskUser != undefined && ContextData?.AllTaskUser?.length) {
-                  UserToBeTagged = ContextData?.AllTaskUser.filter((e: any) => e.AssingedToUserId == Item?.Author?.Id)[0];
+                  UserToBeTagged = ContextData?.AllTaskUser.filter((e: any) => e.AssingedToUserId == ContextData?.currentUserId)[0];
                   CreatorData = ContextData?.AllTaskUser.filter((e: any) => e.AssingedToUserId == ContextData?.currentUserId)[0];
                 }
                 if (Item?.WorkingAction == undefined || Item?.WorkingAction == '')
@@ -885,91 +912,96 @@ const TaskStatusTbl = (Tile: any) => {
                 PostData.Categories = TaskCategoriesTite;
               }
             }
-            web.lists.getById(Item.listId).items.getById(Item?.Id).update(PostData).then((res: any) => {
-              console.log('Drop successfuly');
-              count++;
-              if (config?.onDropAction != undefined && config?.onDropAction?.length) {
-                if (count == UpdatedItem?.length) {
-                  alert('Task update successfully please refresh page to reflect changes')
+            if (config?.IsWorkingWeekTask != true || Callback == true) {
+              web.lists.getById(Item.listId).items.getById(Item?.Id).update(PostData).then((res: any) => {
+                console.log('Drop successfuly');
+                count++;
+                if (config?.onDropAction != undefined && config?.onDropAction?.length) {
+                  if (count == UpdatedItem?.length) {
+                    alert('Task update successfully please refresh page to reflect changes')
+                  }
                 }
-              }
-              else {
-                DashboardConfig?.forEach((item: any) => {
-                  if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
-                    if (item?.Tasks != undefined) {
-                      item?.Tasks.map((user: any) => {
-                        // if (user?.AssingedToUserId == sourceUser?.AssingedToUserId) {
-                        if (config?.TileName != 'WorkingToday')
-                          Item.WorkingDate = '';
-                        if (Item.PrevWorkingAction != undefined && Item.PrevWorkingAction != '' && Item.PrevWorkingAction?.length > 0) {
-                          Item.PrevWorkingAction?.map((workingMember: any) => {
-                            if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
-                              workingMember?.InformationData?.map((workingDetails: any) => {
-                                if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
-                                  let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
-                                  WorkingDate?._d.setHours(0, 0, 0, 0)
-                                  if (user?.dates != undefined && user?.dates?.length > 0) {
-                                    user?.dates.map((Time: any) => {
-                                      if (Time?.ServerDate?.getTime() == WorkingDate?._d.getTime()) {
-                                        Time.Tasks = Time?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
-                                        Time.TotalTask = Time?.Tasks?.length;
-                                        Time.TotalEstimatedTime -= Item?.EstimatedTime;
-                                        user.Tasks = Time?.Tasks
-                                        user.TotalTask = Time?.TotalTask
-                                        user.TotalEstimatedTime -= Time?.TotalEstimatedTime
-                                      }
-                                    })
+                else {
+                  DashboardConfig?.forEach((item: any) => {
+                    if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
+                      if (item?.Tasks != undefined) {
+                        item?.Tasks.map((user: any) => {
+                          // if (user?.AssingedToUserId == sourceUser?.AssingedToUserId) {
+                          if (config?.TileName != 'WorkingToday')
+                            Item.WorkingDate = '';
+                          if (Item.PrevWorkingAction != undefined && Item.PrevWorkingAction != '' && Item.PrevWorkingAction?.length > 0) {
+                            Item.PrevWorkingAction?.map((workingMember: any) => {
+                              if (workingMember?.InformationData != undefined && workingMember?.Title != undefined && workingMember?.Title == 'WorkingDetails' && workingMember?.InformationData?.length > 0) {
+                                workingMember?.InformationData?.map((workingDetails: any) => {
+                                  if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                                    let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
+                                    WorkingDate?._d.setHours(0, 0, 0, 0)
+                                    if (user?.dates != undefined && user?.dates?.length > 0) {
+                                      user?.dates.map((Time: any) => {
+                                        if (Time?.ServerDate?.getTime() == WorkingDate?._d.getTime()) {
+                                          Time.Tasks = Time?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                                          Time.TotalTask = Time?.Tasks?.length;
+                                          Time.TotalEstimatedTime -= Item?.EstimatedTime;
+                                          user.Tasks = Time?.Tasks
+                                          user.TotalTask = Time?.TotalTask
+                                          user.TotalEstimatedTime -= Time?.TotalEstimatedTime
+                                        }
+                                      })
+                                    }
                                   }
-                                }
-                              })
+                                })
+                              }
+                            })
+                          }
+                          //}
+                        });
+                        if ((sourceUser?.AssingedToUserId == undefined || sourceUser?.AssingedToUserId == '') && config?.TileName != 'WorkingToday' && config?.IsImmediateTask != "Immediate" && config?.IsBottleneckTask != "Bottleneck") {
+                          item.Tasks = item?.Tasks?.filter((Task: any) => Task?.Id != Item.Id);
+                        }
+                        if (DragDropType == "Un-Assigned" && item?.Tasks[0] != undefined && item?.Tasks[0]?.dates?.length > 0 && item?.Tasks[0]?.dates[0]?.Tasks != undefined && item?.Tasks[0]?.dates[0]?.Tasks?.length > 0) {
+                          item.Tasks[0].dates[0].Tasks = item?.Tasks[0]?.dates[0]?.Tasks?.filter((Task: any) => Task?.Id != Item.Id);
+                        }
+                      }
+                    }
+                    if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle && !isTaskItemExists(item?.Tasks, Item)) {
+                      item?.Tasks.push(Item)
+                    }
+                  });
+                  DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+                  DashboardConfigCopy?.map((Config: any) => {
+                    if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+                      Config?.Tasks?.map((Date: any) => {
+                        if (Date?.dates != undefined && Date?.dates?.length > 0) {
+                          Date?.dates?.map((Time: any) => {
+                            if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
+                              Time.ServerDate = Moment(Time?.ServerDate)
+                              Time.ServerDate = Time.ServerDate?._d;
+                              Time.ServerDate.setHours(0, 0, 0, 0)
                             }
                           })
                         }
-                        //}
                       });
-                      if ((sourceUser?.AssingedToUserId == undefined || sourceUser?.AssingedToUserId == '') && config?.TileName != 'WorkingToday' && config?.IsImmediateTask != "Immediate" && config?.IsBottleneckTask != "Bottleneck") {
-                        item.Tasks = item?.Tasks?.filter((Task: any) => Task?.Id != Item.Id);
-                      }
-                      if (DragDropType == "Un-Assigned" && item?.Tasks[0] != undefined && item?.Tasks[0]?.dates?.length > 0 && item?.Tasks[0]?.dates[0]?.Tasks != undefined && item?.Tasks[0]?.dates[0]?.Tasks?.length > 0) {
-                        item.Tasks[0].dates[0].Tasks = item?.Tasks[0]?.dates[0]?.Tasks?.filter((Task: any) => Task?.Id != Item.Id);
-                      }
+                    }
+                  });
+                  if (count == UpdatedItem?.length) {
+                    try {
+                      setShowDateSelection(false);
+                      setSelectedWorkingDate(false)
+                      SelectedWorkingDates = [];
+                      if (childRef?.current != undefined)
+                        childRef?.current?.setRowSelection({});
+                      setRefSelectedItem([])
+                    } catch (e) {
+                      console.log(e)
                     }
                   }
-                  if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle && !isTaskItemExists(item?.Tasks, Item)) {
-                    item?.Tasks.push(Item)
-                  }
-                });
-                DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
-                DashboardConfigCopy?.map((Config: any) => {
-                  if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
-                    Config?.Tasks?.map((Date: any) => {
-                      if (Date?.dates != undefined && Date?.dates?.length > 0) {
-                        Date?.dates?.map((Time: any) => {
-                          if (Time?.ServerDate != undefined && Time?.ServerDate != '') {
-                            Time.ServerDate = Moment(Time?.ServerDate)
-                            Time.ServerDate = Time.ServerDate?._d;
-                            Time.ServerDate.setHours(0, 0, 0, 0)
-                          }
-                        })
-                      }
-                    });
-                  }
-                });
-                if (count == UpdatedItem?.length) {
-                  try {
-                    if (childRef?.current != undefined)
-                      childRef?.current?.setRowSelection({});
-                    setRefSelectedItem([])
-                  } catch (e) {
-                    console.log(e)
-                  }
+                  setActiveTile(Tile?.activeTile)
+                  rerender();
                 }
-                setActiveTile(Tile?.activeTile)
-                rerender();
-              }
-            }).catch((err: any) => {
-              console.log(err);
-            })
+              }).catch((err: any) => {
+                console.log(err);
+              })
+            }
           }
         })
       }
@@ -2092,12 +2124,6 @@ const TaskStatusTbl = (Tile: any) => {
       </div>
     );
   }
-  const handlAction = () => {
-    setControlledVisible(true);
-  }
-  const handleMouseLeave = () => {
-    setControlledVisible(false)
-  }
   const tableCall = (config: any, smartFavTableConfig: any) => {
     return (
       <>
@@ -2125,7 +2151,7 @@ const TaskStatusTbl = (Tile: any) => {
                 {(config?.DataSource == 'Tasks' || config?.DataSource == 'Project') && <div className="workingSec empAllSec clearfix">
                   <div className="alignCenter mb-2 justify-content-between">
                   </div>
-                  <div className="Alltable" draggable={true} onDragStart={(e) => handleDragStart(e, config, '')} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
+                  <div className="Alltable" draggable={true} onDragStart={(e) => handleDragStart(e, config, '')} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config, false)} >
                     {config?.Tasks != undefined && config?.Tasks?.length > 0 &&
                       tableCall(config, smartFavTableConfig)
                     }
@@ -2381,6 +2407,36 @@ const TaskStatusTbl = (Tile: any) => {
       </>
     );
   };
+  const ExampleCustomInputWorkingDate = React.forwardRef(
+    ({ value, onClick }: any, ref: any) => (
+      <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
+        <input type="text" id="Startdatepicker" autoComplete="off" data-input-type="Working Date" className="form-control date-picker ps-2" placeholder="DD/MM/YYYY" value={value} />
+        <span style={{ position: "absolute", top: "50%", right: "7px", transform: "translateY(-50%)", cursor: "pointer", }} >
+          <span className="svg__iconbox svg__icon--calendar"></span>
+        </span>
+      </div>
+    )
+  );
+  const CancelDateSelection = () => {
+    setShowDateSelection(false);
+  }
+  const SelectWorkingDate = (event: any, item: any) => {
+    if (event?.target.checked == true) {
+      SelectedWorkingDates?.push(item)
+    }
+    else {
+      SelectedWorkingDates = SelectedWorkingDates?.filter((e: any) => e?.ServerDate != item?.ServerDate)
+    }
+    if (SelectedWorkingDates?.length > 0)
+      setSelectedWorkingDate(true)
+    else
+      setSelectedWorkingDate(false)
+  }
+  const SaveDateSelection = () => {
+    setShowDateSelection(false);
+    let Config: any = DashboardConfig.filter((item: any) => item.IsWorkingWeekTask == true)[0];
+    onDropTable('', '', Config, true)
+  }
   return (
     <>
       <div>
@@ -2403,6 +2459,32 @@ const TaskStatusTbl = (Tile: any) => {
           {IsTimeEntry && (
             <TimeEntryPopup props={TimeComponent} CallBackTimeEntry={TimeEntryCallBack} Context={ContextData?.propsValue?.Context}  ></TimeEntryPopup>
           )}
+        </span>
+        <span>
+          <Modal className='border-0 boxshadow  rounded-0 smartpopopbox' show={ShowDateSelection} onHide={() => CancelDateSelection()} dialogClassName="modal-90w" aria-labelledby="example-custom-modal-styling-title" centered>
+            <div className="fade modal-backdrop show"></div>
+            <div className='modal-header'>
+              <span className='m-0 subheading '>
+                Select Working Date
+              </span>
+              <span className="ml-auto" ></span>
+              <span className=' valign-middle' ><i onClick={() => CancelDateSelection()} className="svg__iconbox svg__icon--cross dark crossBtn"></i></span>
+            </div>
+            <Modal.Body>
+              <div className='align-items-center justify-content-between p-2 select-date'>
+                {SelectedDateRange?.length > 0 &&
+                  SelectedDateRange.map((items: any, index: number) => (
+                    index !== 0 && index <= 5 && (
+                      <div key={index} className="alignCenter bg-ee mb-2 p-1 rounded-1">
+                        <input type="checkbox" checked={items?.SelectedDate} className="form-check-input me-1" onChange={(e) => SelectWorkingDate(e, items)} />
+                        <span>{items?.DisplayDate}</span>
+                      </div>
+                    )
+                  ))}
+              </div>
+              <div className='p-2 text-end'><button onClick={() => SaveDateSelection()} disabled={SelectedWorkingDate == false} className='btn btn-primary me-2 mb-2'>Save</button></div>
+            </Modal.Body>
+          </Modal>
         </span>
       </div>
       {
