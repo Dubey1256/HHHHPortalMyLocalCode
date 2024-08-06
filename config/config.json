@@ -531,6 +531,14 @@
         }
       ]
     },
+    "gmbh-home-page-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/gmbhHomePage/GmbhHomePageWebPart.js",
+          "manifest": "./src/webparts/gmbhHomePage/GmbhHomePageWebPart.manifest.json"
+        }
+      ]
+    },
     "eod-report-web-part": {
       "components": [
         {
@@ -547,11 +555,11 @@
         }
       ]
     },
-    "gmbh-home-page-web-part": {
+    "import-task-portfolio-items-web-part": {
       "components": [
         {
-          "entrypoint": "./lib/webparts/gmbhHomePage/GmbhHomePageWebPart.js",
-          "manifest": "./src/webparts/gmbhHomePage/GmbhHomePageWebPart.manifest.json"
+          "entrypoint": "./lib/webparts/importTaskPortfolioItems/ImportTaskPortfolioItemsWebPart.js",
+          "manifest": "./src/webparts/importTaskPortfolioItems/ImportTaskPortfolioItemsWebPart.manifest.json"
         }
       ]
     }
@@ -649,8 +657,8 @@
     "ContentEditingDocumentsWebPartStrings": "lib/webparts/contentEditingDocuments/loc/{locale}.js",
     "ManageWebpartTemplateWebPartStrings": "lib/webparts/manageWebpartTemplate/loc/{locale}.js",
     "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js",
+    "GmbhHomePageWebPartStrings": "lib/webparts/gmbhHomePage/loc/{locale}.js",
     "EodReportWebPartStrings": "lib/webparts/eodReport/loc/{locale}.js",
-    "ManageQuestionWebPartStrings": "lib/webparts/manageQuestion/loc/{locale}.js",
-    "GmbhHomePageWebPartStrings": "lib/webparts/gmbhHomePage/loc/{locale}.js"
+    "ImportTaskPortfolioItemsWebPartStrings": "lib/webparts/importTaskPortfolioItems/loc/{locale}.js"
   }
 }

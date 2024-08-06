@@ -16,7 +16,7 @@ const GmbhHomePage = (props: any): any => {
     let web = new Web(props?.props?.siteUrl);
     const currentUrl = window.location.href;
     var match = currentUrl.match(/\/([^/]+\.aspx)(\?.*)?$/);
-     let checkValueAfterLastSlash = match ? match[1] : null;
+    let checkValueAfterLastSlash = match ? match[1] : null;
     let valueAfterLastSlash = checkValueAfterLastSlash;
     try {
       await web.lists

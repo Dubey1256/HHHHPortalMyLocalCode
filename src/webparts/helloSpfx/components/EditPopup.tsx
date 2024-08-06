@@ -622,7 +622,7 @@ const EditPopup = (props: any) => {
                             
                             </div>
                             <div>
-                                 <label className="label--checkbox">
+                                 <label className="label--checkbox" style={{width:"150px"}}>
                                     <input
                                         className="form-control"
                                         type="text"
