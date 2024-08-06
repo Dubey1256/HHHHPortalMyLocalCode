@@ -2166,6 +2166,37 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                     }
                                 })
                             }
+                            if (TNC?.percentComplete == Status && TNC?.NotificationType == "Lead") {
+                                ItemDetails?.TaskCategories?.map((item: any) => {
+                                    if ((TNC.Category?.includes(item.Title) || TNC?.Category?.includes('All')) && TNC?.notifygroupname != undefined) {
+                                        const groupArray = TNC?.notifygroupname.split(',').map((item: any) => item.trim());
+                                        if (ItemDetails?.TeamMembers != undefined) {
+                                            AllTaskUser?.map((TaskUserData: any) => {
+                                                ItemDetails?.TeamMembers?.map((teamMembersData: any) => {
+                                                    groupArray?.map((groupArrayData: any) => {
+                                                        if (teamMembersData.Id == TaskUserData.AssingedToUserId && groupArrayData == TaskUserData.TimeCategory) {
+                                                            leadArray.push(TaskUserData);
+                                                        }
+
+                                                    });
+                                                });   
+                                            });
+
+                                        }
+
+                                        if (!TNC?.Category?.includes('All') && TNC.Category?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
+                                            //Alina
+                                            TNC.Notifier.map((user: any) => {
+                                                AllTaskUser?.map((TaskUserData: any) => {
+                                                    if (user.Id == TaskUserData.AssingedToUserId)
+                                                        leadArray.push(TaskUserData);
+                                                })
+                                            });
+                                            ItemDetails.ResponsibleTeamMembers = leadArray
+                                        }
+                                    }
+                                })
+                            }
                         }
                     })
                 }

@@ -2988,9 +2988,9 @@ const loadAllPXTimeEntries = async () => {
                                     <dl>
                                         <dt className="bg-fxdark">Total PX Time</dt>
                                         <dd className="bg-light">
-                                          {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime} hrs;`}</span>}
-                                          {(monthTotalTime != undefined && monthTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime} hrs; `}</span>}
-                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime} hrs; `}</span>}
+                                          {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime.toFixed(2)} hrs; `}</span>}
+                                          {(monthTotalTime != undefined && monthTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime.toFixed(2)} hrs; `}</span>}
+                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime.toFixed(2)} hrs; `}</span>}
                                           <a className="smartTotalTime hover-text m-0 float-end" onClick={() => loadAllPXTimeEntries()}><BsClock/><span className='tooltip-text pop-left'>Load Time Entries</span></a>
                                         </dd>
                                       </dl>
