@@ -1238,7 +1238,10 @@ const loadAllPXTimeEntries = async () => {
       let groupedDataItems = globalCommon.deepCopy(backupTableData);
       let flattenedData = flattenData(groupedDataItems)
       PXTasks = flattenedData.filter((item: any) => item.TaskType)
-      totalTime = PXTasks?.reduce((total: any, time: any) => total + time.TotalTime, 0);
+      totalTime = PXTasks?.reduce((total: any, time: any) => {
+        const taskTime = time.TotalTime || 0;
+        return total + taskTime;
+      }, 0);
       totalTime = totalTime/60;
       totalTime = totalTime.toFixed(2)
       setTaskTaggedPortfolios(taskTaggedComponents)
