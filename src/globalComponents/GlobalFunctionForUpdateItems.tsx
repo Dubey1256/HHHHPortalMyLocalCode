@@ -2065,6 +2065,7 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
             console.log("Task Notification Configuration ResponseData =================== :", ResponseData);
             let TaskNotificationConfig: any = [];
             const filterNotificationData: any = [];
+            let leadArray :any=[]
             ResponseData?.map((TNMItem: any) => {
                 if (TNMItem?.Title == "TaskNotificationConfigComponent") {
                     TaskNotificationConfig = JSON.parse(TNMItem.ConfigrationJSON);
