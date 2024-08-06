@@ -8,6 +8,7 @@ import * as Moment from "moment";
 import { ColumnDef } from '@tanstack/react-table';
 import { data } from 'jquery';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import PageLoader from '../../../globalComponents/pageLoader';
 let BriefwahlBatches: any = [];
 let allListId: any = {};
 let CopyAllExceldata: any = []
@@ -173,12 +174,12 @@ const ImportExcel = (props: any) => {
     }
 
     var showProgressBar = () => {
-        setLoaded(false)
+        setLoaded(true)
         $(' #SpfxProgressbar').show();
     }
 
     var showProgressHide = () => {
-        setLoaded(true)
+        setLoaded(false)
         $(' #SpfxProgressbar').hide();
     }
 
@@ -269,9 +270,9 @@ const ImportExcel = (props: any) => {
     )
     return (
         <><div className="container">
-            <div id="SpfxProgressbar" style={{ display: "none" }}>
+            {/* <div id="SpfxProgressbar" style={{ display: "none" }}>
                 <img id="sharewebprogressbar-image" src={`${allListId?.jointSiteUrl}/sp/SiteCollectionImages/ICONS/32/loading_apple.gif`} alt="Loading..." />
-            </div>
+            </div> */}
             <header className="page-header">
                 <h3 className="page-title heading">Import Tasks/Components</h3>
             </header>
@@ -282,7 +283,8 @@ const ImportExcel = (props: any) => {
                 </span>
             </div>
             <div className='Alltable'>
-                <GlobalCommanTable columns={column} data={AllExceldata} callBackData={callBackData} showHeader={true} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} />
+                <GlobalCommanTable columns={column} data={AllExceldata} callBackData={callBackData} setLoaded={setLoaded} showHeader={true} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} />
+                {loaded && <PageLoader />}
             </div>
             {/* <Panel onRenderHeader={onRenderCustomHeaderContactPopup}
                 isOpen={showpopup}
