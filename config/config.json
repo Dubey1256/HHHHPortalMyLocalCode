@@ -522,6 +522,14 @@
         }
       ]
     },
+    "root-update-top-navigation-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/rootUpdateTopNavigation/RootUpdateTopNavigationWebPart.js",
+          "manifest": "./src/webparts/rootUpdateTopNavigation/RootUpdateTopNavigationWebPart.manifest.json"
+        }
+      ]
+    },
     "eod-report-web-part": {
       "components": [
         {
@@ -623,6 +631,7 @@
     "ContentEditingDocumentsWebPartStrings": "lib/webparts/contentEditingDocuments/loc/{locale}.js",
     "ManageWebpartTemplateWebPartStrings": "lib/webparts/manageWebpartTemplate/loc/{locale}.js",
     "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js",
+    "RootUpdateTopNavigationWebPartStrings": "lib/webparts/rootUpdateTopNavigation/loc/{locale}.js",
     "EodReportWebPartStrings": "lib/webparts/eodReport/loc/{locale}.js"
 
 
