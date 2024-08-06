@@ -165,11 +165,11 @@ const EmailComponent = (props: any) => {
               <tbody>
                   <tr>
                     <td style={{ border: 'none', background: '#fff', color: "#f333", padding: '.75pt .75pt .75pt .75pt' }}>
-                      <b style={{ marginBottom: '1.25pt' }}><div style={{fontFamily: 'Segoe UI Dark', fontSize: '10.0pt', color: 'black' }} >Task Details :</div></b>
+                      <b style={{ marginBottom: '1.25pt' }}><div style={{fontFamily:'Segoe UI', fontSize: '10.0pt', color: 'black' }} >Task Details :</div></b>
                     </td>
                   </tr>
                 <tr>
-                  <td align="left" valign="middle" style={{border: "1px solid #ccc", fontFamily:" Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                  <td align="left" valign="middle" style={{border: "1px solid #ccc", fontFamily:"Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
                     <span style={{ fontSize: '10.0pt', color: 'black' }}>Task Id:</span>
                   </td>
                   <td colSpan={2} style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderTop: "1px solid #ccc", fontFamily:" Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
@@ -248,21 +248,21 @@ const EmailComponent = (props: any) => {
                   <td style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily:" Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
                   <span style={{ fontSize: '10.0pt', color: 'black' }}>Status:</span>
                   </td>
-                  <td colSpan={2} style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily:" Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                  <td colSpan={2} style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily:"Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
                     {props?.items["Status"]}
                   </td>
-                  <td style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily:" Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                  <td style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily:"Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
                     <span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span>
                   </td>
-                  <td colSpan={2} style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily:" Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                  <td colSpan={2} style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily:"Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
                     {props?.items["PercentComplete"]}
                   </td>
                 </tr>
                 <tr>
-                  <td style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderLeft: "1px solid #ccc", fontFamily:" Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                  <td style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderLeft: "1px solid #ccc", fontFamily:"Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
                     <span style={{ fontSize: '10.0pt', color: 'black' }}>URL:</span>
                   </td>
-                  <td colSpan={7} style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily:" Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                  <td colSpan={8} style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily:"Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
                     <span style={{ fontSize: '10.0pt', color: 'black' }}>
                       {props?.items["ComponentLink"] != null &&
                         <a href={props?.items["ComponentLink"].Url} target="_blank">{props?.items["ComponentLink"].Url}</a>
@@ -270,10 +270,10 @@ const EmailComponent = (props: any) => {
                   </td>
                 </tr>
                 <tr>
-                  <td style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderLeft: "1px solid #ccc", fontFamily:" Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
+                  <td style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", borderLeft: "1px solid #ccc", fontFamily:"Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#f4f4f4" }}>
                     <span style={{ fontSize: '10.0pt', color: 'black' }}>Smart Priority:</span>
                   </td>
-                  <td colSpan={7} style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily:" Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
+                  <td colSpan={8} style={{borderBottom: "1px solid #ccc", borderRight: "1px solid #ccc", fontFamily:"Segoe UI", padding: "8px", fontSize: "13px", backgroundColor: "#fafafa" }}>
                     {props?.items["SmartPriority"]}
                   </td>
                 </tr>

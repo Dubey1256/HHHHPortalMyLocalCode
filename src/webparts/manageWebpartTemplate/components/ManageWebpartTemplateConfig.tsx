@@ -101,7 +101,7 @@ const ManageWebpartTemplateConfig = (props: any) => {
                 accessorFn: (row: any) => row?.WebpartTitle,
                 cell: ({ row }: any) => (
                     <div className="alignCenter">
-                        {row?.original?.WebpartTitle} {row?.original?.ShowTitleInHeader == true ? ' - {User Name}' : ''}
+                        {row?.original?.WebpartTitle} {row?.original?.ShowTitleInHeader == true ? ` - ${props?.props?.Context?.pageContext?.user?.displayName}` : ''}
                     </div>
                 ),
                 id: "WebpartTitle",

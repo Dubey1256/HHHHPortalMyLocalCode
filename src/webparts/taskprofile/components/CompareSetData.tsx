@@ -7,6 +7,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { BiInfoCircle } from 'react-icons/bi';
+import Tooltip from '../../../globalComponents/Tooltip';
 let arrayOfChar = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',]
 const CompareSetData = (props: any) => {
 
@@ -29,7 +30,7 @@ const CompareSetData = (props: any) => {
         return (
             <div className="d-flex full-width pb-1">
                 <div className="subheading siteColor"></div>
-                {/* <Tooltip ComponentId="6776" isServiceTask={ServicesTaskCheck} /> */}
+                {/* <Tooltip ComponentId="8591"/> */}
             </div>
         );
     };

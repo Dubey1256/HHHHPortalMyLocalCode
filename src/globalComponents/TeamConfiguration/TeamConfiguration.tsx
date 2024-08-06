@@ -585,6 +585,19 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                     })
                 })
             }
+            if(dragItem.userType=='TeamMemberUsers'){
+                this.state.TeamMemberUsers.some((user: any,index:any) => {
+                    if (user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id){
+                        this.state.TeamMemberUsers.splice(index,1)
+                    } })}
+     
+            if(dragItem.userType=="ResponsibleTeam"){
+                        this.state.ResponsibleTeam.some((user: any,index:any) => {
+                            if (user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id){
+                                this.state.ResponsibleTeam.splice(index,1)
+                            }
+                         })
+            }
             let userExistsWorkingDates = this.state.datesInfo.some((item: any) =>
                 item?.userInformation.some((user: any) =>
                     user?.AssingedToUser?.Id == dragItem?.user?.AssingedToUser?.Id
@@ -1004,5 +1017,4 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         );
     }
 }
-
 export default TeamConfigurationCard;

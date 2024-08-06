@@ -4,12 +4,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { arraysEqual, Modal, Panel, PanelType } from "office-ui-fabric-react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import Tooltip from "../../../globalComponents/Tooltip";
-import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+//import Tooltip from "../../../globalComponents/Tooltip";
+//import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import { ColumnDef } from "@tanstack/react-table";
 import * as Moment from "moment";
 import { data } from "jquery";
-import VersionHistory from "../../../globalComponents/VersionHistroy/VersionHistory";
+//import VersionHistory from "../../../globalComponents/VersionHistroy/VersionHistory";
 var ParentData: any = [];
 var childData: any = [];
 var newData: any = "";
@@ -107,20 +107,18 @@ const TopNavigation = (dynamicData: any) => {
   const loadTopNavigation = async () => {
     var TaskTypeItems: any = [];
     var Nodes: any = [];
-    let web = new Web(dynamicData.dynamicData.siteUrl);
+    let web = new Web(dynamicData?.dynamicData?.siteUrl);
 
     TaskTypeItems = await web.lists
-      .getById(ListId)
+      .getById(dynamicData?.dynamicData?.TopNavigationListID)
       .items.select(
         "ID",
         "Id",
         "Title",
         "href",
-        "ParentID",
-        "Order0",
+        "Parent/ID",
+        "Parent/Title",
         "SortOrder",
-        "ownersonly",
-        "IsVisible",
         "Modified",
         "Created",
         "Author/Id",
@@ -128,48 +126,42 @@ const TopNavigation = (dynamicData: any) => {
         "Editor/Id",
         "Editor/Title"
       )
-      .expand("Editor,Author")
+      .expand("Editor,Author,Parent")
       .top(4999)
       .get();
     console.log(TaskTypeItems);
+    let myData:any=[]
     TaskTypeItems?.forEach((item: any) => {
       item.Title = item?.Title?.replace(/\b\w/g, (match:any) => match.toUpperCase());
-      if (item.ownersonly == true) {
-        item.image =`${dynamicData?.dynamicData?.siteUrl}/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png`;
-      }
-      if (item.IsVisible == false) {
-        item.image =
-        `${dynamicData?.dynamicData?.siteUrl}/SitecollectionImages/ICONS/24/do-not-disturb-rounded.png`;
-      }
-      if (item.ParentID == 0) {
-        item.Id = item.ID;
+      if (item?.Parent?.ID == 75 || item?.ID == 75) {
         getChilds(item, TaskTypeItems);
-        Nodes.push(item);
+        myData.push(item)
       }
     });
-    console.log(Nodes);
-    var AllData = Nodes.sort((a:any, b:any) => a.SortOrder - b.SortOrder);
-    AllData.map((val:any)=>{
-        val.childs =  val?.childs.sort((a:any, b:any) => a.SortOrder - b.SortOrder);
-    })
+    setRoot(myData)
+    console.log(myData);
+    var AllData = myData.sort((a:any, b:any) => a.SortOrder - b.SortOrder);
+    // AllData.map((val:any)=>{
+    //     val.childs =  val?.childs.sort((a:any, b:any) => a.SortOrder - b.SortOrder);
+    // })
     setRoot(AllData);
   };
   const getChilds = (item: any, items: any) => {
     item.childs = [];
     items?.forEach((childItem: any) => {
       if (
-        childItem.ParentID != undefined &&
-        parseInt(childItem.ParentID) == item.ID
+        childItem.Parent?.ID != undefined &&
+        parseInt(childItem.Parent?.ID) == item.ID
       ) {
-        if (childItem.ownersonly == true) {
-          childItem.image =
-          item.image =`${dynamicData.dynamicData.siteUrl}/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png`;
+        // if (childItem.ownersonly == true) {
+        //   childItem.image =
+        //   item.image =`${dynamicData.dynamicData?.siteUrl}/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png`;
 
-        }
-        if (childItem.IsVisible == false) {
-          childItem.image =
-          `${dynamicData.dynamicData.siteUrl}/SitecollectionImages/ICONS/24/do-not-disturb-rounded.png`;
-        }
+        // }
+        // if (childItem.IsVisible == false) {
+        //   childItem.image =
+        //   `${dynamicData.dynamicData?.siteUrl}/SitecollectionImages/ICONS/24/do-not-disturb-rounded.png`;
+        // }
         item.childs.push(childItem);
         getChilds(childItem, items);
       }
@@ -218,7 +210,7 @@ const TopNavigation = (dynamicData: any) => {
     return (
       <>
         <div className="subheading siteColor">Update TopNavigation</div>
-        <Tooltip ComponentId="1810" />
+        {/* <Tooltip ComponentId="1810" /> */}
       </>
     );
   };
@@ -226,7 +218,7 @@ const TopNavigation = (dynamicData: any) => {
     return (
       <>
         <div className="subheading siteColor">Add TopNavigation</div>
-        <Tooltip ComponentId="1810" />
+        {/* <Tooltip ComponentId="1810" /> */}
       </>
     );
   };
@@ -234,7 +226,7 @@ const TopNavigation = (dynamicData: any) => {
     return (
       <>
         <div className="subheading siteColor">Update SortOrder</div>
-        <Tooltip ComponentId="1810" />
+        {/* <Tooltip ComponentId="1810" /> */}
       </>
     );
   };
@@ -242,7 +234,7 @@ const TopNavigation = (dynamicData: any) => {
     return (
       <>
         <div className="subheading siteColor">Select Parent</div>
-        <Tooltip ComponentId="1810" />
+        {/* <Tooltip ComponentId="1810" /> */}
       </>
     );
   };
@@ -275,8 +267,6 @@ const TopNavigation = (dynamicData: any) => {
               ? item?.href.Url
               : "",
         },
-        IsVisible: isVisible,
-        ownersonly: owner,
       })
       .then((i) => {
         console.log(i);
@@ -296,35 +286,35 @@ const TopNavigation = (dynamicData: any) => {
     });
   };
   const deleteDataFunction = async (item: any, type: any) => {
-    if (item?.childs.length > 0 && type == 'single') {
-      item?.childs?.map((items: any) => {
-        items.value = items.Title
-        items.label = items.Title
-        items.children = items?.childs
-        items.checked = true
-      })
-      const filteredData = uniqueBy(item?.childs, 'odata.id');
-      if (filteredData != undefined) {
-        filteredData?.map((items: any) => {
-          items.children?.map((val: any) => {
-            val.value = val.Title
-            val.label = val.Title
-            val.children = val?.childs
-            val.checked = true;
-          })
+    // if (item?.childs.length > 0 && type == 'single') {
+    //   item?.childs?.map((items: any) => {
+    //     items.value = items.Title
+    //     items.label = items.Title
+    //     items.children = items?.childs
+    //     items.checked = true
+    //   })
+    //   const filteredData = uniqueBy(item?.childs, 'odata.id');
+    //   if (filteredData != undefined) {
+    //     filteredData?.map((items: any) => {
+    //       items.children?.map((val: any) => {
+    //         val.value = val.Title
+    //         val.label = val.Title
+    //         val.children = val?.childs
+    //         val.checked = true;
+    //       })
 
-        })
-      }
-      ClosePopup();
-      setDeletePopupData(filteredData)
-      setDeletePopup(true)
-    }
-    else {
+    //     })
+    //   }
+    //   ClosePopup();
+    //   setDeletePopupData(filteredData)
+    //   setDeletePopup(true)
+    // }
+    
       var deleteConfirmation = confirm("Are you sure, you want to delete this?");
       if (deleteConfirmation) {
         let web = new Web(dynamicData.dynamicData.siteUrl);
         await web.lists
-          .getById(ListId)
+          .getById(dynamicData.dynamicData?.TopNavigationListID)
           .items.getById(item.Id)
           .delete()
           .then((i) => {
@@ -333,20 +323,20 @@ const TopNavigation = (dynamicData: any) => {
             loadTopNavigation();
           });
       }
-    }
+    
 
   };
 
   const Additem = async () => {
     if (popupData[0] == "New") {
-      popupData[0] = { ID: 0 };
+      popupData[0] = { ID: 75 };
     }
     let web = new Web(dynamicData.dynamicData.siteUrl);
     await web.lists
-      .getById(ListId)
+      .getById(dynamicData?.dynamicData?.TopNavigationListID)
       .items.add({
         Title: postData.Title,
-        ParentID:
+        ParentId:
           postData.Id != undefined && postData.Id != ""
             ? postData.Id
             : popupData[0]?.ID,
@@ -360,9 +350,7 @@ const TopNavigation = (dynamicData: any) => {
             postData.Url != undefined && postData.Url != ""
               ? postData.Url
               : popupData[0]?.href != undefined && popupData[0]?.href != null ? popupData[0]?.href.Url : '',
-        },
-        IsVisible: isVisible,
-        ownersonly: owner,
+        }
       })
       .then((res: any) => {
         console.log(res);
@@ -437,7 +425,7 @@ const TopNavigation = (dynamicData: any) => {
     let web = new Web(dynamicData.dynamicData.siteUrl);
 
     await web.lists
-      .getById(ListId)
+      .getById(dynamicData.dynamicData?.TopNavigationListID)
       .items.getById(sortId)
       .update({
         SortOrder: sortOrder,
@@ -601,7 +589,7 @@ const TopNavigation = (dynamicData: any) => {
     return (
       <>
         <div className="subheading siteColor">Select items for delete</div>
-        <Tooltip ComponentId="1810" />
+        {/* <Tooltip ComponentId="1810" /> */}
       </>
     );
   };
@@ -658,17 +646,12 @@ const TopNavigation = (dynamicData: any) => {
                       className="alignIcon svg__iconbox svg__icon--editBox"
                       onClick={() => editPopup(item,'Parent')}
                     ></span>
-                   
-                    {/* <span
-                      className="svg__iconbox svg__icon--trash"
-                      onClick={() => deleteDataFunction(item)}
-                    ></span> */}
                   </span>
                   <ul className="sub-menu">
                     <li onClick={() => AddNewItem(item)}>
                       <span className="alignIcon  svg__iconbox svg__icon--Plus"></span> Add Level{" "}
                     </li>
-                    {item.childs?.map((child: any) => {
+                    {item?.childs?.map((child: any) => {
                       return (
                         <>
                           <li className="pre">
@@ -706,7 +689,7 @@ const TopNavigation = (dynamicData: any) => {
                                 <span className="alignIcon  svg__iconbox svg__icon--Plus"></span>{" "}
                                 Add Level{" "}
                               </li>
-                              {child.childs?.map((subchild: any) => {
+                              {child?.childs?.map((subchild: any) => {
                                 return (
                                   <>
                                     <li className="pre">
@@ -754,7 +737,7 @@ const TopNavigation = (dynamicData: any) => {
                                           ></span>{" "}
                                           Add Level{" "}
                                         </li>
-                                        {subchild.childs?.map(
+                                        {subchild?.childs?.map(
                                           (subchildLast: any) => {
                                             return (
                                               <>
@@ -914,7 +897,7 @@ const TopNavigation = (dynamicData: any) => {
               </span>
             </div> */}
             <div className="col-sm-5">
-  <span className="col-sm-2">
+  {/* <span className="col-sm-2">
     <label className="rediobutton">
       <span className="SpfxCheckRadio">
         <input
@@ -941,9 +924,9 @@ const TopNavigation = (dynamicData: any) => {
         No Show
       </span>
     </label>
-  </span>
+  </span> */}
 </div>
-            <div className="col-sm-5">
+            {/* <div className="col-sm-5">
               <div className="form-group">
                 <label>
                   <input
@@ -954,7 +937,7 @@ const TopNavigation = (dynamicData: any) => {
                   Facilitators Only
                 </label>
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="row mt-2">
             <div className="col-sm-2">
@@ -1031,9 +1014,9 @@ const TopNavigation = (dynamicData: any) => {
                   className="alignIcon  svg__iconbox svg__icon--trash"
                   onClick={() => deleteDataFunction(popupData[0], 'single')}
                 ></span>
-                    <span className="text-left" onClick={()=>setVersionHistoryPopup(false)}>
+                    {/* <span className="text-left" onClick={()=>setVersionHistoryPopup(false)}>
                   {popupData[0]?.Id && <VersionHistory taskId={popupData[0]?.Id} listId={ListId} listName = "TopNavigation" siteUrls={dynamicData.dynamicData.siteUrl} RequiredListIds={AllListId} />}
-              </span>
+              </span> */}
               </div>
          
                                 
@@ -1044,7 +1027,7 @@ const TopNavigation = (dynamicData: any) => {
                
                 data-interception="off"
                 target="_blank"
-                href={`${dynamicData.dynamicData.siteUrl}/Lists/TopNavigation/AllItems.aspx`}
+                href={`${dynamicData.dynamicData?.siteUrl}/Lists/TopNavigation/AllItems.aspx`}
               >
                 Open out-of-the-box form
               </a>
@@ -1103,7 +1086,7 @@ const TopNavigation = (dynamicData: any) => {
               </div>
             </div>
           </div>
-          <div className="row mt-2">
+          {/* <div className="row mt-2">
             <div className="col-sm-2">
               <div className="form-group">
                 <label>
@@ -1147,7 +1130,7 @@ const TopNavigation = (dynamicData: any) => {
                 </label>
               </div>
             </div>
-          </div>
+          </div> */}
           <div className="row mt-2">
             <div className="col-sm-2">
               <div className="form-group">
@@ -1512,7 +1495,7 @@ const TopNavigation = (dynamicData: any) => {
               <a
                 data-interception="off"
                 target="_blank"
-                href={`${dynamicData.dynamicData.siteUrl}/Lists/TopNavigation/AllItems.aspx`}
+                href={`${dynamicData.dynamicData?.siteUrl}/Lists/TopNavigation/AllItems.aspx`}
               >
                 Open out-of-the-box form
               </a>

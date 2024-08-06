@@ -144,7 +144,7 @@ export default function InterviewFeedbackForm(props: any) {
             "Configurations": JSON.stringify(AllAvlStatusdata)
         }
         try {
-            await HRweb.lists.getById('2e5ed76d-63ae-4f4a-887a-6d56f0b925c3').items.getById(statusKeyID).update(postData).then((response: any) => {
+            await HRweb.lists.getById('cf944b8b-c657-4476-8313-223febf5bf7c').items.getById(statusKeyID).update(postData).then((response: any) => {
                 setNewStatus('')
             })
         } catch (error) {
@@ -260,7 +260,7 @@ export default function InterviewFeedbackForm(props: any) {
 
     const getCurrentJobTitle = () => {
         let CurrentJobTitle: any
-        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
+        const web = new Web(props?.props?.siteUrl);
         web.lists.getById(props?.props?.SkillsPortfolioListID)
         .items.select('Id', 'Title')
         .filter(`Id eq ${JobPositionId}`).get().then((Job: any) => {
@@ -276,7 +276,7 @@ export default function InterviewFeedbackForm(props: any) {
     }
 
     const getListData = () => {
-        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
+        const web = new Web(props?.props?.siteUrl);
         let query = web.lists
             .getById(props?.props?.InterviewFeedbackFormListId)
             .items.select('Id', 'Title', 'Remarks', 'Motivation','Created','Modified','AuthorId','Author/Title','Editor/Id','Editor/Title' ,'SelectedPlatforms', 'Result', 'CandidateStaffID', 'ActiveInterv', 'Status0', 'IsFavorite', 'CandidateName', 'SkillRatings', 'Positions/Id', 'Positions/Title', 'Platform', 'IsFavorite', 'PhoneNumber', 'Email', 'Experience', 'Current_x0020_Company', 'Date', 'CurrentCTC', 'ExpectedCTC', 'NoticePeriod', 'CurrentLocation', 'DateOfJoining', 'HRNAME')
@@ -340,9 +340,9 @@ export default function InterviewFeedbackForm(props: any) {
     };
 
     const loadAdminConfigurations = () => {
-        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/')
+        const web = new Web(props?.props?.siteUrl)
         web.lists
-            .getById("2e5ed76d-63ae-4f4a-887a-6d56f0b925c3")
+            .getById("cf944b8b-c657-4476-8313-223febf5bf7c")
             .items.select("Id,Title,Value,Key,Description,Configurations")
             .filter(`Key eq 'RecruitmentStatus'`)
             .getAll().then((data: any) => {
@@ -363,7 +363,7 @@ export default function InterviewFeedbackForm(props: any) {
     const delItem = (itm: any) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this item?");
         if (confirmDelete) {
-            const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
+            const web = new Web(props?.props?.siteUrl);
             web.lists
                 .getById(props?.props?.InterviewFeedbackFormListId)
                 .items.getById(itm.Id)
@@ -535,13 +535,47 @@ export default function InterviewFeedbackForm(props: any) {
     const callbackAdd = () => {
         getListData();
     };
+
+    const customTableHeaderButtons = (
+        <>
+        <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => AddPopupOpen()}
+          >
+            Add Candidate
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => AddEditPositionOpen()}
+          >
+            Add/Edit Positions
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={isStatButtonDisabled}
+            onClick={() => openChangeStatus()}
+          >
+            Change Status
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => openModal()}
+          >
+            Add/Remove Status
+          </button>
+        </>   
+    );
     
     
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName, }}>
             <div>
                 <div className='alignCenter'>
-                <h2 className='heading'>{currentJob ? `Recruiting Tool-${currentJob}`: "Recruiting-Tool"}</h2>
+                <h2 className='heading'>{currentJob ? `Recruitment Tool-${currentJob}`: "Recruitment Tool"}</h2>
                 {JobPositionId && <span onClick={() => editPosition(currentjobData)} className='svg__iconbox svg__icon--edit'></span>}
                 <a target='_blank' className='hreflink ml-auto f-14 fw-semibold' data-interception="off" href={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/Recruiting-Tool.aspx'}>Old Recruting Tool</a>
                 </div>
@@ -563,29 +597,23 @@ export default function InterviewFeedbackForm(props: any) {
                         <button onClick={() => handleTabChange('Archive')} className={`nav-link ${activeTab === 'Archive' ?
                             'active' : ''}`} data-bs-target="#ArchiveCandidates" id="profile-tab" type="button" role="tab" aria-controls="profile" aria-selected="false">Archive({ArchiveCandidates.length})</button>
                     </li>
-                    <div className='ml-auto'>
-                        <span className='text-right me-1'><button type='button' className='btnCol btn btn-primary' onClick={() => AddPopupOpen()}>Add Candidate</button></span>
-                        <span className='text-right me-1'><button type='button' className='btnCol btn btn-primary' onClick={() => AddEditPositionOpen()}>Add/Edit Positions</button></span>
-                        <span className='text-right me-1'><button type='button' className='btnCol btn btn-primary' disabled={isStatButtonDisabled} onClick={() => openChangeStatus()}>Change Status</button></span>
-                        <span className='text-right'><button type='button' className='btnCol btn btn-primary' onClick={() => openModal()}>Add/Remove Status</button></span>
-                    </div>
                 </ul>
                 <div className="tab-content border border-top-0 clearfix " id="nav-tabContent">
                     <div className={`tab-pane fade px-1 ${activeTab === 'All Candidates' ? 'show active' : ''}`} id="AllCandidates"
                         role="tabpanel" aria-labelledby="home-tab">
-                        {listData && <div className='Alltable'><GlobalCommanTable columns={columns} data={listData} multiSelect={true} showHeader={true} callBackData={callBackData} showEmailIcon={true}/></div>}
+                        {listData && <div className='Alltable'><GlobalCommanTable columns={columns} data={listData} multiSelect={true} showHeader={true} callBackData={callBackData} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} /></div>}
                     </div>
                     <div className={`tab-pane fade px-1 ${activeTab === 'New Candidates' ? 'show active' : ''}`} id="NewCandidates"
                         role="tabpanel" aria-labelledby="profile-tab">
-                        {NewCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={NewCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} showEmailIcon={true}/></div>}
+                        {NewCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={NewCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons}/></div>}
                     </div>
                     <div className={`tab-pane fade px-1 ${activeTab === 'In Process' ? 'show active' : ''}`} id="inProcessCand"
                         role="tabpanel" aria-labelledby="profile-tab">
-                        {inProcessCand && <div className='Alltable'><GlobalCommanTable columns={columns} data={inProcessCand} multiSelect={true} showHeader={true} callBackData={callBackData} showEmailIcon={true}/></div>}
+                        {inProcessCand && <div className='Alltable'><GlobalCommanTable columns={columns} data={inProcessCand} multiSelect={true} showHeader={true} callBackData={callBackData} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons}/></div>}
                     </div>
                     <div className={`tab-pane fade px-1 ${activeTab === 'Archive' ? 'show active' : ''}`} id="ArchiveCandidates"
                         role="tabpanel" aria-labelledby="profile-tab">
-                        {ArchiveCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={ArchiveCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} showEmailIcon={true}/></div>}
+                        {ArchiveCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={ArchiveCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons}/></div>}
                     </div>
                 </div>
                 {isEditPopupOpen ? <EditPopup siteUrl={props?.props?.siteUrl} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} skillsList={props?.props?.SkillsPortfolioListID} statusData={AllAvlStatusdata}/> : ''}

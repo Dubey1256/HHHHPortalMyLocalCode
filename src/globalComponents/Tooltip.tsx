@@ -8,6 +8,7 @@ import { myContextValue } from './globalCommon'
 import { Web } from "sp-pnp-js";
 import Feedback from 'react-bootstrap/esm/Feedback';
 import CallNotes from './CreateMeetingPopup';
+import AdminHelp from './AdminHelp'
 import * as globalCommon from './globalCommon'
 var completeUrl = ''
 var PageUrl = ''
@@ -24,7 +25,9 @@ var ComponentData: any = {
 function Tooltip(props: any) {
   const [projectId, setprojectId] = React.useState(null)
   const [OpenCallNotes, setOpenCallNotes] = React.useState(false);
+  const [OpenAdminHelp, setOpenAdminHelp] = React.useState(false)
   const [CMSToolComponent, setCMSToolComponent] = React.useState('');
+  const [component, setComponent] = React.useState('')
   const [currentbrowser, setcurrentbrowser] = React.useState('');
   const isServiceTask = props.IsServiceTask;
   
@@ -178,6 +181,36 @@ function Tooltip(props: any) {
       setCMSToolComponent(Component);
       setOpenCallNotes(true);
     }
+    if (itemType === 'Admin Help') {
+      let Componentdata: any
+      if (PageUrl != undefined && PageUrl != null) {
+        try{
+        let res = [];
+        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        if (props?.ComponentId != undefined) {
+          res = await web.lists.getByTitle('Master Tasks').items
+            .select("Id,Title,Short_x0020_Description_x0020_On,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
+            .expand("Author,Editor")
+            .filter("Id eq " + props?.ComponentId)
+            .get();
+          ComponentData = res[0]
+          Componentdata = res[0]
+        } else {
+          res = await web.lists.getByTitle('Master Tasks').items
+            .select("Id,Title")
+            .filter("FoundationPageUrl eq '" + PageUrl + "'")
+            .get();
+          ComponentData = res[0]
+          console.log(res)
+        }
+        }
+        catch(error){
+          console.log(error)
+        }
+      }
+      setComponent(Componentdata);
+      setOpenAdminHelp(true);
+    }
     IsSameSite = false
   }
 
@@ -223,9 +256,13 @@ function Tooltip(props: any) {
     setOpenCallNotes(false);
   }
 
+  const adminHelpCallBack = () => {
+    setOpenAdminHelp(false);
+  }
+
 
   return (
-    <myContextValue.Provider value={{ ...myContextValue, createNotesCallback: callNotesCallBack }}>
+    <myContextValue.Provider value={{ ...myContextValue, createNotesCallback: callNotesCallBack, closeadminHelpCallBack: adminHelpCallBack }}>
       <>
         <Popup
           trigger={
@@ -267,6 +304,7 @@ function Tooltip(props: any) {
         </Popup>
 
         {OpenCallNotes && <CallNotes Item={CMSToolComponent} callback={callNotesCallBack} />}
+        {OpenAdminHelp && <AdminHelp Item={component} callback={adminHelpCallBack}/>}
       </>
     </myContextValue.Provider>
   )

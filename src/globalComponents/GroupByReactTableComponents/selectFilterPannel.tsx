@@ -119,7 +119,7 @@ const SelectFilterPanel = (props: any) => {
                                                                     <tr key={column?.id}>
                                                                         <td style={{ width: "100%" }}>
                                                                             <div className="alignCenter">
-                                                                                <input className="form-check-input cursor-pointer me-1" id={column.id} type='checkbox' checked={props?.selectedFilterPannelData[column?.id].Selected} name={column.id} onChange={handleCheckboxChangeValue} />{column?.placeholder}
+                                                                                <input className="form-check-input cursor-pointer mt-0 me-1" id={column.id} type='checkbox' checked={props?.selectedFilterPannelData[column?.id].Selected} name={column.id} onChange={handleCheckboxChangeValue} />{column?.placeholder}
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -129,7 +129,7 @@ const SelectFilterPanel = (props: any) => {
                                                         <tr>
                                                             <td style={{ width: "100%" }}>
                                                                 <div className="alignCenter">
-                                                                    <input className="cursor-pointer form-check-input rounded-0 me-1" type="checkbox" name="selectAll" checked={Object.keys(props?.selectedFilterPannelData)?.every((key: any) => props?.selectedFilterPannelData[key].Selected === true)} onChange={handleSelectAllChange} />All content
+                                                                    <input className="cursor-pointer form-check-input rounded-0 me-1 mt-0" type="checkbox" name="selectAll" checked={Object.keys(props?.selectedFilterPannelData)?.every((key: any) => props?.selectedFilterPannelData[key].Selected === true)} onChange={handleSelectAllChange} />All content
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -149,13 +149,15 @@ const SelectFilterPanel = (props: any) => {
                     </div>
                 </div>
             </div>
-            <footer>
+            <footer className="bg-f4 fixed-bottom">
+            <div className="clearfix px-4 py-2"> 
                 <button type="button" className="btn btn-default pull-right" style={{ backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` }} onClick={setModalIsOpenToFalse}>
                     Cancel
                 </button>
                 <button type="button" className="btn btn-primary mx-1 pull-right" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={() => handleChangeData()}>
                     Apply
                 </button>
+                </div>
             </footer>
         </Panel>
     );

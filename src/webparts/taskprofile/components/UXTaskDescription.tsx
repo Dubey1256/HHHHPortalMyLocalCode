@@ -2,6 +2,7 @@ import moment from 'moment';
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import * as globalCommon from '../../../globalComponents/globalCommon'
+import ApprovalHistoryPopupComponent from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
 import {
     mergeStyleSets,
     FocusTrapCallout,
@@ -56,7 +57,7 @@ const uxdescriptions = (props: any) => {
     const [sendMail, setsendMail] = React.useState(false);
     const [emailStatus, setemailStatus] = React.useState('');
     const [emailComponentstatus, setemailComponentstatus] = React.useState('')
-    const [ApprovalHistoryPopup, setApprovalHistoryPopup] = React.useState(true);
+    const [ApprovalHistoryPopup, setApprovalHistoryPopup] = React.useState(false);
     const [ApprovalPointUserData, setApprovalPointUserData] = React.useState(null);
     const [ApprovalPointCurrentParentIndex, setApprovalPointCurrentParentIndex] = React.useState(null);
     const [currentArraySubTextIndex, setcurrentArraySubTextIndex] = React.useState(null);
@@ -93,7 +94,7 @@ const uxdescriptions = (props: any) => {
     const changeTrafficLigth = async (index: any, item: any,obj:any) => {
         console.log(index);
         console.log(item);
-        if ((Result?.Approver?.AssingedToUser?.Id == props?.currentUser[0]?.Id) || (Result?.Approver?.Approver[0]?.Id == props?.currentUser[0]?.Id)) {
+        if (Result?.checkIsApproval) {
             if (obj === 'objective') {                
                 var tempData: any = TaskFeedbackData[index];
             }
@@ -152,7 +153,7 @@ const uxdescriptions = (props: any) => {
         console.log(parentindex);
         console.log(subchileindex);
         console.log(status);
-        if ((Result?.Approver?.AssingedToUser?.Id == props?.currentUser[0]?.Id) || (Result?.Approver?.Approver[0]?.Id == props?.currentUser[0]?.Id)) {
+        if (Result?.checkIsApproval) {
             if (obj === 'objective') {
                 var tempData: any = TaskFeedbackData[parentindex];
             }
@@ -1783,6 +1784,17 @@ const uxdescriptions = (props: any) => {
                     <button className='btn btn-default ms-1' onClick={Closecommentpopup}>Cancel</button>
                 </footer>
             </Panel>}
+            {ApprovalHistoryPopup ? <ApprovalHistoryPopupComponent
+                        ApprovalPointUserData={ApprovalPointUserData}
+                        indexSHow={currentArraySubTextIndex != null ? ApprovalPointCurrentParentIndex + "." + currentArraySubTextIndex : ApprovalPointCurrentParentIndex}
+                        ApprovalPointCurrentIndex={ApprovalPointCurrentParentIndex - 1}
+                        ApprovalPointHistoryStatus={ApprovalHistoryPopup}
+                        currentArrayIndex={currentArraySubTextIndex - 1}
+                        usefor="TaskProfile"
+
+                        callBack={() => ApprovalHistoryPopupCallBack()}
+                    />
+                        : null}
            {comparesetpannel  && checkedSetData?.length>0 &&   <CompareSetData checkedSetData={checkedSetData} setComparesetpannel={setComparesetpannel}></CompareSetData>}
         </>
     )

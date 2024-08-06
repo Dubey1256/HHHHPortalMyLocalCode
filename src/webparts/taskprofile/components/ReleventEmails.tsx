@@ -6,7 +6,6 @@ import EditDocument from './EditDocunentPanel'
 import { useState, useEffect, forwardRef, useImperativeHandle, createContext } from 'react';
 // import { MyContext } from './Taskprofile'
 import { myContextValue } from "../../../globalComponents/globalCommon";
-import { Tooltip as InfoToolTip } from "@fluentui/react-components";
 
 let mastertaskdetails: any = [];
 const RelevantEmail = (props: any, ref: any) => {
@@ -119,23 +118,9 @@ const RelevantEmail = (props: any, ref: any) => {
 
                     </a>
                   </li>
-                  <li className="text-ellips">
-                      <InfoToolTip
-                        withArrow
-                        content={item?.Title}
-                        relationship="label"
-                        positioning="below"
-                      >
-                        <a
-                          className="fontColor3"
-                          href={`${item?.EncodedAbsUrl}?web=1`}
-                          target="_blank"
-                          data-interception="off"
-                        >
-                         {item?.Title}
-                        </a>
-                      </InfoToolTip>
-                    </li>
+                  <li>
+                    <a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a>
+                  </li>
                   <li className='ml-auto'>
                     <span title="Edit" className="svg__iconbox svg__icon--edit hreflink alignIcon" onClick={() => editDocumentsLink(item)}></span>
 

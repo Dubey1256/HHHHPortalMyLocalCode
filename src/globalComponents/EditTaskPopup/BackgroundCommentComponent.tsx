@@ -26,9 +26,9 @@ const BackgroundCommentComponent = (Props: any) => {
     const Context = Props.Context;
     const siteUrls = Props.siteUrls;
 
-    React.useEffect(()=>{
-        CheckOneEodReport()
-    },[])
+    // React.useEffect(()=>{
+    //     CheckOneEodReport()
+    // },[])
 
     // This is used for Upload Background Images section and callback functions
     const FlorarImageReplaceComponentCallBack = (dt: any) => {
@@ -86,6 +86,7 @@ const BackgroundCommentComponent = (Props: any) => {
     const AddBackgroundCommentFunction = async () => {
         if (BackgroundComment.length > 0) {
             let CurrentUser: any
+            let uniqueId=generateUniqueId()
             if (currentUserData?.length > 0) {
                 CurrentUser = currentUserData[0];
             }
@@ -96,7 +97,7 @@ const BackgroundCommentComponent = (Props: any) => {
                 Body: BackgroundComment,
                 AuthorImage: CurrentUser?.Item_x0020_Cover != null ? CurrentUser?.Item_x0020_Cover?.Url : null,
                 AuthorName: CurrentUser?.Title != undefined ? CurrentUser?.Title : Context?.pageContext?._user.displayName,
-                ID: (BackgroundComments != undefined ? BackgroundComments?.length + 1 : 0)
+                ID: (uniqueId != undefined ? uniqueId: BackgroundComments?.length + 1)
             }
             BackgroundComments.push(CommentJSON);
             setBackgroundComments(BackgroundComments);
@@ -107,9 +108,22 @@ const BackgroundCommentComponent = (Props: any) => {
         }
     }
     // Code by Udbhav related to the EOD report Comments Add
+    function generateUniqueId() {
+        let newId = BackgroundComments?.length;
+    
+        BackgroundComments.forEach((uniqueId: any) => {
+            while (uniqueId.ID == newId) {
+                newId++;
+            }
+        });
+    
+        return newId;
+    }
+
     const AddEODComent = () => {
         if (EODPendingComment?.length > 0 || EODAchiviedComment?.length > 0) {
             let CurrentUser: any
+            let uniqueId=generateUniqueId()
             if (currentUserData?.length > 0) {
                 CurrentUser = currentUserData[0];
             }
@@ -125,13 +139,13 @@ const BackgroundCommentComponent = (Props: any) => {
                 ProjectName: taskInfo?.Project?.Title,
                 Achieved: EODAchiviedComment,
                 Pending: EODPendingComment,
-                ID: (BackgroundComments != undefined ? BackgroundComments?.length + 1 : 0)
+                ID: (uniqueId != undefined ? uniqueId: BackgroundComments?.length + 1)
             }
             BackgroundComments.push(CommentJSON);
             setBackgroundComments(BackgroundComments)
             setEODAchiviedComment('')
             setEODPendingComment('')
-            setOneEODReport(false)
+            // setOneEODReport(false)
             updateCommentFunction(BackgroundComments, "OffshoreComments");
         } else {
             alert("Please Enter Your Comment First!")
@@ -249,25 +263,25 @@ const BackgroundCommentComponent = (Props: any) => {
         setUpdateCommentData(Body);
         setCurrentIndex(Index);
     }
-    const CheckOneEodReport=()=>{
-        const currentDate = Moment();
-        let taskDetail=[];
-        try{
-            taskDetail=JSON.parse(taskInfo?.OffshoreComments);
-        }
-        catch{
-            console.log("undefined json")
-        }
+    // const CheckOneEodReport=()=>{
+    //     const currentDate = Moment();
+    //     let taskDetail=[];
+    //     try{
+    //         taskDetail=JSON.parse(taskInfo?.OffshoreComments);
+    //     }
+    //     catch{
+    //         console.log("undefined json")
+    //     }
         
-        const hasTodayEODReport = taskDetail?.some((item: any) =>{
-            return(item.Type=="EODReport" && Moment(currentDate)?.format('DD/MM/YYYY')==Moment(item?.Created)?.format('DD/MM/YYYY'))
-        }   
-        );
+    //     const hasTodayEODReport = taskDetail?.some((item: any) =>{
+    //         return(item.Type=="EODReport" && Moment(currentDate)?.format('DD/MM/YYYY')==Moment(item?.Created)?.format('DD/MM/YYYY'))
+    //     }   
+    //     );
     
-        if (hasTodayEODReport) {
-            setOneEODReport(false);
-        }
-    } 
+    //     if (hasTodayEODReport) {
+    //         setOneEODReport(false);
+    //     }
+    // } 
     const ChangeCommentFunction = () => {
         if (BackgroundComments != undefined && BackgroundComments.length > 0) {
             if (editTypeUsedFor === "Achieved" || editTypeUsedFor === "Pending") {
@@ -421,7 +435,7 @@ const BackgroundCommentComponent = (Props: any) => {
                     Post Comment
                 </button>
                 {/* Code by Udbhav realted EOD report */}
-                {(currentUserData[0]?.UserGroup?.Title=="Portfolio Lead Team" ||currentUserData[0]?.UserGroup?.Title=="Smalsus Lead Team"||currentUserData[0]?.UserGroup?.Title=="Junior Task Management") && 
+                {(currentUserData[0]?.UserGroup?.Title=="Portfolio Lead Team" ||currentUserData[0]?.UserGroup?.Title=="Smalsus Lead Team"||currentUserData[0]?.UserGroup?.Title=="Junior Task Management"||currentUserData[0]?.UserGroup?.Title=="Design Team" ||currentUserData[0]?.UserGroup?.Title=="QA Team" ||currentUserData[0]?.AssingedToUserId=='328' ) && 
                <>
                <p className="siteColor mb-0">EOD Report</p>
                 {BackgroundComments != undefined && BackgroundComments.length > 0 ? BackgroundComments.map((dataItem: any, Index: any) => {
@@ -473,11 +487,6 @@ const BackgroundCommentComponent = (Props: any) => {
                                                 <span onClick={() => DeleteEODComment(dataItem.ID, dataItem.Pending, "Pending")} title="Delete Comment" className="svg__iconbox ms-1 svg__icon--trash"></span>
                                                 </span>
                                             </div>}
-
-
-
-
-
                                         </div>
                                     </div>
                                 </div>

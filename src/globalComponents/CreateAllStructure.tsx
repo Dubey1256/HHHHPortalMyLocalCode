@@ -711,7 +711,7 @@ const CreateAllStructureComponent = (props: any) => {
               <label>
                 <b>Select Portfolio Type</b>
               </label>
-              <div className="py-3">
+              <div className="py-2">
                 {props?.portfolioTypeData.map((item: any) => {
                   return (
                     <span>
@@ -969,7 +969,7 @@ const CreateAllStructureComponent = (props: any) => {
                                 }
 
                                 title="Add"
-                                className="svg__iconbox mx-1 svg__icon--Plus mini mt-1"
+                                className="svg__iconbox mx-1 svg__icon--Plus mini"
                               ></span>
                               {!(props?.SelectedItem?.Item_x0020_Type === "Component" && component.SubComponent.length === 1 && props?.SelectedItem === undefined) && (
                                 <div className="input-group-append alignCenter">
@@ -1084,7 +1084,7 @@ const CreateAllStructureComponent = (props: any) => {
                                   }
                                 />
                                 
-                                {!(props?.SelectedItem?.Item_x0020_Type === "Component" && component.Feature.length === 1 && props?.SelectedItem === undefined)  && (
+                                {(props?.SelectedItem?.Item_x0020_Type === "Component" && component.Feature.length >= 1 && (component.SubComponent.length>=1 || component.Feature.length>1))  && (
                                   <span
                                     onClick={() =>
                                       handleDelete(
@@ -1098,7 +1098,7 @@ const CreateAllStructureComponent = (props: any) => {
                                     className="svg__iconbox svg__icon--trash"
                                   ></span>
                                 )}
-                                {component.SubComponent.length == 1 &&
+                                {component.Feature.length >= 1 &&
                                 ( props?.SelectedItem === undefined) && (
                                     <span
                                       onClick={() =>

@@ -1,8 +1,9 @@
 import * as React from "react";
 import { useState, useEffect, useCallback } from 'react';
 import * as Moment from 'moment';
-import { Panel, PanelType } from 'office-ui-fabric-react';
+import { IStackTokens, Panel, PanelType } from 'office-ui-fabric-react';
 import ApprovalHistoryPopup from "./ApprovalHistoryPopup";
+import { Popover, PopoverTrigger, PopoverSurface, } from "@fluentui/react-components";
 import Tooltip from '../Tooltip';
 import {
     mergeStyleSets,
@@ -14,6 +15,7 @@ import {
 } from '@fluentui/react';
 import { useBoolean, useId } from '@fluentui/react-hooks';
 import * as globalCommon from "../globalCommon";
+const containerStackTokens: IStackTokens = { childrenGap: 5 };
 const AddCommentComponent = (FbData: any) => {
     const FeedBackData = FbData.Data?.length > 0 ? FbData.Data : [];
     const Context = FbData.Context;
@@ -37,7 +39,7 @@ const AddCommentComponent = (FbData: any) => {
     const [isCalloutVisible, { toggle: toggleIsCalloutVisible }] = useBoolean(false);
     const [currentDataIndex, setCurrentDataIndex] = useState<any>(0);
     const [ReplyMessageText, setReplyMessageText] = useState('');
-    const buttonId = useId(`callout-button`);
+    const [buttonId, setButtonId] = useState(``);
     const [EditModelUsedFor, setEditModelUsedFor] = useState('');
     var Array: any = [];
     useEffect(() => {
@@ -56,8 +58,8 @@ const AddCommentComponent = (FbData: any) => {
                 tempArray.push(dataItem);
             })
             setFeedBackArray(tempArray);
-        }else{
-            setFeedBackArray([])   
+        } else {
+            setFeedBackArray([])
         }
         getCurrentUserDetails();
     }, [FbData.Data?.length])
@@ -129,14 +131,24 @@ const AddCommentComponent = (FbData: any) => {
     const editPostCloseFunction = () => {
         setEditPostPanel(false);
     }
+    // const updateCommentFunction = (e: any, CommentData: any, usedFor: any) => {
+    //     if (usedFor == "ParentComment") {
+    //         FeedBackArray[CommentData.Index].Title = e.target.value;
+    //         FbData.callBack(true, FeedBackArray, FbData?.UXStatus ? CommentData?.SubTextIndex : 0);
+    //     }
+    //     if (usedFor == "ReplyComment") {
+    //         FeedBackArray[CommentData.SubTextIndex].ReplyMessages[CommentData.Index].Title = e.target.value;
+    //         FbData.callBack(true, FeedBackArray, FbData?.UXStatus ? CommentData?.SubTextIndex : 0);
+    //     }
+    // }
     const updateCommentFunction = (e: any, CommentData: any, usedFor: any) => {
         if (usedFor == "ParentComment") {
             FeedBackArray[CommentData.Index].Title = e.target.value;
-            FbData.callBack(true, FeedBackArray, FbData?.UXStatus ?CommentData?.SubTextIndex:FbData?.Index);
+            FbData.callBack(true, FeedBackArray, FbData?.UXStatus ? CommentData?.SubTextIndex : FbData.index);
         }
         if (usedFor == "ReplyComment") {
             FeedBackArray[CommentData.SubTextIndex].ReplyMessages[CommentData.Index].Title = e.target.value;
-            FbData.callBack(true, FeedBackArray, FbData?.UXStatus ?CommentData?.SubTextIndex:FbData?.Index);
+            FbData.callBack(true, FeedBackArray, FbData?.UXStatus ? CommentData?.SubTextIndex : FbData.index);
         }
     }
     const cancelCommentBtn = () => {
@@ -207,6 +219,7 @@ const AddCommentComponent = (FbData: any) => {
 
     const OpenCallOutFunction = (IndexData: any) => {
         setCurrentDataIndex(IndexData);
+        setButtonId('ReplyBtn' + IndexData)
         toggleIsCalloutVisible();
     }
 
@@ -225,8 +238,8 @@ const AddCommentComponent = (FbData: any) => {
             FeedBackArray[currentDataIndex].ReplyMessages = [];
         }
         FeedBackArray[currentDataIndex].ReplyMessages.push(ReplyMessageObject);
-        FbData.callBack(true, FeedBackArray, 0);
-        toggleIsCalloutVisible();
+        FbData.callBack(true, FeedBackArray, FbData.index);
+        setButtonId("")
     }
 
     const DeleteReplyMessageFunction = (ReplyMsgIndex: any, ParentIndex: any) => {
@@ -240,7 +253,7 @@ const AddCommentComponent = (FbData: any) => {
             }
         })
         setFeedBackArray(tempArray);
-        FbData.callBack(true, tempArray, 0);
+        FbData.callBack(true, tempArray, FbData.index);
         // FbData.callBack(isSubtextComment, tempArray, indexOfSubtext);
     }
     const styles = mergeStyleSets({
@@ -279,8 +292,32 @@ const AddCommentComponent = (FbData: any) => {
                                                         {commentDtl.AuthorName} - {commentDtl.Created}
                                                     </span>
                                                     <span className="alignCenter">
-                                                        <span title="Comment Reply" data-toggle="tooltip" id={buttonId + "-" + index}
-                                                            onClick={() => OpenCallOutFunction(index)} data-placement="bottom" className="hreflink ps-1 svg__iconbox svg__icon--reply"></span>
+                                                        {/* <span
+                                                            title="Comment Reply"
+                                                            data-toggle="tooltip"
+                                                            id={buttonId + "-" + index}
+                                                            onClick={() => OpenCallOutFunction(index)}
+                                                            data-placement="bottom"
+                                                            className="hreflink ps-1 svg__iconbox svg__icon--reply"
+                                                        >
+                                                        </span> */}
+                                                        <Popover size="medium" withArrow open={buttonId == "ReplyBtn" + index} onOpenChange={() => OpenCallOutFunction(index)}>
+                                                            <PopoverTrigger disableButtonEnhancement>
+                                                                <span className="svg__iconbox svg__icon--reply"></span>
+                                                            </PopoverTrigger>
+                                                            <PopoverSurface className="a"  tabIndex={-1}>
+                                                                <div>
+                                                                    <div className='subheading m-0' style={{ minWidth: '400px' }}>Comment Reply</div>
+                                                                    <div className='my-2'>
+                                                                        <textarea className='w-100'  rows={3} onChange={(e: any) => setReplyMessageText(e?.target?.value)}></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div className='footer text-end'>
+                                                                    <button className='btnCol btn me-2 btn-primary' onClick={SaveReplyMessageFunction}>Save</button>
+                                                                    <button className='btnCol btn btn-default' onClick={() => setButtonId("")}>Cancel</button>
+                                                                </div>
+                                                            </PopoverSurface>
+                                                        </Popover>
                                                         <span title="Edit Comment" onClick={() => openEditModal(commentDtl.Title, index, FbData?.index, false, "ParentComment")} style={{ marginTop: "2px" }} className="hreflink ps-1 svg__iconbox svg__icon--edit siteColor"></span>
                                                         <span title="Delete Comment" onClick={() => clearComment(true, index, FbData?.index)} className="ps-1 hreflink svg__iconbox svg__icon--trash"></span>
                                                     </span>
@@ -385,7 +422,7 @@ const AddCommentComponent = (FbData: any) => {
                 />
                 : null
             }
-            {isCalloutVisible ? (
+            {/* {isCalloutVisible ? (
                 <FocusTrapCallout
                     role="alertdialog"
                     className={styles.callout}
@@ -404,16 +441,14 @@ const AddCommentComponent = (FbData: any) => {
 
                     </Text>
                     <FocusZone handleTabKey={FocusZoneTabbableElements.all} isCircularNavigation>
-                        <Stack className={styles.buttons} gap={8} horizontal>
-                            {/* <PrimaryButton onClick={SaveReplyMessageFunction}>Save</PrimaryButton>
-                            <DefaultButton onClick={toggleIsCalloutVisible}>Cancel</DefaultButton> */}
+                        <Stack className={styles.buttons} tokens={containerStackTokens} horizontal>
                             <button type="button" className="btnCol btn btn-primary" onClick={SaveReplyMessageFunction}>Save</button>
                             <button type="button" className="btnCol btn btn-default" onClick={toggleIsCalloutVisible}>Cancel</button>
                         </Stack>
                     </FocusZone>
                 </FocusTrapCallout>
             ) : null
-            }
+            } */}
         </div>
     )
 }

@@ -1,17 +1,16 @@
 import * as React from 'react';
-import { Panel, PanelType,Modal  } from 'office-ui-fabric-react';
-import Tooltip from '../../../globalComponents/Tooltip'; 
+import { Panel, PanelType } from 'office-ui-fabric-react';
+import Tooltip from '../../../globalComponents/Tooltip';
 import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
+import moment from 'moment';
+import { Web } from 'sp-pnp-js';
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
 import "@pnp/sp/webs";
 import "@pnp/sp/files";
-import moment from 'moment';
-import { Web } from 'sp-pnp-js';
 import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import ImageInformation from '../../EditPopupFiles/ImageInformation';
 import ReadyMadeTable from '../../../globalComponents/RadimadeTable';
-import { SendTeamMessage } from '../../../globalComponents/globalCommon';
 let mastertaskdetails: any = []
 let copyEditData: any = {}
 let mydataa: any = [];
@@ -19,11 +18,9 @@ let myTaskData: any = []
 let count = 0;
 let componentDetailsDaata: any = [];
 let tempmetadata: any = [];
-let TeamsMessage:any='';
 var tempArray: any = [];
 var selectedTasks: any = [];
 var AllListId: any;
-
 
 
 const EditDocumentpanel = (props: any) => {
@@ -47,8 +44,6 @@ const EditDocumentpanel = (props: any) => {
   const [searchedTaskData, setSearchedTaskData] = React.useState([]);
   const [TaggedSitesTask, setTaggedSitesTask] = React.useState<any>([]);
   const [isOpenComponentServicePopup, setIsOpenComponentServicePopup] = React.useState(false);
-const [ShowConfirmation, setShowConfirmation]: any = React.useState(false);
-  const [Email,setEmail]:any=React.useState('')
 
   let ItemRank = [
     { rankTitle: 'Select Item Rank', rank: null },
@@ -73,7 +68,7 @@ const [ShowConfirmation, setShowConfirmation]: any = React.useState(false);
       AllListId.TaskTypeID = "21b55c7b-5748-483a-905a-62ef663972dc";
       AllListId.PortFolioTypeID = "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
     }
-
+    
     AllListId.Context = props.AllListId?.context
     if (props?.editData != undefined) {
       LoadMasterTaskList().then((smartData: any) => {
@@ -86,14 +81,7 @@ const [ShowConfirmation, setShowConfirmation]: any = React.useState(false);
     LoadSmartmetadata()
   }, [props?.editData != undefined])
 
-const cancelConfirmationPopup = () => {
-    setShowConfirmation(false);
-}
 
-const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
-    await SendTeamMessage([name], TeamsMessage, props.Context, props?.AllListId)
-    setShowConfirmation(false);
-  }
   const LoadSmartmetadata = async () => {
     let siteConfigSites: any = [];
     let web = new Web(props?.AllListId?.siteUrl);
@@ -188,7 +176,7 @@ const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
           }
 
           if (mastertaskdetails != undefined && mastertaskdetails != null && mastertaskdetails?.length > 0) {
-            mastertaskdetails.map((mastertask: any) => {
+              mastertaskdetails.map((mastertask: any) => {
               if (mastertask?.Item_x0020_Type == "Project" || mastertask?.Item_x0020_Type == "Sprint") {
                 projectDataforsuggestion.push(mastertask)
               }
@@ -200,17 +188,17 @@ const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
               Data.Portfolios?.map((portfolio: any) => {
                 mastertaskdetails?.map((mastertask: any) => {
                   if (mastertask?.Id == portfolio?.Id && mastertask?.Item_x0020_Type != "Project" && mastertask.Item_x0020_Type != "Sprint") {
-                    portfolioData.push(mastertask);
-                  }
+                  portfolioData.push(mastertask);
+                }
                   if (mastertask?.Id == portfolio?.Id && (mastertask?.Item_x0020_Type == "Project" || mastertask.Item_x0020_Type == "Sprint")) {
-                    projectData.push(mastertask);
-                  }
+                  projectData.push(mastertask);
+                }
                 });
               })
             }
 
             Data.projectData = projectData
-            Data.Portfolios = portfolioData
+            Data.Portfolios  = portfolioData
             setProjectData(projectData)
             setPortfolioData(portfolioData)
             SetAllProjectDaata(projectDataforsuggestion)
@@ -229,7 +217,7 @@ const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
     } catch (e: any) {
       console.log(e);
     }
-  };
+  }; 
 
   async function updateMultiLookup(
     itemIds: number[],
@@ -282,19 +270,19 @@ const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
           "Portfolios/Id",
           "Portfolios/Title"
         )
-        .expand("Portfolios", "PortfolioType")
-        .filter("(Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint' or PortfolioType/Title eq 'Component') and Portfolios/Id eq " + props?.editData?.Id)
+      .expand("Portfolios","PortfolioType")
+      .filter("(Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint' or PortfolioType/Title eq 'Component') and Portfolios/Id eq " + props?.editData?.Id)
         .top(4000)
-        .getAll()
+      .getAll()
 
       // Project Data for HHHH Project Management
-      if (componentDetailsDaata.length > 0) {
-        let PxData = componentDetailsDaata?.filter((items: any) => items.Item_x0020_Type == "Project" || items.Item_x0020_Type == "Sprint")
-        let PortfolioData = componentDetailsDaata?.filter((items: any) => items?.PortfolioType?.Title == "Component")
+        if (componentDetailsDaata.length > 0) {
+          let PxData = componentDetailsDaata?.filter((items:any)=>items.Item_x0020_Type =="Project" || items.Item_x0020_Type =="Sprint")
+          let PortfolioData = componentDetailsDaata?.filter((items:any)=>items?.PortfolioType?.Title == "Component")
 
-        setProjectData(PxData)
-        setPortfolioData(PortfolioData)
-      }
+          setProjectData(PxData)
+          setPortfolioData(PortfolioData)
+    }
 
       console.log("data show on componentdetails", componentDetailsDaata);
     } catch (error) {
@@ -432,18 +420,9 @@ const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
         if (err.message.includes('423')) {
           const sp = spfi().using(spSPFx(props?.Context));;
           const user = await sp.web.getFolderByServerRelativePath(EditdocumentsData?.FileDirRef).files.getByUrl(EditdocumentsData?.FileLeafRef).getLockedByUser();
-          let name = user?.Title + ' - (' + user?.Email + ')'
+          let name= user?.Title + ' - (' + user?.Email + ')'
           console.log(user)
-          setEmail(user?.Email)
-          TeamsMessage=`<div>Hi ${user?.Title}, <br/> I am trying to make changes in <a href='${EditdocumentsData?.EncodedAbsUrl}?web=1'>${EditdocumentsData?.Title}</a> , but this is currently open in your system.<br/>
-          Can you please close the document so that I can move forward with my changes.
-          <br/>
-          Thanks,
-          <br/>
-          ${ props?.Context?.pageContext?.user?.displayName} </div> `
-          setShowConfirmation(true);
-          
-         
+          alert(`Document you are trying to update/tag is locked by ${name}. Please ask them to close it and try again.`)
         }
       })
   }
@@ -520,10 +499,10 @@ const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
             .map((item: { Id: any }) => item.Id);
           setEditdocumentsData({ ...EditdocumentsData, Portfolios: copyPortfoliosData })
           setisopencomonentservicepopup(false)
-        }
+    }
       } else {
-        setisopencomonentservicepopup(false);
-      }
+      setisopencomonentservicepopup(false);
+    }
       console.log("EditdocumentsData:", EditdocumentsData);
     },
     []
@@ -580,7 +559,7 @@ const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
       setSearchedPortfolioDaata([]);
     }
   };
-
+  
   const handleSuggestionforTask = (suggestion: any) => {
     // allProjectDaata?.map((items: any) => {
     //   if (items?.Id === suggestion?.Id) {
@@ -620,7 +599,7 @@ const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
     }
   }
 
-  const DeleteTagPortfolios = async (titleToRemove: any) => {
+  const DeleteTagPortfolios = async(titleToRemove: any) => {
 
     // setEditdocumentsData((prev: any) => {
     //   return {
@@ -708,20 +687,20 @@ const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
     []
   );
 
-  const DeleteCrossIconDataForTask = async (titleToRemove: any, site: any) => {
+  const DeleteCrossIconDataForTask = async (titleToRemove: any,site:any) => {
     var selectedTasks1 = TaggedSitesTask.filter(
       (itemmm: any) => itemmm.Id !== titleToRemove
     );
     selectedTasks = selectedTasks1
     tempArray.map((item: any) => {
-      item.Task = item?.Task?.filter(
-        (itemmm: any) => itemmm.Id !== titleToRemove
-      );
+        item.Task = item?.Task?.filter(
+          (itemmm: any) => itemmm.Id !== titleToRemove
+        );
       item?.TaskIds?.map((id: any, index: any) => {
         if (id == titleToRemove)
           item?.TaskIds?.splice(index, 1)
       })
-
+         
     })
     console.log("remove data", selectedTasks1);
     setTaggedSitesTask(selectedTasks1);
@@ -828,7 +807,7 @@ const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
     setTaggedSitesTask(selectedTasks);
   }
 
-  
+
   /////////folara editor function start//////////
   const HtmlEditorCallBack = (items: any) => {
     console.log(items);
@@ -982,8 +961,8 @@ const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
                       )}
                     </div>
                   </div>
-                </div>
-                {/* -------For Project--- */}
+                </div>     
+                  {/* -------For Project--- */}
                 <div className="col-sm-6 mb-3">
                   <div className="input-group">
                     <label className="full_width">Project</label>
@@ -1096,7 +1075,7 @@ const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
                       )}
                     </div>
                   </div>
-                </div>
+                </div>  
                 {/* -------For Portfolio--- */}
                 <div className="col-sm-6 mb-3">
                   <div className="input-group">
@@ -1148,7 +1127,7 @@ const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
                           onChange={(e) => autoSuggestionForPortfolio(e)}
                         />
                         <span className="input-group-text" placeholder="Portfolios">
-                          <span
+                        <span
                             title="Portfolio"
                             onClick={(e) => opencomonentservicepopup()}
                             className="svg__iconbox svg__icon--editBox"
@@ -1377,30 +1356,6 @@ const SendTeamMessages=async (name:any,TeamsMessage:any)=>{
       <Panel isOpen={isopenTaskpopup} isBlocking={false} onDismiss={() => setisopenTaskpopup(false)} type={PanelType.large} >
         <ReadyMadeTable AllListId={AllListId} configration={"AllAwt"} TaskFilter={"PercentComplete lt '0.90'"} usedFor={'editdocument'} callBack={TaskCallback} closepopup={() => setisopenTaskpopup(false)} />
       </Panel>
-      <Modal titleAriaId={`UploadConfirmation`} isOpen={ShowConfirmation} onDismiss={cancelConfirmationPopup}>
-    <div className="modal-content border-0 rounded-0" style={{ width: '681px' }}>
-        <div className="modal-header">
-            <h5 className="modal-title">Alert</h5>
-            <span className="svg__iconbox svg__icon--cross" aria-label="Close" onClick={cancelConfirmationPopup}>
-               
-            </span>
-        </div>
-        <div className="modal-body">
-            <div className='clearfix mx-2'>
-                <Col className='Alltable mt-2'>
-                    <div>
-                        {`Document you are trying to update/tag is locked by ${Email}.`}
-                    </div>
-                </Col>
-            </div>
-        </div>
-        <footer className='text-end p-2'>
-            {/* <button className="btn btn-primary" onClick={() => cancelConfirmationPopup()} disabled>Forcefully Close</button> */}
-            <button className="btn btn-primary" onClick={() => SendTeamMessages(Email,TeamsMessage)}>Ask To Close</button>
-            <button className="btn btn-primary" onClick={() => cancelConfirmationPopup()}>Cancel</button>
-        </footer>
-    </div>
-</Modal>
 
     </>
   )
