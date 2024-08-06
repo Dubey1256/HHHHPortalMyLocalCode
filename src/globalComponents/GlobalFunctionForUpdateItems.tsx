@@ -2058,6 +2058,7 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
     const { usedFor, SiteURL, ItemDetails, Context, RequiredListIds, AllTaskUser, Status, SendUserEmail }: any = requiredData || {};
     const filterData: any = [];
     let UserArray: any = []
+    let leadArray: any = []
     try {
         const web = new Web(SiteURL)
         let ResponseData: any = await web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').expand('Author,Editor,Recipients ,PortfolioType').get();
