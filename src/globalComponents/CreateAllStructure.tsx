@@ -711,7 +711,7 @@ const CreateAllStructureComponent = (props: any) => {
               <label>
                 <b>Select Portfolio Type</b>
               </label>
-              <div className="py-3">
+              <div className="py-2">
                 {props?.portfolioTypeData.map((item: any) => {
                   return (
                     <span>
