@@ -359,7 +359,7 @@ const EditTaskPopup = (Items: any) => {
                         ? user.Item_x0020_Cover?.Url
                         : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
                     currentUserBackupArray.push(user);
-                if (user.UserGroupId == 7) {
+                if (user.Company  == "HHHH") {
                     setIsUserFromHHHHTeam(true);
                 }
             }

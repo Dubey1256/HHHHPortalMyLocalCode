@@ -2154,7 +2154,7 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                         });
                                         ItemDetails.TaskAssignedUsers = UserArray
                                     }
-                                    if (TNC?.Category?.includes('All') && TNC?.Site?.includes('All') && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
+                                    if (TNC?.Category?.includes('All') && (TNC?.Site?.includes('All') || TNC?.selectedSite?.includes('All')) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
                                         //Stefan
                                         TNC.Notifier.map((user: any) => {
                                             AllTaskUser?.map((TaskUserData: any) => {
