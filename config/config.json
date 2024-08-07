@@ -658,6 +658,7 @@
     "ManageWebpartTemplateWebPartStrings": "lib/webparts/manageWebpartTemplate/loc/{locale}.js",
     "ManageDashboardTemplateWebPartStrings": "lib/webparts/manageDashboardTemplate/loc/{locale}.js",
     "GmbhHomePageWebPartStrings": "lib/webparts/gmbhHomePage/loc/{locale}.js",
+    "ManageQuestionWebPartStrings": "lib/webparts/manageQuestion/loc/{locale}.js",
     "EodReportWebPartStrings": "lib/webparts/eodReport/loc/{locale}.js",
     "ImportTaskPortfolioItemsWebPartStrings": "lib/webparts/importTaskPortfolioItems/loc/{locale}.js"
   }
