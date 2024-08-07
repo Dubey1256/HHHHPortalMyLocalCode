@@ -132,6 +132,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const rerender = React.useReducer(() => ({}), {})[1];
     const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
     const [taskCatagory, setTaskCatagory] = React.useState([]);
+    const [smartTimelastModifiedDate, setSmartTimelastModifiedDate] = React.useState("")
     // const [showProgress, setShowProgress] = React.useState(false);
     // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
@@ -3788,7 +3789,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                                     portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration}
                                                     showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity}
                                                     customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons}
-                                                    showHeader={true} tableId="teamPortfolio" columnSettingIcon={true}
+                                                    showHeader={true} tableId="teamPortfolio" columnSettingIcon={true} smartTimelastModifiedDate={smartTimelastModifiedDate}
                                                 />
                                             </div>
                                         </div>

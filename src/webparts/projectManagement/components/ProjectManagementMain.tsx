@@ -1243,7 +1243,6 @@ const loadAllPXTimeEntries = async () => {
         return total + taskTime;
       }, 0);
       totalTime = totalTime/60;
-      totalTime = totalTime.toFixed(2)
       setTaskTaggedPortfolios(taskTaggedComponents)
       setSuggestedPortfolios(suggestedPortfolioItems)
       loadTaggedDocuments();
@@ -3217,7 +3216,8 @@ const loadAllPXTimeEntries = async () => {
                                   AllSitesTaskData={AllSitesAllTasks}
                                   MasterdataItem={Masterdata}
                                   columns={column2} data={ProjectTableData} callBackData={callBackData}
-                                  smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
+                                  smartTimeTotalFunction={smartTimeTotal} 
+                                  //  SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
                                   showCreationAllButton={true}
                                   flatViewDataAll={flatViewDataAll}

@@ -46,6 +46,7 @@ export const MonthlyLeaveReport = (props: any) => {
     useState(true);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [expandedIndexLeave, setExpandedIndexLeave] = useState<number | null>(null);
+  const [expandedVal, setExpandedVal] = useState<string | null>(null);
 
   let dropSuccessHandler: any;
 
@@ -60,14 +61,17 @@ export const MonthlyLeaveReport = (props: any) => {
     }
   }, [selectedMonth, selectedYear, selectedUserId]);
 
-  const toggleExpand = (index: number) => {
-    setExpandedIndex((prevIndex) => (prevIndex === index ? null : index));
+  const toggleExpand = (index?: number, leaveType?: string) => {
+    const newExpandedIndex = expandedIndex === index ? null : index;
+    if (leaveType != "") {
+      setExpandedVal(leaveType); // Set leave value when a row is collapsed
+    }
+    else {
+      setExpandedVal("")
+    }
+    setExpandedIndexLeave(newExpandedIndex)
+    setExpandedIndex(newExpandedIndex);
   };
-
-  const toggleExpandLeave = (value: string, index: number) => {
-    expandedVal = value
-    setExpandedIndexLeave((prev) => (prev === index ? null : index))
-  }
 
   const getTaskUser = async () => {
     let web = new Web(props.props.siteUrl);
@@ -192,7 +196,7 @@ export const MonthlyLeaveReport = (props: any) => {
                 !isItemExists(ImageSelectedUser, child.Id)
               )
                 ImageSelectedUsers.push(child);
-            } catch (error) {}
+            } catch (error) { }
           }
         }
       });
@@ -210,7 +214,7 @@ export const MonthlyLeaveReport = (props: any) => {
                 let el = ImageSelectedUser[k];
                 if (el.Id == child.Id) ImageSelectedUser.splice(k, 1);
               }
-            } catch (error) {}
+            } catch (error) { }
           });
         }
       });
@@ -236,7 +240,7 @@ export const MonthlyLeaveReport = (props: any) => {
         }
         return previous;
       },
-      []);
+        []);
     }
     setImageSelectedUsers(ImageSelectedUser);
     setSelectGroupName(SelectGroupName);
@@ -303,7 +307,7 @@ export const MonthlyLeaveReport = (props: any) => {
           }
           return previous;
         },
-        []);
+          []);
       }
     }
 
@@ -650,24 +654,31 @@ export const MonthlyLeaveReport = (props: any) => {
       const eventDate = new Date(item.EventDate);
       const timezoneOffset = endDate.getTimezoneOffset();
       const timezoneOffsetInHours = timezoneOffset / 60;
+
       const adjustedEndDate = new Date(
         endDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000
       );
       const adjustedEventDate: any = new Date(
         eventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000
       );
+
+      // Set hours to 0 to remove time part from date comparison
+      adjustedEndDate.setHours(0, 0, 0, 0);
+      adjustedEventDate.setHours(0, 0, 0, 0);
+
       if (adjustedEventDate.getFullYear() === today.getFullYear()) {
-        const adjustedEndDateToToday =
-          today < adjustedEndDate ? today : adjustedEndDate;
-        adjustedEndDateToToday.setHours(0);
+        const adjustedEndDateToToday = today < adjustedEndDate ? today : adjustedEndDate;
+        adjustedEndDateToToday.setHours(0, 0, 0, 0);
+
         let workingDays = 0;
         let currentDate = new Date(adjustedEventDate);
-        currentDate.setHours(0, 0, 0, 0);
+
+        // Calculate working days
         while (currentDate <= adjustedEndDateToToday) {
           const dayOfWeek = currentDate.getDay();
           if (
-            dayOfWeek !== 0 &&
-            dayOfWeek !== 6 &&
+            dayOfWeek !== 0 && // Sunday
+            dayOfWeek !== 6 && // Saturday
             !isWeekend(currentDate, adjustedEndDateToToday)
           ) {
             if (item?.Event_x002d_Type == LeaveType) {
@@ -678,13 +689,16 @@ export const MonthlyLeaveReport = (props: any) => {
               }
             }
           }
-          currentDate.setDate(currentDate.getDate() + 1);
+          currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
         }
+
         return total + workingDays;
       }
+
       return total;
     }, 0);
   };
+
   const PreSetPikerCallBack = React.useCallback(
     (preSetStartDate: any, preSetEndDate) => {
       if (preSetStartDate != undefined) {
@@ -948,9 +962,8 @@ export const MonthlyLeaveReport = (props: any) => {
         let RhplannedLeaveString = `${MyRHdayData.join(", ")}`;
 
         user.Plannedleave = calculatePlannedLeave(matchedData, "Planned Leave");
-        user.Plannedleave = `${user.Plannedleave} ${
-          plannedLeaveString.length != 0 ? ` ${plannedLeaveString} ` : ""
-        } `;
+        // user.Plannedleave = `${user.Plannedleave} ${plannedLeaveString.length != 0 ? ` ${plannedLeaveString} ` : ""
+        //   } `;
 
         user.PlanedEventDates = PlanedEventDates;
         user.leavediscriptionPlanned =
@@ -975,11 +988,10 @@ export const MonthlyLeaveReport = (props: any) => {
           MyHalfdayData,
           "HalfDay" || "HalfDayTwo"
         );
-        user.Halfdayleave = `${user.Halfdayleave}${
-          HalfplannedLeaveString.length != 0
-            ? `[ ${HalfplannedLeaveString} ]`
-            : ""
-        } `;
+        user.Halfdayleave = `${user.Halfdayleave}${HalfplannedLeaveString.length != 0
+          ? `[ ${HalfplannedLeaveString} ]`
+          : ""
+          } `;
         user.HalfdayEventDates = HalfdayEventDates;
         user.leavediscriptionHalfday =
           leavediscriptionHalfday != undefined ? leavediscriptionHalfday : "";
@@ -987,9 +999,8 @@ export const MonthlyLeaveReport = (props: any) => {
           matchedData,
           "Restricted Holiday"
         );
-        user.RestrictedHoliday = `${user.RestrictedHoliday}${
-          RhplannedLeaveString.length != 0 ? `[ ${RhplannedLeaveString} ]` : ""
-        } `;
+        user.RestrictedHoliday = `${user.RestrictedHoliday}${RhplannedLeaveString.length != 0 ? `[ ${RhplannedLeaveString} ]` : ""
+          } `;
         user.MyRHdayData = MyRHdayData;
         user.leavediscriptionRh =
           leavediscriptionRh != undefined ? leavediscriptionRh : "";
@@ -1018,7 +1029,7 @@ export const MonthlyLeaveReport = (props: any) => {
           }
           return previous;
         },
-        []);
+          []);
       }
       allReportData = allReportData.filter((item: any) =>
         ImageSelectedUsers.some((user: any) => item.Id === user.Id)
@@ -1063,13 +1074,13 @@ export const MonthlyLeaveReport = (props: any) => {
         onDismiss={() => handleclose()}
         onRenderHeader={onRenderCustomHeader}
         isBlocking={false}
-        // onRenderFooter={CustomFooter}
+      // onRenderFooter={CustomFooter}
       >
-        <div className="smartFilter bg-light border mb-3 col px-3 py-2">
+        <div className="smartFilter bg-light border mb-3 col">
           {showingMonthlyPannelData ? (
             <>
               <div className="p-0 m-0">
-                <SlArrowDown className="mr-4"
+                <SlArrowDown
                   onClick={() => setshowingMonthlyPannelData(false)}
                 />
                 All Filters -{" "}
@@ -1082,14 +1093,14 @@ export const MonthlyLeaveReport = (props: any) => {
                     return (
                       <span>
                         <Avatar
+
+                          id={"UserImg" + user?.Id}
                           className="AssignUserPhoto me-1 activeimg"
                           title={user?.AssingedToUser?.Title}
                           onClick={(e: any) => SelectUserImagee(e, user)}
                           image={{ src: user?.Item_x0020_Cover?.Url }}
                           initials={
-                            user?.Item_x0020_Cover?.Url
-                              ? undefined
-                              : user?.AssingedToUser?.Suffix
+                            user?.Item_x0020_Cover?.Url == undefined ? user?.Suffix : undefined
                           }
                         />
                       </span>
@@ -1113,7 +1124,7 @@ export const MonthlyLeaveReport = (props: any) => {
                   </summary>
 
                   <div style={{ display: "block" }}>
-                    <div className="taskTeamBox ps-30">
+                    <div className="taskTeamBox ps-40 ">
                       {AllTaskuser != null &&
                         AllTaskuser.length > 0 &&
                         AllTaskuser.map((users: any, i: number) => {
@@ -1140,7 +1151,7 @@ export const MonthlyLeaveReport = (props: any) => {
                                           return (
                                             <div className="alignCenter">
                                               {item.Item_x0020_Cover !=
-                                              undefined ? (
+                                                undefined ? (
                                                 <Avatar
                                                   id={"UserImg" + item?.Id}
                                                   className={
@@ -1169,10 +1180,14 @@ export const MonthlyLeaveReport = (props: any) => {
                                                 />
                                               ) : (
                                                 <Avatar
+                                                  id={"UserImg" + item?.Id}
                                                   className={
-                                                    item?.AssingedToUserId ==
-                                                    users?.Id
-                                                      ? "activeimg suffix_Usericon"
+
+                                                    ImageSelectedUsers.some(
+                                                      (i) => i?.Id === item?.Id
+                                                    )
+                                                      ? "activeimg suffix_Usericon seclected-Image"
+
                                                       : "suffix_Usericon"
                                                   }
                                                   onClick={(e: any) =>
@@ -1209,8 +1224,9 @@ export const MonthlyLeaveReport = (props: any) => {
                     <hr></hr>
                   </summary>
                   <Row className="ps-30">
-                      <div className="col-lg-12 TimeReportDays">
-                        <span className="SpfxCheckRadio">
+                    <div>
+                      <div className="col TimeReportDays">
+                        <span className="SpfxCheckRadio me-2">
                           <input
                             type="radio"
                             className="radio"
@@ -1223,7 +1239,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>Custom</label>
                         </span>
-                        <span className="SpfxCheckRadio">
+                        <span className="SpfxCheckRadio me-2">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1235,7 +1251,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>Today</label>
                         </span>
-                        <span className="SpfxCheckRadio">
+                        <span className="SpfxCheckRadio me-2">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1247,7 +1263,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label> Yesterday </label>
                         </span>
-                        <span className="SpfxCheckRadio">
+                        <span className="SpfxCheckRadio me-2">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1260,7 +1276,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label> This Week</label>
                         </span>
-                        <span className="SpfxCheckRadio">
+                        <span className="SpfxCheckRadio me-2">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1272,7 +1288,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label> Last Week</label>
                         </span>
-                        <span className="SpfxCheckRadio">
+                        <span className="SpfxCheckRadio me-2">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1284,7 +1300,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>This Month</label>
                         </span>
-                        <span className="SpfxCheckRadio">
+                        <span className="SpfxCheckRadio me-2">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1296,7 +1312,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>Last Month</label>
                         </span>
-                        <span className="SpfxCheckRadio">
+                        <span className="SpfxCheckRadio me-2">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1307,7 +1323,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>Last 3 Months</label>
                         </span>
-                        <span className="SpfxCheckRadio">
+                        <span className="SpfxCheckRadio me-2">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1318,7 +1334,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>This Year</label>
                         </span>
-                        <span className="SpfxCheckRadio">
+                        <span className="SpfxCheckRadio me-2">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1329,7 +1345,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>Last Year</label>
                         </span>
-                        <span className="SpfxCheckRadio">
+                        <span className="SpfxCheckRadio me-2">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1340,7 +1356,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>All Time</label>
                         </span>
-                        <span className="SpfxCheckRadio">
+                        <span className="SpfxCheckRadio me-2">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1360,10 +1376,10 @@ export const MonthlyLeaveReport = (props: any) => {
                           </label>
                         </span>
                       </div>
-                     
+                    </div>
                   </Row>
                   <Row className="ps-30 mt-2">
-                  <div className="col">
+                    <div className="col">
                       <label
                         ng-required="true"
                         className="full_width ng-binding"
@@ -1414,14 +1430,13 @@ export const MonthlyLeaveReport = (props: any) => {
                     return (
                       <span>
                         <Avatar
+                          id={"UserImg" + user?.Id}
                           className="AssignUserPhoto me-1 activeimg"
                           title={user?.AssingedToUser?.Title}
-                          onClick={(e: any) => SelectUserImage(e, user)}
+                          onClick={(e: any) => SelectUserImagee(e, user)}
                           image={{ src: user?.Item_x0020_Cover?.Url }}
                           initials={
-                            user?.Item_x0020_Cover?.Url
-                              ? undefined
-                              : user?.AssingedToUser?.Suffix
+                            user?.Item_x0020_Cover?.Url == undefined ? user?.Suffix : undefined
                           }
                         />
                       </span>
@@ -1538,141 +1553,121 @@ export const MonthlyLeaveReport = (props: any) => {
                                 ? "svg__iconbox svg__icon--arrowDown"
                                 : "svg__iconbox svg__icon--arrowRight"
                             }
-                            onClick={() => toggleExpand(index)}
+                            onClick={() => toggleExpand(index, "")}
                           ></span>
                         </td>
                         <td>{entry.Title}</td>
-                        <td onClick={() => toggleExpandLeave("Planned", index)}>{entry?.leavediscriptionPlanned?.length}</td>
-                        <td onClick={() => toggleExpandLeave("Un-Planned", index)}>{entry?.leavediscriptionUnPlanned?.length}</td>
-                        <td onClick={() => toggleExpandLeave("RH", index)}>{entry?.leavediscriptionRh?.length}</td>
-                        <td onClick={() => toggleExpandLeave("Halfday", index)}>{entry?.leavediscriptionHalfday?.length}</td>
-                        <td onClick={() => toggleExpand(index)}>{entry?.TotalLeave}</td>
+                        <td onClick={() => toggleExpand(index, "Planned")}>{entry?.Plannedleave}</td>
+                        <td onClick={() => toggleExpand(index, "Un-Planned")}>{entry?.leavediscriptionUnPlanned.length}</td>
+                        <td onClick={() => toggleExpand(index, "RH")}>{entry?.leavediscriptionRh?.length}</td>
+                        <td onClick={() => toggleExpand(index, "Halfday")}>{entry?.leavediscriptionHalfday?.length}</td>
+                        <td onClick={() => toggleExpand(index, "")}>{entry?.TotalLeave}</td>
                       </tr>
 
                       {expandedIndex === index && (
                         <tr className="MonthlyLeaveReport-Table-InnerRow">
                           <td colSpan={7}>
-                            <div className="maXh-400 scrollbar border-0">
                             <table className="table">
                               <tr>
-                                {/* <td>{leave.eventType}</td>
-                                  <td>{leave.eventDate}</td>
-                                  <td>
-                                    {leave.Short_x0020_Description_x0020_On}
-                                  </td> */}
-                                {(entry?.leavediscriptionPlanned.length > 0 || expandedVal == "Planned" || expandedIndexLeave === index) && (
-                                  <fieldset className="LeaveType">
-                                    <legend className="LeaveTypeName">
-                                      Planned:&nbsp;{" "}
-                                      {entry?.leavediscriptionPlanned.length}{" "}
-                                    </legend>
-                                    <>
-                                      {entry?.leavediscriptionPlanned?.map(
-                                        (leave: any) => (
-                                          <div className="LeaveData-Row">
+                                {((expandedVal == "" || expandedVal === "Planned") && entry?.leavediscriptionPlanned?.length > 0) && (
+                                  <tr>
+                                    <td colSpan={7}>
+                                      <fieldset className="LeaveType">
+                                        <legend className="LeaveTypeName">
+                                          Planned:&nbsp; {entry?.Plannedleave}
+                                        </legend>
+                                        {entry?.leavediscriptionPlanned?.map((leave: any, idx: number) => (
+                                          <div className="LeaveData-Row" key={idx}>
                                             <span className="LeaveDate">
                                               {leave.eventDate !== leave.endDate
                                                 ? `${leave.eventDate} - ${leave.endDate}`
                                                 : leave.eventDate}
                                             </span>
                                             <span className="LeaveShortDescription">
-                                              {
-                                                leave.Short_x0020_Description_x0020_On
-                                              }
+                                              {leave.Short_x0020_Description_x0020_On}
                                             </span>
                                             <span className="LeaveStatus">
                                               {leave.isApproved}
                                             </span>
                                           </div>
-                                        )
-                                      )}
-                                    </>
-                                  </fieldset>
+                                        ))}
+                                      </fieldset>
+                                    </td>
+                                  </tr>
                                 )}
-                                {(entry?.leavediscriptionUnPlanned.length >
-                                  0 || expandedVal == "Un-Planned" || expandedIndexLeave === index)&& (
-                                  <fieldset className="LeaveType">
-                                    <legend className="LeaveTypeName">
-                                      Un-planned:&nbsp;{" "}
-                                      {entry?.leavediscriptionUnPlanned.length}{" "}
-                                    </legend>
-                                    <>
-                                      {entry?.leavediscriptionUnPlanned?.map(
-                                        (leave: any) => (
-                                          <div className="LeaveData-Row">
+                                {((expandedVal == "" || expandedVal === "Un-Planned") && entry?.leavediscriptionUnPlanned?.length > 0) && (
+                                  <tr>
+                                    <td colSpan={7}>
+                                      <fieldset className="LeaveType">
+                                        <legend className="LeaveTypeName">
+                                          Un-planned:&nbsp; {entry?.leavediscriptionUnPlanned.length}
+                                        </legend>
+                                        {entry?.leavediscriptionUnPlanned?.map((leave: any, idx: number) => (
+                                          <div className="LeaveData-Row" key={idx}>
                                             <span className="LeaveDate">
                                               {leave.eventDate !== leave.endDate
                                                 ? `${leave.eventDate} - ${leave.endDate}`
                                                 : leave.eventDate}
                                             </span>
                                             <span className="LeaveShortDescription">
-                                              {
-                                                leave.Short_x0020_Description_x0020_On
-                                              }
+                                              {leave.Short_x0020_Description_x0020_On}
                                             </span>
                                             <span className="LeaveStatus">
                                               {leave.isApproved}
                                             </span>
                                           </div>
-                                        )
-                                      )}
-                                    </>
-                                  </fieldset>
+                                        ))}
+                                      </fieldset>
+                                    </td>
+                                  </tr>
                                 )}
-                                {(entry?.leavediscriptionRh?.length > 0  || expandedVal =="RH" || expandedIndexLeave === index) && (
-                                  <fieldset className="LeaveType">
-                                    <legend className="LeaveTypeName">
-                                      RH:&nbsp;{" "}
-                                      {entry?.leavediscriptionRh?.length}{" "}
-                                    </legend>
-                                    <>
-                                      {entry?.leavediscriptionRh?.map(
-                                        (leave: any) => (
-                                          <div className="LeaveData-Row">
+                                {((expandedVal == "" || expandedVal === "RH") && entry?.leavediscriptionRh?.length > 0) && (
+                                  <tr>
+                                    <td colSpan={7}>
+                                      <fieldset className="LeaveType">
+                                        <legend className="LeaveTypeName">
+                                          RH:&nbsp; {entry?.leavediscriptionRh?.length}
+                                        </legend>
+                                        {entry?.leavediscriptionRh?.map((leave: any, idx: number) => (
+                                          <div className="LeaveData-Row" key={idx}>
                                             <span className="LeaveDate">
                                               {leave.eventDate}
                                             </span>
                                             <span className="LeaveShortDescription">
-                                              {
-                                                leave.Short_x0020_Description_x0020_On
-                                              }
+                                              {leave.Short_x0020_Description_x0020_On}
                                             </span>
                                           </div>
-                                        )
-                                      )}
-                                    </>
-                                  </fieldset>
+                                        ))}
+                                      </fieldset>
+                                    </td>
+                                  </tr>
                                 )}
-                                {(entry?.leavediscriptionHalfday?.length > 0   || expandedVal =="Halfday" || expandedIndexLeave === index) && (
-                                  <fieldset className="LeaveType">
-                                    <legend className="LeaveTypeName">
-                                      HalfDay:&nbsp;{" "}
-                                      {entry?.leavediscriptionHalfday?.length}{" "}
-                                    </legend>
-                                    <>
-                                      {entry?.leavediscriptionHalfday?.map(
-                                        (leave: any) => (
-                                          <div className="LeaveData-Row">
+                                {((expandedVal == "" || expandedVal === "Halfday") && entry?.leavediscriptionHalfday?.length > 0) && (
+                                  <tr>
+                                    <td colSpan={7}>
+                                      <fieldset className="LeaveType">
+                                        <legend className="LeaveTypeName">
+                                          Half Day:&nbsp; {entry?.leavediscriptionHalfday.length}
+                                        </legend>
+                                        {entry?.leavediscriptionHalfday?.map((leave: any, idx: number) => (
+                                          <div className="LeaveData-Row" key={idx}>
                                             <span className="LeaveDate">
                                               {leave.eventDate}
                                             </span>
                                             <span className="LeaveShortDescription">
-                                              {
-                                                leave.Short_x0020_Description_x0020_On
-                                              }
+                                              {leave.Short_x0020_Description_x0020_On}
                                             </span>
-                                            <span className="LeaveShortDescription">
+                                            <span className="LeaveStatus">
                                               {leave.isApproved}
                                             </span>
                                           </div>
-                                        )
-                                      )}
-                                    </>
-                                  </fieldset>
+                                        ))}
+                                      </fieldset>
+                                    </td>
+                                  </tr>
                                 )}
                               </tr>
                             </table>
-                            </div>
                           </td>
                         </tr>
                       )}

@@ -969,11 +969,18 @@ export const SendApprovalEmailNotificationComponent = (props: any) => {
 
 const joinObjectValues = (arr: any) => {
     let val = '';
-    arr.forEach((element: any) => {
-        val += element.Title + '; '
-    });
-    let FinalUserNames: string = '';
-    return val;
+    if(arr?.length > 1){
+        arr.forEach((element: any) => {
+            val += element.Title + '; '
+        });
+        return val;
+    }else{
+        arr.forEach((element: any) => {
+            val = element.Title
+        });
+        return val
+    }
+   
 }
 
 // This function is used for generating the required HTML structure to handle different scenarios, such as sending email notifications for tasks that are created, approved, or rejected
@@ -1581,7 +1588,9 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Categories:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '11.0pt' }} title={RequiredData["Categories"]}>{RequiredData["Categories"]?.length > 17 ? RequiredData["Categories"]?.slice(0, 14) + "..." : RequiredData["Categories"]}</span>
+                            <span title={joinObjectValues(RequiredData["TaskCategories"])} style={{ fontSize: '11.0pt', whiteSpace: 'nowrap', width: '95%', wordWrap: 'break-word', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>
+                                        {ReduceTheContentLines(joinObjectValues(RequiredData["TaskCategories"]), 14)}
+                                    </span>
                             </div>
                             <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Status:</span>
@@ -2066,6 +2075,7 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
             console.log("Task Notification Configuration ResponseData =================== :", ResponseData);
             let TaskNotificationConfig: any = [];
             const filterNotificationData: any = [];
+            let leadArray :any=[]
             ResponseData?.map((TNMItem: any) => {
                 if (TNMItem?.Title == "TaskNotificationConfigComponent") {
                     TaskNotificationConfig = JSON.parse(TNMItem.ConfigrationJSON);

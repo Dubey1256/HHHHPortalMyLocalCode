@@ -482,8 +482,7 @@ const ColumnsSetting = (props: any) => {
                                 </td>
                                 <td>
                                     <div className="SpfxCheckRadio alignCenter">
-                                        <input type="radio" className="radio" id="flexible" value="flexible" checked={heightOption === 'flexible'} onChange={() => setHeightOption('flexible')} />
-                                        <label htmlFor="flexible" className="me-3">Flexible</label>
+                                        <input type="radio" disabled={props?.multiWebPart != true ? true : false} className="radio" id="flexible" value="flexible" checked={heightOption === 'flexible'} onChange={() => setHeightOption('flexible')} /><label htmlFor="flexible" className="me-3">Flexible</label>
                                         <input type="radio" className="radio" id="fixed" value="fixed" checked={heightOption === 'fixed'} onChange={() => setHeightOption('fixed')} />
                                         <label htmlFor="fixed">Fixed</label>
                                         {heightOption === 'fixed' && (
