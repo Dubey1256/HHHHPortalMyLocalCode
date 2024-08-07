@@ -1084,7 +1084,7 @@ const CreateAllStructureComponent = (props: any) => {
                                   }
                                 />
                                 
-                                {(props?.SelectedItem?.Item_x0020_Type === "Component" && component.Feature.length >= 1 && (component.SubComponent.length>=1 || component.Feature.length>1))  && (
+                                {!(props?.SelectedItem?.Item_x0020_Type === "Component" && component.Feature.length === 1 && props?.SelectedItem === undefined)  && (
                                   <span
                                     onClick={() =>
                                       handleDelete(
@@ -1098,7 +1098,7 @@ const CreateAllStructureComponent = (props: any) => {
                                     className="svg__iconbox svg__icon--trash"
                                   ></span>
                                 )}
-                                {component.Feature.length >= 1 &&
+                                {component.SubComponent.length == 1 &&
                                 ( props?.SelectedItem === undefined) && (
                                     <span
                                       onClick={() =>
