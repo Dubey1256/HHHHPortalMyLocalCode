@@ -257,11 +257,9 @@ function Tooltip(props: any) {
   const callNotesCallBack = () => {
     setOpenCallNotes(false);
   }
-
   const adminHelpCallBack = () => {
     setOpenAdminHelp(false);
   }
-
 
   return (
     <myContextValue.Provider value={{ ...myContextValue, createNotesCallback: callNotesCallBack, closeadminHelpCallBack: adminHelpCallBack }}>
@@ -308,6 +306,7 @@ function Tooltip(props: any) {
 
         {OpenCallNotes && <CallNotes Item={CMSToolComponent} callback={callNotesCallBack} />}
         {OpenAdminHelp && <AdminHelp Item={component} callback={adminHelpCallBack}/>}
+
       </>
     </myContextValue.Provider>
   )
