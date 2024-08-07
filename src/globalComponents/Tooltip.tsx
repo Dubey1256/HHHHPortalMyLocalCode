@@ -8,7 +8,6 @@ import { myContextValue } from './globalCommon'
 import { Web } from "sp-pnp-js";
 import Feedback from 'react-bootstrap/esm/Feedback';
 import CallNotes from './CreateMeetingPopup';
-import AdminHelp from './AdminHelp'
 import * as globalCommon from './globalCommon'
 var completeUrl = ''
 var PageUrl = ''
@@ -25,10 +24,10 @@ var ComponentData: any = {
 function Tooltip(props: any) {
   const [projectId, setprojectId] = React.useState(null)
   const [OpenCallNotes, setOpenCallNotes] = React.useState(false);
-  const [OpenAdminHelp, setOpenAdminHelp] = React.useState(false)
   const [CMSToolComponent, setCMSToolComponent] = React.useState('');
-  const [component, setComponent] = React.useState('')
   const [currentbrowser, setcurrentbrowser] = React.useState('');
+  const [allowLabelEdit, setAllowLabelEdit] = React.useState(false);
+  
   const isServiceTask = props.IsServiceTask;
   
   const loadSiteUrl = async () => {
@@ -181,36 +180,6 @@ function Tooltip(props: any) {
       setCMSToolComponent(Component);
       setOpenCallNotes(true);
     }
-    if (itemType === 'Admin Help') {
-      let Componentdata: any
-      if (PageUrl != undefined && PageUrl != null) {
-        try{
-        let res = [];
-        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-        if (props?.ComponentId != undefined) {
-          res = await web.lists.getByTitle('Master Tasks').items
-            .select("Id,Title,Short_x0020_Description_x0020_On,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
-            .expand("Author,Editor")
-            .filter("Id eq " + props?.ComponentId)
-            .get();
-          ComponentData = res[0]
-          Componentdata = res[0]
-        } else {
-          res = await web.lists.getByTitle('Master Tasks').items
-            .select("Id,Title")
-            .filter("FoundationPageUrl eq '" + PageUrl + "'")
-            .get();
-          ComponentData = res[0]
-          console.log(res)
-        }
-        }
-        catch(error){
-          console.log(error)
-        }
-      }
-      setComponent(Componentdata);
-      setOpenAdminHelp(true);
-    }
     IsSameSite = false
   }
 
@@ -256,13 +225,9 @@ function Tooltip(props: any) {
     setOpenCallNotes(false);
   }
 
-  const adminHelpCallBack = () => {
-    setOpenAdminHelp(false);
-  }
-
 
   return (
-    <myContextValue.Provider value={{ ...myContextValue, createNotesCallback: callNotesCallBack, closeadminHelpCallBack: adminHelpCallBack }}>
+    <myContextValue.Provider value={{ ...myContextValue, createNotesCallback: callNotesCallBack }}>
       <>
         <Popup
           trigger={
@@ -283,12 +248,13 @@ function Tooltip(props: any) {
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Feedback SP')}><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH Feedback SP</a>
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Bug')}><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH Bug</a>
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Design')}><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH Design</a>
-              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH UX')}><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHHH User Experience - UX</a>
+              <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH UX')}><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH UX - New</a>
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Quick')} ><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH Quick</a>
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Component Page')} ><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH Component Page</a>
               <a className='dropdown-item hreflink' onClick={(e) => feedbackInitial('Call Notes')}> <span className="svg__iconbox  svg__icon--Comments mr-4"></span>Call Notes</a>
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Admin Help')}> <span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Admin Help</a>
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Help')}> <span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Help</a>
+              {(props.ShowPencilIcon==true || props.ShowPencilIcon==false) && <a className='dropdown-item hreflink' onClick={() => { setAllowLabelEdit(!allowLabelEdit); props?.setShowPencilIcon(!allowLabelEdit)}}> <span className="svg__iconbox  svg__icon--help-fill mr-4"></span>{allowLabelEdit == true ? 'Stop Editing' : 'Edit Labels'}</a>}
               {pageContent?.WebFullUrl.indexOf("hhhhteams") == -1 && <li>
               <a className='dropdown-item hreflink' onMouseEnter={() => { handleMouseEnter() }} ><span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Browser Setting</a>
                 <div className="dropdown-submenu dropdown-menu-level-1 showBrowsers" onMouseLeave={() => $(".showBrowsers").css("display", "none")} style={{ display: "none" }}>
@@ -304,7 +270,6 @@ function Tooltip(props: any) {
         </Popup>
 
         {OpenCallNotes && <CallNotes Item={CMSToolComponent} callback={callNotesCallBack} />}
-        {OpenAdminHelp && <AdminHelp Item={component} callback={adminHelpCallBack}/>}
       </>
     </myContextValue.Provider>
   )
