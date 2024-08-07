@@ -172,9 +172,9 @@ return (
         >
           Manage Content
         </a>
-        <span className="ml-5 mr-5 pull-right"> | </span>
+        <span className="mx-2 pull-right"> | </span>
         <a
-          className="hreflink pull-right"
+          className="pull-right"
           target="_blank"
           data-interception="off"
           href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Question-Management.aspx?taskId=${componentData?.Id}`}
@@ -186,7 +186,7 @@ return (
         <fieldset className="fieldsett">
           <legend>FAQs</legend>
           <div className="col-sm-12 mb-10">
-            <div className="col-sm-12 padL-0 PadR0">
+            <div className="col-sm-12">
               <span
                 className="pull-right hreflink siteColor"
                 onClick={() => setIsOpenAddQuestion(true)}
@@ -195,7 +195,7 @@ return (
               </span>
             </div>
           </div>
-          <div className="borderDes p-2">
+          <div className="col-sm-12">
             {smartHelpData
               ?.filter((elem: any) => elem?.ComponentsId != undefined)
               .map((item: any) =>
@@ -209,13 +209,13 @@ return (
 
                               <div className="ml-auto alignCenter">
                                 <span
-                                  className="svg__iconbox svg__icon--edit hreflink"
+                                  className="svg__iconbox svg__icon--edit"
                                   onClick={() => editQuestionHandler(item)}
                                 >
                                   Edit
                                 </span>
                                 <span
-                                  className="svg__iconbox svg__icon--cross hreflink"
+                                  className="svg__iconbox svg__icon--cross"
                                   onClick={() => deleteHandler(item.Id)}
                                 >
                                   Delete
@@ -272,19 +272,6 @@ return (
                     )
                   : null
               )}
-
-            {smartHelpData
-              .filter(
-                (elem: any) =>
-                  elem.Components &&
-                  elem.Components[0] &&
-                  componentData?.Id === elem.Components[0]?.Id
-              )
-              .every((elem: any) => elem.ItemType !== "Question") ? (
-              <div className="text-center p-2">
-                No Questions Description available
-              </div>
-            ) : null}
           </div>
         </fieldset>
       </div>
