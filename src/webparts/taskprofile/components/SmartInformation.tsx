@@ -1205,14 +1205,15 @@ const SmartInformation = (props: any, ref: any) => {
     let filtersmartvalue: any = [];
     setsearchvalue(event.target.value)
     if (value) {
-      copySmartInfo.map((val: any) => {
-        if (val?.Title?.toLowerCase()?.indexOf(value?.toLowerCase()) > -1 || val?.Title.toLowerCase() === value?.toLowerCase()) {
-          if (!IsitemExists(filtersmartvalue, val))
-            filtersmartvalue.push(val)
+      const regex = new RegExp(value, 'i'); // 'i' flag for case-insensitive search
+      copySmartInfo.forEach((val: any) => {
+        if (regex.test(val?.Title)) {
+          if (!IsitemExists(filtersmartvalue, val)) {
+            filtersmartvalue.push(val);
+          }
         }
-      })
-    }
-    else {
+      });
+    } else {
       filtersmartvalue = copySmartInfo;
     }
     setSmartInformation(filtersmartvalue)
@@ -1409,6 +1410,7 @@ const SmartInformation = (props: any, ref: any) => {
                           })}
 
                           <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified:</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span>}</span> </div>
+                          <div className="p-1 px-2"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>
                         </div>
                       </div>
                     </>)
@@ -1477,7 +1479,6 @@ const SmartInformation = (props: any, ref: any) => {
                               <li className='ml-auto'>
                                 <span title="Edit" className="svg__iconbox svg__icon--edit hreflink alignIcon" onClick={() => editDocumentsLink(item)}></span>
                               </li>
-
                             </ul>
                           </div>
                         )
@@ -1499,12 +1500,10 @@ const SmartInformation = (props: any, ref: any) => {
                           </div>
                         )
                       })}
-
                       <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified:</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span>}</span> </div>
+                      <div className="p-1 px-2"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>
                     </div>
-                    {/* <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Author?.Id)} title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url} /> : ""}</span></div> */}
                   </div>
-
                 </>)
             }
           })}</div>
