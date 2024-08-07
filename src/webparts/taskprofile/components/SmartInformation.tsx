@@ -1578,7 +1578,7 @@ const SmartInformation = (props: any, ref: any) => {
                 </div>
               </div>
 
-              {allValue?.InfoType !== 'Information Source' && <div className='col-md-6'>
+              {allValue?.InfoType !== 'Information Source' && <div className='col'>
                 <div className='input-group'>
                   <label htmlFor="URL" className='full-width'>URL</label>
                   <input type="text" className='form-control' id="URL" value={allValue?.URL} onChange={(e) => changeInputField(e.target.value, "url")} />
@@ -1645,7 +1645,7 @@ const SmartInformation = (props: any, ref: any) => {
                 <span className='mx-2'>|</span>
 
                 <span><a title='Add Link/ Document' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
-                <Button className='btn btn-primary ms-1 me-1' onClick={saveSharewebItem} disabled={allValue.InfoType === 'Information Source' ? (sourceTitle == '' || smartnoteAuthor?.length == 0 || InfoDate == '' || InfoSource.key == 0) : allValue?.Title == ''}>
+                <Button className='btn btn-primary ms-3 me-1' onClick={saveSharewebItem} disabled={allValue.InfoType === 'Information Source' ? (sourceTitle == '' || smartnoteAuthor?.length == 0 || InfoDate == '' || InfoSource.key == 0) : allValue?.Title == ''}>
                   Save
                 </Button>
                 <Button className='btn btn-default mx-1' onClick={() => handleClose()}>
