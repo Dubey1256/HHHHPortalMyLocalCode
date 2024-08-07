@@ -50,7 +50,7 @@ import CentralizedSiteComposition from "../SiteCompositionComponents/Centralized
 import SmartPriorityHover from "./SmartPriorityHover";
 import UXDesignPopupTemplate from "./UXDesignPopupTemplate";
 import ReactPopperTooltipSingleLevel from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
-// import RecurringTask from "../RecurringTask";
+import RecurringTask from "../RecurringTask";
 
 let PortfolioItemColor: any = "";
 let taskUsers: any = [];
@@ -360,7 +360,7 @@ const EditTaskPopup = (Items: any) => {
                         ? user.Item_x0020_Cover?.Url
                         : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
                     currentUserBackupArray.push(user);
-                if (user.Company  == "HHHH") {
+                if (user.Company == "HHHH") {
                     setIsUserFromHHHHTeam(true);
                 }
             }
@@ -2063,25 +2063,13 @@ const EditTaskPopup = (Items: any) => {
                 setIsTaskStatusUpdated(true);
                 let DynamicAssignmentInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Auto-Assignment", SiteURL: siteUrls, ItemDetails: EditDataBackup, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: StatusData.value })
                 console.log("Dynamic Assignment Information All Details from backend  ==================", DynamicAssignmentInformation);
-                const isItemExists = (arr: any, value: any) => {
-                    let isExists = false;
-                    arr.forEach((item: any) => {
-                        if (item == value) {
-                            isExists = true;
-                            return;
-                        }
-                    });
-                    return isExists;
-                };
-                const assignmentUser = EditDataBackup.TaskAssignedUsers;
-                const finalTaskAssignedTo: any = [];
-                assignmentUser?.map((finalEmail: any) => {
-                    if (finalEmail != undefined && !isItemExists(finalTaskAssignedTo, finalEmail)) {
-                        finalTaskAssignedTo.push(finalEmail)
+                const finalUsersData = EditDataBackup?.TaskAssignedUsers?.filter(
+                    (val: any, id: any, array: any) => {
+                        return array?.indexOf(val) == id;
                     }
-                });
-                if (finalTaskAssignedTo?.length > 0 && StatusData.value > 2) {
-                    setTaskAssignedTo(finalTaskAssignedTo);
+                );
+                if (finalUsersData?.length > 0 && StatusData.value > 2) {
+                    setTaskAssignedTo(finalUsersData);
                 }
                 if (StatusData.value == 0) {
                     updateWAForApproval(true, "IsChecked");
@@ -4974,8 +4962,7 @@ const EditTaskPopup = (Items: any) => {
                             }`}
                     </span>
                 </div>
-                {/* <RecurringTask props={Items} WorkingAction={WorkingAction} setWorkingAction={setWorkingAction} /> */}
-                {/* <Tooltip ComponentId="1683" isServiceTask={false} /> */}
+                <RecurringTask props={Items} WorkingAction={WorkingAction} setWorkingAction={setWorkingAction} />
                 <Tooltip ComponentId="1683" isServiceTask={false} setShowPencilIcon={setShowPencilIcon} ShowPencilIcon={ShowPencilIcon} />
             </>
         );
@@ -5512,7 +5499,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div className="col-md-5">
                                         <div className="col-12 ">
                                             <div className="input-group">
-                                                <LabelInfoIconToolTip columnName={"Title"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Title"} />
                                                 {/* <div className="d-flex justify-content-between align-items-center mb-0  full-width">
                                                     Title </div> */}
                                                 <input
@@ -5532,7 +5519,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="mx-0 row taskdate ">
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
-                                                    <LabelInfoIconToolTip columnName={"StartDate"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                    <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"StartDate"} />
                                                     <input
                                                         type="date"
                                                         className="form-control"
@@ -5554,7 +5541,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col-6 ps-0 pe-0 mt-2">
                                                 <div className="input-group ">
                                                     <div className="form-label full-width">
-                                                        <LabelInfoIconToolTip columnName={"dueDate"} onlyText={"text"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                        <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"dueDate"} onlyText={"text"} />
                                                         <span title="Re-occurring Due Date">
                                                             <input
                                                                 type="checkbox"
@@ -5583,7 +5570,7 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
-                                                    <LabelInfoIconToolTip columnName={"CompletedDate"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                    <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"CompletedDate"} />
                                                     <input
                                                         type="date"
                                                         className="form-control"
@@ -5607,7 +5594,7 @@ const EditTaskPopup = (Items: any) => {
                                                     {/* <label className="form-label full-width">
                                                         Item Rank
                                                     </label> */}
-                                                    <LabelInfoIconToolTip columnName={"ItemRank"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                    <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"ItemRank"} />
                                                     <select
                                                         className="form-select"
                                                         defaultValue={EditData.ItemRank}
@@ -5636,7 +5623,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="mx-0 row mt-2 taskservices">
                                             <div className="col-md-6  ps-0">
                                                 <div className="input-group mb-2">
-                                                    <LabelInfoIconToolTip columnName={"PortfolioItem"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                    <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"PortfolioItem"} />
                                                     {TaggedPortfolioData?.length > 0 ? (
                                                         <div className="full-width">
                                                             {TaggedPortfolioData?.map((com: any) => {
@@ -5707,7 +5694,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
 
                                                 <div className="input-group mb-2">
-                                                    <LabelInfoIconToolTip columnName={"Categories"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                    <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Categories"} />
                                                     {TaskCategoriesData?.length > 1 ? <>
                                                         <input
                                                             type="text"
@@ -5838,7 +5825,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="row">
                                                     <div className="time-status col-md-6">
                                                         <div className="input-group">
-                                                            <LabelInfoIconToolTip columnName={"Priority"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                            <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Priority"} />
                                                             <input
                                                                 type="text"
                                                                 className="form-control"
@@ -5919,7 +5906,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                     <div className="col-md-6">
                                                         <div className="input-group">
-                                                            <LabelInfoIconToolTip columnName={"SmartPriority"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                            <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"SmartPriority"} />
                                                             <div className="bg-e9 w-100 py-1 px-2" style={{ border: '1px solid #CDD4DB' }}>
                                                                 <span className={EditData?.SmartPriority != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
                                                                     <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
@@ -5936,7 +5923,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-12 mb-2">
                                                     <div className="input-group ">
-                                                        <LabelInfoIconToolTip columnName={"ClientActivity"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                        <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"ClientActivity"} />
                                                         <input
                                                             type="text"
                                                             className="form-control"
@@ -5949,7 +5936,7 @@ const EditTaskPopup = (Items: any) => {
                                                     title="Relevant Portfolio Items"
                                                 >
                                                     <div className="input-group">
-                                                        <LabelInfoIconToolTip columnName={"LinkedComponentTask"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                        <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"LinkedComponentTask"} />
                                                         <input
                                                             type="text"
                                                             readOnly
@@ -5970,7 +5957,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-12 mb-2 mt-2">
                                                     <div className="input-group mb-2">
-                                                        <LabelInfoIconToolTip columnName={"LinkedPortfolioItems"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                        <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"LinkedPortfolioItems"} />
                                                         <input
                                                             type="text"
                                                             className="form-control"
@@ -6055,7 +6042,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-12">
                                                     <div className="input-group">
-                                                        <LabelInfoIconToolTip columnName={"Project"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                        <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Project"} />
                                                         {selectedProject != undefined &&
                                                             selectedProject.length > 0 ? (
                                                             <>
@@ -6134,7 +6121,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                         <div className="col-12 mb-2 taskurl">
                                             <div className="input-group">
-                                                <LabelInfoIconToolTip columnName={"RelevantURL"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"RelevantURL"} />
                                                 <input
                                                     type="text"
                                                     className="form-control"
@@ -6192,7 +6179,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     <SlArrowRight />
                                                                 )}
                                                             </span>
-                                                            <span className="mx-2">   <LabelInfoIconToolTip columnName={"SiteComposition"} onlyText={"text"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} /></span>
+                                                            <span className="mx-2">   <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"SiteComposition"} onlyText={"text"} /></span>
                                                         </div>
                                                         <span
                                                             className="svg__iconbox svg__icon--editBox hreflink"
@@ -6265,7 +6252,7 @@ const EditTaskPopup = (Items: any) => {
 
                                         <div className="col mt-2 clearfix">
                                             <div className="input-group taskTime">
-                                                <LabelInfoIconToolTip columnName={"Status"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Status"} />
                                                 <input
                                                     type="text"
                                                     maxLength={3}
@@ -6302,7 +6289,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col mt-2 time-status">
                                                 <div>
                                                     <div className="input-group">
-                                                        <LabelInfoIconToolTip columnName={"Time"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                        <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Time"} />
                                                         <input
                                                             type="text"
                                                             maxLength={3}
@@ -6459,14 +6446,16 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                         </div>
                                         <div className="border p-2 mb-3">
-                                        <div><LabelInfoIconToolTip columnName={"EstimatedTaskTime"} onlyText={"text"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} /></div>
+                                            <div>Estimated Task Time Details</div>
                                             <div className="col-12">
                                                 <div
                                                     onChange={UpdateEstimatedTimeDescriptions}
                                                     className="full-width"
                                                 >
                                                     <div className="input-group mt-2">
-                                                    <LabelInfoIconToolTip columnName={"SelectCategory"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                        <label className="form-label full-width">
+                                                            Select Category
+                                                        </label>
                                                         <input
                                                             type="text"
                                                             className="form-control"
@@ -6597,7 +6586,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="input-group">
                                                 {console.log("Working action default users data ==============", WorkingActionDefaultUsers)}
                                                 <label className="form-label full-width alignCenter mb-1">
-                                                    <b><LabelInfoIconToolTip columnName={"Bottleneck"} onlyText={"text"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />: </b>
+                                                    <b><LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Bottleneck"} onlyText={"text"} />: </b>
 
                                                     {WorkingActionDefaultUsers?.map((userDtl: any, index: number) => {
                                                         return (
@@ -6757,7 +6746,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col mt-2 ps-0">
                                             <div className="input-group">
                                                 <label className="form-label full-width alignCenter mb-1">
-                                                    <b><LabelInfoIconToolTip columnName={"Attention"} onlyText={"text"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />: </b>
+                                                    <b><LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Attention"} onlyText={"text"} />: </b>
                                                     {WorkingActionDefaultUsers?.map((userDtl: any, index: number) => {
                                                         return (
                                                             <div className="TaskUsers" key={index} onClick={() => SelectApproverFromAutoSuggestion(userDtl, "Attention")}>
@@ -6945,7 +6934,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col mt-2 ps-0">
                                             <div className="input-group">
                                                 <label className="form-label full-width alignCenter mb-1">
-                                                    <b><LabelInfoIconToolTip columnName={"Phone"} onlyText={"text"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />: </b>
+                                                    <b><LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Phone"} onlyText={"text"} />: </b>
                                                     {WorkingActionDefaultUsers?.map((userDtl: any, index: number) => {
                                                         return (
                                                             <div className="TaskUsers" key={index} onClick={() => SelectApproverFromAutoSuggestion(userDtl, "Phone")}>
@@ -9084,14 +9073,14 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                     </div>
                                                     <div className="border p-2 mb-3">
-                                                        <div><LabelInfoIconToolTip columnName={"EstimatedTaskTime"} onlyText={"text"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} /></div>
+                                                        <div><LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"EstimatedTaskTime"} onlyText={"text"} /></div>
                                                         <div className="col-12">
                                                             <div
                                                                 onChange={UpdateEstimatedTimeDescriptions}
                                                                 className="full-width"
                                                             >
                                                                 <div className="input-group mt-2">
-                                                                    <LabelInfoIconToolTip columnName={"SelectCategory"} ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} />
+                                                                    <LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"SelectCategory"} />
                                                                     <input
                                                                         type="text"
                                                                         className="form-control"
