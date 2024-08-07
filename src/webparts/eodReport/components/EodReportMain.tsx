@@ -274,16 +274,18 @@ export const EodReportMain = (props: any) => {
             let tasks = groupedTasks[projectTitle];
             let firstTask = true;
             let lastTask = false
-            tasks.forEach((item: { Id: any; siteType: any; Title: any; Achieved: any; Pending: any; Lead: any; }, index: any) => {
+            tasks.forEach((item: { Id: any; siteType: any; Title: any; Achieved: any; Pending: any; Lead: any;ProjectId:any }, index: any) => {
                 let projectTitleCell = `<tr>
                     <td height="48" align="left" width="180" valign="middle" style="background: #fff;color: #333;width:180px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-left: 1px solid #EEE; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                                             ${''}
                                         </td>`
                 if (firstTask) {
                     projectTitleCell = ` <tr>
-                     
                     <td height="48" align="left" width="180" valign="middle" style="background: #fff;color: #333;width:180px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-left: 1px solid #EEE; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
-                                            ${projectTitle ?? ''}
+                      <a style="color: #2F5596;" href="${siteURL}/SitePages/PX-Profile.aspx?ProjectId==${item?.ProjectId}">
+                            ${projectTitle ?? ''}
+                        </a>    
+                   
                                         </td>`;
                     firstTask = false;
                 }
@@ -608,7 +610,7 @@ export const EodReportMain = (props: any) => {
                 hasCustomExpanded: false,
                 hasExpanded: false,
                 isHeaderNotAvlable: true,
-                size: 20,
+                size: 5,
                 id: 'Id',
             },
 
@@ -626,7 +628,7 @@ export const EodReportMain = (props: any) => {
                 placeholder: "ProjectTitle",
                 header: "",
                 resetColumnFilters: false,
-                size: 140,
+                size: 60,
                 isColumnVisible: true
             },
             {
@@ -657,7 +659,7 @@ export const EodReportMain = (props: any) => {
                 placeholder: "TaskCategories",
                 header: "",
                 resetColumnFilters: false,
-                size: 120,
+                size: 140,
                 isColumnVisible: true
             },
             {
@@ -673,7 +675,7 @@ export const EodReportMain = (props: any) => {
                 placeholder: "Achieved",
                 header: "",
                 resetColumnFilters: false,
-                size: 120,
+                size: 330,
                 isColumnVisible: true
             },
             {
@@ -689,7 +691,7 @@ export const EodReportMain = (props: any) => {
                 placeholder: "Pending",
                 header: "",
                 resetColumnFilters: false,
-                size: 120,
+                size: 330,
                 isColumnVisible: true
             },
 
@@ -704,7 +706,7 @@ export const EodReportMain = (props: any) => {
                 placeholder: "Lead",
                 header: "",
                 resetColumnFilters: false,
-                size: 140,
+                size: 130,
                 isColumnVisible: true
             },
             {
@@ -771,17 +773,31 @@ export const EodReportMain = (props: any) => {
     );
     const columns1: any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
-            // {
-            //     accessorKey: "",
-            //     placeholder: "",
-            //     hasCheckbox: true,
-            //     hasCustomExpanded: false,
-            //     hasExpanded: false,
-            //     isHeaderNotAvlable: true,
-            //     size: 20,
-            //     id: 'Id',
-            // },
-
+            {
+                accessorKey: "",
+                placeholder: "",
+                hasCustomExpanded: false,
+                hasExpanded: false,
+                isHeaderNotAvlable: true,
+                size: 20,
+                id: 'Id',
+            },
+            {
+                accessorFn: (row) => row?.projectStructerId,
+                cell: ({ row, getValue }) => (
+                    <> {row?.original?.projectStructerId != (null || undefined) &&
+                        <span className="">
+                            {row?.original?.projectStructerId}</span>
+                    }
+                    </>
+                ),
+                id: "projectStructerId",
+                placeholder: "projectStructerId",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                isColumnVisible: true
+            },
             {
                 accessorFn: (row) => row?.ProjectTitle,
                 cell: ({ row, getValue }) => (
@@ -1268,7 +1284,7 @@ export const EodReportMain = (props: any) => {
                         filteredData = res;
                     }
                     else if (loginUserInfo[0]?.UserGroup?.Title == "HHHH Team") {
-                        filteredData = [];
+                        filteredData = res;
                     }
                     else if (loginUserInfo[0]?.UserGroup?.Title == "Junior Task Management") {
                         filteredData = res;
