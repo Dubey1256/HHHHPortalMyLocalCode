@@ -452,7 +452,7 @@ const ImageViewPanel = (props: any) => {
                                                         Add Comment</a>
                                                 </div>
                                             </div>
-                                            {commentStatus?.status && commentStatus?.index === index && <div className="align-items-center d-flex" >
+                                            {commentStatus?.status && commentStatus?.index === index && <div className="align-items-center d-flex mb-2" >
                                         <textarea id="txtComment" onChange={(e) => setCommentData(e.target?.value)} className="form-control full-width"></textarea>
                                         <button type="button"className='btn btn-primary btnCol ms-2' onClick={() => PostButtonClick(slide)}>Post</button>
                                     </div>}
@@ -628,7 +628,7 @@ const ImageViewPanel = (props: any) => {
                                         Add Comment</a>
                                 </div>
                             </div>
-                            {commentStatus?.status && commentStatus?.index === index && <div className="align-items-center d-flex" >
+                            {commentStatus?.status && commentStatus?.index === index && <div className="align-items-center d-flex mb-2" >
                                         <textarea id="txtComment" onChange={(e) => setCommentData(e.target?.value)} className="form-control full-width"></textarea>
                                         <button type="button"className='btn btn-primary btnCol ms-2' onClick={() => PostButtonClick(slide)}>Post</button>
                                     </div>}
