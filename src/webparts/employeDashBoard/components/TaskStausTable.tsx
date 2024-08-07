@@ -1235,7 +1235,7 @@ const TaskStatusTbl = (Tile: any) => {
         hasCheckbox: true,
         hasCustomExpanded: item?.GroupByView,
         hasExpanded: item?.GroupByView,
-        size: 10,
+        size: 5,
         id: "Id"
       },
       {
@@ -1306,7 +1306,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "Title",
         resetColumnFilters: false,
         header: "",
-        size: 350,
+        size: 265,
         isColumnVisible: true
       },
       {
@@ -1328,7 +1328,7 @@ const TaskStatusTbl = (Tile: any) => {
         resetSorting: false,
         isColumnDefultSortingDesc: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === undefined ? true : false,
         header: "",
-        size: 45,
+        size: 40,
         isColumnVisible: true,
         fixedColumnWidth: true
       },
@@ -1366,7 +1366,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "Project",
         resetColumnFilters: false,
         header: "",
-        size: 70,
+        size: 64,
         isColumnVisible: false
       },
       {
@@ -1378,7 +1378,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "Status",
         resetColumnFilters: false,
         header: "",
-        size: 55,
+        size: 35,
         isColumnVisible: true,
         fixedColumnWidth: true
 
@@ -1462,30 +1462,30 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "Estimated Task Time",
         header: "",
         resetColumnFilters: false,
-        size: 80,
+        size: 25,
         isColumnVisible: item?.DataSource == 'Tasks' ? true : false,
         fixedColumnWidth: true
       },
-      {
-        accessorFn: (row: any) => row?.WorkingDate,
-        cell: ({ row }: any) => (
-          <div className='alignCenter'>
-            <span style={{ display: "flex", alignItems: "center", maxWidth: "84px" }}>
-              <span className="hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.WorkingDate}>
-                {row?.original?.WorkingDate}
-              </span>
-            </span>
-            <span className="alignIcon mt--5">{row?.original?.WorkingDate != undefined && row?.original?.WorkingDate != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"WorkingDate"} />}</span>
-          </div>
-        ),
-        id: "WorkingDate",
-        placeholder: "Working Date",
-        header: "",
-        resetColumnFilters: false,
-        size: 80,
-        isColumnVisible: item?.DataSource == 'Tasks' ? true : false,
-        fixedColumnWidth: true
-      },
+      // {
+      //   accessorFn: (row: any) => row?.WorkingDate,
+      //   cell: ({ row }: any) => (
+      //     <div className='alignCenter'>
+      //       <span style={{ display: "flex", alignItems: "center", maxWidth: "84px" }}>
+      //         <span className="hreflink" style={{ flexGrow: "1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={row?.original?.WorkingDate}>
+      //           {row?.original?.WorkingDate}
+      //         </span>
+      //       </span>
+      //       <span className="alignIcon mt--5">{row?.original?.WorkingDate != undefined && row?.original?.WorkingDate != "" && <InfoIconsToolTip row={row?.original} SingleColumnData={"WorkingDate"} />}</span>
+      //     </div>
+      //   ),
+      //   id: "WorkingDate",
+      //   placeholder: "Working Date",
+      //   header: "",
+      //   resetColumnFilters: false,
+      //   size: 80,
+      //   isColumnVisible: item?.DataSource == 'Tasks' ? true : false,
+      //   fixedColumnWidth: true
+      // },
       {
         accessorFn: (row: any) => row?.Created,
         cell: ({ row, column }: any) => (
@@ -1516,7 +1516,7 @@ const TaskStatusTbl = (Tile: any) => {
           }
         },
         header: "",
-        size: 100,
+        size: 90,
         isColumnVisible: true,
         fixedColumnWidth: true,
         isColumnDefultSortingDesc: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Created" ? true : false
@@ -1538,7 +1538,7 @@ const TaskStatusTbl = (Tile: any) => {
         resetSorting: false,
         placeholder: "DueDate",
         header: "",
-        size: 91,
+        size: 90,
         isColumnVisible: false,
         fixedColumnWidth: true,
         isColumnDefultSortingDesc: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "DueDate" ? true : false
@@ -1575,7 +1575,7 @@ const TaskStatusTbl = (Tile: any) => {
           }
         },
         header: "",
-        size: 100,
+        size: 90,
         fixedColumnWidth: true,
         isColumnDefultSortingDesc: item?.configurationData != undefined && item?.configurationData[0] != undefined && item?.configurationData[0]?.showPageSizeSetting != undefined && item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Modified" ? true : false
       },
@@ -1621,7 +1621,7 @@ const TaskStatusTbl = (Tile: any) => {
         header: "",
         resetColumnFilters: false,
         resetSorting: false,
-        size: 45,
+        size: 49,
         isColumnVisible: true,
         fixedColumnWidth: true
       },]
@@ -2057,7 +2057,7 @@ const TaskStatusTbl = (Tile: any) => {
         </a>}
         {config?.WebpartTitle == 'Draft Tasks' && <a className="empCol hreflink me-3">Approve</a>}
         {config?.WebpartTitle == 'Waiting for Approval' && <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>}
-        {(ContextData?.DashboardId == 1 || ContextData?.DashboardId == 27 || ContextData?.DashboardId == undefined || ContextData?.DashboardId == '') && <span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks, config)} className="hreflink svg__iconbox svg__icon--TShare empBg"></span>}
+        {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks, config)} className="hreflink svg__iconbox svg__icon--TShare empBg"></span>}
       </span>
     )
   }

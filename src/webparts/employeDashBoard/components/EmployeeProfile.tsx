@@ -886,8 +886,7 @@ const EmployeProfile = (props: any) => {
     let todayDate: any = new Date();
     const currentDate = todayDate;
     currentDate.setDate(today.getDate());
-    currentDate.setHours(0, 0, 0, 0);
-    // if (DashboardId == 1 || DashboardId == 27) {
+    currentDate.setHours(0, 0, 0, 0);  
     for (const items of array ?? []) {
       for (const config of DashboardConfig ?? []) {
         if (config?.Tasks == undefined) {
@@ -962,7 +961,6 @@ const EmployeProfile = (props: any) => {
         }
       }
     }
-    // }
     setprogressBar(false);
   };
   const smartTimeUseLocalStorage = () => {
@@ -1030,8 +1028,7 @@ const EmployeProfile = (props: any) => {
   const getAllData = async (IsLoad: any) => {
     if (IsLoad != undefined && IsLoad == true) {
       let filter = 'PercentComplete lt 0.81';
-      await globalCommon?.loadAllSiteTasks(props?.props, filter).then((data: any) => {
-        if (DashboardId == 1 || DashboardId == 27)
+      await globalCommon?.loadAllSiteTasks(props?.props, filter).then((data: any) => {      
           loadAllTimeEntry();
         data?.map((items: any) => {
           items.descriptionsSearch = '';

@@ -3199,7 +3199,7 @@ function getEndingDate(startDateOf: any): Date {
 //----------------------------End Time Report function------------------------------------------------------------------------------------
 
 
-export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, Context: any, DateType: any, selectedUser: any) => {
+export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, Context: any, DateType: any, selectedUser: any,TimeSheetDetails:any) => {
     let DevloperTime: any = 0.00;
     let ManagementTime: any = 0.00;
     let QATime: any = 0.00;
@@ -3238,97 +3238,6 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
     var select = selectedDate[2] + selectedDate[1] + selectedDate[0]
 
     const currentLoginUserId = Context.pageContext?._legacyPageContext.userId;
-    selectedUser?.forEach((items: any) => {
-        if (items?.UserGroup?.Title == 'Developers Team' || items?.UserGroup?.Title == 'Portfolio Lead Team' || items?.UserGroup?.Title == 'Trainees') {
-            DevCount++
-        }
-        if (items?.UserGroup?.Title == 'Junior Task Management' || items?.Title == 'Prashant Kumar') {
-            ManagementCount++
-        }
-        if ((items?.TimeCategory == 'Design' && items.Company == 'Smalsus') || items?.UserGroup?.Title == 'Design Team') {
-            DesignCount++
-        }
-        if ((items?.TimeCategory == 'QA' && items.Company == 'Smalsus') && items?.UserGroup?.Title != 'Ex-Staff') {
-            QACount++
-        }
-
-    })
-    TaskUser?.forEach((val: any) => {
-        AllTimeEntry?.map((item: any) => {
-
-            if (item?.AuthorId == val?.AssingedToUserId) {
-
-                if (val?.UserGroup?.Title == 'Developers Team' || val?.UserGroup?.Title == 'Portfolio Lead Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff') {
-                    item.Department = 'Developer';
-                    item.userName = val?.Title
-                }
-                if (val?.UserGroup?.Title == 'Junior Task Management' || val?.Title == 'Prashant Kumar') {
-                    item.Department = 'Management'
-                    item.userName = val?.Title
-                }
-
-
-                if (val?.UserGroup?.Title == 'Design Team') {
-                    item.Department = 'Design';
-                    item.userName = val?.Title
-                }
-
-
-                if (val?.UserGroup?.Title == 'QA Team') {
-                    item.Department = 'QA';
-                    item.userName = val?.Title
-                }
-
-
-            }
-        })
-
-    })
-    if (AllTimeEntry != undefined) {
-        AllTimeEntry?.forEach((time: any) => {
-            if (time?.Department == 'Developer') {
-                DevloperTime = DevloperTime + parseFloat(time.Effort)
-            }
-            if (time?.Department == 'Management') {
-                ManagementTime = ManagementTime + parseFloat(time.Effort)
-            }
-
-            if (time?.Department == 'Design') {
-                DesignTime = DesignTime + parseFloat(time.Effort)
-            }
-            if (time?.Department == 'QA') {
-                QATime = QATime + parseFloat(time.Effort)
-            }
-
-        })
-        TotleTaskTime = QATime + DevloperTime + DesignTime + ManagementTime;
-    }
-    LeaveUserData?.forEach((items: any) => {
-        if (select >= items.Start && select <= items.EndDate) {
-            items.TaskDate = startDate
-            if (items?.Department == 'Development') {
-                DevelopmentMembers++
-                DevelopmentleaveHours += items.totaltime
-            }
-            if (items?.Department == 'Management') {
-                managementMembers++
-                managementleaveHours += items.totaltime
-            }
-
-            if (items?.Department == 'Design') {
-                DesignMembers++
-                DesignMemberleaveHours += items.totaltime
-            }
-
-            if (items?.Department == 'QA') {
-                QAMembers++
-                QAleaveHours += items.totaltime
-            }
-
-
-            AllTimeEntry.push(items)
-        }
-    })
     var body1: any = []
     var body2: any = []
     var To: any = []
@@ -3354,20 +3263,20 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
 
     })
 
-    const sortUsersByName = (usersArray: any) => {
-        return usersArray.sort((a: any, b: any) => {
-            const nameA = a.userName ? a.userName.toLowerCase() : ''; // Handle undefined or null userName
-            const nameB = b.userName ? b.userName.toLowerCase() : ''; // Handle undefined or null userName
-
-            if (nameA < nameB) {
-                return -1;
-            }
-            if (nameA > nameB) {
-                return 1;
-            }
-            return 0;
+    const sortUsersByName = (usersArray:any) => {
+        return usersArray.sort((a:any, b:any) => {
+          const nameA = a.userName ? a.userName.toLowerCase() : ''; // Handle undefined or null userName
+          const nameB = b.userName ? b.userName.toLowerCase() : ''; // Handle undefined or null userName
+          
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          return 0;
         });
-    };
+      };
     const sortedUsers = sortUsersByName(AllTimeEntry);
     sortedUsers?.forEach((item: any) => {
 
@@ -3397,7 +3306,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
         if (item.Department == undefined || item.Department == '') {
             item.Department = ''
         }
-        if (item.userName == undefined || item.userName == '') {
+         if (item.userName == undefined || item.userName == '') {
             item.userName = ''
         }
         if (item.ProjectID == undefined || item.ProjectID == '') {
@@ -3414,7 +3323,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Effort + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PercentComplete + '%' + '</td>'
             + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Status + '</td>'
-            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + '<p style="margin:0px;">' + `<a href ='https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/UserTimeEntry.aspx??userId=${item.AuthorId}&Date=${item?.TaskDate}'>` + '<span style="font-size:13px">' + item?.userName + '</span></a>' + '</p>' + '</td>'
+            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' +  '<p style="margin:0px;">' + `<a href ='https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/UserTimeEntry.aspx??userId=${item.AuthorId}&Date=${item?.TaskDate}'>`+'<span style="font-size:13px">' + item?.userName + '</span></a>' + '</p>' + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Department + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.ClientCategorySearch + '</td>'
             + '</tr>'
@@ -3430,39 +3339,39 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
         + '</tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Management' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + ManagementCount + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + managementMembers + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + ManagementTime.toFixed(2) + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + managementleaveHours + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.ManagementCount + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.managementMembers + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.ManagementTime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.managementleaveHours + '</td>'
         + '</tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Technical Team' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevCount + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentMembers + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevloperTime.toFixed(2) + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentleaveHours + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.DevCount + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.DevelopmentMembers + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.DevloperTime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.DevelopmentleaveHours + '</td>'
         + '</tr>'
         + '<tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Design' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignCount + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignMembers + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignTime.toFixed(2) + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignMemberleaveHours + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.DesignCount + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.DesignMembers + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.DesignTime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.DesignMemberleaveHours + '</td>'
         + '</tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'QA' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QACount + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QAMembers + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QATime.toFixed(2) + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QAleaveHours + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.QACount + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.QAMembers + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.QATime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TimeSheetDetails?.QAleaveHours + '</td>'
         + '</tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Total' + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + (DesignCount + DevCount + QACount).toFixed(2) + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + (DesignMembers + DevelopmentMembers + QAMembers).toFixed(2) + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime.toFixed(2) + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveHours + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + (TimeSheetDetails?.DesignCount + TimeSheetDetails?.DevCount + TimeSheetDetails?.QACount + TimeSheetDetails?.ManagementCount).toFixed(2) + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + (TimeSheetDetails?.DesignMembers + TimeSheetDetails?.DevelopmentMembers + TimeSheetDetails?.QAMembers).toFixed(2) + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TimeSheetDetails?.TotleTaskTime.toFixed(2) + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TimeSheetDetails?.TotalleaveHours + '</strong>' + '</td>'
         + '</tr>';
     body2.push(text2);
 

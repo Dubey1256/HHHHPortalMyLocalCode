@@ -2,7 +2,7 @@ import * as React from 'react';
 import Tooltip from '../../../globalComponents/Tooltip';
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Dropdown, Panel, PanelType } from 'office-ui-fabric-react';
-import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
+import { Button, Tabs, Tab, Col, Nav, Row, Modal } from 'react-bootstrap';
 import EditDocument from './EditDocunentPanel'
 import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import pnp, { sp, Web } from "sp-pnp-js";
@@ -17,7 +17,10 @@ import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/People
 import EditorComponent from '../../../globalComponents/HtmlEditor/CopyHtmlEditor';
 import { ContentState, EditorState, Modifier } from 'draft-js';
 import { SlArrowDown, SlArrowRight, SlArrowUp } from 'react-icons/sl';
+import { SPHttpClient } from "@microsoft/sp-http";
 import { event } from 'jquery';
+import { set } from '@microsoft/sp-lodash-subset';
+import CoustomInfoIcon from '../../../globalComponents/GroupByReactTableComponents/CoustomInfoIcon';
 let AllTasktagsmartinfo: any = [];
 let hhhsmartinfoId: any = [];
 let taskUser: any = [];
@@ -28,8 +31,10 @@ let count = 5;
 const SmartInformation = (props: any, ref: any) => {
   const myContextData2: any = React.useContext<any>(myContextValue)
   const [show, setShow] = useState(false);
+  const [ShowallNotes, setShowallNotes] = useState(false)
   const [popupEdit, setpopupEdit] = useState(false);
-  const [smartInformationArrow, setsmartInformationArrow]:any = useState();
+  const [smartInformationArrow, setsmartInformationArrow]: any = useState();
+  const [enlargeInformationArrow, setenlargeInformationArrow]: any = useState();
   const [copySmartInfo, setcopySmartInfo] = useState([])
   const [allValue, setallSetValue] = useState({
     Title: "", Id: 1021, URL: "", Acronym: "", Description: "", InfoType: "Information Note", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
@@ -59,6 +64,8 @@ const SmartInformation = (props: any, ref: any) => {
   const [taskInfo, settaskinfo] = useState(null);
   const [SmartMetaData, setLoadSmartMetaData] = useState([]);
   const [SmartInformation, setSmartInformation] = useState([]);
+  const [showenlargeSmartInfo, setshowenlargeSmartInfo] = useState([]);
+  const [Enlargesearchvalue, setEnlargesearchvalue] = useState('');
   const [AllSmartInfo, setAllSmartInfo] = useState(null);
   const [MovefolderItemUrl, setMovefolderItemUrl] = useState(null)
   const [showAdddocument, setshowAdddocument] = useState(false);
@@ -74,6 +81,9 @@ const SmartInformation = (props: any, ref: any) => {
   const [searchvalue, setsearchvalue] = useState('');
   const [colunOredrAsc, setcolunOredrAsc] = React.useState("")
   const [state, rerender] = React.useReducer(() => ({}), {});
+  const [showallnote, setshowallnote] = useState(false);
+  const [SlArrowDownup, setSlArrowDownup] = useState(false)
+  const [enlargeSlArrowDownup, setenlargeSlArrowDownup] = useState(false)
   const handleClose = () => {
     if (addSmartInfoPopupAddlinkDoc2 == false) {
       setpopupEdit(false);
@@ -94,13 +104,14 @@ const SmartInformation = (props: any, ref: any) => {
   const handleShow = async (item: any, value: any) => {
 
     await LoadSmartMetaData();
+    setShowallNotes(false)
     setTimeout(() => {
       const panelMain: any = document.querySelector('.ms-Panel-main');
       if (panelMain && myContextData2?.ColorCode != undefined) {
         $('.ms-Panel-main').css('--SiteBlue', myContextData2?.ColorCode); // Set the desired color value here
       }
     }, 1000)
-    if (value == "edit") {
+    if (value == "edit" || value == 'enlargeeditpopup') {
       setpopupEdit(true);
       seteditvalue(item);
       setInfoDate(item.SmartNoteDate);
@@ -113,8 +124,8 @@ const SmartInformation = (props: any, ref: any) => {
         })
       }
       try {
-        item.Description = item?.Description.replace(/<[^>]*>|&[^;]+;/g, '');
         if (item?.InfoType?.Title === 'Information Source') {
+          item.Description = item?.Description?.replace(/<[^>]*>|&[^;]+;/g, '');
           setsourceTitle(item.Title);
           setEditorState(insertText(item?.Description, editorState));
         }
@@ -128,7 +139,7 @@ const SmartInformation = (props: any, ref: any) => {
       setallSetValue({ ...allValue, Title: item.Title, Id: item?.InfoType?.Id, URL: item?.URL?.Url, Description: item?.Description, InfoType: item?.InfoType?.Title, Acronym: item?.Acronym, SelectedFolder: item.SelectedFolder });
       setShow(true);
 
-    } else {
+    } else if (value == 'enlargeaddpopup' || value == 'add') {
       setallSetValue({ ...allValue, Id: 1021, Title: "", URL: "", Acronym: "", Description: "", InfoType: "Information Note", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
       if (props.showHide === "projectManagement") {
         setallSetValue({ ...allValue, InfoType: "Remarks" })
@@ -149,6 +160,14 @@ const SmartInformation = (props: any, ref: any) => {
       }, 1000)
     }
 
+  }
+
+
+  const showallnotes = () => {
+    setshowallnote(true)
+  }
+  const closeallnotes = () => {
+    setshowallnote(false)
   }
 
   useEffect(() => {
@@ -272,9 +291,8 @@ const SmartInformation = (props: any, ref: any) => {
               // MovefolderItemUrl2 = `/${tagsmartinfo.Id}_.000`
             }
             if (tagsmartinfo?.Id == items?.Id) {
-
+              tagsmartinfo.Description = tagsmartinfo?.Description?.replace(/<span[^>]*>(.*?)<\/span>/gi, '$1');
               allSmartInformationglobal.push(tagsmartinfo);
-
             }
           })
         }
@@ -316,7 +334,7 @@ const SmartInformation = (props: any, ref: any) => {
           .then(async (result: any[]) => {
             console.log(result);
             result?.map((servicecomponent: any) => {
-              servicecomponent.Title = servicecomponent.Title.replace('.', "")
+              servicecomponent.Title = servicecomponent?.Title?.replace('.', "")
               servicecomponent.Description = servicecomponent?.Body
               if (servicecomponent.Portfolios != undefined && servicecomponent.Portfolios.length > 0) {
                 mastertaskdetails.map((mastertask: any) => {
@@ -351,12 +369,13 @@ const SmartInformation = (props: any, ref: any) => {
 
             if (allSmartInformationglobal.length == allSmartInformationglobaltagdocuments.length) {
               let initialData = allSmartInformationglobaltagdocuments.slice(0, 5);
-              setSmartInformation(initialData);             
+              setSmartInformation(initialData);
               if (addSmartInfoPopupAddlinkDoc2 && (props.showHide === "projectManagement" || props.showHide === "ANCTaskProfile")) {
                 props?.callback?.();
                 addSmartInfoPopupAddlinkDoc2 = false;
               }
               setcopySmartInfo(allSmartInformationglobaltagdocuments);
+              setshowenlargeSmartInfo(allSmartInformationglobaltagdocuments);
             }
 
           }).catch((err) => {
@@ -527,7 +546,8 @@ const SmartInformation = (props: any, ref: any) => {
           InfoTypeId: metaDataId != undefined ? metaDataId : null,
           Description: allValue?.Description != "" ? allValue.InfoType === 'Information Source' ? sourcedescription : allValue?.Description : sourcedescription != undefined ? sourcedescription : "",
           SelectedFolder: allValue?.SelectedFolder,
-          SmartNoteAuthorId: smartnoteAuthor?.length > 0 ? smartnoteAuthor[0]?.AssingedToUser?.Id : typeof (smartnoteAuthor) === 'object' && smartnoteAuthor?.Id != undefined ? smartnoteAuthor?.Id : null,
+          // SmartNoteAuthorId: smartnoteAuthor?.length > 0 ? smartnoteAuthor[0]?.AssingedToUser?.Id : typeof (smartnoteAuthor) === 'object' && smartnoteAuthor[0]?.Id != undefined ? smartnoteAuthor?.Id : null,
+          SmartNoteAuthorId: smartnoteAuthor?.length > 0 ? smartnoteAuthor[0]?.Id : null,
           RequirementSource: InfoSource?.text,
           SmartNoteDate: InfoDate != '' ? moment(new Date(InfoDate)).tz("Europe/Berlin").format('DD MMM YYYY HH:mm') : null,
           Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
@@ -648,9 +668,15 @@ const SmartInformation = (props: any, ref: any) => {
 
   //===========show hide smartInformation===========
 
-  const showhideComposition = (showhideComposition: any,index:any) => {
-  setsmartInformationArrow(index)
-   }
+  const showhideComposition = (showhideComposition: any, index: any) => {
+    setSlArrowDownup(!SlArrowDownup)
+    setsmartInformationArrow(index)
+  }
+
+  const showhideenlargeComposition = (index: any) => {
+    setenlargeSlArrowDownup(!enlargeSlArrowDownup)
+    setenlargeInformationArrow(index)
+  }
 
   //========delete function smartinfomation items ==================
 
@@ -748,7 +774,7 @@ const SmartInformation = (props: any, ref: any) => {
   //===============create folder function========================
 
   const createFolder = async (folderName: any) => {
-    const web: any = new Web(props?.AllListId?.siteUrl);    
+    const web: any = new Web(props?.AllListId?.siteUrl);
     if (folderName != "") {
       var libraryName = "Documents";
       var newFolderResult = await web?.rootFolder?.folders.getByName(libraryName).folders.add(folderName);
@@ -806,7 +832,7 @@ const SmartInformation = (props: any, ref: any) => {
   // ===========get file upload data and Id ============= .
 
   const getAll = async (folderName: any, folderPath: any) => {
-    const web: any = new Web(props?.AllListId?.siteUrl);    
+    const web: any = new Web(props?.AllListId?.siteUrl);
     let fileName: any = "";
     if (allValue?.fileupload != "") {
       fileName = allValue?.fileupload;
@@ -975,21 +1001,85 @@ const SmartInformation = (props: any, ref: any) => {
   ]
   //================ People picker function===================
 
+
+
+  const getUserInfo = async (userMail: string) => {
+    const userEndPoint: any = `${props?.Context?.pageContext?.web?.absoluteUrl}/_api/Web/EnsureUser`;
+
+    const userData: string = JSON.stringify({
+      logonName: userMail,
+    });
+
+    const userReqData = {
+      body: userData,
+    };
+
+    const resUserInfo = await props?.Context?.spHttpClient.post(
+      userEndPoint,
+      SPHttpClient.configurations.v1,
+      userReqData
+    );
+    const userInfo = await resUserInfo.json();
+
+    return userInfo;
+  };
+
+  // const AssignedToUser = async (items: any[]) => {
+  //   let userId: number = undefined;
+  //   let userTitle: any;
+  //   let userSuffix: string = undefined;
+  //   if (items.length > 0) {
+  //     let userMail = items[0].id.split("|")[2];
+  //     EmailNotification = userMail
+  //     let userInfo = await getUserInfo(userMail);
+  //     userId = userInfo.Id;
+  //     userTitle = userInfo.Title;
+  //     userSuffix = userTitle
+  //       .split(" ")
+  //       .map((i: any) => i.charAt(0))
+  //       .join("");
+  //     setAssignedToUser(userInfo);
+  //     setIsUserNameValid(true);
+  //   } else {
+  //     setAssignedToUser([]);
+  //     setIsUserNameValid(false);
+  //   }
+  // };
+
   const userIdentifier = EditSmartinfoValue?.SmartNoteAuthor != undefined ? EditSmartinfoValue?.SmartNoteAuthor?.Name : editvalue?.SmartNoteAuthor?.Name;
   const email = userIdentifier ? userIdentifier.split('|').pop() : '';
 
-  const smartNoteAuthor = (item: any) => {
-    if (item.length > 0) {
-      const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
+  const smartNoteAuthor = async (item: any) => {
+    let userId: number = undefined;
+    let userTitle: any;
+    let userSuffix: string = undefined;
 
-      if (item[0].text === 'Stefan Hochhuth') {
-        var member = taskUser.filter((elem: any) => elem.AssingedToUser != undefined && elem.AssingedToUser.Id === 32)
-      }
-      else {
-        // var member = taskUser.filter((elem: any) => elem.Email.toLowerCase() === email.toLowerCase())
-        var member = taskUser.filter((elem: any) => new RegExp('^' + email + '$', 'i').test(elem.Email));
-      }
-      setsmartnoteAuthor(member)
+    if (item.length > 0) {
+      const email = item.length > 0 ? item[0].loginName.split('|').pop().indexOf('ext') > -1 ? item[0]?.secondaryText : item[0].loginName.split('|').pop() : null;
+
+      // if (item[0].text === 'Stefan Hochhuth') {
+      //   var member = taskUser.filter((elem: any) => elem.AssingedToUser != undefined && elem.AssingedToUser.Id === 32)
+      // }
+      // else {
+      //   // var member = taskUser.filter((elem: any) => elem.Email.toLowerCase() === email.toLowerCase())
+      //   // const emailName = email.split("@")[0]
+      //   // var member = taskUser.filter((elem: any) => {
+      //   //   const regex = new RegExp('^' + emailName + '$', 'i');
+      //   //   const elemEmailName = elem.Email.split('@')[0]; // Extract the name part from elem.Email
+      //   //   return regex.test(elemEmailName);
+      //   // });
+
+      //   var member = taskUser.filter((elem: any) => new RegExp('^' + email + '$', 'i').test(elem.Email));
+      // }
+
+      let userInfo = await getUserInfo(email);
+      userId = userInfo.Id;
+      userTitle = userInfo.Title;
+      userSuffix = userTitle
+        .split(" ")
+        .map((i: any) => i.charAt(0))
+        .join("");
+      setsmartnoteAuthor([userInfo])
       setIsUserNameValid(true);
     }
     else {
@@ -1009,7 +1099,7 @@ const SmartInformation = (props: any, ref: any) => {
     }
     setsourceTitle(title);
   }
-
+  // const [show, setShow] = useState(false);
   //===================== Handle Editor for Description ==============================//
   // const insertText = (text: any, editorValue: any) => {
   //   const currentContent = editorValue.getCurrentContent();
@@ -1112,26 +1202,44 @@ const SmartInformation = (props: any, ref: any) => {
   }
   const handlesearchingvalue = (event: any) => {
     const value = event.target.value;
-    let filtersmartvalue: any = [];    
+    let filtersmartvalue: any = [];
     setsearchvalue(event.target.value)
+    if (value) {
+      const regex = new RegExp(value, 'i'); // 'i' flag for case-insensitive search
+      copySmartInfo.forEach((val: any) => {
+        if (regex.test(val?.Title)) {
+          if (!IsitemExists(filtersmartvalue, val)) {
+            filtersmartvalue.push(val);
+          }
+        }
+      });
+    } else {
+      filtersmartvalue = copySmartInfo;
+    }
+    setSmartInformation(filtersmartvalue)
+  }
+  const handleenlargesearchingvalue = (event: any) => {
+    const value = event.target.value;
+    let filtersmartvalue: any = [];
+    setEnlargesearchvalue(event.target.value)
     if (value) {
       copySmartInfo.map((val: any) => {
         if (val?.Title?.toLowerCase()?.indexOf(value?.toLowerCase()) > -1 || val?.Title.toLowerCase() === value?.toLowerCase()) {
-          if (!IsitemExists(filtersmartvalue , val) )
+          if (!IsitemExists(filtersmartvalue, val))
             filtersmartvalue.push(val)
-        }        
+        }
       })
     }
     else {
       filtersmartvalue = copySmartInfo;
     }
-    setSmartInformation(filtersmartvalue)
+    setshowenlargeSmartInfo(filtersmartvalue)
   }
 
 
   const sortByAsc = (type: any) => {
-    let array = [...SmartInformation]; 
-    let sortarray: any = [];   
+    let array = [...SmartInformation];
+    let sortarray: any = [];
     if (type === "asc") {
       sortarray = array.sort((a: any, b: any) => { return a.Title.localeCompare(b.Title) });
     } else {
@@ -1140,6 +1248,18 @@ const SmartInformation = (props: any, ref: any) => {
     setcolunOredrAsc(type);
     setSmartInformation(array);
   };
+
+  const sortByAscEnlarge = (type: any) => {
+    let array = [...showenlargeSmartInfo];
+    let sortarray1: any = [];
+    if (type === "asc") {
+      sortarray1 = array.sort((a: any, b: any) => { return a.Title.localeCompare(b.Title) });
+    } else {
+      sortarray1 = array.sort((a: any, b: any) => { return b.Title.localeCompare(a.Title) });
+    }
+    setcolunOredrAsc(type);
+    setshowenlargeSmartInfo(array);
+  }
 
   const showMoreInfo = () => {
     count += 5;
@@ -1181,380 +1301,490 @@ const SmartInformation = (props: any, ref: any) => {
     handleClose()
 
   }
-  return (   
-    <div>
+  return (
+    <>
+      <div>
 
-      {(props?.showHide != "projectManagement" && SmartInformation?.length > 0) && <div className='mb-3 card commentsection'>
-        <div className='card-header'>
-          <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation
-            <span className='alignCenter'>
-              <span onClick={() => handleShow(null, "add")} className='svg__iconbox svg__icon--Plus mini hreflink text-bg-light' title="Add SmartInformation"></span>
-              <Tooltip ComponentId='993' /></span></div>
-        </div>
-        <div className='sortinginput'>
-          <input type='text' className='full-width' placeholder='Title' value={searchvalue} onChange={(e)=>handlesearchingvalue(e)}></input>
-          <div className='defultSortingIcons'>
-            <div className='upArrow'><SlArrowDown onClick={() => sortByAsc("asc")} /></div> <div className='downArrow'><SlArrowUp onClick={() => sortByAsc("desc")} /></div>
+        {(props?.showHide != "projectManagement" && SmartInformation?.length > 0) && <div className='mb-3 card commentsection'>
+          <div className='card-header'>
+            <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation
+              <span className='alignCenter'>
+                <span onClick={() => handleShow(null, "add")} className='svg__iconbox svg__icon--Plus mini hreflink text-bg-light' title="Add SmartInformation"></span>
+                <span className='px-1' onClick={() => setShowallNotes(true)}><svg data-bs-toggle="modal" data-bs-target="#exampleModal" width="15" height="15" viewBox="0 0 49 48" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M28.7008 8.11474C28.6373 8.17769 28.5854 8.68085 28.5854 9.23285V10.2362H32.1885C34.1703 10.2362 35.8467 10.2909 35.9139 10.3579C36.0353 10.4786 10.629 35.8669 10.3865 35.8669C10.3168 35.8669 10.2388 34.2221 10.2132 32.2115L10.1665 28.5562H9.12883H8.09114L8.04566 34.2782L8 40L13.6665 39.9548L19.3327 39.9093V38.8205V37.7318L15.8447 37.7517C13.3782 37.7658 12.3204 37.7135 12.2334 37.5733C12.1172 37.3864 37.3188 12.1284 37.6215 12.1284C37.6931 12.1284 37.7517 13.754 37.7517 15.7408V19.3532H38.8758H40V13.6766V8H34.4081C31.3324 8 28.7641 8.05161 28.7008 8.11474Z" fill="#fff"></path></svg></span>
+                <Tooltip ComponentId='993' /></span></div>
           </div>
-        </div>
-        {SmartInformation != null && SmartInformation.length > 0  && <div className="subiteminfo">{SmartInformation?.map((SmartInformation: any, i: any) => {
-          if ((props?.Context?.pageContext?.legacyPageContext?.userId == SmartInformation?.Author?.Id && SmartInformation?.SelectedFolder == "Only For Me") || SmartInformation.SelectedFolder == "Public") {
-            return (
-              <>
-                <div className='infoitem'>
-                  <div className='bgyellow  d-flex py-1 '>
-                    <span className='full-width'>
-                      <a className='d-flex' onClick={() => showhideComposition(SmartInformation,i)}>
-                        <span className='px-1 alignCenter'>{smartInformationArrow == i? <SlArrowDown /> : <SlArrowRight />}</span >
-                        <span className="pe-3">{SmartInformation?.Title != undefined ? SmartInformation?.Title : ""}</span>
-                      </a>
+          <Modal className='border-0 boxshadow  rounded-0 smartpopopbox' show={ShowallNotes} onHide={() => setShowallNotes(false)} dialogClassName="modal-90w" aria-labelledby="example-custom-modal-styling-title" centered>
+            <div className="fade modal-backdrop show"></div>
+            <div className='modal-header'>
+              <span className='m-0 subheading '>
+                SmartInformation
+              </span>
+              <span className="ml-auto" ><Tooltip ComponentId='' />  </span>
+              <span className=' valign-middle' ><i onClick={() => setShowallNotes(false)} className="svg__iconbox svg__icon--cross dark crossBtn"></i></span>
 
-                    </span>
-                    <span className='alignCenter'>
-                      <a style={{ cursor: "pointer" }} onClick={() => addDocument("AddDocument", SmartInformation)}>
-                        <span className='svg__iconbox svg__icon--Plus mini hreflink' title="Add Document"></span>
-                      </a>
-                      <a style={{ cursor: "pointer" }}
-                        onClick={() => handleShow(SmartInformation, "edit")}>
-                        <span className='svg__iconbox svg__icon--editBox hreflink' title="Edit SmartInformation"></span></a>
-                    
-                    </span>
-                  </div>
-
-                  <div className="border-0 border-bottom m-0 bgLightyellow" style={{ display: smartInformationArrow ==i? 'block' : 'none', fontSize: "small" }}>
-                    <div className="p-1 px-2" style={{ fontSize: "small" }} dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
-                    {SmartInformation?.TagDocument != undefined && SmartInformation?.TagDocument?.length > 0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
-                      return (
-                        <div className='card-body p-1 bg-ee mt-1'>
-                          <ul className='alignCenter list-none'>
-                            <li>
-                              <span><a href={item?.EncodedAbsUrl} target="_blank" data-interception="off">
-                                {item?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
-                                {item?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}
-                                {item?.File_x0020_Type == "csv" || item?.File_x0020_Type == "xlsx" && <span className='svg__iconbox svg__icon--csv' title="csv"></span>}
-                                {item?.File_x0020_Type == "jpeg" || item?.File_x0020_Type == "jpg " && <span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span>}
-                                {item?.File_x0020_Type == "ppt" || item?.File_x0020_Type == "pptx" && <span className='svg__iconbox svg__icon--ppt' title="ppt"></span>}
-                                {item?.File_x0020_Type == "svg" && <span className='svg__iconbox svg__icon--svg' title="svg"></span>}
-                                {item?.File_x0020_Type == "zip" && <span className='svg__iconbox svg__icon--zip' title="zip"></span>}
-                                {item?.File_x0020_Type == "png" && <span className='svg__iconbox svg__icon--png' title="png"></span>}
-                                {item?.File_x0020_Type == "txt" && <span className='svg__iconbox svg__icon--txt' title="txt"></span>}
-                                {item?.File_x0020_Type == "smg" && <span className='svg__iconbox svg__icon--smg' title="smg"></span>}
-                                {item.Url != null && <span className='svg__iconbox svg__icon--link' title="smg"></span>}
-                              </a></span>
-                            </li>
-                            <li>
-                              {item.Url == null && <span><a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
-                              {item.Url != null && <span><a className='px-2' href={`${item?.Url?.Url}`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
-                            </li>
-                            <li className='ml-auto'>
-                              <span title="Edit" className="svg__iconbox svg__icon--edit hreflink alignIcon" onClick={() => editDocumentsLink(item)}></span>
-                            </li>
-
-                          </ul>
-                        </div>
-                      )
-                    })}
-                    {SmartInformation.TagTask != undefined && SmartInformation?.TagTask?.length > 0 && SmartInformation?.TagTask?.map((tagtask: any) => {
-                      return (
-                        <div className='card-body p-0 bg-ee mt-1'>
-                          <ul className='alignCenter list-none'>
-                            <li>
-                              <span><a href={`${props.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`} target="_blank" data-interception="off"><span className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
-                            </li>
-                            <li>
-                              <span className='px-2'><a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`} target="_blank" data-interception="off">{tagtask?.Title}</a></span>
-                            </li>
-                            <li className='d-end'>
-                              <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={(e) => edittaskpopup(tagtask)}></span>
-                            </li>
-                          </ul>
-                        </div>
-                      )
-                    })}
-
-                    <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By <span>{SmartInformation?.Editor != null && SmartInformation?.Editor?.Title}</span></span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : ""}</span> </div>
-                  </div>
-                  {/* <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Author?.Id)} title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url} /> : ""}</span></div> */}
-                </div>
-
-              </>)
-          }
-
-        })}
-
-        </div>}
-
-
-        {(copySmartInfo != undefined && copySmartInfo?.length > 5 && copySmartInfo?.length !==  SmartInformation.length ) && <div className="showmorbtn hyperlink" onClick={showMoreInfo}> Show more Options</div>}
-      </div>}
-      {/* ================= smartInformation add and edit panel=========== */}
-
-      <Panel onRenderHeader={onRenderCustomHeadersmartinfo}
-        isOpen={show}
-        type={PanelType.custom}
-        customWidth="1091px"
-        onDismiss={() => handleClose()}
-        isBlocking={false}
-      >
-
-        <div>
-          <div className="row">
-            <dl className="align-items-center d-flex Hz-align ">
-              <dt>
-                Select Permission:
-              </dt>
-              <dt className='SpfxCheckRadio '><input type="radio" className='radio' checked={allValue?.SelectedFolder == "Public"} value="Public" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Global</label></dt>
-              <dt className='SpfxCheckRadio '><input type="radio" className='radio' checked={allValue?.SelectedFolder == "Only For Me"} value="Only For Me" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Only for me</label></dt>
-            </dl>
-          </div>
-          <div className='row'>
-            <div className='col-md-6'>
-              <div className='input-group'>
-                <label htmlFor="Title" className='form-label full-width'>Title
-                  <span className='ml-1 mr-1 text-danger'>*</span>
-                  {(popupEdit != true && !Htmleditorcall) && <span className='mx-2'><input type="checkbox" className="form-check-input" onClick={(e) => checkboxFunction(e)} /></span>}</label>
-                {allValue?.InfoType === 'Information Source' ? <input type="text" className="form-control" value={sourceTitle} id="Title" onChange={(e) => setsourceTitle(e.target.value)} autoComplete='off' /> :
-                  <input type="text" className="form-control" value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} autoComplete='off' />}
-                {/* {allValue.AstricMesaage &&<span className='ml-1 mr-1 text-danger'>Please enter your Title !</span>} */}
-                {/* {filterSmartinfo != undefined && filterSmartinfo.length > 0 && <div className='bg-Fa border overflow-auto'><ul className='list-group mx-2 tex'> {filterSmartinfo.map((smartinfofilter: any) => {
-                  return (
-                    < >
-                      <li onClick={() => onclickfilteritems(smartinfofilter.Title)}> {smartinfofilter.Title}</li>
-                    </>
-                  )
-                })}
-                </ul>
-                </div>} */}
-              </div></div>
-            <div className='col-sm-6'>
-              <div className='input-group'>
-                <label className='full-width' htmlFor="InfoType">InfoType</label>
-                <Dropdown id='sourceinfoid' className='full-width'
-                  options={SmartMetaData.map((src) => ({ key: src?.Id, text: src?.Title }))}
-                  selectedKey={allValue?.Id}
-                  onChange={(e, option) => InfoType(option)}
-                  styles={{ dropdown: { width: '100%' } }}
-                />
-                {/*<select className='form-control' name="cars" id="InfoType" value={allValue?.InfoType} onChange={(e) => InfoType(e.target.value)}>
-                {SmartMetaData != undefined && SmartMetaData?.map((items: any) => {
-                  return (
-                    <> <option value={items?.Title}>{items?.Title}</option></>
-                  )
-                })}
-
-                </select> */}
-              </div>
             </div>
 
-            {allValue?.InfoType !== 'Information Source' && <div className='col-md-6'>
-              <div className='input-group'>
-                <label htmlFor="URL" className='full-width'>URL</label>
-                <input type="text" className='form-control' id="URL" value={allValue?.URL} onChange={(e) => changeInputField(e.target.value, "url")} />
-              </div></div>}
-            {allValue.InfoType != null && allValue.InfoType == "Glossary" && <div className='col-md-6'> <div className='input-group'>
-              <label htmlFor="Acronym" className='full-width'>Acronym</label>
-              <input type="text" className='form-control' id="Acronym" value={allValue?.Acronym} onChange={(e) => changeInputField(e.target.value, "Acronym")} />
-            </div></div>}
-            {allValue.InfoType != null && allValue.InfoType == "Information Source" && <div className='col-md-6 mt-2 d-flex'>
-              <div className='col-md-4'>
-                <div className='input-group class-input'>
-                  <label className='form-label full-width'> Author <span className='ml-1 mr-1 text-danger'>*</span> </label>
-                  <PeoplePicker context={props.Context} titleText="" personSelectionLimit={1}
-                    principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => smartNoteAuthor(items)}
-                    defaultSelectedUsers={email ? [email] : []} />
+            <Modal.Body>
+              <div className='d-flex justify-content-between align-items-center'>
+                <div className='sortinginput w-100'>
+                  <input type='text' className='full-width' placeholder='Search SmartNotes' value={Enlargesearchvalue} onChange={(e) => handleenlargesearchingvalue(e)}></input>
+                  <div className='defultSortingIcons'>
+                    <div className='upArrow'><SlArrowDown onClick={() => sortByAscEnlarge("asc")} /></div> <div className='downArrow'><SlArrowUp onClick={() => sortByAscEnlarge("desc")} /></div>
+                  </div>
                 </div>
+                <span onClick={() => handleShow(null, "add")} className='svg__iconbox svg__icon--Plus mini hreflink me-2' title="Add SmartInformation"></span>
               </div>
-              <div className='col-md-4 ps-4'>
-                <div className='input-group ps-1'>
-                  <label htmlFor="InfoDate" className='form-label full-width'> Date <span className='ml-1 mr-1 text-danger'>*</span> </label>
-                  <input type="date" className='form-control' id="dateforIonfosource" value={InfoDate != undefined && InfoDate != '' ? moment(InfoDate).format("YYYY-MM-DD") : ''} onChange={(e) => setInfoDate(e.target.value)} />
-                </div>
-              </div>
-              <div className='col-md-4 ps-3'>
+
+              {showenlargeSmartInfo != null && showenlargeSmartInfo.length > 0 && <div className="subiteminfo">{showenlargeSmartInfo?.map((SmartInformation: any, i: any) => {
+                if ((props?.Context?.pageContext?.legacyPageContext?.userId == SmartInformation?.Author?.Id && SmartInformation?.SelectedFolder == "Only For Me") || SmartInformation.SelectedFolder == "Public") {
+                  return (
+                    <>
+                      <div className='infoitem'>
+                        <div className='bgyellow  d-flex py-1 '>
+                          <span className='full-width'>
+                            <a className='d-flex' onClick={() => showhideenlargeComposition(i)}>
+                              <span className='px-1 alignCenter'>{enlargeInformationArrow == i && enlargeSlArrowDownup ? <SlArrowDown /> : <SlArrowRight />}</span >
+                              <span className="pe-3">{SmartInformation?.Title != undefined ? SmartInformation?.Title : ""}</span>
+                            </a>
+                          </span>
+                          <span className='alignCenter'>
+                            <a style={{ cursor: "pointer" }} onClick={() => addDocument("AddDocument", SmartInformation)}>
+                              <span className="svg__iconbox svg__icon--attach mini hreflink" title="Add Document"></span>
+                            </a>
+                            <a style={{ cursor: "pointer" }}
+                              onClick={() => handleShow(SmartInformation, "edit")}>
+                              <span className='svg__iconbox svg__icon--editBox hreflink' title="Edit SmartInformation"></span>
+                            </a>
+                          </span>
+                        </div>
+
+                        <div className="border-0 border-bottom m-0 bgLightyellow" style={{ display: enlargeInformationArrow == i && enlargeSlArrowDownup ? 'block' : 'none', fontSize: "small" }}>
+                          <div className="p-1 px-2" style={{ fontSize: "small" }} dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
+                          {SmartInformation?.TagDocument != undefined && SmartInformation?.TagDocument?.length > 0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
+                            return (
+                              <div className='card-body p-1 bg-ee mt-1'>
+                                <ul className='alignCenter list-none'>
+                                  <li>
+                                    <span><a href={item?.EncodedAbsUrl} target="_blank" data-interception="off">
+                                      {item?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
+                                      {item?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}
+                                      {item?.File_x0020_Type == "csv" || item?.File_x0020_Type == "xlsx" && <span className='svg__iconbox svg__icon--csv' title="csv"></span>}
+                                      {item?.File_x0020_Type == "jpeg" || item?.File_x0020_Type == "jpg " && <span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span>}
+                                      {item?.File_x0020_Type == "ppt" || item?.File_x0020_Type == "pptx" && <span className='svg__iconbox svg__icon--ppt' title="ppt"></span>}
+                                      {item?.File_x0020_Type == "svg" && <span className='svg__iconbox svg__icon--svg' title="svg"></span>}
+                                      {item?.File_x0020_Type == "zip" && <span className='svg__iconbox svg__icon--zip' title="zip"></span>}
+                                      {item?.File_x0020_Type == "png" && <span className='svg__iconbox svg__icon--png' title="png"></span>}
+                                      {item?.File_x0020_Type == "txt" && <span className='svg__iconbox svg__icon--txt' title="txt"></span>}
+                                      {item?.File_x0020_Type == "smg" && <span className='svg__iconbox svg__icon--smg' title="smg"></span>}
+                                      {item.Url != null && <span className='svg__iconbox svg__icon--link' title="smg"></span>}
+                                    </a></span>
+                                  </li>
+                                  <li>
+                                    {item.Url == null && <span><a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
+                                    {item.Url != null && <span><a className='px-2' href={`${item?.Url?.Url}`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
+                                  </li>
+                                  <li className='ml-auto'>
+                                    <span title="Edit" className="svg__iconbox svg__icon--edit hreflink alignIcon" onClick={() => editDocumentsLink(item)}></span>
+                                  </li>
+
+                                </ul>
+                              </div>
+                            )
+                          })}
+                          {SmartInformation.TagTask != undefined && SmartInformation?.TagTask?.length > 0 && SmartInformation?.TagTask?.map((tagtask: any) => {
+                            return (
+                              <div className='card-body p-0 bg-ee mt-1'>
+                                <ul className='alignCenter list-none'>
+                                  <li>
+                                    <span><a href={`${props.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`} target="_blank" data-interception="off"><span className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
+                                  </li>
+                                  <li>
+                                    <span className='px-2'><a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`} target="_blank" data-interception="off">{tagtask?.Title}</a></span>
+                                  </li>
+                                  <li className='d-end'>
+                                    <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={(e) => edittaskpopup(tagtask)}></span>
+                                  </li>
+                                </ul>
+                              </div>
+                            )
+                          })}
+
+                          <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified:</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span>}</span> </div>
+                          <div className="p-1 px-2"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>
+                        </div>
+                      </div>
+                    </>)
+                }
+              })}</div>
+              }
+              <div className='p-2 text-end'><button onClick={() => setShowallNotes(false)} className="btn btn-default">Cancel</button></div>
+            </Modal.Body>
+
+          </Modal>
+
+          <div className='sortinginput'>
+            <input type='text' className='full-width' placeholder='Search SmartNotes' value={searchvalue} onChange={(e) => handlesearchingvalue(e)}></input>
+            <div className='defultSortingIcons'>
+              <div className='upArrow'><SlArrowDown onClick={() => sortByAsc("asc")} /></div> <div className='downArrow'><SlArrowUp onClick={() => sortByAsc("desc")} /></div>
+            </div>
+          </div>
+          {SmartInformation != null && SmartInformation.length > 0 && <div className="subiteminfo">{SmartInformation?.map((SmartInformation: any, i: any) => {
+            if ((props?.Context?.pageContext?.legacyPageContext?.userId == SmartInformation?.Author?.Id && SmartInformation?.SelectedFolder == "Only For Me") || SmartInformation.SelectedFolder == "Public") {
+              return (
+                <>
+                  <div className='infoitem'>
+                    <div className='bgyellow  d-flex py-1 '>
+                      <span className='full-width'>
+                        <a className='d-flex' onClick={() => showhideComposition(SmartInformation, i)}>
+                          <span className='px-1 alignCenter'>{smartInformationArrow == i && SlArrowDownup ? <SlArrowDown /> : <SlArrowRight />}</span >
+                          <span className="pe-3">{SmartInformation?.Title != undefined ? SmartInformation?.Title : ""}</span>
+                        </a>
+                      </span>
+                      <span className='alignCenter'>
+                        <a style={{ cursor: "pointer" }} onClick={() => addDocument("AddDocument", SmartInformation)}>
+                          <span className="svg__iconbox svg__icon--attach mini hreflink" title="Add Document"></span>
+                        </a>
+                        <a style={{ cursor: "pointer" }}
+                          onClick={() => handleShow(SmartInformation, "edit")}>
+                          <span className='svg__iconbox svg__icon--editBox hreflink' title="Edit SmartInformation"></span>
+                        </a>
+                      </span>
+                    </div>
+
+                    <div className="border-0 border-bottom m-0 bgLightyellow" style={{ display: smartInformationArrow == i && SlArrowDownup ? 'block' : 'none', fontSize: "small" }}>
+                      <div className="p-1 px-2" style={{ fontSize: "small" }} dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
+                      {SmartInformation?.TagDocument != undefined && SmartInformation?.TagDocument?.length > 0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
+                        return (
+                          <div className='card-body p-1 bg-ee mt-1'>
+                            <ul className='alignCenter list-none'>
+                              <li>
+                                <span><a href={item?.EncodedAbsUrl} target="_blank" data-interception="off">
+                                  {item?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
+                                  {item?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}
+                                  {item?.File_x0020_Type == "csv" || item?.File_x0020_Type == "xlsx" && <span className='svg__iconbox svg__icon--csv' title="csv"></span>}
+                                  {item?.File_x0020_Type == "jpeg" || item?.File_x0020_Type == "jpg " && <span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span>}
+                                  {item?.File_x0020_Type == "ppt" || item?.File_x0020_Type == "pptx" && <span className='svg__iconbox svg__icon--ppt' title="ppt"></span>}
+                                  {item?.File_x0020_Type == "svg" && <span className='svg__iconbox svg__icon--svg' title="svg"></span>}
+                                  {item?.File_x0020_Type == "zip" && <span className='svg__iconbox svg__icon--zip' title="zip"></span>}
+                                  {item?.File_x0020_Type == "png" && <span className='svg__iconbox svg__icon--png' title="png"></span>}
+                                  {item?.File_x0020_Type == "txt" && <span className='svg__iconbox svg__icon--txt' title="txt"></span>}
+                                  {item?.File_x0020_Type == "smg" && <span className='svg__iconbox svg__icon--smg' title="smg"></span>}
+                                  {item.Url != null && <span className='svg__iconbox svg__icon--link' title="smg"></span>}
+                                </a></span>
+                              </li>
+                              <li>
+                                {item.Url == null && <span><a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
+                                {item.Url != null && <span><a className='px-2' href={`${item?.Url?.Url}`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
+                              </li>
+                              <li className='ml-auto'>
+                                <span title="Edit" className="svg__iconbox svg__icon--edit hreflink alignIcon" onClick={() => editDocumentsLink(item)}></span>
+                              </li>
+                            </ul>
+                          </div>
+                        )
+                      })}
+                      {SmartInformation.TagTask != undefined && SmartInformation?.TagTask?.length > 0 && SmartInformation?.TagTask?.map((tagtask: any) => {
+                        return (
+                          <div className='card-body p-0 bg-ee mt-1'>
+                            <ul className='alignCenter list-none'>
+                              <li>
+                                <span><a href={`${props.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`} target="_blank" data-interception="off"><span className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
+                              </li>
+                              <li>
+                                <span className='px-2'><a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`} target="_blank" data-interception="off">{tagtask?.Title}</a></span>
+                              </li>
+                              <li className='d-end'>
+                                <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={(e) => edittaskpopup(tagtask)}></span>
+                              </li>
+                            </ul>
+                          </div>
+                        )
+                      })}
+                      <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified:</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span>}</span> </div>
+                      <div className="p-1 px-2"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>
+                    </div>
+                  </div>
+                </>)
+            }
+          })}</div>
+          }
+          {(copySmartInfo != undefined && copySmartInfo?.length > 5 && copySmartInfo?.length !== SmartInformation.length) && <div className="showmorbtn hyperlink" onClick={showMoreInfo}> Show more Options</div>}
+        </div>}
+        {/* ================= smartInformation add and edit panel=========== */}
+
+        <Panel onRenderHeader={onRenderCustomHeadersmartinfo}
+          isOpen={show}
+          type={PanelType.custom}
+          customWidth="1091px"
+          onDismiss={() => handleClose()}
+          isBlocking={false}
+        >
+
+          <div>
+            <div className="row">
+              <dl className="align-items-center d-flex Hz-align ">
+                <dt>
+                  Select Permission:
+                </dt>
+                <dt className='SpfxCheckRadio '><input type="radio" className='radio' checked={allValue?.SelectedFolder == "Public"} value="Public" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Global</label></dt>
+                <dt className='SpfxCheckRadio '><input type="radio" className='radio' checked={allValue?.SelectedFolder == "Only For Me"} value="Only For Me" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Only for me</label></dt>
+              </dl>
+            </div>
+            <div className='row'>
+              <div className='col-md-6  mb-1'>
                 <div className='input-group'>
-                  <label htmlFor="InfoDate" className='full-width form-label'> Source <span className='ml-1 mr-1 text-danger'>*</span> </label>
-                  {/* <input type="text" className='full-width' value={InfoSource} onChange={(e) => setInfoSource(e.target.value)} /> */}
-                  {/* <select className='full-width' name="cars" id="InfoType" value={InfoSource} onChange={(e) => setInfoSource(e.target.value)}>
-                    <option value='team'>Team</option>
-                    <option value='call'>Call</option>
-                    <option value='email'>Email</option>
-                  </select> */}
+                  <label htmlFor="Title" className='d-flex form-label full-width'>Title
+                    <span className='ml-1 mr-1 text-danger'>*</span>
+                    {(popupEdit != true && !Htmleditorcall) && <span className='mx-2'><input type="checkbox" className="form-check-input" onClick={(e) => checkboxFunction(e)} /></span>} <span>
+                    <CoustomInfoIcon Discription="Select checkbox to generate title automatically" />
+                      </span></label>
+
+                  {allValue?.InfoType === 'Information Source' ? <input type="text" className="form-control" value={sourceTitle} id="Title" onChange={(e) => setsourceTitle(e.target.value)} autoComplete='off' /> :
+                    <input type="text" className="form-control" value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} autoComplete='off' />}
+                  {/* {allValue.AstricMesaage &&<span className='ml-1 mr-1 text-danger'>Please enter your Title !</span>} */}
+                  {/* {filterSmartinfo != undefined && filterSmartinfo.length > 0 && <div className='bg-Fa border overflow-auto'><ul className='list-group mx-2 tex'> {filterSmartinfo.map((smartinfofilter: any) => {
+                    return (
+                      < >
+                        <li onClick={() => onclickfilteritems(smartinfofilter.Title)}> {smartinfofilter.Title}</li>
+                      </>
+                    )
+                  })}
+                  </ul>
+                  </div>} */}
+                </div></div>
+              <div className='col-sm-6'>
+                <div className='input-group'>
+                  <label className='full-width' htmlFor="InfoType">InfoType</label>
                   <Dropdown id='sourceinfoid' className='full-width'
-                    options={sourceinfo.map((src) => ({ key: src?.key, text: src?.text }))}
-                    selectedKey={InfoSource?.key}
-                    onChange={(e, option) => handleSource(option)}
+                    options={SmartMetaData.map((src) => ({ key: src?.Id, text: src?.Title }))}
+                    selectedKey={allValue?.Id}
+                    onChange={(e, option) => InfoType(option)}
                     styles={{ dropdown: { width: '100%' } }}
                   />
+                  {/*<select className='form-control' name="cars" id="InfoType" value={allValue?.InfoType} onChange={(e) => InfoType(e.target.value)}>
+                  {SmartMetaData != undefined && SmartMetaData?.map((items: any) => {
+                    return (
+                      <> <option value={items?.Title}>{items?.Title}</option></>
+                    )
+                  })}
+
+                  </select> */}
                 </div>
               </div>
-            </div>}
-          </div>
-        </div>
-        {!Htmleditorcall && allValue.InfoType !== 'Information Source' && <div className='mt-2'><HtmlEditorCard editorValue={allValue?.Description != null ? allValue?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>}
 
-        {Htmleditorcall && <div className='text-end my-1'><a title='Add Description' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDescription()}>Add Source Description</a></div>}
-        {(Htmleditorcall || (popupEdit && allValue.InfoType === 'Information Source')) && <div className='mt-2'> <EditorComponent editorState={editorState} setEditorState={setEditorState} /> </div>}
-
-        <footer className='text-end mt-2'>
-          <div className='col-sm-12 row m-0'>
-            <div className={popupEdit ? "col-sm-4 text-lg-start ps-1" : "col-sm-6 text-lg-start ps-1"}>
-              {popupEdit && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{editvalue?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{editvalue?.Author?.Title}</a></span></div>
-                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{editvalue?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{editvalue?.Editor?.Title}</a></span></div>
-                <div className='alignCenter'>Delete this item<span className="svg__iconbox svg__icon--trash" onClick={() => deleteSmartinfoData(editvalue.Id)}> </span></div>
+              {allValue?.InfoType !== 'Information Source' && <div className='col'>
+                <div className='input-group'>
+                  <label htmlFor="URL" className='full-width'>URL</label>
+                  <input type="text" className='form-control' id="URL" value={allValue?.URL} onChange={(e) => changeInputField(e.target.value, "url")} />
+                </div></div>}
+              {allValue.InfoType != null && allValue.InfoType == "Glossary" && <div className='col-md-6'> <div className='input-group'>
+                <label htmlFor="Acronym" className='full-width'>Acronym</label>
+                <input type="text" className='form-control' id="Acronym" value={allValue?.Acronym} onChange={(e) => changeInputField(e.target.value, "Acronym")} />
+              </div></div>}
+              {allValue.InfoType != null && allValue.InfoType == "Information Source" && <div className='col-md-6 mt-2 d-flex'>
+                <div className='col-md-4'>
+                  <div className='input-group class-input'>
+                    <label className='form-label full-width'> Author <span className='ml-1 mr-1 text-danger'>*</span> </label>
+                    <PeoplePicker context={props.Context} titleText="" personSelectionLimit={1}
+                      principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => smartNoteAuthor(items)}
+                      defaultSelectedUsers={email ? [email] : []} />
+                  </div>
+                </div>
+                <div className='col-md-4 ps-4'>
+                  <div className='input-group ps-1'>
+                    <label htmlFor="InfoDate" className='form-label full-width'> Date <span className='ml-1 mr-1 text-danger'>*</span> </label>
+                    <input type="date" className='form-control' id="dateforIonfosource" value={InfoDate != undefined && InfoDate != '' ? moment(InfoDate).format("YYYY-MM-DD") : ''} onChange={(e) => setInfoDate(e.target.value)} />
+                  </div>
+                </div>
+                <div className='col-md-4 ps-3'>
+                  <div className='input-group'>
+                    <label htmlFor="InfoDate" className='full-width form-label'> Source <span className='ml-1 mr-1 text-danger'>*</span> </label>
+                    {/* <input type="text" className='full-width' value={InfoSource} onChange={(e) => setInfoSource(e.target.value)} /> */}
+                    {/* <select className='full-width' name="cars" id="InfoType" value={InfoSource} onChange={(e) => setInfoSource(e.target.value)}>
+                      <option value='team'>Team</option>
+                      <option value='call'>Call</option>
+                      <option value='email'>Email</option>
+                    </select> */}
+                    <Dropdown id='sourceinfoid' className='full-width'
+                      options={sourceinfo.map((src) => ({ key: src?.key, text: src?.text }))}
+                      selectedKey={InfoSource?.key}
+                      onChange={(e, option) => handleSource(option)}
+                      styles={{ dropdown: { width: '100%' } }}
+                    />
+                  </div>
+                </div>
               </div>}
             </div>
-
-            <footer className={popupEdit ? 'col-sm-8 mt-2 p-0' : "mt-2 p-0"}>
-              {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
-              <span className='me-2'><a className="ForAll hreflink" target="_blank" data-interception="off"
-                href={`${props?.Context?._pageContext?._web?.absoluteUrl}/SitePages/ManageSmartMetaData.aspx`}>
-                Manage Information
-              </a></span>
-              <span className='mx-2'>|</span>
-
-              <span><a title='Add Link/ Document' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
-              <Button className='btn btn-primary ms-1 me-1' onClick={saveSharewebItem} disabled={allValue.InfoType === 'Information Source' ? (sourceTitle == '' || smartnoteAuthor?.length == 0 || InfoDate == '' || InfoSource.key == 0) : allValue?.Title == ''}>
-                Save
-              </Button>
-              <Button className='btn btn-default mx-1' onClick={() => handleClose()}>
-                Cancel
-              </Button>
-
-            </footer>
           </div>
-        </footer>
-      </Panel>
+          {!Htmleditorcall && allValue.InfoType !== 'Information Source' && <div className='mt-2'><HtmlEditorCard editorValue={allValue?.Description != null ? allValue?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>}
 
+          {Htmleditorcall && <div className='text-end my-1'><a title='Add Description' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDescription()}>Add Source Description</a></div>}
+          {(Htmleditorcall || (popupEdit && allValue.InfoType === 'Information Source')) && <div className='mt-2'> <EditorComponent editorState={editorState} setEditorState={setEditorState} /> </div>}
 
-      {/* ================ upload documents link task  panel=========== */}
-
-      <Panel onRenderHeader={onRenderCustomHeadersmartinfo}
-        isOpen={showAdddocument}
-        type={PanelType.custom}
-        customWidth="1091px"
-        onDismiss={() => closeDoc()}
-        isBlocking={false}
-      >
-
-        <div >
-
-          <div className='bg-ee d-flex justify-content-center py-4 text-center'>
-            <a className={SelectedTilesTitle == "UploadDocument" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('UploadDocument')}>
-              <p className='full-width floar-end'>
-                Document
-              </p>
-
-              <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_LibraryBooks.png" title="Documents" data-themekey="#" />
-
-
-            </a>
-            <a className={SelectedTilesTitle == "UploadEmail" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('UploadEmail')}>
-              <p className='full-width floar-end'>
-                Email
-              </p>
-              <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_MailPlus.png" title="Mail" data-themekey="#" />
-
-
-            </a>
-            <a className={SelectedTilesTitle == "CreateLink" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('CreateLink')}>
-              <p className='full-width floar-end'>
-                Link
-              </p>
-              <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Links.png" title="Links" data-themekey="#" />
-
-
-            </a>
-            {props?.listName != 'Master Tasks' && <a className={SelectedTilesTitle == "Task" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('Task')}>
-              <p className='full-width floar-end'>
-                Task
-              </p>
-              <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Task.png" title="Tasks" data-themekey="#" />
-            </a>}
-
-          </div>
-
-          {SelectedTilesTitle === "UploadDocument" && <div className='mt-2'>
-            <div className=''>{SelectedTilesTitle}</div>
-            <DragDropFiles
-              dropEffect="copy"
-              // enable={true}  
-              onDrop={_getDropFiles}
-              iconName="Upload"
-            //labelMessage= "My custom upload File"
-            >
-              <div className='BorderDas py-5 px-2 text-center'> {allValue?.Dragdropdoc == "" && <span>Drag and drop here...</span>}
-                <span>{allValue?.Dragdropdoc != "" ? allValue?.Dragdropdoc : ""}</span>
+          <footer className='text-end mt-2'>
+            <div className='col-sm-12 row m-0'>
+              <div className={popupEdit ? "col-sm-4 text-lg-start ps-1" : "col-sm-6 text-lg-start ps-1"}>
+                {popupEdit && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{editvalue?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{editvalue?.Author?.Title}</a></span></div>
+                  <div><span className='pe-2'>Last modified</span><span className='pe-2'>{editvalue?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{editvalue?.Editor?.Title}</a></span></div>
+                  <div className='alignCenter'>Delete this item<span className="svg__iconbox svg__icon--trash" onClick={() => deleteSmartinfoData(editvalue.Id)}> </span></div>
+                </div>}
               </div>
 
-            </DragDropFiles>
-            <div className='row'>
-              <div className='col-md-6'>
-                <input type='file' onChange={(e) => changeInputField(e, "fileupload")} className="full-width mt-3"></input>
-              </div>
-              <div className='col-md-6'><input type="text" className="full-width mt-3" placeholder='Rename your document' value={allValue?.fileupload != "" ? allValue?.fileupload : ""}></input></div>
+              <footer className={popupEdit ? 'col-sm-8 mt-2 p-0' : "mt-2 p-0"}>
+                {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
+                <span className='me-2'><a className="ForAll hreflink" target="_blank" data-interception="off"
+                  href={`${props?.Context?._pageContext?._web?.absoluteUrl}/SitePages/ManageSmartMetaData.aspx`}>
+                  Manage Information
+                </a></span>
+                <span className='mx-2'>|</span>
+
+                <span><a title='Add Link/ Document' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
+                <Button className='btn btn-primary ms-3 me-1' onClick={saveSharewebItem} disabled={allValue.InfoType === 'Information Source' ? (sourceTitle == '' || smartnoteAuthor?.length == 0 || InfoDate == '' || InfoSource.key == 0) : allValue?.Title == ''}>
+                  Save
+                </Button>
+                <Button className='btn btn-default mx-1' onClick={() => handleClose()}>
+                  Cancel
+                </Button>
+
+              </footer>
             </div>
-            <footer className='mt-2 text-end' >
-              <button className='btn btn-primary mx-3 text-end ' onClick={(e) => onUploadDocumentFunction("uploadFile", "UploadDocument")}>Upload</button>
-              <Button className='btn btn-default text-end  btn btn-primary' onClick={() => closeDoc()}>
-                Cancel
-              </Button> </footer>
-          </div>}
-          {SelectedTilesTitle === "UploadEmail" && <div>
-            <div className='mt-2 emailupload'>Email</div>
-            <DragDropFiles
-              dropEffect="copy"
-              // enable={true}  
-              onDrop={_getDropFiles}
-              iconName="Upload"
-              labelMessage="Drag and drop here..."
-            >
-              <div className='BorderDas py-5 px-2 text-center'> {allValue?.emailDragdrop == "" && <span>Drag and drop here...</span>}
-                <span>{allValue?.emailDragdrop != "" ? allValue?.emailDragdrop : ""}</span>
-              </div>
-            </DragDropFiles>
-            <div className='text-lg-end mt-2'><Button className='btn btn-default text-end  btn btn-primary' onClick={() => closeDoc()}>Cancel</Button></div>
-          </div>}
-          {SelectedTilesTitle === "CreateLink" && <div><div className="card mt-3 ">
-            <div className="card-header">
-              Link</div>
-            <div className='mx-3 my-2'><label htmlFor="Name">Name</label>
-              <input type='text' id="Name" className="form-control" placeholder='Name' value={allValue?.LinkTitle != "" ? allValue?.LinkTitle : null} onChange={(e) => setallSetValue({ ...allValue, LinkTitle: e.target.value })}></input>
-            </div>
-            <div className='mx-3 my-2'><label htmlFor="url">Url</label>
-              <input type='text' id="url" className="form-control" placeholder='Url' value={allValue.LinkUrl != "" ? allValue?.LinkUrl : null} onChange={(e) => setallSetValue({ ...allValue, LinkUrl: e.target.value })}></input>
+          </footer>
+        </Panel>
+
+
+        {/* ================ upload documents link task  panel=========== */}
+
+        <Panel onRenderHeader={onRenderCustomHeadersmartinfo}
+          isOpen={showAdddocument}
+          type={PanelType.custom}
+          customWidth="1091px"
+          onDismiss={() => closeDoc()}
+          isBlocking={false}
+        >
+
+          <div >
+
+            <div className='selectifodocbox'>
+              <a className={SelectedTilesTitle == "UploadDocument" ? "docbox BoxShadow" : "docbox"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('UploadDocument')}>
+                <p className='full-width floar-end'>
+                  Document
+                </p>
+                <span className="svg__iconbox svg__icon--document" title="Documents"></span>
+                {/* <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_LibraryBooks.png" title="Documents" data-themekey="#" /> */}
+
+              </a>
+              <a className={SelectedTilesTitle == "UploadEmail" ? "docbox  BoxShadow" : "docbox"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('UploadEmail')}>
+                <p className='full-width floar-end'>
+                  Email
+                </p>
+                <span className="svg__iconbox svg__icon--Email" title="Mail"></span>
+                {/* <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_MailPlus.png" title="Mail" data-themekey="#" /> */}
+
+
+              </a>
+              <a className={SelectedTilesTitle == "CreateLink" ? "docbox  BoxShadow" : "docbox"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('CreateLink')}>
+                <p className='full-width floar-end'>
+                  Link
+                </p>
+                <span className="svg__iconbox svg__icon--smlink" title="Links"></span>
+                {/* <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Links.png" title="Links" data-themekey="#" /> */}
+
+
+              </a>
+              {props?.listName != 'Master Tasks' && <a className={SelectedTilesTitle == "Task" ? "docbox BoxShadow" : "docbox"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('Task')}>
+                <p className='full-width floar-end'>
+                  Task
+                </p>
+                <span className="svg__iconbox svg__icon--smtask" title="Tasks"></span>
+                {/* <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Task.png" title="Tasks" data-themekey="#" /> */}
+              </a>}
+
             </div>
 
-            <div className='text-lg-end mt-2'><Button className='btn btn-default mx-3 my-2 text-end' onClick={() => uploadDocumentFinal("")}>Create</Button></div>
+            {SelectedTilesTitle === "UploadDocument" && <div className='mt-2'>
+              <div className=''>{SelectedTilesTitle}</div>
+              <DragDropFiles
+                dropEffect="copy"
+                // enable={true}  
+                onDrop={_getDropFiles}
+                iconName="Upload"
+              //labelMessage= "My custom upload File"
+              >
+                <div className='BorderDas py-5 px-2 text-center'> {allValue?.Dragdropdoc == "" && <span>Drag and drop here...</span>}
+                  <span>{allValue?.Dragdropdoc != "" ? allValue?.Dragdropdoc : ""}</span>
+                </div>
 
+              </DragDropFiles>
+              <div className='row'>
+                <div className='col-md-6'>
+                  <input type='file' onChange={(e) => changeInputField(e, "fileupload")} className="full-width mt-3"></input>
+                </div>
+                <div className='col-md-6'><input type="text" className="full-width mt-3" placeholder='Rename your document' value={allValue?.fileupload != "" ? allValue?.fileupload : ""}></input></div>
+              </div>
+              <footer className='mt-2 text-end' >
+                <button className='btn btn-primary mx-3 text-end ' onClick={(e) => onUploadDocumentFunction("uploadFile", "UploadDocument")}>Upload</button>
+                <Button className='btn btn-default text-end  btn btn-primary' onClick={() => closeDoc()}>
+                  Cancel
+                </Button> </footer>
+            </div>}
+            {SelectedTilesTitle === "UploadEmail" && <div>
+              <div className='mt-2 emailupload'>Email</div>
+              <DragDropFiles
+                dropEffect="copy"
+                // enable={true}  
+                onDrop={_getDropFiles}
+                iconName="Upload"
+                labelMessage="Drag and drop here..."
+              >
+                <div className='BorderDas py-5 px-2 text-center'> {allValue?.emailDragdrop == "" && <span>Drag and drop here...</span>}
+                  <span>{allValue?.emailDragdrop != "" ? allValue?.emailDragdrop : ""}</span>
+                </div>
+              </DragDropFiles>
+              <div className='text-lg-end mt-2'><Button className='btn btn-default text-end  btn btn-primary' onClick={() => closeDoc()}>Cancel</Button></div>
+            </div>}
+            {SelectedTilesTitle === "CreateLink" && <div><div className="card mt-3 ">
+              <div className="form-label full-width fw-semibold titleheading">
+                Link</div>
+              <div className='mx-3 my-2'><label htmlFor="Name">Name</label>
+                <input type='text' id="Name" className="form-control" placeholder='Name' value={allValue?.LinkTitle != "" ? allValue?.LinkTitle : null} onChange={(e) => setallSetValue({ ...allValue, LinkTitle: e.target.value })}></input>
+              </div>
+              <div className='mx-3 my-2'><label htmlFor="url">Url</label>
+                <input type='text' id="url" className="form-control" placeholder='Url' value={allValue.LinkUrl != "" ? allValue?.LinkUrl : null} onChange={(e) => setallSetValue({ ...allValue, LinkUrl: e.target.value })}></input>
+              </div>
+
+              <div className='text-lg-end mt-2'><Button className='btn btn-default mx-3 my-2 text-end' onClick={() => uploadDocumentFinal("")}>Create</Button></div>
+
+            </div>
+
+            </div>}
+            {SelectedTilesTitle === "Task" && <div className='card mt-3'>
+              <div className='form-label full-width fw-semibold titleheading'>Task</div>
+              <div className='mx-3 my-2'><label htmlFor="Title">Title</label>
+                <input type='text' id="Title" className="form-control" placeholder='Name' onChange={(e) => setallSetValue({ ...allValue, taskTitle: e.target.value })}></input>
+              </div>
+              <div className='text-lg-end mt-2'><Button className='btn btn-default mx-3 my-2 text-end' onClick={creatTask}>Create</Button></div>
+            </div>}
           </div>
 
-          </div>}
-          {SelectedTilesTitle === "Task" && <div className='card mt-3'>
-            <div className='card-header'>Task</div>
-            <div className='mx-3 my-2'><label htmlFor="Title">Title</label>
-              <input type='text' id="Title" className="form-control" placeholder='Name' onChange={(e) => setallSetValue({ ...allValue, taskTitle: e.target.value })}></input>
-            </div>
-            <div className='text-lg-end mt-2'><Button className='btn btn-default mx-3 my-2 text-end' onClick={creatTask}>Create</Button></div>
-          </div>}
-        </div>
+        </Panel>
 
-      </Panel>
+        {/* ===============edit  uploaded documents and link both  data panel============== */}
+        {Editdocpanel && <EditDocument editData={EditdocumentsData} ColorCode={myContextData2?.ColorCode} AllListId={props.AllListId} Context={props.Context} editdocpanel={Editdocpanel} callbackeditpopup={callbackeditpopup} />}
+        {allValue.EditTaskpopupstatus && <EditTaskPopup Items={EditTaskdata} context={props?.Context} AllListId={props?.AllListId} Call={() => { CallBack() }} />}
 
-      {/* ===============edit  uploaded documents and link both  data panel============== */}
-      {Editdocpanel && <EditDocument editData={EditdocumentsData} ColorCode={myContextData2?.ColorCode} AllListId={props.AllListId} Context={props.Context} editdocpanel={Editdocpanel} callbackeditpopup={callbackeditpopup} />}
-      {allValue.EditTaskpopupstatus && <EditTaskPopup Items={EditTaskdata} context={props?.Context} AllListId={props?.AllListId} Call={() => { CallBack() }} />}
+        {isopencomonentservicepopup &&
+          <ServiceComponentPortfolioPopup
+            props={allValue?.componentservicesetdata}
+            Dynamic={props.AllListId}
+            ComponentType={"Component"}
+            Call={ComponentServicePopupCallBack}
 
-      {isopencomonentservicepopup &&
-        <ServiceComponentPortfolioPopup
-          props={allValue?.componentservicesetdata}
-          Dynamic={props.AllListId}
-          ComponentType={"Component"}
-          Call={ComponentServicePopupCallBack}
+          />
+        }
 
-        />
-      }
+      </div>
 
-    </div>
+    </>
   )
 }
 export default forwardRef(SmartInformation);

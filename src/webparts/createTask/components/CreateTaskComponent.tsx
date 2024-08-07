@@ -13,6 +13,7 @@ import GlobalCommanTable from '../../../globalComponents/GroupByReactTableCompon
 import { ColumnDef } from '@tanstack/react-table';
 import { Item } from '@pnp/sp/items';
 import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
+import * as GlobalFunctionForUpdateItems from '../../../globalComponents/GlobalFunctionForUpdateItems'
 let AllMetadata: any = []
 let siteConfig: any = []
 let AssignedToUsers: any = []
@@ -40,6 +41,7 @@ let AllProjects: any = [];
 let URLRelatedProjects: any = [];
 let suggestedProjects: any = []
 let DirectTask = false;
+let UXCat: any = []
 function CreateTaskComponent(props: any) {
     let base_Url = props?.pageContext?._web?.absoluteUrl;
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
@@ -928,9 +930,6 @@ function CreateTaskComponent(props: any) {
             if (CategoryTitle !== undefined) {
                 CategoryTitle.split(';')?.map((cat: any) => {
                     if (cat === 'User Experience - UX' || cat === 'UX-New') {
-                        AssignedToIds.push(301)
-                        TeamMembersIds.push(301);
-                        ResponsibleIds.push(298);
                         taskUsers?.map((User: any) => {
                             if (User.Title === 'User Experience - UX' && burgerMenuTaskDetails.TaskType != "User Experience - UX" && TeamMembersIds.length === 0 && User.AssingedToUserId != null && User.AssingedToUserId != '' && User.AssingedToUserId != undefined) {
                                 TeamMembersIds.push(User.AssingedToUserId);
@@ -1172,9 +1171,28 @@ function CreateTaskComponent(props: any) {
                         }
 
                         if (CategoryTitle?.indexOf("User Experience - UX") > -1 || CategoryTitle?.indexOf("UX-New") > -1) {
-                            globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'DesignMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
-                                console.log(response);
-                            });
+                            data.data.TaskCategories = UXCat || []
+                            await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Auto-Assignment", SiteURL: AllListId.siteUrl, ItemDetails: data.data, Context: AllListId.Context, RequiredListIds: AllListId, AllTaskUser: taskUsers, Status: 0 })
+                            let assignedToIds: any[] = [];
+                            let responsibleTeamIds: any[] = [];
+                            data.data.TaskAssignedUsers.map((users: any) => {
+                                assignedToIds.push(users.AssingedToUserId)
+                            })
+                            data.data.ResponsibleTeamMembers.map((teamMember: any) => {
+                                responsibleTeamIds.push(teamMember.AssingedToUserId)
+                            })
+                            let updateTask: any = {}
+                            updateTask.AssignedToId = {results: assignedToIds ? assignedToIds : []}
+                            updateTask.TeamMembersId = {results: assignedToIds ? assignedToIds : []}
+                            updateTask.ResponsibleTeamId = {results: responsibleTeamIds ? responsibleTeamIds : []}
+                            await web.lists.getById(selectedSite?.listId).items.getById(data.data.Id).update(updateTask).then(async (item) => {
+                                console.log(item.data, "updated Item")
+                            }).then((error) => {
+                                console.log(error)
+                            })
+                            // globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'DesignMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
+                            //     console.log(response);
+                            // });
                         }
                         if (CategoryTitle?.indexOf("Approval") > -1) {
                             setSendApproverMail(true);
