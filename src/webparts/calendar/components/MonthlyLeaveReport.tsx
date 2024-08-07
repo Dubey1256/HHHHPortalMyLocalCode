@@ -1087,9 +1087,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           onClick={(e: any) => SelectUserImagee(e, user)}
                           image={{ src: user?.Item_x0020_Cover?.Url }}
                           initials={
-                            user?.Item_x0020_Cover?.Url
-                              ? undefined
-                              : user?.AssingedToUser?.Suffix
+                            user?.Item_x0020_Cover?.Url == undefined ? user?.Suffix : undefined
                           }
                         />
                       </span>
@@ -1170,9 +1168,10 @@ export const MonthlyLeaveReport = (props: any) => {
                                               ) : (
                                                 <Avatar
                                                   className={
-                                                    item?.AssingedToUserId ==
-                                                    users?.Id
-                                                      ? "activeimg suffix_Usericon"
+                                                    ImageSelectedUsers.some(
+                                                      (i) => i?.Id === item?.Id
+                                                    )
+                                                      ? "activeimg suffix_Usericon seclected-Image"
                                                       : "suffix_Usericon"
                                                   }
                                                   onClick={(e: any) =>
@@ -1419,9 +1418,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           onClick={(e: any) => SelectUserImage(e, user)}
                           image={{ src: user?.Item_x0020_Cover?.Url }}
                           initials={
-                            user?.Item_x0020_Cover?.Url
-                              ? undefined
-                              : user?.AssingedToUser?.Suffix
+                            user?.Item_x0020_Cover?.Url == undefined ? user?.Suffix : undefined
                           }
                         />
                       </span>

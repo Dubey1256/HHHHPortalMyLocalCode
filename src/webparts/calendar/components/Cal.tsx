@@ -54,6 +54,7 @@ let ApproveruserEmail: any;
 let backuprecurringarr: any = [];
 let leaveapproved = false;
 let leaverejected = false;
+let eventsInSlot: any = [];
 
 const leaveTypes = [
   { key: "Sick", text: "Sick" },
@@ -1119,7 +1120,7 @@ const Apps = (props: any) => {
     today.setHours(0, 0, 0, 0);
     let IsOpenAddPopup = true;
     const { start, end } = slotInfo;
-    const eventsInSlot = events.filter((event: any) => event.start >= start && event.end <= end);
+    eventsInSlot = events.filter((event: any) => event.start >= start && event.end <= end);
     if (eventsInSlot !== undefined && eventsInSlot?.length > 0) {
       for (let index = 0; index < eventsInSlot.length; index++) {
         let item = eventsInSlot[index];
@@ -1688,6 +1689,13 @@ const Apps = (props: any) => {
   // Email End 
 
   const saveEvent = async () => {
+    let employeeAlreadyAval = eventsInSlot.some((item: any) => peopleName.includes(item?.Title.split("-")[0]));
+    if (employeeAlreadyAval) {
+      alert('Leave already exist for the Employee on the Selected Date !!')
+      setm(false);
+      setInputValueName("");
+      sedType("");
+    } else {
     try {
       if (inputValueName?.length > 0 && (dType?.length > 0 || type == "National Holiday" || type == "Company Holiday")) {
         const chkstartDate = new Date(startDate);
@@ -1783,6 +1791,9 @@ const Apps = (props: any) => {
       console.error(error);
       alert("An error occurred while saving the event. Please try again.");
     }
+
+    }
+
   };
   const handleInputChangeName = (
     event: React.ChangeEvent<HTMLInputElement>
