@@ -1082,6 +1082,7 @@ export const MonthlyLeaveReport = (props: any) => {
                     return (
                       <span>
                         <Avatar
+                          id={"UserImg" + user?.Id}
                           className="AssignUserPhoto me-1 activeimg"
                           title={user?.AssingedToUser?.Title}
                           onClick={(e: any) => SelectUserImagee(e, user)}
@@ -1415,7 +1416,7 @@ export const MonthlyLeaveReport = (props: any) => {
                         <Avatar
                           className="AssignUserPhoto me-1 activeimg"
                           title={user?.AssingedToUser?.Title}
-                          onClick={(e: any) => SelectUserImage(e, user)}
+                          onClick={(e: any) => SelectUserImagee(e, user)}
                           image={{ src: user?.Item_x0020_Cover?.Url }}
                           initials={
                             user?.Item_x0020_Cover?.Url == undefined ? user?.Suffix : undefined
