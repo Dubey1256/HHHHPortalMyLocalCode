@@ -359,7 +359,7 @@ const EditTaskPopup = (Items: any) => {
                         ? user.Item_x0020_Cover?.Url
                         : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
                     currentUserBackupArray.push(user);
-                if (user.Company  == "HHHH") {
+                if (user.Company == "HHHH") {
                     setIsUserFromHHHHTeam(true);
                 }
             }
@@ -2062,25 +2062,13 @@ const EditTaskPopup = (Items: any) => {
                 setIsTaskStatusUpdated(true);
                 let DynamicAssignmentInformation = await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Auto-Assignment", SiteURL: siteUrls, ItemDetails: EditDataBackup, Context: Context, RequiredListIds: AllListIdData, AllTaskUser: AllTaskUser, Status: StatusData.value })
                 console.log("Dynamic Assignment Information All Details from backend  ==================", DynamicAssignmentInformation);
-                const isItemExists = (arr: any, value: any) => {
-                    let isExists = false;
-                    arr.forEach((item: any) => {
-                        if (item == value) {
-                            isExists = true;
-                            return;
-                        }
-                    });
-                    return isExists;
-                };
-                const assignmentUser = EditDataBackup.TaskAssignedUsers;
-                const finalTaskAssignedTo: any = [];
-                assignmentUser?.map((finalEmail: any) => {
-                    if (finalEmail != undefined && !isItemExists(finalTaskAssignedTo, finalEmail)) {
-                        finalTaskAssignedTo.push(finalEmail)
+                const finalUsersData = EditDataBackup?.TaskAssignedUsers?.filter(
+                    (val: any, id: any, array: any) => {
+                        return array?.indexOf(val) == id;
                     }
-                });
-                if (finalTaskAssignedTo?.length > 0 && StatusData.value > 2) {
-                    setTaskAssignedTo(finalTaskAssignedTo);
+                );
+                if (finalUsersData?.length > 0 && StatusData.value > 2) {
+                    setTaskAssignedTo(finalUsersData);
                 }
                 if (StatusData.value == 0) {
                     updateWAForApproval(true, "IsChecked");
