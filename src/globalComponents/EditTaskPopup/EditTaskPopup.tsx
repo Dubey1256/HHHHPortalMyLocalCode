@@ -10137,7 +10137,7 @@ const EditTaskPopup = (Items: any) => {
                 type={PanelType.medium}
             >
                 <div>
-                    <div className="modal-body">
+                    <div className="modal-body mb-5">
                         <div className="col-sm-12 categScroll" style={{ height: "auto" }}>
                             <input
                                 className="form-control my-2"
