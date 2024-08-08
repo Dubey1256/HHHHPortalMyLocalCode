@@ -6618,12 +6618,7 @@ const EditTaskPopup = (Items: any) => {
                                                     })}
 
 
-<<<<<<< HEAD
-
-                                                </label>
-=======
                                                 </div>
->>>>>>> 59cb8510f70fe94d84063d0a97902d0495eeb490
                                                 {WorkingAction?.length > 0 ? (
                                                     <>
                                                         {WorkingAction.map((WAItemData, ItemIndex) => {
