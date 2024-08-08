@@ -164,10 +164,30 @@ const LabelInfoIconToolTip = (props: any) => {
                         <Info16Regular tabIndex={0} className={(tooltipVisible || !visibleDes) ? styles.visible : ''} onClick={toggleVisibility} />
                     </InfoToolTip>
                 </div>}
-            </label> : res?.Title}
+            </label> : <> {res?.Title}  {res?.Description && <div className={styles.root}>
+                <InfoToolTip
+                    content={{
+                        children: (
+                            <>
+                                <span dangerouslySetInnerHTML={{ __html: res?.Description }}></span>
+                                {res?.LongDescription && <div className="col-sm-12 mt-2 text-end"> <a className="siteColor" onClick={() => editItem(res)}>Show More ...</a></div>}
+                            </>),
+                        id: contentId,
+                    }}
+                    withArrow
+                    relationship="label"
+                    onVisibleChange={handleTooltipVisibilityChange} >
+                    <Info16Regular tabIndex={0} className={(tooltipVisible || !visibleDes) ? styles.visible : ''} onClick={toggleVisibility} />
+                </InfoToolTip>
+            </div>}
+            </>
+
+            }
+
+
             {(res != null && res != '' && props?.ShowPencilIcon && props.onlyText == "text") && <span title="Edit label" className="svg__iconbox svg__icon--info" onClick={() => editItem(res)}></span>}
             {visibleDes && (
-                <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container itemRankTooltip p-0 m-0" })}>
+                <div ref={setTooltipRef} {...getTooltipProps({ className: ['Bottleneck', 'Phone', 'Attention'].indexOf(res.InternalName) !== -1 ? 'tooltip-container itemRankTooltip tooltip-Right p-0 m-0': 'tooltip-container itemRankTooltip p-0 m-0' })}>
 
                     <div className="col-12">
                         <div className="alignCenter tootltip-title">{res?.Title} <span title="Edit Item" className="light ml-4 svg__icon--editBox svg__iconbox" onClick={() => editItem(res)}></span></div>

@@ -13,6 +13,7 @@ import { BiInfoCircle } from 'react-icons/bi';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionToggleEventHandler, } from "@fluentui/react-components";
 import Slider from 'react-slick';
+import { TbReplace } from 'react-icons/tb';
 var settings = {
     dots: false,
     infinite: false,
@@ -67,12 +68,12 @@ const UXDesignPopupTemplate = (props: any) => {
 
     // ==============Add more image Function Start ====================    
 
-    const FlorarAddMoreImageComponentCallBack = (dt: any, imageIndex: any) => {
+    const FlorarAddMoreImageComponentCallBack = (dt: any, imageIndex: any) => {        
         let TaskImages = []
         let DataObject: any = {
             data_url: dt,
             file: "Image/jpg",
-        };
+        };    
         TaskImages.push(DataObject);
         ReplaceImage = DataObject
         if (dt.length > 0 && funcType !== 'replace') {
@@ -103,7 +104,7 @@ const UXDesignPopupTemplate = (props: any) => {
                 let imageIndex = addUpdateIndex + 2;
                 fileName = "T" + props?.EditData?.Id + "-Image" + imageIndex + "-" + props?.EditData?.Title?.replace(/["/':?%]/g, "")?.slice(0, 40) + " " + timeStamp + ".jpg";
                 let currentUserDataObject: any;
-                if (props?.currentUserBackupArray != null && props?.currentUserBackupArray.length > 0) {
+                if ( props?.currentUserBackupArray != null && props?.currentUserBackupArray.length > 0 ) {
                     currentUserDataObject = props?.currentUserBackupArray[0];
                 }
                 let ImgArray = {
@@ -112,13 +113,13 @@ const UXDesignPopupTemplate = (props: any) => {
                     imageDataUrl: props?.EditData?.siteUrl + "/Lists/" + CurrentSiteName + "/Attachments/" + props?.EditData?.Id + "/" + fileName,
                     ImageUrl: props?.EditData?.siteUrl + "/Lists/" + CurrentSiteName + "/Attachments/" + props?.EditData?.Id + "/" + fileName,
                     UserImage: currentUserDataObject != undefined &&
-                        currentUserDataObject.Item_x0020_Cover?.Url?.length > 0
-                        ? currentUserDataObject.Item_x0020_Cover?.Url
-                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                            currentUserDataObject.Item_x0020_Cover?.Url?.length > 0
+                            ? currentUserDataObject.Item_x0020_Cover?.Url
+                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
                     UserName: currentUserDataObject != undefined &&
-                        currentUserDataObject.Title?.length > 0
-                        ? currentUserDataObject.Title
-                        : props?.Context?.pageContext._user.displayName,
+                            currentUserDataObject.Title?.length > 0
+                            ? currentUserDataObject.Title
+                            : props?.Context?.pageContext._user.displayName,
                     Description:
                         imgItem.Description != undefined ? imgItem.Description : "",
                 };
@@ -140,7 +141,7 @@ const UXDesignPopupTemplate = (props: any) => {
             let updateImage: any = imageList[updateIndex];
             UploadImageFunction(lastindexArray, fileName, tempArray, addUpdateIndex, AddMoreImage);
         }
-
+        
     };
     const UploadImageFunction = (Data: any, imageName: any, DataJson: any, imageIndex: any, AddMoreImage: any): Promise<any> => {
         return new Promise<void>(async (resolve, reject) => {
@@ -180,7 +181,7 @@ const UXDesignPopupTemplate = (props: any) => {
                                 props.data[0].setImagesInfo = [];
                                 props?.data[0].setImagesInfo.push(DataJson[0])
                             }
-
+                            
                         }
                         catch (error) {
                             reject(error);
@@ -200,7 +201,7 @@ const UXDesignPopupTemplate = (props: any) => {
                             } else {
                                 props.data[0].setImagesInfo = [];
                                 props?.data[0]?.setImagesInfo.push(DataJson[0])
-                            }
+                            }                            
                             resolve();
                         } catch (error) {
                             reject(error);
@@ -209,7 +210,7 @@ const UXDesignPopupTemplate = (props: any) => {
                 }
             }, 2000);
         });
-    };
+    };   
 
     const AddMoreImages = (index: any, func: any) => {
         funcType = func;
@@ -224,20 +225,20 @@ const UXDesignPopupTemplate = (props: any) => {
         // designTemplatesArray=UpdatedFeedBackParentArray
         // setState(UpdatedFeedBackParentArray);
         // callBack(UpdatedFeedBackParentArray);
-        if (funcType === 'replace') {
+        if (funcType==='replace') {
             ReplaceImageFunction(ReplaceImage, imageIndex)
         } else {
-            setopenAddMoreImagePopup(false)
-        }
-
+            setopenAddMoreImagePopup(false)       
+        }              
+            
     }
 
 
 
     // ********************************  Replace Image Functionality **************************
-
+   
     const ReplaceImageFunction = (Data: any, ImageIndex: any) => {
-        return new Promise<void>(async (resolve, reject) => {
+        return new Promise<void>(async (resolve, reject) => {           
             let ImageName = props?.data[0]?.setImagesInfo?.[ImageIndex]?.ImageName;
             var src = Data?.data_url?.split(",")[1];
             var byteArray = new Uint8Array(
@@ -258,23 +259,23 @@ const UXDesignPopupTemplate = (props: any) => {
                         let web = new Web(props?.EditData?.siteUrl);
                         let item = web.lists.getById(props?.EditData?.listId).items.getById(props?.EditData?.Id);
                         await item.attachmentFiles.getByName(ImageName).setContent(data)
-                            .then((res: any) => {
-                                console.log(res);
-                                console.log("Attachment Updated");
-                                let replaceimageData: any = props.data[0].setImagesInfo[ImageIndex];
-                                let TimeStamp = moment(new Date().toLocaleString());
-                                replaceimageData.ImageUrl = replaceimageData?.ImageUrl + "?Updated=" + TimeStamp
-                                props.data[0].setImagesInfo?.splice(ImageIndex, 1, replaceimageData)
-                                setopenAddMoreImagePopup(false)
-                            })
-                            .catch((err: any) => {
-                                console.log(err)
-                            })
-
+                        .then((res: any) => {
+                            console.log(res);
+                            console.log("Attachment Updated"); 
+                            let replaceimageData: any = props.data[0].setImagesInfo[ImageIndex];
+                            let TimeStamp = moment(new Date().toLocaleString());
+                            replaceimageData.ImageUrl = replaceimageData?.ImageUrl + "?Updated=" + TimeStamp
+                            props.data[0].setImagesInfo?.splice(ImageIndex, 1, replaceimageData)
+                            setopenAddMoreImagePopup(false)   
+                        })
+                        .catch((err: any) => {
+                            console.log(err)
+                        })
+                                              
                         // props.data[0].setImagesInfo?.splice(ImageIndex, 1, TaskImages[0])
                         // props.data[0].setImagesInfo = TaskImages
                         // setTaskImages(EditData.UploadedImage);
-
+                      
                         resolve();
                     } catch (error) {
                         console.log("Error updating attachment:", error);
@@ -289,20 +290,20 @@ const UXDesignPopupTemplate = (props: any) => {
                             .getById(props?.EditData?.listName)
                             .items.getById(props?.EditData?.Id);
                         await item.attachmentFiles.getByName(ImageName).setContent(data)
-                            .then((res: any) => {
-                                console.log(res);
-                                let replaceimageData: any = props.data[0].setImagesInfo[ImageIndex];
-                                let TimeStamp = moment(new Date().toLocaleString());
-                                replaceimageData.ImageUrl = replaceimageData?.ImageUrl + "?Updated=" + TimeStamp
-                                props.data[0].setImagesInfo?.splice(ImageIndex, 1, replaceimageData)
-                                console.log("Attachment Updated");
-                            })
-                            .catch((err: any) => {
-                                console.log(err)
-                            })
+                        .then((res: any) => {
+                            console.log(res);
+                            let replaceimageData: any = props.data[0].setImagesInfo[ImageIndex];
+                            let TimeStamp = moment(new Date().toLocaleString());
+                            replaceimageData.ImageUrl = replaceimageData?.ImageUrl + "?Updated=" + TimeStamp
+                            props.data[0].setImagesInfo?.splice(ImageIndex, 1, replaceimageData)
+                            console.log("Attachment Updated");
+                        })
+                        .catch((err: any) => {
+                            console.log(err)
+                        })                       
                         // props.data[0].setImagesInfo?.splice(ImageIndex, 1,TaskImages[0])
                         // props.data[0].setImagesInfo = TaskImages
-                        setopenAddMoreImagePopup(false)
+                        setopenAddMoreImagePopup(false)                           
                         resolve();
                     } catch (error) {
                         console.log("Error updating attachment:", error);
@@ -336,12 +337,12 @@ const UXDesignPopupTemplate = (props: any) => {
                         .getById(props?.TaskListDetails?.ListId)
                         .items.getById(props?.TaskListDetails?.TaskId);
                     await item.attachmentFiles.getByName(imageName).recycle();
-                    props.data[0].setImagesInfo = tempArray;
+                    props.data[0].setImagesInfo = tempArray;                   
                     console.log("Attachment deleted");
 
                 } catch (error) {
                     console.log("Error deleting attachment:", error);
-                    props.data[0].setImagesInfo = tempArray;
+                    props.data[0].setImagesInfo = tempArray;                   
                 }
             })();
         } else {
@@ -352,12 +353,12 @@ const UXDesignPopupTemplate = (props: any) => {
                         .getByTitle(props?.TaskListDetails?.siteType)
                         .items.getById(props?.TaskListDetails?.TaskId);
                     await item.attachmentFiles.getByName(imageName).recycle();
-                    props.data[0].setImagesInfo = tempArray;
+                    props.data[0].setImagesInfo = tempArray;                    
                     console.log("Attachment deleted");
 
                 } catch (error) {
                     console.log("Error deleting attachment:", error);
-                    props.data[0].setImagesInfo = tempArray;
+                    props.data[0].setImagesInfo = tempArray;                    
                 }
             })();
         }
@@ -400,7 +401,7 @@ const UXDesignPopupTemplate = (props: any) => {
                                 Context={props?.Context}
                                 FeedbackCount={props?.FeedbackCount}
                             />
-                                <div className="AddImageFirstIndex text-end" onClick={() => AddMoreImages(0, 'add')}>
+                                <div className="AddImageFirstIndex text-end" onClick={() => AddMoreImages(0,'add')}>
                                     <a className='hyperlink' > <span className="alignIcon hreflink mini svg__icon--Plus svg__iconbox " title="Add set"></span> Add Image</a>
                                 </div>
 
@@ -452,15 +453,18 @@ const UXDesignPopupTemplate = (props: any) => {
                                                                         className="m-0 hover-text"
                                                                         onClick={() =>
                                                                             AddMoreImages(
-                                                                                indeximage, 'replace'
+                                                                                indeximage,'replace'                                                                               
                                                                             )
                                                                         }
                                                                     >
                                                                         {" "}
-                                                                        |
+                                                                        | 
                                                                         <span className="siteColor">
-                                                                            Replace
-                                                                        </span>
+                                                                            <TbReplace />{" "}
+                                                                            <span className="tooltip-text pop-right">
+                                                                                Replace Image
+                                                                            </span>
+                                                                        </span>                                                                        
                                                                     </span>
 
 
@@ -518,7 +522,7 @@ const UXDesignPopupTemplate = (props: any) => {
             >
                 <div>
                     <div className="modal-body">
-                        <FlorarImageUploadComponent callBack={FlorarAddMoreImageComponentCallBack} imageIndex={imageIndex} />
+                        <FlorarImageUploadComponent callBack={FlorarAddMoreImageComponentCallBack} imageIndex={imageIndex}/>
                     </div>
                     <footer className="float-end mt-1">
                         <button

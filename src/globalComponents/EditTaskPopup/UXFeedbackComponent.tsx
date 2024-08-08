@@ -22,6 +22,7 @@ import FlorarImageUploadComponent from "../FlorarComponents/FlorarImageUploadCom
 import MoveSetComponent from "./MoveSetComponent";
 import Tooltip from "../Tooltip";
 import moment from "moment";
+import { TbReplace } from "react-icons/tb";
 let arrayOfChar = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',]
 //   End====
 let globalCount = 1;
@@ -32,7 +33,7 @@ let UpdatedFeedBackParentArray: any = []
 let designTemplatesArray: any[];
 let copyCurrentActiveTab = 0;
 let funcType: any = '';
-let ReplaceImage: any = []
+let ReplaceImage:any = []
 export default function UXFeedbackComponent(textItems: any) {
     console.log(textItems?.copyAlldescription)
     const Context = textItems.Context;
@@ -618,8 +619,8 @@ export default function UXFeedbackComponent(textItems: any) {
             setState(UpdatedFeedBackParentArray);
             callBack(UpdatedFeedBackParentArray);
             setopenAddMoreImagePopup(false)
-        }
-
+        }    
+        
     }
     const onRenderCustomAddMoreImageHeader = () => {
         return (
@@ -706,7 +707,7 @@ export default function UXFeedbackComponent(textItems: any) {
             var fileData = "";
             for (var i = 0; i < byteArray.byteLength; i++) {
                 fileData += String.fromCharCode(byteArray[i]);
-            }
+            }           
             if (textItems?.EditData?.siteUrl != undefined) {
                 (async () => {
                     try {
@@ -846,43 +847,23 @@ export default function UXFeedbackComponent(textItems: any) {
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
                     {state?.map((tab: any, index: any) => (
                         <div className="position-relative">
-                            <button
-                                className={`nav-link ${currentActiveTab == index ? 'active' : ''}`}
-                                id={tab?.setTitle}
-                                data-bs-toggle="tab"
-                                data-bs-target={`#${tab?.setTitle}`}
-                                type="button"
-                                role="tab"
-                                aria-controls={tab?.setTitle}
-                                aria-selected="true"
-                                onClick={() => { handleChangeTab(index) }}
-                            >
-
-                                {isEditing?.editable && isEditing?.index == index ? <input
-                                    type="text"
-                                    value={tab?.setTitle}
-                                    onChange={(e) => handleTitleInputChange(index, e.target.value)}
-                                    autoFocus
-                                /> :
-
-                                    arrayOfChar[index] + ". " + tab?.setTitle}
-
-
+                            <button className={`nav-link ${currentActiveTab === index ? 'active' : ''}`} id={tab?.setTitle} data-bs-toggle="tab" data-bs-target={`#${tab?.setTitle}`} type="button" role="tab" aria-controls={tab?.setTitle} aria-selected={currentActiveTab === index} onClick={() => handleChangeTab(index)}>
+                                {isEditing?.editable && isEditing?.index === index ? (
+                                    <input type="text" value={tab?.setTitle} onChange={(e) => handleTitleInputChange(index, e.target.value)} autoFocus style={{ display: 'inline-block' }} // Ensures input is always present
+                                    />) : (`${arrayOfChar[index]}. ${tab?.setTitle}`)}
                             </button>
+
                             <div className="alignCenter editTab">
                                 <span className="svg__iconbox svg__icon--editBox hreflink" title="Edit set Title" onClick={() => handleEditClick(index)}></span>
                                 <span className="svg__iconbox hreflink mini svg__icon--trash" title="Delete Set" onClick={() => DeleteSet(index)} > </span>
                             </div>
                         </div>
-
-
                     ))}
                     {btnStatus ? <a className="alignCenter ms-2 hreflink" onClick={addSet}><span className="svg__iconbox svg__icon--Plus hreflink mini" title="Add set" ></span> Add New Set</a> : ""}
                     <div className="alignCenter ml-auto">{<a className="hreflink" onClick={() => setEnableSelectForMove(true)}>Enable move</a>}
                         <span className="mx-2"> | </span>
                         {<a className="hreflink" onClick={() => setMoveTo(true)}>Move to Set</a>}</div>
                 </ul>
-
 
                 <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                     {TextItems?.length > 0 ?
@@ -900,7 +881,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                         <div className="full-width my-2" >
                                             <span
                                                 className="mx-1 hover-text"
-                                                onClick={() => AddMoreImages(j, 'add')}
+                                                onClick={() => AddMoreImages(j,'add')}
                                             >
                                                 <span className="svg__iconbox svg__icon--Plus hreflink mini" ></span>Add Images
                                                 <span className="tooltip-text pop-right" >
@@ -964,8 +945,11 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                         {" "}
                                                                         |
                                                                         <span className="siteColor">
-                                                                            Replace
-                                                                        </span>
+                                                                            <TbReplace />{" "}
+                                                                            <span className="tooltip-text pop-right">
+                                                                                Replace Image
+                                                                            </span>
+                                                                        </span>   
                                                                     </span>
 
                                                                 </span>

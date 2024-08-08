@@ -2296,7 +2296,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                             value={CCDetails.Title == SelectedSiteName ? searchedKey : ""}
                                                                             onChange={(e: any) => CCAutoSuggestionsMain(e, CCDetails.Title)}
                                                                             defaultValue={CCDetails.Title == SelectedSiteName ? searchedKey : ""}
-                                                                        /> 
+                                                                        />
                                                                         <span className="bg-white hreflink border"
                                                                             onClick={() => openClientCategoryModel(CCDetails.Title, CCDetails.ClientCategories)}
                                                                         >
@@ -2383,7 +2383,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                 </div>
                             </div>
                             <div className="tagged-child-items-table Alltable mb-5">
-                                <GlobalCommonTable
+                                {data?.length > 0 ? <GlobalCommonTable
                                     setLoaded={setLoaded}
                                     AllListId={RequiredListIds}
                                     columns={columns}
@@ -2393,7 +2393,17 @@ const CentralizedSiteComposition = (Props: any) => {
                                     showHeader={false}
                                     fixedWidth={true}
                                     expendedTrue={true}
-                                />
+                                /> : <GlobalCommonTable
+                                    setLoaded={setLoaded}
+                                    AllListId={RequiredListIds}
+                                    columns={columns}
+                                    data={data}
+                                    multiSelect={true}
+                                    callBackData={GlobalTableCallBackData}
+                                    showHeader={false}
+                                    fixedWidth={true}
+                                    expendedTrue={true}
+                                />}
                             </div>
                         </div> : null
                     }
