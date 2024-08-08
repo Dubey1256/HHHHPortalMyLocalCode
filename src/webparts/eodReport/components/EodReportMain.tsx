@@ -1080,7 +1080,7 @@ export const EodReportMain = (props: any) => {
                         ProjectName: selectedPanelTask?.Project?.Title ?? '',
                         Achieved: panelAchivedComment,
                         Pending: panelPendingComment,
-                        ID: offshoreComments?.ID ?? newId,
+                        ID: generateUniqueId(offshoreComments) ?? newId,
                         isEodTask: editPanelType == 1 ? true : false,
                     }
                 }
@@ -1475,7 +1475,7 @@ export const EodReportMain = (props: any) => {
     }
     function generateUniqueId(OffshoreComments: any) {
         let newId = nextUniqueId++;
-        while (OffshoreComments.some((comment: { id: number; }) => comment.id === newId)) {
+        while (OffshoreComments.some((comment: { ID: number; }) => comment.ID === newId)) {
             newId = nextUniqueId++;
         }
         return newId;
