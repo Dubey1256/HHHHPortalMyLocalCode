@@ -1779,7 +1779,7 @@ const SendEmailFinal = async (to: any, subject: any, body: any, Context: any) =>
     }).then(() => {
         console.log("Email Sent!");
 
-    }).catch((err) => {
+    }).catch((err:any) => {
         console.log(err.message);
     });
 }
@@ -3085,7 +3085,7 @@ export const ShareTimeSheet = async (totalTimeDay: any, AllTaskTimeEntries: any,
             }).then(() => {
                 console.log("Email Sent!");
                 alert('Email sent sucessfully');
-            }).catch((err) => {
+            }).catch((err:any) => {
                 console.log(err.message);
             });
         } else {
@@ -3448,7 +3448,7 @@ const sendEmailToUser = (from: any, to: any, body: any, subject: any, ReplyTo: a
     }).then(() => {
         console.log("Email Sent!");
 
-    }).catch((err) => {
+    }).catch((err:any) => {
         console.log(err.message);
     });
 }
