@@ -132,6 +132,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const rerender = React.useReducer(() => ({}), {})[1];
     const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
     const [taskCatagory, setTaskCatagory] = React.useState([]);
+    const [smartTimelastModifiedDate, setSmartTimelastModifiedDate] = React.useState("")
     // const [showProgress, setShowProgress] = React.useState(false);
     // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
@@ -3769,7 +3770,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         </h2>
                     </div>
                     <div className="togglecontent mt-1">
-                        {filterCounters == true ? <TeamSmartFilter openTableSettingPopup={childRef?.current?.openTableSettingPopup} setSmartFabBasedColumnsSetting={childRef?.current?.setSmartFabBasedColumnsSetting} LoadAllSiteTasksAllData={LoadAllSiteTasksAllData} AllSiteTasksDataLoadAll={AllSiteTasksDataLoadAll} IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
+                        {filterCounters == true ? <TeamSmartFilter  setSmartTimelastModifiedDate={setSmartTimelastModifiedDate} openTableSettingPopup={childRef?.current?.openTableSettingPopup} setSmartFabBasedColumnsSetting={childRef?.current?.setSmartFabBasedColumnsSetting} LoadAllSiteTasksAllData={LoadAllSiteTasksAllData} AllSiteTasksDataLoadAll={AllSiteTasksDataLoadAll} IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                     </div>
                 </section>
                 <section className="Tabl1eContentSection row taskprofilepagegreen">
@@ -3788,7 +3789,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                                     portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration}
                                                     showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity}
                                                     customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons}
-                                                    showHeader={true} tableId="teamPortfolio" columnSettingIcon={true}
+                                                    showHeader={true} tableId="teamPortfolio" columnSettingIcon={true} smartTimelastModifiedDate={smartTimelastModifiedDate}
                                                 />
                                             </div>
                                         </div>

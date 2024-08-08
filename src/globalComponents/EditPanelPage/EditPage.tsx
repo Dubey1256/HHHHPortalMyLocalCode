@@ -157,7 +157,7 @@ const EditPage = (props: any) => {
               </select>
             </div>
           </div>
-          <HtmlEditorCard editorValue={data?.Page_x0020_Content != undefined && data?.Page_x0020_Content != null ? data?.Page_x0020_Content : ''} HtmlEditorStateChange={HtmlEditorStateChange}/>
+          <HtmlEditorCard editorValue={data?.Page_x0020_Content ? data?.Page_x0020_Content : props?.GmbhHomePageDesc ? props?.GmbhHomePageDesc : ""} HtmlEditorStateChange={HtmlEditorStateChange}/>
         </div>
 
         <footer className="mt-4">

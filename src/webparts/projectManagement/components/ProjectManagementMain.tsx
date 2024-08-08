@@ -1238,9 +1238,11 @@ const loadAllPXTimeEntries = async () => {
       let groupedDataItems = globalCommon.deepCopy(backupTableData);
       let flattenedData = flattenData(groupedDataItems)
       PXTasks = flattenedData.filter((item: any) => item.TaskType)
-      totalTime = PXTasks?.reduce((total: any, time: any) => total + time.TotalTime, 0);
+      totalTime = PXTasks?.reduce((total: any, time: any) => {
+        const taskTime = time.TotalTime || 0;
+        return total + taskTime;
+      }, 0);
       totalTime = totalTime/60;
-      totalTime = totalTime.toFixed(2)
       setTaskTaggedPortfolios(taskTaggedComponents)
       setSuggestedPortfolios(suggestedPortfolioItems)
       loadTaggedDocuments();
@@ -2985,9 +2987,9 @@ const loadAllPXTimeEntries = async () => {
                                     <dl>
                                         <dt className="bg-fxdark">Total PX Time</dt>
                                         <dd className="bg-light">
-                                          {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime} hrs;`}</span>}
-                                          {(monthTotalTime != undefined && monthTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime} hrs; `}</span>}
-                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime} hrs; `}</span>}
+                                          {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime.toFixed(2)} hrs; `}</span>}
+                                          {(monthTotalTime != undefined && monthTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime.toFixed(2)} hrs; `}</span>}
+                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime.toFixed(2)} hrs; `}</span>}
                                           <a className="smartTotalTime hover-text m-0 float-end" onClick={() => loadAllPXTimeEntries()}><BsClock/><span className='tooltip-text pop-left'>Load Time Entries</span></a>
                                         </dd>
                                       </dl>
@@ -3214,7 +3216,8 @@ const loadAllPXTimeEntries = async () => {
                                   AllSitesTaskData={AllSitesAllTasks}
                                   MasterdataItem={Masterdata}
                                   columns={column2} data={ProjectTableData} callBackData={callBackData}
-                                  smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
+                                  smartTimeTotalFunction={smartTimeTotal} 
+                                  //  SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
                                   showCreationAllButton={true}
                                   flatViewDataAll={flatViewDataAll}

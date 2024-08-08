@@ -3590,6 +3590,137 @@ export const GetColumnDetails = (name: any, Columns: any) => {
     if (columnDetail != undefined)
         return columnDetail;
     else return columnDetail;
-
-
 }
+function blobToFile(blob: any, filename: any, type = "") {
+    return new File([blob], filename, { type });
+}
+export async function smartTimeFind(item: any) {
+    let allTastsData: any = item?.item?.AllSiteTasksData;
+    const timeEntryIndex: any = {};
+    let ContextValue = item?.item?.ContextValue;
+    let AllTimeEntries = [];
+    if (item?.timeSheetConfig?.Id !== undefined) {
+        AllTimeEntries = await loadAllTimeEntry(item?.timeSheetConfig);
+    }
+    let allSites = item?.smartmetaDataDetails?.filter((e: any) => e.TaxType === "Sites");
+    AllTimeEntries?.forEach((entry: any) => {
+        allSites?.forEach((site: any) => {
+            const taskTitle = `Task${site.Title}`;
+            const key = taskTitle + entry[taskTitle]?.Id
+            if (entry.hasOwnProperty(taskTitle) && entry?.AdditionalTimeEntry !== null && entry?.AdditionalTimeEntry !== undefined) {
+                const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
+                let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
+                let timeSheetsDescriptionSearch = additionalTimeEntry?.reduce((accumulator: any, entry: any) => `${accumulator} ${entry?.Description?.replace(/(<([^>]+)>|\n)/gi, "").trim()}`, "").trim();
+                if (timeEntryIndex.hasOwnProperty(key)) {
+                    timeEntryIndex[key].TotalTaskTime += totalTaskTime;
+                    timeEntryIndex[key].timeSheetsDescriptionSearch = (timeEntryIndex[key]?.timeSheetsDescriptionSearch || '') + ' ' + timeSheetsDescriptionSearch;
+                } else {
+                    timeEntryIndex[`${taskTitle}${entry[taskTitle]?.Id}`] = {
+                        ...entry[taskTitle],
+                        TotalTaskTime: totalTaskTime,
+                        siteType: site.Title,
+                        timeSheetsDescriptionSearch: timeSheetsDescriptionSearch
+                    };
+                }
+            }
+        });
+    });
+
+    allTastsData?.map((task: any) => {
+        task.TotalTaskTime = 0;
+        task.timeSheetsDescriptionSearch = "";
+        const key = `Task${task?.siteType + task.Id}`;
+        if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
+            task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndex[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndex[key]?.TotalTaskTime;
+            task.timeSheetsDescriptionSearch = timeEntryIndex[key]?.timeSheetsDescriptionSearch;
+        }
+    })
+    if (timeEntryIndex) {
+        const dataString = JSON.stringify(timeEntryIndex);
+        const blob = new Blob([dataString], { type: 'text/plain;charset=utf-8' });
+        let fileName = item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userDisplayName.replace(/\s+/g, '') + item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userId + "-" + "SmartTimeTotel";
+        let folderName = item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userDisplayName.replace(/\s+/g, '') + item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userId + "-" + "SmartTimeTotel";
+        await createFolder(blob, fileName + '.txt', folderName, ContextValue, item?.item);
+    }
+    console.log("timeEntryIndex", timeEntryIndex);
+    // UpdateFilterData("udateClickFalse");\
+    return allTastsData;
+}
+async function checkIfFolderExists(libraryName: string, folderName: string, ContextValue: any): Promise<boolean> {
+    try {
+        const filter = `FileLeafRef eq '${folderName}'`;
+        const web = new Web(ContextValue?.siteUrl);
+        const folders = await web.lists.getById('d0f88b8f-d96d-4e12-b612-2706ba40fb08').items.select("FileLeafRef").filter(filter).get();
+        return folders.length > 0 && folders.some((e: any) => e.FileLeafRef === folderName);
+    } catch (error) {
+        console.log("Error checking folder existence:", error);
+        return false;
+    }
+};
+const createFolder = async (blob: any, fileName: any, folderName: any, ContextValue: any, item:any) => {
+    const libraryName = "Documents";
+    const exists = await checkIfFolderExists(libraryName, folderName, ContextValue);
+    if (exists) {
+        console.log("Folder exists.");
+    } else {
+        const web = new Web(ContextValue?.siteUrl);
+        const newFolderResult = await web?.rootFolder?.folders.getByName(libraryName).folders.add(folderName);
+        console.log("Folder created:", newFolderResult);
+        console.log("Folder did not exist.");
+    }
+    await uploadDocumentFinal({ blob, fileName, folderName, ContextValue,item });
+};
+const uploadDocumentFinal = async (item: any) => {
+    if (item?.folderName) {
+        try {
+            const web = new Web(item?.ContextValue?.siteUrl);
+            const folderPath = `Documents/${item?.folderName}`;
+            const folder = web.getFolderByServerRelativeUrl(folderPath);
+            const arrayBuffer = await item?.blob.arrayBuffer();
+            const items = await folder.files.add(item?.fileName, arrayBuffer);
+            item?.item?.setSmartTimelastModifiedDate(moment(items?.data?.TimeLastModified).format('DD/MM/YYYY HH:mm:ss'));
+            console.log(items);
+            console.log(`File ${item?.fileName} uploaded to ${folderPath}`);
+        } catch (error) {
+            console.log("Error uploading document:", error);
+        }
+    }
+};
+export const smartTimeUseStorage = async (item: any) => {
+    let finalString = ''
+    let ContextValue = item?.ContextValue;
+    let allTastsData: any = item?.AllSiteTasksData;
+    try {
+        let folderName = item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userDisplayName.replace(/\s+/g, '') + item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userId + "-" + "SmartTimeTotel";
+        let web = new Web(ContextValue?.siteUrl);
+        const files = await web.getFolderByServerRelativeUrl(`Documents/${folderName}`).files.get();
+        if (files?.length > 0) {
+            const file = files[0]
+            const blob: Blob = await web.getFileByServerRelativePath(`${file?.ServerRelativeUrl}`)?.getBlob();
+            const myFile: any = blobToFile(blob, file?.FileLeafRef);
+            item?.setSmartTimelastModifiedDate(moment(file?.TimeLastModified).format('DD/MM/YYYY HH:mm:ss'));
+            const reader = new FileReader();
+            reader.onload = (e: any) => {
+                finalString = e.target.result;
+                if (finalString?.length > 0) {
+                    const timeEntryIndexLocalStorage = JSON.parse(finalString);
+                    allTastsData?.map((task: any) => {
+                        task.TotalTaskTime = 0;
+                        task.timeSheetsDescriptionSearch = "";
+                        const key = `Task${task?.siteType + task.Id}`;
+                        if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
+                            // task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                            task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                            task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
+                        }
+                    })
+                    console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage)
+                    return allTastsData;
+                }
+            };
+            reader.readAsText(myFile);
+        }
+    } catch (error) {
+        console.log('An error occurred while fetching files:', error);
+    }
+};

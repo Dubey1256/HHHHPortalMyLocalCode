@@ -482,8 +482,7 @@ const ColumnsSetting = (props: any) => {
                                 </td>
                                 <td>
                                     <div className="SpfxCheckRadio alignCenter">
-                                        <input type="radio" className="radio" id="flexible" value="flexible" checked={heightOption === 'flexible'} onChange={() => setHeightOption('flexible')} />
-                                        <label htmlFor="flexible" className="me-3">Flexible</label>
+                                        <input type="radio" disabled={props?.multiWebPart != true ? true : false} className="radio" id="flexible" value="flexible" checked={heightOption === 'flexible'} onChange={() => setHeightOption('flexible')} /><label htmlFor="flexible" className="me-3">Flexible</label>
                                         <input type="radio" className="radio" id="fixed" value="fixed" checked={heightOption === 'fixed'} onChange={() => setHeightOption('fixed')} />
                                         <label htmlFor="fixed">Fixed</label>
                                         {heightOption === 'fixed' && (
@@ -559,7 +558,7 @@ const ColumnsSetting = (props: any) => {
                                                         {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && column.id != "showProgress") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <tr key={column?.id} style={columnSorting[column?.id]?.asc === true || columnSorting[column.id]?.desc === true ? { background: "#ddd" } : {}}>
                                                             <td style={{ width: "40%" }}>
                                                                 {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && column.id != "showProgress") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <div className={column.id === "Type" || column.id === "Attention" || column.id === "Admin" || column.id === "Actions" ? "alignCenter mx-3" : "alignCenter"}>
-                                                                    <input className="form-check-input cursor-pointer mt-0 me-1" id={column.id} type='checkbox' disabled={column?.id === "Title" || column?.id === "TaskID" || column?.id === "portfolioItemsSearch" ? true : false} checked={column?.isColumnVisible}
+                                                                    <input className="form-check-input cursor-pointer mt-0 me-1" style={column?.id === "Title" || column?.id === "TaskID" || column?.id === "portfolioItemsSearch" ? { backgroundColor: "#6a6a6a" } : {}}  id={column.id} type='checkbox' disabled={column?.id === "Title" || column?.id === "TaskID" || column?.id === "portfolioItemsSearch" ? true : false} checked={column?.isColumnVisible}
                                                                         onChange={(e: any) => coustomColumnsSetting(column, event)} name={column.id}
                                                                     />{column?.placeholder}
                                                                     {selectedSortingPanelIsOpen === false ? <a className="pancil-icons mx-1 mt-1" onClick={(e) => editSortingMode(column)}><span className="svg__iconbox svg__icon--editBox"></span></a> : <a className="pancil-icons mx-1 mt-1"><span className="svg__iconbox svg__icon--editBox" style={{ backgroundColor: "gray" }}></span></a>}
