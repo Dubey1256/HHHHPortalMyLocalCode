@@ -167,9 +167,7 @@ export const EodReportMain = (props: any) => {
             console.error('Invalid selectedTaskForEod object');
             return;
         }
-
         let OffshoreCommentsArray: any[] = [];
-
         if (typeof selectedTaskForEod.OffshoreComments === 'string') {
             try {
                 OffshoreCommentsArray = JSON.parse(selectedTaskForEod.OffshoreComments);
@@ -179,30 +177,34 @@ export const EodReportMain = (props: any) => {
         } else {
             OffshoreCommentsArray = selectedTaskForEod.OffshoreComments;
         }
-        const updatedOffshoreComments = OffshoreCommentsArray.map((comment) => ({
-            ...comment,
-            isEodTask: false
-        }));
+            if(selectedTaskForEod.CommentUniqueID!=undefined&& selectedTaskForEod.CommentUniqueID==""){
+                selectedTaskForEod.CommentUniqueID= getCommentUniqueID(selectedTaskForEod.OffshoreComments)
+            }
 
+
+        const updatedOffshoreComments:any = OffshoreCommentsArray.map((comment) => {
+            if (selectedTaskForEod.CommentUniqueID == comment.ID) {
+                return {
+                    ...comment,
+                    isEodTask: false
+                };
+            }
+            return comment;
+        });
+
+        const updateValue = updatedOffshoreComments.find((comment: any) => comment.ID == selectedTaskForEod.CommentUniqueID) || {};
         const updatedTask = {
             ...selectedTaskForEod,
             OffshoreComments: updatedOffshoreComments
         };
-
-
-        // console.log(updatedTask, "updatedTask");
-        // console.log(updatedTask, "updatedTask");
-
-
         const combinedArray = [...copyAllAditionalTaskData, updatedTask];
-
         const removeFromAdditionalArray = allTodayModifiedTask.filter((item: { ID: any; }) => item.ID !== updatedTask.ID);
         setallAditionalTask(combinedArray)
         setAllTodayModifiedTask(removeFromAdditionalArray)
         setSelectedTaskForEod([])
 
         // combinedArray.map((item: any) => {
-        updateCommentFunctionForAddToEoD(updatedOffshoreComments[0], "OffshoreComments", selectedTaskForEod?.oldOffshoreComments, selectedTaskForEod);
+        updateCommentFunctionForAddToEoD(updateValue, "OffshoreComments", selectedTaskForEod?.oldOffshoreComments, selectedTaskForEod);
         // })
     };
 
@@ -537,7 +539,7 @@ export const EodReportMain = (props: any) => {
             }
         })
         if( isPendingEmpty == false && isAcheviedEmpty==false && bothEmpty==false){
-            const filterarrray = selectedTaskForEod.map((item: any) => {
+            const filterarrray = selectedTaskForEod?.map((item: any) => {
                 let OffshoreCommentsArray;
                 if (typeof item.original.OffshoreComments === 'string') {
                     OffshoreCommentsArray = JSON.parse(item.original.OffshoreComments);
@@ -577,7 +579,7 @@ export const EodReportMain = (props: any) => {
             setSelectedTaskForEod([])
     
             combinedArray.map((item: any) => {
-                updateCommentFunctionForAddToEoD(item?.OffshoreComments[0], "OffshoreComments", item?.oldOffshoreComments, item);
+                updateCommentFunctionForAddToEoD(item?.OffshoreComments, "OffshoreComments", item?.oldOffshoreComments, item);
             })
             childRef?.current?.setRowSelection({});
 
@@ -1012,11 +1014,15 @@ export const EodReportMain = (props: any) => {
         console.log(selectedPanelTask, "selectedPanelTask");
         let offshoreComments: any = [];
         let newId = 1;
-        try {
-            offshoreComments = JSON.parse(selectedPanelTask?.OffshoreComments);
-        } catch (error) {
-
-        }
+        if (typeof selectedPanelTask.OffshoreComments === 'string') {
+            try {
+                offshoreComments = JSON.parse(selectedPanelTask.OffshoreComments);
+            } catch (error) {
+                console.error('Error parsing OffshoreComments:', error);
+            }
+        } else {
+            offshoreComments = selectedPanelTask.OffshoreComments;
+        } 
         console.log("Newly generated ID:", newId);
         if (offshoreComments == undefined || offshoreComments == null || offshoreComments == "[null]") {
             newId = 1;
@@ -1039,20 +1045,28 @@ export const EodReportMain = (props: any) => {
         } else {
 
             if (panelPendingComment != '' || panelAchivedComment != '') {
-                let CommentJSON = {
-                    AuthorId: currentUserData,
-                    Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
-                    AuthorImage: loginUserData[0]?.Item_x0020_Cover?.Url ?? '',
-                    AuthorName: loginUserData[0]?.Title != undefined ? loginUserData[0]?.Title : props.props.context?.pageContext?._user.displayName,
-                    Type: "EODReport",
-                    Title: selectedPanelTask?.Title ?? '',
-                    ProjectID: selectedPanelTask?.Project?.Id ?? '',
-                    ProjectName: selectedPanelTask?.Project?.Title ?? '',
-                    Achieved: panelAchivedComment,
-                    Pending: panelPendingComment,
-                    ID: offshoreComments?.ID ?? newId,
-                    isEodTask: editPanelType == 1 ? true : false,
-                }
+                let CommentJSON ={}
+                offshoreComments.map((comments:any)=>{
+                    if(comments?.ID==selectedPanelTask?.CommentUniqueID){
+                         CommentJSON = {
+                                AuthorId: currentUserData,
+                                Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+                                AuthorImage: loginUserData[0]?.Item_x0020_Cover?.Url ?? '',
+                                AuthorName: loginUserData[0]?.Title != undefined ? loginUserData[0]?.Title : props.props.context?.pageContext?._user.displayName,
+                                Type: "EODReport",
+                                Title: selectedPanelTask?.Title ?? '',
+                                ProjectID: selectedPanelTask?.Project?.Id ?? '',
+                                ProjectName: selectedPanelTask?.Project?.Title ?? '',
+                                Achieved: panelAchivedComment,
+                                Pending: panelPendingComment,
+                                ID: comments?.ID ?? newId,
+                                isEodTask: editPanelType == 1 ? true : false,
+                            }
+                    }
+
+                })
+
+                // 
                 updateCommentFunction(CommentJSON, "OffshoreComments", selectedPanelTask?.oldOffshoreComments, selectedPanelTask);
 
                 console.log(CommentJSON, "CommentJSON")
@@ -1156,17 +1170,22 @@ export const EodReportMain = (props: any) => {
     const updateCommentFunctionForAddToEoD = async (UpdateData: any, columnName: any, oldoffshoreComments: any, task: any) => {
         let oldoffshoreComment: any = [];
 
+        if (typeof oldoffshoreComments === 'string') {
+            oldoffshoreComment = JSON.parse(oldoffshoreComments);
+        }
+        else {
+            oldoffshoreComment = oldoffshoreComments;
+        }
+
+
+
         try {
             let web = new Web(siteURL);
 
-            try {
-                oldoffshoreComment = JSON.parse(oldoffshoreComments);
-            } catch (error) {
-
-            }
+            
             let updatedComments = [...oldoffshoreComment];
             if (oldoffshoreComment.length > 0) {
-                if (UpdateData.ID) {
+                if (UpdateData?.ID!=undefined) {
                     const index = oldoffshoreComment.findIndex((comment: any) => comment.ID === UpdateData.ID);
                     if (index !== -1) {
                         updatedComments[index] = UpdateData;
@@ -1175,7 +1194,7 @@ export const EodReportMain = (props: any) => {
                     }
                 }
             } else {
-                updatedComments.push(UpdateData);
+                updatedComments.push(...UpdateData);
             }
 
             let tempObject: any = {}
@@ -1329,6 +1348,7 @@ export const EodReportMain = (props: any) => {
 
                         item.Achieved = getTodayAchievedOrPending(item?.OffshoreComments, 1)
                         item.Pending = getTodayAchievedOrPending(item?.OffshoreComments, 2)
+                        item.CommentUniqueID=getCommentUniqueID(item?.OffshoreComments)
                         // item.Lead = item.ResponsibleTeam?.[0]?.Title
                         item.Lead = item.ResponsibleTeam?.map((teamMember: { Title: any; }) => teamMember.Title).join(', ');
                         item.TaskCategories = item?.TaskCategories?.map((categories: { Title: any; }) => categories?.Title).join(', ')
@@ -1528,7 +1548,31 @@ export const EodReportMain = (props: any) => {
         }
     }
 
+   const getCommentUniqueID=(offShoreComment:any)=>{
+  let uniqueCommentId=''
+    if (offShoreComment == null) {
+        return uniqueCommentId;
+    }else{
+        let commentsArray:any=[]
+        if (typeof offShoreComment === 'string') {
+            try {
+                commentsArray = JSON.parse(offShoreComment);
+            } catch (error) {
+                console.error('Error parsing OffshoreComments:', error);
+            }
+        } else {
+            commentsArray = offShoreComment;
+        }
+        commentsArray.map((comment:any)=>{
+            if( isTodayCreated(comment?.Created)){
+                uniqueCommentId=comment.ID
+                return  uniqueCommentId
+            }
+        })
+    }
+    return uniqueCommentId
 
+   }
 
 
     function getTodayAchievedOrPending(offshoreComments: any | null | undefined, type: number): string {
