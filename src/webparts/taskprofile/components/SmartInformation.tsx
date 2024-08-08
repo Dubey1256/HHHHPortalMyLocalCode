@@ -1416,7 +1416,7 @@ const SmartInformation = (props: any, ref: any) => {
                           })}
 
                           <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified:</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span>}</span> </div>
-                          <div className="p-1 px-2"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>
+                          <div className="d-flex p-1 px-2 w-100"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>
                         </div>
                       </div>
                     </>)
@@ -1578,7 +1578,7 @@ const SmartInformation = (props: any, ref: any) => {
                 </div>
               </div>
 
-              {allValue?.InfoType !== 'Information Source' && <div className='col-md-6'>
+              {allValue?.InfoType !== 'Information Source' && <div className='col'>
                 <div className='input-group'>
                   <label htmlFor="URL" className='full-width'>URL</label>
                   <input type="text" className='form-control' id="URL" value={allValue?.URL} onChange={(e) => changeInputField(e.target.value, "url")} />
@@ -1645,7 +1645,7 @@ const SmartInformation = (props: any, ref: any) => {
                 <span className='mx-2'>|</span>
 
                 <span><a title='Add Link/ Document' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
-                <Button className='btn btn-primary ms-1 me-1' onClick={saveSharewebItem} disabled={allValue.InfoType === 'Information Source' ? (sourceTitle == '' || smartnoteAuthor?.length == 0 || InfoDate == '' || InfoSource.key == 0) : allValue?.Title == ''}>
+                <Button className='btn btn-primary ms-3 me-1' onClick={saveSharewebItem} disabled={allValue.InfoType === 'Information Source' ? (sourceTitle == '' || smartnoteAuthor?.length == 0 || InfoDate == '' || InfoSource.key == 0) : allValue?.Title == ''}>
                   Save
                 </Button>
                 <Button className='btn btn-default mx-1' onClick={() => handleClose()}>

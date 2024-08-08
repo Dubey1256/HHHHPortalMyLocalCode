@@ -1243,7 +1243,6 @@ const loadAllPXTimeEntries = async () => {
         return total + taskTime;
       }, 0);
       totalTime = totalTime/60;
-      totalTime = totalTime.toFixed(2)
       setTaskTaggedPortfolios(taskTaggedComponents)
       setSuggestedPortfolios(suggestedPortfolioItems)
       loadTaggedDocuments();
