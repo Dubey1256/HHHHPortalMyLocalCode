@@ -2178,6 +2178,21 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
 
                                 })
                             }
+                            if (TNC?.percentComplete == Status && TNC?.NotificationType == "Lead") {
+                                ItemDetails?.TaskCategories?.map((item: any) => {
+                                        let leadArray: any = [];
+                                        if (!TNC?.Category?.includes('All') && TNC.Category?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
+                                            //This is used to assigned Design As Lead
+                                            TNC.Notifier.map((user: any) => {
+                                                AllTaskUser?.map((TaskUserData: any) => {
+                                                    if (user.Id == TaskUserData.AssingedToUserId)
+                                                        leadArray.push(TaskUserData);
+                                                })
+                                            });
+                                            ItemDetails.ResponsibleTeamMembers = leadArray
+                                        }
+                                })
+                            }
                         }
                     })
                 }
