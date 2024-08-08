@@ -1007,13 +1007,15 @@ const GlobalCommanTable = (items: any, ref: any) => {
     }
     const exportCallBack = React.useCallback((columnChecked: any) => {
         if (columnChecked != 'close') {
-            let headerColur = "0a1c3e"
-            let currentUrl: any = window.location.href;
+            let headerColur="0a1c3e"
+            let currentUrl:any=window.location.href;
+            let FileSaveName="PageData"
+            let match = currentUrl?.match(/\/([^/]+\.aspx)(\?.*)?$/);
 
-            let match = currentUrl.match(/\/([^/]+\.aspx)(\?.*)?$/);
-
-            let FileSaveName = match[1].replace('.aspx', '');
-
+            if(match!=undefined){
+                 FileSaveName = match[1]?.replace('.aspx','');
+            }
+            
 
             if (currentUrl.toString().includes('PortfolioType=Service')) {
                 headerColur = '#228B22'
