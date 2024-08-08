@@ -1012,6 +1012,9 @@ export const EodReportMain = (props: any) => {
 
     const AddEODComment = () => {
         console.log(selectedPanelTask, "selectedPanelTask");
+        if(selectedPanelTask.CommentUniqueID!=undefined&& selectedPanelTask.CommentUniqueID==""){
+            selectedPanelTask.CommentUniqueID= getCommentUniqueID(selectedPanelTask.OffshoreComments)
+        }
         let offshoreComments: any = [];
         let newId = 1;
         if (typeof selectedPanelTask.OffshoreComments === 'string') {
@@ -1046,26 +1049,41 @@ export const EodReportMain = (props: any) => {
 
             if (panelPendingComment != '' || panelAchivedComment != '') {
                 let CommentJSON ={}
-                offshoreComments.map((comments:any)=>{
-                    if(comments?.ID==selectedPanelTask?.CommentUniqueID){
-                         CommentJSON = {
-                                AuthorId: currentUserData,
-                                Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
-                                AuthorImage: loginUserData[0]?.Item_x0020_Cover?.Url ?? '',
-                                AuthorName: loginUserData[0]?.Title != undefined ? loginUserData[0]?.Title : props.props.context?.pageContext?._user.displayName,
-                                Type: "EODReport",
-                                Title: selectedPanelTask?.Title ?? '',
-                                ProjectID: selectedPanelTask?.Project?.Id ?? '',
-                                ProjectName: selectedPanelTask?.Project?.Title ?? '',
-                                Achieved: panelAchivedComment,
-                                Pending: panelPendingComment,
-                                ID: comments?.ID ?? newId,
-                                isEodTask: editPanelType == 1 ? true : false,
-                            }
+                if(selectedPanelTask?.CommentUniqueID!=undefined &&selectedPanelTask?.CommentUniqueID!=''){
+                    offshoreComments.map((comments:any)=>{
+                        if(comments?.ID==selectedPanelTask?.CommentUniqueID){
+                             CommentJSON = {
+                                    AuthorId: currentUserData,
+                                    Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+                                    AuthorImage: loginUserData[0]?.Item_x0020_Cover?.Url ?? '',
+                                    AuthorName: loginUserData[0]?.Title != undefined ? loginUserData[0]?.Title : props.props.context?.pageContext?._user.displayName,
+                                    Type: "EODReport",
+                                    Title: selectedPanelTask?.Title ?? '',
+                                    ProjectID: selectedPanelTask?.Project?.Id ?? '',
+                                    ProjectName: selectedPanelTask?.Project?.Title ?? '',
+                                    Achieved: panelAchivedComment,
+                                    Pending: panelPendingComment,
+                                    ID: comments?.ID ?? newId,
+                                    isEodTask: editPanelType == 1 ? true : false,
+                                }
+                        }
+                    })
+                }else{
+                     CommentJSON = {
+                        AuthorId: currentUserData,
+                        Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+                        AuthorImage: loginUserData[0]?.Item_x0020_Cover?.Url ?? '',
+                        AuthorName: loginUserData[0]?.Title != undefined ? loginUserData[0]?.Title : props.props.context?.pageContext?._user.displayName,
+                        Type: "EODReport",
+                        Title: selectedPanelTask?.Title ?? '',
+                        ProjectID: selectedPanelTask?.Project?.Id ?? '',
+                        ProjectName: selectedPanelTask?.Project?.Title ?? '',
+                        Achieved: panelAchivedComment,
+                        Pending: panelPendingComment,
+                        ID: offshoreComments?.ID ?? newId,
+                        isEodTask: editPanelType == 1 ? true : false,
                     }
-
-                })
-
+                }
                 // 
                 updateCommentFunction(CommentJSON, "OffshoreComments", selectedPanelTask?.oldOffshoreComments, selectedPanelTask);
 
@@ -1129,7 +1147,7 @@ export const EodReportMain = (props: any) => {
             }
             let updatedComments = [...oldoffshoreComment];
             if (oldoffshoreComment.length > 0) {
-                if (UpdateData.ID) {
+                if (UpdateData.ID !=undefined) {
                     const index = oldoffshoreComment.findIndex((comment: any) => comment.ID === UpdateData.ID);
                     if (index !== -1) {
                         updatedComments[index] = UpdateData;
