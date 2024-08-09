@@ -2147,7 +2147,7 @@ const CopyTaskProfile = (props: any) => {
                                                                             <div className="alignCenter">
                                                                               <span className="me-2 siteColor">
                                                                                 {" "}
-                                                                                Attention was added By{" "}
+                                                                                Phone was added By{" "}
                                                                               </span>
                                                                               {PhoneData.CreatorImage !=
                                                                                 undefined &&
@@ -2303,7 +2303,7 @@ const CopyTaskProfile = (props: any) => {
                                                                             <div className="alignCenter">
                                                                               <span className="me-2 siteColor">
                                                                                 {" "}
-                                                                                Attention was added By{" "}
+                                                                                Approval was added By{" "}
                                                                               </span>
                                                                               {ApprovalData.CreatorImage !=
                                                                                 undefined &&
@@ -2346,7 +2346,7 @@ const CopyTaskProfile = (props: any) => {
                                                                             <div className="alignCenter">
                                                                               <span className="me-2 siteColor">
                                                                                 {" "}
-                                                                                Phone was added By{" "}
+                                                                                Approval was added By{" "}
                                                                               </span>
                                                                               {ApprovalData.CreatorImage !=
                                                                                 undefined &&

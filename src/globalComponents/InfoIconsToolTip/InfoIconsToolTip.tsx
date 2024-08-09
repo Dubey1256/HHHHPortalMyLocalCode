@@ -66,7 +66,7 @@ export default function InfoIconsToolTip(props:any) {
                     if (newAction == "hover" ) {
                         hovertitle= props?.row[props?.SingleColumnData]
                         // if(hoverTitleShow==undefined){
-                        //    hovertitle="Short Description is not available in this. Please click to see other details" 
+                        //    hovertitle="Click to see description" 
                         // }
                         setshowHoverTitle(hovertitle)
                         const obj = {
@@ -91,7 +91,7 @@ export default function InfoIconsToolTip(props:any) {
                              setfeedbackArray(feedback);
                              if (newAction == "hover" && heading === "Short Description") {
                                  if(hoverTitleShow?.Title==""){
-                                     hoverTitleShow.Title="Short Description is not available in this. Please click to see other details" 
+                                     hoverTitleShow.Title="Click to see description" 
                                  }
                                  setshowHoverTitle(hoverTitleShow?.Title)
                              }
@@ -102,7 +102,7 @@ export default function InfoIconsToolTip(props:any) {
                          let   hovertitle:any;
                      if (newAction == "hover" ) {
                          if(hoverTitleShow==undefined){
-                            hovertitle="Short Description is not available in this. Please click to see other details" 
+                            hovertitle="Click to see description" 
                          }
                          setshowHoverTitle(hovertitle)
                      }
