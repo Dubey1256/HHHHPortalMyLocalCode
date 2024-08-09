@@ -347,7 +347,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         ID: this.state.Result["Comments"] != undefined ? this.state.Result["Comments"].length + 1 : 1,
         Title: txtComment,
         editable: false,
-        CommentFor: this.props.commentFor?.length > 0 ? this.props.commentFor : ''
+        CommentFor: this.props.commentFor == "On-Hold" ? "On-Hold" : ''
       };
       if (this.state?.ChildLevel == true) {
         this.state?.Result?.Comments?.forEach((element: any) => {
@@ -697,16 +697,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private isDecimal = (value: any) => {
     return /^\d*\.?\d+$/.test(value);
   }
-  private ReduceTheContentLines: any = (Content: String, sliceFrom: number) => {
-    if (Content?.length > sliceFrom) {
-        let NewContent: string = Content.slice(0, sliceFrom);
-        return NewContent + "..."
-    } else {
-        return Content;
-    }
-  }
-
- 
   private async GetEmailObjects(txtComment: any, MentionedValue: any) {
     if (MentionedValue != '') {
       //Get All To's
@@ -781,18 +771,18 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             if (this.state?.ReplyParent?.MsTeamCreated == undefined)
               this.state.ReplyParent.MsTeamCreated = ''
             const PreMsg = `
-               Task Comment:<span style="background-color: yellow;" title="${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}">${this.ReduceTheContentLines(this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, ''), 450)}.</span>
+               Task Comment:<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span>
               <p><br/></p>
               <p></p>
-              Task Link: <a href=${MsgURL}>${this.state?.Result?.TaskId}-${this?.state?.Result?.Title}</a>
+              Task Link: <a href=${MsgURL}>Click here</a>
               <p></p>
               <span>${finalTaskInfo}</span>
              
           `;
             const CurrentMsg = `
-              Task Comment:<span style="background-color: yellow;" title="${txtComment}">${this.ReduceTheContentLines(txtComment, 450)}.</span>
+              Task Comment:<span style="background-color: yellow;">${txtComment}.</span>
               <p><br/></p>
-              Task Link: <a href=${MsgURL}>${this.state?.Result?.TaskId}-${this?.state?.Result?.Title}</a>
+              Task Link: <a href=${MsgURL}>Click here</a>
               <p></p>
               <span>${finalTaskInfo}</span>
               <p></p>
@@ -800,22 +790,15 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             TeamsMessage = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${PreMsg} </blockquote>${CurrentMsg}`;
           }
           else {
-            TeamsMessage = `
-          <div style="background-color: transparent; border-top: 5px solid #2f5596;">
-            <div style="margin-bottom: 16px;"></div>
-            <span> You have been tagged in comment in the below task. </span>
-          <div style="background-color: #DFDFDF; padding:16px; margin-top:10px; color:#333; display:block;" title="${txtComment}">
-          <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;" >Comment</b>: <span>${this.ReduceTheContentLines(txtComment, 450)}</span>
-          </div>
-          <div style="margin-top: 16px;font-size:16px;">  <b style="font-weight:600; font-size:16px;">Task Link: </b>
-            <a style="font-size:16px;" href="${MsgURL}">
-                ${this.state?.Result?.TaskId}-${this?.state?.Result?.Title}
-            </a>
+            TeamsMessage = `<span> You have been tagged in comment in the below task. </span>
+            <p></p>
+          <div style="background-color: #fff; padding:16px; margin-top:10px; display:block;">
+          <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">Comment</b>: <span>${txtComment}</span>
           </div>
           <p></p>
-          <span>${finalTaskInfo}</span> 
-          </div>
-          `;
+          Task Link: <a href=${MsgURL}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a>
+          <p></p>
+          <span>${finalTaskInfo}</span> `;
           }
 
           await globalCommon.SendTeamMessage(mention_To, TeamsMessage, this.props.Context, this.props?.AllListId)
@@ -827,7 +810,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         }
       }
     }
-    if (this.props.commentFor?.length > 0) {
+    if (this.props.commentFor == "On-Hold") {
       this.state.onHoldCallBack("Save");
     }
   }

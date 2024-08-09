@@ -2812,7 +2812,7 @@ const CompareTool = (props: any) => {
                                                         <div className="d-flex  w-100">
                                                             <span style={{ flex: "0 0 60px" }} onClick={() => toggleExpand(items, data[1], 'taggedTasks')}>   {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
                                                             <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span>  <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
-                                                            {inexdnew == 0 && <input type="checkbox" checked={items?.checked} className="form-check-input me-1" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />}
+                                                            {inexdnew == 0 && <input type="checkbox" checked={items?.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />}
                                                             <span> <a target="_blank" className="mx-2" data-interception="off"
                                                                 href={`${items?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
                                                                 {items?.Title}
