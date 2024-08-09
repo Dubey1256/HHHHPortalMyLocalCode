@@ -9,12 +9,20 @@ import { Info16Regular, Add16Regular } from "@fluentui/react-icons";
 import { data } from "jquery";
 import { TextField } from "office-ui-fabric-react";
 import HtmlEditor from '../globalComponents/HtmlEditor/HtmlEditor';
-
+import { myContextValue } from './globalCommon'
 const useStyles = makeStyles({
     root: { display: "flex", columnGap: tokens.spacingVerticalS, },
     visible: { color: tokens.colorNeutralForeground2BrandSelected, },
 });
 const LabelInfoIconToolTip = (props: any) => {
+    let siteUrls: any;
+    if (props != undefined && props?.ContextInfo?.siteUrl != undefined && props?.ContextInfo?.siteUrl?.toLowerCase()?.indexOf('sites/hhhh/sp') > -1)
+        siteUrls = 'https://hhhhteams.sharepoint.com/sites/HHHH'
+    else
+        siteUrls = props?.ContextInfo?.siteUrl;
+
+  
+    // const myContextData2: any = React.useContext<any>(myContextValue);
     const {
         getArrowProps,
         getTooltipProps,
@@ -35,38 +43,31 @@ const LabelInfoIconToolTip = (props: any) => {
     const [res, setRes] = useState<any>("");
     const [copyres, setcopyRes] = useState<any>("");
 
-    let siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH';
-    let listId = 'fb4b4ae0-fb2d-4623-bffd-a7172e12cd09';
-    if (window?.location?.href?.toLowerCase()?.indexOf('hhhhqa') > -1) {
-        siteUrl = 'https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP';
-        listId = '69a5eee2-8ab3-45af-b9a5-363086ddc122';
-    }
-    else {
-        siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH';
-        listId = 'fb4b4ae0-fb2d-4623-bffd-a7172e12cd09';
-    }
     const getsiteConfig = async () => {
         try {
-            let web = new Web(siteUrl);
-            let getdata: any = [];  // .filter(Id eq )
-            getdata = await web.lists.getById(listId).items.select("Id", "Title", "InternalName", "LongDescription", "Description").top(4999).filter("InternalName eq  '" + props.columnName + "'").get();
+            let getdata: any = [];
+            let web = new Web(siteUrls);
+            getdata = await web.lists.getByTitle("Column Management").items.select("Id", "Title", "InternalName", "LongDescription", "Description").top(4999).filter("InternalName eq  '" + props.columnName + "'").get();
             if (getdata != undefined && getdata.length > 0) {
                 if (getdata[0].Description != undefined && getdata[0].Description != null && getdata[0].Description != '')
                     getdata[0].Description = getdata[0].Description.replace(/<[^>]*>|&#[^;]+;/g, '');
-                getdata[0].copyTitle=getdata[0].Title;
+                getdata[0].copyTitle = getdata[0].Title;
                 setRes(getdata[0]);
                 setcopyRes(getdata[0]);
+                console.log(props.columnName);
             }
 
         } catch (error) {
+            console.log(props.columnName);
             console.log(error);
         }
     }
     useEffect(() => {
-        if (props?.columnName != undefined) {
+        if (props?.columnName != undefined){
             getsiteConfig()
         }
-    }, [props != undefined])
+    }, [props?.columnName]);
+
     const toggleVisibility = () => {
         setVisibleDes(prevVisible => !prevVisible);
         setTooltipVisible(false);
@@ -123,17 +124,18 @@ const LabelInfoIconToolTip = (props: any) => {
         }));
     }
     const editItem = (val: any) => {
+        setVisibleDes(true);
         setEditDes(true);
     };
     const handleSave = async () => {
-        res.Title=res?.copyTitle;
+        let web = new Web(siteUrls);
+        res.Title = res?.copyTitle;
         let postData: any = {
             Title: res?.copyTitle,
             LongDescription: res?.LongDescription,
             Description: res?.Description,
         }
-        let web = new Web(siteUrl);
-        await web.lists.getById(listId).items.getById(res.Id).update(postData).then((e) => {
+        await web.lists.getByTitle("Column Management").items.getById(res.Id).update(postData).then((e) => {
             CloseDespopup('update');
         }).catch((error) => {
             console.log('Error:', error);
@@ -143,12 +145,17 @@ const LabelInfoIconToolTip = (props: any) => {
 
     return (
         <>
-            {res != null && res != '' && props.onlyText==undefined ? <label className="alignCenter form-label full-width gap-1">
+            {res != null && res != '' && props.onlyText == undefined ? <label className="alignCenter form-label full-width gap-1">
                 {res?.Title}
-                {res?.Description != null && res?.Description != '' && <div className={styles.root}>
+                {props?.ShowPencilIcon && <span title="Edit label " className="svg__iconbox svg__icon--info " onClick={() => editItem(res)}></span>}
+                {res?.Description && <div className={styles.root}>
                     <InfoToolTip
                         content={{
-                            children: <span dangerouslySetInnerHTML={{ __html: res?.Description }}></span>,
+                            children: (
+                                <>
+                                    <span dangerouslySetInnerHTML={{ __html: res?.Description }}></span>
+                                    {res?.LongDescription && <div className="col-sm-12 mt-2 text-end"> <a className="siteColor" onClick={() => editItem(res)}>Show More ...</a></div>}
+                                </>),
                             id: contentId,
                         }}
                         withArrow
@@ -157,10 +164,30 @@ const LabelInfoIconToolTip = (props: any) => {
                         <Info16Regular tabIndex={0} className={(tooltipVisible || !visibleDes) ? styles.visible : ''} onClick={toggleVisibility} />
                     </InfoToolTip>
                 </div>}
-                {res?.InternalName == 'dueDate' && <span title="Re-occurring Due Date"> <input type="checkbox" className="form-check-input rounded-0 ms-2" />  </span>}
-            </label>:  res?.Title}
+            </label> : <> {res?.Title}  {res?.Description && <div className={styles.root}>
+                <InfoToolTip
+                    content={{
+                        children: (
+                            <>
+                                <span dangerouslySetInnerHTML={{ __html: res?.Description }}></span>
+                                {res?.LongDescription && <div className="col-sm-12 mt-2 text-end"> <a className="siteColor" onClick={() => editItem(res)}>Show More ...</a></div>}
+                            </>),
+                        id: contentId,
+                    }}
+                    withArrow
+                    relationship="label"
+                    onVisibleChange={handleTooltipVisibilityChange} >
+                    <Info16Regular tabIndex={0} className={(tooltipVisible || !visibleDes) ? styles.visible : ''} onClick={toggleVisibility} />
+                </InfoToolTip>
+            </div>}
+            </>
+
+            }
+
+
+            {(res != null && res != '' && props?.ShowPencilIcon && props.onlyText == "text") && <span title="Edit label" className="svg__iconbox svg__icon--info" onClick={() => editItem(res)}></span>}
             {visibleDes && (
-                <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container itemRankTooltip p-0 m-0" })}>
+                <div ref={setTooltipRef} {...getTooltipProps({ className: ['Bottleneck', 'Phone', 'Attention'].indexOf(res.InternalName) !== -1 ? 'tooltip-container itemRankTooltip tooltip-Right p-0 m-0': 'tooltip-container itemRankTooltip p-0 m-0' })}>
 
                     <div className="col-12">
                         <div className="alignCenter tootltip-title">{res?.Title} <span title="Edit Item" className="light ml-4 svg__icon--editBox svg__iconbox" onClick={() => editItem(res)}></span></div>
@@ -169,7 +196,7 @@ const LabelInfoIconToolTip = (props: any) => {
                         </button>
                     </div>
                     {!editdes && <div className="col-12 toolsbox">
-                        {res?.LongDescription != null && res?.LongDescription != '' ? <div dangerouslySetInnerHTML={{ __html: res?.LongDescription }}></div> : <div dangerouslySetInnerHTML={{ __html: res?.Description }}></div>}
+                        {res?.LongDescription ? <div dangerouslySetInnerHTML={{ __html: res?.LongDescription }}></div> : <div dangerouslySetInnerHTML={{ __html: res?.Description }}></div>}
                     </div>}
 
                     {editdes && <div className="col-12 toolsbox">
@@ -198,6 +225,7 @@ const LabelInfoIconToolTip = (props: any) => {
                 </div>
             )}
         </>
+
     );
 }
 

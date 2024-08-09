@@ -4,31 +4,22 @@ import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import * as globalCommon from "../../globalComponents/globalCommon";
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
-import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col'
-import Form from 'react-bootstrap/Form';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { AiFillCheckSquare, AiFillMinusSquare, AiOutlineBorder, AiOutlineUp } from 'react-icons/ai';
+import { AiOutlineUp } from 'react-icons/ai';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
-import '../../globalComponents/SmartFilterGolobalBomponents/Style.css'
 import Tooltip from '../Tooltip';
-import ShowTaskTeamMembers from '../ShowTaskTeamMembers';
-import { Panel, PanelType } from 'office-ui-fabric-react';
-import { ColumnDef } from '@tanstack/react-table';
-import GlobalCommanTable from '../GroupByReactTableComponents/GlobalCommanTable';
 import PreSetDatePikerPannel from './PreSetDatePiker';
-import { usePopperTooltip } from "react-popper-tooltip";
-import "react-popper-tooltip/dist/styles.css";
-// import TeamSmartFavorites from './Smart Favrorites/TeamSmartFavorites';
 import TeamSmartFavoritesCopy from './Smart Favrorites/TeamSmartFavoritesCopy';
-import { GlobalConstants } from '../LocalCommon';
 import { myContextValue } from '../globalCommon';
 import * as Moment from "moment";
 import ServiceComponentPortfolioPopup from '../EditTaskPopup/ServiceComponentPortfolioPopup';
 import SmartfilterSettingTypePanel from './SmartfilterSettingTypePanel';
-
+import "@pnp/sp/webs";
+import "@pnp/sp/folders";
+let finalString: any = ''
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
 let timeSheetConfig: any = {};
@@ -92,7 +83,7 @@ const TeamSmartFilter = (item: any) => {
     const [updatedSmartFilter, setUpdatedSmartFilter] = React.useState(false)
     const [firstTimecallFilterGroup, setFirstTimecallFilterGroup] = React.useState(false)
     const [hideTimeEntryButton, setHideTimeEntryButton] = React.useState(0);
-    const [timeEntryDataLocalStorage, setTimeEntryDataLocalStorage] = React.useState<any>(localStorage.getItem('timeEntryIndex'));
+    // const [timeEntryDataLocalStorage, setTimeEntryDataLocalStorage] = React.useState<any>(localStorage.getItem('timeEntryIndex'));
     //*******************************************************Project Section********************************************************************/
     const [ProjectManagementPopup, setProjectManagementPopup] = React.useState(false);
     const [ProjectSearchKey, setProjectSearchKey] = React.useState('');
@@ -250,10 +241,13 @@ const TeamSmartFilter = (item: any) => {
         if (siteConfigSites?.length > 0) {
             setSiteConfig(siteConfigSites)
         }
-        setSmartmetaDataDetails(smartmetaDetails);
-        smartTimeUseLocalStorage();
+        setSmartmetaDataDetails(smartmetaDetails)
     }
-
+    const ChckSmartTimeIsAvalable = async () => {
+        await globalCommon.smartTimeUseStorage(item);
+        getTaskUsers();
+        GetSmartmetadata();
+    }
     const loadAdminConfigurationsId = async (itemId: any) => {
         try {
             let configurationData: any[] = [];
@@ -293,19 +287,17 @@ const TeamSmartFilter = (item: any) => {
             console.log(error);
         }
     }
-
     React.useEffect(() => {
         if (item?.IsSmartfavoriteId != "" && item?.IsSmartfavoriteId != undefined && item?.IsSmartfavoriteId != null) {
             setFlatView(true);
             setUpdatedSmartFilter(true);
             loadAdminConfigurationsId(item?.IsSmartfavoriteId);
         } else {
-            getTaskUsers();
-            GetSmartmetadata();
+            ChckSmartTimeIsAvalable();
         }
     }, [])
     React.useEffect(() => {
-        if (smartmetaDataDetails.length > 0) {
+        if (smartmetaDataDetails?.length > 0) {
             GetfilterGroups();
         }
     }, [smartmetaDataDetails])
@@ -935,27 +927,6 @@ const TeamSmartFilter = (item: any) => {
             setTaskUsersData((prev: any) => filterGroups);
             rerender()
         }
-
-        // else if (event == "ClintCatogry") {
-        //     let filterGroups = [...allFilterClintCatogryData];
-        //     filterGroups[index].selectAllChecked = selectAllChecked;
-        //     let selectedId: any = [];
-        //     filterGroups[index].values.forEach((item: any) => {
-        //         item.checked = selectAllChecked;
-        //         if (selectAllChecked) {
-        //             selectedId.push(item?.Id)
-        //         }
-        //         item?.children?.forEach((chElement: any) => {
-        //             if (selectAllChecked) {
-        //                 selectedId.push(chElement?.Id)
-        //             }
-        //         });
-        //     });
-        //     filterGroups[index].checked = selectedId;
-        //     filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
-        //     setFilterClintCatogryData((prev: any) => filterGroups);
-        //     rerender()
-        // }
         else if (event === "ClintCatogry") {
             const filterGroups = [...allFilterClintCatogryData];
             const selectedIds: any[] = [];
@@ -1724,76 +1695,11 @@ const TeamSmartFilter = (item: any) => {
     ];
 
     //*************************************************************smartTimeTotal*********************************************************************/
-    const timeEntryIndex: any = {};
     const smartTimeTotal = async () => {
         item?.setLoaded(false);
-        let AllTimeEntries = [];
-        if (timeSheetConfig?.Id !== undefined) {
-            AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
-        }
-        let allSites = smartmetaDataDetails?.filter((e) => e.TaxType === "Sites")
-        AllTimeEntries?.forEach((entry: any) => {
-            allSites.forEach((site) => {
-                const taskTitle = `Task${site.Title}`;
-                const key = taskTitle + entry[taskTitle]?.Id
-                if (entry.hasOwnProperty(taskTitle) && entry.AdditionalTimeEntry !== null && entry.AdditionalTimeEntry !== undefined) {
-                    if (entry[taskTitle].Id === 168) {
-                        console.log(entry[taskTitle].Id);
-                    }
-                    const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
-                    let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
-                    let timeSheetsDescriptionSearch = additionalTimeEntry?.reduce((accumulator: any, entry: any) => `${accumulator} ${entry?.Description?.replace(/(<([^>]+)>|\n)/gi, "").trim()}`, "").trim();
-                    if (timeEntryIndex.hasOwnProperty(key)) {
-                        timeEntryIndex[key].TotalTaskTime += totalTaskTime;
-                        timeEntryIndex[key].timeSheetsDescriptionSearch = (timeEntryIndex[key]?.timeSheetsDescriptionSearch || '') + ' ' + timeSheetsDescriptionSearch;
-                    } else {
-                        timeEntryIndex[`${taskTitle}${entry[taskTitle]?.Id}`] = {
-                            ...entry[taskTitle],
-                            TotalTaskTime: totalTaskTime,
-                            siteType: site.Title,
-                            timeSheetsDescriptionSearch: timeSheetsDescriptionSearch
-                        };
-                    }
-                }
-            });
-        });
-        allTastsData?.map((task: any) => {
-            task.TotalTaskTime = 0;
-            task.timeSheetsDescriptionSearch = "";
-            const key = `Task${task?.siteType + task.Id}`;
-            if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
-                // task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
-                task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndex[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndex[key]?.TotalTaskTime;
-                task.timeSheetsDescriptionSearch = timeEntryIndex[key]?.timeSheetsDescriptionSearch;
-            }
-        })
-        if (timeEntryIndex) {
-            const dataString = JSON.stringify(timeEntryIndex);
-            localStorage.setItem('timeEntryIndex', dataString);
-        }
-        console.log("timeEntryIndex", timeEntryIndex)
+        await globalCommon.smartTimeFind({ item, smartmetaDataDetails, timeSheetConfig });
         UpdateFilterData("udateClickFalse");
-        return allTastsData;
-    };
-
-    const smartTimeUseLocalStorage = () => {
-        if (timeEntryDataLocalStorage?.length > 0) {
-            const timeEntryIndexLocalStorage = JSON.parse(timeEntryDataLocalStorage)
-            allTastsData?.map((task: any) => {
-                task.TotalTaskTime = 0;
-                task.timeSheetsDescriptionSearch = "";
-                const key = `Task${task?.siteType + task.Id}`;
-                if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
-                    // task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
-                    task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
-                    task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
-                }
-            })
-            console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage)
-            FilterDataOnCheck();
-            return allTastsData;
-        }
-    };
+    }
     //*************************************************************smartTimeTotal End*********************************************************************/
     /// **************** CallBack Part *********************///
     React.useEffect(() => {

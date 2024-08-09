@@ -1238,10 +1238,7 @@ const loadAllPXTimeEntries = async () => {
       let groupedDataItems = globalCommon.deepCopy(backupTableData);
       let flattenedData = flattenData(groupedDataItems)
       PXTasks = flattenedData.filter((item: any) => item.TaskType)
-      totalTime = PXTasks?.reduce((total: any, time: any) => {
-        const taskTime = time.TotalTime || 0;
-        return total + taskTime;
-      }, 0);
+      totalTime = PXTasks?.reduce((total: any, time: any) => total + time.TotalTime, 0);
       totalTime = totalTime/60;
       totalTime = totalTime.toFixed(2)
       setTaskTaggedPortfolios(taskTaggedComponents)
@@ -2197,7 +2194,7 @@ const loadAllPXTimeEntries = async () => {
                 </a>
               </>
             ) : (
-              <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+              <span className='svg__iconbox svg__icon--defaultUser grey workmember ms-1' title={row?.original?.Author?.Title}></span>
             )}
           </span>
         ),
@@ -2235,7 +2232,7 @@ const loadAllPXTimeEntries = async () => {
                 </a>
               </>
             ) : (
-              <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Editor?.Title}></span>
+              <span className='svg__iconbox svg__icon--defaultUser grey workmember ms-1' title={row?.original?.Editor?.Title}></span>
             )}
           </span>
         ),
@@ -2262,7 +2259,7 @@ const loadAllPXTimeEntries = async () => {
           <span> {row?.original?.TotalTaskTime}</span>
         ),
         id: "TotalTaskTime",
-        placeholder: "Estimated Time",
+        placeholder: "Smart Time",
         header: "",
         resetColumnFilters: false,
         size: 49,
@@ -2870,7 +2867,7 @@ const loadAllPXTimeEntries = async () => {
           <>
             <div className="row">
               <div
-                className="d-flex justify-content-between p-0"
+                className="d-flex justify-content-between col"
               >
                 <ul className="spfxbreadcrumb mb-2 ms-2 mt-16 p-0">
                   <li>
@@ -2988,9 +2985,9 @@ const loadAllPXTimeEntries = async () => {
                                     <dl>
                                         <dt className="bg-fxdark">Total PX Time</dt>
                                         <dd className="bg-light">
-                                          {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime.toFixed(2)} hrs; `}</span>}
-                                          {(monthTotalTime != undefined && monthTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime.toFixed(2)} hrs; `}</span>}
-                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime.toFixed(2)} hrs; `}</span>}
+                                          {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime} hrs;`}</span>}
+                                          {(monthTotalTime != undefined && monthTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime} hrs; `}</span>}
+                                          {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime} hrs; `}</span>}
                                           <a className="smartTotalTime hover-text m-0 float-end" onClick={() => loadAllPXTimeEntries()}><BsClock/><span className='tooltip-text pop-left'>Load Time Entries</span></a>
                                         </dd>
                                       </dl>
@@ -3217,8 +3214,7 @@ const loadAllPXTimeEntries = async () => {
                                   AllSitesTaskData={AllSitesAllTasks}
                                   MasterdataItem={Masterdata}
                                   columns={column2} data={ProjectTableData} callBackData={callBackData}
-                                  smartTimeTotalFunction={smartTimeTotal} 
-                                  //  SmartTimeIconShow={true}
+                                  smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
                                   showCreationAllButton={true}
                                   flatViewDataAll={flatViewDataAll}
