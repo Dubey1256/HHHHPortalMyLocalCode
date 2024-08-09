@@ -133,10 +133,10 @@ export const EodReportMain = (props: any) => {
         setCurrentPageEoDReport(pageNumber);
     };
 
-    const findAndUpdateOffshoreComments = (objectToUpdate: any, newOffshoreComments: any) => {
+    const findAndUpdateOffshoreComments = (objectToUpdate: any, newOffshoreComments: any,alloffshoreComment:any) => {
         allTodayModifiedTask.map((item: any) => {
             if (item.ID === objectToUpdate.ID) {
-                item.OffshoreComments = [newOffshoreComments];
+                item.OffshoreComments = [...alloffshoreComment];
                 item.Achieved = newOffshoreComments?.Achieved;
                 item.Pending = newOffshoreComments?.Pending;
               
@@ -145,7 +145,7 @@ export const EodReportMain = (props: any) => {
 
         copyAllAditionalTaskData.map((item: any) => {
             if (item.ID === objectToUpdate.ID) {
-                item.OffshoreComments =[newOffshoreComments];
+                item.OffshoreComments =[...alloffshoreComment];
                 item.Achieved = newOffshoreComments?.Achieved;
                 item.Pending = newOffshoreComments?.Pending;
                 
@@ -1125,7 +1125,7 @@ export const EodReportMain = (props: any) => {
 
             }
             await web.lists.getById(selectedPanelTask?.listId).items.getById(selectedPanelTask?.ID).update(tempObject).then(() => {
-                findAndUpdateOffshoreComments(task, UpdateData[0])
+                findAndUpdateOffshoreComments(task, UpdateData[0],UpdateData)
                 alert("Successfully Submitted")
                 closePanel()
                 console.log("Background Comment Updated !!!")
@@ -1136,15 +1136,17 @@ export const EodReportMain = (props: any) => {
     }
     const updateCommentFunction = async (UpdateData: any, columnName: any, oldoffshoreComments: any, task: any) => {
         let oldoffshoreComment: any = [];
-
         try {
             let web = new Web(siteURL);
-
-            try {
-                oldoffshoreComment = JSON.parse(oldoffshoreComments);
-            } catch (error) {
-
-            }
+            if (typeof oldoffshoreComments === 'string') {
+                try {
+                    oldoffshoreComment = JSON.parse(oldoffshoreComments)
+                } catch (error) {
+                    console.error('Error parsing OffshoreComments:', error);
+                }
+            } else {
+                oldoffshoreComment =oldoffshoreComments;
+            } 
             let updatedComments = [...oldoffshoreComment];
             if (oldoffshoreComment.length > 0) {
                 if (UpdateData.ID !=undefined) {
@@ -1167,7 +1169,7 @@ export const EodReportMain = (props: any) => {
             }
             try {
                 await web.lists.getById(selectedPanelTask?.listId).items.getById(selectedPanelTask?.ID).update(tempObject).then(() => {
-                    findAndUpdateOffshoreComments(task, UpdateData)
+                    findAndUpdateOffshoreComments(task, UpdateData,updatedComments)
 
                     alert("Successfully Submitted")
                     closePanel()
