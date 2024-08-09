@@ -1190,9 +1190,9 @@ function CreateTaskComponent(props: any) {
                             }).then((error) => {
                                 console.log(error)
                             })
-                            // globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'DesignMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
-                            //     console.log(response);
-                            // });
+                            globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'DesignMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
+                                console.log(response);
+                            });
                         }
                         if (CategoryTitle?.indexOf("Approval") > -1) {
                             setSendApproverMail(true);
@@ -1532,6 +1532,11 @@ function CreateTaskComponent(props: any) {
 
                 });
             }
+
+            if (title.indexOf("UX-New") > -1) {
+                UXCat.push(item)
+            }
+            
             if (title?.indexOf('Support') > -1) {
                 var flag = true;
                 taskUsers?.map((User: any) => {

@@ -21,6 +21,8 @@ import FlorarImageUploadComponent from "../FlorarComponents/FlorarImageUploadCom
 
 import MoveSetComponent from "./MoveSetComponent";
 import Tooltip from "../Tooltip";
+import moment from "moment";
+import { TbReplace } from "react-icons/tb";
 let arrayOfChar = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',]
 //   End====
 let globalCount = 1;
@@ -29,7 +31,9 @@ let currentUserData: any;
 
 let UpdatedFeedBackParentArray: any = []
 let designTemplatesArray: any[];
-let copyCurrentActiveTab= 0;
+let copyCurrentActiveTab = 0;
+let funcType: any = '';
+let ReplaceImage:any = []
 export default function UXFeedbackComponent(textItems: any) {
     console.log(textItems?.copyAlldescription)
     const Context = textItems.Context;
@@ -50,16 +54,16 @@ export default function UXFeedbackComponent(textItems: any) {
     const [ApprovalPointHistoryStatus, setApprovalPointHistoryStatus] = useState<any>(false);
     const [IsOpenCreateTaskPanel, setIsOpenCreateTaskPanel] = useState<any>(false);
     const [CreateTaskForThis, setCreateTaskForThis] = useState<any>();
-     const [enableSelectForMove,setEnableSelectForMove]=useState(false)
+    const [enableSelectForMove, setEnableSelectForMove] = useState(false)
     const [TaskImages, setTaskImages] = useState([]);
-    const [sectedMoveImageData,setSectedMoveImageData]=useState([])
-    const [selectedMoveData,setSelectedMoveData]=useState([])
-  
-    const [moveTo,setMoveTo]=useState(false)
-    const [currentActiveTab, setCurrentActiveTab] :any= React.useState();
+    const [sectedMoveImageData, setSectedMoveImageData] = useState([])
+    const [selectedMoveData, setSelectedMoveData] = useState([])
+
+    const [moveTo, setMoveTo] = useState(false)
+    const [currentActiveTab, setCurrentActiveTab]: any = React.useState();
     const [openAddMoreImagePopup, setopenAddMoreImagePopup] = useState(false)
     const [imageIndex, setImageIndex]: any = useState()
-    const [isEditing, setIsEditing] = useState({editable:false,index:0});
+    const [isEditing, setIsEditing] = useState({ editable: false, index: 0 });
     var settings = {
         dots: false,
         infinite: true,
@@ -112,7 +116,7 @@ export default function UXFeedbackComponent(textItems: any) {
 
                             setTexts(!Texts);
                             IndexCount = IndexCount + 1;
-                           
+
 
                         })
 
@@ -132,7 +136,7 @@ export default function UXFeedbackComponent(textItems: any) {
         if (SmartLightStatus) {
             setIsCurrentUserApprover(true);
         }
-        copyCurrentActiveTab=0
+        copyCurrentActiveTab = 0
         getCurrentUserDetails();
         setIndexCount(TextItems?.length)
     }, [TextItems?.length])
@@ -156,14 +160,14 @@ export default function UXFeedbackComponent(textItems: any) {
     }
     const addSet = () => {
 
-      
-            let designTemplates: any = {
-                setTitle: `set${designTemplatesArray?.length + 1}`,
-                setImagesInfo: [],
-                TemplatesArray: []
-            }
-            designTemplatesArray.push(designTemplates);
-      
+
+        let designTemplates: any = {
+            setTitle: `set${designTemplatesArray?.length + 1}`,
+            setImagesInfo: [],
+            TemplatesArray: []
+        }
+        designTemplatesArray.push(designTemplates);
+
 
         IndexCount = IndexCount + 1;
         const object: any = {
@@ -189,13 +193,13 @@ export default function UXFeedbackComponent(textItems: any) {
 
 
         setCurrentActiveTab(designTemplatesArray?.length - 1)
-        copyCurrentActiveTab=designTemplatesArray?.length - 1
+        copyCurrentActiveTab = designTemplatesArray?.length - 1
         setTexts(!Texts);
         setBtnStatus(true);
     }
     const addMainRowInDiv = () => {
         let testTaskIndex: any = State?.length + 1
-        let oldDesignArray = designTemplatesArray[copyCurrentActiveTab]?.TemplatesArray?.length>0?designTemplatesArray[copyCurrentActiveTab]?.TemplatesArray:[]
+        let oldDesignArray = designTemplatesArray[copyCurrentActiveTab]?.TemplatesArray?.length > 0 ? designTemplatesArray[copyCurrentActiveTab]?.TemplatesArray : []
         IndexCount = IndexCount + 1;
         const object: any = {
             Completed: "",
@@ -231,9 +235,9 @@ export default function UXFeedbackComponent(textItems: any) {
         //     callBack("delete");
         // } else {
 
-            designTemplatesArray[copyCurrentActiveTab].TemplatesArray = tempArray
-            
-            callBack(designTemplatesArray);
+        designTemplatesArray[copyCurrentActiveTab].TemplatesArray = tempArray
+
+        callBack(designTemplatesArray);
         // }
         designTemplatesArray[copyCurrentActiveTab].TemplatesArray = tempArray
         setState([...designTemplatesArray]);
@@ -316,11 +320,11 @@ export default function UXFeedbackComponent(textItems: any) {
             ApprovalDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
             isShowLight: value
         }
-        const copy =  designTemplatesArray[copyCurrentActiveTab].TemplatesArray;
+        const copy = designTemplatesArray[copyCurrentActiveTab].TemplatesArray;
         let tempApproverData: any = copy[index].ApproverData;
         const obj = { ...copy[index], isShowLight: value, ApproverData: tempApproverData };
         copy[index] = obj;
-  
+
         copy[index].isShowLight = value;
         copy[index].ApproverData.push(temObject);
         copy?.forEach((ele: any) => {
@@ -338,10 +342,10 @@ export default function UXFeedbackComponent(textItems: any) {
                 })
             }
         })
-        designTemplatesArray[copyCurrentActiveTab].TemplatesArray=copy
+        designTemplatesArray[copyCurrentActiveTab].TemplatesArray = copy
         setState([...designTemplatesArray]);
         callBack(designTemplatesArray);
-       
+
     }
     const postBtnHandleCallBackCancel = useCallback((status: any) => {
         if (status) {
@@ -413,7 +417,7 @@ export default function UXFeedbackComponent(textItems: any) {
     }, [])
 
 
-  
+
     // ==================Image upload function Start by vivek===========
     const FlorarImageUploadComponentCallBack = (dt: any, imageIndex: any) => {
         let TaskImages = []
@@ -436,6 +440,7 @@ export default function UXFeedbackComponent(textItems: any) {
         };
 
         TaskImages.push(DataObject);
+        ReplaceImage = DataObject
         if (dt.length > 0) {
             onUploadImageFunction(TaskImages, imageIndex, true);
         }
@@ -598,18 +603,24 @@ export default function UXFeedbackComponent(textItems: any) {
         });
     };
     //===========Addm more image functionality=========
-    const AddMoreImages = (index: any) => {
+    const AddMoreImages = (index: any, func: any) => {
+        funcType = func
         setImageIndex(index)
         setopenAddMoreImagePopup(true)
     }
 
     const UpdateMoreImage = () => {
-        UpdatedFeedBackParentArray = State;
-        UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo.push(TaskImages[0])
-        designTemplatesArray=UpdatedFeedBackParentArray
-        setState(UpdatedFeedBackParentArray);
-        callBack(UpdatedFeedBackParentArray);
-        setopenAddMoreImagePopup(false)
+        if (funcType === 'replace') {
+            ReplaceImageFunction(ReplaceImage, imageIndex)
+        } else {
+            UpdatedFeedBackParentArray = State;
+            UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo.push(TaskImages[0])
+            designTemplatesArray = UpdatedFeedBackParentArray
+            setState(UpdatedFeedBackParentArray);
+            callBack(UpdatedFeedBackParentArray);
+            setopenAddMoreImagePopup(false)
+        }    
+        
     }
     const onRenderCustomAddMoreImageHeader = () => {
         return (
@@ -618,90 +629,170 @@ export default function UXFeedbackComponent(textItems: any) {
 
             >
                 <div className="subheading siteColor">Add More Image</div>
-                <Tooltip ComponentId="12134"  />
+                <Tooltip ComponentId="12134" />
             </div>
         );
     };
     const DeleteImageFunction = (imageIndex: any, imageName: any, FunctionType: any) => {
-      
-            let tempArray: any = [];
-            
-            if (FunctionType == "Remove") {
-                designTemplatesArray[copyCurrentActiveTab]?.setImagesInfo?.map((imageData:any, index:any) => {
-                    if (index != imageIndex) {
-                        tempArray.push(imageData);
-                    }
-                });
-                setTaskImages(tempArray);
-            }
-            if (textItems?.TaskListDetails?.ListId != undefined) {
+
+        let tempArray: any = [];
+
+        if (FunctionType == "Remove") {
+            designTemplatesArray[copyCurrentActiveTab]?.setImagesInfo?.map((imageData: any, index: any) => {
+                if (index != imageIndex) {
+                    tempArray.push(imageData);
+                }
+            });
+            setTaskImages(tempArray);
+        }
+        if (textItems?.TaskListDetails?.ListId != undefined) {
+            (async () => {
+                try {
+                    let web = new Web(textItems?.TaskListDetails?.SiteURL);
+                    let item = web.lists
+                        .getById(textItems?.TaskListDetails?.ListId)
+                        .items.getById(textItems?.TaskListDetails?.TaskId);
+                    await item.attachmentFiles.getByName(imageName).recycle();
+                    designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
+                    setState([...designTemplatesArray]);
+                    callBack(designTemplatesArray);
+                    console.log("Attachment deleted");
+
+                } catch (error) {
+                    console.log("Error deleting attachment:", error);
+                    designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
+                    setState([...designTemplatesArray]);
+                    callBack(designTemplatesArray);
+                }
+            })();
+        } else {
+            (async () => {
+                try {
+                    let web = new Web(textItems?.TaskListDetails?.SiteURL);
+                    let item = web.lists
+                        .getByTitle(textItems?.TaskListDetails?.siteType)
+                        .items.getById(textItems?.TaskListDetails?.TaskId);
+                    await item.attachmentFiles.getByName(imageName).recycle();
+                    designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
+
+                    setState([...designTemplatesArray]);
+                    console.log("Attachment deleted");
+
+                } catch (error) {
+                    console.log("Error deleting attachment:", error);
+                    designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
+                    setState([...designTemplatesArray]);
+                    callBack(designTemplatesArray);
+
+                }
+            })();
+        }
+
+    };
+
+    // ********************************  Replace Image Functionality **************************
+
+    const ReplaceImageFunction = (Data: any, ImageIndex: any) => {
+        return new Promise<void>(async (resolve, reject) => {
+            let ImageName = designTemplatesArray[copyCurrentActiveTab]?.setImagesInfo[ImageIndex]?.ImageName;
+            var src = Data?.data_url?.split(",")[1];
+            var byteArray = new Uint8Array(
+                atob(src)
+                    ?.split("")
+                    ?.map(function (c) {
+                        return c.charCodeAt(0);
+                    })
+            );
+            const data = byteArray;
+            var fileData = "";
+            for (var i = 0; i < byteArray.byteLength; i++) {
+                fileData += String.fromCharCode(byteArray[i]);
+            }           
+            if (textItems?.EditData?.siteUrl != undefined) {
                 (async () => {
                     try {
-                        let web = new Web(textItems?.TaskListDetails?.SiteURL);
-                        let item = web.lists
-                            .getById(textItems?.TaskListDetails?.ListId)
-                            .items.getById(textItems?.TaskListDetails?.TaskId);
-                        await item.attachmentFiles.getByName(imageName).recycle();
-                       designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
-                       setState([...designTemplatesArray]);
-                       callBack(designTemplatesArray);
-                        console.log("Attachment deleted");
-                      
+                        let web = new Web(textItems?.EditData?.siteUrl);
+                        let item = web.lists.getById(textItems?.EditData.listId).items.getById(textItems?.EditData?.Id);
+                        await item.attachmentFiles.getByName(ImageName).setContent(data)
+                            .then((res: any) => {
+                                console.log(res);
+                                console.log("Attachment Updated");
+                                let replaceimageData: any = designTemplatesArray[copyCurrentActiveTab]?.setImagesInfo[ImageIndex];
+                                let TimeStamp = moment(new Date().toLocaleString());
+                                replaceimageData.ImageUrl = replaceimageData?.ImageUrl + "?Updated=" + TimeStamp
+                                designTemplatesArray[copyCurrentActiveTab]?.setImagesInfo?.splice(ImageIndex, 1, replaceimageData)
+                                setopenAddMoreImagePopup(false)
+                            })
+                            .catch((err: any) => {
+                                console.log(err)
+                            })
+
+                        // props.data[0].setImagesInfo?.splice(ImageIndex, 1, TaskImages[0])
+                        // props.data[0].setImagesInfo = TaskImages
+                        // setTaskImages(EditData.UploadedImage);
+
+                        resolve();
                     } catch (error) {
-                        console.log("Error deleting attachment:", error);
-                        designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
-                        setState([...designTemplatesArray]);
-                        callBack(designTemplatesArray);
+                        console.log("Error updating attachment:", error);
+                        reject(error);
                     }
                 })();
             } else {
                 (async () => {
                     try {
-                        let web = new Web(textItems?.TaskListDetails?.SiteURL);
+                        let web = new Web(textItems?.EditData?.siteUrl);
                         let item = web.lists
-                            .getByTitle(textItems?.TaskListDetails?.siteType)
-                            .items.getById(textItems?.TaskListDetails?.TaskId);
-                        await item.attachmentFiles.getByName(imageName).recycle();
-                        designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
-                       
-                        setState([...designTemplatesArray]);
-                        console.log("Attachment deleted");
-                       
+                            .getById(textItems?.EditData?.listName)
+                            .items.getById(textItems?.EditData?.Id);
+                        await item.attachmentFiles.getByName(ImageName).setContent(data)
+                            .then((res: any) => {
+                                console.log(res);
+                                let replaceimageData: any = designTemplatesArray[copyCurrentActiveTab]?.setImagesInfo[ImageIndex];
+                                let TimeStamp = moment(new Date().toLocaleString());
+                                replaceimageData.ImageUrl = replaceimageData?.ImageUrl + "?Updated=" + TimeStamp
+                                designTemplatesArray[copyCurrentActiveTab]?.setImagesInfo?.splice(ImageIndex, 1, replaceimageData)
+                                console.log("Attachment Updated");
+                            })
+                            .catch((err: any) => {
+                                console.log(err)
+                            })
+                        // props.data[0].setImagesInfo?.splice(ImageIndex, 1,TaskImages[0])
+                        // props.data[0].setImagesInfo = TaskImages
+                        setopenAddMoreImagePopup(false)
+                        resolve();
                     } catch (error) {
-                        console.log("Error deleting attachment:", error);
-                        designTemplatesArray[copyCurrentActiveTab].setImagesInfo = tempArray;
-                        setState([...designTemplatesArray]);
-                        callBack(designTemplatesArray);
-                       
+                        console.log("Error updating attachment:", error);
+                        reject(error);
                     }
                 })();
             }
-        
+        });
     };
+
     //=====================End Image upload function ===============
 
-// -----------  change the tab name and its function strat -----------------
+    // -----------  change the tab name and its function strat -----------------
     const handleChangeTab = (newValue: any) => {
         setCurrentActiveTab(newValue)
-            copyCurrentActiveTab=newValue
-            if(currentActiveTab!=newValue){
-            setIsEditing({...isEditing,editable:false,index:0})
+        copyCurrentActiveTab = newValue
+        if (currentActiveTab != newValue) {
+            setIsEditing({ ...isEditing, editable: false, index: 0 })
         }
-      
+
     }
 
-    const handleEditClick = (index:any) => {
+    const handleEditClick = (index: any) => {
         // let editablefield=!isEditing.editable
-        setIsEditing({...isEditing,editable:true,index:index});
+        setIsEditing({ ...isEditing, editable: true, index: index });
     };
     const handleTitleInputChange = (index: any, value: any) => {
-          UpdatedFeedBackParentArray = State;
+        UpdatedFeedBackParentArray = State;
         UpdatedFeedBackParentArray[index].setTitle = value;
 
         setState((prevItems: any) => (
             prevItems.map((item: any, idx: any) => idx === index ? UpdatedFeedBackParentArray[index] : item)
         ));
-        designTemplatesArray=UpdatedFeedBackParentArray
+        designTemplatesArray = UpdatedFeedBackParentArray
         setState([...UpdatedFeedBackParentArray]);
         callBack(UpdatedFeedBackParentArray);
 
@@ -709,24 +800,24 @@ export default function UXFeedbackComponent(textItems: any) {
     //------End tab chnages function -------------
 
     //-------------Move set function start ---------------
-    const moveToCallbackFunction=(data:any)=>{
-       
-        if(data?.length>0){
-            designTemplatesArray=data;
-        setState([...data])
+    const moveToCallbackFunction = (data: any) => {
+
+        if (data?.length > 0) {
+            designTemplatesArray = data;
+            setState([...data])
         }
         setMoveTo(false);
         setSelectedMoveData([]);
         setSectedMoveImageData([]);
     }
-    const handleCheckboxImageChange = (data:any, isChecked:any) => {
+    const handleCheckboxImageChange = (data: any, isChecked: any) => {
         if (isChecked) {
             setSectedMoveImageData([...sectedMoveImageData, data]);
         } else {
             setSectedMoveImageData(sectedMoveImageData.filter(item => item.ImageName !== data.ImageName));
         }
     };
-    const handleCheckboxsetChange=(data:any, isChecked:any)=>{
+    const handleCheckboxsetChange = (data: any, isChecked: any) => {
         if (isChecked) {
             setSelectedMoveData([...selectedMoveData, data]);
         } else {
@@ -734,65 +825,45 @@ export default function UXFeedbackComponent(textItems: any) {
         }
     }
     //------------------move set function End-------------
-     
+
 
     //--------------Delete set Fuctionality----------------
-    const DeleteSet=(index:any)=>{
-        designTemplatesArray.splice(index,1) 
-        if(index==0){
-            setCurrentActiveTab(index)   
-        }else{
-            setCurrentActiveTab(index-1)
+    const DeleteSet = (index: any) => {
+        designTemplatesArray.splice(index, 1)
+        if (index == 0) {
+            setCurrentActiveTab(index)
+        } else {
+            setCurrentActiveTab(index - 1)
         }
-       setState([...designTemplatesArray]);
+        setState([...designTemplatesArray]);
         callBack(designTemplatesArray);
 
     }
     //------------Delete set Data end -----------------
-    
+
     const DesignCategoriesTask = (state: any) => {
         return (
             <div className="UXDesignTabs">
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
-                    {state?.map((tab:any, index: any) => (
+                    {state?.map((tab: any, index: any) => (
                         <div className="position-relative">
-                            <button
-                            className={`nav-link ${currentActiveTab == index ? 'active' : ''}`}
-                            id={tab?.setTitle}
-                            data-bs-toggle="tab"
-                            data-bs-target={`#${tab?.setTitle}`}
-                            type="button"
-                            role="tab"
-                            aria-controls={tab?.setTitle}
-                            aria-selected="true"
-                            onClick={() => { handleChangeTab(index) }}
-                        >
-                         
-                   {isEditing?.editable &&  isEditing?.index==index?<input
-                        type="text"
-                        value={tab?.setTitle}
-                        onChange={(e)=>handleTitleInputChange(index,e.target.value)}
-                        autoFocus
-                    />:
-                    
-                   arrayOfChar[index]+"."+tab?.setTitle}
-                   
-                    
-                 </button>
-                 <div className="alignCenter editTab">
-                 <span className="svg__iconbox svg__icon--editBox hreflink" title="Edit set Title" onClick={()=>handleEditClick(index)}></span>
-                 <span  className="svg__iconbox hreflink mini svg__icon--trash" title="Delete Set"onClick={() => DeleteSet(index) } > </span>
-                    </div>
-                        </div>
-                    
+                            <button className={`nav-link ${currentActiveTab === index ? 'active' : ''}`} id={tab?.setTitle} data-bs-toggle="tab" data-bs-target={`#${tab?.setTitle}`} type="button" role="tab" aria-controls={tab?.setTitle} aria-selected={currentActiveTab === index} onClick={() => handleChangeTab(index)}>
+                                {isEditing?.editable && isEditing?.index === index ? (
+                                    <input type="text" value={tab?.setTitle} onChange={(e) => handleTitleInputChange(index, e.target.value)} autoFocus style={{ display: 'inline-block' }} // Ensures input is always present
+                                    />) : (`${arrayOfChar[index]}. ${tab?.setTitle}`)}
+                            </button>
 
+                            <div className="alignCenter editTab">
+                                <span className="svg__iconbox svg__icon--editBox hreflink" title="Edit set Title" onClick={() => handleEditClick(index)}></span>
+                                <span className="svg__iconbox hreflink mini svg__icon--trash" title="Delete Set" onClick={() => DeleteSet(index)} > </span>
+                            </div>
+                        </div>
                     ))}
                     {btnStatus ? <a className="alignCenter ms-2 hreflink" onClick={addSet}><span className="svg__iconbox svg__icon--Plus hreflink mini" title="Add set" ></span> Add New Set</a> : ""}
-                    <div className="alignCenter ml-auto">{<a className="hreflink" onClick={()=>setEnableSelectForMove(true)}>Enable move</a>}
-                    <span className="mx-2"> | </span>
-                    {<a className="hreflink" onClick={()=>setMoveTo(true)}>Move to Set</a>}</div>
+                    <div className="alignCenter ml-auto">{<a className="hreflink" onClick={() => setEnableSelectForMove(true)}>Enable move</a>}
+                        <span className="mx-2"> | </span>
+                        {<a className="hreflink" onClick={() => setMoveTo(true)}>Move to Set</a>}</div>
                 </ul>
-
 
                 <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                     {TextItems?.length > 0 ?
@@ -810,19 +881,19 @@ export default function UXFeedbackComponent(textItems: any) {
                                         <div className="full-width my-2" >
                                             <span
                                                 className="mx-1 hover-text"
-                                                onClick={() => AddMoreImages(j)}
+                                                onClick={() => AddMoreImages(j,'add')}
                                             >
-                                             <span className="svg__iconbox svg__icon--Plus hreflink mini" ></span>Add Images
-                                               <span className="tooltip-text pop-right" >
+                                                <span className="svg__iconbox svg__icon--Plus hreflink mini" ></span>Add Images
+                                                <span className="tooltip-text pop-right" >
                                                     Add Images
                                                 </span>
                                             </span>
-                                       
+
                                         </div>
                                         {
                                             designdata?.setImagesInfo?.length == 0 && <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} imageIndex={j} />}
                                         {designdata?.setImagesInfo?.length == 1 ?
-                                            designdata?.setImagesInfo?.map((imgData: any,imageIndex:any) => {
+                                            designdata?.setImagesInfo?.map((imgData: any, imageIndex: any) => {
                                                 const isChecked = sectedMoveImageData.some(item => item.ImageName === imgData.ImageName);
                                                 return (
 
@@ -848,21 +919,38 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                         <BiInfoCircle />
                                                                     </span>}
                                                                     <span
-                                                                                className="mx-1 hover-text"
-                                                                                onClick={() =>
-                                                                                    DeleteImageFunction(
-                                                                                        imageIndex,
-                                                                                        imgData.ImageName,
-                                                                                        "Remove"
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                {" "}
-                                                                                | <RiDeleteBin6Line /> 
-                                                                                <span className="tooltip-text pop-right" >
-                                                                                    Delete
-                                                                                </span>
+                                                                        className="mx-1 hover-text"
+                                                                        onClick={() =>
+                                                                            DeleteImageFunction(
+                                                                                imageIndex,
+                                                                                imgData.ImageName,
+                                                                                "Remove"
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        {" "}
+                                                                        | <RiDeleteBin6Line />
+                                                                        <span className="tooltip-text pop-right" >
+                                                                            Delete
+                                                                        </span>
+                                                                    </span>
+                                                                    <span
+                                                                        className="m-0 hover-text"
+                                                                        onClick={() =>
+                                                                            AddMoreImages(
+                                                                                imageIndex, 'replace'
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        {" "}
+                                                                        |
+                                                                        <span className="siteColor">
+                                                                            <TbReplace />{" "}
+                                                                            <span className="tooltip-text pop-right">
+                                                                                Replace Image
                                                                             </span>
+                                                                        </span>   
+                                                                    </span>
 
                                                                 </span>
                                                             </div>
@@ -871,7 +959,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                 <span >
                                                                     {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
                                                                 </span>
-                                                                {enableSelectForMove && <span key={imageIndex}className="ms-2">
+                                                                {enableSelectForMove && <span key={imageIndex} className="ms-2">
                                                                     <input
                                                                         type="checkbox"
                                                                         id={`checkbox-${imageIndex}`}
@@ -893,7 +981,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                 <Slider {...settings}>
 
                                                     {designdata?.setImagesInfo?.map((imgData: any, indeximage: any) => {
-                                                     const isChecked = sectedMoveImageData.some(item => item.ImageName === imgData.ImageName);
+                                                        const isChecked = sectedMoveImageData.some(item => item.ImageName === imgData.ImageName);
                                                         return (
                                                             <div key={indeximage} className="carouselHeight">
                                                                 <img className="img-fluid"
@@ -917,7 +1005,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                                 <BiInfoCircle />
                                                                             </span>}
                                                                             <span
-                                                                                className="mx-1 hover-text"
+                                                                                className="m-0 hover-text"
                                                                                 onClick={() =>
                                                                                     DeleteImageFunction(
                                                                                         indeximage,
@@ -927,9 +1015,23 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                                 }
                                                                             >
                                                                                 {" "}
-                                                                                | <RiDeleteBin6Line /> 
+                                                                                | <RiDeleteBin6Line />
                                                                                 <span className="tooltip-text pop-right">
                                                                                     Delete
+                                                                                </span>
+                                                                            </span>
+                                                                            <span
+                                                                                className="m-0 hover-text"
+                                                                                onClick={() =>
+                                                                                    AddMoreImages(
+                                                                                        indeximage, 'replace'
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                {" "}
+                                                                                |
+                                                                                <span className="siteColor">
+                                                                                    Replace
                                                                                 </span>
                                                                             </span>
 
@@ -940,26 +1042,23 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                         <span >
                                                                             {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
                                                                         </span>
-                                                                        {enableSelectForMove && <span key={imageIndex}className="ms-2">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        id={`checkbox-${imageIndex}`}
-                                                                        name={`checkbox-${imageIndex}`}
-                                                                        value={imgData?.ImageName}
-                                                                        checked={isChecked}
-                                                                        onChange={(e) => handleCheckboxImageChange(imgData, e.target.checked)}
-                                                                    />
-                                                                    <label className="ms-1" htmlFor={`checkbox-${imageIndex}`}>Select for Move</label><br />
-                                                                </span> } 
+                                                                        {enableSelectForMove && <span key={imageIndex} className="ms-2">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={`checkbox-${imageIndex}`}
+                                                                                name={`checkbox-${imageIndex}`}
+                                                                                value={imgData?.ImageName}
+                                                                                checked={isChecked}
+                                                                                onChange={(e) => handleCheckboxImageChange(imgData, e.target.checked)}
+                                                                            />
+                                                                            <label className="ms-1" htmlFor={`checkbox-${imageIndex}`}>Select for Move</label><br />
+                                                                        </span>}
                                                                     </div>
 
                                                                 </div>
 
                                                             </div>
                                                         )
-
-
-
                                                     })}
                                                 </Slider>
                                             </div>
@@ -968,11 +1067,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                             const isChecked = selectedMoveData.some(item => item.Title === obj.Title);
                                             return (
                                                 <div className="col-sm-12 row">
-
-
                                                     <div className="FeedBack-comment row my-1">
-
-
                                                         <div
                                                             data-id={i}
                                                             className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9 col py-3" : "col"}
@@ -1070,19 +1165,19 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                         </label>
                                                                     </span>
                                                                     <span>|</span>
-                                                                    {enableSelectForMove &&  <span  key={i}className="mx-1">
-                                                                    
-                                                                    <input
-                                                                    className="form-check-input mt--3"
-                                                                        type="checkbox"
-                                                                        id={`checkbox-${i}`}
-                                                                        name={`checkbox-${i}`}
-                                                                        value={obj?.Title}
-                                                                        checked={isChecked}
-                                                                        onChange={(e) => handleCheckboxsetChange(obj, e.target.checked)}
-                                                                    />
-                                                                    <label className="ms-1" htmlFor={`checkbox-${imageIndex}`}>Select for Move</label>
-                                                                </span>  }
+                                                                    {enableSelectForMove && <span key={i} className="mx-1">
+
+                                                                        <input
+                                                                            className="form-check-input mt--3"
+                                                                            type="checkbox"
+                                                                            id={`checkbox-${i}`}
+                                                                            name={`checkbox-${i}`}
+                                                                            value={obj?.Title}
+                                                                            checked={isChecked}
+                                                                            onChange={(e) => handleCheckboxsetChange(obj, e.target.checked)}
+                                                                        />
+                                                                        <label className="ms-1" htmlFor={`checkbox-${imageIndex}`}>Select for Move</label>
+                                                                    </span>}
                                                                     <span> | </span>
                                                                     <span className="mx-1">
                                                                         <span className="hreflink siteColor commentSectionLabel" onClick={() => postBtnHandle(i)}> Add Comment </span>
@@ -1099,14 +1194,14 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                         onClick={() => RemoveItem(obj, i)}>
                                                                         <span className="svg__iconbox hreflink mini svg__icon--trash"></span>
                                                                     </a>
-                                                                 
-                                                                    
+
+
 
                                                                 </div>
                                                             </div>
                                                             <div className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9" : ""}>
                                                                 <div className="d-flex" title={obj.isShowLight}>
-                                                                    <span className="SubTestBorder p-1 me-1">{`${arrayOfChar[currentActiveTab]}.${i + 1}`}</span>
+                                                                    <span className="SubTestBorder p-1 me-1">{`${arrayOfChar[currentActiveTab]}. ${i + 1}`}</span>
                                                                     <textarea
                                                                         style={{ width: "100%" }}
                                                                         className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "form-control Disabled-Link bg-e9" : "form-control"}
@@ -1147,9 +1242,9 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                     SmartLightPercentStatus={SmartLightPercentStatus}
                                                                     isCurrentUserApprover={isCurrentUserApprover}
                                                                     Context={Context}
-                                                                    SetChar={`${arrayOfChar[currentActiveTab]}.`}
+                                                                    SetChar={`${arrayOfChar[currentActiveTab]}. `}
                                                                     isFirstComment={false}
-                                                                
+
                                                                 />
                                                             </div>
                                                         </div>
@@ -1232,14 +1327,12 @@ export default function UXFeedbackComponent(textItems: any) {
                 </div>
             </Panel>
             {/**************End************************************* */}
-                {/* ********************* this is MovesetPanel ****************** */}
-               {moveTo&& <MoveSetComponent AllSetData={State}moveToCallbackFunction={moveToCallbackFunction}
+            {/* ********************* this is MovesetPanel ****************** */}
+            {moveTo && <MoveSetComponent AllSetData={State} moveToCallbackFunction={moveToCallbackFunction}
                 selectedMoveData={selectedMoveData}
-                 sectedMoveImageData={sectedMoveImageData}
-                ></MoveSetComponent>}
-                {/*********Moves set panel End***************** */}
+                sectedMoveImageData={sectedMoveImageData}
+            ></MoveSetComponent>}
+            {/*********Moves set panel End***************** */}
         </div>
     );
 }
-
-

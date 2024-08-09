@@ -28,8 +28,8 @@ import { RiFileExcel2Fill, RiFilter3Fill, RiListSettingsFill } from 'react-icons
 import ShowTeamMembers from '../ShowTeamMember';
 import SelectFilterPanel from './selectFilterPannel';
 import ExpndTable from '../ExpandTable/Expandtable';
- import RestructuringCom from '../Restructuring/RestructuringCom';
- import RestructureProject from '../../webparts/projectManagement/components/RestructureProject';
+import RestructuringCom from '../Restructuring/RestructuringCom';
+import RestructureProject from '../../webparts/projectManagement/components/RestructureProject';
 import { SlArrowDown, SlArrowRight, SlArrowUp } from 'react-icons/sl';
 import { BsClockHistory, BsList, BsSearch } from 'react-icons/bs';
 import Tooltip from "../../globalComponents/Tooltip";
@@ -111,9 +111,6 @@ function DebouncedInput({
         </>
     );
 }
-
-
-
 export function Filter({
     column,
     table,
@@ -134,7 +131,6 @@ export function Filter({
 
     );
 }
-
 export function IndeterminateCheckbox(
     {
         indeterminate,
@@ -156,7 +152,6 @@ export function IndeterminateCheckbox(
         />
     );
 }
-
 // ********************* function with globlize Expended And Checkbox*******************
 let forceExpanded: any = [];
 const getFirstColHeader = ({ hasCheckbox, hasExpanded, isHeaderNotAvlable, portfolioColor }: any) => {
@@ -175,7 +170,6 @@ const getFirstColHeader = ({ hasCheckbox, hasExpanded, isHeaderNotAvlable, portf
         </>
     );
 };
-
 const getFirstColCell = ({ setExpanded, hasCheckbox, hasCustomExpanded, hasExpanded }: any) => {
     return ({ row, getValue, table }: any) => (
         <div className="alignCenter">
@@ -245,8 +239,6 @@ const getFirstColCell = ({ setExpanded, hasCheckbox, hasCustomExpanded, hasExpan
     );
 };
 // ********************* function with globlize Expended And Checkbox*******************
-
-
 // ReactTable Part end/////
 let isShowingDataAll: any = false;
 let settingConfrigrationData: any = [];
@@ -481,8 +473,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const bulkEditingSettingPopupEvent = () => {
         setBulkEditingSettingPopup(true);
     }
-
-
     ///******************** Bulk Editing Setting End************* */
     const fetchSettingConfrigrationData = async (event: any) => {
         try {
@@ -1017,13 +1007,15 @@ const GlobalCommanTable = (items: any, ref: any) => {
     }
     const exportCallBack = React.useCallback((columnChecked: any) => {
         if (columnChecked != 'close') {
-            let headerColur = "0a1c3e"
-            let currentUrl: any = window.location.href;
+            let headerColur="0a1c3e"
+            let currentUrl:any=window.location.href;
+            let FileSaveName="PageData"
+            let match = currentUrl?.match(/\/([^/]+\.aspx)(\?.*)?$/);
 
-            let match = currentUrl.match(/\/([^/]+\.aspx)(\?.*)?$/);
-
-            let FileSaveName = match[1].replace('.aspx', '');
-
+            if(match!=undefined){
+                 FileSaveName = match[1]?.replace('.aspx','');
+            }
+            
 
             if (currentUrl.toString().includes('PortfolioType=Service')) {
                 headerColur = '#228B22'
@@ -1477,54 +1469,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         {items?.protfolioProfileButton === true && items?.hideAddActivityBtn != true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" disabled={true} > Add Activity-Task</button>}</>}
-                        
+
                         {items?.showRestructureButton && (
-    <>
-        {items?.projectmngmnt === 'projectmngmnt' ? (
-            trueRestructuring ? (
-                <RestructureProject
-                    AllSitesTaskData={items?.AllSitesTaskData}
-                    AllMasterTasksData={items?.masterTaskData}
-                    projectmngmnt={items?.projectmngmnt}
-                    MasterdataItem={items?.MasterdataItem}
-                    queryItems={items.queryItems}
-                    restructureFunct={restructureFunct}
-                    ref={childRef}
-                    taskTypeId={items.TaskUsers}
-                    contextValue={items.AllListId}
-                    allData={data}
-                    restructureCallBack={items.restructureCallBack}
-                    restructureItem={table?.getSelectedRowModel()?.flatRows}
-                />
-            ) : (
-                <button type="button" title="Restructure" disabled className="btn btn-primary">
-                    Restructure P
-                </button>
-            )
-        ) : (
-            trueRestructuring ? (
-                <RestructuringCom
-                    AllSitesTaskData={items?.AllSitesTaskData}
-                    AllMasterTasksData={items?.masterTaskData}
-                    projectmngmnt={items?.projectmngmnt}
-                    MasterdataItem={items?.MasterdataItem}
-                    queryItems={items.queryItems}
-                    restructureFunct={restructureFunct}
-                    ref={childRef}
-                    taskTypeId={items.TaskUsers}
-                    contextValue={items.AllListId}
-                    allData={data}
-                    restructureCallBack={items.restructureCallBack}
-                    restructureItem={table?.getSelectedRowModel()?.flatRows}
-                />
-            ) : (
-                <button type="button" title="Restructure" disabled className="btn btn-primary">
-                    Restructure
-                </button>
-            )
-        )}
-    </>
-)}
+                            <>
+                                {items?.projectmngmnt === 'projectmngmnt' ? (trueRestructuring ? (<RestructureProject AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} projectmngmnt={items?.projectmngmnt} MasterdataItem={items?.MasterdataItem} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />) : (<button type="button" title="Restructure" disabled className="btn btn-primary"> Restructure P </button>)
+                                ) : (trueRestructuring ? (<RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} projectmngmnt={items?.projectmngmnt} MasterdataItem={items?.MasterdataItem} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />) : (<button type="button" title="Restructure" disabled className="btn btn-primary"> Restructure </button>))} </>
+                        )}
 
                         {items?.showCompareButton === true && <div> {
                             ((table?.getSelectedRowModel()?.flatRows?.length === 2) && (table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Workstream" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task")) ?
@@ -1536,7 +1486,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {items.taskProfile === true && items?.showCreationAllButton === true && items?.hideRestructureBtn != true && <>
                         {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Workstream-Task")}>{(table?.getSelectedRowModel()?.flatRows.length > 0 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType.Title == "Workstream") || (items?.queryItems?.TaskType?.Title == "Workstream") ? "Add Task" : "Add Workstream-Task"}</button> :
                             <button type="button" className="btn btn-primary" disabled={true} > Add Workstream-Task</button>}
-                        
+
                         {
                             trueRestructuring == true ?
                                 <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
@@ -1577,7 +1527,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {items?.showCatIcon != true ? <><a className='excal hreflink hover-text m-0' onClick={() => exportToExcel()}><RiFileExcel2Fill /><span className='tooltip-text pop-left'>Export To Excel</span></a></> :
                         <><a className='excal hover-text m-0' onClick={items?.exportToExcelCategoryReport}><RiFileExcel2Fill /><span className='tooltip-text pop-left'>Export To Excel</span></a></>}
 
-                    {items?.SmartTimeIconShow === true && items?.AllListId?.isShowTimeEntry === true && <a className='smartTotalTime hreflink hover-text m-0' title="Load SmartTime of AWT" onClick={() => openCreationAllStructure("Smart-Time")} > <BsClockHistory /> <span className='tooltip-text pop-left'>Load SmartTime of AWT</span></a>}
+                    {items?.SmartTimeIconShow === true && items?.AllListId?.isShowTimeEntry === true && <a className='smartTotalTime hreflink hover-text m-0' onClick={() => openCreationAllStructure("Smart-Time")} > <BsClockHistory /> <span className='tooltip-text pop-left'>Load SmartTime of AWT {items?.smartTimelastModifiedDate ? "Last Modified Date - " + items?.smartTimelastModifiedDate : "No Smart Time available"}</span></a>}
 
                     {items?.flatView === true && items?.updatedSmartFilterFlatView === false && <>{items?.clickFlatView === false ? <a className='smartTotalTime hreflink hover-text m-0' onClick={() => openCreationAllStructure("Flat-View")}><BsList /> <span className='tooltip-text pop-left'>Switch to Flat-View</span></a> :
                         <a className='smartTotalTime hover-text m-0' onClick={() => openCreationAllStructure("Groupby-View")}><FaListAlt /><span className='tooltip-text pop-left'>Switch to Groupby View</span></a>}</>}

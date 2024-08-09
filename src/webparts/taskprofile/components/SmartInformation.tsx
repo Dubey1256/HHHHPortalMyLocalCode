@@ -35,7 +35,13 @@ const SmartInformation = (props: any, ref: any) => {
   const [popupEdit, setpopupEdit] = useState(false);
   const [smartInformationArrow, setsmartInformationArrow]: any = useState();
   const [enlargeInformationArrow, setenlargeInformationArrow]: any = useState();
-  const [copySmartInfo, setcopySmartInfo] = useState([])
+  const [copySmartInfo, setcopySmartInfo] = useState([]);
+  if (props.AllListId?.siteUrl?.indexOf('washington') > -1) {
+    var baseurl = props.AllListId?.siteUrl?.replace(/\/Team/i, '/Public') + '/SitePages/Smartmetadataportfolio.aspx';
+  }
+  else {
+    var baseurl = props.AllListId?.siteUrl + '/SitePages/ManageSmartMetaData.aspx'
+  }
   const [allValue, setallSetValue] = useState({
     Title: "", Id: 1021, URL: "", Acronym: "", Description: "", InfoType: "Information Note", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
   })
@@ -291,7 +297,7 @@ const SmartInformation = (props: any, ref: any) => {
               // MovefolderItemUrl2 = `/${tagsmartinfo.Id}_.000`
             }
             if (tagsmartinfo?.Id == items?.Id) {
-              tagsmartinfo.Description = tagsmartinfo?.Description?.replace(/<span[^>]*>(.*?)<\/span>/gi, '$1');
+              // tagsmartinfo.Description = tagsmartinfo?.Description?.replace(/<span[^>]*>(.*?)<\/span>/gi, '$1');
               allSmartInformationglobal.push(tagsmartinfo);
             }
           })
@@ -1205,14 +1211,15 @@ const SmartInformation = (props: any, ref: any) => {
     let filtersmartvalue: any = [];
     setsearchvalue(event.target.value)
     if (value) {
-      copySmartInfo.map((val: any) => {
-        if (val?.Title?.toLowerCase()?.indexOf(value?.toLowerCase()) > -1 || val?.Title.toLowerCase() === value?.toLowerCase()) {
-          if (!IsitemExists(filtersmartvalue, val))
-            filtersmartvalue.push(val)
+      const regex = new RegExp(value, 'i'); // 'i' flag for case-insensitive search
+      copySmartInfo.forEach((val: any) => {
+        if (regex.test(val?.Title)) {
+          if (!IsitemExists(filtersmartvalue, val)) {
+            filtersmartvalue.push(val);
+          }
         }
-      })
-    }
-    else {
+      });
+    } else {
       filtersmartvalue = copySmartInfo;
     }
     setSmartInformation(filtersmartvalue)
@@ -1409,6 +1416,7 @@ const SmartInformation = (props: any, ref: any) => {
                           })}
 
                           <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified:</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span>}</span> </div>
+                          {SmartInformation?.URL && <div className="d-flex p-1 px-2 w-100"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""} target='_blank' data-interception='off' className='text-break'>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>}
                         </div>
                       </div>
                     </>)
@@ -1477,7 +1485,6 @@ const SmartInformation = (props: any, ref: any) => {
                               <li className='ml-auto'>
                                 <span title="Edit" className="svg__iconbox svg__icon--edit hreflink alignIcon" onClick={() => editDocumentsLink(item)}></span>
                               </li>
-
                             </ul>
                           </div>
                         )
@@ -1499,12 +1506,10 @@ const SmartInformation = (props: any, ref: any) => {
                           </div>
                         )
                       })}
-
                       <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified:</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span>}</span> </div>
+                      {SmartInformation?.URL && <div className="d-flex p-1 px-2"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a target='_blank' data-interception='off' className='text-break' href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>}
                     </div>
-                    {/* <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Author?.Id)} title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url} /> : ""}</span></div> */}
                   </div>
-
                 </>)
             }
           })}</div>
@@ -1537,8 +1542,8 @@ const SmartInformation = (props: any, ref: any) => {
                   <label htmlFor="Title" className='d-flex form-label full-width'>Title
                     <span className='ml-1 mr-1 text-danger'>*</span>
                     {(popupEdit != true && !Htmleditorcall) && <span className='mx-2'><input type="checkbox" className="form-check-input" onClick={(e) => checkboxFunction(e)} /></span>} <span>
-                    <CoustomInfoIcon Discription="Select checkbox to generate title automatically" />
-                      </span></label>
+                      <CoustomInfoIcon Discription="Select checkbox to generate title automatically" />
+                    </span></label>
 
                   {allValue?.InfoType === 'Information Source' ? <input type="text" className="form-control" value={sourceTitle} id="Title" onChange={(e) => setsourceTitle(e.target.value)} autoComplete='off' /> :
                     <input type="text" className="form-control" value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} autoComplete='off' />}
@@ -1620,7 +1625,7 @@ const SmartInformation = (props: any, ref: any) => {
           {!Htmleditorcall && allValue.InfoType !== 'Information Source' && <div className='mt-2'><HtmlEditorCard editorValue={allValue?.Description != null ? allValue?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>}
 
           {Htmleditorcall && <div className='text-end my-1'><a title='Add Description' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDescription()}>Add Source Description</a></div>}
-          {(Htmleditorcall || (popupEdit && allValue.InfoType === 'Information Source')) && <div className='mt-2'> <EditorComponent editorState={editorState} setEditorState={setEditorState} /> </div>}
+          {(Htmleditorcall || (popupEdit && allValue.InfoType === 'Information Source')) && <div className='mt-2'> <EditorComponent editorState={editorState} setEditorState={setEditorState} usedFor={''} /> </div>}
 
           <footer className='text-end mt-2'>
             <div className='col-sm-12 row m-0'>
@@ -1634,7 +1639,7 @@ const SmartInformation = (props: any, ref: any) => {
               <footer className={popupEdit ? 'col-sm-8 mt-2 p-0' : "mt-2 p-0"}>
                 {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
                 <span className='me-2'><a className="ForAll hreflink" target="_blank" data-interception="off"
-                  href={`${props?.Context?._pageContext?._web?.absoluteUrl}/SitePages/ManageSmartMetaData.aspx`}>
+                  href={baseurl}>
                   Manage Information
                 </a></span>
                 <span className='mx-2'>|</span>

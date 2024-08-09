@@ -1759,136 +1759,325 @@ const CopyTaskProfile = (props: any) => {
                                                     {/* ////////////////this is Bottleneck section/////////////// */}
 
                                                     <dl>
-                                                        <dt className='bg-Fa'>Bottleneck</dt>
-                                                        <dd className='bg-Ff'>
-                                                            {state?.Result?.Bottleneck?.length > 0 && state?.Result?.Bottleneck?.map((BottleneckData: any) => {
-                                                                return (
-                                                                    <div className="align-content-center alignCenter justify-content-between py-1">
-                                                                        <div className="alignCenter">
-                                                                            {BottleneckData.TaggedUsers.userImage != undefined && BottleneckData.TaggedUsers.userImage.length > 0 ? <img
-                                                                                className="ProirityAssignedUserPhoto m-0"
-                                                                                title={BottleneckData.TaggedUsers?.Title}
-                                                                                src={BottleneckData.TaggedUsers.userImage} />
-                                                                                :
-                                                                                <span title={BottleneckData.TaggedUsers?.Title != undefined ? BottleneckData.TaggedUsers?.Title : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
-                                                                            }
-                                                                            <span className="ms-1">{BottleneckData?.TaggedUsers?.Title}</span>
-                                                                        </div>
+                            <dt className="bg-Fa">Bottleneck</dt>
+                            <dd className="bg-Ff">
+                              {state?.Result?.Bottleneck?.length > 0 &&
+                                state?.Result?.Bottleneck?.map(
+                                  (BottleneckData: any) => {
+                                    return (
+                                      <div className="align-content-center alignCenter justify-content-between py-1">
+                                        <div className="alignCenter">
+                                          {BottleneckData.TaggedUsers
+                                            .userImage != undefined &&
+                                          BottleneckData.TaggedUsers.userImage
+                                            .length > 0 ? (
+                                            <img
+                                              className="ProirityAssignedUserPhoto m-0"
+                                              title={
+                                                BottleneckData.TaggedUsers
+                                                  ?.Title
+                                              }
+                                              src={
+                                                BottleneckData.TaggedUsers
+                                                  .userImage
+                                              }
+                                            />
+                                          ) : (
+                                            <span
+                                              title={
+                                                BottleneckData.TaggedUsers
+                                                  ?.Title != undefined
+                                                  ? BottleneckData.TaggedUsers
+                                                      ?.Title
+                                                  : "Default user icons"
+                                              }
+                                              className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                            ></span>
+                                          )}
+                                          <span className="ms-1">
+                                            {BottleneckData?.TaggedUsers?.Title
+                                              .length <= 5
+                                              ? BottleneckData?.TaggedUsers
+                                                  ?.Title
+                                              : BottleneckData?.TaggedUsers?.Title.slice(
+                                                  0,
+                                                  5
+                                                ) + "..."}
+                                          </span>
+                                        </div>
 
-                                                                        <div className="alignCenter">
-                                                                            <span
-                                                                                className="hover-text me-1"
-                                                                                onClick={() =>
-                                                                                    SendRemindernotifications(BottleneckData, "Bottleneck")}
-                                                                            >
-                                                                                <LuBellPlus />
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    Send reminder notifications
-                                                                                </span>
-                                                                            </span>
-                                                                            {BottleneckData.Comment != undefined &&
-                                                                                BottleneckData.Comment?.length > 1 && <span
-                                                                                    className="m-0 img-info hover-text"
-
-                                                                                >
-                                                                                    <span className="svg__iconbox svg__icon--comment"></span>
-                                                                                    <span className="tooltip-text pop-left">
-                                                                                        {BottleneckData.Comment}
-                                                                                    </span>
-                                                                                </span>}
-
-                                                                            <span className="hover-text me-1" >
-                                                                                <span className='svg__icon--info svg__iconbox mt-1'></span>
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    <div className="alignCenter">
-                                                                                        <span className='me-2'>  By </span>
-                                                                                        {BottleneckData.CreatorImage != undefined && BottleneckData.CreatorImage.length > 0 ? <img
-                                                                                            className="ProirityAssignedUserPhoto m-0"
-                                                                                            title={BottleneckData.CreatorName}
-                                                                                            src={BottleneckData.CreatorImage} />
-                                                                                            :
-                                                                                            <span title={BottleneckData.CreatorName != undefined ? BottleneckData.CreatorName : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
-                                                                                        }
-                                                                                        <span className="mx-1">{BottleneckData?.CreatorName}</span>
-                                                                                        <span>{BottleneckData?.CreatedOn}</span>
-                                                                                    </div>
-                                                                                </span>
-                                                                            </span>
-
-                                                                        </div>
-                                                                    </div>
-                                                                )
-
-                                                            })}
-
-                                                        </dd>
-                                                    </dl>
+                                        <div className="alignCenter">
+                                          <span
+                                            className="hover-text me-1"
+                                            onClick={() =>
+                                              SendRemindernotifications(
+                                                BottleneckData,
+                                                "Bottleneck"
+                                              )
+                                            }
+                                          >
+                                            <LuBellPlus />
+                                            <span className="tooltip-text pop-left">
+                                              Send reminder notifications
+                                            </span>
+                                          </span>
+                                          {BottleneckData.Comment !=
+                                            undefined &&
+                                          BottleneckData.Comment?.length > 1 ? (
+                                            <span className="m-0 img-info hover-text">
+                                              <span className="svg__iconbox svg__icon--comment"></span>
+                                              <span className="tooltip-text pop-left">
+                                                <div className="alignCenter">
+                                                  <span className="me-2 siteColor">
+                                                    {" "}
+                                                    Bottleneck was added By{" "}
+                                                  </span>
+                                                  {BottleneckData.CreatorImage !=
+                                                    undefined &&
+                                                  BottleneckData.CreatorImage
+                                                    .length > 0 ? (
+                                                    <img
+                                                      className="ProirityAssignedUserPhoto m-0"
+                                                      title={
+                                                        BottleneckData.CreatorName
+                                                      }
+                                                      src={
+                                                        BottleneckData.CreatorImage
+                                                      }
+                                                    />
+                                                  ) : (
+                                                    <span
+                                                      title={
+                                                        BottleneckData.CreatorName !=
+                                                        undefined
+                                                          ? BottleneckData.CreatorName
+                                                          : "Default user icons"
+                                                      }
+                                                      className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                    ></span>
+                                                  )}
+                                                  <span className="mx-1">
+                                                    {
+                                                      BottleneckData?.CreatorName
+                                                    }
+                                                  </span>
+                                                  <span>
+                                                    {BottleneckData?.CreatedOn}
+                                                  </span>
+                                                </div>
+                                                {BottleneckData.Comment}
+                                              </span>
+                                            </span>
+                                          ) : (
+                                            <span className="hover-text me-1">
+                                              <span className="svg__icon--info svg__iconbox mt-1"></span>
+                                              <span className="tooltip-text pop-left">
+                                                <div className="alignCenter">
+                                                  <span className="me-2 siteColor">
+                                                    {" "}
+                                                    Bottleneck was added By{" "}
+                                                  </span>
+                                                  {BottleneckData.CreatorImage !=
+                                                    undefined &&
+                                                  BottleneckData.CreatorImage
+                                                    .length > 0 ? (
+                                                    <img
+                                                      className="ProirityAssignedUserPhoto m-0"
+                                                      title={
+                                                        BottleneckData.CreatorName
+                                                      }
+                                                      src={
+                                                        BottleneckData.CreatorImage
+                                                      }
+                                                    />
+                                                  ) : (
+                                                    <span
+                                                      title={
+                                                        BottleneckData.CreatorName !=
+                                                        undefined
+                                                          ? BottleneckData.CreatorName
+                                                          : "Default user icons"
+                                                      }
+                                                      className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                    ></span>
+                                                  )}
+                                                  <span className="mx-1">
+                                                    {
+                                                      BottleneckData?.CreatorName
+                                                    }
+                                                  </span>
+                                                  <span>
+                                                    {BottleneckData?.CreatedOn}
+                                                  </span>
+                                                </div>
+                                              </span>
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    );
+                                  }
+                                )}
+                            </dd>
+                          </dl>
                                                     {/* ////////////////this is Attention section/////////////// */}
 
                                                     <dl>
-                                                        <dt className='bg-Fa'>Attention</dt>
-                                                        <dd className='bg-Ff'>
-                                                            {state?.Result?.Attention?.length > 0 && state?.Result?.Attention?.map((AttentionData: any) => {
-                                                                return (
-                                                                    <div className="align-content-center alignCenter justify-content-between py-1">
-                                                                        <div className="alignCenter">
-                                                                            {AttentionData.TaggedUsers.userImage != undefined && AttentionData.TaggedUsers.userImage.length > 0 ? <img
-                                                                                className="ProirityAssignedUserPhoto m-0"
-                                                                                title={AttentionData.TaggedUsers?.Title}
-                                                                                src={AttentionData.TaggedUsers.userImage} />
-                                                                                :
-                                                                                <span title={AttentionData.TaggedUsers?.Title != undefined ? AttentionData.TaggedUsers?.Title : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
-                                                                            }
-                                                                            <span className="ms-1">{AttentionData?.TaggedUsers?.Title}</span>
-                                                                        </div>
+                            <dt className="bg-Fa">Attention</dt>
+                            <dd className="bg-Ff">
+                              {state?.Result?.Attention?.length > 0 &&
+                                state?.Result?.Attention?.map(
+                                  (AttentionData: any) => {
+                                    return (
+                                      <div className="align-content-center alignCenter justify-content-between py-1">
+                                        <div className="alignCenter">
+                                          {AttentionData.TaggedUsers
+                                            .userImage != undefined &&
+                                          AttentionData.TaggedUsers.userImage
+                                            .length > 0 ? (
+                                            <img
+                                              className="ProirityAssignedUserPhoto m-0"
+                                              title={
+                                                AttentionData.TaggedUsers?.Title
+                                              }
+                                              src={
+                                                AttentionData.TaggedUsers
+                                                  .userImage
+                                              }
+                                            />
+                                          ) : (
+                                            <span
+                                              title={
+                                                AttentionData.TaggedUsers
+                                                  ?.Title != undefined
+                                                  ? AttentionData.TaggedUsers
+                                                      ?.Title
+                                                  : "Default user icons"
+                                              }
+                                              className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                            ></span>
+                                          )}
+                                          <span className="ms-1">
+                                            {AttentionData?.TaggedUsers?.Title
+                                              .length <= 5
+                                              ? AttentionData?.TaggedUsers
+                                                  ?.Title
+                                              : AttentionData?.TaggedUsers?.Title.slice(
+                                                  0,
+                                                  5
+                                                ) + "..."}
+                                          </span>
+                                        </div>
 
-                                                                        <div className="alignCenter">
-                                                                            <span
-                                                                                className="hover-text me-1"
-                                                                                onClick={() =>
-                                                                                    SendRemindernotifications(AttentionData, "Attention")}
-                                                                            >
-                                                                                <LuBellPlus />
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    Send reminder notifications
-                                                                                </span>
-                                                                            </span>
-                                                                            {AttentionData.Comment != undefined &&
-                                                                                AttentionData.Comment?.length > 1 && <span
-                                                                                    className="m-0 img-info hover-text"
-
-                                                                                >
-                                                                                    <span className="svg__iconbox svg__icon--comment"></span>
-                                                                                    <span className="tooltip-text pop-left">
-                                                                                        {AttentionData.Comment}
-                                                                                    </span>
-                                                                                </span>}
-                                                                            <span className="hover-text me-1" >
-                                                                                <span className='svg__icon--info svg__iconbox mt-1'></span>
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    <div className="alignCenter">
-                                                                                        <span className='me-2'>  By </span>
-                                                                                        {AttentionData.CreatorImage != undefined && AttentionData.CreatorImage.length > 0 ? <img
-                                                                                            className="ProirityAssignedUserPhoto m-0"
-                                                                                            title={AttentionData.CreatorName}
-                                                                                            src={AttentionData.CreatorImage} />
-                                                                                            :
-                                                                                            <span title={AttentionData.CreatorName != undefined ? AttentionData.CreatorName : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
-                                                                                        }
-                                                                                        <span className="mx-1">{AttentionData?.CreatorName}</span>
-                                                                                        <span>{AttentionData?.CreatedOn}</span>
-                                                                                    </div>
-                                                                                </span>
-                                                                            </span>
-
-                                                                        </div>
-                                                                    </div>
-                                                                )
-
-                                                            })}
-
-                                                        </dd>
-                                                    </dl>
+                                        <div className="alignCenter">
+                                          <span
+                                            className="hover-text me-1"
+                                            onClick={() =>
+                                              SendRemindernotifications(
+                                                AttentionData,
+                                                "Attention"
+                                              )
+                                            }
+                                          >
+                                            <LuBellPlus />
+                                            <span className="tooltip-text pop-left">
+                                              Send reminder notifications
+                                            </span>
+                                          </span>
+                                          {AttentionData.Comment != undefined &&
+                                          AttentionData.Comment?.length > 1 ? (
+                                            <span className="m-0 img-info hover-text">
+                                              <span className="svg__iconbox svg__icon--comment"></span>
+                                              <span className="tooltip-text pop-left">
+                                                <div className="alignCenter">
+                                                  <span className="me-2 siteColor">
+                                                    {" "}
+                                                    Attention was added By{" "}
+                                                  </span>
+                                                  {AttentionData.CreatorImage !=
+                                                    undefined &&
+                                                  AttentionData.CreatorImage
+                                                    .length > 0 ? (
+                                                    <img
+                                                      className="ProirityAssignedUserPhoto m-0"
+                                                      title={
+                                                        AttentionData.CreatorName
+                                                      }
+                                                      src={
+                                                        AttentionData.CreatorImage
+                                                      }
+                                                    />
+                                                  ) : (
+                                                    <span
+                                                      title={
+                                                        AttentionData.CreatorName !=
+                                                        undefined
+                                                          ? AttentionData.CreatorName
+                                                          : "Default user icons"
+                                                      }
+                                                      className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                    ></span>
+                                                  )}
+                                                  <span className="mx-1">
+                                                    {AttentionData?.CreatorName}
+                                                  </span>
+                                                  <span>
+                                                    {AttentionData?.CreatedOn}
+                                                  </span>
+                                                </div>
+                                                {AttentionData.Comment}
+                                              </span>
+                                            </span>
+                                          ) : (
+                                            <span className="hover-text me-1">
+                                              <span className="svg__icon--info svg__iconbox mt-1"></span>
+                                              <span className="tooltip-text pop-left">
+                                                <div className="alignCenter">
+                                                  <span className="me-2 siteColor">
+                                                    {" "}
+                                                    Attention was added By{" "}
+                                                  </span>
+                                                  {AttentionData.CreatorImage !=
+                                                    undefined &&
+                                                  AttentionData.CreatorImage
+                                                    .length > 0 ? (
+                                                    <img
+                                                      className="ProirityAssignedUserPhoto m-0"
+                                                      title={
+                                                        AttentionData.CreatorName
+                                                      }
+                                                      src={
+                                                        AttentionData.CreatorImage
+                                                      }
+                                                    />
+                                                  ) : (
+                                                    <span
+                                                      title={
+                                                        AttentionData.CreatorName !=
+                                                        undefined
+                                                          ? AttentionData.CreatorName
+                                                          : "Default user icons"
+                                                      }
+                                                      className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                    ></span>
+                                                  )}
+                                                  <span className="mx-1">
+                                                    {AttentionData?.CreatorName}
+                                                  </span>
+                                                  <span>
+                                                    {AttentionData?.CreatedOn}
+                                                  </span>
+                                                </div>
+                                              </span>
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    );
+                                  }
+                                )}
+                            </dd>
+                          </dl>
                                                     {/* ////////////////this is phone section/////////////// */}
                                                     <dl>
                                                         <dt className='bg-Fa'>Phone</dt>
@@ -1896,41 +2085,149 @@ const CopyTaskProfile = (props: any) => {
                                                             {state?.Result?.Phone?.length > 0 && state?.Result?.Phone?.map((PhoneData: any) => {
                                                                 return (
                                                                     <div className="align-content-center alignCenter justify-content-between py-1">
-                                                                        <div className="alignCenter">
-                                                                            {PhoneData.TaggedUsers.userImage != undefined && PhoneData.TaggedUsers.userImage.length > 0 ? <img
-                                                                                className="ProirityAssignedUserPhoto m-0"
-                                                                                title={PhoneData.TaggedUsers?.Title}
-                                                                                src={PhoneData.TaggedUsers.userImage} />
-                                                                                :
-                                                                                <span title={PhoneData.TaggedUsers?.Title != undefined ? PhoneData.TaggedUsers?.Title : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
-                                                                            }
-                                                                            <span className="ms-1">{PhoneData?.TaggedUsers?.Title}</span>
-                                                                        </div>
-
-                                                                        <div className="alignCenter">
-                                                                            <span
-                                                                                className="hover-text me-1"
-                                                                                onClick={() =>
-                                                                                    SendRemindernotifications(PhoneData, "Phone")}
-                                                                            >
-                                                                                <LuBellPlus />
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    Send reminder notifications
-                                                                                </span>
-                                                                            </span>
-                                                                            {PhoneData.Comment != undefined &&
-                                                                                PhoneData.Comment?.length > 1 && <span
-                                                                                    className="m-0 img-info hover-text"
-
-                                                                                >
-                                                                                    <span className="svg__iconbox svg__icon--comment"></span>
-                                                                                    <span className="tooltip-text pop-left">
-                                                                                        {PhoneData.Comment}
-                                                                                    </span>
-                                                                                </span>}
-
-                                                                        </div>
+                                                                    <div className="alignCenter">
+                                                                      {PhoneData.TaggedUsers
+                                                                        .userImage != undefined &&
+                                                                        PhoneData.TaggedUsers.userImage
+                                                                        .length > 0 ? (
+                                                                        <img
+                                                                          className="ProirityAssignedUserPhoto m-0"
+                                                                          title={
+                                                                            PhoneData.TaggedUsers?.Title
+                                                                          }
+                                                                          src={
+                                                                            PhoneData.TaggedUsers
+                                                                              .userImage
+                                                                          }
+                                                                        />
+                                                                      ) : (
+                                                                        <span
+                                                                          title={
+                                                                            PhoneData.TaggedUsers
+                                                                              ?.Title != undefined
+                                                                              ? PhoneData.TaggedUsers
+                                                                                  ?.Title
+                                                                              : "Default user icons"
+                                                                          }
+                                                                          className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                        ></span>
+                                                                      )}
+                                                                      <span className="ms-1">
+                                                                        {PhoneData?.TaggedUsers?.Title
+                                                                          .length <= 5
+                                                                          ? PhoneData?.TaggedUsers
+                                                                              ?.Title
+                                                                          : PhoneData?.TaggedUsers?.Title.slice(
+                                                                              0,
+                                                                              5
+                                                                            ) + "..."}
+                                                                      </span>
                                                                     </div>
+                            
+                                                                    <div className="alignCenter">
+                                                                      <span
+                                                                        className="hover-text me-1"
+                                                                        onClick={() =>
+                                                                          SendRemindernotifications(
+                                                                            PhoneData,
+                                                                            "Phone"
+                                                                          )
+                                                                        }
+                                                                      >
+                                                                        <LuBellPlus />
+                                                                        <span className="tooltip-text pop-left">
+                                                                          Send reminder notifications
+                                                                        </span>
+                                                                      </span>
+                                                                      {PhoneData.Comment != undefined &&
+                                                                      PhoneData.Comment?.length > 1 ? (
+                                                                        <span className="m-0 img-info hover-text">
+                                                                          <span className="svg__iconbox svg__icon--comment"></span>
+                                                                          <span className="tooltip-text pop-left">
+                                                                            <div className="alignCenter">
+                                                                              <span className="me-2 siteColor">
+                                                                                {" "}
+                                                                                Phone was added By{" "}
+                                                                              </span>
+                                                                              {PhoneData.CreatorImage !=
+                                                                                undefined &&
+                                                                                PhoneData.CreatorImage
+                                                                                .length > 0 ? (
+                                                                                <img
+                                                                                  className="ProirityAssignedUserPhoto m-0"
+                                                                                  title={
+                                                                                    PhoneData.CreatorName
+                                                                                  }
+                                                                                  src={
+                                                                                    PhoneData.CreatorImage
+                                                                                  }
+                                                                                />
+                                                                              ) : (
+                                                                                <span
+                                                                                  title={
+                                                                                    PhoneData.CreatorName !=
+                                                                                    undefined
+                                                                                      ? PhoneData.CreatorName
+                                                                                      : "Default user icons"
+                                                                                  }
+                                                                                  className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                ></span>
+                                                                              )}
+                                                                              <span className="mx-1">
+                                                                                {PhoneData?.CreatorName}
+                                                                              </span>
+                                                                              <span>
+                                                                                {PhoneData?.CreatedOn}
+                                                                              </span>
+                                                                            </div>
+                                                                            {PhoneData.Comment}
+                                                                          </span>
+                                                                        </span>
+                                                                      ) : (
+                                                                        <span className="hover-text me-1">
+                                                                          <span className="svg__icon--info svg__iconbox mt-1"></span>
+                                                                          <span className="tooltip-text pop-left">
+                                                                            <div className="alignCenter">
+                                                                              <span className="me-2 siteColor">
+                                                                                {" "}
+                                                                                Phone was added By{" "}
+                                                                              </span>
+                                                                              {PhoneData.CreatorImage !=
+                                                                                undefined &&
+                                                                                PhoneData.CreatorImage
+                                                                                .length > 0 ? (
+                                                                                <img
+                                                                                  className="ProirityAssignedUserPhoto m-0"
+                                                                                  title={
+                                                                                    PhoneData.CreatorName
+                                                                                  }
+                                                                                  src={
+                                                                                    PhoneData.CreatorImage
+                                                                                  }
+                                                                                />
+                                                                              ) : (
+                                                                                <span
+                                                                                  title={
+                                                                                    PhoneData.CreatorName !=
+                                                                                    undefined
+                                                                                      ? PhoneData.CreatorName
+                                                                                      : "Default user icons"
+                                                                                  }
+                                                                                  className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                ></span>
+                                                                              )}
+                                                                              <span className="mx-1">
+                                                                                {PhoneData?.CreatorName}
+                                                                              </span>
+                                                                              <span>
+                                                                                {PhoneData?.CreatedOn}
+                                                                              </span>
+                                                                            </div>
+                                                                          </span>
+                                                                        </span>
+                                                                      )}
+                                                                    </div>
+                                                                  </div>
                                                                 )
 
                                                             })}
@@ -1944,59 +2241,149 @@ const CopyTaskProfile = (props: any) => {
                                                             {state?.Result?.Approval?.length > 0 && state?.Result?.Approval?.map((ApprovalData: any) => {
                                                                 return (
                                                                     <div className="align-content-center alignCenter justify-content-between py-1">
-                                                                                    <div className="alignCenter">
-                                                                            {ApprovalData.TaggedUsers.userImage != undefined && ApprovalData.TaggedUsers.userImage.length > 0 ? <img
-                                                                                            className="ProirityAssignedUserPhoto m-0"
-                                                                                title={ApprovalData.TaggedUsers?.Title}
-                                                                                src={ApprovalData.TaggedUsers.userImage} />
-                                                                                            :
-                                                                                <span title={ApprovalData.TaggedUsers?.Title != undefined ? ApprovalData.TaggedUsers?.Title : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
-                                                                                        }
-                                                                            <span className="ms-1">{ApprovalData?.TaggedUsers?.Title}</span>
-                                                                                    </div>
-
-                                                                        <div className="alignCenter">
-                                                                            <span
-                                                                                className="hover-text me-1"
-                                                                                onClick={() =>
-                                                                                    SendRemindernotifications(ApprovalData, "Approval")}
-                                                                            >
-                                                                                <LuBellPlus />
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    Send reminder notifications
-                                                                                </span>
-                                                                            </span>
-                                                                            {ApprovalData.Comment != undefined &&
-                                                                                ApprovalData.Comment?.length > 1 && <span
-                                                                                    className="m-0 img-info hover-text"
-
-                                                                                >
-                                                                                    <span className="svg__iconbox svg__icon--comment"></span>
-                                                                                    <span className="tooltip-text pop-left">
-                                                                                        {ApprovalData.Comment}
-                                                                                    </span>
-                                                                                </span>}
-                                                                                <span className="hover-text me-1" >
-                                                                                <span className='svg__icon--info svg__iconbox mt-1'></span>
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    <div className="alignCenter">
-                                                                                        <span className='me-2'>  By </span>
-                                                                                        {ApprovalData.CreatorImage != undefined && ApprovalData.CreatorImage.length > 0 ? <img
-                                                                                            className="ProirityAssignedUserPhoto m-0"
-                                                                                            title={ApprovalData.CreatorName}
-                                                                                            src={ApprovalData.CreatorImage} />
-                                                                                            :
-                                                                                            <span title={ApprovalData.CreatorName != undefined ? ApprovalData.CreatorName : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
-                                                                                        }
-                                                                                        <span className="mx-1">{ApprovalData?.CreatorName}</span>
-                                                                                        <span>{ApprovalData?.CreatedOn}</span>
-                                                                                    </div>
-                                                                                </span>
-                                                                            </span>
-
-
-                                                                        </div>
+                                                                    <div className="alignCenter">
+                                                                      {ApprovalData.TaggedUsers
+                                                                        .userImage != undefined &&
+                                                                        ApprovalData.TaggedUsers.userImage
+                                                                        .length > 0 ? (
+                                                                        <img
+                                                                          className="ProirityAssignedUserPhoto m-0"
+                                                                          title={
+                                                                            ApprovalData.TaggedUsers?.Title
+                                                                          }
+                                                                          src={
+                                                                            ApprovalData.TaggedUsers
+                                                                              .userImage
+                                                                          }
+                                                                        />
+                                                                      ) : (
+                                                                        <span
+                                                                          title={
+                                                                            ApprovalData.TaggedUsers
+                                                                              ?.Title != undefined
+                                                                              ? ApprovalData.TaggedUsers
+                                                                                  ?.Title
+                                                                              : "Default user icons"
+                                                                          }
+                                                                          className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                        ></span>
+                                                                      )}
+                                                                      <span className="ms-1">
+                                                                        {ApprovalData?.TaggedUsers?.Title
+                                                                          .length <= 5
+                                                                          ? ApprovalData?.TaggedUsers
+                                                                              ?.Title
+                                                                          : ApprovalData?.TaggedUsers?.Title.slice(
+                                                                              0,
+                                                                              5
+                                                                            ) + "..."}
+                                                                      </span>
                                                                     </div>
+                            
+                                                                    <div className="alignCenter">
+                                                                      <span
+                                                                        className="hover-text me-1"
+                                                                        onClick={() =>
+                                                                          SendRemindernotifications(
+                                                                            ApprovalData,
+                                                                            "Approval"
+                                                                          )
+                                                                        }
+                                                                      >
+                                                                        <LuBellPlus />
+                                                                        <span className="tooltip-text pop-left">
+                                                                          Send reminder notifications
+                                                                        </span>
+                                                                      </span>
+                                                                      {ApprovalData.Comment != undefined &&
+                                                                      ApprovalData.Comment?.length > 1 ? (
+                                                                        <span className="m-0 img-info hover-text">
+                                                                          <span className="svg__iconbox svg__icon--comment"></span>
+                                                                          <span className="tooltip-text pop-left">
+                                                                            <div className="alignCenter">
+                                                                              <span className="me-2 siteColor">
+                                                                                {" "}
+                                                                                Approval was added By{" "}
+                                                                              </span>
+                                                                              {ApprovalData.CreatorImage !=
+                                                                                undefined &&
+                                                                                ApprovalData.CreatorImage
+                                                                                .length > 0 ? (
+                                                                                <img
+                                                                                  className="ProirityAssignedUserPhoto m-0"
+                                                                                  title={
+                                                                                    ApprovalData.CreatorName
+                                                                                  }
+                                                                                  src={
+                                                                                    ApprovalData.CreatorImage
+                                                                                  }
+                                                                                />
+                                                                              ) : (
+                                                                                <span
+                                                                                  title={
+                                                                                    ApprovalData.CreatorName !=
+                                                                                    undefined
+                                                                                      ? ApprovalData.CreatorName
+                                                                                      : "Default user icons"
+                                                                                  }
+                                                                                  className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                ></span>
+                                                                              )}
+                                                                              <span className="mx-1">
+                                                                                {ApprovalData?.CreatorName}
+                                                                              </span>
+                                                                              <span>
+                                                                                {ApprovalData?.CreatedOn}
+                                                                              </span>
+                                                                            </div>
+                                                                            {ApprovalData.Comment}
+                                                                          </span>
+                                                                        </span>
+                                                                      ) : (
+                                                                        <span className="hover-text me-1">
+                                                                          <span className="svg__icon--info svg__iconbox mt-1"></span>
+                                                                          <span className="tooltip-text pop-left">
+                                                                            <div className="alignCenter">
+                                                                              <span className="me-2 siteColor">
+                                                                                {" "}
+                                                                                Approval was added By{" "}
+                                                                              </span>
+                                                                              {ApprovalData.CreatorImage !=
+                                                                                undefined &&
+                                                                                ApprovalData.CreatorImage
+                                                                                .length > 0 ? (
+                                                                                <img
+                                                                                  className="ProirityAssignedUserPhoto m-0"
+                                                                                  title={
+                                                                                    ApprovalData.CreatorName
+                                                                                  }
+                                                                                  src={
+                                                                                    ApprovalData.CreatorImage
+                                                                                  }
+                                                                                />
+                                                                              ) : (
+                                                                                <span
+                                                                                  title={
+                                                                                    ApprovalData.CreatorName !=
+                                                                                    undefined
+                                                                                      ? ApprovalData.CreatorName
+                                                                                      : "Default user icons"
+                                                                                  }
+                                                                                  className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                ></span>
+                                                                              )}
+                                                                              <span className="mx-1">
+                                                                                {ApprovalData?.CreatorName}
+                                                                              </span>
+                                                                              <span>
+                                                                                {ApprovalData?.CreatedOn}
+                                                                              </span>
+                                                                            </div>
+                                                                          </span>
+                                                                        </span>
+                                                                      )}
+                                                                    </div>
+                                                                  </div>
                                                                 )
 
                                                             })}

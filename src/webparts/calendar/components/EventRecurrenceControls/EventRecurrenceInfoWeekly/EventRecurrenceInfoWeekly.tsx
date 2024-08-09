@@ -436,8 +436,8 @@ export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceI
               </div>
             </div>
 
-            <div style={{ paddingTop: '22px' }}>
-              <Label>{strings.dateRangeLabel}</Label>
+            <div className='pt-4'>
+              <Label className='border-bottom'>{strings.dateRangeLabel}</Label>
               <div className={styles.dateRange}>
 
                 <DatePicker
@@ -466,7 +466,7 @@ export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceI
                       text: strings.EndByLabel,
                       onRenderField: (props, render) => {
                         return (
-                          <div  >
+                          <div>
                             {render!(props)}
                             <DatePicker
                               firstDayOfWeek={DayOfWeek.Sunday}
