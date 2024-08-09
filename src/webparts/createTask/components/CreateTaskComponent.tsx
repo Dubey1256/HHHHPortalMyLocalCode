@@ -1532,6 +1532,11 @@ function CreateTaskComponent(props: any) {
 
                 });
             }
+
+            if (title.indexOf("UX-New") > -1) {
+                UXCat.push(item)
+            }
+            
             if (title?.indexOf('Support') > -1) {
                 var flag = true;
                 taskUsers?.map((User: any) => {
