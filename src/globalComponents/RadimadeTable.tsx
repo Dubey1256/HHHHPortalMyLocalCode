@@ -123,7 +123,7 @@ function ReadyMadeTable(SelectedProp: any) {
     const [taskCatagory, setTaskCatagory] = React.useState([]);
     const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
-    const [timeEntryDataLocalStorage, setTimeEntryDataLocalStorage] = React.useState<any>(localStorage.getItem('timeEntryIndex'));
+    const [smartTimelastModifiedDate, setSmartTimelastModifiedDate] = React.useState("")
     let Response: any = [];
     let props = undefined;
     let AllTasks: any = [];
@@ -537,7 +537,7 @@ function ReadyMadeTable(SelectedProp: any) {
             });
     
             await Promise.all(promises);
-    
+
             // Further processing on AllTasksData
             map(AllTasksData, (result: any) => {
                 result.Id = result.Id != undefined ? result.Id : result.ID;
@@ -680,14 +680,23 @@ function ReadyMadeTable(SelectedProp: any) {
             if(filterTaskType){
                 console.log(AlltaskfilterData)
                  AlltaskfilterData=AllTasksData;
-                 await smartTimeUseLocalStorage(AlltaskfilterData)
-               
+                 let item ={
+                    ContextValue:ContextValue,
+                    AllSiteTasksData:AllTasksData,
+                    setSmartTimelastModifiedDate:setSmartTimelastModifiedDate
+                 }
+                 AlltaskfilterData= await globalCommon.smartTimeUseStorage(item);
                  setAllSiteTasksData(AlltaskfilterData);
                  DataPrepareForCSFAWT()
             }
             
             else{
-                await smartTimeUseLocalStorage(AllTasksData)
+                let item ={
+                    ContextValue:ContextValue,
+                    AllSiteTasksData:AllTasksData,
+                    setSmartTimelastModifiedDate:setSmartTimelastModifiedDate
+                 }
+                 AllTasksData=  await globalCommon.smartTimeUseStorage(item);
                 AlltaskfilterData=AllTasksData
                 setAllSiteTasksData(AllTasksData);
             }
@@ -953,14 +962,24 @@ function ReadyMadeTable(SelectedProp: any) {
                             console.log(AllSiteTasksData)
                              AlltaskfilterData=[...AllSiteTasksData,...AllTasksData]
                           
-                             await smartTimeUseLocalStorage(AlltaskfilterData)
+                             let item ={
+                                ContextValue:ContextValue,
+                                AllSiteTasksData:AlltaskfilterData,
+                                setSmartTimelastModifiedDate:setSmartTimelastModifiedDate
+                             }
+                             AlltaskfilterData= await globalCommon.smartTimeUseStorage(item);
                            
                              setAllSiteTasksData(AlltaskfilterData);
                              DataPrepareForCSFAWT()
                         }
                         
                         else{
-                            await smartTimeUseLocalStorage(AllTasksData)
+                            let item ={
+                                ContextValue:ContextValue,
+                                AllSiteTasksData:AllTasksData,
+                                setSmartTimelastModifiedDate:setSmartTimelastModifiedDate
+                             }
+                             AllTasksData= await globalCommon.smartTimeUseStorage(item);
                             AlltaskfilterData=AllTasksData
                             setAllSiteTasksData(AllTasksData);
                         }
@@ -980,111 +999,53 @@ function ReadyMadeTable(SelectedProp: any) {
         }
     }
     };
-    const smartTimeUseLocalStorage = (AllTasksData:any) => {
-        if (timeEntryDataLocalStorage?.length > 0) {
-            const timeEntryIndexLocalStorage = JSON.parse(timeEntryDataLocalStorage)
-            AllTasksData?.map((task: any) => {
-                task.TotalTaskTime = 0;
-                task.timeSheetsDescriptionSearch = "";
-                const key = `Task${task?.siteType + task.Id}`;
-                if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
-                    // task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
-                    task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
-                    task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
-                }
-            });
-            return AllTasksData;
-        }
-    };
-    const timeEntryIndex: any = {};
-    const smartTimeTotal = async () => {
-        setLoaded(false)
-        count++;
-        let AllTimeEntries = [];
-        if (timeSheetConfig?.Id !== undefined) {
-            AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
-        }
-        AllTimeEntries?.forEach((entry: any) => {
-            siteConfig.forEach((site) => {
-                const taskTitle = `Task${site.Title}`;
-                const key = taskTitle + entry[taskTitle]?.Id
-                if (entry.hasOwnProperty(taskTitle) && entry.AdditionalTimeEntry !== null && entry.AdditionalTimeEntry !== undefined) {
-                    if (entry[taskTitle].Id === 168) {
-                        console.log(entry[taskTitle].Id);
-
-                    }
-                    const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
-                    let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
-
-                    if (timeEntryIndex.hasOwnProperty(key)) {
-                        timeEntryIndex[key].TotalTaskTime += totalTaskTime
-                    } else {
-                        timeEntryIndex[`${taskTitle}${entry[taskTitle]?.Id}`] = {
-                            ...entry[taskTitle],
-                            TotalTaskTime: totalTaskTime,
-                            siteType: site.Title,
-                        };
-                    }
-                }
-            });
-        });
-        AlltaskfilterData?.map((task: any) => {
-            task.TotalTaskTime = 0;
-            const key = `Task${task?.siteType + task.Id}`;
-            if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
-                task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
-            }
-        })
-        if (timeEntryIndex) {
-            const dataString = JSON.stringify(timeEntryIndex);
-            localStorage.setItem('timeEntryIndex', dataString);
-        }
-        console.log("timeEntryIndex", timeEntryIndex)
-        if (AlltaskfilterData?.length > 0) {
-            setData([]);
-            portfolioTypeData?.map((port: any, index: any) => {
-                if (SelectedProp?.SelectedItem != undefined) {
-                    if (port.Title === SelectedProp?.SelectedItem?.Item_x0020_Type) {
-                        componentData = []
-                        componentGrouping(port?.Id, port?.Id);
-                    }
-                    if ('ParentTask' in SelectedProp?.SelectedItem) {
-                        let data: any = [SelectedProp?.SelectedItem]
-                        data?.map((wTdata: any) => {
-                            wTdata.subRows = [];
-                            componentWsT(wTdata);
-                        })
-                       
-                        setLoaded(true)
-                        setData(data[0]?.subRows);
-        
-        
-                    }
-                    console.log(data)
-        
-                }else{
-                    portfolioTypeData?.map((port: any, index: any) => {
-                        if (SelectedProp?.SelectedItem != undefined) {
-                            if (port.Title === SelectedProp?.SelectedItem?.PortfolioType?.Title) {
-                                componentData = []
-                                componentGrouping(port?.Id, portfolioTypeData?.length - 1);
-                            }
-                        } else {
+        const smartTimeTotal = async () => {
+            setLoaded(false);
+            let item ={
+                ContextValue:ContextValue,
+                AllSiteTasksData:AlltaskfilterData,
+                setSmartTimelastModifiedDate:setSmartTimelastModifiedDate
+             }
+             let smartmetaDataDetails :any= [];
+             smartmetaDataDetails= smartmetaDataDetails.concat(AllMetadata)
+            AlltaskfilterData = await globalCommon.smartTimeFind({ item, smartmetaDataDetails, timeSheetConfig });
+            if (AlltaskfilterData?.length > 0) {
+                setData([]);
+                portfolioTypeData?.map((port: any, index: any) => {
+                    if (SelectedProp?.SelectedItem != undefined) {
+                        if (port.Title === SelectedProp?.SelectedItem?.Item_x0020_Type) {
                             componentData = []
-                            componentGrouping(port?.Id, index);
+                            componentGrouping(port?.Id, port?.Id);
                         }
-        
-                    })
-                }
-
-            })
-            countsrun++;
-
+                        if ('ParentTask' in SelectedProp?.SelectedItem) {
+                            let data: any = [SelectedProp?.SelectedItem]
+                            data?.map((wTdata: any) => {
+                                wTdata.subRows = [];
+                                componentWsT(wTdata);
+                            })
+                            setLoaded(true)
+                            setData(data[0]?.subRows);
+                        }
+                        console.log(data)
+                    }else{
+                        portfolioTypeData?.map((port: any, index: any) => {
+                            if (SelectedProp?.SelectedItem != undefined) {
+                                if (port.Title === SelectedProp?.SelectedItem?.PortfolioType?.Title) {
+                                    componentData = []
+                                    componentGrouping(port?.Id, portfolioTypeData?.length - 1);
+                                }
+                            } else {
+                                componentData = []
+                                componentGrouping(port?.Id, index);
+                            }
+                        })
+                    }
+                })
+                countsrun++;
+            }
+            setLoaded(true)
+            return AlltaskfilterData;
         }
-
-        setLoaded(true)
-        return AlltaskfilterData;
-    };
     const GetComponents = async () => {
         if (portfolioTypeData.length > 0) {
             portfolioTypeData?.map((elem: any) => {
@@ -3062,7 +3023,7 @@ function ReadyMadeTable(SelectedProp: any) {
                                                 flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef}
                                                 callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers}
                                                 showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration}
-                                                showingAllPortFolioCount={true}
+                                                showingAllPortFolioCount={true}smartTimelastModifiedDate={smartTimelastModifiedDate}
                                                 customHeaderButtonAvailable={true} customTableHeaderButtons={SelectedProp?.configration == "AllAwt" ? customTableHeaderButtonsAllAWT : customTableHeaderButtons} />
                                           {!loaded && <PageLoader />}
                                         </div>
