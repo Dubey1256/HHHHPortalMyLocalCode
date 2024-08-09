@@ -3650,7 +3650,7 @@ async function checkIfFolderExists(libraryName: string, folderName: string, Cont
     try {
         const filter = `FileLeafRef eq '${folderName}'`;
         const web = new Web(ContextValue?.siteUrl);
-        const folders = await web.lists.getById('d0f88b8f-d96d-4e12-b612-2706ba40fb08').items.select("FileLeafRef").filter(filter).get();
+        const folders = await web.lists.getByTitle('Documents').items.select("FileLeafRef").filter(filter).get();
         return folders.length > 0 && folders.some((e: any) => e.FileLeafRef === folderName);
     } catch (error) {
         console.log("Error checking folder existence:", error);
