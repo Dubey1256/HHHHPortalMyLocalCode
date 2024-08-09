@@ -32,7 +32,7 @@ const SmartFilterSearchGlobal = (item: any) => {
     let SetAllData: any = [];
     let filt: any = "";
 
-
+ 
 
     const getTaskUsers = async () => {
         let web = new Web(ContextValue?.siteUrl);
