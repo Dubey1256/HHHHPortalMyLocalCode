@@ -185,6 +185,9 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
                     if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser?.toLowerCase()) {
                         IsSendTeamMessage += 1;
                     }
+                    if (User?.Email?.toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && User?.ID == 2 && User?.Email != undefined && User?.Email != undefined && User?.Email != '' && User?.Email?.toLowerCase() == TeamUser?.toLowerCase()) {
+                        IsSendTeamMessage += 1;
+                    }
                 })
 
             })
