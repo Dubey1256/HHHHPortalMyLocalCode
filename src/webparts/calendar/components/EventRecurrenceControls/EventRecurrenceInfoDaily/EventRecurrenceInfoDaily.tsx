@@ -341,7 +341,7 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
 
             </div>
             <div style={{ width: '100%', paddingTop: '10px' }}>
-              <Label>{ strings.patternLabel }</Label>
+              <Label className='Pattern border-bottom'>{ strings.patternLabel }</Label>
               <ChoiceGroup
                 selectedKey={this.state.selectPatern}
                 options={[
@@ -378,7 +378,7 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
             </div>
 
             <div style={{ paddingTop: '22px' }}>
-              <Label>{ strings.dateRangeLabel }</Label>
+              <Label className='border-bottom'>{ strings.dateRangeLabel }</Label>
               <div style={{ display: 'inline-block', verticalAlign: 'top', paddingRight: '35px', paddingTop: '10px' }}>
 
                 <DatePicker

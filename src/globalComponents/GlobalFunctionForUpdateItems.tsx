@@ -969,11 +969,18 @@ export const SendApprovalEmailNotificationComponent = (props: any) => {
 
 const joinObjectValues = (arr: any) => {
     let val = '';
-    arr.forEach((element: any) => {
-        val += element.Title + '; '
-    });
-    let FinalUserNames: string = '';
-    return val;
+    if (arr?.length > 1) {
+        arr?.forEach((element: any) => {
+            val += element.Title + '; '
+        });
+        return val;
+    } else {
+        arr?.forEach((element: any) => {
+            val = element.Title
+        });
+        return val
+    }
+
 }
 
 // This function is used for generating the required HTML structure to handle different scenarios, such as sending email notifications for tasks that are created, approved, or rejected
@@ -1581,7 +1588,9 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Categories:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '11.0pt' }} title={RequiredData["Categories"]}>{RequiredData["Categories"]?.length > 17 ? RequiredData["Categories"]?.slice(0, 14) + "..." : RequiredData["Categories"]}</span>
+                                <span title={joinObjectValues(RequiredData["TaskCategories"])} style={{ fontSize: '11.0pt', whiteSpace: 'nowrap', width: '95%', wordWrap: 'break-word', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>
+                                    {ReduceTheContentLines(joinObjectValues(RequiredData["TaskCategories"]), 14)}
+                                </span>
                             </div>
                             <div style={{ background: '#DFDFDF', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt', fontWeight: '600', color: '#333' }}>Status:</span>
@@ -2057,7 +2066,6 @@ export const ReduceTheContentLines: any = (Content: String, sliceFrom: number) =
 export const TaskNotificationConfiguration = async (requiredData: any) => {
     const { usedFor, SiteURL, ItemDetails, Context, RequiredListIds, AllTaskUser, Status, SendUserEmail }: any = requiredData || {};
     const filterData: any = [];
-    let UserArray: any = []
     try {
         const web = new Web(SiteURL)
         let ResponseData: any = await web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').expand('Author,Editor,Recipients ,PortfolioType').get();
@@ -2091,12 +2099,13 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                 ItemDetails?.TaskCategories?.map((item: any) => {
                                     if ((TNC.Category?.includes(item.Title) || TNC?.Category?.includes('All')) && TNC?.notifygroupname != undefined) {
                                         const groupArray = TNC?.notifygroupname.split(',').map((item: any) => item.trim());
+                                        let GroupAssignment: any = [];
                                         if (ItemDetails?.TeamMembers != undefined) {
                                             AllTaskUser?.map((TaskUserData: any) => {
                                                 ItemDetails?.TeamMembers?.map((teamMembersData: any) => {
                                                     groupArray?.map((groupArrayData: any) => {
                                                         if (teamMembersData.Id == TaskUserData.AssingedToUserId && groupArrayData == TaskUserData.TimeCategory) {
-                                                            UserArray.push(TaskUserData);
+                                                            GroupAssignment.push(TaskUserData);
                                                         }
 
                                                     });
@@ -2104,7 +2113,7 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                                 if (TNC.Notify == "Approval") {
                                                     ItemDetails?.Approvee?.Approver?.map((approverMembersData: any) => {
                                                         if (approverMembersData.Id == TaskUserData.AssingedToUserId) {
-                                                            UserArray.push(TaskUserData);
+                                                            GroupAssignment.push(TaskUserData);
                                                         }
                                                     })
 
@@ -2112,7 +2121,7 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                                 if (TNC.Notify == "Creator") {
                                                     ItemDetails?.Approvee?.Approver?.map((approverMembersData: any) => {
                                                         if (approverMembersData.Id == TaskUserData.AssingedToUserId) {
-                                                            UserArray.push(TaskUserData);
+                                                            GroupAssignment.push(TaskUserData);
                                                         }
                                                     })
                                                 }
@@ -2121,49 +2130,67 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
 
                                         }
 
-                                        ItemDetails.TaskAssignedUsers = UserArray;
-                                    }
-                                    if (!TNC?.Category?.includes('All') && TNC.Category?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
+                                        ItemDetails.TaskAssignedUsers = GroupAssignment;
+                                    } else if (!TNC?.Category?.includes('All') && TNC.Category?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
                                         //Kristina
+                                        let DesignTaskAssignment: any = []
                                         TNC.Notifier.map((user: any) => {
                                             AllTaskUser?.map((TaskUserData: any) => {
                                                 if (user.Id == TaskUserData.AssingedToUserId)
-                                                    UserArray.push(TaskUserData);
+                                                    DesignTaskAssignment.push(TaskUserData);
                                             })
                                         });
-                                        ItemDetails.TaskAssignedUsers = UserArray
-                                    }
-                                    if (TNC?.Category?.includes('All') && TNC?.ExceptionCategory?.length > 0 && !TNC?.ExceptionCategory?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
+                                        ItemDetails.TaskAssignedUsers = DesignTaskAssignment
+                                    } else if (TNC?.Category?.includes('All') && TNC?.ExceptionCategory?.length > 0 && !TNC?.ExceptionCategory?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
                                         // Mattis
+                                        let otherAllTaskAssignment: any = []
                                         TNC.Notifier.map((user: any) => {
                                             AllTaskUser?.map((TaskUserData: any) => {
                                                 if (user.Id == TaskUserData.AssingedToUserId)
-                                                    UserArray.push(TaskUserData);
+                                                    otherAllTaskAssignment.push(TaskUserData);
                                             })
                                         });
-                                        ItemDetails.TaskAssignedUsers = UserArray;
-                                    }
+                                        ItemDetails.TaskAssignedUsers = otherAllTaskAssignment;
+                                    } else if (TNC?.Category?.includes('All') && (TNC?.Site?.includes('All') || TNC?.selectedSite?.includes('All')) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
+                                        //Stefan
+                                        let TaskCompleteAssignment: any = [];
+                                        TNC.Notifier.map((user: any) => {
+                                            AllTaskUser?.map((TaskUserData: any) => {
+                                                if (user.Id == TaskUserData.AssingedToUserId)
+                                                    TaskCompleteAssignment.push(TaskUserData);
+                                            })
+                                        });
+                                        ItemDetails.TaskAssignedUsers = TaskCompleteAssignment
+                                    } else {
 
+                                    }
                                     if (TNC.Site == ItemDetails.siteType) {
                                         //Deepak
+                                        let SiteTaskAssignment: any = [];
                                         TNC.Notifier.map((user: any) => {
                                             AllTaskUser?.map((TaskUserData: any) => {
                                                 if (user.Id == TaskUserData.AssingedToUserId)
-                                                    UserArray.push(TaskUserData);
+                                                    SiteTaskAssignment.push(TaskUserData);
                                             })
                                         });
-                                        ItemDetails.TaskAssignedUsers = UserArray
+                                        ItemDetails.TaskAssignedUsers = SiteTaskAssignment
                                     }
-                                    if (TNC?.Category?.includes('All') && (TNC?.Site?.includes('All') || TNC?.selectedSite?.includes('All')) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
-                                        //Stefan
-                                        TNC.Notifier.map((user: any) => {
-                                            AllTaskUser?.map((TaskUserData: any) => {
-                                                if (user.Id == TaskUserData.AssingedToUserId)
-                                                    UserArray.push(TaskUserData);
-                                            })
-                                        });
-                                        ItemDetails.TaskAssignedUsers = UserArray
-                                    }
+
+                                })
+                            }
+                            if (TNC?.percentComplete == Status && TNC?.NotificationType == "Lead") {
+                                ItemDetails?.TaskCategories?.map((item: any) => {
+                                        let leadArray: any = [];
+                                        if (!TNC?.Category?.includes('All') && TNC.Category?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
+                                            //This is used to assigned Design As Lead
+                                            TNC.Notifier.map((user: any) => {
+                                                AllTaskUser?.map((TaskUserData: any) => {
+                                                    if (user.Id == TaskUserData.AssingedToUserId)
+                                                        leadArray.push(TaskUserData);
+                                                })
+                                            });
+                                            ItemDetails.ResponsibleTeamMembers = leadArray
+                                        }
                                 })
                             }
                         }
