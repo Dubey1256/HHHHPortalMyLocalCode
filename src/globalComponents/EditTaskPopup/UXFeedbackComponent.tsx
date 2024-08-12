@@ -1041,10 +1041,12 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                                 {" "}
                                                                                 |
                                                                                 <span className="siteColor">
-                                                                                    Replace
+                                                                                    <TbReplace />{" "}
+                                                                                    <span className="tooltip-text pop-right">
+                                                                                        Replace Image
+                                                                                    </span>
                                                                                 </span>
                                                                             </span>
-
                                                                         </div>
                                                                     </div>
                                                                     <div className="expandicon">
