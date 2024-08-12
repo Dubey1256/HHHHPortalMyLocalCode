@@ -183,9 +183,10 @@ const LabelInfoIconToolTip = (props: any) => {
             </>
 
             }
+    {res?.Title==undefined && props?.defaultTitle!=undefined && <span>{props?.defaultTitle}</span>}
 
-
-            {(res != null && res != '' && props?.ShowPencilIcon && props.onlyText == "text") && <span title="Edit label" className="svg__iconbox svg__icon--info" onClick={() => editItem(res)}></span>}
+            {(res != null && res != '' && props?.ShowPencilIcon && props.onlyText == "text") && 
+            <span title="Edit label" className="svg__iconbox svg__icon--info" onClick={() => editItem(res)}></span>}
             {visibleDes && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: ['Bottleneck', 'Phone', 'Attention'].indexOf(res.InternalName) !== -1 ? 'tooltip-container itemRankTooltip tooltip-Right p-0 m-0': 'tooltip-container itemRankTooltip p-0 m-0' })}>
 

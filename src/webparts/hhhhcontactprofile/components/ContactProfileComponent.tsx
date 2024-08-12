@@ -2,12 +2,19 @@ import * as React from "react";
 import { useState } from 'react';
 import { Web } from 'sp-pnp-js';
 import EditContactPopup from "../../hhhcontact/components/EditContactPopup";
+import { Col, Container, Row } from "react-bootstrap";
+import { SpaOutlined } from "@mui/icons-material";
+import { IoMdMail } from "react-icons/io";
+import { FaCity, FaFax, FaAddressCard, FaGlobe } from "react-icons/fa";
+import { FaSquarePhone } from "react-icons/fa6";
+import { BsSkype } from "react-icons/bs";
 let allListId: any = {};
 const ContactProfileComponent = (props: any) => {
     const baseUrl = props?.props?.Context?.pageContext?._web?.absoluteUrl;
     const MainSiteUrl = props?.props?.Context?.pageContext?.site?.absoluteUrl;
     let webs = new Web(baseUrl);
     const [Contacts, setContacts] = useState(null);
+    const [Masterdata, setMasterdata] = React.useState<any>({});
     const [openEditpopup, setopenEditpopup] = useState(false)
 
     React.useEffect(() => {
@@ -52,143 +59,123 @@ const ContactProfileComponent = (props: any) => {
 
     return (
         <>
-            <div className="container">
-                <div className="col-sm-12 no-padding smart-folder pagetitle">
-                    <ul className="DisplayInline ps-2">
-                        <span>
-                            <a href={`${baseUrl}/Sitepages/contacts-search.aspx`} ><span id="spnsubtopic">Contact Database </span></a>
-                            <span className="right-icon" id="">
-                                <span> &gt; {Contacts?.FirstName}&nbsp;{Contacts?.Title} <span>{Contacts?.null !== undefined && Contacts?.Suffix !== undefined && Contacts?.Suffix !== '' ? `(${Contacts?.Suffix})` : ''}</span> </span>
-                            </span>
-                        </span>
-                    </ul>
-                </div>
-                <table width="100%" style={{ marginTop: '30px' }}>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <h2 className="ml-16 heading">{Contacts?.FirstName}&nbsp;{Contacts?.Title} <span>{Contacts?.Suffix !== null && Contacts?.Suffix !== undefined && Contacts?.Suffix !== '' ? `(${Contacts?.Suffix})` : ''}</span> </h2>
+            <Container>
+                <section>
+                    <div className="sp-breadcrumbv">
+                        <ul className="spfxbreadcrumb mb-2 ms-2 mt-16 p-0">
+                            <li>
+                                <a data-interception="off" target="_blank" href={`${allListId?.baseUrl}/Sitepages/contacts-search.aspx`}>
+                                Contact Database 
+                                </a>
+                            </li>                          
+                        </ul>
+                    </div>
+                </section>
 
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div className="leftcol">
-                                    <div style={{ lineHeight: '150px', textAlign: 'center' }}>
-                                        <img className="img-fluid" src={Contacts?.ItemCover === undefined || Contacts?.ItemCover === null || Contacts?.ItemCover?.Url === undefined || Contacts?.ItemCover?.Url === null ? `${MainSiteUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg` : Contacts?.ItemCover?.Url} alt="User" />
-                                    </div>
-                                    <div style={{ textAlign: 'center' }}>
-                                        <a href="javascript:void(0)" className="alignCenter justify-content-center" onClick={() => EditItem()}>
-                                            <span className="svg__iconbox svg__icon--edit hreflink"></span>
-                                            Edit Profile
-                                        </a>
-                                    </div>
-                                    <div className="ms-clear"></div>
-                                </div>
-                                <div className="rightcol">
-                                    <div className="row">
-                                        <div className="col-lg-12 infoblock px-0 contact">
-                                            <div className="col-lg-3 label">Organization</div>
-                                            <div className="col-lg-9 labeltext">{Contacts?.Company}</div>
-                                        </div>
-                                        <div className="col-lg-12 infoblock px-0 contact">
-                                            <div className="col-lg-3 label">Department</div>
-                                            <div className="col-lg-9 labeltext">{Contacts?.ol_Department}</div>
-                                        </div>
-                                        <div className="col-lg-12 infoblock px-0 contact">
-                                            <div className="col-lg-3 label">Job Title</div>
-                                            <div className="col-lg-9 labeltext">{Contacts?.JobTitle}</div>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-12 mt-3">
-                                        <div className="row">
-                                            <h2 className="infoheading  px-0">Contact Information</h2>
-                                            <div className="col-md-6 ps-0">
-                                                <div className="contact-info">
-                                                    <div className="contact-dtls">
-                                                        <div className="infocontent-pannel" ><img src={`${baseUrl}//PublishingImages/Icons/24/c_Phone_png.jpg`} title="Business Phone" alt="Phone" />{Contacts?.WorkPhone}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-md-6 ps-2 pe-0">
-                                                <div className="contact-info">
-                                                    <div className="contact-dtls">
-                                                        <div className="infocontent-pannel"><img src={`${baseUrl}/PublishingImages/Icons/24/icon_Mobile_png.jpg`} title="Mobile Number" alt="Mobile" /> {Contacts?.CellPhone}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="row mt-1">
-                                            <div className="col-md-6 ps-0">
-                                                <div className="contact-info">
-                                                    <div className="contact-dtls">
-                                                        <div className="infocontent-pannel"><img title="Email" src={`${baseUrl}/PublishingImages/Icons/24/circle_mail_png.jpg`} /><a href="mailto:{{Contacts?.Email}}">{Contacts?.Email}</a></div>
-                                                    </div>
-                                                </div>
 
-                                            </div>
-                                            <div className="col-md-6 ps-2 pe-0">
-                                                <div className="contact-info">
-                                                    <div className="contact-dtls">
-                                                        <div className="infocontent-pannel"><img title="Fax" src={`${baseUrl}/PublishingImages/Icons/24/icon_Fax_png.jpg`} /> {Contacts?.WorkFax}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                <section className="alignCenter border-bottom pb-2">
+                    <div>
+                        <img className="user-dp" src={Contacts?.ItemCover === undefined || Contacts?.ItemCover === null || Contacts?.ItemCover?.Url === undefined || Contacts?.ItemCover?.Url === null ? `${MainSiteUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg` : Contacts?.ItemCover?.Url} alt="User" />
+                        <a href="javascript:void(0)" className="alignCenter justify-content-center" onClick={() => EditItem()}>
+                            <span className="svg__iconbox svg__icon--edit hreflink"></span>
+                            Edit Profile
+                        </a>
+                    </div>
+                    <div className="w-100 ms-4">
+                        <div className="alignCenter">
+                            <h2 className="mb-2 ms-0 heading">
+                                {Contacts?.FirstName}&nbsp;{Contacts?.Title} <span>{Contacts?.Suffix !== null && Contacts?.Suffix !== undefined && Contacts?.Suffix !== '' ? `(${Contacts?.Suffix})` : ''}</span>
+                            </h2>
+                        </div>
+                        <section>
+                            <Row className="profileHead">
+                                <Col md={3} className="bg-Fa profileLeftSec">Organization</Col>
+                                <Col md={9} className="bg-Ff profileRightSec">{Contacts?.Company}</Col>
+                            </Row>
+                            <Row className="profileHead">
+                                <Col md={3} className="bg-Fa profileLeftSec">Department</Col>
+                                <Col md={9} className="bg-Ff profileRightSec">{Contacts?.ol_Department}</Col>
+                            </Row>
+                            <Row className="profileHead">
+                                <Col md={3} className="bg-Fa profileLeftSec">Job Title</Col>
+                                <Col md={9} className="bg-Ff profileRightSec">{Contacts?.JobTitle}</Col>
+                            </Row>
 
-                                        </div>
-                                    </div>
-                                    <div className="col-md-12 mt-2">
-                                        <div className="row">
-                                            <h2 className="infoheading  px-0">Address Information</h2>
-                                            <div className="col-md-6 ps-0">
-                                                <div className="contact-info">
-                                                    <div className="contact-dtls">
-                                                        <div className="infocontent-pannel"> <img title="Address" src={`${baseUrl}/PublishingImages/Icons/24/c_Venue.png`} />{Contacts?.WorkAddress}</div>
-                                                    </div>
-                                                </div>
+                        </section>
 
-                                            </div>
-                                            <div className="col-md-6 ps-2 pe-0">
-                                                <div className="contact-info">
-                                                    <div className="contact-dtls">
-                                                        <div className="infocontent-pannel"><img title="City" src={`${baseUrl}/PublishingImages/Icons/24/icon_Street_png.jpg`} /> {Contacts?.WorkCity}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                    </div>
+                </section>
+                <section>
+                    <Col className="mt-3">
+                        <Row>
+                            <h2 className="siteBdrBottom siteColor sectionHead ps-0 mb-2">Contact Information</h2>
+                            <Col md={6} className="ps-0">
+                                <span className="f-20">
+                                    <FaSquarePhone />
+                                </span>
 
-                                        </div>
-                                        <div className="row mt-1">
-                                            <div className="col-md-6 ps-0">
-                                                <div className="contact-info">
-                                                    <div className="contact-dtls">
-                                                        <div className="infocontent-pannel"><img title="Webpage" src={`${baseUrl}/PublishingImages/Icons/24/icon_Webpage_png.jpg`} />   <a href={Contacts?.WebPage?.Url} target="_blank">{Contacts?.WebPage?.Url}</a></div>
-                                                    </div>
-                                                </div>
+                                <span className="infocontent-pannel" >{Contacts?.WorkPhone}</span>
 
-                                            </div>
-                                            <div className="col-md-6 ps-2 pe-0">
-                                                <div className="contact-info">
-                                                    <div className="contact-dtls">
-                                                        <div className="infocontent-pannel"><img title="Skype" src={`${baseUrl}/PublishingImages/Icons/24/icon_Skype_png.jpg`} /> <a href={Contacts?.IM} target="_blank">{Contacts?.IM}</a></div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                            </Col>
+                            <Col md={6} className="ps-0">
+                                <span className="f-20">
+                                    <FaSquarePhone title="Mobile Number" />
+                                </span>
 
-                                        </div>
-                                    </div>
-                                    <div className="col-md-12 my-2">
-                                        <div className="row">
-                                            <h2 className="infoheading  px-0">Notes</h2>
-                                            <div className="infocontent-pannel"><p className="padL-10 "><span>{Contacts?.Comments}</span></p></div>
+                                <span className="infocontent-pannel"> {Contacts?.CellPhone}</span>
+                            </Col>
+                        </Row>
+                        <Row className="mt-1">
+                            <Col md={6} className="ps-0">
+                                <span className="f-20">
+                                    <IoMdMail title="mail" />
+                                </span>
+                                <div className="infocontent-pannel"><a href="mailto:{{Contacts?.Email}}">{Contacts?.Email}</a></div>
 
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                            </Col>
+                            <Col md={6} className="ps-0">
+                                <span className="f-20">
+                                    <FaFax title="Fax" />
+                                </span>
+                                <span className="infocontent-pannel"> {Contacts?.WorkFax}</span>
+                            </Col>
+                        </Row>
+                    </Col>
+                    <Col className="mt-2">
+                        <Row>
+                            <h2 className="siteBdrBottom siteColor sectionHead ps-0 mb-2">Address Information</h2>
+                            <Col md={6} className="ps-0">
+                                <span className="f-20"> <FaAddressCard /></span>
+                                <span>{Contacts?.WorkAddress}</span>
+                            </Col>
+                            <Col md={6} className="ps-0">
+                                <span className="f-20"> <FaCity title="City" /></span>
+                                <span> {Contacts?.WorkCity}</span>
+                            </Col>
+
+                        </Row>
+                        <Row className=" mt-1">
+                            <Col md={6} className="ps-0">
+                                <span className="f-20"> <FaGlobe title="Webpage" /></span>
+                                <span> <a href={Contacts?.WebPage?.Url} target="_blank">{Contacts?.WebPage?.Url}</a></span>
+                            </Col>
+                            <Col md={6} className="ps-0">
+                                <span className="f-20"> <BsSkype /></span>
+                                <span> <a href={Contacts?.IM} target="_blank">{Contacts?.IM}</a></span>
+                            </Col>
+
+                        </Row>
+                    </Col>
+                    <Col className="my-2">
+                        <Row>
+                            <h2 className="siteBdrBottom siteColor sectionHead ps-0 mb-2">Notes</h2>
+                            <div><p><span>{Contacts?.Comments}</span></p></div>
+
+                        </Row>
+                    </Col>
+                </section>
+
+            </Container>
             {openEditpopup && (<EditContactPopup Context={props?.props?.Context} props={Contacts} allListId={allListId} EditCallBackItemProfile={EditCallBackItemProfile} page={"ContactProfile"}></EditContactPopup>)}
         </>
     );

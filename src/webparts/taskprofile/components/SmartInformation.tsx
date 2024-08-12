@@ -1416,7 +1416,7 @@ const SmartInformation = (props: any, ref: any) => {
                           })}
 
                           <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified:</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span>}</span> </div>
-                          {SmartInformation?.URL && <div className="d-flex p-1 px-2 w-100"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""} className='text-break'>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>}
+                          {SmartInformation?.URL && <div className="d-flex p-1 px-2 w-100"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""} target='_blank' data-interception='off' className='text-break'>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>}
                         </div>
                       </div>
                     </>)
@@ -1507,7 +1507,7 @@ const SmartInformation = (props: any, ref: any) => {
                         )
                       })}
                       <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified:</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span>}</span> </div>
-                      {SmartInformation?.URL && <div className="d-flex p-1 px-2"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a className='text-break' href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>}
+                      {SmartInformation?.URL && <div className="d-flex p-1 px-2"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a target='_blank' data-interception='off' className='text-break' href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>}
                     </div>
                   </div>
                 </>)

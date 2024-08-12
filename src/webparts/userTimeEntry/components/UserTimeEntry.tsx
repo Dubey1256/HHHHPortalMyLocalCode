@@ -188,7 +188,7 @@ export default class UserTimeEntry extends React.Component<
     await this._fetchSubsitesWithPermissions();
     if (this.props.Context.pageContext.web.absoluteUrl !== 'https://hhhhteams.sharepoint.com/sites/HHHH' || this.props.Context.pageContext.web.absoluteUrl !== 'https://smalsusinfolabs.sharepoint.com/sites/HHHHQA') {
       try {
-    
+
         const apiUrl = `${this.props.Context.pageContext.web.absoluteUrl}/_api/web/lists/getbytitle('SmartMetadata')/items?$filter=TaxType eq 'DynamicUserTimeEntry'`;
         const response = await fetch(apiUrl, {
           method: 'GET',
@@ -204,7 +204,7 @@ export default class UserTimeEntry extends React.Component<
             val.isSelected = true;
             filteredData.push(val);
           });
-          this.setState({ seletedAllSites: JSONData});
+          this.setState({ seletedAllSites: JSONData });
           await this.LoadPortfolio();
           await this.GetTaskUsers('checked');
           if (user != undefined && user?.Id != undefined && user?.Id != "") {
@@ -218,7 +218,7 @@ export default class UserTimeEntry extends React.Component<
         console.error(`Error fetching data from: ${error.message}`);
       }
     }
-    else{
+    else {
       let startdt = new Date();
       let enddt = new Date();
       let diff, lastday;
@@ -255,18 +255,18 @@ export default class UserTimeEntry extends React.Component<
         AllSubSites = AllSites[0];
       }
     });
-    
+
     // Logging AllSubSites outside forEach (may not log as expected due to async forEach)
     console.log(AllSubSites);
-    
+
     // Check if AllSubSites is defined and has elements
     if (AllSubSites !== undefined && AllSubSites.length > 0) {
       // Use regular forEach instead of async forEach for synchronous operations
       const promises = AllSubSites.map(async (subsite: any) => {
         await this.GetSitesMetaData(subsite);
       });
-      
-      
+
+
       await Promise.all(promises);
       validSites?.forEach((subsite: any) => {
         subsite.siteurl = subsite.siteUrl
@@ -276,19 +276,19 @@ export default class UserTimeEntry extends React.Component<
         }
         validSites.push(subsite);
       });
-      const titleMap:any = {};
+      const titleMap: any = {};
 
-// Filter out duplicate titles in the original validSites array
-validSites = validSites.filter((site:any) => {
-  // Check if title exists in titleMap
-  if (!titleMap[site.Title]) {
-    // If title does not exist, add it to titleMap and return true to keep this element
-    titleMap[site.Title] = true;
-    return true;
-  }
-  // If title exists in titleMap, return false to filter out this element
-  return false;
-});
+      // Filter out duplicate titles in the original validSites array
+      validSites = validSites.filter((site: any) => {
+        // Check if title exists in titleMap
+        if (!titleMap[site.Title]) {
+          // If title does not exist, add it to titleMap and return true to keep this element
+          titleMap[site.Title] = true;
+          return true;
+        }
+        // If title exists in titleMap, return false to filter out this element
+        return false;
+      });
       this.setState({
         loaded: false,
       });
@@ -296,14 +296,14 @@ validSites = validSites.filter((site:any) => {
     if (this.props.Context.pageContext.web.absoluteUrl === 'https://hhhhteams.sharepoint.com/sites/HHHH' || this.props.Context.pageContext.web.absoluteUrl === 'https://smalsusinfolabs.sharepoint.com/sites/HHHHQA') {
       if (user !== undefined && user?.Id !== undefined && user?.Id !== "") {
         await this.DefaultValues(); // Await inside async function
-         await this.LoadAllMetaDataFilter('loading'); // Uncomment if needed
+        await this.LoadAllMetaDataFilter('loading'); // Uncomment if needed
       }
       this.setState({
         loaded: false,
       });
     }
   }
-  private  GetSitesMetaData = async (config: any) => {
+  private GetSitesMetaData = async (config: any) => {
     if (config?.TaskUserListID != undefined) {
       try {
         let web = new Web(config?.siteUrl);
@@ -513,20 +513,20 @@ validSites = validSites.filter((site:any) => {
     let todayLeaveUsers: any = []
     const promises = filteredData?.map(async (items: any) => {
       let web = new Web(items.siteUrl);
-    myData = await web.lists
-      .getById(items?.LeaveCalendarListId)
-      .items
-      .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,HalfDay,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Employee/Id")
-      .top(499)
-      .expand("Author,Editor,Employee")
-      .getAll()
-    console.log(myData);
-    return myData;
-  });
+      myData = await web.lists
+        .getById(items?.LeaveCalendarListId)
+        .items
+        .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,HalfDay,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Employee/Id")
+        .top(499)
+        .expand("Author,Editor,Employee")
+        .getAll()
+      console.log(myData);
+      return myData;
+    });
 
-  const allResults = await Promise.all(promises);
-  await Promise.all(allResults);
-  allResults[0]?.forEach((val: any) => {
+    const allResults = await Promise.all(promises);
+    await Promise.all(allResults);
+    allResults[0]?.forEach((val: any) => {
       val.EndDate = new Date(val?.EndDate);
       val?.EndDate.setHours(val?.EndDate.getHours() - 9);
       var itemDate = Moment(val.EventDate)
@@ -606,12 +606,10 @@ validSites = validSites.filter((site:any) => {
       }
 
     })
-    TaskUser?.forEach((val: any) => {
-      AllTimeEntry?.map((item: any) => {
-
+    AllTimeEntry?.forEach((item: any) => {
+      TaskUser?.map((val: any) => {
         if (item?.AuthorId == val?.AssingedToUserId) {
-
-          if (val?.UserGroup?.Title == 'Developers Team' || val?.UserGroup?.Title == ' Portfolio Lead Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff') {
+          if (val?.UserGroup?.Title == 'Developers Team' || val?.UserGroup?.Title == 'Portfolio Lead Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff' || val?.UserGroup?.Title == 'Trainees') {
             item.Department = 'Developer';
             item.userName = val?.Title
           }
@@ -631,29 +629,45 @@ validSites = validSites.filter((site:any) => {
             item.Department = 'QA';
             item.userName = val?.Title
           }
-
-
         }
       })
 
     })
     if (AllTimeEntry != undefined) {
-      AllTimeEntry?.forEach((time: any) => {
-        if (time?.Department == 'Developer') {
-          DevloperTime = DevloperTime + parseFloat(time.Effort)
+      // AllTimeEntry?.forEach((time: any) => {
+      //   if (time?.Department == 'Developer') {
+      //     DevloperTime = DevloperTime + parseFloat(time.Effort)
+      //   }
+      //   if (time?.Department == 'Management') {
+      //     ManagementTime = ManagementTime + parseFloat(time.Effort)
+      //   }
+
+      //   if (time?.Department == 'Design') {
+      //     DesignTime = DesignTime + parseFloat(time.Effort)
+      //   }
+      //   if (time?.Department == 'QA') {
+      //     QATime = QATime + parseFloat(time.Effort)
+      //   }
+
+      // })
+      for (let index = 0; index < AllTimeEntry.length; index++) {
+
+        if (AllTimeEntry[index]?.Department == 'Developer') {
+          DevloperTime += AllTimeEntry[index].Effort
         }
-        if (time?.Department == 'Management') {
-          ManagementTime = ManagementTime + parseFloat(time.Effort)
+        if (AllTimeEntry[index]?.Department == 'Management') {
+          ManagementTime += AllTimeEntry[index].Effort
         }
 
-        if (time?.Department == 'Design') {
-          DesignTime = DesignTime + parseFloat(time.Effort)
+        if (AllTimeEntry[index]?.Department == 'Design') {
+          DesignTime += AllTimeEntry[index].Effort
         }
-        if (time?.Department == 'QA') {
-          QATime = QATime + parseFloat(time.Effort)
+        if (AllTimeEntry[index]?.Department == 'QA') {
+          QATime += AllTimeEntry[index].Effort
         }
 
-      })
+
+      }
       TotleTaskTime = QATime + DevloperTime + DesignTime + ManagementTime;
     }
     LeaveUserData?.forEach((items: any) => {
@@ -1266,7 +1280,7 @@ validSites = validSites.filter((site:any) => {
         .get();
       if (Type == 'checked') {
         AllTaskUser = [...AllTaskUser, ...results];
-        
+
       }
       else {
         AllTaskUser = results;
@@ -1416,14 +1430,14 @@ validSites = validSites.filter((site:any) => {
     });
     if (sitesResult.length > 0) {
       sitesResult?.map((site: any) => {
-        if(site?.Title != "SP Online" && site?.Title != "SDC Sites"){
+        if (site?.Title != "SP Online" && site?.Title != "SDC Sites") {
           site.ParentID = site?.ParentId
         }
         if (site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.IsVisible == true) {
-         siteConfig.push(site);
+          siteConfig.push(site);
         }
       });
-      
+
     }
 
     if (type !== 'checked' || this.props.Context.pageContext.web.absoluteUrl == '') {
@@ -1543,44 +1557,44 @@ validSites = validSites.filter((site:any) => {
         });
       }
     });
-    const filterSitesss = filterSites.map((item:any) => ({
+    const filterSitesss = filterSites.map((item: any) => ({
       ID: item.ID,
       value: item.value,
       label: item.label,
       Title: item.label,
       TaxType: item?.TaxType,
       Group: item?.Group,
-      IsVisible:item.IsVisible,
-      children: item.children ? item.children.map((child:any) => ({
-          ID: child.ID,
-          value: child.value,
-          label: child.label,
-          IsVisible:child.IsVisible,
-          Title: child.label,
-          TaxType: child.TaxType,
-          Group: child.Group,
-      })) : [] 
-     }));
-     const filterItemss = filterItems.map((item:any) => ({
+      IsVisible: item.IsVisible,
+      children: item.children ? item.children.map((child: any) => ({
+        ID: child.ID,
+        value: child.value,
+        label: child.label,
+        IsVisible: child.IsVisible,
+        Title: child.label,
+        TaxType: child.TaxType,
+        Group: child.Group,
+      })) : []
+    }));
+    const filterItemss = filterItems.map((item: any) => ({
       ID: item.ID,
       value: item.value,
       label: item.label,
       Title: item.label,
       TaxType: item?.TaxType,
       Group: item?.Group,
-      IsVisible:item.IsVisible,
-      children: item.children ? item.children.map((child:any) => ({
-          ID: child.ID,
-          value: child.value,
-          label: child.label,
-          IsVisible:child.IsVisible,
-          Title: child.label,
-          TaxType: child.TaxType,
-          Group: child.Group,
-      })) : [] 
-  }));
-      filterItems = this.removeDuplicates(filterItemss);
-      filterSites = this.removeDuplicates(filterSitesss);
+      IsVisible: item.IsVisible,
+      children: item.children ? item.children.map((child: any) => ({
+        ID: child.ID,
+        value: child.value,
+        label: child.label,
+        IsVisible: child.IsVisible,
+        Title: child.label,
+        TaxType: child.TaxType,
+        Group: child.Group,
+      })) : []
+    }));
+    filterItems = this.removeDuplicates(filterItemss);
+    filterSites = this.removeDuplicates(filterSitesss);
     this.setState({ filterItems, filterSites });
   }
   private SelectAllCategories(ev: any) {
@@ -2184,7 +2198,7 @@ validSites = validSites.filter((site:any) => {
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(29, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(42, "days").format();
       var b = new Date(change);
       formattedDate = b;
     } else if (startDateOf == "Last Week") {
@@ -2224,8 +2238,8 @@ validSites = validSites.filter((site:any) => {
       this.setState({ showShareTimesheet: true });
       let startDatess = this.getStartingDate(DateType).toISOString();
       const date = new Date(startDatess);
-       date.setDate(date.getDate() - 2);
-       let startDate = date.toISOString();
+      date.setDate(date.getDate() - 2);
+      let startDate = date.toISOString();
 
       try {
         if (
@@ -2922,6 +2936,12 @@ validSites = validSites.filter((site:any) => {
       AllTimeEntryItem = getAllTimeEntry;
       let CopyAllTimeEntry = [...AllTimeEntryItem];
       this.BackupAllTimeEntry = CopyAllTimeEntry;
+
+      this.ShareTimeSheetMultiUser(AllTimeEntryItem,
+        AllTaskUser,
+        this?.props?.Context,
+        DateType,
+        this.state.ImageSelectedUsers)
       this.TotalTimeEntry = 0;
       for (let index = 0; index < AllTimeEntryItem.length; index++) {
         this.TotalTimeEntry += AllTimeEntryItem[index].Effort;
@@ -2968,11 +2988,7 @@ validSites = validSites.filter((site:any) => {
       );
     }
 
-    this.ShareTimeSheetMultiUser(this.state.AllTimeEntry,
-      AllTaskUser,
-      this?.props?.Context,
-      DateType,
-      this.state.ImageSelectedUsers)
+
   }
   private getFilterTask(filterTask: any) {
     let selectedFilters: any = [];
@@ -3267,7 +3283,7 @@ validSites = validSites.filter((site:any) => {
         const seen = new Set();
 
         this.AllTimeEntry = this.AllTimeEntry.filter((entry: any) => {
-          const key = `${entry.Id}-${entry.Effort}-${entry.TimeEntryDate}`;
+          const key = `${entry.Id}-${entry.Effort}-${entry.TimeEntryDate}-${entry?.AuthorId}`;
           if (seen.has(key)) {
             return false;
           } else {
@@ -3530,7 +3546,7 @@ validSites = validSites.filter((site:any) => {
           filteredData.splice(index, 1)
         }
       })
-      const filteredTimeSheetLists = this.state.TimeSheetLists.filter((val:any) => (val.siteType.toLowerCase() !== Site.Title.toLowerCase()));
+      const filteredTimeSheetLists = this.state.TimeSheetLists.filter((val: any) => (val.siteType.toLowerCase() !== Site.Title.toLowerCase()));
       this.setState({ TimeSheetLists: filteredTimeSheetLists });
       this.setState({ seletedAllSites: filteredArray });
 
@@ -3544,20 +3560,20 @@ validSites = validSites.filter((site:any) => {
     console.log(filteredData);
   };
 
-  private removeDuplicates(arr:any) {
+  private removeDuplicates(arr: any) {
     const uniqueItems = new Map();
 
     // Filter out duplicates based on ID
-    const filteredArr = arr.filter((item:any) => {
-        if (!uniqueItems.has(item.ID)) {
-            uniqueItems.set(item.ID, true);
-            return true;
-        }
-        return false;
+    const filteredArr = arr.filter((item: any) => {
+      if (!uniqueItems.has(item.ID)) {
+        uniqueItems.set(item.ID, true);
+        return true;
+      }
+      return false;
     });
 
     return filteredArr;
-}
+  }
   private getAllSubChildenCount(item: any) {
     let count = 1;
     if (item?.children != undefined && item?.children.length > 0) {
@@ -4282,6 +4298,7 @@ validSites = validSites.filter((site:any) => {
           DateType
         );
       } else {
+
         let TimeSheetDetails:any = {}
         TimeSheetDetails['ManagementCount'] = ManagementCount,
           TimeSheetDetails['managementMembers'] = managementMembers,
@@ -4382,22 +4399,22 @@ validSites = validSites.filter((site:any) => {
                 <label className="d-flex ml-60">
                   <a className="fw-semibold mx-3">Select Sites</a>
                   <div className="d-flex gap-2">
-                 
+
                     {validSites.map((val: any, index: number) => (
                       <div key={index}>
-                      
+
                         <input
                           checked={val?.isSelected}
                           type="checkbox"
                           className="form-check-input me-1"
                           onChange={(e) => this.SelectSites(val, e)}
                         />
-                         {val?.Title}
+                        {val?.Title}
                       </div>
                     ))}
-                 
+
                   </div>
-                 
+
 
                 </label>
               </summary>
@@ -4687,7 +4704,7 @@ validSites = validSites.filter((site:any) => {
                       </div>
                     </Row>
                     <Row className="ps-30 mb-2">
-                      <div className="col-1 pe-0" style={{width:"160px"}}>
+                      <div className="col-2">
                         <div className="input-group">
                           <label className="full-width">Start Date</label>
                           <span>
@@ -4703,7 +4720,7 @@ validSites = validSites.filter((site:any) => {
                           </span>
                         </div>
                       </div>
-                      <div className="col-1 pe-0" style={{width:"160px"}}>
+                      <div className="col-2">
                         <div className="input-group">
                           <label className="full-width">End Date</label>
                           <span>
@@ -4946,7 +4963,7 @@ validSites = validSites.filter((site:any) => {
                                               <td><b>Total</b></td>
                                               <td>{(DesignCount + DevCount + QACount + ManagementCount).toFixed(2)}</td>
                                               <td>{(DesignMembers + DevelopmentMembers + QAMembers).toFixed(2)}</td>
-                                              <td>{TotlaTime.toFixed(2)}</td>
+                                              <td>{TotleTaskTime.toFixed(2)}</td>
                                               <td>{TotalleaveHours}</td>
                                             </tr>
                                           </tbody>
