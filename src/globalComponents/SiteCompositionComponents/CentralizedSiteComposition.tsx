@@ -2392,7 +2392,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                     callBackData={GlobalTableCallBackData}
                                     showHeader={false}
                                     fixedWidth={true}
-                                    expendedTrue={true}
+                                    
                                 /> : <GlobalCommonTable
                                     setLoaded={setLoaded}
                                     AllListId={RequiredListIds}
@@ -2402,7 +2402,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                     callBackData={GlobalTableCallBackData}
                                     showHeader={false}
                                     fixedWidth={true}
-                                    expendedTrue={true}
+                                    
                                 />}
                             </div>
                         </div> : null
