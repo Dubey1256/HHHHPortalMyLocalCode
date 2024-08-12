@@ -3,32 +3,65 @@ import { parseString } from 'xml2js';
 import { EventRecurrenceInfo } from '../webparts/calendar/components/EventRecurrenceControls/EventRecurrenceInfo/EventRecurrenceInfo';
 import { Panel, PanelType, Toggle } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
+import GlobalTooltip from './Tooltip'
+let web :any
+let copyTaskData:any;
 const RecurringTask = (props: any) => {
+    
     const [returnedRecurrenceInfo, setReturnedRecurrenceInfo] = React.useState(null);
     const [recurrenceData, setRecurrenceData] = React.useState(null);
     const [startDate, setStartDate]: any = React.useState(null);
     const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] = React.useState(false);
     const [TaskData, SetTaskData]:any = React.useState({});
-
+    const WorkingAction= React.useRef([])
+     WorkingAction.current=  JSON.parse(JSON.stringify( props?.WorkingAction));
+    // Function Convert date
+    function convertToISO(dateString:any) {
+        let match = dateString.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+        if (!match) {
+            throw new Error('Invalid date format. Expected format: DD/MM/YYYY');
+            return null;
+        }
+        let day = match[1];
+        let month = match[2];
+        let year = match[3];
+    
+        let date = new Date(`${year}-${month}-${day}`);
+        let isoDate = date.toISOString();
+    
+        return isoDate;
+    }
     // Load the task
-    let web = new Web(props?.props?.AllListId?.siteUrl);
+ 
     const LoadTaskData = async () => {
-     
-        let TaskDetailsFromCall = await web.lists
+      await web.lists
             .getById(props?.props?.Items?.listId)
-            .items.select(
+            .items .getById(props?.props?.Items?.Id).select(
                 "Id,Title,WorkingAction,workingThisWeek,CompletedDate,StartDate,PriorityRank,DueDate,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,TaskID,RecurrenceData"
-            )
-            .filter(`Id eq ${props?.props?.Items?.Id}`)
-            .expand(
-                "AssignedTo,Author,TeamMembers,Editor,ResponsibleTeam")
-            .get();
-        SetTaskData(TaskDetailsFromCall);
+            ).expand("AssignedTo,Author,TeamMembers,Editor,ResponsibleTeam")
+            .get().then((TaskDetailsFromCall:any)=>{
+                SetTaskData([TaskDetailsFromCall]);
+                copyTaskData=TaskDetailsFromCall;
+            }).catch((error:any)=>{
+                console.log(error)
+                props.props.Items.RecurrenceData="";
+                let copyData =JSON.parse(JSON.stringify(props?.props?.Items))
+                copyData.StartDate = convertToISO(copyData?.StartDate);
+                copyData.CompletedDate = convertToISO(copyData?.CompletedDate)
+                SetTaskData([copyData])
+                copyTaskData=copyData
+            });
+       
     }
 
     React.useEffect(() => {
-        LoadTaskData()
-    }, [])
+        if(props?.props?.AllListId?.siteUrl){
+            web = new Web(props?.props?.AllListId?.siteUrl);
+           
+            LoadTaskData()
+        }
+       
+    }, [showRecurrenceSeriesInfo])
 
 
     const UpdateWorkinActionJSON = async (DataForUpdate: any) => {
@@ -37,9 +70,11 @@ const RecurringTask = (props: any) => {
             await web.lists
                 .getById(props?.props?.Items?.listId)
                 .items.getById(props?.props?.Items?.Id)
-                .update({ WorkingAction: DataForUpdate?.length > 0 ? JSON.stringify(DataForUpdate) : null,RecurrenceData:returnedRecurrenceInfo?.recurrenceData })
-                .then(response => {
+                .update({ WorkingAction: DataForUpdate?.length > 0 ? JSON.stringify(DataForUpdate) : null,
+                    RecurrenceData:returnedRecurrenceInfo?.recurrenceData })
+                .then((response:any) => {
                     console.log('Update successful:', response);
+                    props?.setWorkingAction(WorkingAction.current);
                     setShowRecurrenceSeriesInfo(false)
                 })
         } catch (error) {
@@ -491,19 +526,53 @@ const RecurringTask = (props: any) => {
                 { "Title": "Phone", "InformationData": [] },
                 { "Title": "WorkingDetails", "InformationData": WorkingDetails }
             ];
-            if (!Array.isArray(Taskobject.WorkingAction)) {
+            if (!Array?.isArray(Taskobject?.WorkingAction)) {
                 Taskobject.WorkingAction = [];
             }
-    
+             if(WorkingAction.current?.length>0){
+                WorkingAction.current?.map((workingData:any)=>{
+                    if(workingData?.Title==="WorkingDetails"){
+                       if(copyTaskData?.RecurrenceData!=undefined && copyTaskData?.RecurrenceData?.length>0){
+                        workingData.InformationData=WorkingDetails
+                       }else{
+                        workingData.InformationData=[... workingData.InformationData,...WorkingDetails]
+                       }
+                       
+                    }
+                })
+                console.log(props?.WorkingAction)
+                console.log(  WorkingAction.current)
+                let Updatedworkingjson = [
+                    ...Taskobject.WorkingAction, 
+                    ... WorkingAction.current
+                ];
+                UpdateWorkinActionJSON(Updatedworkingjson);
+             }else{
+                let Updatedworkingjson = [
+                    ...Taskobject.WorkingAction, 
+                    ...WorkingActionJson
+                ];
+                UpdateWorkinActionJSON(Updatedworkingjson);
+             }
+            
+            //  props?.setWorkingAction(props?.WorkingAction);
+             
             // Combine with existing WorkingAction
-            let Updatedworkingjson = [
-                ...Taskobject.WorkingAction, 
-                ...WorkingActionJson
-            ];
+           
     
-            UpdateWorkinActionJSON(Updatedworkingjson);
+           
         }
     }
+    const customRecurrenceSeries = () => {
+        return (
+          <>
+            <div className='subheading' >
+              Select Recurrence 
+            </div>
+            <GlobalTooltip ComponentId='3292' />
+          </>
+        )
+      }
 
     return (
         <>
@@ -514,7 +583,8 @@ const RecurringTask = (props: any) => {
                 defaultChecked={false}
                 checked={showRecurrenceSeriesInfo}
                 inlineLabel
-                label="Recurrence"
+                title='Recurrence'
+                // label="Recurrence"
                 onChange={handleRecurrenceCheck}
                 styles={{
                     root: { marginBottom: "10px" },
@@ -528,12 +598,9 @@ const RecurringTask = (props: any) => {
                 isOpen={showRecurrenceSeriesInfo}
                 onDismiss={() => setShowRecurrenceSeriesInfo(false)}
                 type={PanelType.medium}
+                onRenderHeader={customRecurrenceSeries}
                 closeButtonAriaLabel="Close"
-                styles={{
-                    main: { padding: "20px" },
-                    header: { fontSize: "18px", fontWeight: "bold" },
-                    content: { padding: "10px 0" }
-                }}
+               
             >
                 <EventRecurrenceInfo
                     context={props.props.context}
@@ -545,11 +612,20 @@ const RecurringTask = (props: any) => {
                     selectedKey={undefined}
                     selectedRecurrenceRule={undefined}
                 />
-                <div className='text-end'>
+                <div>
                     <button
-                    className='btn btn-primary mx-1 px-3'
                         type="button"
-                        onClick={() => HandleRecurrenceUpdate(returnedRecurrenceInfo)}>
+                        onClick={() => HandleRecurrenceUpdate(returnedRecurrenceInfo)}
+                        style={{
+                            padding: "10px 20px",
+                            backgroundColor: "#0078d4",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            fontSize: "16px"
+                        }}
+                    >
                         Save
                     </button>
                 </div>
