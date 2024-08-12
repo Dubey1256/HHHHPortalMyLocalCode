@@ -369,7 +369,7 @@ const ProjectManagementMain = (props: any) => {
                 }
                 item.TeamMembersSearch = '';
 
-                if(item.TeamMembers.length > 0){ 
+                if(item.TeamMembers != undefined && item.TeamMembers.length > 0){ 
                   item.TeamMembersSearch = item.TeamMembers.map((user:any)=>
                     user.Title
                   ).join(", ")
