@@ -5063,7 +5063,7 @@ const EditTaskPopup = (Items: any) => {
                             </span>
                         </div>
                         <div>
-                            <a className="hreflink siteColor">
+                            <a className="hreflink siteColor me-1">
                                 <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
                                 <span
                                     onClick={() => deleteTaskFunction(EditData.ID, "Delete-Task")}
@@ -6445,6 +6445,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                             </div>
                                         </div>
+                                        {AllListIdData.isShowTimeEntry == true ?
                                         <div className="border p-2 mb-3">
                                             <div>Estimated Task Time Details</div>
                                             <div className="col-12">
@@ -6578,7 +6579,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                 ) : null}
                                             </div>
-                                        </div>
+                                        </div> :  null }
                                     </div>
                                     <div className="col-md-4">
                                         {/* This is used for bottleneck  */}
