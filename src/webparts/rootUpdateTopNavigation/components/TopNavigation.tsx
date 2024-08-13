@@ -4,12 +4,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { arraysEqual, Modal, Panel, PanelType } from "office-ui-fabric-react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-//import Tooltip from "../../../globalComponents/Tooltip";
-//import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import Tooltip from "../../../globalComponents/Tooltip";
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import { ColumnDef } from "@tanstack/react-table";
 import * as Moment from "moment";
 import { data } from "jquery";
-//import VersionHistory from "../../../globalComponents/VersionHistroy/VersionHistory";
+import VersionHistory from "../../../globalComponents/VersionHistroy/VersionHistory";
 var ParentData: any = [];
 var childData: any = [];
 var newData: any = "";
@@ -210,7 +210,7 @@ const TopNavigation = (dynamicData: any) => {
     return (
       <>
         <div className="subheading siteColor">Update TopNavigation</div>
-        {/* <Tooltip ComponentId="1810" /> */}
+        <Tooltip ComponentId="1810" />
       </>
     );
   };
@@ -218,7 +218,7 @@ const TopNavigation = (dynamicData: any) => {
     return (
       <>
         <div className="subheading siteColor">Add TopNavigation</div>
-        {/* <Tooltip ComponentId="1810" /> */}
+        <Tooltip ComponentId="1810" />
       </>
     );
   };
@@ -226,7 +226,7 @@ const TopNavigation = (dynamicData: any) => {
     return (
       <>
         <div className="subheading siteColor">Update SortOrder</div>
-        {/* <Tooltip ComponentId="1810" /> */}
+        <Tooltip ComponentId="1810" />
       </>
     );
   };
@@ -234,7 +234,7 @@ const TopNavigation = (dynamicData: any) => {
     return (
       <>
         <div className="subheading siteColor">Select Parent</div>
-        {/* <Tooltip ComponentId="1810" /> */}
+        <Tooltip ComponentId="1810" />
       </>
     );
   };
@@ -589,7 +589,7 @@ const TopNavigation = (dynamicData: any) => {
     return (
       <>
         <div className="subheading siteColor">Select items for delete</div>
-        {/* <Tooltip ComponentId="1810" /> */}
+        <Tooltip ComponentId="1810" />
       </>
     );
   };
@@ -1014,9 +1014,9 @@ const TopNavigation = (dynamicData: any) => {
                   className="alignIcon  svg__iconbox svg__icon--trash"
                   onClick={() => deleteDataFunction(popupData[0], 'single')}
                 ></span>
-                    {/* <span className="text-left" onClick={()=>setVersionHistoryPopup(false)}>
+                    <span className="text-left" onClick={()=>setVersionHistoryPopup(false)}>
                   {popupData[0]?.Id && <VersionHistory taskId={popupData[0]?.Id} listId={ListId} listName = "TopNavigation" siteUrls={dynamicData.dynamicData.siteUrl} RequiredListIds={AllListId} />}
-              </span> */}
+              </span>
               </div>
          
                                 
