@@ -36,15 +36,15 @@ export default function InfoIconsToolTip(props:any) {
             }
         });
         const brTags = div.querySelectorAll('br');
-    if (brTags.length > 1) {
-      for (let i = brTags.length - 1; i > 0; i--) {
-        brTags[i].parentNode.removeChild(brTags[i]);
-      }
-    }
+        if (brTags.length > 1) {
+            for (let i = brTags.length - 1; i > 0; i--) {
+                brTags[i].parentNode.removeChild(brTags[i]);
+            }
+        }
 
         return div.innerHTML;
     }
-    function removeHtmlAndNewline(text:any) {
+    function removeHtmlAndNewline(text: any) {
         if (text) {
             return text.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
         } else {
@@ -65,88 +65,94 @@ export default function InfoIconsToolTip(props:any) {
                         let   hovertitle:any;
                     if (newAction == "hover" ) {
                         hovertitle= props?.row[props?.SingleColumnData]
-                        // if(hoverTitleShow==undefined){
+                            // if(hoverTitleShow==undefined){
                         //    hovertitle="Click to see description" 
-                        // }
-                        setshowHoverTitle(hovertitle)
-                        const obj = {
-                            Title: hovertitle,
+                            // }
+                            setshowHoverTitle(hovertitle)
+                            const obj = {
+                                Title: hovertitle,
                             heading :props?.SingleColumnData=="Short_x0020_Description_x0020_On"?"Short Description":props?.SingleColumnData?.replace("_x0020_", " "),
-                        };
-                        feedback.push(obj);
-                        setfeedbackArray(feedback);
+                            };
+                            feedback.push(obj);
+                            setfeedbackArray(feedback);
+                        }
                     }
                 }
-            }
                 else{
                     let addToFeedbackArray = (value: any, heading: any) => {
                         value=  removeHtmlAndNewline(value)
-                         if (value !== undefined && value != null) {
-                             const obj = {
-                                 Title: value,
-                                 heading,
-                             };
-                             feedback.push(obj);
-                             hoverTitleShow = obj;
-                             setfeedbackArray(feedback);
-                             if (newAction == "hover" && heading === "Short Description") {
+                        if (value !== undefined && value != null) {
+                            const obj = {
+                                Title: value,
+                                heading,
+                            };
+                            feedback.push(obj);
+                            hoverTitleShow = obj;
+                            setfeedbackArray(feedback);
+                            if (newAction == "hover" && heading === "Short Description") {
                                  if(hoverTitleShow?.Title==""){
                                      hoverTitleShow.Title="Click to see description" 
-                                 }
-                                 setshowHoverTitle(hoverTitleShow?.Title)
-                             }
-                         }
-                        
-                     }
+                                }
+                                setshowHoverTitle(hoverTitleShow?.Title)
+                            }
+                        }
+
+                    }
                      if(props?.row?.Short_x0020_Description_x0020_On==undefined){
                          let   hovertitle:any;
                      if (newAction == "hover" ) {
                          if(hoverTitleShow==undefined){
                             hovertitle="Click to see description" 
-                         }
-                         setshowHoverTitle(hovertitle)
-                     }
-                 }
+                            }
+                            setshowHoverTitle(hovertitle)
+                        }
+                    }
                      if(props?.row?.Short_x0020_Description_x0020_On!=undefined){
-                         addToFeedbackArray(props?.row?.Short_x0020_Description_x0020_On, "Short Description");
-                     }
+                        addToFeedbackArray(props?.row?.Short_x0020_Description_x0020_On, "Short Description");
+                    }
                      if(props?.row?.Background!=undefined){
-                         addToFeedbackArray(props?.row?.Background, "Background");
+                        addToFeedbackArray(props?.row?.Background, "Background");
                      } if(props?.row?.Body!=undefined){
-                         addToFeedbackArray(props?.row?.Body, "Description");
+                        addToFeedbackArray(props?.row?.Body, "Description");
                      } if(props?.row?.AdminNotes!=undefined){
-                         addToFeedbackArray(props?.row?.AdminNotes, "AdminNotes");
+                        addToFeedbackArray(props?.row?.AdminNotes, "AdminNotes");
                      } if(props?.row?.TechnicalExplanations!=undefined){
-                         addToFeedbackArray(props?.row?.TechnicalExplanations, "Technical Explanations");
-                     }
+                        addToFeedbackArray(props?.row?.TechnicalExplanations, "Technical Explanations");
+                    }
                      if(props?.row?.Deliverables!=undefined){
-                         addToFeedbackArray(props?.row?.Deliverables, "Deliverables");
-                     }
+                        addToFeedbackArray(props?.row?.Deliverables, "Deliverables");
+                    }
                      if(props?.row?.Idea!=undefined){
-                         addToFeedbackArray(props?.row?.Idea, "Idea");
-                     }
+                        addToFeedbackArray(props?.row?.Idea, "Idea");
+                    }
                      if(props?.row?.ValueAdded!=undefined){
-                         addToFeedbackArray(props?.row?.ValueAdded, "ValueAdded");
-                     }
+                        addToFeedbackArray(props?.row?.ValueAdded, "ValueAdded");
+                    }
                     if (props?.row?.FeedBack !== undefined) {
-                         feedback = JSON.parse(props?.row.FeedBack);
-                         hoverTitleShow = feedback[0].FeedBackDescriptions[0];
-                         hoverTitleShow = {
-                             ...hoverTitleShow,
-                             Title: cleanHTML(hoverTitleShow.Title),
-                         }
-                         setfeedbackArray(feedback[0].FeedBackDescriptions);
-                         settaskInfo(true);
-                         if (newAction == "hover") {
-                             setshowHoverTitle(hoverTitleShow?.Title)
-                         }
-                     }
+                        feedback = JSON.parse(props?.row.FeedBack);
+                        hoverTitleShow = feedback[0].FeedBackDescriptions[0];
+                        hoverTitleShow = {
+                            ...hoverTitleShow,
+                            Title: cleanHTML(hoverTitleShow.Title),
+                        }
+                        setfeedbackArray(feedback[0].FeedBackDescriptions);
+                        settaskInfo(true);
+                        if (newAction == "hover") {
+                            //  setshowHoverTitle(hoverTitleShow?.Title)
+                            let hovertitle: any;
+                            if (hoverTitleShow != undefined) {
+                                hovertitle = "Click to see description"
+                            }
+                            setshowHoverTitle(hovertitle)
+
+                        }
+                    }
                 }
 
-               
+
 
             } catch (error) {
-            console.log(error)
+                console.log(error)
             }
         }
 
@@ -175,11 +181,11 @@ export default function InfoIconsToolTip(props:any) {
     }, [action]);
     return (
         <>
-             {props?.versionHistory != true ? <span ref={setTriggerRef} 
-             onClick={() => handlAction("click")}
-              onMouseEnter={() => handlAction("hover")} 
+            {props?.versionHistory != true ? <span ref={setTriggerRef}
+                onClick={() => handlAction("click")}
+                onMouseEnter={() => handlAction("hover")}
               onMouseLeave={() => handleMouseLeave()} className=" svg__iconbox svg__icon--info dark"></span>:
-            <span className="text-end w-25" ref={setTriggerRef} onClick={() => handlAction("click")} title="Description"><a href="#" className="ps-1">Show More</a></span>}
+                <span className="text-end w-25" ref={setTriggerRef} onClick={() => handlAction("click")} title="Description"><a href="#" className="ps-1">Show More</a></span>}
 
             {action === "click" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container p-0 m-0" })}>
