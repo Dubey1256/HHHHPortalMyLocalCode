@@ -124,7 +124,7 @@ export function Filter({
     return (
 
         <>
-            <input style={{ width: "100%", paddingRight: "10px" }} className="m-1" type="search" value={(columnFilterValue ?? "") as string}
+            <input style={{ width: "100%", paddingRight: "12px" }} className="m-1" type="search" value={(columnFilterValue ?? "") as string}
                 onChange={(e) => column.setFilterValue(e.target.value)} placeholder={`${placeholder?.placeholder}`} />
             {columnFilterValue && <span className='searchClear' onClick={(e: any) => column.setFilterValue("")}></span>}<span className='tooltip-text pop-right fw-light'>{placeholder?.placeholder}</span>
         </>
