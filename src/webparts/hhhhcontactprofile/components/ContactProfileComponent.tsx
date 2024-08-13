@@ -81,7 +81,7 @@ const ContactProfileComponent = (props: any) => {
                     <div className="w-100 ms-4">
                         <div className="alignCenter">
                             <h2 className="d-flex heading m-0 mb-2 ms-0 ">
-                                {Contacts?.FirstName} &nbsp; {Contacts?.Title} <span>{Contacts?.Suffix !== null && Contacts?.Suffix !== undefined && Contacts?.Suffix !== '' ? `(${Contacts?.Suffix})` : ''}</span>  
+                                {Contacts?.FirstName} &nbsp; {Contacts?.Title} <span className="me-1">{Contacts?.Suffix !== null && Contacts?.Suffix !== undefined && Contacts?.Suffix !== '' ? `(${Contacts?.Suffix})` : ''}</span>  
                                 <a href="javascript:void(0)" className="alignCenter justify-content-center" onClick={() => EditItem()}>
                                 <span className="alignIcon hreflink svg__icon--edit svg__iconbox"></span>   </a>
                             </h2>
