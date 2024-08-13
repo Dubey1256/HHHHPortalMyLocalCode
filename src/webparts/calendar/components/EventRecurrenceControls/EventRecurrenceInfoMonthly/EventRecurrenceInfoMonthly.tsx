@@ -52,7 +52,7 @@ export class EventRecurrenceInfoMonthly extends React.Component<IEventRecurrence
       selectedKey: 'daily',
       selectPatern: 'monthly',
       startDate: this.props.startDate ? this.props.startDate : moment().toDate(),
-      endDate: moment(this.props.startDate).add('month', 1).toDate(),
+      endDate:props?.DueDate!=undefined?props?.DueDate: moment(this.props.startDate).add('month', 1).toDate(),
       numberOcurrences: '10',
       disableDayOfMonth: false,
       disableNumberOcurrences: true,
