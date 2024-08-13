@@ -290,8 +290,8 @@ function Tooltip(props: any) {
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Admin Help')}> <span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Admin Help</a>
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Help')}> <span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Help</a>
               {(props.ShowPencilIcon==true || props.ShowPencilIcon==false) && <a className='dropdown-item hreflink' onClick={() => { setAllowLabelEdit(!allowLabelEdit); props?.setShowPencilIcon(!allowLabelEdit)}}> <span className="svg__iconbox  svg__icon--editLabel mr-4"></span>{allowLabelEdit == true ? 'Stop Editing' : 'Edit Labels'}</a>}
-              {pageContent?.WebFullUrl.indexOf("hhhhteams") == -1 && <li>
-              <a className='dropdown-item hreflink' onMouseEnter={() => { handleMouseEnter() }} ><span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Browser Setting</a>
+              {pageContent?.WebFullUrl.indexOf("hhhhteams") == -1 && <>
+                <a className='dropdown-item' onMouseEnter={() => { handleMouseEnter() }} ><FaCommentAlt />Browser Setting</a>
                 <div className="dropdown-submenu dropdown-menu-level-1 showBrowsers" onMouseLeave={() => $(".showBrowsers").css("display", "none")} style={{ display: "none" }}>
                   <ul className="dropdown-menu-item">
                     <li className="dropdown-submenu" onClick={() => setDefaultBrowser('googlechrome://')} ><a className='dropdown-item' ><input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'googlechrome://'} /><FaCommentAlt /> Chrome</a></li>
@@ -299,7 +299,8 @@ function Tooltip(props: any) {
                     <li className="dropdown-submenu" onClick={() => setDefaultBrowser('firefox:')}><a className='dropdown-item' ><input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'firefox:'} /><FaCommentAlt /> Firefox</a></li>
                   </ul>
                 </div>
-              </li>}
+              </>
+              }
           </div>
 
         </Popup>
