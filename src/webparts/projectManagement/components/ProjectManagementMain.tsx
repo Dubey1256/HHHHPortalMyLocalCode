@@ -20,7 +20,7 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
-// import MSTeamsChat from "../../../globalComponents/MSTeamsChat";
+import MSTeamsChat from "../../../globalComponents/MSTeamsChat";
 import SmartInformation from "../../taskprofile/components/SmartInformation";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import { BiCommentDetail } from "react-icons/bi";
@@ -1911,14 +1911,17 @@ const loadAllPXTimeEntries = async () => {
           <>
             {row?.original?.Item_x0020_Type == "Sprint" ?
               <div className="alignCenter">
+                <span className="columnFixedTitle">
                 <a
-                  className="hreflink"
+                  className="hreflink text-content"
+                  title={row?.original?.Title}
                   href={`${props?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Id}`}
                   data-interception="off"
                   target="_blank"
                 >
                   {row?.original?.Title}
                 </a>
+                </span>
                 {row?.original?.descriptionsSearch?.length > 0 ? (
                     <InfoIconsToolTip
                       Discription={row?.original?.bodys}
@@ -1929,14 +1932,17 @@ const loadAllPXTimeEntries = async () => {
                 )}
               </div>
               : <div className="alignCenter">
+                <span className="columnFixedTitle">
                 <a
-                  className="hreflink"
+                  className="hreflink text-content"
+                  title={row?.original?.Title}
                   href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                   data-interception="off"
                   target="_blank"
                 >
                   {row?.original?.Title}
                 </a>
+                </span>
                 {row?.original?.descriptionsSearch?.length > 0 ? (
                     <InfoIconsToolTip
                       Discription={row?.original?.bodys}
@@ -3470,7 +3476,7 @@ const loadAllPXTimeEntries = async () => {
                                         </span>
                                       </dd>
                                     </dl>
-                                    {!AllListId.siteUrl.includes("ilftransactionhub") && <dl>
+                                    {showTimeEntryIcon && <dl>
                                         <dt className="bg-fxdark">Total PX Time</dt>
                                         <dd className="bg-light">
                                           {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime.toFixed(2)} hrs; `}</span>}
@@ -3627,7 +3633,7 @@ const loadAllPXTimeEntries = async () => {
                                         </div>}
                                     </div>
                                 </details>
-                                {!AllListId.siteUrl.includes("ilftransactionhub") && <details open={timeEntries.length > 0}>
+                                {showTimeEntryIcon && <details open={timeEntries.length > 0}>
                                     <summary> Time Entries </summary>
                                     <div className='AccordionContent'  >
                                         {timeEntries?.length > 0 ?
@@ -3659,7 +3665,7 @@ const loadAllPXTimeEntries = async () => {
                               )}
                             </span>
                           </div>
-                          {/* <div>
+                          <div>
                             <div>
                               <span>
                                 {Masterdata?.TeamsGroup && (
@@ -3677,7 +3683,7 @@ const loadAllPXTimeEntries = async () => {
                                 )}
                               </span>
                             </div>
-                          </div> */}
+                          </div>
                           <div>
                             {Masterdata?.Id != undefined && <AncTool item={Masterdata} callBack={AncCallback} AllListId={AllListId} Context={props.Context} listName={"Master Tasks"} />}
                           </div>
