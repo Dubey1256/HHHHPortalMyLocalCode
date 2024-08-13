@@ -2189,8 +2189,8 @@ function CreateTaskComponent(props: any) {
                 {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup context={props?.SelectedProp.Context} SDCTaskDetails={burgerMenuTaskDetails}
                     sendApproverMail={sendApproverMail} AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} pageType={'createTask'} /> : ''}
             </div >
-            <span className="ms-4">
-                <div className="card mb-3">
+            <span className="rightSideWebparts ms-4">
+                <div className="card no-border mb-3">
                     <div className="card-body">
                         <h6 className="f-15 title titleBorder">Suggested Projects</h6>
                         <input
@@ -2203,9 +2203,9 @@ function CreateTaskComponent(props: any) {
                         {SuggestedProjectsOfporfolio?.length > 0 ? <ul className="SpfxCheckRadio list-group list-group-flush">
                             {SuggestedProjectsOfporfolio?.map((project: any) => {
                                 return (
-                                    <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action' >
+                                    <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action no-border ellipsisTextList' >
                                         <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
-                                        <a className="hreflink" title={`${project?.PortfolioStructureID} - ${project?.Title}`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
+                                        <a title={`${project?.PortfolioStructureID} - ${project?.Title}`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
                                             data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title}`}</a>
                                     </li>
                                 )
@@ -2213,7 +2213,7 @@ function CreateTaskComponent(props: any) {
                         </ul> : <h6 className="f-15 title">No Suggested Projects</h6>}
                     </div>
                 </div>
-                <div className="card mb-3">
+                <div className="card no-border mb-3">
                     <div className="card-body">
                         <h6 className="f-15 title titleBorder">Relevant Projects</h6>
                         <input
@@ -2223,12 +2223,12 @@ function CreateTaskComponent(props: any) {
                             placeholder="Search Relevant Projects"
                             className='full-width px-1 py-0 mt-1'
                         />
-                        {relevantProjects?.length > 0 ? <ul className="SpfxCheckRadio  list-group list-group-flush">
+                        {relevantProjects?.length > 0 ? <ul className="SpfxCheckRadio list-group list-group-flush m-0">
                             {relevantProjects?.map((project: any) => {
                                 return (
-                                    <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action'>
+                                    <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action no-border ellipsisTextList'>
                                         <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
-                                        <a className="hreflink" title={`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
+                                        <a title={`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
                                             data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`}</a>
                                     </li>
                                 )
