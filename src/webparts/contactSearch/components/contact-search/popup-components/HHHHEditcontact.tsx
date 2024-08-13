@@ -253,7 +253,8 @@ const HHHHEditComponent = (props: any) => {
 //********************* Joint Hr detail function start************** */
     const HrTagInformation = async (Id: any) => {
         try {
-            const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
+            const web = new Web(myContextData2?.allListId?.jointSiteUrl);
+            // const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
             await web.lists
                 .getById("6DD8038B-40D2-4412-B28D-1C86528C7842")
                 .items.select(
@@ -475,7 +476,8 @@ const HHHHEditComponent = (props: any) => {
                          }
                          else{
                             if( props?.pageName=="Recruiting-Tool"){
-                             window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/EmployeeInfo.aspx?employeeId=${updateData.Id}`,"_blank")
+                             window.open(`${myContextData2?.allListId?.jointSiteUrl}/HR/SitePages/EmployeeInfo.aspx?employeeId=${updateData.Id}`,"_blank")
+                            //  window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/EmployeeInfo.aspx?employeeId=${updateData.Id}`,"_blank")
                                 }
                                  
                                      callBack();
@@ -503,11 +505,13 @@ const HHHHEditComponent = (props: any) => {
                     await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.getById(updateData?.Id).recycle().then(async (data: any) => {
                        console.log("joint data delete")
                        if(updateData?.Site?.toString().search("HR")>=0){
-                      let  web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/HR");
+                      let  web = new Web(`${myContextData2?.allListId?.jointSiteUrl}/HR`); 
+                    //   let  web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/HR");
                         await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.select("Id","SmartContactId").filter(`SmartContactId eq ${updateData?.Id}`).get().then(async (data: any) => { 
                             if(data?.length>0){
                                 data?.map(async(deleteData:any)=>{
-                                  let   web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/HR");
+                                  let   web = new Web(`${myContextData2?.allListId?.jointSiteUrl}/HR`); 
+                                //   let   web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/HR");
                                     await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(deleteData.Id).recycle().then((data:any)=>{
                                      console.log("Hr site data delete")
                                     })
@@ -521,7 +525,8 @@ const HHHHEditComponent = (props: any) => {
                                             await web.lists.getById(myContextData2?.allListId?.MAIN_HR_LISTID).items.getById(deleteData.Id).recycle().then(async(data:any)=>{
                                              console.log("Hr joint data delete")
                                              if(updateData?.Site?.toString().search("GMBH")>=0){
-                                                let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/GMBH"); 
+                                                let web = new Web(`${myContextData2?.allListId?.jointSiteUrl}/GMBH`);  
+                                                // let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/GMBH"); 
                                                 await web.lists.getById(myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.select("Id","SmartContactId").filter(`SmartContactId eq ${updateData?.Id}`).get()
                                                 .then( (data: any) => { 
                                                     console.log(data)
@@ -552,7 +557,8 @@ const HHHHEditComponent = (props: any) => {
                         callBack();
                        }
                        else if(updateData?.Site?.toString().search("GMBH")>=0){
-                        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/GMBH"); 
+                        let web = new Web(`${myContextData2?.allListId?.jointSiteUrl}/GMBH`); 
+                        // let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/GMBH"); 
                         await web.lists.getById(myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.select("Id","SmartContactId").filter(`SmartContactId eq ${updateData?.Id}`).get()
                         .then( (data: any) => { 
                             console.log(data)
@@ -657,7 +663,8 @@ const HHHHEditComponent = (props: any) => {
         return (
             <>
                 <div className='subheading alignCenter'>
-                    <img className='workmember me-1 ' src={updateData?.Item_x0020_Cover != undefined ? updateData?.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} /> Edit Contact - {updateData?.FullName}
+                    <img className='workmember me-1' src={updateData?.Item_x0020_Cover != undefined ? updateData?.Item_x0020_Cover.Url : `${myContextData2?.allListId?.jointSiteUrl}/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg`} />Edit Contact - {updateData?.FullName}
+                    {/* <img className='workmember' src={updateData?.Item_x0020_Cover != undefined ? updateData?.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />Edit Contact - {updateData?.FullName} */}
                 </div>
                 <Tooltip ComponentId='3433' />
             </>
@@ -831,7 +838,7 @@ const HHHHEditComponent = (props: any) => {
                                                 </div>
                                                 <div className="col pad0">
                                                     <label className="full_width form-label"> D.O.E</label>
-                                                    <div><input className='form-control' type='date' value={updateData?.DOE != undefined ? moment(updateData?.DOE).format('YYYY-MM-DD') : null} onChange={(e) => setUpdateData({ ...updateData, DOE: moment(e.target.value).format('YYYY-MM-DD') })} /></div>
+                                                    <div><input  className='form-control' type='date' value={updateData?.DOE != undefined ? moment(updateData?.DOE).format('YYYY-MM-DD') : null} onChange={(e) => setUpdateData({ ...updateData, DOE: moment(e.target.value).format('YYYY-MM-DD') })} /></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -940,7 +947,7 @@ const HHHHEditComponent = (props: any) => {
                                                             <span
                                                                 onClick={() => setUpdateData({ ...updateData, SmartCountries: [] })}
                                                                 className="bg-light ml-auto svg__icon--cross svg__iconbox"></span>
-                                                        </div> : <input type='text' className='form-control'></input>}
+                                                        </div> : <input type='text' className='form-control' ></input>}
 
                                                         <span className="input-group-text" title="Smart Category Popup">
                                                             <span onClick={() => openCountry(updateData?.SmartCountries)} className="svg__iconbox svg__icon--editBox"></span>
@@ -1562,7 +1569,7 @@ const HHHHEditComponent = (props: any) => {
                         </div>
                     </div>
                     {status.orgPopup ? <OrgContactEditPopup callBack={CloseOrgPopup} updateData={updateData} /> : null}
-                    {status.countryPopup ? <CountryContactEditPopup popupName="Country" selectedCountry={currentCountry} callBack={CloseCountryPopup} data={countryData} updateData={updateData} /> : null}
+                    {status.countryPopup ? <CountryContactEditPopup popupName="Country" siteurl = {props?.siteurl} selectedCountry={currentCountry} callBack={CloseCountryPopup} data={countryData} updateData={updateData} /> : null}
                     {status.statePopup ? <CountryContactEditPopup popupName="State" selectedState={selectedState} callBack={CloseCountryPopup} data={stateData} updateData={updateData} /> : null}
                     
                 </div >
@@ -1583,18 +1590,19 @@ const HHHHEditComponent = (props: any) => {
                                 <a className="ForAll hreflink" target="_blank" data-interception="off"                        
                                  href={myContextData2.allSite?.MainSite?`${myContextData2?.allListId?.jointSiteUrl}/SitePages/contact-Profile.aspx?contactId=${updateData.Id}`:`${myContextData2?.allListId?.siteUrl}/SitePages/EmployeeInfo.aspx?employeeId=${updateData.Id}`}>
                                     <img className="icon_siz19" style={{ marginRight: '3px' }}
-                                        src="/_layouts/15/images/ichtm.gif?rev=23" alt="icon" /> Go to Profile page
+                                        src="/_layouts/15/images/ichtm.gif?rev=23" alt="icon" />Go to Profile page
                                 </a>
                             </span>}
 
-                            {(myContextData2.allSite?.MainSite || myContextData2?.allSite?.HrSite) && <span className='mx-1'>|</span>}
+                            {(myContextData2.allSite?.MainSite || myContextData2?.allSite?.HrSite) && <span  className='mx-1'>|</span>}
                             {myContextData2.allSite?.MainSite && <span>
                                 <a className="ForAll hreflink" target="_blank" data-interception="off"
-                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/SmartMetaDataPortfolio.aspx`}>
+                                    href={`${myContextData2?.allListId?.jointSiteUrl}/SP/SitePages/SmartMetaDataPortfolio.aspx`}>
+                                         {/* href={`https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP/SitePages/SmartMetaDataPortfolio.aspx`}> */}
                                     Manage Contact-Categories
                                 </a>
                             </span>}
-                            {myContextData2.allSite?.MainSite && <span className='mx-1'>|</span>}
+                            {myContextData2.allSite?.MainSite && <span  className='mx-1'>|</span>}
 
                             <a href={`${myContextData2.allSite?.MainSite ? myContextData2?.allListId?.jointSiteUrl : myContextData2?.allListId?.siteUrl}/Lists/Contacts/EditForm.aspx?ID=${updateData?.Id}`} data-interception="off"
                                 target="_blank">Open out-of-the-box form</a>
