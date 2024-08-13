@@ -1622,7 +1622,7 @@ function ReadyMadeTable(SelectedProp: any) {
             temp.ClientCategorySearch = '';
             temp.Created = null;
             temp.Author = "";
-            temp.subRows = findTasks
+            temp.subRows = temp.subRows = SelectedProp?.usedFor != 'editdocument' ?  findTasks : AlltaskfilterData?.filter((item: any) => item?.ParentTask?.Id == undefined);
             findActivity.push(temp)
           
             setData(findActivity);
