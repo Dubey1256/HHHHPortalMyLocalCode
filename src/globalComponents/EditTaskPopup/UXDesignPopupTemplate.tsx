@@ -372,7 +372,7 @@ const UXDesignPopupTemplate = (props: any) => {
                 className="d-flex full-width pb-1"
 
             >
-                <div className="subheading siteColor">Add More Image</div>
+                {funcType != 'replace' ? <div className="subheading siteColor">Add More Image</div> : <div className="subheading siteColor"> Replace Image </div>}
                 <Tooltip ComponentId="12134" />
             </div>
         );

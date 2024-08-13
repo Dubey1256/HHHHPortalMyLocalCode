@@ -43,7 +43,7 @@ export default function UXFeedbackComponent(textItems: any) {
     const TaskDetails: any = textItems.TaskListDetails;
     const ItemDetails: any = TaskDetails?.TaskDetails;
     const [State, setState] = useState<any>([]);
-
+    const [isdisabled, setIsdisabled] = React.useState(true);
     const [Texts, setTexts] = useState<any>(false);
     const [btnStatus, setBtnStatus] = useState<any>(false);
     const [postBtnStatus, setPostBtnStatus] = useState<any>(false);
@@ -441,8 +441,13 @@ export default function UXFeedbackComponent(textItems: any) {
 
         TaskImages.push(DataObject);
         ReplaceImage = DataObject
-        if (dt.length > 0) {
+        if (dt.length > 0 && funcType !== 'replace') {
             onUploadImageFunction(TaskImages, imageIndex, true);
+        }
+        else {
+            setTimeout(() => {
+                setIsdisabled(false)
+            }, 0)
         }
     }
 
@@ -569,14 +574,16 @@ export default function UXFeedbackComponent(textItems: any) {
                             await item.attachmentFiles.add(imageName, data);
                             console.log("Attachment added");
                             console.log(DataJson)
-                            console.log(TaskImages)
+                            console.log(TaskImages)                            
                             if (AddMoreImage == false) {
                                 UpdatedFeedBackParentArray = State;
                                 UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo = DataJson
                                 setState([...UpdatedFeedBackParentArray]);
-                                callBack(UpdatedFeedBackParentArray);
+                                callBack(UpdatedFeedBackParentArray);                               
                             }
-
+                            setTimeout(() => {
+                                setIsdisabled(false)
+                            }, 0)
                         }
                         catch (error) {
                             reject(error);
@@ -587,11 +594,14 @@ export default function UXFeedbackComponent(textItems: any) {
                         try {
                             let web = new Web(textItems?.EditData?.siteUrl);
                             let item = web.lists.getByTitle(listName).items.getById(Id);
-                            await item.attachmentFiles.add(imageName, data);
+                            await item.attachmentFiles.add(imageName, data);                           
                             UpdatedFeedBackParentArray = State;
                             UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo = DataJson
                             setState(UpdatedFeedBackParentArray);
                             callBack(UpdatedFeedBackParentArray);
+                            setTimeout(() => {
+                                setIsdisabled(false)
+                            }, 0)
 
                             resolve();
                         } catch (error) {
@@ -606,6 +616,9 @@ export default function UXFeedbackComponent(textItems: any) {
     const AddMoreImages = (index: any, func: any) => {
         funcType = func
         setImageIndex(index)
+        setTimeout(() => {
+            setIsdisabled(true)
+        }, 0)
         setopenAddMoreImagePopup(true)
     }
 
@@ -624,11 +637,8 @@ export default function UXFeedbackComponent(textItems: any) {
     }
     const onRenderCustomAddMoreImageHeader = () => {
         return (
-            <div
-                className="d-flex full-width pb-1"
-
-            >
-                <div className="subheading siteColor">Add More Image</div>
+            <div className="d-flex full-width pb-1">
+                {funcType != 'replace' ? <div className="subheading siteColor">Add More Image</div> : <div className="subheading siteColor"> Replace Image </div>}
                 <Tooltip ComponentId="12134" />
             </div>
         );
@@ -1031,10 +1041,12 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                                 {" "}
                                                                                 |
                                                                                 <span className="siteColor">
-                                                                                    Replace
+                                                                                    <TbReplace />{" "}
+                                                                                    <span className="tooltip-text pop-right">
+                                                                                        Replace Image
+                                                                                    </span>
                                                                                 </span>
                                                                             </span>
-
                                                                         </div>
                                                                     </div>
                                                                     <div className="expandicon">
@@ -1313,6 +1325,7 @@ export default function UXFeedbackComponent(textItems: any) {
                             type="button"
                             className="btn btn-primary px-3 mx-1"
                             onClick={() => UpdateMoreImage()}
+                            disabled={isdisabled}
                         >
                             Save
                         </button>

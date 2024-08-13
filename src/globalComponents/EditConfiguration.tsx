@@ -3,16 +3,30 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
 import Tooltip from "./Tooltip";
 import { deepCopy, myContextValue } from "./globalCommon";
+import * as globalCommon from "./globalCommon";
 import PageLoader from '../globalComponents/pageLoader';
 import _ from "lodash";
 import AddEditWebpartTemplate from "./AddEditWebpartTemplate";
 import AddDashboardTemplate from "./AddDashboardTemplate";
 import { GlobalConstants } from "./LocalCommon";
-
+import { Label, makeStyles, mergeClasses, tokens, Tooltip as InfoToolTip, useId, } from "@fluentui/react-components";
+import { Info16Regular, Add16Regular } from "@fluentui/react-icons";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "react-datepicker/dist/react-datepicker-cssmodules.css";
+import * as Moment from "moment";
 let DashTemp: any = [];
 let ExistingWepartsBackup: any = [];
 let TempBackup: any = [];
+let ColumnDetails: any = [];
+let UserName = ""
+const useStyles = makeStyles({
+    root: { display: "flex", columnGap: tokens.spacingVerticalS, },
+    visible: { color: tokens.colorNeutralForeground2BrandSelected, },
+});
+let DraggedItem: any = {};
 const EditConfiguration = (props: any) => {
+    UserName = ' - {' + props?.props?.Context?._pageContext?._legacyPageContext.userDisplayName + '}';
     props.props.siteUrl = props?.props?.Context?._pageContext?._web?.absoluteUrl
     const [progressBar, setprogressBar] = useState(true)
     const params = new URLSearchParams(window.location.search);
@@ -33,14 +47,23 @@ const EditConfiguration = (props: any) => {
     const [dragOverItem, setDragOverItem] = useState<any>();
     const [IsManageConfigPopup, setIsManageConfigPopup] = React.useState(false);
     const [SelectedItem, setSelectedItem]: any = React.useState({});
-    const [IsWebPartPopup, setIsWebPartPopup] = React.useState(false);
-    const [IsTemplatePopup, setIsTemplatePopup] = React.useState(false);
     const [type, setType] = useState<any>({});
     const [IsOpenPopup, setIsOpenPopup] = React.useState(false);
     const [IsDashboardPage, setIsDashboardPage] = React.useState(false);
     const [IsDashboardTemplate, setIsDashboardTemplate] = React.useState(false);
     const [DashboardTemplateItem, setDashboardTemplateItem]: any = React.useState({});
-
+    const styles = useStyles();
+    const contentId = useId("content");
+    const [visible, setVisible] = useState(false);
+    const [visibleRank, setVisibleRank] = useState(false);
+    const [ItemRankval, setItemRankval] = useState<any>(null);
+    const [serachValue, setserachValue] = useState<any>("");
+    const [StatusArray, setStatusArray] = useState<any>([]);;
+    const [ProjectStatusPopup, setProjectStatusPopup] = React.useState(false);
+    const [ProjectDueDate, setProjectDueDate] = React.useState(false);
+    const [WebpartTitle, setWebpartTitle] = React.useState<any>('');
+    const [startDueDate, setStartDueDate] = useState<any>(null);
+    const [endDueDate, setEndDueDate] = useState<any>(null);
     const NewConfigarray = (newArray: any, arrayItem: any, Count: any) => {
 
         const array = newArray.filter((a: any) => a.WebpartPosition.Column === Count)
@@ -147,10 +170,25 @@ const EditConfiguration = (props: any) => {
             if (draggedItemContent?.Key === "DashboardTemplate") {
 
                 setDashboardTemplateItem(draggedItemContent);
-                setIsDashboardTemplate(true);
-                let data = e.dataTransfer.getData("Text");
-                e.target.appendChild(document.getElementById(data));
-                e.preventDefault();
+                if (e?.DataSource != "Project") {
+                    setIsDashboardTemplate(true);
+                }
+                else {
+                    if (e?.IsDueDateFilter) {
+                        DraggedItem = { ...e };
+                        setProjectDueDate(true)
+                    }
+                    else {
+                        DraggedItem = { ...e };
+                        setProjectStatusPopup(true)
+                    }
+                }
+
+                let data = e?.dataTransfer?.getData("Text");
+                if (data != undefined) {
+                    e.target.appendChild(document?.getElementById(data));
+                    e.preventDefault();
+                }
             }
             if (draggedItemContent?.Key != "DashboardTemplate" && draggedItemContent != undefined) {
                 draggedItemContent.WebpartTitle = draggedItemContent.WebpartTitle === undefined ? draggedItemContent.Title : draggedItemContent.WebpartTitle;
@@ -189,9 +227,11 @@ const EditConfiguration = (props: any) => {
                 setNewItem(updatedItems);
                 //  rerender();
             }
-            let data = e.dataTransfer.getData("Text");
-            e.target.appendChild(document.getElementById(data));
-            e.preventDefault();
+            let data = e?.dataTransfer?.getData("Text");
+            if (data != undefined) {
+                e.target.appendChild(document.getElementById(data));
+                e.preventDefault();
+            }
         }
 
     }
@@ -295,6 +335,7 @@ const EditConfiguration = (props: any) => {
                     let ConfigItem: any = JSON.parse(webpart?.Configurations);
                     ConfigItem.UpdatedId = webpart.Id;
                     ConfigItem.Key = webpart?.Key;
+                    ConfigItem.IsEditWebpart = ConfigItem.IsEditWebpart === false ? ConfigItem.IsEditWebpart : true;
                     backupaaray.push(ConfigItem);
                     //  let items = TempBackup?.filter((obj: any) => obj.WebpartId === ConfigItem.WebpartId);
                     // if (items?.length === 0) {
@@ -379,14 +420,21 @@ const EditConfiguration = (props: any) => {
     const SmartMetaDataListInformations = async () => {
         let AllSmartDataListData: any = [];
         let tempArray: any = [];
+        let statusArray: any = [];
         try {
             let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
             AllSmartDataListData = await web.lists.getById(props?.props?.SmartMetadataListID)
-                .items.select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail").expand("Author,Editor,IsSendAttentionEmail").getAll();
+                .items.select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail").expand("Author,Editor,IsSendAttentionEmail").orderBy('SortOrder', true).orderBy("Title", true).getAll();
             AllSmartDataListData?.map((SmartItemData: any, index: any) => {
                 if (SmartItemData?.TaxType === "DataSource")
                     tempArray.push(SmartItemData);
+                if (SmartItemData?.TaxType === 'Percent Complete' && SmartItemData?.Title != 'In Preparation (0-9)' && SmartItemData?.Title != 'Ongoing (10-89)' && SmartItemData?.Title != 'Completed (90-100)') {
+                    statusArray.push(SmartItemData);
+                }
             })
+            statusArray = statusArray.sort((a: any, b: any) => { return a.SortOrder - b.SortOrder; });
+            console.log(statusArray)
+            setStatusArray(statusArray)
             setDataSource(tempArray);
 
             // ########## this is for All Site Data related validations ################
@@ -397,6 +445,7 @@ const EditConfiguration = (props: any) => {
     };
 
     useEffect(() => {
+        loadColumnDetails();
         SmartMetaDataListInformations()
         LoadSmartFav();
 
@@ -428,28 +477,20 @@ const EditConfiguration = (props: any) => {
                 })
             })
         }
+        else if (itesm === true) {
+            let iten = props.EditItem;
+        }
         setIsDashboardPage(false);
         setIsManageConfigPopup(false);
         setSelectedItem('');
     }
 
-    const AddWebpartPopup = () => {
-        let IsIsWebPartPopupNew = IsWebPartPopup === true ? false : true;
-        setIsWebPartPopup(IsIsWebPartPopupNew);
-        setIsTemplatePopup(false);
-    }
-    const AddTemplatePopup = () => {
 
-        let IsTemplatePopupNew = IsTemplatePopup === true ? false : true;
-        setIsTemplatePopup(IsTemplatePopupNew);
-        setIsWebPartPopup(false);
-    }
     const CloseWebpartPopup = (array: any, Properties: any) => {
         if (array?.length > 0) {
             const arraynew: any = NewItem[0].ArrayValue = NewItem[0].ArrayValue.concat(array);
             setNewItem(arraynew);
         }
-        setIsWebPartPopup(false);
     }
     const AddColumn = (title: any) => {
         const copyListItems = [...NewItem];
@@ -510,6 +551,10 @@ const EditConfiguration = (props: any) => {
             item?.ArrayValue?.forEach((obj: any) => {
                 itemsArray.push(obj);
             })
+        })
+        findItems?.forEach((obj: any, index: any) => {
+            obj.ColumnTitle = 'Column' + (index + 1);
+            obj.ClassValues = "col-sm-" + 12 / findItems.length;
         })
         setItems(itemsArray);
         setNewItem(findItems);
@@ -635,6 +680,131 @@ const EditConfiguration = (props: any) => {
     function allowDrop(ev: any) {
         ev.preventDefault();
     }
+    const getColumnDetails = (name: string) => {
+        let rank: any = ''
+        if (!visibleRank) {
+            const res = globalCommon.GetColumnDetails(name, ColumnDetails);
+            if (res && res.Title) {
+                setVisibleRank(true);
+                rank =
+                    <label className="alignCenter form-label full-width gap-1">
+                        {res?.Title}
+                        <div className={styles.root}>
+                            <InfoToolTip
+                                content={{
+                                    children: <span dangerouslySetInnerHTML={{ __html: res?.Description }}></span>,
+                                    id: contentId,
+                                }}
+                                withArrow
+                                relationship="label"
+                                onVisibleChange={(e: any, data: any) => setVisible(data?.visible)} >
+                                <Info16Regular tabIndex={0} className={mergeClasses(visible && styles.visible)} />
+                            </InfoToolTip>
+                        </div>
+                    </label>
+                setItemRankval(rank)
+            }
+        }
+        return rank;
+    };
+    const loadColumnDetails = async () => {
+        let getvalue = await globalCommon.getsiteConfig();
+        ColumnDetails = getvalue;
+    };
+    const handlewebpartTitle = (value: string) => {
+        setWebpartTitle(value)
+    };
+    const SaveWebpart = () => {
+        if (DraggedItem != undefined) {
+            if (ProjectDueDate) {
+                DraggedItem.StartDate = '';
+                DraggedItem.EndDate = ''
+                if (startDueDate) {
+                    startDueDate.setHours(0, 0, 0, 0);
+                    DraggedItem.StartDate = Moment(startDueDate).format('DD/MM/YYYY');
+                }
+                if (endDueDate) {
+                    endDueDate.setHours(0, 0, 0, 0);
+                    DraggedItem.EndDate = Moment(endDueDate).format('DD/MM/YYYY');
+                }
+            }
+            let DataItem = [...NewItem]
+            DataItem[dragOverItem.CurrentIndex].ArrayValue = DataItem[dragOverItem.CurrentIndex].ArrayValue.concat([DraggedItem]);
+            setNewItem(DataItem);
+        }
+        setProjectDueDate(false)
+        setProjectStatusPopup(false)
+        setWebpartTitle('');
+        DraggedItem = {};
+    }
+    const handleSelectedStatus = (event: any, item: any) => {
+        if (DraggedItem) {
+            DraggedItem.WebpartTitle = WebpartTitle;
+            if (DraggedItem?.Status == undefined)
+                DraggedItem.Status = [];
+            if (event?.target?.checked) {
+                DraggedItem?.Status?.push({ 'Id': item?.Id, "PercentComplete": item?.Description1 })
+            }
+            else if (!event?.target?.checked) {
+                DraggedItem.Status = DraggedItem?.Status?.filter((Status: any) => Status?.Id != item?.Id);
+            }
+        }
+    }
+    const ExampleCustomInputStrat = React.forwardRef(
+        ({ value, onClick }: any, ref: any) => (
+            <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
+                <input type="text" id="datepicker" data-input-type="StartDate" className="form-control date-picker ps-2" placeholder="DD/MM/YYYY" value={value} />
+                <span style={{ position: "absolute", top: "50%", right: "7px", transform: "translateY(-50%)", cursor: "pointer", }}  >
+                    <span className="svg__iconbox svg__icon--calendar"></span>
+                </span>
+            </div>
+        )
+    )
+    const ExampleCustomInputEnd = React.forwardRef(
+        ({ value, onClick }: any, ref: any) => (
+            <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
+                <input type="text" id="datepicker" data-input-type="EndDate" className="form-control date-picker ps-2" placeholder="DD/MM/YYYY" value={value} />
+                <span style={{ position: "absolute", top: "50%", right: "7px", transform: "translateY(-50%)", cursor: "pointer", }}   >
+                    <span className="svg__iconbox svg__icon--calendar"></span>
+                </span>
+            </div>
+        )
+    )
+    const onRenderCustomHeaderStatusPopup = () => {
+        return (
+            <div className="d-flex full-width pb-1">
+                <div className="subheading siteColor">
+                    Select Status
+                </div>
+                {/* <Tooltip ComponentId={2330} /> */}
+            </div>
+        );
+    };
+    const onRenderCustomFooterStatusPopup = () => {
+        return (
+            <footer className='text-end px-4 py-2'>
+                <button className="btn btn-primary" disabled={WebpartTitle == undefined || WebpartTitle == ''} onClick={SaveWebpart}>Save</button>
+            </footer>
+        );
+    };
+    const onRenderCustomHeaderDuedatePopup = () => {
+        return (
+            <div className="d-flex full-width pb-1">
+                <div className="subheading siteColor">
+                    Select Due Date
+                </div>
+                {/* <Tooltip ComponentId={2330} /> */}
+            </div>
+        );
+    };
+    const onRenderCustomFooterDuedatePopup = () => {
+        return (
+            <footer className='text-end px-4 py-2'>
+                <button className="btn btn-primary" disabled={WebpartTitle == undefined || WebpartTitle == ''} onClick={SaveWebpart}>Save</button>
+            </footer>
+        );
+    };
+
     return (
         <>
             <Panel onRenderHeader={CustomHeaderConfiguration}
@@ -653,7 +823,7 @@ const EditConfiguration = (props: any) => {
                         <label className='form-label full-width fw-semibold'>Drag and drop tiles between columns in any vertical order.</label></div>
                     <div className="Metadatapannel border p-2 mb-2">
                         <div className="row">
-                            <div className="col-md-8  col-lg-9 pe-0" draggable>
+                            <div className="col-sm-8 col-md-8 col-lg-9 pe-0" draggable>
                                 <div className="row">
                                     {NewItem != undefined && NewItem?.length > 0 && NewItem.map((item: any, index: any) => {
                                         return (
@@ -663,32 +833,34 @@ const EditConfiguration = (props: any) => {
                                                     <div className="fw-semibold text-center mb-2 alignCenter justify-content-center" style={{ borderBottom: '1px solid var(--SiteBlue)' }}>{item.ColumnTitle}
                                                         {NewItem?.length > 1 && <span title="Delete" className="dark ml-12  svg__icon--cross svg__iconbox" onClick={(e) => deleteColumn(item, index)} ></span>}</div>
                                                     {item != undefined && item?.ArrayValue?.length > 0 ? item?.ArrayValue?.map((subitem: any, indexNew: any) => {
-                                                        return (
-                                                            <>
-                                                                <div className="alignCenter bg-siteColor justify-content-center mb-1 w-100 outer-box" style={{ height: '30px' }}
-                                                                    onDragStart={(e) => dragStart(e, indexNew, index)}
-                                                                    onDragEnter={(e) => dragEnd(e, indexNew, index)}
-                                                                    onDragEnd={(e) => drop(e, indexNew, index, "sameArray")}
-                                                                    key={index}
-                                                                    onDragOver={(e) => allowDrop(e)}
-                                                                    draggable
-                                                                >{subitem.WebpartTitle}
+                                                        if (subitem?.IsDeleted != true) {
+                                                            return (
+                                                                <>
+                                                                    <div className="alignCenter bg-siteColor justify-content-center mb-1 w-100 outer-box" style={{ height: '30px' }}
+                                                                        onDragStart={(e) => dragStart(e, indexNew, index)}
+                                                                        onDragEnter={(e) => dragEnd(e, indexNew, index)}
+                                                                        onDragEnd={(e) => drop(e, indexNew, index, "sameArray")}
+                                                                        key={index}
+                                                                        onDragOver={(e) => allowDrop(e)}
+                                                                        draggable
+                                                                    >{subitem.WebpartTitle}
 
-                                                                    {" "}
-                                                                    <span title="Edit" className="light ml-12 svg__icon--editBox svg__iconbox" onClick={(e) => OpenConfigPopup(subitem)} ></span>
-                                                                    <span title="Delete" className="light ml-12  svg__icon--cross svg__iconbox" onClick={(e) => deleteExistingTemplate(subitem, index)} ></span>
-                                                                    <span title="Copy webpart" className="light ml-12  alignIcon svg__iconbox svg__icon--copy" onClick={(e) => CopyExistingWebpartTemplate(subitem)} ></span>
-                                                                </div>
-                                                                {(item?.ArrayValue?.length - 1) === indexNew && <div id="textDrag" className="alignCenter justify-content-center mb-2 w-100 outer-box" style={{ height: '100px', width: "100px", cursor: "grab" }}
-                                                                    onDragStart={(e) => dragStart(e, indexNew, index)}
-                                                                    onDragEnter={(e) => dragEnd(e, indexNew, index)}
-                                                                    onDragEnd={(e) => drop(e, indexNew, index, "sameArray")}
-                                                                    onDragOver={(e) => allowDrop(e)}
-                                                                    key={index}
-                                                                    draggable
-                                                                > </div>}
-                                                            </>
-                                                        )
+                                                                        {" "}
+                                                                        {subitem?.IsEditWebpart != false && <span title="Edit" className="light ml-12 svg__icon--editBox svg__iconbox" onClick={(e) => OpenConfigPopup(subitem)} ></span>}
+                                                                        <span title="Delete" className="light ml-12  svg__icon--cross svg__iconbox" onClick={(e) => deleteExistingTemplate(subitem, index)} ></span>
+                                                                        <span title="Copy webpart" className="light ml-12  alignIcon svg__iconbox svg__icon--copy" onClick={(e) => CopyExistingWebpartTemplate(subitem)} ></span>
+                                                                    </div>
+                                                                    {(item?.ArrayValue?.length - 1) === indexNew && <div id="textDrag" className="alignCenter justify-content-center mb-2 w-100 outer-box" style={{ height: '100px', width: "100px", cursor: "grab" }}
+                                                                        onDragStart={(e) => dragStart(e, indexNew, index)}
+                                                                        onDragEnter={(e) => dragEnd(e, indexNew, index)}
+                                                                        onDragEnd={(e) => drop(e, indexNew, index, "sameArray")}
+                                                                        onDragOver={(e) => allowDrop(e)}
+                                                                        key={index}
+                                                                        draggable
+                                                                    > </div>}
+                                                                </>
+                                                            )
+                                                        }
                                                     }) : <div>
                                                         <div className="alignCenter justify-content-center mb-2 w-100 " style={{ height: '200px', width: "150px" }}
                                                             onDragStart={(e) => dragStart(e, 0, index)}
@@ -707,61 +879,40 @@ const EditConfiguration = (props: any) => {
                                             </>
                                         )
                                     })}</div ></div>
-                            <div className="col-md-4  col-lg-3 text-end">
+                            <div className="col-sm-4 col-md-4 col-lg-3 text-end">
                                 <div className='form-label full-width mb-1 alignCenter' onClick={(e) => AddColumn('')}><a className="alignCenter hreflink ml-auto siteColor"><span className="svg__iconbox svg__icon--Plus mini"></span> Add Column</a></div>
-                                <div className='form-label full-width alignCenter' onClick={(e) => AddWebpartPopup()}><a className="alignCenter hreflink ml-auto siteColor"> <span className="svg__iconbox svg__icon--Plus mini"></span> Add WebPart</a></div>
-                                <div className='form-label full-width alignCenter' onClick={(e) => AddTemplatePopup()}><a className="alignCenter hreflink ml-auto siteColor"> <span className="svg__iconbox svg__icon--Plus mini"></span> Add Template</a></div>
-                                {IsWebPartPopup && <div className='my-2 card addconnect boxshadow' >
-                                    <div className="alignCenter border-bottom f-15 fw-semibold m-2 siteColor"><div>Basic Webpart Gallery <span className="hover-text">
-                                        <span className="svg__iconbox mt-1 svg__icon--info dark"></span>
-                                        <span className="tooltip-text pop-left">
-                                        Basic Webparts provide basic filters and can be customized in each Dashboard.
-                                        </span>
-                                    </span></div><div className="ml-auto" onClick={CreateNewWebPart}>Create new Webpart</div></div>
-                                    <div className="card-body">
-                                        {IsWebPartPopup && ExistingWeparts?.length > 0 && ExistingWeparts?.map((item: any, index: any) => {
-                                            if (item.Key === "WebpartTemplate") {
-                                                return (
-                                                    <>
-                                                        <div className="alignCenter bg-siteColor justify-content-center mb-1 w-100" style={{ height: '30px' }} onDragStart={(e) => dragStart(e, index, index)}
-                                                            onDragEnter={(e) => dragEnd(e, index, index)}
-                                                            onDragEnd={(e) => drop(item, index, index, "DifferentArray")}
-                                                            key={index}
-                                                            draggable
-                                                        >{item.WebpartTitle === undefined ? item.Title : item.WebpartTitle}
-                                                            <span title="Edit" className="light ml-12 svg__icon--editBox svg__iconbox" onClick={(e) => OpenConfigPopup(item)} ></span>
-                                                        </div>
-                                                    </>
-                                                )
-                                            }
-                                        })}</div>
-                                </div>}
-                                {IsTemplatePopup && <div className='my-2 card addconnect boxshadow' >
-                                    <div className="alignCenter border-bottom f-15 fw-semibold m-2 siteColor"><div>Existing Templates</div></div>
-                                    <div className="card-body">
-                                        {IsTemplatePopup && ExistingWeparts?.length > 0 && ExistingWeparts?.map((item: any, index: any) => {
-                                            if (item.Key === "DashboardTemplate") {
-                                                return (
-                                                    <>
-                                                        <div className="alignCenter bg-siteColor justify-content-center mb-1 w-100" style={{ height: '30px' }} onDragStart={(e) => dragStart(e, index, index)}
-                                                            onDragEnter={(e) => dragEnd(e, index, index)}
-                                                            onDragEnd={(e) => drop(item, index, index, "DifferentArray")}
-                                                            key={index}
-                                                            draggable
-                                                        >{item.WebpartTitle === undefined ? item.Title : item.WebpartTitle}
-                                                        </div>
-                                                    </>
-                                                )
-                                            }
-                                        })}</div>
-                                </div>}
 
+                                <div className='addconnectbox boxshadow card scrollbar mb-2' >
+                                    <div className="alignCenter border-bottom fw-semibold m-2 siteColor">
+                                        {visibleRank ? ItemRankval : (getColumnDetails('BasicWebpart'))}
+                                        <div className="flex-shrink-0 ml-auto" onClick={CreateNewWebPart}>Create new Webpart</div></div>
+                                    <div className="card-body">
+                                        <div className="mb-2 position-relative statusbox">
+                                            <input type="text" placeholder="Basic Webpart Gallery" value={serachValue} className="form-control" onChange={(e) => setserachValue(e.target.value)}></input>
+                                            {serachValue != "" && serachValue?.length > 0 && <span className="input-group-text" ><span onClick={(e) => setserachValue("")} className="svg__iconbox svg__icon--cross"></span></span>}
+                                        </div>
+                                        {ExistingWeparts?.length > 0 && ExistingWeparts?.map((item: any, index: any) => {
+                                            if (item?.WebpartTitle?.includes(serachValue)) {
+                                                return (
+                                                    <>
+                                                        <div className="alignCenter bg-siteColor newTiles mb-1 py-2 w-100" onDragStart={(e) => dragStart(e, index, index)}
+                                                            onDragEnter={(e) => dragEnd(e, index, index)}
+                                                            onDragEnd={(e) => drop(item, index, index, "DifferentArray")}
+                                                            key={index}
+                                                            draggable
+                                                        ><div className="text-start"><span className="me-2">{item?.WebpartId}</span>
+                                                                {item.WebpartTitle === undefined ? item.Title : item.WebpartTitle} <span>{item?.ShowTitleInHeader === true && <>{UserName}</>}</span>
+                                                            </div>
+                                                            {item?.IsEditWebpart === true && <span title="Edit" className="light ml-12 ml-auto svg__icon--editBox svg__iconbox" onClick={(e) => OpenConfigPopup(item)} ></span>}
+                                                        </div>
+                                                    </>
+                                                )
+                                            }
+                                        })}</div>
+                                </div>
                             </div>
-
                         </div>
                     </div>
-
-
                 </div>
 
                 <div className='modal-footer mt-2 pe-0'>
@@ -778,9 +929,66 @@ const EditConfiguration = (props: any) => {
             </span>
             <span>
                 {IsDashboardTemplate && <AddDashboardTemplate props={props?.props} SingleWebpart={true} Item={DashboardTemplateItem} IsDashboardTemplate={IsDashboardTemplate} CloseDashboardTemplate={CloseDashboardTemplate} />}
-
             </span>
-
+            <span>
+                {/* ***************** this is status panel *********** */}
+                <Panel onRenderHeader={onRenderCustomHeaderStatusPopup} onRenderFooter={onRenderCustomFooterStatusPopup} isOpen={ProjectStatusPopup} onDismiss={() => { setProjectStatusPopup(false); setWebpartTitle('') }} isBlocking={ProjectStatusPopup} isFooterAtBottom={true} >
+                    <div className="mb-2">
+                        <label className='form-label full-width'>Webpart Title <span className="ml-1 mr-1 text-danger">*</span></label>
+                        <div className="col"><input className='form-control' type='text' placeholder="Webpart Title" value={WebpartTitle} onChange={(e) => handlewebpartTitle(e.target.value)} /></div>
+                    </div>
+                    <ul className="projectStatus_List">
+                        {StatusArray?.map((item: any, index: any) => {
+                            return (
+                                <li key={index}>
+                                    <div className="form-check">
+                                        <input className="form-check-input" onClick={(e) => handleSelectedStatus(e, item)} type="checkbox" />
+                                        <label className="form-check-label ms-2">{item.Title}</label>
+                                    </div>
+                                </li>
+                            )
+                        })}
+                    </ul>
+                </Panel>
+                <Panel onRenderHeader={onRenderCustomHeaderDuedatePopup}
+                    onRenderFooter={onRenderCustomFooterDuedatePopup}
+                    type={PanelType.custom}
+                    customWidth="490px"
+                    isOpen={ProjectDueDate}
+                    onDismiss={() => { setProjectDueDate(false); setWebpartTitle('') }}
+                    isBlocking={ProjectDueDate}
+                    isFooterAtBottom={true} >
+                    <div className="row mb-2">
+                        <label className='form-label full-width'>Webpart Title <span className="ml-1 mr-1 text-danger">*</span></label>
+                        <div className="col"><input className='form-control' type='text' placeholder="Webpart Title" value={WebpartTitle} onChange={(e) => handlewebpartTitle(e.target.value)} /></div>
+                    </div>
+                    <div className="row date-range-picker">
+                        <div className="col-12 pe-0">
+                            <label className="full-width">Due Date Filter</label>
+                        </div>
+                        <div className="col-6 pe-0">
+                            <div className="input-group">
+                                <label className="full-width">Start Date</label>
+                                <span>
+                                    <DatePicker selected={startDueDate} onChange={(date: any) => setStartDueDate(date)} selectsStart startDate={startDueDate} endDate={endDueDate}
+                                        dateFormat="dd/MM/yyyy" className="form-control date-picker p-1" popperPlacement="bottom-start" customInput={<ExampleCustomInputStrat />}
+                                    />
+                                </span>
+                            </div>
+                        </div>
+                        <div className="col-6 pe-0">
+                            <div className="input-group">
+                                <label className="full-width">End Date</label>
+                                <span>
+                                    <DatePicker selected={endDueDate} onChange={(date: any) => setEndDueDate(date)} minDate={startDueDate ?? undefined} selectsEnd startDate={startDueDate} endDate={endDueDate}
+                                        dateFormat="dd/MM/yyyy" className="form-control date-picker p-1" popperPlacement="bottom-start" customInput={<ExampleCustomInputEnd />}
+                                    />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </Panel>
+            </span>
         </>
 
     );
