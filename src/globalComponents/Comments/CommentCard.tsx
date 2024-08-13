@@ -350,7 +350,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         ID: this.state.Result["Comments"] != undefined ? this.state.Result["Comments"].length + 1 : 1,
         Title: txtComment,
         editable: false,
-        CommentFor: this.props.commentFor == "On-Hold" ? "On-Hold" : ''
+        CommentFor: this.props.commentFor ? this.props.commentFor : ''
       };
       if (this.state?.ChildLevel == true) {
         this.state?.Result?.Comments?.forEach((element: any) => {
@@ -814,7 +814,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         }
       }
     }
-    if (this.props.commentFor == "On-Hold") {
+    if (this.props.commentFor?.length > 0) {
       this.state.onHoldCallBack("Save");
     }
   }
