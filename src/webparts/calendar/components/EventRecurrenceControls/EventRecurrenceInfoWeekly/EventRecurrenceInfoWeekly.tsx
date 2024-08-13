@@ -54,7 +54,7 @@ export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceI
       selectedKey: 'daily',
       selectPatern: 'every',
       startDate: this.props.startDate ? this.props.startDate : moment().toDate(),
-      endDate: moment().endOf('month').toDate(),
+      endDate:props?.DueDate!=undefined?props?.DueDate: moment().endOf('month').toDate(),
       numberOcurrences: '10',
       numberOfWeeks: '1',
       disableNumberOfWeeks: false,
