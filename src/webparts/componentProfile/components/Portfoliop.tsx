@@ -1173,13 +1173,21 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
           let StructureID:any;
           if(item1[0].Item_x0020_Type == 'SubComponent' && mydata[0]?.Item_x0020_Type == 'Feature' ){
             StructureID = item1[0].PortfolioStructureID + '-F' + (item1[0]?.subRows?.length + 1);
+            updateParent(filteredIds, mydataid, SelectedProp,StructureID);
+            setisopenChangeParent(false);
           } else if(item1[0].Item_x0020_Type == 'Component' && mydata[0]?.Item_x0020_Type == 'SubComponent' ){
             StructureID = item1[0].PortfolioStructureID + '-S' + (item1[0]?.subRows?.length + 1);
+            updateParent(filteredIds, mydataid, SelectedProp,StructureID);
+            setisopenChangeParent(false);
           }else if(item1[0].Item_x0020_Type == 'Component' && mydata[0]?.Item_x0020_Type == 'Feature' ){
             StructureID = item1[0].PortfolioStructureID + '-F' + (item1[0]?.subRows?.length + 1)
+            updateParent(filteredIds, mydataid, SelectedProp,StructureID);
+            setisopenChangeParent(false);
+          }else{
+            alert("This cannot be a parent because it is at the same level.")
+            setisopenChangeParent(false);
           }
-        updateParent(filteredIds, mydataid, SelectedProp,StructureID);
-        setisopenChangeParent(false);
+       
       }
     },
     [] // Dependencies array, add variables here if the callback depends on them
