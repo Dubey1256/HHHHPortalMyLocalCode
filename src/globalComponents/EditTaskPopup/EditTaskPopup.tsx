@@ -4962,7 +4962,7 @@ const EditTaskPopup = (Items: any) => {
                             }`}
                     </span>
                 </div>
-                <RecurringTask props={Items} WorkingAction={WorkingAction} setWorkingAction={setWorkingAction} />
+                <RecurringTask props={Items} WorkingAction={WorkingAction} setWorkingAction={setWorkingAction} EditData={EditData} setEditData={setEditData}/>
                 <Tooltip ComponentId="1683" isServiceTask={false} setShowPencilIcon={setShowPencilIcon} ShowPencilIcon={ShowPencilIcon} />
             </>
         );
