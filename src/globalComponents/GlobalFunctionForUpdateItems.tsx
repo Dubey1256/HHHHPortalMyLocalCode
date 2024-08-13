@@ -2131,7 +2131,7 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                         }
 
                                         ItemDetails.TaskAssignedUsers = GroupAssignment;
-                                    } else if (!TNC?.Category?.includes('All') && TNC.Category?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
+                                    } if (!TNC?.Category?.includes('All') && TNC.Category?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
                                         //Kristina
                                         let DesignTaskAssignment: any = []
                                         TNC.Notifier.map((user: any) => {

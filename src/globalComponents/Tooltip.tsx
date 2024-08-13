@@ -289,7 +289,7 @@ function Tooltip(props: any) {
               <a className='dropdown-item hreflink' onClick={(e) => feedbackInitial('Call Notes')}> <span className="svg__iconbox  svg__icon--Comments mr-4"></span>Call Notes</a>
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Admin Help')}> <span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Admin Help</a>
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Help')}> <span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Help</a>
-              {(props.ShowPencilIcon==true || props.ShowPencilIcon==false) && <a className='dropdown-item hreflink' onClick={() => { setAllowLabelEdit(!allowLabelEdit); props?.setShowPencilIcon(!allowLabelEdit)}}> <span className="svg__iconbox  svg__icon--help-fill mr-4"></span>{allowLabelEdit == true ? 'Stop Editing' : 'Edit Labels'}</a>}
+              {(props.ShowPencilIcon==true || props.ShowPencilIcon==false) && <a className='dropdown-item hreflink' onClick={() => { setAllowLabelEdit(!allowLabelEdit); props?.setShowPencilIcon(!allowLabelEdit)}}> <span className="svg__iconbox  svg__icon--editLabel mr-4"></span>{allowLabelEdit == true ? 'Stop Editing' : 'Edit Labels'}</a>}
               {pageContent?.WebFullUrl.indexOf("hhhhteams") == -1 && <li>
               <a className='dropdown-item hreflink' onMouseEnter={() => { handleMouseEnter() }} ><span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Browser Setting</a>
                 <div className="dropdown-submenu dropdown-menu-level-1 showBrowsers" onMouseLeave={() => $(".showBrowsers").css("display", "none")} style={{ display: "none" }}>

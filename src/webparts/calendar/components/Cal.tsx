@@ -487,7 +487,7 @@ const Apps = (props: any) => {
         const rule = recurrence?.rule?.[0];
         const firstDayOfWeek = rule?.firstDayOfWeek || 'su';
         const startDate = new Date(recurrenceData?.EventDate);
-        startDate.setDate(startDate.getDate() - 1);
+        // startDate.setDate(startDate.getDate() - 1);
         let repeatInstance = 0;
 
         if (rule?.repeatInstances && rule.repeatInstances[0] > 0) {
@@ -496,6 +496,14 @@ const Apps = (props: any) => {
         let useCount = false
         if (recurrenceData?.RecurrenceData?.includes('daily')) {
           useCount = true
+          startDate.setDate(startDate.getDate() - 1); // Decrement startDate for daily
+        }
+        else if (recurrenceData?.RecurrenceData?.includes('weekly')) {
+          startDate.setDate(startDate.getDate() - 1); // Decrement startDate for weekly
+        } else if (recurrenceData?.RecurrenceData?.includes('yearly')) {
+          startDate.setFullYear(startDate.getFullYear() - 1);
+        } else if (recurrenceData?.RecurrenceData?.includes('monthly')) {
+          startDate.setMonth(startDate.getMonth() - 1);
         }
         let count = 0;
         let windowEndDate: any;
@@ -512,13 +520,25 @@ const Apps = (props: any) => {
           repeatInstanceEndDate.setHours(0, 0, 0, 0);
           if (recurrenceData?.RecurrenceData?.includes('daily')) {
             repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() + repeatInstance);
+            repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() - 1);
           }
-          repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() - 1); // Subtract one day
+          else if (recurrenceData?.RecurrenceData?.includes('weekly')) {
+            repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() + 7 * repeatInstance);
+            repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() - 1);
+          } else if (recurrenceData?.RecurrenceData?.includes('monthly')) {
+            repeatInstanceEndDate.setMonth(repeatInstanceEndDate.getMonth() + repeatInstance - 1);
+          } else if (recurrenceData?.RecurrenceData?.includes('yearly')) {
+            repeatInstanceEndDate.setFullYear(repeatInstanceEndDate.getFullYear() + repeatInstance);
+            repeatInstanceEndDate.setFullYear(repeatInstanceEndDate.getFullYear() - 1);
+          }
+          // repeatInstanceEndDate.setDate(repeatInstanceEndDate.getDate() - 1);
           windowEndDate = repeatInstanceEndDate;
         }
         else {
           windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(recurrenceData?.EndDate).setHours(0, 0, 0, 0);
+
         }
+
         while (dates.length < repeatInstance || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
           if ((repeatInstance != 0 ? count > repeatInstance : new Date(dates[dates.length - 1]).setHours(0, 0, 0, 0) > windowEndDate) && useCount == true) {
             break
@@ -532,20 +552,33 @@ const Apps = (props: any) => {
           const repeatType = Object.keys(repeat[0])[0];
           let currentDate: any = new Date(dates[0])
           let event: any = {};
+          let eventExists = (date: Date) => AllEvents.some((event: any) => new Date(event.date).toDateString() === date.toDateString());
           switch (repeatType) {
 
             case 'yearly':
-              currentDate.setFullYear(currentDate.getFullYear() - 1);
-              event = eventDataForBinding(recurrenceData, currentDate)
-              AllEvents?.push(event)
+              // Process the event for the current year
+              event = eventDataForBinding(recurrenceData, currentDate);
+            
+              // Check if the event is already in AllEvents
+              if (!AllEvents.some((e:any) => e.date === event.date && e.type === event.type)) {
+                AllEvents?.push(event);
+              }
+            
+              // Add the date to dates array
               dates.push(new Date(currentDate));
+            
+              // Increment the year
+              currentDate.setFullYear(currentDate.getFullYear() + 1);
               break;
             case 'monthly':
-              let MonthToBeIncreased = currentDate.getMonth() - 1;
+              let MonthToBeIncreased = currentDate.getMonth() + 1;
               currentDate = currentDate.setMonth(MonthToBeIncreased);
-              event = eventDataForBinding(recurrenceData, currentDate);
-              AllEvents?.push(event);
-              dates.push(new Date(currentDate));
+              if (!eventExists(currentDate)) {
+                event = eventDataForBinding(recurrenceData, currentDate);
+                AllEvents?.push(event);
+                dates.push(new Date(currentDate));
+              }
+              currentDate.setMonth(currentDate.getMonth() + MonthToBeIncreased);
               break;
 
 
@@ -587,6 +620,9 @@ const Apps = (props: any) => {
     const dayFrequency = parseInt(frequency.dayFrequency);
     const nextDate = new Date(currentDate);
     nextDate.setDate(nextDate.getDate() + 1);
+    while (nextDate.getDay() === 0 || nextDate.getDay() === 6) { // Skip Sunday (0) and Saturday (6)
+      nextDate.setDate(nextDate.getDate() + 1);
+    }
     currentDate.setHours(0, 0, 0, 0);
     let count = 0;
     let result = '';
@@ -635,7 +671,7 @@ const Apps = (props: any) => {
   }
 
   function handleWeeklyRecurrence(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any) {
-    const { weekFrequency } = frequency;
+    let { weekFrequency } = frequency;
     const daysOfWeekIndex = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
 
     // Get the days of the week that are marked as TRUE
@@ -672,7 +708,7 @@ const Apps = (props: any) => {
     const daysOfWeekIndex = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
     const weekMap: any = { first: 1, second: 2, third: 3, fourth: 4, last: 5 };
 
-
+    currentDate.setMonth(currentDate.getMonth() + 1);
     const monthFreq = parseInt(monthFrequency, 10);
 
     const processEvent = (dayIndexes: number[], isSpecificDay: boolean = false) => {
@@ -748,10 +784,12 @@ const Apps = (props: any) => {
 
     const processEvent = (dayIndexes: number[], isSpecificDay: boolean = false) => {
       while (true) {
+        let startDate = currentDate.getFullYear()
+        
         for (const dayIndex of dayIndexes) {
           const targetDate: any = isSpecificDay
-            ? new Date(currentDate.getFullYear(), Number(month) - 1, weekMap[weekdayOfMonth])
-            : getNthWeekdayOfMonth(currentDate.getFullYear(), Number(month) - 1, dayIndex, weekMap[weekdayOfMonth]);
+            ? new Date(startDate + 1, Number(month) - 1, weekMap[weekdayOfMonth])
+            : getNthWeekdayOfMonth(startDate + 1, Number(month) - 1, dayIndex, weekMap[weekdayOfMonth]);
 
           if (targetDate.setHours(0, 0, 0, 0) > windowEndDate) {
             dates.push(new Date(targetDate));
@@ -761,8 +799,9 @@ const Apps = (props: any) => {
           const event = eventDataForBinding(eventDetails, targetDate);
           AllEvents.push(event);
           dates.push(new Date(targetDate));
+          startDate.setFullYear(startDate.getFullYear() + yearFreq);
         }
-        currentDate.setFullYear(currentDate.getFullYear() + yearFreq);
+       
       }
     };
 
@@ -820,18 +859,19 @@ const Apps = (props: any) => {
           AllEvents?.push(event);
           dates.push(new Date(currentDate));
           break;
+
         case 'monthlyByDay':
           handleMonthlyByDay(frequency, currentDate, dates, AllEvents, eventDetails, endDate);
           break;
         case 'yearlyByDay':
           handleYearlyByDay(frequency, currentDate, dates, AllEvents, eventDetails, endDate);
           break;
-
         case 'yearly':
           const { yearFrequency, month, day } = frequency;
           currentDate.setMonth(Number(month) - 1);
           currentDate.setDate(Number(day));
-          currentDate.setFullYear(currentDate.getFullYear() + Number(yearFrequency));
+          const originalYear = currentDate.getFullYear();
+          currentDate.setFullYear(originalYear + Number(yearFrequency));
           event = eventDataForBinding(eventDetails, currentDate)
           AllEvents?.push(event)
           dates.push(new Date(currentDate));
@@ -2389,6 +2429,7 @@ const Apps = (props: any) => {
                 recurrenceData={recurrenceData}
                 startDate={startDate}
                 siteUrl={props.props.siteUrl}
+                DueDate={undefined}
                 returnRecurrenceData={returnRecurrenceInfo} selectedKey={undefined} selectedRecurrenceRule={undefined}
               ></EventRecurrenceInfo>
             )}

@@ -7,5 +7,6 @@ export interface IEventRecurrenceInfoProps {
   siteUrl: string;
   selectedKey: any;
   selectedRecurrenceRule: any;
+  DueDate:any;
   returnRecurrenceData: (startDate: Date, endDate: Date, recurrenceData: string) => void;
 }

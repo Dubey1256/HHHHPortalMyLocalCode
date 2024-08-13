@@ -1368,7 +1368,7 @@ const EditDocumentpanel = (props: any) => {
       }
 
       <Panel isOpen={isopenTaskpopup} isBlocking={false} onDismiss={() => setisopenTaskpopup(false)} type={PanelType.large} onRenderHeader={customRadimadeTable} >
-        <ReadyMadeTable AllListId={AllListId} configration={"AllAwt"} TaskFilter={"PercentComplete lt '0.90'"} usedFor={'editdocument'} callBack={TaskCallback} closepopup={() => setisopenTaskpopup(false)} />
+        <ReadyMadeTable AllListId={AllListId} others={true} configration={"AllAwt"} TaskFilter={"PercentComplete lt '0.90'"} usedFor={'editdocument'} callBack={TaskCallback} closepopup={() => setisopenTaskpopup(false)} />
       </Panel>
 
     </>
