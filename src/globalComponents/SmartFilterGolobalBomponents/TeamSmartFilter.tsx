@@ -451,6 +451,7 @@ const TeamSmartFilter = (item: any) => {
                 Categories.push(element);
             }
         });
+
         PriorityData = PriorityData?.sort((elem1: any, elem2: any) => parseInt(elem2.SortOrder) - parseInt(elem1.SortOrder));
         Type = Type?.sort((elem1: any, elem2: any) => parseInt(elem1.SortOrder) - parseInt(elem2.SortOrder));
         ClientCategory?.forEach((elem: any) => {
@@ -522,7 +523,10 @@ const TeamSmartFilter = (item: any) => {
                 getChildsSites(element, portfolioTypeHeadingData);
             }
         })
-        PrecentComplete = PrecentComplete?.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
+        PrecentComplete=PrecentComplete.sort((a:any, b:any) => { const numA = parseInt(a?.status);
+            const numB = parseInt(b?.status);  return numA - numB;
+          });
+        // PrecentComplete = PrecentComplete?.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
         PrecentComplete?.forEach((element: any) => {
             if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
                 element.value = element.Id;

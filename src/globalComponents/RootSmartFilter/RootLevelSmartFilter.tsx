@@ -10,7 +10,7 @@ import { AiOutlineUp } from 'react-icons/ai';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
-import '../../globalComponents/SmartFilterGolobalBomponents/Style.css'
+// import '../../globalComponents/SmartFilterGolobalBomponents/Style.css'
 import Tooltip from '../Tooltip';
 import PreSetDatePikerPannel from '../SmartFilterGolobalBomponents/PreSetDatePiker';
 import TeamSmartFavoritesCopy from '../SmartFilterGolobalBomponents/Smart Favrorites/TeamSmartFavoritesCopy';

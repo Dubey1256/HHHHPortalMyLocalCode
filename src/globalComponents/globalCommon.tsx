@@ -185,6 +185,9 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
                     if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser?.toLowerCase()) {
                         IsSendTeamMessage += 1;
                     }
+                    if (User?.Email?.toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && User?.ID == 2 && User?.Email != undefined && User?.Email != undefined && User?.Email != '' && User?.Email?.toLowerCase() == TeamUser?.toLowerCase()) {
+                        IsSendTeamMessage += 1;
+                    }
                 })
 
             })
@@ -2343,7 +2346,7 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     }
 }
 export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | null, pertiCularSites?: any | null, showOffShore?: any | undefined) => {
-    let query = "Id,Title,FeedBack,Comments,PriorityRank,WorkingAction,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+    let query = "Id,Title,FeedBack,Comments,TotalTime,PriorityRank,WorkingAction,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
     }
@@ -3650,7 +3653,7 @@ async function checkIfFolderExists(libraryName: string, folderName: string, Cont
     try {
         const filter = `FileLeafRef eq '${folderName}'`;
         const web = new Web(ContextValue?.siteUrl);
-        const folders = await web.lists.getById('d0f88b8f-d96d-4e12-b612-2706ba40fb08').items.select("FileLeafRef").filter(filter).get();
+        const folders = await web.lists.getByTitle('Documents').items.select("FileLeafRef").filter(filter).get();
         return folders.length > 0 && folders.some((e: any) => e.FileLeafRef === folderName);
     } catch (error) {
         console.log("Error checking folder existence:", error);
@@ -3687,40 +3690,52 @@ const uploadDocumentFinal = async (item: any) => {
     }
 };
 export const smartTimeUseStorage = async (item: any) => {
-    let finalString = ''
-    let ContextValue = item?.ContextValue;
-    let allTastsData: any = item?.AllSiteTasksData;
-    try {
-        let folderName = item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userDisplayName.replace(/\s+/g, '') + item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userId + "-" + "SmartTimeTotel";
-        let web = new Web(ContextValue?.siteUrl);
-        const files = await web.getFolderByServerRelativeUrl(`Documents/${folderName}`).files.get();
-        if (files?.length > 0) {
-            const file = files[0]
-            const blob: Blob = await web.getFileByServerRelativePath(`${file?.ServerRelativeUrl}`)?.getBlob();
-            const myFile: any = blobToFile(blob, file?.FileLeafRef);
-            item?.setSmartTimelastModifiedDate(moment(file?.TimeLastModified).format('DD/MM/YYYY HH:mm:ss'));
-            const reader = new FileReader();
-            reader.onload = (e: any) => {
-                finalString = e.target.result;
-                if (finalString?.length > 0) {
-                    const timeEntryIndexLocalStorage = JSON.parse(finalString);
-                    allTastsData?.map((task: any) => {
-                        task.TotalTaskTime = 0;
-                        task.timeSheetsDescriptionSearch = "";
-                        const key = `Task${task?.siteType + task.Id}`;
-                        if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
-                            // task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
-                            task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
-                            task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
-                        }
-                    })
-                    console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage)
-                    return allTastsData;
-                }
-            };
-            reader.readAsText(myFile);
+    return new Promise(async (resolve, reject) => {
+        let finalString = '';
+        let ContextValue = item?.ContextValue;
+        let allTastsData: any = item?.AllSiteTasksData;
+
+        try {
+            let folderName = ContextValue?.Context?.pageContext?.legacyPageContext?.userDisplayName.replace(/\s+/g, '') 
+                + ContextValue?.Context?.pageContext?.legacyPageContext?.userId 
+                + "-" 
+                + "SmartTimeTotel";
+            let web = new Web(ContextValue?.siteUrl);
+            const files = await web.getFolderByServerRelativeUrl(`Documents/${folderName}`).files.get();
+
+            if (files?.length > 0) {
+                const file = files[0];
+                const blob: Blob = await web.getFileByServerRelativePath(`${file?.ServerRelativeUrl}`)?.getBlob();
+                const myFile: any = blobToFile(blob, file?.FileLeafRef);
+                item?.setSmartTimelastModifiedDate(moment(file?.TimeLastModified).format('DD/MM/YYYY HH:mm:ss'));
+
+                const reader = new FileReader();
+                reader.onload = (e: any) => {
+                    finalString = e.target.result;
+                    if (finalString?.length > 0) {
+                        const timeEntryIndexLocalStorage = JSON.parse(finalString);
+                        allTastsData?.map((task: any) => {
+                            task.TotalTaskTime = 0;
+                            task.timeSheetsDescriptionSearch = "";
+                            const key = `Task${task?.siteType + task.Id}`;
+                            if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
+                                task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 !== 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                                task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
+                            }
+                        });
+                        console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage);
+                        resolve(allTastsData); // Resolve with the data
+                    } else {
+                        resolve(allTastsData); // Resolve with empty data or original data
+                    }
+                };
+                reader.readAsText(myFile);
+            } else {
+                resolve(allTastsData); // Resolve if no files found
+            }
+        } catch (error) {
+            console.log('An error occurred while fetching files:', error);
+            reject(error); // Reject the promise in case of an error
         }
-    } catch (error) {
-        console.log('An error occurred while fetching files:', error);
-    }
+    });
 };

@@ -12,8 +12,9 @@ import { getSP } from '../../spservices/pnpjsConfig';
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
 import { ImReply } from 'react-icons/im';
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
-import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Stack, Text, } from '@fluentui/react';
+// import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Stack, Text, } from '@fluentui/react';
 import { Avatar } from "@fluentui/react-components";
+import { Popover, PopoverTrigger, PopoverSurface, } from "@fluentui/react-components";
 import ReactDOM from "react-dom";
 let color: any = false;
 let Title: any = "";
@@ -51,6 +52,7 @@ export interface ICommentCardState {
   editorValue: string;
   ChildLevel: boolean;
   ReplyParent: any;
+  buttonId: any;
   editorChangeValue: string;
   mailReply: any;
   postButtonHide: boolean;
@@ -84,6 +86,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       AllCommentModal: false,
       mentionValue: '',
       ReplymentionValue: '',
+      buttonId: '',
       topCommenterShow: false,
       mailReply: { isMailReply: false, Index: null, },
       postButtonHide: false,
@@ -252,11 +255,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   }
 
   private async commentCardNotificationConfig() {
-    try{
+    try {
       let recipientData: any = await globalCommon.LoadAllNotificationConfigrations("CommentCardNotification", this.props.AllListId)
       return recipientData;
     }
-    catch(error){
+    catch (error) {
       console.log(error)
     }
   }
@@ -266,7 +269,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     let web = new Web(this.props.siteUrl);
     let currentUser = await web.currentUser?.get();
     let emailRecipients = await this.commentCardNotificationConfig()
-    
+
     //.then((r: any) => {  
     // console.log("Cuurent User Name - " + r['Title']);  
     //}); 
@@ -277,9 +280,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     if (emailRecipients != undefined && emailRecipients.length > 0) {
       emailRecipients.forEach((recipient: any) => {
         this.taskUsers.forEach((user: any) => {
-        if (recipient.Id == user.AssingedToUserId) {
-          recipient.Item_x0020_Cover = user.Item_x0020_Cover
-        }
+          if (recipient.Id == user.AssingedToUserId) {
+            recipient.Item_x0020_Cover = user.Item_x0020_Cover
+          }
         })
         return recipient;
       })
@@ -289,10 +292,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           display: emailRecipients[index].Title,
           Title: emailRecipients[index].Title,
           ItemCoverURL: (emailRecipients[index].Item_x0020_Cover != undefined) ?
-          emailRecipients[index].Item_x0020_Cover?.Url :
-          null
+            emailRecipients[index].Item_x0020_Cover?.Url :
+            null
         })
-      }  
+      }
     }
     else {
       for (let index = 0; index < this.taskUsers.length; index++) {
@@ -309,7 +312,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       }
     }
 
-    if (this.taskUsers != undefined && this.taskUsers.length > 0) { 
+    if (this.taskUsers != undefined && this.taskUsers.length > 0) {
       for (let index = 0; index < this.taskUsers.length; index++) {
         this.mentionUsers.push({
           id: this.taskUsers[index].Title + "{" + this.taskUsers[index]?.AssingedToUser?.EMail + "}",
@@ -347,7 +350,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         ID: this.state.Result["Comments"] != undefined ? this.state.Result["Comments"].length + 1 : 1,
         Title: txtComment,
         editable: false,
-        CommentFor: this.props.commentFor?.length > 0 ? this.props.commentFor : ''
+        CommentFor: this.props.commentFor ? this.props.commentFor : ''
       };
       if (this.state?.ChildLevel == true) {
         this.state?.Result?.Comments?.forEach((element: any) => {
@@ -395,19 +398,19 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       console.log(this.state.Result);
       (document.getElementById(txtCommentControlId) as HTMLTextAreaElement).value = '';
       let web = new Web(this.props.siteUrl);
-      if(this.state.listName != null ) {
+      if (this.state.listName != null) {
         await web.lists.getByTitle(this.state.listName)
-        .items
-        .getById(this.state.itemID).update({
-          Comments: JSON.stringify(this.state.Result["Comments"])
-        });
+          .items
+          .getById(this.state.itemID).update({
+            Comments: JSON.stringify(this.state.Result["Comments"])
+          });
       }
       else {
         await web.lists.getById(this.state.listId)
-        .items
-        .getById(this.state.itemID).update({
-          Comments: JSON.stringify(this.state.Result["Comments"])
-        });
+          .items
+          .getById(this.state.itemID).update({
+            Comments: JSON.stringify(this.state.Result["Comments"])
+          });
       }
 
       if (isPushOnRoot != false)
@@ -697,6 +700,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private isDecimal = (value: any) => {
     return /^\d*\.?\d+$/.test(value);
   }
+
+
   private ReduceTheContentLines: any = (Content: String, sliceFrom: number) => {
     if (Content?.length > sliceFrom) {
         let NewContent: string = Content.slice(0, sliceFrom);
@@ -706,7 +711,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
   }
 
- 
   private async GetEmailObjects(txtComment: any, MentionedValue: any) {
     if (MentionedValue != '') {
       //Get All To's
@@ -818,6 +822,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           `;
           }
 
+
           await globalCommon.SendTeamMessage(mention_To, TeamsMessage, this.props.Context, this.props?.AllListId)
           //  this.SendEmail(emailprops);
           this.setState({
@@ -918,14 +923,23 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }, () => { console.log(this.state.mentionValue) })
   }
   private openReplycommentPopup = (replyData: any, i: any) => {
-    if (replyData.ReplyMessages == undefined)
-      replyData.ReplyMessages = []
-    replyData.isReplyMsg = true
-
+    if (replyData.ReplyMessages == undefined) {
+      replyData.ReplyMessages = [];
+    }
+    replyData.isReplyMsg = true;
     this.setState({
-      ReplymentionValue: replyData.AuthorName, ReplyParent: replyData, ChildLevel: true, currentDataIndex: i, isCalloutVisible: true, mailReply: { isMailReply: true, index: i, }
-    }, () => { console.log(this.state.ReplymentionValue) })
-  }
+      buttonId: 'ReplyBtn' + i,  // Set buttonId
+      ReplymentionValue: replyData.AuthorName,
+      ReplyParent: replyData,
+      ChildLevel: true,
+      currentDataIndex: i,
+      isCalloutVisible: true,
+      mailReply: { isMailReply: true, index: i }
+    }, () => {
+      console.log(this.state.ReplymentionValue);
+    });
+  };
+
   private updateReplyMessagesFunction = (e: any) => {
     console.log(e.target.value)
     this.setState({
@@ -935,6 +949,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private SaveReplyMessageFunction = () => {
     this.PostComment('txtComment')
     this.setState({
+      buttonId: '',
       isCalloutVisible: false
     })
   }
@@ -945,6 +960,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       });
     }
     this.setState({
+      buttonId: '',
       replyTextComment: '',
       isCalloutVisible: false
     })
@@ -955,25 +971,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private handleMouseClick = (e: any) => {
     this.setState({ keyPressed: false });
   };
-  // private detectAndRenderLinks = (text: any) => {
-  //   const tempElement = document.createElement('div');
-  //   tempElement.innerHTML = text;
-  //   text = tempElement.textContent || tempElement.innerText || '';
-  //   text = text.replace(/\s+/g, ' ').trim();
-
-  //   const urlRegex = /(https?:\/\/[^\s]+)/g;
-  //   return text.split(urlRegex).map((part: any, index: any) => {
-  //     if (part.match(urlRegex)) {
-  //       return (
-  //         <a key={index} href={part} target="_blank" rel="noopener noreferrer">
-  //           {part}
-  //         </a>
-  //       );
-  //     }
-  //     return part;
-  //   });
-  // };
-
 
   private detectAndRenderLinks = (html: any) => {
 
@@ -988,13 +985,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     });
     div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
     div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
-    // Update anchor tags
-    const anchorTags = div.querySelectorAll('a');
-    // anchorTags.forEach((a) => {
-    //   a.setAttribute('target', '_blank');
-    //   a.setAttribute('data-interception', 'off');
-    // });
 
+    const anchorTags = div.querySelectorAll('a');
+  
 
     return globalCommon?.replaceURLsWithAnchorTags(div.innerHTML);
   };
@@ -1012,7 +1005,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 {this.topCommenters != null && this.topCommenters.length > 0 && this.topCommenters?.map((topCmnt: any, i: any) => {
                   return <span>
                     <a target="_blank">
-                      {topCmnt?.ItemCoverURL != null || topCmnt?.Suffix != null? <Avatar
+                      {topCmnt?.ItemCoverURL != null || topCmnt?.Suffix != null ? <Avatar
                         onClick={(e) => this.topCommentersClick(e)}
                         className="UserImage workmember"
                         title={topCmnt?.Title}
@@ -1076,16 +1069,38 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               </span>
                               {cmtData.Created}</span>
                             <div className="d-flex ml-auto media-icons px-1 " >
-                            <a onClick={() => this.openEditModal(cmtData, i, false)}>
+                              <a onClick={() => this.openEditModal(cmtData, i, false)}>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
                                 <span className='svg__iconbox svg__icon--edit'></span>
                               </a>
-                              <a ><div data-toggle="tooltip" id={"Reply-" + i}
-                                onClick={() => this.openReplycommentPopup(cmtData, i)} data-placement="bottom"  >
-                                <span className="svg__iconbox svg__icon--reply"></span>
-                              </div></a>
+                              <Popover
+                                size="medium"
+                                withArrow
+                                open={this.state.buttonId == "ReplyBtn" + i}
+                                onOpenChange={() => this.openReplycommentPopup(cmtData, i)}
+                              >
+                                <PopoverTrigger disableButtonEnhancement>
+                                  <span className="svg__iconbox svg__icon--reply"></span>
+                                </PopoverTrigger>
+                                <PopoverSurface  className="a"  tabIndex={-1}>
+                                   <div>
+                                      <div className='subheading m-0' style={{ minWidth: '400px' }}>Comment Reply</div>
+                                      <div className="my-2">
+                                        <textarea className='w-100'  rows={3}
+                                          value={this.state.replyTextComment}
+                                          onChange={this.updateReplyMessagesFunction}
+                                        ></textarea>
+                                      </div>
+                                    </div>
+                                    <div className="footer text-end">
+                                      <button className="btnCol btn me-2 btn-primary" onClick={this.SaveReplyMessageFunction}>Save</button>
+                                      <button className="btnCol btn btn-default" onClick={this.CancelReplyPopup}>Cancel</button>
+                                    </div>
+                                
+                                </PopoverSurface>
+                              </Popover>
                               {/* <a onClick={() => this.replyMailFunction(cmtData, i)}><span><ImReply /></span></a> */}
-                             
+
                               <a title="Delete" onClick={() => this.clearComment(i, undefined, undefined)}>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" /> */}
                                 <span className='svg__iconbox svg__icon--trash'></span>
@@ -1236,21 +1251,49 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               </span>
                               {cmtData.Created}</span>
                             <div className="d-flex ml-auto media-icons px-1 " >
-                            
+
                               <a onClick={() => this.openEditModal(cmtData, i, false)}>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
                                 <span className='svg__iconbox svg__icon--edit'></span>
                               </a>
-                              <a ><div data-toggle="tooltip" id={"Reply-" + i}
-                                onClick={() => this.openReplycommentPopup(cmtData, i)} data-placement="bottom"  >
+
+                              {/*  <a ><div data-toggle="tooltip" id={"Reply-" + i}
+                             onClick={() => this.openReplycommentPopup(cmtData, i)} data-placement="bottom"  >
                                 <span className="svg__iconbox svg__icon--reply"></span>
-                              </div></a>
+                              </div></a> */}
+                              {/* <Popover
+                                size="medium"
+                                withArrow
+                                open={this.state.buttonId == "ReplyBtn" + i}
+                                onOpenChange={() => this.openReplycommentPopup(cmtData, i)}
+                              >
+                                <PopoverTrigger disableButtonEnhancement>
+                                  <span className="svg__iconbox svg__icon--reply"></span>
+                                </PopoverTrigger>
+                                <PopoverSurface  className="a"  tabIndex={-1}>
+                                   <div>
+                                      <div className='subheading m-0' style={{ minWidth: '400px' }}>Comment Reply</div>
+                                      <div className="my-2">
+                                        <textarea className='w-100'  rows={3}
+                                          value={this.state.replyTextComment}
+                                          onChange={this.updateReplyMessagesFunction}
+                                        ></textarea>
+                                      </div>
+                                    </div>
+                                    <div className="footer text-end">
+                                      <button className="btnCol btn me-2 btn-primary" onClick={this.SaveReplyMessageFunction}>Save</button>
+                                      <button className="btnCol btn btn-default" onClick={this.CancelReplyPopup}>Cancel</button>
+                                    </div>
+                                
+                                </PopoverSurface>
+                              </Popover> */}
+
                               {/* <a onClick={() => this.replyMailFunction(cmtData, i)}><span><ImReply /></span></a> */}
                               <a title="Delete" onClick={() => this.clearComment(i, undefined, undefined)}>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" /> */}
                                 <span className='svg__iconbox svg__icon--trash'></span>
                               </a>
-                              
+
                             </div>
                           </div>
                           <div className="media-text">
@@ -1345,41 +1388,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             </footer>
           </div>
         </Panel>
-        {
-          this?.state?.isCalloutVisible ? (
-            <FocusTrapCallout
-              className='p-2 replyTooltip'
-              role="alertdialog"
-              gapSpace={0}
-              target={`#Reply-${this.state.currentDataIndex}`}
-              onDismiss={() => this.setState({
-                isCalloutVisible: false
-              })} setInitialFocus>
-              <Text block variant="xLarge" className='siteColor f-15 fw-semibold'>
-                Comment Reply
-              </Text>
-              <Text block variant="small">
-                <div className="d-flex my-2">
-                  <textarea className="form-control" value={this?.state?.replyTextComment}
-                    onChange={(e) => this.updateReplyMessagesFunction(e)}
-                  ></textarea>
-                </div>
-              </Text>
-              <FocusZone handleTabKey={FocusZoneTabbableElements.all} isCircularNavigation>
-                <Stack
-                  className='modal-footer'
-                  gap={8} horizontal>
-                  <button className='btn btn-primary'
-                    onClick={this.SaveReplyMessageFunction}
-                  >Save</button>
-                  <button className='btn btn-default'
-                    onClick={this.CancelReplyPopup}
-                  >Cancel</button>
-                </Stack>
-              </FocusZone>
-            </FocusTrapCallout>
-          ) : null
-        }
         {
           this.state.Result != null && this.state.Result?.Comments != null && this.state.Result?.Comments.length > 0 &&
           <div id='htmlMailBody' style={{ display: 'none' }}>

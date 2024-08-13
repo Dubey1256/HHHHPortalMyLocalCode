@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react'; Moment
+import React, { useEffect, useContext, useState } from 'react';
 import { Web } from 'sp-pnp-js';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import { myContextValue } from '../../../globalComponents/globalCommon'
@@ -407,8 +407,11 @@ const EmployeProfile = (props: any) => {
           items.DisplayCreateDate = items.DisplayCreateDate.replaceAll("Invalid date", "");
         if (items.Author)
           items.Author.autherImage = findUserByName(items.Author?.Id)
-        if (items?.DueDate != null && items?.DueDate != undefined)
-          items.serverDueDate = new Date(items?.DueDate).setHours(0, 0, 0, 0)
+        if (items?.DueDate != null && items?.DueDate != undefined) {
+          items.serverDueDate = Moment(items?.serverDueDate);
+          items.serverDueDate = items?.serverDueDate?._d.setHours(0, 0, 0, 0)
+        }
+        items.serverDueDate = new Date(items?.DueDate).setHours(0, 0, 0, 0)
         items.DisplayDueDate = Moment(items?.DueDate).format("DD/MM/YYYY");
         if (items.DisplayDueDate == "Invalid date" || "")
           items.DisplayDueDate = items?.DisplayDueDate.replaceAll("Invalid date", "");
@@ -596,29 +599,29 @@ const EmployeProfile = (props: any) => {
     const array: any = allData;
     const filteredConfig = DashboardConfig.find((item: any) => item.DataSource === 'TimeSheet');
     DashboardConfig.forEach((config: any) => {
-      if (config.Tasks === undefined) {
+      if (config?.Tasks === undefined) {
         config.Tasks = [];
       }
-      if (config.DataSource === 'Tasks' || config.DataSource === 'Project') {
-        if (config.selectFilterType !== 'custom') {
-          if (config.smartFevId !== undefined && config.smartFevId !== '' && !config.isShowEveryone) {
-            if (currentUserData?.AssingedToUser?.Id === config.CurrentUserID) {
+      if (config?.DataSource === 'Tasks' || config?.DataSource === 'Project') {
+        if (config?.selectFilterType !== 'custom') {
+          if (config?.smartFevId !== undefined && config?.smartFevId !== '' && !config?.isShowEveryone) {
+            if (currentUserData?.AssingedToUser?.Id === config?.CurrentUserID) {
               config.LoadDefaultFilter = false;
               FilterDataOnCheck(config);
             }
-          } else if (config.smartFevId !== undefined && config.smartFevId !== '' && config.isShowEveryone) {
+          } else if (config?.smartFevId !== undefined && config?.smartFevId !== '' && config?.isShowEveryone) {
             config.LoadDefaultFilter = false;
             FilterDataOnCheck(config);
           }
         }
-        else if (config.selectFilterType === 'custom') {
+        else if (config?.selectFilterType === 'custom') {
           config.LoadDefaultFilter = false;
           if (config?.DataSource == 'Tasks') {
             if (Array.isArray(array) && array.length > 0) {
               if (config['selectUserFilterType']) {
                 array.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
                   if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id == currentUserData?.AssingedToUser?.Id)) {
-                    config.Tasks.push(task);
+                    config?.Tasks.push(task);
                   }
                 });
               }
@@ -630,21 +633,66 @@ const EmployeProfile = (props: any) => {
           else if (config?.DataSource == 'Project') {
             if (Array.isArray(AllMasterTasks) && AllMasterTasks.length > 0) {
               let filteredProject = AllMasterTasks.filter((item: any) => item.Item_x0020_Type == 'Project');
-              filteredProject.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
-                if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id == currentUserData?.AssingedToUser?.Id)) {
-                  config.Tasks.push(task);
+              if (!config?.IsTemplate) {
+                filteredProject.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
+                  if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id == currentUserData?.AssingedToUser?.Id)) {
+                    config?.Tasks.push(task);
+                  }
+                });
+              }
+              else if (config?.IsTemplate) {
+                if (!config?.IsDueDateFilter) {
+                  if (config?.Status != undefined && config?.Status?.length) {
+                    config?.Status?.forEach((percentcomplete: any) => {
+                      filteredProject?.forEach((item: any) => {
+                        if (percentcomplete?.PercentComplete === item?.PercentComplete) {
+                          config?.Tasks.push(item);
+                        }
+                      });
+                    });
+                  }
                 }
-              });
+                else if (config?.IsDueDateFilter) {
+                  let StartDate: any = '';
+                  let EndDate: any = '';
+                  if (config?.StartDate != undefined && config?.StartDate != '') {
+                    StartDate = Moment(config?.StartDate, 'DD/MM/YYYY');
+                    StartDate = StartDate?._d.setHours(0, 0, 0, 0)
+                  }
+                  if (config?.EndDate != undefined && config?.EndDate != '') {
+                    EndDate = Moment(config?.EndDate, 'DD/MM/YYYY');
+                    EndDate = EndDate?._d.setHours(0, 0, 0, 0)
+                  }
+                  filteredProject?.forEach((item: any) => {
+                    let MatchableDate: any = ''
+                    if (item?.DueDate) {
+                      MatchableDate = Moment(item?.DueDate, 'DD/MM/YYYY');
+                      MatchableDate = MatchableDate?._d.setHours(0, 0, 0, 0)
+                    }
+                    if (MatchableDate != '' && StartDate != undefined && StartDate != '' && EndDate != undefined && EndDate != '' && MatchableDate >= StartDate && MatchableDate <= EndDate) {
+                      config?.Tasks.push(item);
+                    }
+                    else if (MatchableDate != '' && StartDate != undefined && StartDate != '' && (EndDate == undefined || EndDate == '') && MatchableDate >= StartDate) {
+                      config?.Tasks.push(item);
+                    }
+                    else if (MatchableDate != '' && (StartDate == undefined && StartDate == '') && EndDate != undefined && EndDate != '' && MatchableDate <= EndDate) {
+                      config?.Tasks.push(item);
+                    }
+                  });
+                }
+              }
             }
           }
         }
-        if (!filteredConfig) {
-          setIsCallContext(true);
-        }
+        setTimeout(() => {
+          if (!filteredConfig) {
+            setIsCallContext(true);
+          }
+        }, 2000)
       }
-      else if (config.DataSource === 'TaskUsers') {
+      else if (config?.DataSource === 'TaskUsers') {
         config.LoadDefaultFilter = false;
-        if (config.selectFilterType === 'custom') {
+        if (config?.selectFilterType === 'custom') {
           if (!isTaskUserExist(AllUsers, currentUserData)) {
             AllUsers.unshift(currentUserData);
           }
@@ -722,15 +770,15 @@ const EmployeProfile = (props: any) => {
           }
 
           for (let item of AllUsers) {
-            if (item[config.Status]) {
-              if (Array.isArray(item[config.Status])) {
-                for (let teamMember of item[config.Status]) {
+            if (item[config?.Status]) {
+              if (Array.isArray(item[config?.Status])) {
+                for (let teamMember of item[config?.Status]) {
                   if (teamMember.Id == currentUserId && !isTaskUserExist(LoginUserTeamMembers, item) && item.ItemType !== 'Group') {
                     LoginUserTeamMembers.push(item);
                   }
                 }
-              } else if (typeof item[config.Status] === 'object' && item[config.Status] !== null) {
-                if ((item[config.Status].Id == currentUserId || item[config.Status].Id == currentUserData.Id) && !isTaskUserExist(LoginUserTeamMembers, item) && item.ItemType !== 'Group') {
+              } else if (typeof item[config?.Status] === 'object' && item[config?.Status] !== null) {
+                if ((item[config?.Status].Id == currentUserId || item[config?.Status].Id == currentUserData.Id) && !isTaskUserExist(LoginUserTeamMembers, item) && item.ItemType !== 'Group') {
                   LoginUserTeamMembers.push(item);
                 }
               }
@@ -744,7 +792,7 @@ const EmployeProfile = (props: any) => {
           config.BackupTask = LoginUserTeamMembers;
           config.AllUserTask = AllUsers;
         }
-        else if (config.selectFilterType === 'GroupByUser') {
+        else if (config?.selectFilterType === 'GroupByUser') {
           config.Tasks = GroupByUsers;
         }
         if (!filteredConfig) {
@@ -868,7 +916,7 @@ const EmployeProfile = (props: any) => {
                     TeamMember?.map((User: any) => {
                       TempArray?.map((TimeEntry: any) => {
                         if (User?.AssingedToUserId != undefined && TimeEntry?.AuthorId != undefined && TimeEntry?.AuthorId == User?.AssingedToUserId) {
-                          config.Tasks.push(TimeEntry)
+                          config?.Tasks.push(TimeEntry)
                         }
                       })
                     })
@@ -886,7 +934,7 @@ const EmployeProfile = (props: any) => {
     let todayDate: any = new Date();
     const currentDate = todayDate;
     currentDate.setDate(today.getDate());
-    currentDate.setHours(0, 0, 0, 0);  
+    currentDate.setHours(0, 0, 0, 0);
     for (const items of array ?? []) {
       for (const config of DashboardConfig ?? []) {
         if (config?.Tasks == undefined) {
@@ -1028,8 +1076,8 @@ const EmployeProfile = (props: any) => {
   const getAllData = async (IsLoad: any) => {
     if (IsLoad != undefined && IsLoad == true) {
       let filter = 'PercentComplete lt 0.81';
-      await globalCommon?.loadAllSiteTasks(props?.props, filter).then((data: any) => {      
-          loadAllTimeEntry();
+      await globalCommon?.loadAllSiteTasks(props?.props, filter).then((data: any) => {
+        loadAllTimeEntry();
         data?.map((items: any) => {
           items.descriptionsSearch = '';
           let descriptionSearchData = '';

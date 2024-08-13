@@ -282,14 +282,16 @@ const AddCommentComponent = (FbData: any) => {
                                 return (
                                     <div className="FeedBack-comment">
                                         <div className={`col-12 d-flex float-end add_cmnt my-1 ${commentDtl.isShowLight}`} title={commentDtl.isShowLight}>
-                                            <div className="">
+                                            {/* <div className="">
                                                 <img className="workmember" src={commentDtl.AuthorImage != undefined && commentDtl.AuthorImage != '' ?
                                                     commentDtl.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
-                                            </div>
-                                            <div className="col-11 pe-0 ms-2" >
+                                            </div> */}
+                                            <div className="col pe-0 ms-2" >
                                                 <div className='d-flex justify-content-between align-items-center'>
+                                                    
                                                     <span className="font-weight-normal">
-                                                        {commentDtl.AuthorName} - {commentDtl.Created}
+                                                    <span><img className="workmember" src={commentDtl.AuthorImage != undefined && commentDtl.AuthorImage != '' ?
+                                                    commentDtl.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} /></span>   {commentDtl.AuthorName} - {commentDtl.Created}
                                                     </span>
                                                     <span className="alignCenter">
                                                         {/* <span
@@ -342,7 +344,7 @@ const AddCommentComponent = (FbData: any) => {
                                                                             </span>
                                                                             <span className="alignCenter">
                                                                                 <span title="Edit Comment" onClick={() => openEditModal(ReplyDtl.Title, ReplyIndex, index, false, "ReplyComment")} className="ps-1 hreflink svg__iconbox svg__icon--edit siteColor"></span>
-                                                                                <span title="Delete Comment" onClick={() => DeleteReplyMessageFunction(ReplyIndex, index)} className="ps-1 hreflink svg__iconbox svg__icon--trash"></span>
+                                                                                <span title="Delete Comment" onClick={() => DeleteReplyMessageFunction(ReplyIndex, index)} className="ps-1 hreflink svg__iconbox svg__icon--trash siteColor"></span>
                                                                             </span>
                                                                         </div>
                                                                         <div>

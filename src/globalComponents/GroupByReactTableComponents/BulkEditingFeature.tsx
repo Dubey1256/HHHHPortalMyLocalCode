@@ -1178,8 +1178,9 @@ const BulkEditingFeature = (props: any) => {
         Priority?.sort((a: any, b: any) => {
             return a.SortOrder - b.SortOrder;
         });
-        PrecentComplete?.sort((a: any, b: any) => {
-            return a.SortOrder - b.SortOrder;
+        PrecentComplete = PrecentComplete.sort((a: any, b: any) => {
+            const numA = parseInt(a?.status);
+            const numB = parseInt(b?.status); return numA - numB;
         });
         setFeatureTypeItemTiles(FeatureType);
         setpriorityRank(Priority)

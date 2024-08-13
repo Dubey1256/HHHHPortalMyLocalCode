@@ -31,6 +31,8 @@ let count = 5;
 const SmartInformation = (props: any, ref: any) => {
   const myContextData2: any = React.useContext<any>(myContextValue)
   const [show, setShow] = useState(false);
+  const [showmore, setshowmore] = useState(false);
+  const [isSmartNote, setIsSmartNote] = useState(false);
   const [ShowallNotes, setShowallNotes] = useState(false)
   const [popupEdit, setpopupEdit] = useState(false);
   const [smartInformationArrow, setsmartInformationArrow]: any = useState();
@@ -375,6 +377,9 @@ const SmartInformation = (props: any, ref: any) => {
 
             if (allSmartInformationglobal.length == allSmartInformationglobaltagdocuments.length) {
               let initialData = allSmartInformationglobaltagdocuments.slice(0, 5);
+              if (initialData?.length == 5) {
+                setshowmore(true)
+              }
               setSmartInformation(initialData);
               if (addSmartInfoPopupAddlinkDoc2 && (props.showHide === "projectManagement" || props.showHide === "ANCTaskProfile")) {
                 props?.callback?.();
@@ -396,6 +401,11 @@ const SmartInformation = (props: any, ref: any) => {
     else {
       setSmartInformation(allSmartInformationglobal)
     }
+    if (allSmartInformationglobal?.length > 0)
+      setIsSmartNote(true)
+    else {
+      setIsSmartNote(false)
+    }
     console.log(allSmartInformationglobaltagdocuments)
   }
 
@@ -411,8 +421,6 @@ const SmartInformation = (props: any, ref: any) => {
 
   const LoadSmartMetaData = async () => {
     const web = new Web(props?.AllListId?.siteUrl);
-
-
     await web.lists.getById(props?.AllListId?.SmartMetadataListID)
       .items.select('ID,Title,ProfileType', 'Parent/Id', 'Parent/Title', 'TaxType', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Title', 'Editor/Id')
       .expand("Author", "Editor", "Parent").filter("TaxType eq 'Information'").top(4999)
@@ -1207,11 +1215,33 @@ const SmartInformation = (props: any, ref: any) => {
     return isExists;
   }
   const handlesearchingvalue = (event: any) => {
-    const value = event.target.value;
+    const value = event.target.value.trim(); 
     let filtersmartvalue: any = [];
-    setsearchvalue(event.target.value)
+    setsearchvalue(event.target.value);   
+    if (value) {           
+      const regex = new RegExp(value.split(/\s+/).map((word:any) => `(?=.*${word})`).join(''), 'i');
+      copySmartInfo.forEach((val: any) => {
+        if (regex.test(val?.Title)) {          
+          if (!IsitemExists(filtersmartvalue, val)) {
+            filtersmartvalue.push(val);
+          }          
+        }       
+      });      
+    } else {
+      filtersmartvalue = copySmartInfo;
+    }
+    setSmartInformation(filtersmartvalue);
+    if (showmore) {
+      setshowmore(false)
+    }    
+  }
+
+  const handleenlargesearchingvalue = (event: any) => {
+    const value = event.target.value.trim();
+    let filtersmartvalue: any = [];
+    setEnlargesearchvalue(event.target.value)   
     if (value) {
-      const regex = new RegExp(value, 'i'); // 'i' flag for case-insensitive search
+      const regex = new RegExp(value.split(/\s+/).map((word: any) => `(?=.*${word})`).join(''), 'i');
       copySmartInfo.forEach((val: any) => {
         if (regex.test(val?.Title)) {
           if (!IsitemExists(filtersmartvalue, val)) {
@@ -1222,24 +1252,11 @@ const SmartInformation = (props: any, ref: any) => {
     } else {
       filtersmartvalue = copySmartInfo;
     }
-    setSmartInformation(filtersmartvalue)
-  }
-  const handleenlargesearchingvalue = (event: any) => {
-    const value = event.target.value;
-    let filtersmartvalue: any = [];
-    setEnlargesearchvalue(event.target.value)
-    if (value) {
-      copySmartInfo.map((val: any) => {
-        if (val?.Title?.toLowerCase()?.indexOf(value?.toLowerCase()) > -1 || val?.Title.toLowerCase() === value?.toLowerCase()) {
-          if (!IsitemExists(filtersmartvalue, val))
-            filtersmartvalue.push(val)
-        }
-      })
-    }
-    else {
-      filtersmartvalue = copySmartInfo;
-    }
     setshowenlargeSmartInfo(filtersmartvalue)
+    if (showmore) {
+      setshowmore(false)
+    }              
+   
   }
 
 
@@ -1276,6 +1293,7 @@ const SmartInformation = (props: any, ref: any) => {
         myInfodata.push(Infodata[i]);
       }
       setSmartInformation(myInfodata);
+      setshowmore(false)
     }
   };
   //============ update documents link update both  function =============
@@ -1311,7 +1329,7 @@ const SmartInformation = (props: any, ref: any) => {
     <>
       <div>
 
-        {(props?.showHide != "projectManagement" && SmartInformation?.length > 0) && <div className='mb-3 card commentsection'>
+        {(props?.showHide != "projectManagement" && isSmartNote) && <div className='mb-3 card commentsection'>
           <div className='card-header'>
             <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation
               <span className='alignCenter'>
@@ -1416,7 +1434,7 @@ const SmartInformation = (props: any, ref: any) => {
                           })}
 
                           <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified:</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span>}</span> </div>
-                          {SmartInformation?.URL && <div className="d-flex p-1 px-2 w-100"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""} className='text-break'>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>}
+                          {SmartInformation?.URL && <div className="d-flex p-1 px-2 w-100"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""} target='_blank' data-interception='off' className='text-break'>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>}
                         </div>
                       </div>
                     </>)
@@ -1507,14 +1525,14 @@ const SmartInformation = (props: any, ref: any) => {
                         )
                       })}
                       <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified:</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1 alignIcon'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : <span className="alignIcon svg__iconbox svg__icon--defaultUser" title={SmartInformation?.Editor?.Title} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, SmartInformation?.Editor?.Id)}></span>}</span> </div>
-                      {SmartInformation?.URL && <div className="d-flex p-1 px-2"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a className='text-break' href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>}
+                      {SmartInformation?.URL && <div className="d-flex p-1 px-2"><span className='pe-2 boldClable'> Link: </span><span className='pe-2'><a target='_blank' data-interception='off' className='text-break' href={SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}>{SmartInformation?.URL != undefined ? SmartInformation?.URL?.Url : ""}</a></span></div>}
                     </div>
                   </div>
                 </>)
             }
           })}</div>
           }
-          {(copySmartInfo != undefined && copySmartInfo?.length > 5 && copySmartInfo?.length !== SmartInformation.length) && <div className="showmorbtn hyperlink" onClick={showMoreInfo}> Show more Options</div>}
+          {showmore && <div className="showmorbtn hyperlink" onClick={showMoreInfo}> Show more Options</div>}
         </div>}
         {/* ================= smartInformation add and edit panel=========== */}
 

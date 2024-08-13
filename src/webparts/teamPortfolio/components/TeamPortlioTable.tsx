@@ -31,6 +31,7 @@ import { myContextValue } from "../../../globalComponents/globalCommon";
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import WorkingActionInformation from "../../../globalComponents/WorkingActionInformation";
 import { Avatar } from "@fluentui/react-components";
+import LabelInfoIconToolTip from "../../../globalComponents/labelInfoIconToolTip";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -3755,8 +3756,8 @@ function TeamPortlioTable(SelectedProp: any) {
                             {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("component") > -1 && (
                                 <div style={{ color: `${portfolioColor}` }}>{IsUpdated} Portfolio</div>
                             )}
-                            {IsUpdated === "" && IsUpdated != undefined && (
-                                <div style={{ color: `${portfolioColor}` }}>Team Portfolio</div>
+                             {IsUpdated === "" && IsUpdated != undefined && (
+                                <div style={{ color: `${portfolioColor}` }}><LabelInfoIconToolTip columnName={"TeamPortfolioPageTitle"} ContextInfo={ContextValue} defaultTitle={"Team Portfolio"}/></div>
                             )}
                             {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("component") > -1 && (
                                 <div className="text-end fs-6">
