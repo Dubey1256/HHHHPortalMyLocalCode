@@ -4,6 +4,7 @@ import { EventRecurrenceInfo } from '../webparts/calendar/components/EventRecurr
 import { Panel, PanelType, Toggle } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
 import GlobalTooltip from './Tooltip'
+import moment from 'moment';
 let web :any
 let copyTaskData:any;
 const RecurringTask = (props: any) => {
@@ -40,6 +41,8 @@ const RecurringTask = (props: any) => {
                 "Id,Title,WorkingAction,workingThisWeek,CompletedDate,StartDate,PriorityRank,DueDate,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,TaskID,RecurrenceData"
             ).expand("AssignedTo,Author,TeamMembers,Editor,ResponsibleTeam")
             .get().then((TaskDetailsFromCall:any)=>{
+
+                TaskDetailsFromCall. DueDate= TaskDetailsFromCall. DueDate!=undefined? new Date(TaskDetailsFromCall?.DueDate):undefined
                 SetTaskData([TaskDetailsFromCall]);
                 copyTaskData=TaskDetailsFromCall;
             }).catch((error:any)=>{
@@ -48,6 +51,7 @@ const RecurringTask = (props: any) => {
                 let copyData =JSON.parse(JSON.stringify(props?.props?.Items))
                 copyData.StartDate = convertToISO(copyData?.StartDate);
                 copyData.CompletedDate = convertToISO(copyData?.CompletedDate)
+                copyData.DueDate =convertToISO(copyData?.DueDate)
                 SetTaskData([copyData])
                 copyTaskData=copyData
             });
@@ -71,9 +75,14 @@ const RecurringTask = (props: any) => {
                 .getById(props?.props?.Items?.listId)
                 .items.getById(props?.props?.Items?.Id)
                 .update({ WorkingAction: DataForUpdate?.length > 0 ? JSON.stringify(DataForUpdate) : null,
-                    RecurrenceData:returnedRecurrenceInfo?.recurrenceData })
+                    RecurrenceData:returnedRecurrenceInfo?.recurrenceData ,
+                    DueDate:returnedRecurrenceInfo?.endDate
+                })
+                  
                 .then((response:any) => {
                     console.log('Update successful:', response);
+                    props.EditData.DueDate= moment(returnedRecurrenceInfo?.endDate).format("YYYY-MM-DD")
+                    props?.setEditData(props.EditData)
                     props?.setWorkingAction(WorkingAction.current);
                     setShowRecurrenceSeriesInfo(false)
                 })
@@ -517,7 +526,7 @@ const RecurringTask = (props: any) => {
         if(returnedRecurrenceInfo!= null){
             let Taskobject=TaskData[0];
             Taskobject.EventDate = Taskobject?.StartDate != null ? Taskobject?.StartDate : currentDate;
-            Taskobject.EndDate = Taskobject?.CompletedDate != null ? Taskobject?.CompletedDate : currentDate.getDate()+3;
+            Taskobject.EndDate = Taskobject?.DueDate != null ? Taskobject?.DueDate : currentDate.getDate()+3;
             Taskobject.RecurrenceData = returnedRecurrenceInfo?.recurrenceData;
             let WorkingDetails = parseRecurrence(Taskobject)
             let WorkingActionJson = [
@@ -610,6 +619,7 @@ const RecurringTask = (props: any) => {
                     siteUrl={props?.props?.AllListId?.siteUrl}
                     returnRecurrenceData={returnRecurrenceInfo}
                     selectedKey={undefined}
+                    DueDate ={TaskData[0]?.DueDate!=undefined? TaskData[0]?.DueDate:undefined}
                     selectedRecurrenceRule={undefined}
                 />
                 <div>

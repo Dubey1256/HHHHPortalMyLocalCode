@@ -2429,6 +2429,7 @@ const Apps = (props: any) => {
                 recurrenceData={recurrenceData}
                 startDate={startDate}
                 siteUrl={props.props.siteUrl}
+                DueDate={undefined}
                 returnRecurrenceData={returnRecurrenceInfo} selectedKey={undefined} selectedRecurrenceRule={undefined}
               ></EventRecurrenceInfo>
             )}
