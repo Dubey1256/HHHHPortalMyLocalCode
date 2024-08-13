@@ -971,25 +971,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private handleMouseClick = (e: any) => {
     this.setState({ keyPressed: false });
   };
-  // private detectAndRenderLinks = (text: any) => {
-  //   const tempElement = document.createElement('div');
-  //   tempElement.innerHTML = text;
-  //   text = tempElement.textContent || tempElement.innerText || '';
-  //   text = text.replace(/\s+/g, ' ').trim();
-
-  //   const urlRegex = /(https?:\/\/[^\s]+)/g;
-  //   return text.split(urlRegex).map((part: any, index: any) => {
-  //     if (part.match(urlRegex)) {
-  //       return (
-  //         <a key={index} href={part} target="_blank" rel="noopener noreferrer">
-  //           {part}
-  //         </a>
-  //       );
-  //     }
-  //     return part;
-  //   });
-  // };
-
 
   private detectAndRenderLinks = (html: any) => {
 
@@ -1004,13 +985,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     });
     div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
     div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
-    // Update anchor tags
-    const anchorTags = div.querySelectorAll('a');
-    // anchorTags.forEach((a) => {
-    //   a.setAttribute('target', '_blank');
-    //   a.setAttribute('data-interception', 'off');
-    // });
 
+    const anchorTags = div.querySelectorAll('a');
+  
 
     return globalCommon?.replaceURLsWithAnchorTags(div.innerHTML);
   };
