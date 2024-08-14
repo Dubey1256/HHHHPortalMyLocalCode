@@ -9,6 +9,11 @@ import { IoMdMail } from "react-icons/io";
 import { FaCity, FaFax, FaAddressCard, FaGlobe } from "react-icons/fa";
 import { FaSquarePhone } from "react-icons/fa6";
 import { BsSkype } from "react-icons/bs";
+import { HiBuildingOffice2 } from "react-icons/hi2";
+import { BsGlobe2 } from "react-icons/bs";
+import { FaMapLocationDot } from "react-icons/fa6";
+import { MdContactPhone } from "react-icons/Md";
+import { SlLocationPin } from "react-icons/sl";
 let allListId: any = {};
 const ContactProfileComponent = (props: any) => {
     const baseUrl = props?.props?.Context?.pageContext?._web?.absoluteUrl;
@@ -76,14 +81,14 @@ const ContactProfileComponent = (props: any) => {
                 <section className="border-bottom d-flex pb-2">
                     <div>
                         <img className="user-dp" src={Contacts?.ItemCover === undefined || Contacts?.ItemCover === null || Contacts?.ItemCover?.Url === undefined || Contacts?.ItemCover?.Url === null ? `${MainSiteUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg` : Contacts?.ItemCover?.Url} alt="User" />
-                        
+
                     </div>
                     <div className="w-100 ms-4">
                         <div className="alignCenter">
                             <h2 className="d-flex heading m-0 mb-2 ms-0 ">
-                                {Contacts?.FirstName} &nbsp; {Contacts?.Title} <span className="me-1">{Contacts?.Suffix !== null && Contacts?.Suffix !== undefined && Contacts?.Suffix !== '' ? `(${Contacts?.Suffix})` : ''}</span>  
+                                {Contacts?.FirstName} &nbsp; {Contacts?.Title} <span className="me-1">{Contacts?.Suffix !== null && Contacts?.Suffix !== undefined && Contacts?.Suffix !== '' ? `(${Contacts?.Suffix})` : ''}</span>
                                 <a href="javascript:void(0)" className="alignCenter justify-content-center" onClick={() => EditItem()}>
-                                <span className="alignIcon hreflink svg__icon--edit svg__iconbox"></span>   </a>
+                                    <span className="alignIcon hreflink svg__icon--edit svg__iconbox"></span>   </a>
                             </h2>
                         </div>
                         <section>
@@ -144,9 +149,24 @@ const ContactProfileComponent = (props: any) => {
                                         </Col>
                                         <Col md={6} className="ps-0">
                                             <span className="f-20">
-                                                <FaFax title="Fax" /> 
+                                                <FaFax title="Fax" />
                                             </span>
                                             <span className="infocontent-pannel"> {Contacts?.WorkFax}</span>
+                                        </Col>
+                                    </Row>
+                                    <Row className="mt-1">
+                                        <Col md={6} className="ps-0">
+                                            <span className="f-20">
+                                                <MdContactPhone title="HomePhone" />
+                                            </span>
+                                            <span className="infocontent-pannel">{Contacts?.HomePhone} </span>
+
+                                        </Col>
+                                        <Col md={6} className="ps-0">
+                                            <span className="f-20">
+                                                <FaMapLocationDot title="WorkZip" />
+                                            </span>
+                                            <span className="infocontent-pannel"> {Contacts?.WorkZip}</span>
                                         </Col>
                                     </Row>
                                 </Col>
@@ -154,7 +174,7 @@ const ContactProfileComponent = (props: any) => {
                                     <Row>
                                         <h2 className="siteBdrBottom siteColor sectionHead ps-0 mb-2">Address Information</h2>
                                         <Col md={6} className="ps-0">
-                                            <span className="f-20"> <FaAddressCard /></span>
+                                            <span className="f-20"> <SlLocationPin /></span>
                                             <span className="infocontent-pannel">{Contacts?.WorkAddress}</span>
                                         </Col>
                                         <Col md={6} className="ps-0">
@@ -162,6 +182,17 @@ const ContactProfileComponent = (props: any) => {
                                             <span className="infocontent-pannel"> {Contacts?.WorkCity}</span>
                                         </Col>
 
+
+                                    </Row>
+                                    <Row className=" mt-1">
+                                        <Col md={6} className="ps-0">
+                                            <span className="f-20"> <BsGlobe2 /></span>
+                                            <span className="infocontent-pannel">{Contacts?.WorkCountry}</span>
+                                        </Col>
+                                        <Col md={6} className="ps-0">
+                                            <span className="f-20"> <HiBuildingOffice2 title="City" /></span>
+                                            <span className="infocontent-pannel"> {Contacts?.Office}</span>
+                                        </Col>
                                     </Row>
                                     <Row className=" mt-1">
                                         <Col md={6} className="ps-0">
@@ -172,7 +203,6 @@ const ContactProfileComponent = (props: any) => {
                                             <span className="f-20"> <BsSkype /></span>
                                             <span className="infocontent-pannel"> <a href={Contacts?.IM} target="_blank" className="hyperlink">{Contacts?.IM}</a></span>
                                         </Col>
-
                                     </Row>
                                 </Col>
                                 <Col className="my-2">
@@ -192,12 +222,6 @@ const ContactProfileComponent = (props: any) => {
 
                     </div>
                 </section>
-
-
-
-
-
-
             </Container>
             {openEditpopup && (<EditContactPopup Context={props?.props?.Context} props={Contacts} allListId={allListId} EditCallBackItemProfile={EditCallBackItemProfile} page={"ContactProfile"}></EditContactPopup>)}
         </>
