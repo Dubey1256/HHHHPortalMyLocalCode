@@ -293,11 +293,9 @@ function Tooltip(props: any) {
               {pageContent?.WebFullUrl.indexOf("hhhhteams") == -1 && <>
                 <a className='dropdown-item' onMouseEnter={() => { handleMouseEnter() }} ><FaCommentAlt />Browser Setting</a>
                 <div className="dropdown-submenu dropdown-menu-level-1 showBrowsers" onMouseLeave={() => $(".showBrowsers").css("display", "none")} style={{ display: "none" }}>
-                  <ul className="dropdown-menu-item">
-                    <li className="dropdown-submenu" onClick={() => setDefaultBrowser('googlechrome://')} ><a className='dropdown-item' ><input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'googlechrome://'} /><FaCommentAlt /> Chrome</a></li>
-                    <li className="dropdown-submenu" onClick={() => setDefaultBrowser('microsoft-edge:')}><a className='dropdown-item' ><input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'microsoft-edge:'} /><FaCommentAlt /> Edge</a></li>
-                    <li className="dropdown-submenu" onClick={() => setDefaultBrowser('firefox:')}><a className='dropdown-item' ><input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'firefox:'} /><FaCommentAlt /> Firefox</a></li>
-                  </ul>
+                    <a className='dropdown-item' onClick={() => setDefaultBrowser('googlechrome://')}> <input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'googlechrome://'} /><FaCommentAlt /> Chrome</a>
+                    <a className='dropdown-item' onClick={() => setDefaultBrowser('microsoft-edge:')}><input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'microsoft-edge:'} /><FaCommentAlt /> Edge</a>
+                    <a className='dropdown-item' onClick={() => setDefaultBrowser('firefox:')}><input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'firefox:'} /><FaCommentAlt /> Firefox</a> 
                 </div>
               </>
               }
