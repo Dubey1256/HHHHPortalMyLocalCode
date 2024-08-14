@@ -1251,15 +1251,18 @@ const loadAllPXTimeEntries = async () => {
       PXTasks.map((task: any) => {
         try {
           task.EstimatedTimeParsed = JSON.parse(task.EstimatedTimeDescription);
-          if (task.EstimatedTimeParsed) {
-              task.EstimatedTimeParsed.map((time: any) => {
-                totalEstimatedTime += parseFloat(time.EstimatedTime);
-              })
+          if (Array.isArray(task.EstimatedTimeParsed)) {
+            task.EstimatedTimeParsed.map((time: any) => {
+              const parsedTime = Number(time.EstimatedTime);
+              if (!isNaN(parsedTime)) {
+                totalEstimatedTime += parsedTime;
+              }
+            });
           }
         } catch (e) {
           console.error('Error parsing EstimatedTimeDescription:', e);
         }
-      })
+      });
       totalEstimatedTime = totalEstimatedTime.toFixed(2);
       totalTime = PXTasks?.reduce((total: any, time: any) => {
         const taskTime = time.TotalTime || 0;
