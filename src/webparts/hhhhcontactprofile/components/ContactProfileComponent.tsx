@@ -6,14 +6,14 @@ import { Col, Container, Row } from "react-bootstrap";
 import { SpaOutlined } from "@mui/icons-material";
 import "bootstrap/js/dist/tab.js";
 import { IoMdMail } from "react-icons/io";
-import { FaCity, FaFax, FaAddressCard, FaGlobe } from "react-icons/fa";
+import { FaCity, FaFax, FaAddressCard, FaGlobe, FaHome } from "react-icons/fa";
 import { FaSquarePhone } from "react-icons/fa6";
 import { BsSkype } from "react-icons/bs";
 import { HiBuildingOffice2 } from "react-icons/hi2";
 import { BsGlobe2 } from "react-icons/bs";
 import { FaMapLocationDot } from "react-icons/fa6";
 import { MdContactPhone } from "react-icons/Md";
-import { SlLocationPin } from "react-icons/sl";
+import { SlArrowRight, SlLocationPin } from "react-icons/sl";
 let allListId: any = {};
 const ContactProfileComponent = (props: any) => {
     const baseUrl = props?.props?.Context?.pageContext?._web?.absoluteUrl;
@@ -70,14 +70,25 @@ const ContactProfileComponent = (props: any) => {
                     <div className="sp-breadcrumbv">
                         <ul className="spfxbreadcrumb mb-2 ms-2 mt-16 p-0">
                             <li>
+                                <a target="_blank"
+                                    rel="noopener"
+                                    data-interception="off">
+                                    <FaHome />{" "}
+                                    {/* <span><SlArrowRight /></span> */}
+                                </a>
+                            </li>
+                            <li>
                                 <a data-interception="off" target="_blank" href={`${allListId?.baseUrl}/Sitepages/contacts-search.aspx`}>
                                     Contact Database
                                 </a>
+                                {/* <span><SlArrowRight /></span> */}
+                            </li>
+                            <li>
+                                <a>{Contacts?.FullName}</a>
                             </li>
                         </ul>
                     </div>
                 </section>
-
                 <section className="border-bottom d-flex pb-2">
                     <div>
                         <img className="user-dp" src={Contacts?.ItemCover === undefined || Contacts?.ItemCover === null || Contacts?.ItemCover?.Url === undefined || Contacts?.ItemCover?.Url === null ? `${MainSiteUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg` : Contacts?.ItemCover?.Url} alt="User" />
@@ -86,7 +97,7 @@ const ContactProfileComponent = (props: any) => {
                     <div className="w-100 ms-4">
                         <div className="alignCenter">
                             <h2 className="d-flex heading m-0 mb-2 ms-0 ">
-                                {Contacts?.FirstName} &nbsp; {Contacts?.Title} <span className="me-1">{Contacts?.Suffix !== null && Contacts?.Suffix !== undefined && Contacts?.Suffix !== '' ? `(${Contacts?.Suffix})` : ''}</span>
+                                {Contacts?.FullName} <span className="me-1">{Contacts?.Suffix !== null && Contacts?.Suffix !== undefined && Contacts?.Suffix !== '' ? `(${Contacts?.Suffix})` : ''}</span>
                                 <a href="javascript:void(0)" className="alignCenter justify-content-center" onClick={() => EditItem()}>
                                     <span className="alignIcon hreflink svg__icon--edit svg__iconbox"></span>   </a>
                             </h2>
