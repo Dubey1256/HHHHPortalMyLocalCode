@@ -3493,7 +3493,7 @@ const loadAllPXTimeEntries = async () => {
                                     {showTimeEntryIcon && <dl>
                                         <dt className="bg-fxdark">Total PX Time</dt>
                                         <dd className="bg-light">
-                                        {(totalEstimatedTime != undefined && totalEstimatedTime != 0) && <span title="Estimated Time">{`${totalEstimatedTime} hrs; `}</span>}
+                                        {(totalEstimatedTime != undefined && totalEstimatedTime != 0) && <span title="Total Estimated Time">{`${totalEstimatedTime} hrs; `}</span>}
                                           {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime.toFixed(2)} hrs; `}</span>}
                                           {(monthTotalTime != undefined && monthTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime.toFixed(2)} hrs; `}</span>}
                                           {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime.toFixed(2)} hrs; `}</span>}
