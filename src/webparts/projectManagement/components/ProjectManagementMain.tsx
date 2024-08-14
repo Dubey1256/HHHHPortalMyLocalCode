@@ -84,6 +84,7 @@ let tempmetadata: any;
 let weekTotalTime: any = 0
 let monthTotalTime: any = 0
 let totalTime: any = 0
+let totalEstimatedTime: any = 0
 let PXTasks: any
 const ProjectManagementMain = (props: any) => {
   const [openServiceComponent, setopenServiceComponent]= React.useState(false)
@@ -1247,6 +1248,19 @@ const loadAllPXTimeEntries = async () => {
       let groupedDataItems = globalCommon.deepCopy(backupTableData);
       let flattenedData = flattenData(groupedDataItems)
       PXTasks = flattenedData.filter((item: any) => item.TaskType)
+      PXTasks.map((task: any) => {
+        try {
+          task.EstimatedTimeParsed = JSON.parse(task.EstimatedTimeDescription);
+          if (task.EstimatedTimeParsed) {
+              task.EstimatedTimeParsed.map((time: any) => {
+                totalEstimatedTime += parseFloat(time.EstimatedTime);
+              })
+          }
+        } catch (e) {
+          console.error('Error parsing EstimatedTimeDescription:', e);
+        }
+      })
+      totalEstimatedTime = totalEstimatedTime.toFixed(2);
       totalTime = PXTasks?.reduce((total: any, time: any) => {
         const taskTime = time.TotalTime || 0;
         return total + taskTime;
@@ -3479,6 +3493,7 @@ const loadAllPXTimeEntries = async () => {
                                     {showTimeEntryIcon && <dl>
                                         <dt className="bg-fxdark">Total PX Time</dt>
                                         <dd className="bg-light">
+                                        {(totalEstimatedTime != undefined && totalEstimatedTime != 0) && <span title="Estimated Time">{`${totalEstimatedTime} hrs; `}</span>}
                                           {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime.toFixed(2)} hrs; `}</span>}
                                           {(monthTotalTime != undefined && monthTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime.toFixed(2)} hrs; `}</span>}
                                           {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime.toFixed(2)} hrs; `}</span>}
