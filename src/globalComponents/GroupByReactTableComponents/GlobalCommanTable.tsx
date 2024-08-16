@@ -16,7 +16,8 @@ import {
     Row
 } from "@tanstack/react-table";
 import { useVirtualizer, notUndefined } from "@tanstack/react-virtual";
-import { exportmeExcel } from "excel-ent";
+import { Dropdown, TooltipHost } from 'office-ui-fabric-react';
+ import { exportmeExcel } from "excel-ent";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaPlus, FaMinus, FaListAlt } from 'react-icons/fa';
 import { HTMLProps } from 'react';
@@ -46,6 +47,7 @@ import { TbChevronDown, TbChevronUp, TbSelector } from 'react-icons/tb';
 import { myContextValue, deepCopy } from '../globalCommon';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import moment from 'moment';
+import { Icon } from '@fluentui/react/lib/Icon';
 import ExportColumnSelect from './ExportColumnSelect';
 // import TileBasedTasks from './TileBasedTasks';
 // ReactTable Part/////
@@ -266,6 +268,29 @@ const GlobalCommanTable = (items: any, ref: any) => {
     let showingAllPortFolioCount = items?.showingAllPortFolioCount
     let columnVisibilityDataValue: any = {}
     let tableId = items?.tableId
+
+    const optionsSearch = [{
+        key: 'ALL',
+        text: 'All Words',
+
+    },
+    {
+        key: 'ANY',
+        text: 'Any Words',
+
+    },
+    {
+        key: 'EXACT',
+        text: 'Exact Phrase',
+
+    },
+    ];
+    const tooltips: any = {
+        ALL: 'Text needs to contain word1 and word2. (Order not important)',
+        ANY: 'Text needs to contain any word1 or word2 or both.',
+        EXACT: 'Text must contain the exact phrase in the same order.',
+    };
+
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
     );
@@ -276,7 +301,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [globalFilter, setGlobalFilter] = React.useState("");
     const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
     const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
-    const [globalSearchType, setGlobalSearchType] = React.useState("ALL");
+    const [globalSearchType, setGlobalSearchType] = React.useState<any>("ALL");
     const [selectedFilterPanelIsOpen, setSelectedFilterPanelIsOpen] = React.useState(false);
     const [dateColumnFilter, setDateColumnFilter] = React.useState(false);
     const [bulkEditingSettingPopup, setBulkEditingSettingPopup] = React.useState(false);
@@ -1431,38 +1456,59 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </span>
 
 
-                    <div className='alignCenter'>
-                        {selectedFilterCount?.selectedFilterCount == "No item is selected" ? <span className="svg__iconbox svg__icon--setting hreflink" style={{ backgroundColor: 'gray' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span> :
-                            <span className="svg__iconbox svg__icon--setting hreflink" style={selectedFilterCount?.selectedFilterCount == 'All content' ? { backgroundColor: "var(--SiteBlue)" } : { backgroundColor: 'rgb(68 114 199)' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>}
-                    </div>
-                    <span className='custom-select mx-1'>
-                        <select style={{ height: "30px" }}
-                            className="w-100 siteColor"
-                            aria-label="Default select example"
-                            value={globalSearchType}
-                            onChange={(e) => {
-                                setGlobalSearchType(e.target.value);
-                                setGlobalFilter("");
-                            }}
-                        >
-                            <option title='text need to contain word1 and word2. (order not important)' value="ALL">All Words</option>
-                            <option title=' text need to contain any word1 or word2 or Both.' value="ANY">Any Words</option>
-                            <option title=' text must contain exact Phrase in same order.' value="EXACT">Exact Phrase</option>
-                        </select>
-                    </span>
-                </span>
-                <span className="toolbox">
-                    {items.taskProfile != true && items?.showCreationAllButton === true && <>
-                        {items?.PortfolioFeature === "Feature" && items?.hideRestructureBtn != true ? (
-                            <button type="button" disabled className="btn btn-primary" title=" Add Structure"> {" "} Add Structure{" "}</button>
-                        ) : (table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" && table?.getSelectedRowModel()?.flatRows[0]?.original
-                            ?.TaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Workstream" && table?.getSelectedRowModel()?.flatRows[0]?.original
-                                ?.TaskType?.Title != "Task") || table?.getSelectedRowModel()?.flatRows?.length === 0 ? (
-                            <button type="button" className="btn btn-primary" title=" Add Structure" onClick={() => openCreationAllStructure("Add Structure")}>
-                                {" "} Add Structure{" "}</button>
-                        ) : (
-                            <button type="button" disabled className="btn btn-primary" title=" Add Structure"> {" "} Add Structure{" "}</button>
-                        )}
+                            <div className='alignCenter'>
+                                {selectedFilterCount?.selectedFilterCount == "No item is selected" ? <span className="svg__iconbox svg__icon--setting hreflink" style={{ backgroundColor: 'gray' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span> :
+                                    <span className="svg__iconbox svg__icon--setting hreflink" style={selectedFilterCount?.selectedFilterCount == 'All content' ? { backgroundColor: "var(--SiteBlue)" } : { backgroundColor: 'rgb(68 114 199)' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>}
+                            </div>
+                            <span className='mx-1'>
+                                <Dropdown
+                                    className="full-width customSelectBox"
+                                    id="search"
+                                    options={optionsSearch}
+                                    selectedKey={globalSearchType}
+                                    onChange={(e, option) => {
+                                        setGlobalSearchType(option.key);
+                                        setGlobalFilter("");
+                                    }}
+                                    onRenderOption={(option) => (
+                                        <TooltipHost content={tooltips[option.key]}>
+                                            <div style={{ display: 'flex',
+                                                    alignItems: 'center', padding:'2px 16px 2px 4px',
+                                                    width: '130px', fontSize:'11px',
+                                                    backgroundColor: option.key === globalSearchType ? 'var(--SiteBlue)' : '',
+                                                    color:option.key === globalSearchType ? '#fff' :'#333333',
+                                                    border: option.key === globalSearchType ? '1px solid #999999':''
+                                                }}
+                                            >
+                                                <div style={{ width: '20px' }} className='alignCenter '>
+                                                    {option.key === globalSearchType && (
+                                                        <Icon
+                                                            iconName="CheckMark"
+                                                            style={{ marginRight: '4px', backgroundColor: 'var(--SiteBlue)', color: 'white', width:'20px', height:'20px' }}
+                                                        />
+                                                    )}
+                                                </div>
+                                                <div>{option.text}</div>
+                                            </div>
+                                        </TooltipHost>
+                                    )}
+                                    styles={{ dropdown: { width: '130px'} }}
+                                />
+
+                            </span>
+                        </span>
+                        <span className="toolbox">
+                            {items.taskProfile != true && items?.showCreationAllButton === true && <>
+                                {items?.PortfolioFeature === "Feature" && items?.hideRestructureBtn != true ? (
+                                    <button type="button" disabled className="btn btn-primary" title=" Add Structure"> {" "} Add Structure{" "}</button>
+                                ) : (table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" && table?.getSelectedRowModel()?.flatRows[0]?.original
+                                    ?.TaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Workstream" && table?.getSelectedRowModel()?.flatRows[0]?.original
+                                        ?.TaskType?.Title != "Task") || table?.getSelectedRowModel()?.flatRows?.length === 0 ? (
+                                    <button type="button" className="btn btn-primary" title=" Add Structure" onClick={() => openCreationAllStructure("Add Structure")}>
+                                        {" "} Add Structure{" "}</button>
+                                ) : (
+                                    <button type="button" disabled className="btn btn-primary" title=" Add Structure"> {" "} Add Structure{" "}</button>
+                                )}
 
                         {items?.protfolioProfileButton != true && items?.hideAddActivityBtn != true && <>{table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" disabled={true} > Add Activity-Task</button>}</>}

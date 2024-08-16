@@ -10,6 +10,7 @@ import HighlightableCell from "../../../globalComponents/GroupByReactTableCompon
 import { Panel, PanelType } from "office-ui-fabric-react";
 import { Avatar } from "@fluentui/react-components";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import PortfolioLeadEOD from './PortFolioLeadEOD';
 
 let forceAllAditionalTaskCall: any = [];
 let copyAllAditionalTaskData: any = [];
@@ -64,7 +65,7 @@ export const EodReportMain = (props: any) => {
         MasterTaskListID: props.props.MasterTaskId,
         TaskUserListID: props.props.TaskUserListID,
         SmartMetadataListID: props.props.SmartMetadataListID,
-        siteUrl: props.props.siteUrl,
+        siteUrl: props.props.context?._pageContext?.web?.absoluteUrl,
         Context: props.props.context,
     }
 
@@ -1680,6 +1681,26 @@ export const EodReportMain = (props: any) => {
     }
     return (
         <div>
+            {/* <h2>All Portfolio Lead</h2>
+
+            <section className="Tabl1eContentSection row taskprofilepagegreen">
+                <div className="container-fluid p-0">
+                    <section className="TableSection">
+                        <div className="container p-0">
+                            <div className="Alltable mt-2 ">
+                                <div className="col-sm-12 p-0 smart">
+                                    <div>
+                                        <div>{ allUsers?.length>0 &&  < PortfolioLeadEOD AllUsers={allUsers} AllListId={AllListId}/>}
+                                      
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </section> */}
+
             <h2>EOD Report</h2>
             <section className="Tabl1eContentSection row taskprofilepagegreen">
                 <div className="container-fluid p-0">
