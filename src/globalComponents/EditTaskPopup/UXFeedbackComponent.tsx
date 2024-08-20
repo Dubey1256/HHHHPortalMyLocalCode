@@ -889,11 +889,9 @@ export default function UXFeedbackComponent(textItems: any) {
                                         aria-labelledby={designdata?.setTitle}
                                     >
                                         <div className="full-width my-2" >
-                                            <span
-                                                className="mx-1 hover-text"
-                                                onClick={() => AddMoreImages(j,'add')}
-                                            >
-                                                <span className="svg__iconbox svg__icon--Plus hreflink mini" ></span>Add Images
+                                            <span className="mx-1 hover-text hreflink alignCenter"
+                                                onClick={() => AddMoreImages(j,'add')}>
+                                                <span className="svg__iconbox svg__icon--Plus mini" ></span>Add Images
                                                 <span className="tooltip-text pop-right" >
                                                     Add Images
                                                 </span>
@@ -999,58 +997,51 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                     src={imgData?.ImageUrl}
                                                                     loading="lazy"
                                                                 ></img>
-                                                                <div className="Footerimg d-flex align-items-center justify-content-between p-1 ">
-                                                                    <div className='usericons'>
-
-                                                                        <div className="d-flex">
-                                                                            {/* <span className="svg__iconbox svg__icon--Plus hreflink" title="Add More Image" onClick={() => AddMoreImages(i)}></span> */}
-                                                                            <span className="mx-2" >{imgData?.UploadeDate}</span>
-                                                                            <span className='round px-1'>
-                                                                                {imgData?.UserImage != null && imgData?.UserImage != "" ?
-                                                                                    <img className='align-self-start hreflink ' title={imgData?.UserName} src={imgData?.UserImage} />
-                                                                                    : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
-                                                                                }
+                                                                <div className="Footerimg d-flex align-items-center justify-content-between p-1">
+                                                                    <div className="alignCenter">
+                                                                        {/* <span className="svg__iconbox svg__icon--Plus hreflink" title="Add More Image" onClick={() => AddMoreImages(i)}></span> */}
+                                                                        <span className="mx-2" >{imgData?.UploadeDate}</span>
+                                                                        <span className='round'>
+                                                                            {imgData?.UserImage != null && imgData?.UserImage != "" ?
+                                                                                <img className='align-self-start hreflink ' title={imgData?.UserName} src={imgData?.UserImage} />
+                                                                                : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
+                                                                            }
+                                                                        </span>
+                                                                        {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1">
+                                                                            <BiInfoCircle />
+                                                                        </span>}
+                                                                        <span className="mx-1 mt--3">|</span>
+                                                                        <span className="m-0 hover-text alignCenter"
+                                                                            onClick={() =>
+                                                                                DeleteImageFunction(
+                                                                                    indeximage,
+                                                                                    imgData.ImageName,
+                                                                                    "Remove"
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            {" "}
+                                                                            <RiDeleteBin6Line />
+                                                                            <span className="tooltip-text pop-right">
+                                                                                Delete
                                                                             </span>
-                                                                            {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
-                                                                                <BiInfoCircle />
-                                                                            </span>}
-                                                                            <span
-                                                                                className="m-0 hover-text"
-                                                                                onClick={() =>
-                                                                                    DeleteImageFunction(
-                                                                                        indeximage,
-                                                                                        imgData.ImageName,
-                                                                                        "Remove"
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                {" "}
-                                                                                | <RiDeleteBin6Line />
+                                                                        </span>
+                                                                        <span className="mx-1 mt--3">|</span>
+                                                                        <span className="m-0 hover-text alignCenter"
+                                                                            onClick={() =>
+                                                                                AddMoreImages(
+                                                                                    indeximage, 'replace'
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            {" "}
+                                                                                <TbReplace />{" "}
                                                                                 <span className="tooltip-text pop-right">
-                                                                                    Delete
+                                                                                    Replace Image
                                                                                 </span>
-                                                                            </span>
-                                                                            <span
-                                                                                className="m-0 hover-text"
-                                                                                onClick={() =>
-                                                                                    AddMoreImages(
-                                                                                        indeximage, 'replace'
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                {" "}
-                                                                                |
-                                                                                <span className="siteColor">
-                                                                                    <TbReplace />{" "}
-                                                                                    <span className="tooltip-text pop-right">
-                                                                                        Replace Image
-                                                                                    </span>
-                                                                                </span>
-                                                                            </span>
-                                                                        </div>
+                                                                        </span>
                                                                     </div>
-                                                                    <div className="expandicon">
-
+                                                                    <div className="alignCenter">
                                                                         <span >
                                                                             {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
                                                                         </span>
@@ -1066,7 +1057,6 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                             <label className="ms-1" htmlFor={`checkbox-${imageIndex}`}>Select for Move</label><br />
                                                                         </span>}
                                                                     </div>
-
                                                                 </div>
 
                                                             </div>
@@ -1078,7 +1068,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                         {designdata?.TemplatesArray?.length > 0 && designdata?.TemplatesArray?.map((obj: any, i: any) => {
                                             const isChecked = selectedMoveData.some(item => item.Title === obj.Title);
                                             return (
-                                                <div className="col-sm-12 row">
+                                                <div className="">
                                                     <div className="FeedBack-comment row my-1">
                                                         <div
                                                             data-id={i}
@@ -1176,9 +1166,9 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                             Mark As Completed
                                                                         </label>
                                                                     </span>
-                                                                    <span>|</span>
+                                                                   
                                                                     {enableSelectForMove && <span key={i} className="mx-1">
-
+                                                                    <span>|</span>
                                                                         <input
                                                                             className="form-check-input mt--3"
                                                                             type="checkbox"
@@ -1213,7 +1203,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                             </div>
                                                             <div className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9" : ""}>
                                                                 <div className="d-flex" title={obj.isShowLight}>
-                                                                    <span className="SubTestBorder p-1 me-1">{`${arrayOfChar[currentActiveTab]}. ${i + 1}`}</span>
+                                                                    <span className="SubTestBorder p-1 me-1" style={{width:'35px'}}>{`${arrayOfChar[currentActiveTab]}. ${i + 1}`}</span>
                                                                     <textarea
                                                                         style={{ width: "100%" }}
                                                                         className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "form-control Disabled-Link bg-e9" : "form-control"}
