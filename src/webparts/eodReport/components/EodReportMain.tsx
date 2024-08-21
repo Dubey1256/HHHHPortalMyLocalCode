@@ -1690,7 +1690,7 @@ export const EodReportMain = (props: any) => {
                             <div className="Alltable mt-2 ">
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
-                                        <div>{ allUsers?.length>0 &&  < PortfolioLeadEOD AllUsers={allUsers} AllListId={AllListId}/>}
+                                        <div>{ allUsers?.length > 0 && timesheetListConfig?.length > 0 && < PortfolioLeadEOD AllUsers={allUsers}timesheetListConfig={timesheetListConfig} AllListId={AllListId}/>}
                                       
                                         </div>
                                     </div>

@@ -1540,19 +1540,19 @@ const uxdescriptions = (props: any) => {
                                                                 </div>
                                                                 {showhideCommentBoxIndex == i && !objective && <div className='SpfxCheckRadio'>
                                                                     <div className="col-sm-12 mt-2 p-0" style={{ display: showcomment }} >
-                                                                        {props?.Item["Approver"] != "" && props?.Item["Approver"] != undefined && (props?.Item["Approver"]?.AssingedToUser?.Id == props?.currentUser[0]?.Id || (props?.Item["Approver"]?.Approver?.length > 0 && props?.Item["Approver"]?.Approver[0]?.Id == props?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' name='approval' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target.checked)} />
+                                                                    {props?.Item?.Approver != "" && props?.Item?.Approver != undefined && (props?.Item?.checkIsApproval) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' name='approval' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target.checked)} />
                                                                             Mark as Approval Comment</label>}
                                                                     </div>
                                                                     <div className="align-items-center d-flex"
                                                                         style={{ display: showcomment }}
                                                                     >  <textarea id="txtComment" onChange={(e) => handleInputChange(e)} className="form-control full-width"></textarea>
-                                                                        <button type="button" className={props?.Item["Approver"] != undefined && props?.Item["Approver"] != "" && (props?.Item["Approver"]?.AssingedToUser?.Id ==props?.currentUser[0]?.Id || (props?.Item["Approver"]?.Approver?.length > 0 && props?.Item["Approver"]?.Approver[0]?.Id ==props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => PostButtonClick(fbData, i)}>Post</button>
+                                                                        <button type="button" className="btn-primary btn ms-2" onClick={() => PostButtonClick(fbData, i)}>Post</button>
                                                                     </div>
                                                                 </div>}
 
                                                             </div>
 
-                                                            {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
+                                                            {fbData['Subtext'] != null && fbData['Subtext']?.length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                                                                 return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
                                                                     <div className='justify-content-between d-flex'>
                                                                         <div className='alignCenter m-0'>
@@ -1698,14 +1698,15 @@ const uxdescriptions = (props: any) => {
                                                                     </div>
                                                                     {subchildcomment == j && subchildParentIndex == i && !objective ? <div className='SpfxCheckRadio' >
                                                                         <div className="col-sm-12 mt-2 p-0  ">
-                                                                            {props?.Item["Approver"] != "" && props?.Item["Approver"] != undefined && (props?.Item["Approver"]?.AssingedToUser?.Id == props?.currentUser[0]?.Id || (props?.Item["Approver"]?.Approver[0]?.Id == props?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target?.checked)} />Mark as Approval Comment</label>}
+                                                                             {props?.Item?.Approver != "" && props?.Item?.Approver != undefined && (props?.Item?.checkIsApproval) && 
+                                                                             <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target?.checked)} />Mark as Approval Comment</label>}
 
                                                                         </div>
 
                                                                         <div className="align-items-center d-flex"
 
                                                                         >  <textarea id="txtCommentSubtext" onChange={(e) => handleInputChange(e)} className="form-control full-width" ></textarea>
-                                                                            <button type="button" className={props?.Item["Approver"] != undefined && props?.Item["Approver"] != "" && (props?.Item["Approver"]?.AssingedToUser?.Id ==props?.currentUser[0]?.Id || (props?.Item["Approver"]?.Approver[0]?.Id ==props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => SubtextPostButtonClick(j, i)}>Post</button>
+                                                                            <button type="button" className="btn-primary btn ms-2" onClick={() => SubtextPostButtonClick(j, i)}>Post</button>
                                                                         </div>
                                                                     </div> : null}
 
