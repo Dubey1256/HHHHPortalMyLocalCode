@@ -61,7 +61,7 @@ const EmployeProfile = (props: any) => {
     loadMasterTask();
     loadTaskUsers(undefined);
     getAllData(true);
-    generateDateRange()
+    generateDateRange();
   }, []);
   const generateDateRange = () => {
     let Count = 0;
