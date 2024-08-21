@@ -84,8 +84,8 @@ let tempmetadata: any;
 let weekTotalTime: any = 0
 let monthTotalTime: any = 0
 let totalTime: any = 0
-let totalEstimatedTime: any = 0
-let PXTasks: any
+let totalEstimatedTime: any
+let PXTasks: any = [];
 const ProjectManagementMain = (props: any) => {
   const [openServiceComponent, setopenServiceComponent]= React.useState(false)
   relevantDocRef = React.useRef();
@@ -226,6 +226,10 @@ const ProjectManagementMain = (props: any) => {
       console.log(e);
     }
   }, []);
+  React.useEffect(() => {
+    loadTotalEstimatedTime();
+  }, [PXTasks])
+
   var showProgressBar = () => {
     $(" #SpfxProgressbar").show();
   };
@@ -1248,22 +1252,6 @@ const loadAllPXTimeEntries = async () => {
       let groupedDataItems = globalCommon.deepCopy(backupTableData);
       let flattenedData = flattenData(groupedDataItems)
       PXTasks = flattenedData.filter((item: any) => item.TaskType)
-      PXTasks.map((task: any) => {
-        try {
-          task.EstimatedTimeParsed = JSON.parse(task.EstimatedTimeDescription);
-          if (Array.isArray(task.EstimatedTimeParsed)) {
-            task.EstimatedTimeParsed.map((time: any) => {
-              const parsedTime = Number(time.EstimatedTime);
-              if (!isNaN(parsedTime)) {
-                totalEstimatedTime += parsedTime;
-              }
-            });
-          }
-        } catch (e) {
-          console.error('Error parsing EstimatedTimeDescription:', e);
-        }
-      });
-      totalEstimatedTime = totalEstimatedTime.toFixed(2);
       totalTime = PXTasks?.reduce((total: any, time: any) => {
         const taskTime = time.TotalTime || 0;
         return total + taskTime;
@@ -1319,6 +1307,30 @@ const loadAllPXTimeEntries = async () => {
       console.log(filterTasksinfo)
       setFilteredTasks(filterTasksinfo)
     }
+  }
+
+  const loadTotalEstimatedTime = () => {
+    if (PXTasks.length > 0) {
+      totalEstimatedTime = 0;
+      PXTasks.map((task: any) => {
+        try {
+          task.EstimatedTimeParsed = JSON.parse(task.EstimatedTimeDescription);
+          if (Array.isArray(task.EstimatedTimeParsed)) {
+            task.EstimatedTimeParsed.map((time: any) => {
+              const parsedTime = Number(time.EstimatedTime);
+              if (!isNaN(parsedTime)) {
+                totalEstimatedTime += parsedTime;
+              }
+            });
+          }
+        } catch (e) {
+          console.error('Error parsing EstimatedTimeDescription:', e);
+        }
+      });
+      totalEstimatedTime = totalEstimatedTime.toFixed(2);
+      console.log(`Total Estimated Time: ${totalEstimatedTime}`);
+    }
+    
   }
 
 
