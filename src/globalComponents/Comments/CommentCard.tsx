@@ -244,12 +244,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         });
         if (senderObject.length > 0) {
           userDeatails.push({
-            'Id': senderObject[0]?.AssingedToUser?.Id,
+            'Id': senderObject[0]?.Id,
             'Name': senderObject[0]?.AssingedToUser?.EMail,
             'Suffix': senderObject[0]?.Suffix,
             'Title': senderObject[0]?.Title,
             'userImage': senderObject[0]?.Item_x0020_Cover?.Url,
-            "Item_x0020_Cover":senderObject[0]?.Item_x0020_Cover
+            "Item_x0020_Cover":senderObject[0]?.Item_x0020_Cover,
+            "AssingedToUser":senderObject[0]?.AssingedToUser
             
           })
         }
@@ -290,21 +291,21 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
    
 
     if (emailRecipients != undefined && emailRecipients.length > 0) {
-      if(emailRecipients?.every((dupl:any)=>dupl.AssingedToUser?.Id  !=Author?.Id)){
+      if(emailRecipients?.every((dupl:any)=>dupl.AssingedToUser?.Id  !=Author?.AssingedToUser?.Id)){
         emailRecipients?.push(Author);
       }
      
        if(ResponsibleTeam?.length>0){
         ResponsibleTeam?.map((resp:any)=>{
          
-          if(emailRecipients?.every((dupl:any)=>dupl?.AssingedToUser?.Id !=resp?.Id)){
+          if(emailRecipients?.every((dupl:any)=>dupl?.AssingedToUser?.Id !=resp?.AssingedToUser?.Id)){
             emailRecipients.push(resp)
           }
           })
         }
        if(TeamMembers?.length>0){
         TeamMembers?.map((team:any)=>{
-          if(emailRecipients?.every((dupl:any)=>dupl?.AssingedToUser?.Id  !=team?.Id)){
+          if(emailRecipients?.every((dupl:any)=>dupl?.AssingedToUser?.Id  !=team?.AssingedToUser?.Id)){
             emailRecipients.push(team)
           }
         })
@@ -342,20 +343,20 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           })
         }
       }
-      if(this.topCommenters?.every((dupl:any)=>dupl.AssingedToUser?.Id  !=Author?.Id)){
+      if(this.topCommenters?.every((dupl:any)=>dupl.AssingedToUser?.Id  !=Author?.AssingedToUser?.Id)){
         this.topCommenters?.push(Author);
       }
      
        if(ResponsibleTeam?.length>0){
         ResponsibleTeam?.map((resp:any)=>{
-        if(this.topCommenters?.every((dupl:any)=>dupl?.AssingedToUser?.Id !=resp?.Id)){
+        if(this.topCommenters?.every((dupl:any)=>dupl?.AssingedToUser?.Id !=resp?.AssingedToUser?.Id)){
             this.topCommenters.push(resp)
           }
           })
         }
        if(TeamMembers?.length>0){
         TeamMembers?.map((team:any)=>{
-          if(this.topCommenters?.every((dupl:any)=>dupl?.AssingedToUser?.Id  !=team?.Id)){
+          if(this.topCommenters?.every((dupl:any)=>dupl?.AssingedToUser?.Id  !=team?.AssingedToUser?.Id)){
             this.topCommenters.push(team)
           }
         })
@@ -607,7 +608,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     return mention_str.trim();
   }
   private GetUserObjectArr(username: any) {
-    let userDeatails = { 'Id': '', 'Name': '', 'Suffix': '', 'Title': '', 'userImage': '','Item_x0020_Cover':{} };
+    let userDeatails = { 'Id': '', 'Name': '', 'Suffix': '', 'Title': '', 'userImage': '','Item_x0020_Cover':{} ,'AssingedToUser':{}};
     if (username != undefined && this.taskUsers != undefined && this.taskUsers.length > 0) {
       let senderObject = this.taskUsers?.filter(function (user: any, i: any) {
         if (user.AssingedToUser != undefined) {
@@ -618,12 +619,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         }
       });
       if (senderObject.length > 0) {
-        userDeatails.Id = senderObject[0]?.AssingedToUser?.Id;
+        userDeatails.Id = senderObject[0]?.Id;
         userDeatails.Name = senderObject[0]?.AssingedToUser?.EMail;
         userDeatails.Suffix = senderObject[0].Suffix;
         userDeatails.Title = senderObject[0].Title;
         userDeatails.userImage = senderObject[0]?.Item_x0020_Cover?.Url,
-        userDeatails.Item_x0020_Cover=senderObject[0]?.Item_x0020_Cover
+        userDeatails.Item_x0020_Cover=senderObject[0]?.Item_x0020_Cover,
+        userDeatails.AssingedToUser=senderObject[0]?.AssingedToUser
       }
       return userDeatails;
     }
