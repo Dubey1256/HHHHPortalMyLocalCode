@@ -807,128 +807,156 @@ const EmployeProfile = (props: any) => {
         let TempArray: any = []
         let ServerThisWeek: any = getStartingDate('This Week')
         let ThisWeek = getStartingDate('This Week').toISOString();
-        if (TimeSheetLists != undefined && TimeSheetLists?.length > 0) {
-          TimeSheetLists.map((site: any) => {
-            let web = new Web(site?.siteUrl);
-            web.lists.getById(site?.listId).items.select(site?.query).filter(`(Modified ge '${ThisWeek}') and (TimesheetTitle/Id ne null)`).getAll()
-              .then((data: any) => {
-                console.log(data);
-                data.map((entry: any) => {
-                  try {
-                    if (entry?.AdditionalTimeEntry != undefined && entry?.AdditionalTimeEntry != null && entry?.AdditionalTimeEntry != '') {
-                      entry.AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
-                      entry.AuthorName = '';
-                      entry.AuthorImage = ''
-                      entry.TaskTime = 0
-                      entry.TaskDate = undefined
-                      entry.CreatedServerDate = undefined
-                      if (entry.AdditionalTimeEntry != undefined && entry.AdditionalTimeEntry?.length > 0) {
-                        entry.AdditionalTimeEntry?.map((TimeEntry: any, index: any) => {
-                          TimeEntry.SiteIcon = '';
-                          TimeEntry.TaskID = '';
-                          if (array?.length) {
-                            array?.map((task: any) => {
-                              if (task?.siteType != undefined && task?.siteType?.toLowerCase() == "offshore tasks")
-                                task.LookupColumn = "Offshore Tasks";
-                              task.LookupColumn = task?.siteType;
-                              let ColumnName = "Task" + task?.LookupColumn.replace(" ", "");
-                              if (entry[ColumnName] != undefined && entry[ColumnName].Title != undefined) {
-                                if (entry[ColumnName].Id != undefined && entry[ColumnName].Id == task?.Id) {
-                                  TimeEntry.SiteIcon = task?.SiteIcon;
-                                  TimeEntry.TaskID = task?.TaskID;
-                                  TimeEntry.Site = task?.siteType;
-                                  TimeEntry.TaskItem = task;
+        let filter = `(Modified ge '${ThisWeek}') and (PercentComplete gt 0.81)`;
+        globalCommon?.loadAllSiteTasks(props?.props, filter).then((Tasks: any) => {
+          let Above80Task: any = [];
+          if (Tasks?.length)
+            Above80Task = [...Tasks]
+          if (TimeSheetLists != undefined && TimeSheetLists?.length > 0) {
+            TimeSheetLists.map((site: any) => {
+              let web = new Web(site?.siteUrl);
+              web.lists.getById(site?.listId).items.select(site?.query).filter(`(Modified ge '${ThisWeek}') and (TimesheetTitle/Id ne null)`).getAll()
+                .then((data: any) => {
+                  console.log(data);
+                  data.map((entry: any) => {
+                    try {
+                      if (entry?.AdditionalTimeEntry != undefined && entry?.AdditionalTimeEntry != null && entry?.AdditionalTimeEntry != '') {
+                        entry.AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
+                        entry.AuthorName = '';
+                        entry.AuthorImage = ''
+                        entry.TaskTime = 0
+                        entry.TaskDate = undefined
+                        entry.CreatedServerDate = undefined
+                        if (entry.AdditionalTimeEntry != undefined && entry.AdditionalTimeEntry?.length > 0) {
+                          entry.AdditionalTimeEntry?.map((TimeEntry: any, index: any) => {
+                            TimeEntry.SiteIcon = '';
+                            TimeEntry.TaskID = '';
+                            if (array?.length) {
+                              array?.map((task: any) => {
+                                if (task?.siteType != undefined && task?.siteType?.toLowerCase() == "offshore tasks")
+                                  task.LookupColumn = "Offshore Tasks";
+                                task.LookupColumn = task?.siteType;
+                                let ColumnName = "Task" + task?.LookupColumn.replace(" ", "");
+                                if (entry[ColumnName] != undefined && entry[ColumnName].Title != undefined) {
+                                  if (entry[ColumnName].Id != undefined && entry[ColumnName].Id == task?.Id) {
+                                    TimeEntry.SiteIcon = task?.SiteIcon;
+                                    TimeEntry.TaskID = task?.TaskID;
+                                    TimeEntry.Site = task?.siteType;
+                                    TimeEntry.TaskItem = task;
+                                  }
                                 }
-                              }
-                            })
-                          }
-                          TimeEntry.timeSheetsDescriptionSearch = '';
-                          TimeEntry.UpdatedId = entry?.Id;
-                          TimeEntry.timeSheetsDescriptionSearch = TimeEntry?.Description
-                          if ((TimeEntry?.Id == undefined || TimeEntry?.Id == '') && TimeEntry?.ID != undefined && TimeEntry?.ID != '')
-                            TimeEntry.Id = TimeEntry?.ID;
-                          else if ((TimeEntry?.ID == undefined || TimeEntry?.ID == '') && TimeEntry?.Id != undefined && TimeEntry?.Id != '')
-                            TimeEntry.ID = TimeEntry?.Id;
-                          else {
-                            TimeEntry.Id = index;
-                            TimeEntry.ID = index;
-                          }
-                          if (TimeEntry.TaskDate != null) {
-                            var dateValues = TimeEntry?.TaskDate?.split("/");
-                            var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
-                            var NewDate = new Date(dp);
-                            TimeEntry.sortTaskDate = NewDate;
-                            TimeEntry.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
-                            TimeEntry.sortTaskDate.setHours(0, 0, 0, 0);
-                            TimeEntry.Title = TimeEntry?.AuthorName;
-                          }
-                          entry.listId = site?.listId;
-                          entry.siteUrl = site?.siteUrl
-                          if (site?.taskSites != undefined && site?.taskSites?.length > 0) {
-                            site?.taskSites?.forEach((Site: any) => {
-                              if (entry['Task' + Site] != undefined && entry['Task' + Site]?.Id != undefined) {
-                                entry.TaskListType = Site;
-                              }
-                            })
-                          }
-                          if (TimeEntry?.sortTaskDate != undefined && ServerThisWeek != undefined && TimeEntry?.sortTaskDate.getTime() >= ServerThisWeek.getTime()) {
-                            if (TimeEntry?.Status == 'For Approval' && config?.Status != "My TimSheet") {
-                              TempArray.push(TimeEntry)
-                              if (!isItemExists(AllTimeEntry, entry.Id))
-                                AllTimeEntry.push(entry);
+                              })
+                              Above80Task?.map((task: any) => {
+                                task.TaskID = globalCommon.GetTaskId(task);
+                                if (task?.siteType != undefined && task?.siteType?.toLowerCase() == "offshore tasks")
+                                  task.LookupColumn = "Offshore Tasks";
+                                task.LookupColumn = task?.siteType;
+                                let ColumnName = "Task" + task?.LookupColumn.replace(" ", "");
+                                if (entry[ColumnName] != undefined && entry[ColumnName].Title != undefined) {
+                                  if (entry[ColumnName].Id != undefined && entry[ColumnName].Id == task?.Id) {
+                                    TimeEntry.SiteIcon = task?.SiteIcon;
+                                    TimeEntry.TaskID = task?.TaskID;
+                                    TimeEntry.Site = task?.siteType;
+                                    TimeEntry.TaskItem = task;
+                                  }
+                                }
+                              })
                             }
-                          }
-                          if (TimeEntry?.sortTaskDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == TimeEntry?.sortTaskDate.getTime()) {
-                            if (TimeEntry?.Status == 'Draft' && config?.Status == "My TimSheet") {
-                              TempArray.push(TimeEntry)
-                              if (!isItemExists(AllTimeEntry, entry.Id))
-                                AllTimeEntry.push(entry);
+                            // if (TimeEntry?.SiteIcon == undefined || TimeEntry?.SiteIcon == '') {
+                            //   let CurrentSite:any = AllSite?.filter((site: any) =>site?.Title == item?.ServerDate)
+                            //   TimeEntry?.SiteIcon = site?.Item_x005F_x0020_Cover?.Url
+                            // }
+                            TimeEntry.timeSheetsDescriptionSearch = '';
+                            TimeEntry.UpdatedId = entry?.Id;
+                            TimeEntry.timeSheetsDescriptionSearch = TimeEntry?.Description
+                            if ((TimeEntry?.Id == undefined || TimeEntry?.Id == '') && TimeEntry?.ID != undefined && TimeEntry?.ID != '')
+                              TimeEntry.Id = TimeEntry?.ID;
+                            else if ((TimeEntry?.ID == undefined || TimeEntry?.ID == '') && TimeEntry?.Id != undefined && TimeEntry?.Id != '')
+                              TimeEntry.ID = TimeEntry?.Id;
+                            else {
+                              TimeEntry.Id = index;
+                              TimeEntry.ID = index;
                             }
-                          }
+                            if (TimeEntry.TaskDate != null) {
+                              var dateValues = TimeEntry?.TaskDate?.split("/");
+                              var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
+                              var NewDate = new Date(dp);
+                              TimeEntry.sortTaskDate = NewDate;
+                              TimeEntry.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
+                              TimeEntry.sortTaskDate.setHours(0, 0, 0, 0);
+                              TimeEntry.Title = TimeEntry?.AuthorName;
+                            }
+                            entry.listId = site?.listId;
+                            entry.siteUrl = site?.siteUrl
+                            if (site?.taskSites != undefined && site?.taskSites?.length > 0) {
+                              site?.taskSites?.forEach((Site: any) => {
+                                if (entry['Task' + Site] != undefined && entry['Task' + Site]?.Id != undefined) {
+                                  entry.TaskListType = Site;
+                                }
+                              })
+                            }
+                            if (TimeEntry?.sortTaskDate != undefined && ServerThisWeek != undefined && TimeEntry?.sortTaskDate.getTime() >= ServerThisWeek.getTime()) {
+                              if (TimeEntry?.Status == 'For Approval' && config?.Status != "My TimSheet") {
+                                TempArray.push(TimeEntry)
+                                if (!isItemExists(AllTimeEntry, entry.Id))
+                                  AllTimeEntry.push(entry);
+                              }
+                            }
+                            if (TimeEntry?.sortTaskDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == TimeEntry?.sortTaskDate.getTime()) {
+                              if (TimeEntry?.Status == 'Draft' && config?.Status == "My TimSheet") {
+                                TempArray.push(TimeEntry)
+                                if (!isItemExists(AllTimeEntry, entry.Id))
+                                  AllTimeEntry.push(entry);
+                              }
+                            }
+                          })
+                        }
+                      }
+                    } catch (e) {
+                      console.log(entry)
+                    }
+                  });
+                  arraycount++;
+                  let currentCount = TimeSheetLists?.length;
+                  if (arraycount == currentCount) {
+                    let TeamMember: any = []
+                    taskUsers?.map((item: any) => {
+                      if (item[config['Status']] != undefined && Array.isArray(item[config['Status']]) && item[config['Status']]?.length > 0) {
+                        item[config['Status']].forEach((teamMember: any) => {
+                          if (teamMember?.Id == currentUserId && !isTaskUserExist(TeamMember, item) && item?.ItemType != 'Group')
+                            TeamMember.push(item)
                         })
                       }
-                    }
-                  } catch (e) {
-                    console.log(entry)
-                  }
-                });
-                arraycount++;
-                let currentCount = TimeSheetLists?.length;
-                if (arraycount == currentCount) {
-                  let TeamMember: any = []
-                  taskUsers?.map((item: any) => {
-                    if (item[config['Status']] != undefined && Array.isArray(item[config['Status']]) && item[config['Status']]?.length > 0) {
-                      item[config['Status']].forEach((teamMember: any) => {
-                        if (teamMember?.Id == currentUserId && !isTaskUserExist(TeamMember, item) && item?.ItemType != 'Group')
+                      else if (item[config['Status']] != undefined && typeof item[config['Status']] == 'object' && item[config['Status']] !== null) {
+                        if ((item[config['Status']]?.Id == currentUserId || item[config['Status']]?.Id == currentUserData?.Id) && !isTaskUserExist(TeamMember, item) && item?.ItemType != 'Group')
                           TeamMember.push(item)
-                      })
-                    }
-                    else if (item[config['Status']] != undefined && typeof item[config['Status']] == 'object' && item[config['Status']] !== null) {
-                      if ((item[config['Status']]?.Id == currentUserId || item[config['Status']]?.Id == currentUserData?.Id) && !isTaskUserExist(TeamMember, item) && item?.ItemType != 'Group')
-                        TeamMember.push(item)
-                    }
-                  })
-                  if (config?.Status == "My TimSheet") {
-                    TeamMember = [];
-                    TeamMember.push(currentUserData)
-                  }
-                  if (TempArray != undefined && TempArray?.length > 0 && TeamMember?.length > 0) {
-                    TeamMember?.map((User: any) => {
-                      TempArray?.map((TimeEntry: any) => {
-                        if (User?.AssingedToUserId != undefined && TimeEntry?.AuthorId != undefined && TimeEntry?.AuthorId == User?.AssingedToUserId) {
-                          config?.Tasks.push(TimeEntry)
-                        }
-                      })
+                      }
                     })
+                    if (config?.Status == "My TimSheet") {
+                      TeamMember = [];
+                      TeamMember.push(currentUserData)
+                    }
+                    if (TempArray != undefined && TempArray?.length > 0 && TeamMember?.length > 0) {
+                      TeamMember?.map((User: any) => {
+                        TempArray?.map((TimeEntry: any) => {
+                          if (User?.AssingedToUserId != undefined && TimeEntry?.AuthorId != undefined && TimeEntry?.AuthorId == User?.AssingedToUserId) {
+                            config?.Tasks.push(TimeEntry)
+                          }
+                        })
+                      })
+                    }
+                    setIsCallContext(true);
                   }
-                  setIsCallContext(true);
-                }
-              }).catch((error: any) => {
-                console.log(error)
-              })
+                }).catch((error: any) => {
+                  console.log(error)
+                })
 
-          })
-        }
+            })
+          }
+        }).catch((err: any) => {
+          console.log("then catch error", err);
+        });
+
       }
     });
     let todayDate: any = new Date();
