@@ -7095,7 +7095,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     />
                                                                     <span className="ms-1">Approval</span>
                                                                 </div >
-                                                                <div class="complexcol">
+                                                                <div className="complexcol">
                                                                     <ul className="p-0 mt-1 list-none alignCenter">
                                                                         <li className="SpfxCheckRadio" onClick={() => updateWAForApproval("Normal", "Type")}>
                                                                             <input
