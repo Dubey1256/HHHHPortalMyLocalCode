@@ -6,8 +6,8 @@ import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalCompone
 import { ColumnDef } from "@tanstack/react-table";
 import moment from 'moment';
 let portfolioLead: any;
-let leaveInformations:any;
-let AllTimeEntry:any;
+let leaveInformations:any=[];
+let AllTimeEntry:any=[];
 const PortfolioLeadEOD = (props: any) => {
     const [data, setData]: any = useState([])
         useEffect(() => {
@@ -15,18 +15,27 @@ const PortfolioLeadEOD = (props: any) => {
          
     
     }, [])
-    
-    
     const getMasterTaskList = () => {
         var web = new Web(props?.AllListId?.siteUrl);
         try {
             web.lists.getById(props?.AllListId?.MasterTaskListID).items.select("Id,Title,Item_x0020_Type,PortfolioStructureID,ResponsibleTeam/Id,ResponsibleTeam/Title,TeamMembers/Id, TeamMembers/Title").expand('ResponsibleTeam,TeamMembers').filter("Item_x0020_Type ne 'Project' and Item_x0020_Type ne 'Sprint'").getAll().then((masterValue: any) => {
                 console.log(masterValue)
                 portfolioLead.map((leads: any) => {
+                    leads.totalTeamTime=(1+(leads?.AllTeamMembers?.length-leads?.teamMembersOnLeave?.length) )*8
                     let LeadportfolioData = masterValue?.filter((item: any) => item?.ResponsibleTeam?.some((leadInfo: any) => leadInfo?.Id == leads?.AssingedToUserId))
                     leads.portfolioTitle=LeadportfolioData?.map((tool: { Title: any; }) => tool.Title).join(', ')
+                    
+                    leads.timeFill=0;
+                    AllTimeEntry.map((timeEntry:any)=>{
+                        if(timeEntry?.AuthorId==leads?.AssingedToUserId || leads?.AllTeamMembers?.some((childs:any)=>childs?.AssingedToUserId==timeEntry?.AuthorId) ){
+                           leads.timeFill=leads?.timeFill + Number(timeEntry?.TaskTime)   
+                        }   
+                    })
+                    leads.shortageTime = leads?.totalTeamTime-leads?.timeFill;
+                   
                     console.log(LeadportfolioData)
                 })
+                
 
 
                 setData(portfolioLead)
@@ -42,9 +51,11 @@ const PortfolioLeadEOD = (props: any) => {
             if (user.UserGroup?.Title == "Portfolio Lead Team") {
                 uniqueLeads.add(user?.AssingedToUserId);
             }
-            user?.Approver?.forEach((approver: any) => {
-                  uniqueLeads.add(approver?.Id);
-            });
+            if(user.UserGroup?.Title == "Design Team" || user.UserGroup?.Title == "QA Team"){
+                user?.Approver?.forEach((approver: any) => {
+                    uniqueLeads.add(approver?.Id);
+              });
+            }
         });
         allUsers?.forEach((user: any) => {
             if (uniqueLeads.has(user?.AssingedToUserId)) {
@@ -61,85 +72,39 @@ const PortfolioLeadEOD = (props: any) => {
                     }
                 });
             })
+            let test=leaveInformations?.find((leave:any)=>{
+                
+               if(leave?.Employee?.Id == Leads?.AssingedToUserId) {
+                return Leads
+               }
+            
+            })
             Leads.teamMembersOnLeave =  Leads.AllTeamMembers?.filter((leadMember: any) =>leaveInformations?.some((leaveMember: any) => leaveMember?.Employee?.Id == leadMember?.AssingedToUserId))
+            if(test!=undefined){
+                Leads.teamMembersOnLeave.push(test)
+            }
            
-
         })
         portfolioLead = leads
         getMasterTaskList()
 
-        // return   leads;
     };
-    // function getStartingDate(startDateOf: any) {
-    //     const startingDate = new Date();
-    //     let formattedDate = startingDate;
-    //     if (startDateOf == 'This Week') {
-    //         startingDate.setDate(startingDate?.getDate() - startingDate?.getDay());
-    //         formattedDate = startingDate;
-    //     } else if (startDateOf == 'Today') {
-    //         formattedDate = startingDate;
-    //     } else if (startDateOf == 'Yesterday') {
-    //         startingDate.setDate(startingDate?.getDate() - 1);
-    //         formattedDate = startingDate;
-    //     } else if (startDateOf == 'This Month') {
-    //         startingDate.setDate(1);
-    //         formattedDate = startingDate;
-    //     } else if (startDateOf == 'Last Month') {
-    //         const lastMonth = new Date(startingDate?.getFullYear(), startingDate?.getMonth() - 1);
-    //         const startingDateOfLastMonth = new Date(lastMonth?.getFullYear(), lastMonth?.getMonth(), 1);
-    //         var change = (moment(startingDateOfLastMonth)?.add(22, 'days')?.format())
-    //         var b = new Date(change)
-    //         formattedDate = b;
-    //     } else if (startDateOf == 'Last Week') {
-    //         const lastWeek = new Date(startingDate?.getFullYear(), startingDate?.getMonth(), startingDate?.getDate() - 7);
-    //         const startingDateOfLastWeek = new Date(lastWeek?.getFullYear(), lastWeek?.getMonth(), lastWeek?.getDate() - lastWeek?.getDay() + 1);
-    //         formattedDate = startingDateOfLastWeek;
-    //     }
 
-    //     return formattedDate;
-    // }
-    // const toIST = (dateString: any, isEndDate: boolean, isFirstHalf: boolean, isSecondHalf: boolean) => {
-    //     const date = new Date(dateString);
-    //     if ((isFirstHalf !== undefined && isSecondHalf != undefined) && (isEndDate || isFirstHalf || isSecondHalf)) {
-    //         date.setHours(date.getHours() - 5);
-    //         date.setMinutes(date.getMinutes() - 30);
-    //     }
-    //     const formattedDate = date.toISOString().substring(0, 19).replace('T', ' ');
-    //     return formattedDate;
-    // };
-    // const loadTodaysLeave = async () => {
-        
-    //         let startDate: any = getStartingDate('Today');
-    //         startDate = new Date(startDate).setHours(0, 0, 0, 0)
-    //         const web = new Web(props?.AllListId?.siteUrl);
-    //            const results = await web.lists
-    //                .getById("72ABA576-5272-4E30-B332-25D7E594AAA4")
-    //             .items.select(
-    //                 "RecurrenceData,Duration,Author/Title,Editor/Title,Name,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo"
-    //             )
-    //             .expand("Author,Editor,Employee")
-    //             .top(5000)
-    //             .getAll();
-    //         results?.map((emp: any) => {
-    //             emp.leaveStart = toIST(emp?.EventDate, false, emp?.HalfDay, emp?.HalfDayTwo)
-    //             emp.leaveStart = new Date(emp?.leaveStart).setHours(0, 0, 0, 0)
-    //             emp.leaveEnd = toIST(emp?.EndDate, true, emp?.HalfDay, emp?.HalfDayTwo);
-    //             emp.leaveEnd = new Date(emp?.leaveEnd).setHours(0, 0, 0, 0)
-    //             if ((startDate >= emp?.leaveStart && startDate <= emp?.leaveEnd) && (emp?.HalfDay !== null && emp?.HalfDayTwo !== null) && (emp?.HalfDay != true && emp?.HalfDayTwo != true)) {
-    //                 leaveInformations.push(emp?.Employee?.Id);
-    //             }
-    //         })
-    //         // setOnLeaveEmployees(AllLeaves)
-    //         console.log(leaveInformations);
-        
-    // }
+    const toIST = (dateString: any, isEndDate: boolean, isFirstHalf: boolean, isSecondHalf: boolean) => {
+        const date = new Date(dateString);
+        if ((isFirstHalf !== undefined && isSecondHalf != undefined) && (isEndDate || isFirstHalf || isSecondHalf)) {
+            date.setHours(date.getHours() - 5);
+            date.setMinutes(date.getMinutes() - 30);
+        }
+        const formattedDate = date.toISOString().substring(0, 19).replace('T', ' ');
+        return formattedDate;
+    };
+    
 
     const loadTodaysLeave = async () => {
        let AllLeaves:any;
        const startDate = new Date();
-       startDate.setHours(0, 0, 0, 0); // Set to start of the day
-        const endDate = new Date();
-       endDate.setHours(23, 59, 59, 999); // Set to end of the day   
+       startDate.setHours(0, 0, 0, 0);  
        const web = new Web(props?.AllListId?.siteUrl);
        const results = await web.lists
            .getById("72ABA576-5272-4E30-B332-25D7E594AAA4")
@@ -147,55 +112,61 @@ const PortfolioLeadEOD = (props: any) => {
                "RecurrenceData,Duration,Author/Title,Editor/Title,Name,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo"
            )
            .expand("Author,Editor,Employee")
-           .filter(
-            `(EventDate ge datetime'${startDate.toISOString()}' and EventDate le datetime'${endDate.toISOString()}') or ` +
-            `(EndDate ge datetime'${startDate.toISOString()}' and EndDate le datetime'${endDate.toISOString()}')`
-          ).top(5000)
+          .top(5000)
            .getAll();
-           console.log(results)
-           console.log(results)
-           leaveInformations=results
+           results?.map((emp: any) => {
+                        emp.leaveStart = toIST(emp?.EventDate, false, emp?.HalfDay, emp?.HalfDayTwo)
+                        emp.leaveStart = new Date(emp?.leaveStart).setHours(0, 0, 0, 0)
+                        emp.leaveEnd = toIST(emp?.EndDate, true, emp?.HalfDay, emp?.HalfDayTwo);
+                        emp.leaveEnd = new Date(emp?.leaveEnd).setHours(0, 0, 0, 0)
+                        if ((startDate >= emp?.leaveStart && startDate <= emp?.leaveEnd) && (emp?.HalfDay !== null && emp?.HalfDayTwo !== null) && (emp?.HalfDay != true && emp?.HalfDayTwo != true)) {
+                            leaveInformations?.push(emp);
+                        }
+                    })
+        
+        //    leaveInformations=results
            getAllLeads(props?.AllUsers)
         console.log(AllLeaves);
         }
         const loadAllTimeEntry = async () => {
+            let  TodayTimeEntry:any=[];
+            AllTimeEntry=[];
          if (props?.timesheetListConfig?.length > 0) {
-                let timesheetLists: any = [];
-                let currentDate:any = new Date();
-                currentDate.setHours(0, 0, 0, 0);
-                let previousDate = new Date(currentDate);
-                // previousDate.setDate(previousDate.getDate() - 1);
-                
-                // Convert the previous date to an ISO string in the format YYYY-MM-DD
-                let previousDateString = previousDate.toISOString().split('T')[0];
-                let previousDateTime = `${previousDateString}T00:00:00.000Z`;
-            
+                let timesheetLists: any = []; 
+                const previousDate = new Date();
+                previousDate.setUTCHours(0, 0, 0, 0);
+            const isoPreviousDate = previousDate.toISOString();
                 timesheetLists = JSON.parse(props?.timesheetListConfig[0]?.Configurations)
     
                 if (timesheetLists?.length > 0) {
-                    const fetchPromises = timesheetLists.map(async (list: any) => {
+                    const fetchPromises = timesheetLists.map(async (list: any,index:any) => {
                         let web = new Web(list?.siteUrl);
                         try {
                             let todayDateToCheck = new Date().setHours(0, 0, 0, 0,)
                              await web.lists
                                 .getById(list?.listId)
                                 .items.select(list?.query)
-                            .filter(`Modified ge datetime'${previousDateTime}'`)
-                         .getAll().then((data:any)=>{
-                           let  TodayTimeEntry:any=[];
-                           
+                            .filter(`Modified ge datetime'${isoPreviousDate}'`)
+                         .getAll().then((data:any)=>{   
                             data?.map((timeEntry:any)=>{
                                 let TimeEntryParse:any=[]
                                 if(timeEntry?. AdditionalTimeEntry!=undefined && timeEntry?. AdditionalTimeEntry!=null){
                                     TimeEntryParse  = JSON.parse(timeEntry?. AdditionalTimeEntry)
                                 }
                             if(TimeEntryParse?.length>0){
-                                TodayTimeEntry.push(TimeEntryParse)
+                                TodayTimeEntry.push(...TimeEntryParse)
+                                // TodayTimeEntry=TimeEntryParse
                             }
                              
                             })
-                            AllTimeEntry=TodayTimeEntry;
-                            loadTodaysLeave()
+                            let chekDate=moment(new Date()).format('DD/MM/YYYY');
+                             let timeValue:any=TodayTimeEntry.filter((item:any)=>item?.TaskDate===chekDate);                  
+                            // AllTimeEntry=TodayTimeEntry.filter((item:any)=>item?.TaskDate===chekDate);
+                            AllTimeEntry.push(...timeValue)
+                            if(timesheetLists?.length-1==index){
+                                loadTodaysLeave()
+                            }
+                            
                             console.log(data,"time entrt data ")
                               }).catch((error:any)=>{
                                 loadTodaysLeave()
@@ -219,7 +190,93 @@ const PortfolioLeadEOD = (props: any) => {
 
     }, []);
 
-
+   useEffect(()=>{
+     let body1:any=[];
+     if(data?.length>0){
+        data?.forEach((item:any, index: any) => {
+            let taskRow = ` 
+                    <tr>
+                    <td height="48"  width="240" valign="middle" style="background: #fff;color: #2F5596;width:220px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                        <a style="color: #2F5596;" href=${props?.AllListId?.siteUrl}/SitePages/Dashboard.aspx?DashBoardId=5">
+                            ${item?.Title ?? ''}
+                        </a>
+                    </td>
+                    <td height="48"  width="400" align="left" valign="middle" style="background: #fff;color: #333;width:350px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                        ${item?.portfolioTitle.slice(0, 22) + '...' ?? 'No data available'}
+                    </td>
+                    <td height="48"  width="400" align="left" valign="middle" style="background: #fff;color: #333;width:350px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                        ${item?.AllTeamMembers?.length ?? 'No data available'}
+                    </td>
+                    <td height="48"  width="130" valign="middle" style="background: #fff;color: #333;width:130px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                        ${item?.teamMembersOnLeave?.length ?? ''}
+                    </td>
+                     <td height="48"  width="130" valign="middle" style="background: #fff;color: #333;width:130px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                        ${item?.shortageTime ?? ''}
+                    </td>
+                </tr>
+               
+                `;
+                body1.push(taskRow);
+            });
+        
+    
+        let body = '';
+        if (body1?.length > 0) {
+            body = `<table width="100%" bgcolor="#FAFAFA" style="background-color:#FAFAFA;margin:-18px -10px;" align="center">
+                <tr>
+                    <td width="100%">
+                        <table width="900px" align="center" bgcolor="#fff" style="width:1350px;padding:0px 32px;background-color:#fff;">
+                            <tr>
+                                <td width="100%">
+                                    <div style="padding-top: 56px;" width="100%">
+                                        <table style="height: 50px;border-collapse: collapse;" border="0" align="left">
+                                            <tr>
+                                                <td width="48px" height="48px"><img width="100%" height="100%" src="https://hochhuth-consulting.de/images/icon_small_hhhh.png" style="width: 48px;height: 48px;border-radius: 50%;" alt="Site Icon"></td>
+                                                <td><div style="color: var(--black, #333);margin-left:4px;text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;">All Portfolio Lead</div></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div width="100%">
+                                        <table style="height: 56px;border-collapse: collapse;" border="0" width="100%" height="56px">
+                                            <tr>
+                                                <td width="100%" height="56px">&nbsp;</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        
+                <tr>
+                <td>
+                  
+                    <div>
+                        <table width="100%" style="border-collapse: collapse;">
+                            <tr>
+                                <td width="180" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">LeadName</td>
+                                <td width="220" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">LeadTitle</td>
+                                <td width="350" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">Total Team-Member Available</td>
+                                <td width="350" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">Not Available team-Member</td>
+                                <td width="130" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">shortageHours</td>
+                            </tr>
+                    
+                            <tbody>
+                                ${body1.join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+                </td>
+                </tr>
+            </table>
+            
+            `;
+        }
+        props?.callbackPortfolioLeadEOD(body)
+        console.log(body, "body1");
+     }
+      
+ },[data]) 
     const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             
@@ -227,7 +284,7 @@ const PortfolioLeadEOD = (props: any) => {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
                     <>
-                        <span>{row.original.Title}</span>
+                      <a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Dashboard.aspx?DashBoardId=5'`} >  <span>{row.original.Title}</span></a>
                     </>
 
                 ),
@@ -242,8 +299,10 @@ const PortfolioLeadEOD = (props: any) => {
                 accessorFn: (row) => row?.portfolioTitle,
                 cell: ({ row, getValue }) => (
                     <div className="columnFixedTitle">
-                        <span title={row?.original?.portfolioTitle} className="text-content hreflink">
+                    <span title={row?.original?.portfolioTitle} className="text-content hreflink">
+                    <a  target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/PortfolioLead.aspx?web=1'`}>
                             {row?.original?.portfolioTitle}
+                            </a>
                         </span>
                     </div>
                     
@@ -288,17 +347,17 @@ const PortfolioLeadEOD = (props: any) => {
                 isAdvanceSearchVisible: true
             },
             {
-                accessorFn: (row) => row?.shortageHours,
+                accessorFn: (row) => row?.shortageTime,
                 cell: ({ row, column, getValue }) => (
                     <>
-                        {row?.original?.ProjectTitle != (null || undefined) &&
-                            <span>
-                                test
-                            </span>
+                       <span>
+                       {row?.original?.shortageTime                   
                         }
+                       </span>
+                      
                     </>
                 ),
-                id: 'shortageHours',
+                id: 'shortageTime',
                 placeholder: "shortageHours",
                 resetColumnFilters: false,
                 header: "",
