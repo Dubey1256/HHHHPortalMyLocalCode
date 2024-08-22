@@ -3379,7 +3379,7 @@ const loadAllPXTimeEntries = async () => {
       <div>
         {QueryId != "" ? (
           <>
-            <div className="row">
+            <div className="">
               <div
                 className="d-flex justify-content-between p-0"
               >
@@ -3453,7 +3453,7 @@ const loadAllPXTimeEntries = async () => {
                           <section>
                             <div className="row">
                               <div className="col-md-12 bg-white">
-                                <div className="team_member row  py-2">
+                                <div className="team_member row pe-2 py-2">
                                   <div className="col-md-4  pe-0">
                                     <dl>
                                       <dt className="bg-fxdark">Due Date</dt>
