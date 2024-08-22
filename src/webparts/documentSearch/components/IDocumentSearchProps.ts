@@ -9,4 +9,6 @@ export interface IDocumentSearchProps {
   DocumentsListID: string;
   MasterTaskListID: string;
   SmartMetadataListID: string;
+   TaskTypeID: string;
+  PortFolioTypeID: string
 }

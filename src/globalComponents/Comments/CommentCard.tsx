@@ -19,6 +19,7 @@ import ReactDOM from "react-dom";
 let color: any = false;
 let Title: any = "";
 let commentlength: any = 0
+let emailRecipientsLengthHyphen=0;
 export interface ICommentCardProps {
   siteUrl?: string;
   userDisplayName?: string;
@@ -141,7 +142,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       console.log(e)
     }
     if (this?.state?.Result?.ID == undefined)
-      await this.GetTaskUsers();
+      
+      await this.GetTaskUsers(taskDetails);
     console.log("this is result function")
     //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
     Title = taskDetails["Title"];
@@ -246,7 +248,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             'Name': senderObject[0]?.AssingedToUser?.EMail,
             'Suffix': senderObject[0]?.Suffix,
             'Title': senderObject[0]?.Title,
-            'userImage': senderObject[0]?.Item_x0020_Cover?.Url
+            'userImage': senderObject[0]?.Item_x0020_Cover?.Url,
+            "Item_x0020_Cover":senderObject[0]?.Item_x0020_Cover,
+            "AssingedToUser":senderObject[0]?.AssingedToUser
+            
           })
         }
       }
@@ -264,12 +269,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
   }
 
-  private async GetTaskUsers() {
+  private async GetTaskUsers(taskDetails:any) {
     console.log("this is GetTaskUsers function")
     let web = new Web(this.props.siteUrl);
     let currentUser = await web.currentUser?.get();
     let emailRecipients = await this.commentCardNotificationConfig()
-
+    emailRecipientsLengthHyphen=emailRecipients?.length;
     //.then((r: any) => {  
     // console.log("Cuurent User Name - " + r['Title']);  
     //}); 
@@ -277,13 +282,40 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     taskUsers = await web.lists.getById(this.props?.AllListId?.TaskUserListID).items.select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'UserGroup/Id', 'UserGroup/Title').filter("ItemType eq 'User'").expand('AssingedToUser', 'UserGroup').get();
     taskUsers = taskUsers?.filter((User: any) => User?.UserGroup == undefined || User?.UserGroup?.Title != "Ex Staff")
     this.taskUsers = taskUsers;
+    
+    let  Author:any= this.GetUserObjectArr(taskDetails["Author"])
+     
+    let ResponsibleTeam:any = taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null
+    let TeamMembers:any = taskDetails["TeamMembers"] != null ? this.GetUserObjectFromCollection(taskDetails["TeamMembers"]) : null;
+   
+   
+
     if (emailRecipients != undefined && emailRecipients.length > 0) {
+      if(emailRecipients?.every((dupl:any)=>dupl.AssingedToUser?.Id  !=Author?.AssingedToUser?.Id)){
+        emailRecipients?.push(Author);
+      }
+     
+       if(ResponsibleTeam?.length>0){
+        ResponsibleTeam?.map((resp:any)=>{
+         
+          if(emailRecipients?.every((dupl:any)=>dupl?.AssingedToUser?.Id !=resp?.AssingedToUser?.Id)){
+            emailRecipients.push(resp)
+          }
+          })
+        }
+       if(TeamMembers?.length>0){
+        TeamMembers?.map((team:any)=>{
+          if(emailRecipients?.every((dupl:any)=>dupl?.AssingedToUser?.Id  !=team?.AssingedToUser?.Id)){
+            emailRecipients.push(team)
+          }
+        })
+       }
       emailRecipients.forEach((recipient: any) => {
         this.taskUsers.forEach((user: any) => {
           if (recipient.Id == user.AssingedToUserId) {
             recipient.Item_x0020_Cover = user.Item_x0020_Cover
           }
-        })
+         })
         return recipient;
       })
       for (let index = 0; index < emailRecipients.length; index++) {
@@ -293,7 +325,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           Title: emailRecipients[index].Title,
           ItemCoverURL: (emailRecipients[index].Item_x0020_Cover != undefined) ?
             emailRecipients[index].Item_x0020_Cover?.Url :
-            null
+            null,
+          
         })
       }
     }
@@ -310,6 +343,24 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           })
         }
       }
+      if(this.topCommenters?.every((dupl:any)=>dupl.AssingedToUser?.Id  !=Author?.AssingedToUser?.Id)){
+        this.topCommenters?.push(Author);
+      }
+     
+       if(ResponsibleTeam?.length>0){
+        ResponsibleTeam?.map((resp:any)=>{
+        if(this.topCommenters?.every((dupl:any)=>dupl?.AssingedToUser?.Id !=resp?.AssingedToUser?.Id)){
+            this.topCommenters.push(resp)
+          }
+          })
+        }
+       if(TeamMembers?.length>0){
+        TeamMembers?.map((team:any)=>{
+          if(this.topCommenters?.every((dupl:any)=>dupl?.AssingedToUser?.Id  !=team?.AssingedToUser?.Id)){
+            this.topCommenters.push(team)
+          }
+        })
+       }
     }
 
     if (this.taskUsers != undefined && this.taskUsers.length > 0) {
@@ -557,7 +608,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     return mention_str.trim();
   }
   private GetUserObjectArr(username: any) {
-    let userDeatails = { 'Id': '', 'Name': '', 'Suffix': '', 'Title': '', 'userImage': '' };
+    let userDeatails = { 'Id': '', 'Name': '', 'Suffix': '', 'Title': '', 'userImage': '','Item_x0020_Cover':{} ,'AssingedToUser':{}};
     if (username != undefined && this.taskUsers != undefined && this.taskUsers.length > 0) {
       let senderObject = this.taskUsers?.filter(function (user: any, i: any) {
         if (user.AssingedToUser != undefined) {
@@ -568,11 +619,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         }
       });
       if (senderObject.length > 0) {
-        userDeatails.Id = senderObject[0].Id;
+        userDeatails.Id = senderObject[0]?.Id;
         userDeatails.Name = senderObject[0]?.AssingedToUser?.EMail;
         userDeatails.Suffix = senderObject[0].Suffix;
         userDeatails.Title = senderObject[0].Title;
-        userDeatails.userImage = senderObject[0]?.Item_x0020_Cover?.Url;
+        userDeatails.userImage = senderObject[0]?.Item_x0020_Cover?.Url,
+        userDeatails.Item_x0020_Cover=senderObject[0]?.Item_x0020_Cover,
+        userDeatails.AssingedToUser=senderObject[0]?.AssingedToUser
       }
       return userDeatails;
     }
@@ -1003,7 +1056,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               <div className='mb-2'>
                 <span> <strong>To:</strong>  </span>
                 {this.topCommenters != null && this.topCommenters.length > 0 && this.topCommenters?.map((topCmnt: any, i: any) => {
-                  return <span>
+                 
+                  return <>
+                 
+               {emailRecipientsLengthHyphen ==i?'-':""}
+                  <span>
                     <a target="_blank">
                       {topCmnt?.ItemCoverURL != null || topCmnt?.Suffix != null ? <Avatar
                         onClick={(e) => this.topCommentersClick(e)}
@@ -1025,6 +1082,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                       }
                     </a>
                   </span>
+                  
+                  </>
                 })}
               </div>
               {/* onKeyDown={this.handleKeyDown} onMouseDown={this.handleMouseClick} */}

@@ -84,8 +84,8 @@ let tempmetadata: any;
 let weekTotalTime: any = 0
 let monthTotalTime: any = 0
 let totalTime: any = 0
-let totalEstimatedTime: any = 0
-let PXTasks: any
+let totalEstimatedTime: any
+let PXTasks: any = [];
 const ProjectManagementMain = (props: any) => {
   const [openServiceComponent, setopenServiceComponent]= React.useState(false)
   relevantDocRef = React.useRef();
@@ -226,6 +226,10 @@ const ProjectManagementMain = (props: any) => {
       console.log(e);
     }
   }, []);
+  React.useEffect(() => {
+    loadTotalEstimatedTime();
+  }, [PXTasks])
+
   var showProgressBar = () => {
     $(" #SpfxProgressbar").show();
   };
@@ -1248,19 +1252,6 @@ const loadAllPXTimeEntries = async () => {
       let groupedDataItems = globalCommon.deepCopy(backupTableData);
       let flattenedData = flattenData(groupedDataItems)
       PXTasks = flattenedData.filter((item: any) => item.TaskType)
-      PXTasks.map((task: any) => {
-        try {
-          task.EstimatedTimeParsed = JSON.parse(task.EstimatedTimeDescription);
-          if (task.EstimatedTimeParsed) {
-              task.EstimatedTimeParsed.map((time: any) => {
-                totalEstimatedTime += parseFloat(time.EstimatedTime);
-              })
-          }
-        } catch (e) {
-          console.error('Error parsing EstimatedTimeDescription:', e);
-        }
-      })
-      totalEstimatedTime = totalEstimatedTime.toFixed(2);
       totalTime = PXTasks?.reduce((total: any, time: any) => {
         const taskTime = time.TotalTime || 0;
         return total + taskTime;
@@ -1316,6 +1307,30 @@ const loadAllPXTimeEntries = async () => {
       console.log(filterTasksinfo)
       setFilteredTasks(filterTasksinfo)
     }
+  }
+
+  const loadTotalEstimatedTime = () => {
+    if (PXTasks.length > 0) {
+      totalEstimatedTime = 0;
+      PXTasks.map((task: any) => {
+        try {
+          task.EstimatedTimeParsed = JSON.parse(task.EstimatedTimeDescription);
+          if (Array.isArray(task.EstimatedTimeParsed)) {
+            task.EstimatedTimeParsed.map((time: any) => {
+              const parsedTime = Number(time.EstimatedTime);
+              if (!isNaN(parsedTime)) {
+                totalEstimatedTime += parsedTime;
+              }
+            });
+          }
+        } catch (e) {
+          console.error('Error parsing EstimatedTimeDescription:', e);
+        }
+      });
+      totalEstimatedTime = totalEstimatedTime.toFixed(2);
+      console.log(`Total Estimated Time: ${totalEstimatedTime}`);
+    }
+    
   }
 
 
@@ -1516,6 +1531,7 @@ const loadAllPXTimeEntries = async () => {
     }
     setIsComponent(false);
     GetMasterData(false)
+    setTaggedPortfolio([]);
   };
 
   const LoadAllSiteAllTasks = async function () {
@@ -2843,16 +2859,6 @@ const loadAllPXTimeEntries = async () => {
   const workingThisWeekColumns = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
-        accessorKey: "",
-        placeholder: "",
-        hasCheckbox: false,
-        hasCustomExpanded: hasCustomExpanded,
-        hasExpanded: hasExpanded,
-        isHeaderNotAvlable: isHeaderNotAvlable,
-        size: 12,
-        id: 'Id',
-      },
-      {
         accessorFn: (row) => row?.Site,
         cell: ({ row }) => (
 
@@ -3565,7 +3571,7 @@ const loadAllPXTimeEntries = async () => {
                                           groupedData={groupedComponentData}
                                           pageName={"projectManagement"}
                                         /> : null}
-                                        {smartPortfoliosData?.map((component: any, index: any) => (`${component?.Title};`))}
+                                        {smartPortfoliosData?.map((component: any, index: any) => (`${component?.Title}; `))}
                                         <a className="ml-auto pull-right" onClick={() => setopenServiceComponent(true)}>
                                           <span className="svg__iconbox svg__icon--editBox alignIcon"  ></span>
                                         </a>
@@ -3637,7 +3643,7 @@ const loadAllPXTimeEntries = async () => {
                                 <div className='col-md-12 bg-white  pe-1'>
                                   <details>
                                     <summary> Working This Week {'(' + filteredTask?.length + ')'} </summary>
-                                    <div className='AccordionContent'  >
+                                    <div className='AccordionContent clearfix'>
                                       {filteredTask?.length > 0 ?
                                         <div className='Alltable border-0 dashboardTable' >
                                           <>
@@ -3650,7 +3656,7 @@ const loadAllPXTimeEntries = async () => {
                                 </details>
                                 {showTimeEntryIcon && <details open={timeEntries.length > 0}>
                                     <summary> Time Entries </summary>
-                                    <div className='AccordionContent'  >
+                                    <div className='AccordionContent clearfix'>
                                         {timeEntries?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable' >
                                                 <>
