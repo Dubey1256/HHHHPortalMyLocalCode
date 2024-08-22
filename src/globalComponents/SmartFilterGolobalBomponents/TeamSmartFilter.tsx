@@ -455,7 +455,7 @@ const TeamSmartFilter = (item: any) => {
         PriorityData = PriorityData?.sort((elem1: any, elem2: any) => parseInt(elem2.SortOrder) - parseInt(elem1.SortOrder));
         Type = Type?.sort((elem1: any, elem2: any) => parseInt(elem1.SortOrder) - parseInt(elem2.SortOrder));
         ClientCategory?.forEach((elem: any) => {
-            if (elem?.Title != 'Master Tasks' && (elem?.ParentID == 0 || (elem?.Parent != undefined && elem?.Parent?.Id == undefined))) {
+            if (elem?.Title != 'Master Tasks' && ((elem?.Parent == undefined || elem?.Parent?.Id == undefined || elem?.Parent?.Id == 0))) {
                 elem.values = [],
                     elem.checked = [],
                     elem.checkedObj = [],
@@ -503,7 +503,7 @@ const TeamSmartFilter = (item: any) => {
         }
 
         SitesData?.forEach((element: any) => {
-            if (element.Title != 'Master Tasks' && (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined))) {
+            if (element.Title != 'Master Tasks' && (element?.Parent === undefined || element?.Parent?.Id == undefined)) {
                 element.values = [],
                     element.checked = [],
                     element.checkedObj = [],
@@ -514,7 +514,7 @@ const TeamSmartFilter = (item: any) => {
             }
         })
         portfolioTypeHeadingData?.forEach((element: any) => {
-            if (element.Title != 'Master Tasks' && (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined))) {
+            if (element.Title != 'Master Tasks' && (element?.Parent === undefined || element?.Parent?.Id == undefined)) {
                 element.values = [],
                     element.checked = [],
                     element.checkedObj = [],
@@ -528,7 +528,7 @@ const TeamSmartFilter = (item: any) => {
           });
         // PrecentComplete = PrecentComplete?.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
         PrecentComplete?.forEach((element: any) => {
-            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+            if ((element?.Parent === undefined || element?.Parent?.Id == undefined)) {
                 element.value = element.Id;
                 element.label = element.Title;
                 filterGroups[1].ValueLength = PrecentComplete?.length;
@@ -537,7 +537,7 @@ const TeamSmartFilter = (item: any) => {
             }
         })
         Type?.forEach((element: any) => {
-            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+            if ((element?.Parent === undefined || element?.Parent?.Id == undefined)) {
                 element.value = element.Id;
                 element.label = element.Title;
                 element.selectAllChecked = true;
@@ -547,7 +547,7 @@ const TeamSmartFilter = (item: any) => {
             }
         })
         PriorityData?.forEach((element: any) => {
-            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+            if ((element?.Parent === undefined || element?.Parent?.Id == undefined)) {
                 element.value = element.Id;
                 element.label = element.Title;
                 filterGroups[2].ValueLength = PriorityData?.length;
@@ -557,7 +557,7 @@ const TeamSmartFilter = (item: any) => {
         })
 
         Categories?.forEach((element: any) => {
-            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+            if ((element?.Parent === undefined || element?.Parent?.Id === undefined || element?.Parent?.Id === 0 )) {
                 element.value = element.Id;
                 element.label = element.Title;
                 filterGroups[3].ValueLength = Categories?.length;
