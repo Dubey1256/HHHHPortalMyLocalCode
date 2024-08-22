@@ -399,7 +399,7 @@ const ImageViewPanel = (props: any) => {
       // }
     }
 
-    setAllImageData(CopyAllImageData);
+    // setAllImageData(CopyAllImageData);
     closeEditPopup();
   };
 
@@ -1868,13 +1868,13 @@ const ImageViewPanel = (props: any) => {
                     )}
                   </span>
                 </div>
-                {iconSeleted == "fullScreen" && imageSlider(allImageData)}
+                {iconSeleted == "fullScreen" && imageSlider(rightSectionImage)}
                 {iconSeleted == "compare2" && (
                   <div className="CompareSection col-sm-12 row">
                     <div className="col-sm-6">
                       {singleImageView(rightSectionImage[0], 0)}
                     </div>
-                    <div className="col-sm-6">{imageSlider(copyAllImage)} </div>
+                    <div className="col-sm-6">{imageSlider(rightSectionImage)} </div>
                   </div>
                 )}
                 {(iconSeleted == "compareSeveral" ||

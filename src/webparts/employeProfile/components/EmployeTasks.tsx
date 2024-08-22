@@ -78,12 +78,27 @@ const EmployeTasks = (props: any) => {
 
     const FilterTasks = (filterType: any,taskInformation:any) => {
         let currentDate: any = moment();
+        if (filterType === "today") {
+            let todayFormat = currentDate?.format('DD/MM/YYYY')
+            const removeEmpty = taskInformation.filter((task: any) => { return task?.WorkingAction != undefined })
+            const storeTask = removeEmpty.filter((task: any) =>
+                JSON.parse(task?.WorkingAction)?.some((workActions: any) =>
+                    workActions.Title === "WorkingDetails" &&
+                    workActions.InformationData.some((taskInfo: any) =>
+                        taskInfo.WorkingDate == todayFormat
+                    )
+                )
+            );
+            setTodayTasks(storeTask)
+        }
         if (filterType === "Week") {
             let weekDates: any = []
             let startWeekDay = currentDate.day()
             let conditionRun = 6 - startWeekDay;
             while (conditionRun > 0) {
-                weekDates.push(currentDate.format('DD/MM/YYYY'))
+                if(startWeekDay!= currentDate?.day()){
+                    weekDates.push(currentDate.format('DD/MM/YYYY'))
+                }
                 currentDate.add(1, 'day');
                 conditionRun--;
             }
@@ -99,19 +114,7 @@ const EmployeTasks = (props: any) => {
             setWeekTasks(storeTask)
            
         }
-        if (filterType === "today") {
-            let todayFormat = currentDate?.format('DD/MM/YYYY')
-            const removeEmpty = taskInformation.filter((task: any) => { return task?.WorkingAction != undefined })
-            const storeTask = removeEmpty.filter((task: any) =>
-                JSON.parse(task?.WorkingAction)?.some((workActions: any) =>
-                    workActions.Title === "WorkingDetails" &&
-                    workActions.InformationData.some((taskInfo: any) =>
-                        taskInfo.WorkingDate == todayFormat
-                    )
-                )
-            );
-            setTodayTasks(storeTask)
-        }
+       
       
 
     }
@@ -253,7 +256,7 @@ const EmployeTasks = (props: any) => {
             <GlobalCommanTable columns={columns} ref={childRef} data={data} showHeader={true} callBackData={callBackData} multiSelect={true} TaskUsers={allUsers} AllListId={AllListId} /> */}
             {!loader && <PageLoader />}
             <details open >
-                <summary> Working Today Tasks    
+                <summary> Working Today Tasks {'(' + todayTasks?.length + ')'}   
                 </summary>
                 <div className='AccordionContent'>
                     {todayTasks.length>0 ?
@@ -268,7 +271,7 @@ const EmployeTasks = (props: any) => {
                 </div>
                 </details>
                 <details  >
-                <summary> Working this Week Tasks    
+                <summary> Working this Week Tasks  {'(' + weekTasks?.length + ')'}    
                 </summary>
                 <div className='AccordionContent'>
                     {weekTasks.length>0 ?
@@ -283,7 +286,7 @@ const EmployeTasks = (props: any) => {
                 </div>
             </details>
             <details  >
-                <summary> Assigned To    
+                <summary> Assigned tasks    {'(' + data?.length + ')'}
                 </summary>
                 <div className='AccordionContent'>
                     {data.length>0 ?
