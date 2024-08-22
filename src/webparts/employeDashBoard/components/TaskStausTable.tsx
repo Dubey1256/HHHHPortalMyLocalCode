@@ -1794,10 +1794,15 @@ const TaskStatusTbl = (Tile: any) => {
 
     }
   }
-  function CallBack() {
+  function CallBack(Type: any) {
     setEditPopupProjects(false);
     setEditPopup(false);
     setEditCompPopup(false);
+    if (editPopup == true && Type != 'Close') {
+      setTimeout(() => {
+        location.reload();
+      }, 1500);
+    }
   }
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
     if (elem != undefined) {
@@ -1949,8 +1954,6 @@ const TaskStatusTbl = (Tile: any) => {
       else {
         confirmation = confirm('You have ' + ' ' + config?.Tasks?.length + ' ' + 'Tasks in your ' + config?.WebpartTitle + ' ' + ' webpart and you have filled timesheet in ' + FilteredTasks?.length + ' Tasks' + '.' + '\n' + 'Do you want to continue?')
       }
-
-
     }
     else {
       if (ContextData?.currentUserData?.Approver != undefined && ContextData?.currentUserData?.Approver[0]?.Title != undefined)
@@ -1963,8 +1966,8 @@ const TaskStatusTbl = (Tile: any) => {
         to.push(ContextData?.currentUserData?.Email)
       }
       SendEmailFinal(to, subject, body);
-    } else {
-      // alert("No entries available");
+    } else if (body1.length == 0 || body1 == undefined || body1 == '') {
+      alert("No Time Entries Available");
     }
   }
   const SendEmailFinal = async (to: any, subject: any, body: any) => {
@@ -2065,9 +2068,7 @@ const TaskStatusTbl = (Tile: any) => {
         </a>}
         {config?.WebpartTitle == 'Draft Tasks' && <a className="empCol hreflink me-3">Approve</a>}
         {config?.WebpartTitle == 'Waiting for Approval' && <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>}
-        {ContextData?.todaysDrafTimeEntry?.length > 0 && config?.Tasks?.length > 0 ? <span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks, config)} className="hreflink svg__iconbox svg__icon--TShare empBg"></span>
-          :
-          <span title={`Share ${config?.WebpartTitle}`} className="grey hreflink svg__iconbox svg__icon--TShare empBg"></span>}
+        <span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks, config)} className="hreflink svg__iconbox svg__icon--TShare empBg"></span>
       </span >
     )
   }
@@ -2468,7 +2469,7 @@ const TaskStatusTbl = (Tile: any) => {
       <div>
         {ActiveTile != undefined && generateDashboard()}
         <span>
-          {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
+          {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={(Type: any) => { CallBack(Type) }} />}
         </span>
         <span>
           {EditPopupProjects && <EditProjectPopup AllListId={AllListId} props={ProjectResult} Call={CallBack} showProgressBar={showProgressBar} />}
