@@ -7076,7 +7076,7 @@ const EditTaskPopup = (Items: any) => {
                                             })}
                                         </div>
                                         {/* //////////////////////////////This is Approval section/////////////////////////// */}
-                                        <div className="col mt-2 ps-0 input-group" >
+                                        <div className="col mt-2 ps-0 input-group Approvalcol " >
                                             {WorkingAction?.length > 0 ? <> {WorkingAction?.map((WAItemData, ItemIndex) => {
                                                 if ((WAItemData.Title === "Approval") && (WAItemData?.InformationData?.length === 0 || WAItemData?.InformationData?.length > 1)) {
                                                     return (
@@ -7095,7 +7095,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     />
                                                                     <span className="ms-1">Approval</span>
                                                                 </div >
-                                                                <div>
+                                                                <div class="complexcol">
                                                                     <ul className="p-0 mt-1 list-none alignCenter">
                                                                         <li className="SpfxCheckRadio" onClick={() => updateWAForApproval("Normal", "Type")}>
                                                                             <input
