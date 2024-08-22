@@ -33,6 +33,7 @@ export const EodReportMain = (props: any) => {
     const [allAditionalTask, setallAditionalTask]: any = React.useState([])
     copyAllAditionalTaskData = allAditionalTask;
     const [loaded, setLoaded] = React.useState(false);
+    const [PortfolioLeadEODMail, setPortfolioLeadEODMail]: any = React.useState('')
     let childRefdata: any;
     let nextUniqueId = 1;
 
@@ -351,7 +352,7 @@ export const EodReportMain = (props: any) => {
 
         let body = '';
         if (body1?.length > 0) {
-            body = `
+               body = PortfolioLeadEODMail+`
             
             <table width="100%" bgcolor="#FAFAFA" style="background-color:#FAFAFA;margin:-18px -10px;" align="center">
                 <tr>
@@ -1767,6 +1768,9 @@ export const EodReportMain = (props: any) => {
     const closePanel = () => {
         setShowpanel(false)
     }
+    const callbackPortfolioLeadEOD= React.useCallback((mailHtml:any)=>{
+        setPortfolioLeadEODMail(mailHtml)
+    },[])
     return (
         <div>
             <h2>All Portfolio Lead</h2>
@@ -1777,7 +1781,7 @@ export const EodReportMain = (props: any) => {
                             <div className="Alltable mt-2 ">
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
-                                        <div>{allUsers?.length > 0 && timesheetListConfig?.length > 0 && < PortfolioLeadEOD AllUsers={allUsers} timesheetListConfig={timesheetListConfig} AllListId={AllListId} />}
+                                    <div>{ allUsers?.length > 0 && timesheetListConfig?.length > 0 && < PortfolioLeadEOD  callbackPortfolioLeadEOD={callbackPortfolioLeadEOD} AllUsers={allUsers}timesheetListConfig={timesheetListConfig} AllListId={AllListId}/>}
 
                                         </div>
                                     </div>
