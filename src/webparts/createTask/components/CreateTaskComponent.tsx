@@ -1175,10 +1175,10 @@ function CreateTaskComponent(props: any) {
                             await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Auto-Assignment", SiteURL: AllListId.siteUrl, ItemDetails: data.data, Context: AllListId.Context, RequiredListIds: AllListId, AllTaskUser: taskUsers, Status: 0 })
                             let assignedToIds: any[] = [];
                             let responsibleTeamIds: any[] = [];
-                            data.data.TaskAssignedUsers.map((users: any) => {
+                            data?.data?.TaskAssignedUsers?.map((users: any) => {
                                 assignedToIds.push(users.AssingedToUserId)
                             })
-                            data.data.ResponsibleTeamMembers.map((teamMember: any) => {
+                            data?.data?.TaskResponsibleTeam?.map((teamMember: any) => {
                                 responsibleTeamIds.push(teamMember.AssingedToUserId)
                             })
                             let updateTask: any = {}
