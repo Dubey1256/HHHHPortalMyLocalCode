@@ -528,7 +528,7 @@ export default function UXFeedbackComponent(textItems: any) {
         tempArray?.map((tempItem: any) => {
             tempItem.Checked = false;
         });
-        setTaskImages(tempArray);
+  
         // UploadImageFunction(lastindexArray, fileName);
         if (addUpdateIndex != undefined) {
             let updateIndex: any = addUpdateIndex[0];
@@ -571,19 +571,23 @@ export default function UXFeedbackComponent(textItems: any) {
                         try {
                             let web = new Web(textItems?.EditData?.siteUrl);
                             let item = web.lists.getById(listId).items.getById(Id);
-                            await item.attachmentFiles.add(imageName, data);
-                            console.log("Attachment added");
-                            console.log(DataJson)
-                            console.log(TaskImages)                            
-                            if (AddMoreImage == false) {
-                                UpdatedFeedBackParentArray = State;
-                                UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo = DataJson
-                                setState([...UpdatedFeedBackParentArray]);
-                                callBack(UpdatedFeedBackParentArray);                               
-                            }
-                            setTimeout(() => {
-                                setIsdisabled(false)
-                            }, 0)
+                            await item.attachmentFiles.add(imageName, data).then((data:any)=>{
+                                console.log("Attachment added");
+                                console.log(DataJson)
+                                console.log(TaskImages)  
+                                setTaskImages(DataJson);                          
+                                if (AddMoreImage == false) {
+                                    // setTaskImages(DataJson);
+                                    UpdatedFeedBackParentArray = State;
+                                    UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo = DataJson
+                                    setState([...UpdatedFeedBackParentArray]);
+                                    callBack(UpdatedFeedBackParentArray);                               
+                                }
+                                setTimeout(() => {
+                                    setIsdisabled(false)
+                                }, 0)
+                            });
+                           
                         }
                         catch (error) {
                             reject(error);
@@ -594,16 +598,19 @@ export default function UXFeedbackComponent(textItems: any) {
                         try {
                             let web = new Web(textItems?.EditData?.siteUrl);
                             let item = web.lists.getByTitle(listName).items.getById(Id);
-                            await item.attachmentFiles.add(imageName, data);                           
-                            UpdatedFeedBackParentArray = State;
-                            UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo = DataJson
-                            setState(UpdatedFeedBackParentArray);
-                            callBack(UpdatedFeedBackParentArray);
-                            setTimeout(() => {
-                                setIsdisabled(false)
-                            }, 0)
-
-                            resolve();
+                            await item.attachmentFiles.add(imageName, data).then((data3:any)=>{
+                                setTaskImages(DataJson);
+                                UpdatedFeedBackParentArray = State;
+                                UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo = DataJson
+                                setState(UpdatedFeedBackParentArray);
+                                callBack(UpdatedFeedBackParentArray);
+                                setTimeout(() => {
+                                    setIsdisabled(false)
+                                }, 0)
+    
+                                resolve();
+                            })                           
+                           
                         } catch (error) {
                             reject(error);
                         }
@@ -627,10 +634,14 @@ export default function UXFeedbackComponent(textItems: any) {
             ReplaceImageFunction(ReplaceImage, imageIndex)
         } else {
             UpdatedFeedBackParentArray = State;
-            UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo.push(TaskImages[0])
+            if(TaskImages?.length>0){
+                UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo.push(TaskImages[0])
+            }
+         
             designTemplatesArray = UpdatedFeedBackParentArray
             setState(UpdatedFeedBackParentArray);
             callBack(UpdatedFeedBackParentArray);
+            setTaskImages([])
             setopenAddMoreImagePopup(false)
         }    
         
@@ -731,6 +742,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                 let TimeStamp = moment(new Date().toLocaleString());
                                 replaceimageData.ImageUrl = replaceimageData?.ImageUrl + "?Updated=" + TimeStamp
                                 designTemplatesArray[copyCurrentActiveTab]?.setImagesInfo?.splice(ImageIndex, 1, replaceimageData)
+                                ReplaceImage=[];
                                 setopenAddMoreImagePopup(false)
                             })
                             .catch((err: any) => {

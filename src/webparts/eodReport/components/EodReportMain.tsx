@@ -705,7 +705,7 @@ export const EodReportMain = (props: any) => {
                 placeholder: "Achieved",
                 header: "",
                 resetColumnFilters: false,
-                size: 330,
+                size: 230,
                 isColumnVisible: true
             },
             {
@@ -721,7 +721,7 @@ export const EodReportMain = (props: any) => {
                 placeholder: "Pending",
                 header: "",
                 resetColumnFilters: false,
-                size: 330,
+                size: 230,
                 isColumnVisible: true
             },
 
@@ -795,7 +795,7 @@ export const EodReportMain = (props: any) => {
                 id: "smartTimeTotal",
                 placeholder: "TotalTime",
                 header: "",
-                size: 80,
+                size: 60,
                 isColumnVisible: true
             },
             {
@@ -1774,31 +1774,37 @@ export const EodReportMain = (props: any) => {
     },[])
     return (
         <div>
-            <h2>All Portfolio Lead</h2>
+            <div className=''>
+               
+
+               <section className="Tabl1eContentSection row taskprofilepagegreen">
+              
+                   <div className="container-fluid p-0">
+                       <section className="ContentSection">
+                      
+                           <div className="container p-0 mt-3">
+                           <h2 className='heading'>All Portfolio Lead</h2>
+                               <div className="Alltable">
+                                   <div className="col-sm-12 p-0 smart">
+                                       <div>
+                                           <div>{ allUsers?.length > 0 && timesheetListConfig?.length > 0 && < PortfolioLeadEOD  callbackPortfolioLeadEOD={callbackPortfolioLeadEOD} AllUsers={allUsers}timesheetListConfig={timesheetListConfig} AllListId={AllListId}/>}
+                                       
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                       </section>
+                   </div>
+               </section>
+           </div>
+            
             <section className="Tabl1eContentSection row taskprofilepagegreen">
                 <div className="container-fluid p-0">
-                    <section className="TableSection">
-                        <div className="container p-0">
-                            <div className="Alltable mt-2 ">
-                                <div className="col-sm-12 p-0 smart">
-                                    <div>
-                                    <div>{ allUsers?.length > 0 && timesheetListConfig?.length > 0 && < PortfolioLeadEOD  callbackPortfolioLeadEOD={callbackPortfolioLeadEOD} AllUsers={allUsers}timesheetListConfig={timesheetListConfig} AllListId={AllListId}/>}
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </section>
-
-            <h2>EOD Report</h2>
-            <section className="Tabl1eContentSection row taskprofilepagegreen">
-                <div className="container-fluid p-0">
-                    <section className="TableSection">
-                        <div className="container p-0">
-                            <div className="Alltable mt-2 ">
+                    <section className="ContentSection">
+                        <div className="container p-0 mt-3">
+                        <h2 className='heading'>EOD Report</h2>
+                            <div className="Alltable">
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
@@ -1811,6 +1817,7 @@ export const EodReportMain = (props: any) => {
                                                 fixedWidth={true}
                                                 tableId="EodReport"
                                                 multiSelect={true}
+                                                  wrapperHeight="400px"
                                                 customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtonsForEmail}
 
                                             />
@@ -1822,12 +1829,13 @@ export const EodReportMain = (props: any) => {
                     </section>
                 </div>
             </section>
-            <h2>Additional Report</h2>
+            
             <section className="Tabl1eContentSection row taskprofilepagegreen">
                 <div className="container-fluid p-0">
-                    <section className="TableSection">
-                        <div className="container p-0">
-                            <div className="Alltable mt-2 ">
+                    <section className="ContentSection">
+                        <div className="container p-0 mt-3">
+                        <h2 className='heading'>Additional Report</h2>
+                            <div className="Alltable">
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
@@ -1841,6 +1849,7 @@ export const EodReportMain = (props: any) => {
                                                 tableId="EodReportAdditional"
                                                 customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons}
                                                 multiSelect={true}
+                                                  wrapperHeight="400px"
 
                                             />
                                         </div>
@@ -1860,7 +1869,6 @@ export const EodReportMain = (props: any) => {
                 onDismiss={closePanel}
                 isBlocking={false}
             >
-                selectedPanelTask
                 <div className="parentDiv p-0 pt-1">
                     {taskCommentData != undefined && taskCommentData?.length >= 1 && taskCommentData?.map((item: { AuthorName: string, Achieved: string | number | readonly string[]; Pending: string | number | readonly string[]; Title: any,Created:any }, index: any) => (
                          item?.hasOwnProperty('isEodTask') && isTodayCreated(item?.Created)
@@ -1868,7 +1876,7 @@ export const EodReportMain = (props: any) => {
                         <div key={index}>
                             <td className="strong">{item?.Title} -- Comment By {item?.AuthorName != undefined ? item?.AuthorName : ''}</td>
                             <div>
-                                <h4>Achieved Comment</h4>
+                                <div className='f-15'>Achieved Comment</div>
                                 <textarea
                                     className="full-width"
                                     id={`txtUpdateCommentAchieved-${index}`}
@@ -1878,7 +1886,7 @@ export const EodReportMain = (props: any) => {
                                 />
                             </div>
                             <div>
-                                <h4>Pending Comment</h4>
+                                <div className='f-15'>Pending Comment</div>
                                 <textarea
                                     className="full-width"
                                     id={`txtUpdateCommentPending-${index}`}
@@ -1899,7 +1907,7 @@ export const EodReportMain = (props: any) => {
                         <div>
                             <td>{panelTitle}</td>
                             <div>
-                                <h4>Achived Comment</h4>
+                                <div className='f-15'>Achived Comment</div>
                                 <textarea
                                     className="full-width"
                                     id={`txtUpdateCommentAchieved-1}`}
@@ -1909,7 +1917,7 @@ export const EodReportMain = (props: any) => {
                                 />
                             </div>
                             <div>
-                                <h4>Pending Comment</h4>
+                                <div className='f-15'>Pending Comment</div>
                                 <textarea
                                     className="full-width"
                                     id={`txtUpdateCommentPending-1`}
@@ -1923,16 +1931,17 @@ export const EodReportMain = (props: any) => {
                         </div>
                     }
                     <footer className="d-flex justify-content-between ms-3 float-end">
-                        <div>
+                        <div className='alignCenter ml-auto'>
+                            <span onClick={addNewComment} className="svg__iconbox svg__icon--Plus hreflink" title='Add'>
+                                Add
+                            </span>
                             <button onClick={onPanelSaveButtonClick} className="btn btnPrimary mx-1">
                                 Save
                             </button>
                             <button className='btn btn-default' onClick={closePanel}>
                                 Cancel
                             </button>
-                            <button onClick={addNewComment} className="btn btn-secondary mx-1">
-                                Add
-                            </button>
+                         
                         </div>
                     </footer>
                 </div>
