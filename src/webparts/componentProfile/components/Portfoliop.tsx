@@ -26,7 +26,7 @@ import InlineEditingcolumns from "../../../globalComponents/inlineEditingcolumns
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import CentralizedSiteComposition from "../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition";
-import KeyDocuments from "../../taskprofile/components/KeyDocument";  
+import KeyDocuments from "../../taskprofile/components/KeyDocument";
 import RadimadeTable from "../../../globalComponents/RadimadeTable";
 
 const sp = spfi();
@@ -38,14 +38,14 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from "moment";
 import PortfolioProjectManagement from "./PortfolioProjectmanagement";
-const CalendarPicker = ({ fieldValue, handleInputChange, type }:any) => {
+const CalendarPicker = ({ fieldValue, handleInputChange, type }: any) => {
   const [startDate, setStartDate] = useState(null);
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
-   const myDate:any = Moment(fieldValue, 'DD/MM/YYYY').toDate();
-   const Dates = new Date(myDate)
-   if (fieldValue) {
+    const myDate: any = Moment(fieldValue, 'DD/MM/YYYY').toDate();
+    const Dates = new Date(myDate)
+    if (fieldValue) {
       setStartDate(Dates);
     }
   }, [fieldValue]);
@@ -54,8 +54,8 @@ const CalendarPicker = ({ fieldValue, handleInputChange, type }:any) => {
     setOpen(!open);
   };
 
-  const handleChange = (date:any) => {
-    const myDate= new Date(date);
+  const handleChange = (date: any) => {
+    const myDate = new Date(date);
     setStartDate(myDate);
     handleInputChange({ target: { value: date, type } });
     setOpen(false);
@@ -65,7 +65,7 @@ const CalendarPicker = ({ fieldValue, handleInputChange, type }:any) => {
     handleInputChange({ target: { value: '', type } });
     setOpen(false);
   };
-  const CustomCalendarContainer = ({ children }:any) => {
+  const CustomCalendarContainer = ({ children }: any) => {
     return (
       <div>
         {children}
@@ -80,15 +80,15 @@ const CalendarPicker = ({ fieldValue, handleInputChange, type }:any) => {
       <span className="svg__iconbox svg__icon--calendar" onClick={handleIconClick}></span>
       {open && (
         <div className="react-datepicker">
-        <DatePicker
-          selected={startDate}
-          onChange={handleChange}
-          withPortal
-          inline
-          calendarContainer={CustomCalendarContainer}
-        />
-      </div>
-        
+          <DatePicker
+            selected={startDate}
+            onChange={handleChange}
+            withPortal
+            inline
+            calendarContainer={CustomCalendarContainer}
+          />
+        </div>
+
       )}
     </div>
   );
@@ -251,7 +251,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFieldValue(event.target.value);
   };
-  
+
 
   if (fieldName == "PercentComplete") {
     const [myfieldValue, setmyFieldValue] = React.useState(value);
@@ -328,7 +328,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
       setFieldValue(event.target.value);
       handleSaveDate(event.target.value);
     };
-  
+
     const handleSaveDate = async (dateValue: any) => {
       try {
         const formattedValue = dateValue ? new Date(dateValue).toISOString() : null;
@@ -339,7 +339,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
           .update({
             [fieldName]: formattedValue,
           });
-  
+
         setEditing(false);
         setKey((prevKey) => prevKey + 1);
       } catch (error) {
@@ -348,19 +348,19 @@ export const EditableField: React.FC<EditableFieldProps> = ({
     };
     if (editing) {
       return (
-    <div className="editcolumn">
-    <CalendarPicker
-      fieldValue={fieldValue}
-      handleInputChange={handleInputChangeDate}
-      type="date"
-    />
-  </div>)
+        <div className="editcolumn">
+          <CalendarPicker
+            fieldValue={fieldValue}
+            handleInputChange={handleInputChangeDate}
+            type="date"
+          />
+        </div>)
     }
     // const formattedDate = fieldValue ? new Date(fieldValue).toLocaleDateString() : "";
     const formattedDate = moment(fieldValue, 'DD/MM/YYYY').format('DD/MM/YYYY');
     return (
       <div>
-        <span title={formattedDate != 'Invalid date'?formattedDate:''}>{formattedDate != 'Invalid date'?formattedDate:''}</span>
+        <span title={formattedDate != 'Invalid date' ? formattedDate : ''}>{formattedDate != 'Invalid date' ? formattedDate : ''}</span>
         <a className="alignIcon ms-1 pencil-icons pull-right" onClick={handleEdit}>
           <span className="svg__iconbox svg__icon--calendar"></span>
         </a>
@@ -456,7 +456,7 @@ let keyDocRef: any;
 let relevantDocRef: any;
 let smartInfoRef: any;
 let portfolioColor: any = '';
-let MyDefaultData:any= [];
+let MyDefaultData: any = [];
 function Portfolio({ SelectedProp, TaskUser }: any) {
   AllTaskuser = TaskUser;
   keyDocRef = React.useRef();
@@ -486,6 +486,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
   const [currentImage, setCurrentImage] = React.useState(null);
   const [filterdata, setfilterdata] = React.useState([]);
   const [isopenProjectpopup, setisopenProjectpopup] = React.useState(false);
+  const [isopenChangeParent, setisopenChangeParent] = React.useState(false);
   const [composition, setComposition] = React.useState(true);
   const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
 
@@ -508,37 +509,37 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
   const [isTooltipOpen, setIsTooltipOpen] = React.useState(false);
   // PortfolioType
 
-// Handle For the HHHH Project Management
-const renderPortfolioProjectManagement = React.useCallback(() => {
-  console.log("Rendering PortfolioProjectManagement");
-  console.log("data:", data);
-  console.log("ContextValue:", ContextValue);
-  console.log("AllTaskuser:", AllTaskuser);
-  console.log("portfolioTyped:", portfolioTyped);
+  // Handle For the HHHH Project Management
+  const renderPortfolioProjectManagement = React.useCallback(() => {
+    console.log("Rendering PortfolioProjectManagement");
+    console.log("data:", data);
+    console.log("ContextValue:", ContextValue);
+    console.log("AllTaskuser:", AllTaskuser);
+    console.log("portfolioTyped:", portfolioTyped);
 
-  // Set default values to avoid undefined propsdata
-  const defaultData = MyDefaultData?.length>0?MyDefaultData[0]: [];
-  const defaultContextValue = ContextValue || {};
-  const defaultContext = defaultContextValue.Context || {};
-  const defaultAllTaskUsers = AllTaskuser || [];
-  const defaultPortfolioTyped = portfolioTyped || [];
-  const DefaultAllMasterTaskData = AllMasterTaskData?.length>0?AllMasterTaskData: [];
-  
- 
+    // Set default values to avoid undefined propsdata
+    const defaultData = MyDefaultData?.length > 0 ? MyDefaultData[0] : [];
+    const defaultContextValue = ContextValue || {};
+    const defaultContext = defaultContextValue.Context || {};
+    const defaultAllTaskUsers = AllTaskuser || [];
+    const defaultPortfolioTyped = portfolioTyped || [];
+    const DefaultAllMasterTaskData = AllMasterTaskData?.length > 0 ? AllMasterTaskData : [];
 
-  return (
-    <PortfolioProjectManagement
-      AllListId={defaultContextValue}
-      MyAllData={defaultData}
-      ContextValue={defaultContext}
-      AllTaskUsers={defaultAllTaskUsers}
-      portfolioTypeDataItem={defaultPortfolioTyped}
-      AllMasterTask = {DefaultAllMasterTaskData}
-    />
-  );
-}, [MyDefaultData, ContextValue, AllTaskuser, portfolioTyped]);
 
-// End of Project management 
+
+    return (
+      <PortfolioProjectManagement
+        AllListId={defaultContextValue}
+        MyAllData={defaultData}
+        ContextValue={defaultContext}
+        AllTaskUsers={defaultAllTaskUsers}
+        portfolioTypeDataItem={defaultPortfolioTyped}
+        AllMasterTask={DefaultAllMasterTaskData}
+      />
+    );
+  }, [MyDefaultData, ContextValue, AllTaskuser, portfolioTyped]);
+
+  // End of Project management 
 
 
 
@@ -561,12 +562,12 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
   }, [count]);
   React.useEffect(() => {
     setTimeout(() => {
-        const panelMain: any = document.querySelector('.ms-Panel-main');
-        if (panelMain && portfolioColor) {
-            $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
-        }
+      const panelMain: any = document.querySelector('.ms-Panel-main');
+      if (panelMain && portfolioColor) {
+        $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
+      }
     }, 1500)
-}, [isopenProjectpopup,IsComponent,SiteCompositionShow]);
+  }, [isopenProjectpopup, IsComponent, SiteCompositionShow]);
 
 
   const getSmartMetaDataListAllItems = async () => {
@@ -722,7 +723,7 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
 
             item.siteCompositionData = SiteCompositionTemp;
             SelectedProp.isShowSiteCompostion = item.siteCompositionData;
-            if(SelectedProp.isShowSiteCompostion.length == 0){
+            if (SelectedProp.isShowSiteCompostion.length == 0) {
               setComposition(false)
             }
             item.listId = ContextValue.MasterTaskListID;
@@ -844,7 +845,7 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
               "--SiteBlue",
               response[0]?.PortfolioType?.Color
             );
-           portfolioColor=response[0]?.PortfolioType?.Color;
+            portfolioColor = response[0]?.PortfolioType?.Color;
           }
 
           console.log(response);
@@ -1132,6 +1133,10 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
     setisopenProjectpopup(true);
     mydata.push(data[0]);
   };
+  const openParentPopupFunction = () => {
+    setisopenChangeParent(true);
+    mydata.push(data[0]);
+  };
 
   const callServiceComponent = React.useCallback(
     (item1: any, type: any, functionType: any) => {
@@ -1155,7 +1160,40 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
     },
     []
   );
-
+  const callBackParentChange = React.useCallback(
+    async (item1: any, type: any, functionType: any) => {
+      if (functionType === "Close") {
+        setisopenChangeParent(false);
+      } else {
+        let mydataid: any = mydata[0]?.Id;
+        let filteredIds = item1
+          .filter((item: { Id: null }) => item.Id !== null)
+          .map((item: { Id: any }) => item.Id);
+          // const a = await getPortfolioStructureId(mydata[0]?.PortfolioType?.Title,mydata[0]);
+          let StructureID:any;
+          if(item1[0].Item_x0020_Type == 'SubComponent' && mydata[0]?.Item_x0020_Type == 'Feature' ){
+            StructureID = item1[0].PortfolioStructureID + '-F' + (item1[0]?.subRows?.length + 1);
+            updateParent(filteredIds, mydataid, SelectedProp,StructureID);
+            setisopenChangeParent(false);
+          } else if(item1[0].Item_x0020_Type == 'Component' && mydata[0]?.Item_x0020_Type == 'SubComponent' ){
+            StructureID = item1[0].PortfolioStructureID + '-S' + (item1[0]?.subRows?.length + 1);
+            updateParent(filteredIds, mydataid, SelectedProp,StructureID);
+            setisopenChangeParent(false);
+          }else if(item1[0].Item_x0020_Type == 'Component' && mydata[0]?.Item_x0020_Type == 'Feature' ){
+            StructureID = item1[0].PortfolioStructureID + '-F' + (item1[0]?.subRows?.length + 1)
+            updateParent(filteredIds, mydataid, SelectedProp,StructureID);
+            setisopenChangeParent(false);
+          }else{
+            alert("This cannot be a parent because it is at the same level.")
+            setisopenChangeParent(false);
+          }
+       
+      }
+    },
+    [] // Dependencies array, add variables here if the callback depends on them
+  );
+  
+  
   // this is used for site compositipon component callback
 
   const ClosePopupCallBack = (FnType: any) => {
@@ -1201,7 +1239,65 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
     }
   }
 
-  
+  async function updateParent(
+    itemIds: number[],
+    itemId: any,
+    AllListId: any,
+    PortfolioId:any
+  ) {
+    try {
+      let web = new Web(AllListId?.siteUrl);
+       await web.lists
+          .getById(AllListId?.MasterTaskListID)
+          .items.getById(itemId)
+          .update({
+            ParentId:itemIds[0],
+            PortfolioStructureID:PortfolioId
+          })
+          .then((res: any) => {
+            getMasterTaskListTasks();
+            count++;
+            console.log(res);
+          });
+      
+    } catch (error) {
+      console.error("Error updating multi-lookup field:", error);
+    }
+  }
+
+
+  // Change for the change parent 
+  const getPortfolioStructureId = async (type: any, item: any) => {
+    var filter = "";
+    if (type == "Component") {
+      filter = "Item_x0020_Type eq 'Component'";
+    } else {
+      filter =
+        "Parent/Id eq '" + item?.Id + "' and Item_x0020_Type eq '" + type + "'";
+      //filter = "Parent/Id eq '" + item.Id
+    }
+ 
+    let web = new Web(SelectedProp?.siteUrl);
+    let results = await web.lists
+      .getByTitle("Master Tasks")
+      .items.select(
+        "Id",
+        "Title",
+        "PortfolioLevel",
+        "Item_x0020_Type",
+        "PortfolioStructureID",
+        "Parent/Id",
+        "PortfolioType/ID",
+        "PortfolioType/Title"
+      )
+      .expand("Parent,PortfolioType")
+      .filter(filter)
+      .orderBy("PortfolioLevel", false)
+      .top(1)
+      .get();
+    console.log(results);
+    return results;
+  };
   return (
     <myContextValue.Provider
       value={{
@@ -1514,7 +1610,7 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
                               //   web={ContextValue?.siteUrl}
                               // />
                               <InlineEditingcolumns
-                              portfolioColor={portfolioColor}
+                                portfolioColor={portfolioColor}
                                 AllListId={ContextValue}
                                 callBack={inlineCallBack}
                                 columnName="PortfolioStatus"
@@ -1551,11 +1647,11 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
                                 <dt className="bg-fxdark" title="Tagged Parent">
                                   Parent
                                 </dt>
-                                <dd className="bg-light columnFixedTitle full-width pe-0">
+                                <dd className="bg-light columnFixedTitle full-width">
                                   {item?.Parent?.Title != undefined && (
                                     <>
                                       <a
-                                      className='text-content'
+                                        className='text-content'
                                         target="_blank"
                                         data-interception="off"
                                         href={
@@ -1565,54 +1661,35 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
                                         }
                                         title={item?.Parent?.Title}
                                       >
-                                       {item?.Parent?.Title}
+                                        {item?.Parent?.Title}
                                       </a>
-                                      <span className="pull-right">
-                                        <span className="pencil_icon">
-                                          <span className="hreflink">
-                                            {item?.PortfolioType?.Title ==
-                                              "Component" && (
-                                                <>
-                                                  <a
-                                                    target="_blank"
-                                                    data-interception="off"
-                                                    href={
-                                                      SelectedProp.siteUrl +
-                                                      "/SitePages/Team-Portfolio.aspx?ComponentID=" +
-                                                      item?.Parent?.Id
-                                                    }
-                                                  >
-                                                    <img
-                                                      src={require("../../../Assets/ICON/edit_page.svg")}
-                                                      width="25"
-                                                      height="25"
-                                                    />{" "}
-                                                  </a>
-                                                </>
-                                              )}
-                                            {item?.PortfolioType?.Title ==
-                                              "Service" && (
-                                                <>
-                                                  <a
-                                                    target="_blank"
-                                                    data-interception="off"
-                                                    href={
-                                                      SelectedProp.siteUrl +
-                                                      "/SitePages/Team-Portfolio.aspx?ComponentID=" +
-                                                      item?.Parent?.Id
-                                                    }
-                                                  >
-                                                    {" "}
-                                                    <img
-                                                      src={require("../../../Assets/ICON/edit_page.svg")}
-                                                      width="25"
-                                                      height="25"
-                                                    />{" "}
-                                                  </a>
-                                                </>
-                                              )}
-                                          </span>
-                                        </span>
+                                      <span className="hreflink">
+                                        {item?.PortfolioType?.Title ==
+                                          "Component" && (
+                                            <>
+                                              <a
+                                                className="pancil-icons"
+                                                onClick={() =>
+                                                  openParentPopupFunction()
+                                                }
+                                              >
+                                                <span className="svg__iconbox svg__icon--editBox"></span>
+                                              </a>
+                                            </>
+                                          )}
+                                        {item?.PortfolioType?.Title ==
+                                          "Service" && (
+                                            <>
+                                              <a
+                                                className="pancil-icons"
+                                                onClick={() =>
+                                                  openParentPopupFunction()
+                                                }
+                                              >
+                                                <span className="svg__iconbox svg__icon--editBox"></span>
+                                              </a>
+                                            </>
+                                          )}
                                       </span>
                                     </>
                                   )}
@@ -1673,7 +1750,7 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
                               //   web={ContextValue?.siteUrl}
                               // />
                               <InlineEditingcolumns
-                              portfolioColor={portfolioColor}
+                                portfolioColor={portfolioColor}
                                 AllListId={ContextValue}
                                 callBack={inlineCallBack}
                                 columnName="ItemRank"
@@ -1769,15 +1846,15 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
                       </dt>
                       <dd className="bg-light">
                         {data.map((item: any, index: any) => (
-                           <InlineEditingcolumns
-                           portfolioColor={portfolioColor}
-                             AllListId={ContextValue}
-                             callBack={inlineCallBack}
-                             columnName="Priority"
-                             item={data[0]}
-                             TaskUsers={AllTaskuser}
-                             pageName={"portfolioprofile"}
-                           />
+                          <InlineEditingcolumns
+                            portfolioColor={portfolioColor}
+                            AllListId={ContextValue}
+                            callBack={inlineCallBack}
+                            columnName="Priority"
+                            item={data[0]}
+                            TaskUsers={AllTaskuser}
+                            pageName={"portfolioprofile"}
+                          />
                           // <EditableField
                           //   key={index}
                           //   listName="Master Tasks"
@@ -1832,7 +1909,7 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
                         {data?.length > 0 && (
                           <>
                             <InlineEditingcolumns
-                            portfolioColor={portfolioColor}
+                              portfolioColor={portfolioColor}
                               AllListId={ContextValue}
                               callBack={inlineCallBack}
                               columnName="TaskCategories"
@@ -1978,7 +2055,7 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
                               </label>
                             </summary>
                             <div className="border border-top-0 p-2">
-                            {AllQuestion?.map((item) => (
+                              {AllQuestion?.map((item) => (
                                 <details>
                                   <summary className="alignCenter">
                                     <label className="toggler full_width">
@@ -2010,7 +2087,7 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
                             </summary>
                             <div className="border border-top-0 p-2">
 
-                            {AllHelp?.map((item) => (
+                              {AllHelp?.map((item) => (
                                 <details>
                                   <summary className="alignCenter">
                                     <label className="toggler full_width">
@@ -2211,8 +2288,8 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
                       <div className="Sitecomposition mb-2">
                         <details open>
                           <summary>
-                              <label>Site Composition</label>
-                              <a className="alignCenter ml-auto pull-right"><span className="svg__iconbox svg__icon--editBox" title="Edit Site Composition" onClick={() => setSiteCompositionShow(true)}></span></a>
+                            <label>Site Composition</label>
+                            <a className="alignCenter ml-auto pull-right"><span className="svg__iconbox svg__icon--editBox" title="Edit Site Composition" onClick={() => setSiteCompositionShow(true)}></span></a>
                           </summary>
                           {data?.length > 0 &&
                             data[0]?.siteCompositionData?.length > 0 ? (
@@ -2412,9 +2489,21 @@ const renderPortfolioProjectManagement = React.useCallback(() => {
             showProject={isopenProjectpopup}
           />
         )}
+        {isopenChangeParent && (
+          <ServiceComponentPortfolioPopup
+            props={filterdata}
+            Dynamic={SelectedProp}
+            ComponentType={"Component"}
+            selectionType={"Single"}
+            Call={(DataItem: any, Type: any, functionType: any) => {
+              callBackParentChange(DataItem, Type, functionType);
+            }}
+          // showProject={isopenChangeParent}
+          />
+        )}
         {SiteCompositionShow && (
           <CentralizedSiteComposition
-          portfolioColor={portfolioColor}
+            portfolioColor={portfolioColor}
             ItemDetails={data[0]}
             RequiredListIds={SelectedProp}
             closePopupCallBack={ClosePopupCallBack}

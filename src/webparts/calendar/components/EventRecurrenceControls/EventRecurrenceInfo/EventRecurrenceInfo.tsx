@@ -27,7 +27,7 @@ export class EventRecurrenceInfo extends React.Component<IEventRecurrenceInfoPro
       selectedKey: props?.selectedKey,
       selectPatern: 'every',
       startDate: moment().toDate(),
-      endDate: moment().endOf('month').toDate(),
+      endDate:props?.DueDate!=undefined?props?.DueDate: moment().endOf('month').toDate(),
       numberOcurrences: '1',
       numberOfDays: '1',
       disableNumberOfDays: false,
@@ -121,6 +121,7 @@ export class EventRecurrenceInfo extends React.Component<IEventRecurrenceInfoPro
               startDate={this.props.startDate}
               context={this.props.context}
               siteUrl={this.props.siteUrl}
+              DueDate={this?.props?.DueDate!=undefined?this?.props?.DueDate:undefined}
               returnRecurrenceData={this.props.returnRecurrenceData}
             />
           )
@@ -133,6 +134,7 @@ export class EventRecurrenceInfo extends React.Component<IEventRecurrenceInfoPro
               startDate={this.props.startDate}
               context={this.props.context}
               siteUrl={this.props.siteUrl}
+              DueDate={this?.props?.DueDate!=undefined?this?.props?.DueDate:undefined}
               returnRecurrenceData={this.props.returnRecurrenceData}
             />
           )
@@ -145,6 +147,7 @@ export class EventRecurrenceInfo extends React.Component<IEventRecurrenceInfoPro
               startDate={this.props.startDate}
               context={this.props.context}
               siteUrl={this.props.siteUrl}
+              DueDate={this?.props?.DueDate!=undefined?this?.props?.DueDate:undefined}
               returnRecurrenceData={this.props.returnRecurrenceData}
             />
           )
@@ -157,6 +160,7 @@ export class EventRecurrenceInfo extends React.Component<IEventRecurrenceInfoPro
               startDate={this.props.startDate}
               context={this.props.context}
               siteUrl={this.props.siteUrl}
+              DueDate={this?.props?.DueDate!=undefined?this?.props?.DueDate:undefined}
               returnRecurrenceData={this.props.returnRecurrenceData}
             />
           )

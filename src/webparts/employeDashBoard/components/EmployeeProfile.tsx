@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react'; Moment
+import React, { useEffect, useContext, useState } from 'react';
 import { Web } from 'sp-pnp-js';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import { myContextValue } from '../../../globalComponents/globalCommon'
@@ -61,7 +61,7 @@ const EmployeProfile = (props: any) => {
     loadMasterTask();
     loadTaskUsers(undefined);
     getAllData(true);
-    generateDateRange()
+    generateDateRange();
   }, []);
   const generateDateRange = () => {
     let Count = 0;
@@ -407,8 +407,11 @@ const EmployeProfile = (props: any) => {
           items.DisplayCreateDate = items.DisplayCreateDate.replaceAll("Invalid date", "");
         if (items.Author)
           items.Author.autherImage = findUserByName(items.Author?.Id)
-        if (items?.DueDate != null && items?.DueDate != undefined)
-          items.serverDueDate = new Date(items?.DueDate).setHours(0, 0, 0, 0)
+        if (items?.DueDate != null && items?.DueDate != undefined) {
+          items.serverDueDate = Moment(items?.serverDueDate);
+          items.serverDueDate = items?.serverDueDate?._d.setHours(0, 0, 0, 0)
+        }
+        items.serverDueDate = new Date(items?.DueDate).setHours(0, 0, 0, 0)
         items.DisplayDueDate = Moment(items?.DueDate).format("DD/MM/YYYY");
         if (items.DisplayDueDate == "Invalid date" || "")
           items.DisplayDueDate = items?.DisplayDueDate.replaceAll("Invalid date", "");
@@ -596,29 +599,29 @@ const EmployeProfile = (props: any) => {
     const array: any = allData;
     const filteredConfig = DashboardConfig.find((item: any) => item.DataSource === 'TimeSheet');
     DashboardConfig.forEach((config: any) => {
-      if (config.Tasks === undefined) {
+      if (config?.Tasks === undefined) {
         config.Tasks = [];
       }
-      if (config.DataSource === 'Tasks' || config.DataSource === 'Project') {
-        if (config.selectFilterType !== 'custom') {
-          if (config.smartFevId !== undefined && config.smartFevId !== '' && !config.isShowEveryone) {
-            if (currentUserData?.AssingedToUser?.Id === config.CurrentUserID) {
+      if (config?.DataSource === 'Tasks' || config?.DataSource === 'Project') {
+        if (config?.selectFilterType !== 'custom') {
+          if (config?.smartFevId !== undefined && config?.smartFevId !== '' && !config?.isShowEveryone) {
+            if (currentUserData?.AssingedToUser?.Id === config?.CurrentUserID) {
               config.LoadDefaultFilter = false;
               FilterDataOnCheck(config);
             }
-          } else if (config.smartFevId !== undefined && config.smartFevId !== '' && config.isShowEveryone) {
+          } else if (config?.smartFevId !== undefined && config?.smartFevId !== '' && config?.isShowEveryone) {
             config.LoadDefaultFilter = false;
             FilterDataOnCheck(config);
           }
         }
-        else if (config.selectFilterType === 'custom') {
+        else if (config?.selectFilterType === 'custom') {
           config.LoadDefaultFilter = false;
           if (config?.DataSource == 'Tasks') {
             if (Array.isArray(array) && array.length > 0) {
               if (config['selectUserFilterType']) {
                 array.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
                   if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id == currentUserData?.AssingedToUser?.Id)) {
-                    config.Tasks.push(task);
+                    config?.Tasks.push(task);
                   }
                 });
               }
@@ -630,21 +633,66 @@ const EmployeProfile = (props: any) => {
           else if (config?.DataSource == 'Project') {
             if (Array.isArray(AllMasterTasks) && AllMasterTasks.length > 0) {
               let filteredProject = AllMasterTasks.filter((item: any) => item.Item_x0020_Type == 'Project');
-              filteredProject.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
-                if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id == currentUserData?.AssingedToUser?.Id)) {
-                  config.Tasks.push(task);
+              if (!config?.IsTemplate) {
+                filteredProject.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
+                  if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id == currentUserData?.AssingedToUser?.Id)) {
+                    config?.Tasks.push(task);
+                  }
+                });
+              }
+              else if (config?.IsTemplate) {
+                if (!config?.IsDueDateFilter) {
+                  if (config?.Status != undefined && config?.Status?.length) {
+                    config?.Status?.forEach((percentcomplete: any) => {
+                      filteredProject?.forEach((item: any) => {
+                        if (percentcomplete?.PercentComplete === item?.PercentComplete) {
+                          config?.Tasks.push(item);
+                        }
+                      });
+                    });
+                  }
                 }
-              });
+                else if (config?.IsDueDateFilter) {
+                  let StartDate: any = '';
+                  let EndDate: any = '';
+                  if (config?.StartDate != undefined && config?.StartDate != '') {
+                    StartDate = Moment(config?.StartDate, 'DD/MM/YYYY');
+                    StartDate = StartDate?._d.setHours(0, 0, 0, 0)
+                  }
+                  if (config?.EndDate != undefined && config?.EndDate != '') {
+                    EndDate = Moment(config?.EndDate, 'DD/MM/YYYY');
+                    EndDate = EndDate?._d.setHours(0, 0, 0, 0)
+                  }
+                  filteredProject?.forEach((item: any) => {
+                    let MatchableDate: any = ''
+                    if (item?.DueDate) {
+                      MatchableDate = Moment(item?.DueDate, 'DD/MM/YYYY');
+                      MatchableDate = MatchableDate?._d.setHours(0, 0, 0, 0)
+                    }
+                    if (MatchableDate != '' && StartDate != undefined && StartDate != '' && EndDate != undefined && EndDate != '' && MatchableDate >= StartDate && MatchableDate <= EndDate) {
+                      config?.Tasks.push(item);
+                    }
+                    else if (MatchableDate != '' && StartDate != undefined && StartDate != '' && (EndDate == undefined || EndDate == '') && MatchableDate >= StartDate) {
+                      config?.Tasks.push(item);
+                    }
+                    else if (MatchableDate != '' && (StartDate == undefined && StartDate == '') && EndDate != undefined && EndDate != '' && MatchableDate <= EndDate) {
+                      config?.Tasks.push(item);
+                    }
+                  });
+                }
+              }
             }
           }
         }
-        if (!filteredConfig) {
-          setIsCallContext(true);
-        }
+        setTimeout(() => {
+          if (!filteredConfig) {
+            setIsCallContext(true);
+          }
+        }, 2000)
       }
-      else if (config.DataSource === 'TaskUsers') {
+      else if (config?.DataSource === 'TaskUsers') {
         config.LoadDefaultFilter = false;
-        if (config.selectFilterType === 'custom') {
+        if (config?.selectFilterType === 'custom') {
           if (!isTaskUserExist(AllUsers, currentUserData)) {
             AllUsers.unshift(currentUserData);
           }
@@ -722,15 +770,15 @@ const EmployeProfile = (props: any) => {
           }
 
           for (let item of AllUsers) {
-            if (item[config.Status]) {
-              if (Array.isArray(item[config.Status])) {
-                for (let teamMember of item[config.Status]) {
+            if (item[config?.Status]) {
+              if (Array.isArray(item[config?.Status])) {
+                for (let teamMember of item[config?.Status]) {
                   if (teamMember.Id == currentUserId && !isTaskUserExist(LoginUserTeamMembers, item) && item.ItemType !== 'Group') {
                     LoginUserTeamMembers.push(item);
                   }
                 }
-              } else if (typeof item[config.Status] === 'object' && item[config.Status] !== null) {
-                if ((item[config.Status].Id == currentUserId || item[config.Status].Id == currentUserData.Id) && !isTaskUserExist(LoginUserTeamMembers, item) && item.ItemType !== 'Group') {
+              } else if (typeof item[config?.Status] === 'object' && item[config?.Status] !== null) {
+                if ((item[config?.Status].Id == currentUserId || item[config?.Status].Id == currentUserData.Id) && !isTaskUserExist(LoginUserTeamMembers, item) && item.ItemType !== 'Group') {
                   LoginUserTeamMembers.push(item);
                 }
               }
@@ -744,7 +792,7 @@ const EmployeProfile = (props: any) => {
           config.BackupTask = LoginUserTeamMembers;
           config.AllUserTask = AllUsers;
         }
-        else if (config.selectFilterType === 'GroupByUser') {
+        else if (config?.selectFilterType === 'GroupByUser') {
           config.Tasks = GroupByUsers;
         }
         if (!filteredConfig) {
@@ -759,134 +807,162 @@ const EmployeProfile = (props: any) => {
         let TempArray: any = []
         let ServerThisWeek: any = getStartingDate('This Week')
         let ThisWeek = getStartingDate('This Week').toISOString();
-        if (TimeSheetLists != undefined && TimeSheetLists?.length > 0) {
-          TimeSheetLists.map((site: any) => {
-            let web = new Web(site?.siteUrl);
-            web.lists.getById(site?.listId).items.select(site?.query).filter(`(Modified ge '${ThisWeek}') and (TimesheetTitle/Id ne null)`).getAll()
-              .then((data: any) => {
-                console.log(data);
-                data.map((entry: any) => {
-                  try {
-                    if (entry?.AdditionalTimeEntry != undefined && entry?.AdditionalTimeEntry != null && entry?.AdditionalTimeEntry != '') {
-                      entry.AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
-                      entry.AuthorName = '';
-                      entry.AuthorImage = ''
-                      entry.TaskTime = 0
-                      entry.TaskDate = undefined
-                      entry.CreatedServerDate = undefined
-                      if (entry.AdditionalTimeEntry != undefined && entry.AdditionalTimeEntry?.length > 0) {
-                        entry.AdditionalTimeEntry?.map((TimeEntry: any, index: any) => {
-                          TimeEntry.SiteIcon = '';
-                          TimeEntry.TaskID = '';
-                          if (array?.length) {
-                            array?.map((task: any) => {
-                              if (task?.siteType != undefined && task?.siteType?.toLowerCase() == "offshore tasks")
-                                task.LookupColumn = "Offshore Tasks";
-                              task.LookupColumn = task?.siteType;
-                              let ColumnName = "Task" + task?.LookupColumn.replace(" ", "");
-                              if (entry[ColumnName] != undefined && entry[ColumnName].Title != undefined) {
-                                if (entry[ColumnName].Id != undefined && entry[ColumnName].Id == task?.Id) {
-                                  TimeEntry.SiteIcon = task?.SiteIcon;
-                                  TimeEntry.TaskID = task?.TaskID;
-                                  TimeEntry.Site = task?.siteType;
-                                  TimeEntry.TaskItem = task;
+        let filter = `(Modified ge '${ThisWeek}') and (PercentComplete gt 0.81)`;
+        globalCommon?.loadAllSiteTasks(props?.props, filter).then((Tasks: any) => {
+          let Above80Task: any = [];
+          if (Tasks?.length)
+            Above80Task = [...Tasks]
+          if (TimeSheetLists != undefined && TimeSheetLists?.length > 0) {
+            TimeSheetLists.map((site: any) => {
+              let web = new Web(site?.siteUrl);
+              web.lists.getById(site?.listId).items.select(site?.query).filter(`(Modified ge '${ThisWeek}') and (TimesheetTitle/Id ne null)`).getAll()
+                .then((data: any) => {
+                  console.log(data);
+                  data.map((entry: any) => {
+                    try {
+                      if (entry?.AdditionalTimeEntry != undefined && entry?.AdditionalTimeEntry != null && entry?.AdditionalTimeEntry != '') {
+                        entry.AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
+                        entry.AuthorName = '';
+                        entry.AuthorImage = ''
+                        entry.TaskTime = 0
+                        entry.TaskDate = undefined
+                        entry.CreatedServerDate = undefined
+                        if (entry.AdditionalTimeEntry != undefined && entry.AdditionalTimeEntry?.length > 0) {
+                          entry.AdditionalTimeEntry?.map((TimeEntry: any, index: any) => {
+                            TimeEntry.SiteIcon = '';
+                            TimeEntry.TaskID = '';
+                            if (array?.length) {
+                              array?.map((task: any) => {
+                                if (task?.siteType != undefined && task?.siteType?.toLowerCase() == "offshore tasks")
+                                  task.LookupColumn = "Offshore Tasks";
+                                task.LookupColumn = task?.siteType;
+                                let ColumnName = "Task" + task?.LookupColumn.replace(" ", "");
+                                if (entry[ColumnName] != undefined && entry[ColumnName].Title != undefined) {
+                                  if (entry[ColumnName].Id != undefined && entry[ColumnName].Id == task?.Id) {
+                                    TimeEntry.SiteIcon = task?.SiteIcon;
+                                    TimeEntry.TaskID = task?.TaskID;
+                                    TimeEntry.Site = task?.siteType;
+                                    TimeEntry.TaskItem = task;
+                                  }
                                 }
-                              }
-                            })
-                          }
-                          TimeEntry.timeSheetsDescriptionSearch = '';
-                          TimeEntry.UpdatedId = entry?.Id;
-                          TimeEntry.timeSheetsDescriptionSearch = TimeEntry?.Description
-                          if ((TimeEntry?.Id == undefined || TimeEntry?.Id == '') && TimeEntry?.ID != undefined && TimeEntry?.ID != '')
-                            TimeEntry.Id = TimeEntry?.ID;
-                          else if ((TimeEntry?.ID == undefined || TimeEntry?.ID == '') && TimeEntry?.Id != undefined && TimeEntry?.Id != '')
-                            TimeEntry.ID = TimeEntry?.Id;
-                          else {
-                            TimeEntry.Id = index;
-                            TimeEntry.ID = index;
-                          }
-                          if (TimeEntry.TaskDate != null) {
-                            var dateValues = TimeEntry?.TaskDate?.split("/");
-                            var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
-                            var NewDate = new Date(dp);
-                            TimeEntry.sortTaskDate = NewDate;
-                            TimeEntry.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
-                            TimeEntry.sortTaskDate.setHours(0, 0, 0, 0);
-                            TimeEntry.Title = TimeEntry?.AuthorName;
-                          }
-                          entry.listId = site?.listId;
-                          entry.siteUrl = site?.siteUrl
-                          if (site?.taskSites != undefined && site?.taskSites?.length > 0) {
-                            site?.taskSites?.forEach((Site: any) => {
-                              if (entry['Task' + Site] != undefined && entry['Task' + Site]?.Id != undefined) {
-                                entry.TaskListType = Site;
-                              }
-                            })
-                          }
-                          if (TimeEntry?.sortTaskDate != undefined && ServerThisWeek != undefined && TimeEntry?.sortTaskDate.getTime() >= ServerThisWeek.getTime()) {
-                            if (TimeEntry?.Status == 'For Approval' && config?.Status != "My TimSheet") {
-                              TempArray.push(TimeEntry)
-                              if (!isItemExists(AllTimeEntry, entry.Id))
-                                AllTimeEntry.push(entry);
+                              })
+                              Above80Task?.map((task: any) => {
+                                task.TaskID = globalCommon.GetTaskId(task);
+                                if (task?.siteType != undefined && task?.siteType?.toLowerCase() == "offshore tasks")
+                                  task.LookupColumn = "Offshore Tasks";
+                                task.LookupColumn = task?.siteType;
+                                let ColumnName = "Task" + task?.LookupColumn.replace(" ", "");
+                                if (entry[ColumnName] != undefined && entry[ColumnName].Title != undefined) {
+                                  if (entry[ColumnName].Id != undefined && entry[ColumnName].Id == task?.Id) {
+                                    TimeEntry.SiteIcon = task?.SiteIcon;
+                                    TimeEntry.TaskID = task?.TaskID;
+                                    TimeEntry.Site = task?.siteType;
+                                    TimeEntry.TaskItem = task;
+                                  }
+                                }
+                              })
                             }
-                          }
-                          if (TimeEntry?.sortTaskDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == TimeEntry?.sortTaskDate.getTime()) {
-                            if (TimeEntry?.Status == 'Draft' && config?.Status == "My TimSheet") {
-                              TempArray.push(TimeEntry)
-                              if (!isItemExists(AllTimeEntry, entry.Id))
-                                AllTimeEntry.push(entry);
+                            // if (TimeEntry?.SiteIcon == undefined || TimeEntry?.SiteIcon == '') {
+                            //   let CurrentSite:any = AllSite?.filter((site: any) =>site?.Title == item?.ServerDate)
+                            //   TimeEntry?.SiteIcon = site?.Item_x005F_x0020_Cover?.Url
+                            // }
+                            TimeEntry.timeSheetsDescriptionSearch = '';
+                            TimeEntry.UpdatedId = entry?.Id;
+                            TimeEntry.timeSheetsDescriptionSearch = TimeEntry?.Description
+                            if ((TimeEntry?.Id == undefined || TimeEntry?.Id == '') && TimeEntry?.ID != undefined && TimeEntry?.ID != '')
+                              TimeEntry.Id = TimeEntry?.ID;
+                            else if ((TimeEntry?.ID == undefined || TimeEntry?.ID == '') && TimeEntry?.Id != undefined && TimeEntry?.Id != '')
+                              TimeEntry.ID = TimeEntry?.Id;
+                            else {
+                              TimeEntry.Id = index;
+                              TimeEntry.ID = index;
                             }
-                          }
+                            if (TimeEntry.TaskDate != null) {
+                              var dateValues = TimeEntry?.TaskDate?.split("/");
+                              var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
+                              var NewDate = new Date(dp);
+                              TimeEntry.sortTaskDate = NewDate;
+                              TimeEntry.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
+                              TimeEntry.sortTaskDate.setHours(0, 0, 0, 0);
+                              TimeEntry.Title = TimeEntry?.AuthorName;
+                            }
+                            entry.listId = site?.listId;
+                            entry.siteUrl = site?.siteUrl
+                            if (site?.taskSites != undefined && site?.taskSites?.length > 0) {
+                              site?.taskSites?.forEach((Site: any) => {
+                                if (entry['Task' + Site] != undefined && entry['Task' + Site]?.Id != undefined) {
+                                  entry.TaskListType = Site;
+                                }
+                              })
+                            }
+                            if (TimeEntry?.sortTaskDate != undefined && ServerThisWeek != undefined && TimeEntry?.sortTaskDate.getTime() >= ServerThisWeek.getTime()) {
+                              if (TimeEntry?.Status == 'For Approval' && config?.Status != "My TimSheet") {
+                                TempArray.push(TimeEntry)
+                                if (!isItemExists(AllTimeEntry, entry.Id))
+                                  AllTimeEntry.push(entry);
+                              }
+                            }
+                            if (TimeEntry?.sortTaskDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == TimeEntry?.sortTaskDate.getTime()) {
+                              if (TimeEntry?.Status == 'Draft' && config?.Status == "My TimSheet") {
+                                TempArray.push(TimeEntry)
+                                if (!isItemExists(AllTimeEntry, entry.Id))
+                                  AllTimeEntry.push(entry);
+                              }
+                            }
+                          })
+                        }
+                      }
+                    } catch (e) {
+                      console.log(entry)
+                    }
+                  });
+                  arraycount++;
+                  let currentCount = TimeSheetLists?.length;
+                  if (arraycount == currentCount) {
+                    let TeamMember: any = []
+                    taskUsers?.map((item: any) => {
+                      if (item[config['Status']] != undefined && Array.isArray(item[config['Status']]) && item[config['Status']]?.length > 0) {
+                        item[config['Status']].forEach((teamMember: any) => {
+                          if (teamMember?.Id == currentUserId && !isTaskUserExist(TeamMember, item) && item?.ItemType != 'Group')
+                            TeamMember.push(item)
                         })
                       }
-                    }
-                  } catch (e) {
-                    console.log(entry)
-                  }
-                });
-                arraycount++;
-                let currentCount = TimeSheetLists?.length;
-                if (arraycount == currentCount) {
-                  let TeamMember: any = []
-                  taskUsers?.map((item: any) => {
-                    if (item[config['Status']] != undefined && Array.isArray(item[config['Status']]) && item[config['Status']]?.length > 0) {
-                      item[config['Status']].forEach((teamMember: any) => {
-                        if (teamMember?.Id == currentUserId && !isTaskUserExist(TeamMember, item) && item?.ItemType != 'Group')
+                      else if (item[config['Status']] != undefined && typeof item[config['Status']] == 'object' && item[config['Status']] !== null) {
+                        if ((item[config['Status']]?.Id == currentUserId || item[config['Status']]?.Id == currentUserData?.Id) && !isTaskUserExist(TeamMember, item) && item?.ItemType != 'Group')
                           TeamMember.push(item)
-                      })
-                    }
-                    else if (item[config['Status']] != undefined && typeof item[config['Status']] == 'object' && item[config['Status']] !== null) {
-                      if ((item[config['Status']]?.Id == currentUserId || item[config['Status']]?.Id == currentUserData?.Id) && !isTaskUserExist(TeamMember, item) && item?.ItemType != 'Group')
-                        TeamMember.push(item)
-                    }
-                  })
-                  if (config?.Status == "My TimSheet") {
-                    TeamMember = [];
-                    TeamMember.push(currentUserData)
-                  }
-                  if (TempArray != undefined && TempArray?.length > 0 && TeamMember?.length > 0) {
-                    TeamMember?.map((User: any) => {
-                      TempArray?.map((TimeEntry: any) => {
-                        if (User?.AssingedToUserId != undefined && TimeEntry?.AuthorId != undefined && TimeEntry?.AuthorId == User?.AssingedToUserId) {
-                          config.Tasks.push(TimeEntry)
-                        }
-                      })
+                      }
                     })
+                    if (config?.Status == "My TimSheet") {
+                      TeamMember = [];
+                      TeamMember.push(currentUserData)
+                    }
+                    if (TempArray != undefined && TempArray?.length > 0 && TeamMember?.length > 0) {
+                      TeamMember?.map((User: any) => {
+                        TempArray?.map((TimeEntry: any) => {
+                          if (User?.AssingedToUserId != undefined && TimeEntry?.AuthorId != undefined && TimeEntry?.AuthorId == User?.AssingedToUserId) {
+                            config?.Tasks.push(TimeEntry)
+                          }
+                        })
+                      })
+                    }
+                    setIsCallContext(true);
                   }
-                  setIsCallContext(true);
-                }
-              }).catch((error: any) => {
-                console.log(error)
-              })
+                }).catch((error: any) => {
+                  console.log(error)
+                })
 
-          })
-        }
+            })
+          }
+        }).catch((err: any) => {
+          console.log("then catch error", err);
+        });
+
       }
     });
     let todayDate: any = new Date();
     const currentDate = todayDate;
     currentDate.setDate(today.getDate());
-    currentDate.setHours(0, 0, 0, 0);  
+    currentDate.setHours(0, 0, 0, 0);
     for (const items of array ?? []) {
       for (const config of DashboardConfig ?? []) {
         if (config?.Tasks == undefined) {
@@ -1028,8 +1104,8 @@ const EmployeProfile = (props: any) => {
   const getAllData = async (IsLoad: any) => {
     if (IsLoad != undefined && IsLoad == true) {
       let filter = 'PercentComplete lt 0.81';
-      await globalCommon?.loadAllSiteTasks(props?.props, filter).then((data: any) => {      
-          loadAllTimeEntry();
+      await globalCommon?.loadAllSiteTasks(props?.props, filter).then((data: any) => {
+        loadAllTimeEntry();
         data?.map((items: any) => {
           items.descriptionsSearch = '';
           let descriptionSearchData = '';

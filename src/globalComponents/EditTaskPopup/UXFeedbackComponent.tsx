@@ -43,7 +43,7 @@ export default function UXFeedbackComponent(textItems: any) {
     const TaskDetails: any = textItems.TaskListDetails;
     const ItemDetails: any = TaskDetails?.TaskDetails;
     const [State, setState] = useState<any>([]);
-
+    const [isdisabled, setIsdisabled] = React.useState(true);
     const [Texts, setTexts] = useState<any>(false);
     const [btnStatus, setBtnStatus] = useState<any>(false);
     const [postBtnStatus, setPostBtnStatus] = useState<any>(false);
@@ -441,8 +441,13 @@ export default function UXFeedbackComponent(textItems: any) {
 
         TaskImages.push(DataObject);
         ReplaceImage = DataObject
-        if (dt.length > 0) {
+        if (dt.length > 0 && funcType !== 'replace') {
             onUploadImageFunction(TaskImages, imageIndex, true);
+        }
+        else {
+            setTimeout(() => {
+                setIsdisabled(false)
+            }, 0)
         }
     }
 
@@ -523,7 +528,7 @@ export default function UXFeedbackComponent(textItems: any) {
         tempArray?.map((tempItem: any) => {
             tempItem.Checked = false;
         });
-        setTaskImages(tempArray);
+  
         // UploadImageFunction(lastindexArray, fileName);
         if (addUpdateIndex != undefined) {
             let updateIndex: any = addUpdateIndex[0];
@@ -566,17 +571,23 @@ export default function UXFeedbackComponent(textItems: any) {
                         try {
                             let web = new Web(textItems?.EditData?.siteUrl);
                             let item = web.lists.getById(listId).items.getById(Id);
-                            await item.attachmentFiles.add(imageName, data);
-                            console.log("Attachment added");
-                            console.log(DataJson)
-                            console.log(TaskImages)
-                            if (AddMoreImage == false) {
-                                UpdatedFeedBackParentArray = State;
-                                UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo = DataJson
-                                setState([...UpdatedFeedBackParentArray]);
-                                callBack(UpdatedFeedBackParentArray);
-                            }
-
+                            await item.attachmentFiles.add(imageName, data).then((data:any)=>{
+                                console.log("Attachment added");
+                                console.log(DataJson)
+                                console.log(TaskImages)  
+                                setTaskImages(DataJson);                          
+                                if (AddMoreImage == false) {
+                                    // setTaskImages(DataJson);
+                                    UpdatedFeedBackParentArray = State;
+                                    UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo = DataJson
+                                    setState([...UpdatedFeedBackParentArray]);
+                                    callBack(UpdatedFeedBackParentArray);                               
+                                }
+                                setTimeout(() => {
+                                    setIsdisabled(false)
+                                }, 0)
+                            });
+                           
                         }
                         catch (error) {
                             reject(error);
@@ -587,13 +598,19 @@ export default function UXFeedbackComponent(textItems: any) {
                         try {
                             let web = new Web(textItems?.EditData?.siteUrl);
                             let item = web.lists.getByTitle(listName).items.getById(Id);
-                            await item.attachmentFiles.add(imageName, data);
-                            UpdatedFeedBackParentArray = State;
-                            UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo = DataJson
-                            setState(UpdatedFeedBackParentArray);
-                            callBack(UpdatedFeedBackParentArray);
-
-                            resolve();
+                            await item.attachmentFiles.add(imageName, data).then((data3:any)=>{
+                                setTaskImages(DataJson);
+                                UpdatedFeedBackParentArray = State;
+                                UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo = DataJson
+                                setState(UpdatedFeedBackParentArray);
+                                callBack(UpdatedFeedBackParentArray);
+                                setTimeout(() => {
+                                    setIsdisabled(false)
+                                }, 0)
+    
+                                resolve();
+                            })                           
+                           
                         } catch (error) {
                             reject(error);
                         }
@@ -606,6 +623,9 @@ export default function UXFeedbackComponent(textItems: any) {
     const AddMoreImages = (index: any, func: any) => {
         funcType = func
         setImageIndex(index)
+        setTimeout(() => {
+            setIsdisabled(true)
+        }, 0)
         setopenAddMoreImagePopup(true)
     }
 
@@ -614,21 +634,22 @@ export default function UXFeedbackComponent(textItems: any) {
             ReplaceImageFunction(ReplaceImage, imageIndex)
         } else {
             UpdatedFeedBackParentArray = State;
-            UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo.push(TaskImages[0])
+            if(TaskImages?.length>0){
+                UpdatedFeedBackParentArray[copyCurrentActiveTab].setImagesInfo.push(TaskImages[0])
+            }
+         
             designTemplatesArray = UpdatedFeedBackParentArray
             setState(UpdatedFeedBackParentArray);
             callBack(UpdatedFeedBackParentArray);
+            setTaskImages([])
             setopenAddMoreImagePopup(false)
         }    
         
     }
     const onRenderCustomAddMoreImageHeader = () => {
         return (
-            <div
-                className="d-flex full-width pb-1"
-
-            >
-                <div className="subheading siteColor">Add More Image</div>
+            <div className="d-flex full-width pb-1">
+                {funcType != 'replace' ? <div className="subheading siteColor">Add More Image</div> : <div className="subheading siteColor"> Replace Image </div>}
                 <Tooltip ComponentId="12134" />
             </div>
         );
@@ -721,6 +742,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                 let TimeStamp = moment(new Date().toLocaleString());
                                 replaceimageData.ImageUrl = replaceimageData?.ImageUrl + "?Updated=" + TimeStamp
                                 designTemplatesArray[copyCurrentActiveTab]?.setImagesInfo?.splice(ImageIndex, 1, replaceimageData)
+                                ReplaceImage=[];
                                 setopenAddMoreImagePopup(false)
                             })
                             .catch((err: any) => {
@@ -879,11 +901,9 @@ export default function UXFeedbackComponent(textItems: any) {
                                         aria-labelledby={designdata?.setTitle}
                                     >
                                         <div className="full-width my-2" >
-                                            <span
-                                                className="mx-1 hover-text"
-                                                onClick={() => AddMoreImages(j,'add')}
-                                            >
-                                                <span className="svg__iconbox svg__icon--Plus hreflink mini" ></span>Add Images
+                                            <span className="mx-1 hover-text hreflink alignCenter"
+                                                onClick={() => AddMoreImages(j,'add')}>
+                                                <span className="svg__iconbox svg__icon--Plus mini" ></span>Add Images
                                                 <span className="tooltip-text pop-right" >
                                                     Add Images
                                                 </span>
@@ -989,56 +1009,51 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                     src={imgData?.ImageUrl}
                                                                     loading="lazy"
                                                                 ></img>
-                                                                <div className="Footerimg d-flex align-items-center justify-content-between p-1 ">
-                                                                    <div className='usericons'>
-
-                                                                        <div className="d-flex">
-                                                                            {/* <span className="svg__iconbox svg__icon--Plus hreflink" title="Add More Image" onClick={() => AddMoreImages(i)}></span> */}
-                                                                            <span className="mx-2" >{imgData?.UploadeDate}</span>
-                                                                            <span className='round px-1'>
-                                                                                {imgData?.UserImage != null && imgData?.UserImage != "" ?
-                                                                                    <img className='align-self-start hreflink ' title={imgData?.UserName} src={imgData?.UserImage} />
-                                                                                    : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
-                                                                                }
+                                                                <div className="Footerimg d-flex align-items-center justify-content-between p-1">
+                                                                    <div className="alignCenter">
+                                                                        {/* <span className="svg__iconbox svg__icon--Plus hreflink" title="Add More Image" onClick={() => AddMoreImages(i)}></span> */}
+                                                                        <span className="mx-2" >{imgData?.UploadeDate}</span>
+                                                                        <span className='round'>
+                                                                            {imgData?.UserImage != null && imgData?.UserImage != "" ?
+                                                                                <img className='align-self-start hreflink ' title={imgData?.UserName} src={imgData?.UserImage} />
+                                                                                : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
+                                                                            }
+                                                                        </span>
+                                                                        {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1">
+                                                                            <BiInfoCircle />
+                                                                        </span>}
+                                                                        <span className="mx-1 mt--3">|</span>
+                                                                        <span className="m-0 hover-text alignCenter"
+                                                                            onClick={() =>
+                                                                                DeleteImageFunction(
+                                                                                    indeximage,
+                                                                                    imgData.ImageName,
+                                                                                    "Remove"
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            {" "}
+                                                                            <RiDeleteBin6Line />
+                                                                            <span className="tooltip-text pop-right">
+                                                                                Delete
                                                                             </span>
-                                                                            {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
-                                                                                <BiInfoCircle />
-                                                                            </span>}
-                                                                            <span
-                                                                                className="m-0 hover-text"
-                                                                                onClick={() =>
-                                                                                    DeleteImageFunction(
-                                                                                        indeximage,
-                                                                                        imgData.ImageName,
-                                                                                        "Remove"
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                {" "}
-                                                                                | <RiDeleteBin6Line />
+                                                                        </span>
+                                                                        <span className="mx-1 mt--3">|</span>
+                                                                        <span className="m-0 hover-text alignCenter"
+                                                                            onClick={() =>
+                                                                                AddMoreImages(
+                                                                                    indeximage, 'replace'
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            {" "}
+                                                                                <TbReplace />{" "}
                                                                                 <span className="tooltip-text pop-right">
-                                                                                    Delete
+                                                                                    Replace Image
                                                                                 </span>
-                                                                            </span>
-                                                                            <span
-                                                                                className="m-0 hover-text"
-                                                                                onClick={() =>
-                                                                                    AddMoreImages(
-                                                                                        indeximage, 'replace'
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                {" "}
-                                                                                |
-                                                                                <span className="siteColor">
-                                                                                    Replace
-                                                                                </span>
-                                                                            </span>
-
-                                                                        </div>
+                                                                        </span>
                                                                     </div>
-                                                                    <div className="expandicon">
-
+                                                                    <div className="alignCenter">
                                                                         <span >
                                                                             {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
                                                                         </span>
@@ -1054,7 +1069,6 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                             <label className="ms-1" htmlFor={`checkbox-${imageIndex}`}>Select for Move</label><br />
                                                                         </span>}
                                                                     </div>
-
                                                                 </div>
 
                                                             </div>
@@ -1066,7 +1080,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                         {designdata?.TemplatesArray?.length > 0 && designdata?.TemplatesArray?.map((obj: any, i: any) => {
                                             const isChecked = selectedMoveData.some(item => item.Title === obj.Title);
                                             return (
-                                                <div className="col-sm-12 row">
+                                                <div className="">
                                                     <div className="FeedBack-comment row my-1">
                                                         <div
                                                             data-id={i}
@@ -1164,9 +1178,9 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                             Mark As Completed
                                                                         </label>
                                                                     </span>
-                                                                    <span>|</span>
+                                                                   
                                                                     {enableSelectForMove && <span key={i} className="mx-1">
-
+                                                                    <span>|</span>
                                                                         <input
                                                                             className="form-check-input mt--3"
                                                                             type="checkbox"
@@ -1192,7 +1206,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                     <a className="hreflink alignIcon"
                                                                         style={{ cursor: "pointer" }} target="_blank"
                                                                         onClick={() => RemoveItem(obj, i)}>
-                                                                        <span className="svg__iconbox hreflink mini svg__icon--trash"></span>
+                                                                        <span className=" hreflink svg__icon--trash svg__iconbox" title="Delete Comment"></span>
                                                                     </a>
 
 
@@ -1201,7 +1215,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                             </div>
                                                             <div className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9" : ""}>
                                                                 <div className="d-flex" title={obj.isShowLight}>
-                                                                    <span className="SubTestBorder p-1 me-1">{`${arrayOfChar[currentActiveTab]}. ${i + 1}`}</span>
+                                                                    <span className="SubTestBorder p-1 me-1" style={{width:'35px'}}>{`${arrayOfChar[currentActiveTab]}. ${i + 1}`}</span>
                                                                     <textarea
                                                                         style={{ width: "100%" }}
                                                                         className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "form-control Disabled-Link bg-e9" : "form-control"}
@@ -1313,6 +1327,7 @@ export default function UXFeedbackComponent(textItems: any) {
                             type="button"
                             className="btn btn-primary px-3 mx-1"
                             onClick={() => UpdateMoreImage()}
+                            disabled={isdisabled}
                         >
                             Save
                         </button>

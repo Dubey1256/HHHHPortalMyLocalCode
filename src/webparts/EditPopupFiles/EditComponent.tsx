@@ -3085,6 +3085,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                     IMAGE INFORMATION
                   </button>
                 </li>
+                {item?.Item_x0020_Type =='Component' && 
                 <li className="alignCenter ml-auto">
                   <a
                     className="mt--2 hreflink"
@@ -3102,7 +3103,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                       Component item.
                     </span>
                   </span>
-                </li>
+                </li>}
               </ul>
               <div className="tab-content clearfix " id="myTabContent">
                 <div
@@ -3121,7 +3122,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                         <div className="input-group">
                           <label className="form-label full-width">Title</label>
                           <input
-                            type="text"
+                            type="text" placeholder="Title"
                             className="form-control"
                             defaultValue={
                               EditData?.Title != undefined
@@ -3175,7 +3176,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
 
                             <input
                               type="text"
-                              className="form-control"
+                              className="form-control" placeholder="Deliverable-Synonyms"
                               defaultValue={
                                 EditData?.DeliverableSynonyms != undefined
                                   ? EditData?.DeliverableSynonyms
@@ -3196,7 +3197,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                             {(linkedComponentData?.length == 0 ||
                               linkedComponentData.length !== 1) && (
                                 <>
-                                  <input type="text" className="form-control" onChange={(e) =>
+                                  <input type="text" placeholder="Portfolio Item" className="form-control" onChange={(e) =>
                                     autoSuggestionsForServiceAndComponent(
                                       e,
                                       "Portfolio"
@@ -3352,7 +3353,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                               Start Date
                             </label>
                             <input
-                              type="date"
+                              type="date" placeholder=" Start Date"
                               className="form-control"
                               max="9999-12-31"
                               defaultValue={moment(EditData?.StartDate).format(
@@ -3373,7 +3374,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                               Due Date
                             </label>
                             <input
-                              type="date"
+                              type="date" placeholder="Due Date"
                               className="form-control"
                               max="9999-12-31"
                               defaultValue={
@@ -3399,7 +3400,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                               Completion Date{" "}
                             </label>
                             <input
-                              type="date"
+                              type="date" placeholder="Completion Date"
                               className="form-control"
                               max="9999-12-31"
                               defaultValue={
@@ -3426,7 +3427,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                               Synonyms{" "}
                             </label>
                             <input
-                              type="text"
+                              type="text" placeholder="Synonyms"
                               className="form-control"
                               defaultValue={EditData?.SynonymsTitle}
                               onChange={(e) =>
@@ -3467,7 +3468,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                               Client Activity{" "}
                             </label>
                             <input
-                              type="text"
+                              type="text" placeholder="Client Activity"
                               className="form-control"
                               defaultValue={
                                 EditData?.Twitter != null
@@ -3484,7 +3485,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                               Package
                             </label>
                             <input
-                              type="text"
+                              type="text" placeholder="Package"
                               className="form-control"
                               defaultValue={
                                 EditData?.Package != null
@@ -3510,7 +3511,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                                   <label key={index}>
                                     <input
                                       type="radio" className="radio"
-                                      name="percentComplete"
+                                      name="percentComplete" placeholder="Status"
                                       value={item.rank}
                                       defaultChecked={
                                         EditData?.PercentComplete === item.rank
@@ -3529,7 +3530,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                             <label className="form-label  full-width">
                               Time{" "}
                             </label>
-                            <input
+                            <input placeholder="Time"
                               type="text"
                               className="form-control"
                               value={
@@ -3601,7 +3602,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                           <label className="form-label  full-width">
                             Priority
                           </label>
-                          <input
+                          <input placeholder="Priority"
                             type="text"
                             className="form-control"
                             value={EditData?.PriorityRank}
@@ -3677,8 +3678,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                                         data-toggle="popover"
                                         data-trigger="hover"
                                         style={{
-                                          width: "35px",
-                                          height: "35px",
+                                          width: "20px",
+                                          height: "20px",
                                           marginLeft: "10px",
                                           borderRadius: "50px",
                                         }}
@@ -3704,7 +3705,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                               CategoriesData?.length !== 1) && (
                                 <>
                                 <input
-                                    type="text"
+                                    type="text" placeholder="Categories"
                                     className="ui-autocomplete-input form-control"
                                     id="txtCategories"
                                     value={categorySearchKey}
@@ -3849,7 +3850,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                             {(filterdata?.length == 0 ||
                               filterdata.length !== 1) && (
                                 <>
-                                  <input
+                                  <input placeholder="Project"
                                     type="text"
                                     className="form-control"
                                     onChange={(e) => autoSuggestionsForProject(e)}
@@ -3889,12 +3890,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                                       className="input-group-text"
                                       placeholder="Project"
                                     >
-                                      <span
+                                      {/* <span
                                         className="bg-dark svg__icon--cross svg__iconbox"
                                         onClick={() =>
                                           DeleteCrossIconData([items?.Id])
                                         }
-                                      ></span>
+                                      ></span> */}
                                       <span
                                         title="Project"
                                         onClick={(e) =>
@@ -3968,7 +3969,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
                             {(FeatureTypeData?.length == 0 ||
                               FeatureTypeData[0] == undefined) && (
                                 <>
-                                  <input
+                                  <input placeholder="Feature Type"
                                     type="text"
                                     className="form-control"
                                     onChange={(e) =>

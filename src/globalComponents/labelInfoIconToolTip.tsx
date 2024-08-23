@@ -16,12 +16,13 @@ const useStyles = makeStyles({
 });
 const LabelInfoIconToolTip = (props: any) => {
     let siteUrls: any;
-    if (props != undefined && props?.ContextInfo?.siteUrl != undefined && props?.ContextInfo?.siteUrl?.toLowerCase()?.indexOf('sites/hhhh/sp') > -1)
+    //  if (props != undefined && props?.ContextInfo?.siteUrl != undefined && ((props?.ContextInfo?.siteUrl?.toLowerCase()?.indexOf('sites/hhhh/sp') > -1) || (props?.ContextInfo?.siteUrl?.toLowerCase()?.indexOf('sites/hhhh/gmbh') > -1) || (props?.ContextInfo?.siteUrl?.toLowerCase()?.indexOf('sites/hhhh/ilf') > -1) || (props?.ContextInfo?.siteUrl?.toLowerCase()?.indexOf('sites/hhhh/livingdocs') > -1) || (props?.ContextInfo?.siteUrl?.toLowerCase()?.indexOf('sites/hhhh/ksl') > -1) || (props?.ContextInfo?.siteUrl?.toLowerCase()?.indexOf('sites/hhhh/sh') > -1) || (props?.ContextInfo?.siteUrl?.toLowerCase()?.indexOf('sites/hhhh/smartmanagement') > -1)))
+    if (props != undefined && props?.ContextInfo?.siteUrl != undefined && (props?.ContextInfo?.siteUrl?.toLowerCase()?.indexOf('sites/hhhh/') > -1))
         siteUrls = 'https://hhhhteams.sharepoint.com/sites/HHHH'
     else
         siteUrls = props?.ContextInfo?.siteUrl;
 
-  
+
     // const myContextData2: any = React.useContext<any>(myContextValue);
     const {
         getArrowProps,
@@ -40,8 +41,11 @@ const LabelInfoIconToolTip = (props: any) => {
     const [tooltipVisible, setTooltipVisible] = useState(false);
     const [visibleDes, setVisibleDes] = useState(false);
     const [editdes, setEditDes] = useState(false);
+    const [hideicon, sethideicon] = useState(true);
     const [res, setRes] = useState<any>("");
     const [copyres, setcopyRes] = useState<any>("");
+
+    const [descriptionVal, setdescriptionVal] = useState(true);
 
     const getsiteConfig = async () => {
         try {
@@ -49,8 +53,11 @@ const LabelInfoIconToolTip = (props: any) => {
             let web = new Web(siteUrls);
             getdata = await web.lists.getByTitle("Column Management").items.select("Id", "Title", "InternalName", "LongDescription", "Description").top(4999).filter("InternalName eq  '" + props.columnName + "'").get();
             if (getdata != undefined && getdata.length > 0) {
-                if (getdata[0].Description != undefined && getdata[0].Description != null && getdata[0].Description != '')
+                if (getdata[0].Description != undefined && getdata[0].Description != null && getdata[0].Description != ''){
                     getdata[0].Description = getdata[0].Description.replace(/<[^>]*>|&#[^;]+;/g, '');
+                    setdescriptionVal(false);
+                }
+
                 getdata[0].copyTitle = getdata[0].Title;
                 setRes(getdata[0]);
                 setcopyRes(getdata[0]);
@@ -63,7 +70,7 @@ const LabelInfoIconToolTip = (props: any) => {
         }
     }
     useEffect(() => {
-        if (props?.columnName != undefined){
+        if (props?.columnName != undefined) {
             getsiteConfig()
         }
     }, [props?.columnName]);
@@ -71,6 +78,7 @@ const LabelInfoIconToolTip = (props: any) => {
     const toggleVisibility = () => {
         setVisibleDes(prevVisible => !prevVisible);
         setTooltipVisible(false);
+        sethideicon(true);
     };
     let hovericon = false;
     const handleTooltipVisibilityChange = (e: any, data: any) => {
@@ -123,9 +131,13 @@ const LabelInfoIconToolTip = (props: any) => {
             LongDescription: pageContent
         }));
     }
-    const editItem = (val: any) => {
+    const editItem = (val: any, type: any) => {
         setVisibleDes(true);
         setEditDes(true);
+        if (type === 'hideicon')
+            sethideicon(false);
+        else
+            sethideicon(true);
     };
     const handleSave = async () => {
         let web = new Web(siteUrls);
@@ -147,14 +159,14 @@ const LabelInfoIconToolTip = (props: any) => {
         <>
             {res != null && res != '' && props.onlyText == undefined ? <label className="alignCenter form-label full-width gap-1">
                 {res?.Title}
-                {props?.ShowPencilIcon && <span title="Edit label " className="svg__iconbox svg__icon--info " onClick={() => editItem(res)}></span>}
+                {props?.ShowPencilIcon && descriptionVal && <span title="Edit Label" className=" svg__iconbox svg__icon--info " onClick={() => editItem(res, 'hideicon')}></span>}
                 {res?.Description && <div className={styles.root}>
                     <InfoToolTip
                         content={{
                             children: (
                                 <>
                                     <span dangerouslySetInnerHTML={{ __html: res?.Description }}></span>
-                                    {res?.LongDescription && <div className="col-sm-12 mt-2 text-end"> <a className="siteColor" onClick={() => editItem(res)}>Show More ...</a></div>}
+                                    {res?.LongDescription && <div className="col-sm-12 mt-2 text-end"> <a className="siteColor" onClick={() => editItem(res, '')}>Show More ...</a></div>}
                                 </>),
                             id: contentId,
                         }}
@@ -170,7 +182,7 @@ const LabelInfoIconToolTip = (props: any) => {
                         children: (
                             <>
                                 <span dangerouslySetInnerHTML={{ __html: res?.Description }}></span>
-                                {res?.LongDescription && <div className="col-sm-12 mt-2 text-end"> <a className="siteColor" onClick={() => editItem(res)}>Show More ...</a></div>}
+                                {res?.LongDescription && <div className="col-sm-12 mt-2 text-end"> <a className="siteColor" onClick={() => editItem(res, '')}>Show More ...</a></div>}
                             </>),
                         id: contentId,
                     }}
@@ -183,14 +195,15 @@ const LabelInfoIconToolTip = (props: any) => {
             </>
 
             }
+            {res?.Title == undefined && props?.defaultTitle != undefined && <span>{props?.defaultTitle}</span>}
 
-
-            {(res != null && res != '' && props?.ShowPencilIcon && props.onlyText == "text") && <span title="Edit label" className="svg__iconbox svg__icon--info" onClick={() => editItem(res)}></span>}
+            {(res != null && res != '' && props?.ShowPencilIcon && props.onlyText == "text") &&
+                <span title="Edit Label" className=" svg__iconbox svg__icon--info" onClick={() => editItem(res, 'hideicon')}></span>}
             {visibleDes && (
-                <div ref={setTooltipRef} {...getTooltipProps({ className: ['Bottleneck', 'Phone', 'Attention'].indexOf(res.InternalName) !== -1 ? 'tooltip-container itemRankTooltip tooltip-Right p-0 m-0': 'tooltip-container itemRankTooltip p-0 m-0' })}>
+                <div ref={setTooltipRef} {...getTooltipProps({ className: ['Bottleneck', 'Phone', 'Attention', 'Time', 'Status', 'EstimatedTaskTime', 'SelectCategory', 'SiteComposition', 'status'].indexOf(res.InternalName) !== -1 ? 'tooltip-container itemRankTooltip tooltip-Right p-0 m-0' : 'tooltip-container itemRankTooltip p-0 m-0' })}>
 
                     <div className="col-12">
-                        <div className="alignCenter tootltip-title">{res?.Title} <span title="Edit Item" className="light ml-4 svg__icon--editBox svg__iconbox" onClick={() => editItem(res)}></span></div>
+                        <div className="alignCenter tootltip-title">{res?.Title} {hideicon && <span title="Edit Item" className="light ml-4 svg__icon--editBox svg__iconbox" onClick={() => editItem(res, 'hideicon')}></span>}</div>
                         <button type="button" className="toolTipCross" onClick={(e: any) => CloseDespopup('close')}>
                             <div className="popHoverCross">×</div>
                         </button>

@@ -31,6 +31,7 @@ import { myContextValue } from "../../../globalComponents/globalCommon";
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import WorkingActionInformation from "../../../globalComponents/WorkingActionInformation";
 import { Avatar } from "@fluentui/react-components";
+import LabelInfoIconToolTip from "../../../globalComponents/labelInfoIconToolTip";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -3539,25 +3540,22 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         return false;
     };
-    function deletedDataFromPortfolios(dataArray: any, idToDelete: any, siteName: any) {
-        let updatedArray = [];
-        let itemDeleted = false;
-        for (let item of dataArray) {
-            if (item.Id === idToDelete && item.siteType === siteName) {
-                itemDeleted = true;
-                continue;
-            }
-            let newItem = { ...item };
-            if (newItem.subRows && newItem.subRows.length > 0) {
-                newItem.subRows = deletedDataFromPortfolios(newItem.subRows, idToDelete, siteName);
-            }
-            updatedArray.push(newItem);
-            if (itemDeleted) {
-                return updatedArray;
-            }
-        }
-        return updatedArray;
-    }
+
+      
+
+    function deletedDataFromPortfolios(dataArray: any[], idToDelete: any, siteName: any): any[] {         
+        return dataArray?.map((item) => {
+          if (item?.Id === idToDelete && item?.siteType === siteName) {
+            return null; 
+          }
+          if (item.subRows && item.subRows.length > 0) {
+            item.subRows = deletedDataFromPortfolios(item?.subRows, idToDelete, siteName);
+          }
+      
+          return item;
+        }).filter(item => item !== null); 
+      }
+
     const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => {
         for (let i = 0; i < copyDtaArray.length; i++) {
             if ((dataToUpdate?.Portfolio?.Id === copyDtaArray[i]?.Portfolio?.Id && dataToUpdate?.Id === copyDtaArray[i]?.Id && copyDtaArray[i]?.siteType === dataToUpdate?.siteType) || (dataToUpdate?.Id === copyDtaArray[i]?.Id && copyDtaArray[i]?.siteType === dataToUpdate?.siteType)) {
@@ -3755,8 +3753,8 @@ function TeamPortlioTable(SelectedProp: any) {
                             {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("component") > -1 && (
                                 <div style={{ color: `${portfolioColor}` }}>{IsUpdated} Portfolio</div>
                             )}
-                            {IsUpdated === "" && IsUpdated != undefined && (
-                                <div style={{ color: `${portfolioColor}` }}>Team Portfolio</div>
+                             {IsUpdated === "" && IsUpdated != undefined && (
+                                <div style={{ color: `${portfolioColor}` }}><LabelInfoIconToolTip columnName={"TeamPortfolioPageTitle"} ContextInfo={ContextValue} defaultTitle={"Team Portfolio"}/></div>
                             )}
                             {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("component") > -1 && (
                                 <div className="text-end fs-6">

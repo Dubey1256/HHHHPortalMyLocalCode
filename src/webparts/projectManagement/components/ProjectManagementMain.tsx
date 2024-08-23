@@ -20,7 +20,7 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
-import MSTeamsChat from "../../../globalComponents/MSTeamsChat";
+
 import SmartInformation from "../../taskprofile/components/SmartInformation";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import { BiCommentDetail } from "react-icons/bi";
@@ -84,7 +84,8 @@ let tempmetadata: any;
 let weekTotalTime: any = 0
 let monthTotalTime: any = 0
 let totalTime: any = 0
-let PXTasks: any
+let totalEstimatedTime: any
+let PXTasks: any = [];
 const ProjectManagementMain = (props: any) => {
   const [openServiceComponent, setopenServiceComponent]= React.useState(false)
   relevantDocRef = React.useRef();
@@ -225,6 +226,10 @@ const ProjectManagementMain = (props: any) => {
       console.log(e);
     }
   }, []);
+  React.useEffect(() => {
+    loadTotalEstimatedTime();
+  }, [PXTasks])
+
   var showProgressBar = () => {
     $(" #SpfxProgressbar").show();
   };
@@ -367,6 +372,13 @@ const ProjectManagementMain = (props: any) => {
                 } else {
                   item.DisplayModifiedDate = '';
                 }
+                item.TeamMembersSearch = '';
+
+                if(item.TeamMembers != undefined && item.TeamMembers.length > 0){ 
+                  item.TeamMembersSearch = item.TeamMembers.map((user:any)=>
+                    user.Title
+                  ).join(", ")
+                }
               })
             }
             if (fetchedProject?.ParentId != undefined && fetchedProject?.Item_x0020_Type == "Sprint") {
@@ -435,6 +447,7 @@ const ProjectManagementMain = (props: any) => {
               }
             }
             projectData = fetchedProject;
+           
             if (loadtask == true) {
               LoadAllSiteTasks();
             }
@@ -640,6 +653,7 @@ const loadAllPXTimeEntries = async () => {
     }
     else if (elem?.TaskType == undefined) {
       selectedItem = elem
+      setCheckedList({});
     }
     else {
       setCheckedList({});
@@ -1295,6 +1309,30 @@ const loadAllPXTimeEntries = async () => {
     }
   }
 
+  const loadTotalEstimatedTime = () => {
+    if (PXTasks.length > 0) {
+      totalEstimatedTime = 0;
+      PXTasks.map((task: any) => {
+        try {
+          task.EstimatedTimeParsed = JSON.parse(task.EstimatedTimeDescription);
+          if (Array.isArray(task.EstimatedTimeParsed)) {
+            task.EstimatedTimeParsed.map((time: any) => {
+              const parsedTime = Number(time.EstimatedTime);
+              if (!isNaN(parsedTime)) {
+                totalEstimatedTime += parsedTime;
+              }
+            });
+          }
+        } catch (e) {
+          console.error('Error parsing EstimatedTimeDescription:', e);
+        }
+      });
+      totalEstimatedTime = totalEstimatedTime.toFixed(2);
+      console.log(`Total Estimated Time: ${totalEstimatedTime}`);
+    }
+    
+  }
+
 
   const getAllRowInfo = (allSprints: any) => {
     let allrowInfo: any = [];
@@ -1493,6 +1531,7 @@ const loadAllPXTimeEntries = async () => {
     }
     setIsComponent(false);
     GetMasterData(false)
+    setTaggedPortfolio([]);
   };
 
   const LoadAllSiteAllTasks = async function () {
@@ -1902,14 +1941,17 @@ const loadAllPXTimeEntries = async () => {
           <>
             {row?.original?.Item_x0020_Type == "Sprint" ?
               <div className="alignCenter">
+                <span className="columnFixedTitle">
                 <a
-                  className="hreflink"
+                  className="hreflink text-content"
+                  title={row?.original?.Title}
                   href={`${props?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Id}`}
                   data-interception="off"
                   target="_blank"
                 >
                   {row?.original?.Title}
                 </a>
+                </span>
                 {row?.original?.descriptionsSearch?.length > 0 ? (
                     <InfoIconsToolTip
                       Discription={row?.original?.bodys}
@@ -1920,14 +1962,17 @@ const loadAllPXTimeEntries = async () => {
                 )}
               </div>
               : <div className="alignCenter">
+                <span className="columnFixedTitle">
                 <a
-                  className="hreflink"
+                  className="hreflink text-content"
+                  title={row?.original?.Title}
                   href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                   data-interception="off"
                   target="_blank"
                 >
                   {row?.original?.Title}
                 </a>
+                </span>
                 {row?.original?.descriptionsSearch?.length > 0 ? (
                     <InfoIconsToolTip
                       Discription={row?.original?.bodys}
@@ -1961,7 +2006,7 @@ const loadAllPXTimeEntries = async () => {
             </span>
           </a>
         ),
-        id: "Portfolio",
+        id: "PortfolioTitle",
         placeholder: "Portfolio Item",
         resetColumnFilters: false,
         resetSorting: false,
@@ -2115,7 +2160,7 @@ const loadAllPXTimeEntries = async () => {
         size: 55
       },
       {
-        accessorFn: (row) => row?.TeamMembers?.map((elem: any) => elem.Title).join('-'),
+        accessorFn: (row) => row?.TeamMembersSearch,
         cell: ({ row }) => (
           <span>
             <InlineEditingcolumns
@@ -2128,7 +2173,496 @@ const loadAllPXTimeEntries = async () => {
             />
           </span>
         ),
-        id: 'TeamMembers',
+        id: 'TeamMembersSearch',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "TeamMembers",
+        header: "",
+        size: 110,
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row) => row?.workingActionTitle,
+        cell: ({ row }) => (
+          <div className="alignCenter">
+            {Array.isArray(row?.original?.workingActionValue) && row.original.workingActionValue.map((elem: any) => {
+              const relevantTitles: any = ["Bottleneck", "Attention", "Phone", "Approval"];
+              return relevantTitles.includes(elem?.Title) && elem?.InformationData?.length > 0 && (
+                <WorkingActionInformation workingAction={elem} actionType={elem?.Title} />
+              );
+            })}
+          </div>
+        ),
+        placeholder: "Working Actions",
+        header: "",
+        resetColumnFilters: false,
+        size: 130,
+        id: "workingActionTitle",
+        isColumnVisible: false
+      },
+      {
+        accessorFn: (row) => row?.SmartInformationTitle,
+        cell: ({ row }) => (
+          <span className='d-flex hreflink' >
+            &nbsp; {row?.original?.SmartInformation?.length > 0 ? (
+              <>
+                <span onClick={() => openRemark(row?.original)} className="commentDetailFill-active svg__iconbox svg__icon--commentBlank"></span>
+              </>
+            ) : (
+              <>
+                <span onClick={() => openRemark(row?.original)} className="commentDetailFill svg__iconbox svg__icon--commentBlank"></span>
+              </>
+            )}
+          </span>
+        ),
+        id: 'SmartInformation',
+        resetSorting: false,
+        resetColumnFilters: false,
+        placeholder: "Remarks",
+        header: '',
+        size: 55,
+        isColumnVisible: true
+      },
+
+      {
+        accessorFn: (row) => row?.Created,
+        cell: ({ row }) => (
+          <span className="d-flex">
+            <span>{row?.original?.DisplayCreateDate} </span>
+
+            {row?.original?.createdImg != undefined ? (
+              <>
+                <a
+                  href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                  target="_blank"
+                  data-interception="off"
+                >
+                  <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                </a>
+              </>
+            ) : (
+              <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+            )}
+          </span>
+        ),
+        id: 'Created',
+        canSort: false,
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Created",
+        isColumnVisible: true,
+        fixedColumnWidth: true,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 105
+      },
+      {
+        accessorFn: (row) => row?.Modified,
+        cell: ({ row }) => (
+          <span className="d-flex">
+            <span>{row?.original?.DisplayModifiedDate} </span>
+
+            {row?.original?.modifiedImg != undefined ? (
+              <>
+                <a
+                  href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                  target="_blank"
+                  data-interception="off"
+                >
+                  <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.modifiedImg} />
+                </a>
+              </>
+            ) : (
+              <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Editor?.Title}></span>
+            )}
+          </span>
+        ),
+        id: 'Modified',
+        canSort: false,
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Modified",
+        isColumnVisible: true,
+        fixedColumnWidth: true,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 105
+      },
+       {
+        accessorFn: (row) => row?.TotalTaskTime,
+        cell: ({ row }) => (
+          <span> {row?.original?.TotalTaskTime}</span>
+        ),
+        id: "TotalTaskTime",
+        placeholder: "Estimated Time",
+        header: "",
+        resetColumnFilters: false,
+        size: 49,
+        isColumnVisible: true,
+        fixedColumnWidth: true,
+       },
+      {
+        header: ({ table }: any) => (
+          <>{
+            topCompoIcon ?
+              <span style={{ backgroundColor: `${''}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => projectTopIcon(true)}>
+                <span className="svg__iconbox svg__icon--re-structure"></span>
+              </span>
+              : ''
+          }
+          </>
+        ),
+        cell: ({ row, getValue }) => (
+          <>
+            {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
+              <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
+                <span className="svg__iconbox svg__icon--re-structure"> </span>
+              </span>
+            )}
+            {getValue()}
+          </>
+        ),
+        id: "Restructure",
+        canSort: false,
+        placeholder: "",
+        size: 1,
+      },
+      {
+        cell: ({ row }) => (
+          <div className="alignCenter">
+            {row?.original?.TaskType != undefined &&
+              (row?.original?.TaskType?.Title == "Activities" ||
+                row?.original?.TaskType?.Title == "Workstream" ||
+                row?.original?.TaskType?.Title == "Task") ? (
+              <>
+                {showTimeEntryIcon && <span
+                  onClick={(e) => EditDataTimeEntry(e, row.original)}
+                  className="ml-auto svg__iconbox svg__icon--clock"
+                  title="Click To Edit Timesheet"
+                ></span>}
+                <span
+                  title="Edit Task"
+                  onClick={(e) => EditPopup(row?.original)}
+                  className="ml-auto svg__iconbox svg__icon--edit hreflink"
+                ></span>
+              </>
+            ) : (
+              <span
+                title="Edit Project"
+                onClick={(e) => EditPopup(row?.original)}
+                className="ml-auto svg__iconbox svg__icon--edit hreflink"
+              ></span>
+            )}
+          </div>
+        ),
+        id: "EditPopup",
+        accessorKey: "",
+        canSort: false,
+        resetSorting: false,
+        resetColumnFilters: false,
+        placeholder: "",
+        size: 55,
+      }
+    ],
+    [ProjectTableData]
+  );
+
+  const column = React.useMemo<ColumnDef<any, unknown>[]>(
+    () => [
+      {
+        accessorKey: "",
+        placeholder: "",
+        hasCheckbox: true,
+        hasCustomExpanded: hasCustomExpanded,
+        hasExpanded: hasExpanded,
+        isHeaderNotAvlable: isHeaderNotAvlable,
+        size: 12,
+        id: 'Id',
+      },
+      {
+        accessorFn: (row) => row?.Site,
+        cell: ({ row }) => (
+
+          <span>
+            {row?.original?.Item_x0020_Type == "Sprint" ?
+              <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={"Dyicons me-1"}>
+                X
+              </div>
+              : <img className='circularImage rounded-circle' src={row?.original?.SiteIcon} />}
+
+          </span>
+        ),
+        id: "Site",
+        placeholder: "Site",
+        header: "",
+        resetSorting: false,
+        resetColumnFilters: false,
+        size: 50,
+        isColumnVisible: true,
+        fixedColumnWidth: true,
+      },
+      {
+        accessorKey: "TaskID",
+        cell: ({ row, getValue }) => (
+          <>
+            <span className="d-flex">
+              <ReactPopperTooltipSingleLevel AllListId={AllListId} CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+            </span>
+          </>
+        ),
+        id: "TaskID",
+        placeholder: "Task Id",
+        header: "",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 125,
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row) => row?.Title,
+        cell: ({ row, column, getValue }) => (
+          <>
+            {row?.original?.Item_x0020_Type == "Sprint" ?
+              <div className="alignCenter">
+                <a
+                  className="hreflink"
+                  href={`${props?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Id}`}
+                  data-interception="off"
+                  target="_blank"
+                >
+                  {row?.original?.Title}
+                </a>
+                {row?.original?.descriptionsSearch?.length > 0 ? (
+                    <InfoIconsToolTip
+                      Discription={row?.original?.bodys}
+                      row={row?.original}
+                    />
+                ) : (
+                  ""
+                )}
+              </div>
+              : <div className="alignCenter">
+                <a
+                  className="hreflink"
+                  href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                  data-interception="off"
+                  target="_blank"
+                >
+                  {row?.original?.Title}
+                </a>
+                {row?.original?.descriptionsSearch?.length > 0 ? (
+                    <InfoIconsToolTip
+                      Discription={row?.original?.bodys}
+                      row={row?.original}
+                    />
+                ) : (
+                  ""
+                )}
+              </div>}
+
+          </>
+        ),
+        id: "Title",
+        placeholder: "Title",
+        resetColumnFilters: false,
+        resetSorting: false,
+        header: "",
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row) => row?.PortfolioTitle,
+        cell: ({ row }) => (
+          <a
+            className="hreflink"
+            data-interception="off"
+            target="blank"
+            href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+          >
+            <span className="d-flex">
+              <ReactPopperTooltipSingleLevel AllListId={AllListId} onclickPopup={false} CMSToolId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+            </span>
+          </a>
+        ),
+        id: "PortfolioTitle",
+        placeholder: "Portfolio Item",
+        resetColumnFilters: false,
+        resetSorting: false,
+        header: "",
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row) => row?.ProjectID + " " + row?.ProjectTitle,
+        cell: ({ row }) => (
+          <>
+            {row.original.ProjectTitle != (null || undefined) &&
+              <a
+                className="hreflink"
+                data-interception="off"
+                target="blank"
+                href={`${props?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.project?.Id}`}
+              >
+                <span className="d-flex">
+                  <ReactPopperTooltipSingleLevel
+                    AllListId={AllListId}
+                    onclickPopup={false}
+                    CMSToolId={row?.original?.project?.PortfolioStructureID}
+                    row={row?.original?.Project}
+                    singleLevel={true}
+                    masterTaskData={MasterListData}
+                    AllSitesTaskData={AllSitesAllTasks}
+                  />
+                </span>
+              </a>}
+          </>
+        ),
+        id: "ProjectTitle",
+        placeholder: "Project",
+        resetColumnFilters: false,
+        resetSorting: false,
+        header: "",
+        size: 70,
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row) => row?.TaskTypeValue,
+        cell: ({ row }) => (
+          <>
+            <span className="columnFixedTaskCate">
+              <InlineEditingcolumns
+                AllListId={AllListId}
+                callBack={inlineCallBack}
+                columnName='TaskCategories'
+                item={row?.original}
+                TaskUsers={AllUser}
+                pageName={'ProjectManagment'}
+              />
+            </span>
+          </>
+        ),
+        placeholder: "Task Type",
+        header: "",
+        resetColumnFilters: false,
+        size: 120,
+        id: "TaskTypeValue",
+      },
+
+      {
+        accessorFn: (row) => row?.PriorityRank,
+        cell: ({ row }) => (
+          <span>
+            <InlineEditingcolumns
+              AllListId={AllListId}
+              type='Task'
+              TaskUsers={AllUser}
+              columnName='Priority'
+              item={row?.original} />
+          </span>
+        ),
+        placeholder: "Priority",
+        id: 'Priority',
+        header: "",
+        resetColumnFilters: false,
+        isColumnVisible: true,
+        fixedColumnWidth: true,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          return row?.original?.PriorityRank == filterValue
+        },
+        resetSorting: false,
+        size: 55,
+      },
+      {
+        accessorFn: (row) => row?.SmartPriority,
+        cell: ({ row }) => (
+          <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority}</div>
+        ),
+        id: "SmartPriority",
+        placeholder: "SmartPriority",
+        resetColumnFilters: false,
+        isColumnVisible: true,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          return row?.original?.SmartPriority == filterValue
+        },
+        header: "",
+        size: 57,
+        fixedColumnWidth: true
+      },
+      {
+        accessorFn: (row) => row?.DueDate,
+        cell: ({ row }) => (
+          <InlineEditingcolumns
+            AllListId={AllListId}
+            callBack={inlineCallBack}
+            columnName='DueDate'
+            item={row?.original}
+            TaskUsers={AllUser}
+            pageName={'ProjectManagment'}
+          />
+        ),
+        id: 'DueDate',
+        resetColumnFilters: false,
+        fixedColumnWidth: true,
+        resetSorting: false,
+        isColumnVisible: true,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          return row?.original?.DisplayDueDate?.includes(filterValue)
+        },
+        placeholder: "Due Date",
+        header: "",
+        size: 80
+      },
+      {
+        accessorFn: (row) => row?.PercentComplete,
+        cell: ({ row }) => (
+          <span>
+            <InlineEditingcolumns
+              AllListId={AllListId}
+              callBack={inlineCallBack}
+              columnName='PercentComplete'
+              item={row?.original}
+              TaskUsers={AllUser}
+              pageName={'ProjectManagment'}
+            />
+          </span>
+        ),
+        id: 'PercentComplete',
+        placeholder: "% Complete",
+        resetColumnFilters: false,
+        isColumnVisible: true,
+        fixedColumnWidth: true,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          return row?.original?.PercentComplete == filterValue
+        },
+        resetSorting: false,
+        header: "",
+        size: 55
+      },
+      {
+        accessorFn: (row) => row?.TeamMembersSearch,
+        cell: ({ row }) => (
+          <span>
+            <InlineEditingcolumns
+              AllListId={AllListId}
+              callBack={inlineCallBack}
+              columnName='Team'
+              item={row?.original}
+              TaskUsers={AllUser}
+              pageName={'ProjectManagment'}
+            />
+          </span>
+        ),
+        id: 'TeamMembersSearch',
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "TeamMembers",
@@ -2256,19 +2790,6 @@ const loadAllPXTimeEntries = async () => {
         size: 105
       },
       {
-        accessorFn: (row) => row?.TotalTaskTime,
-        cell: ({ row }) => (
-          <span> {row?.original?.TotalTaskTime}</span>
-        ),
-        id: "TotalTaskTime",
-        placeholder: "Estimated Time",
-        header: "",
-        resetColumnFilters: false,
-        size: 49,
-        isColumnVisible: true,
-        fixedColumnWidth: true,
-      },
-      {
         header: ({ table }: any) => (
           <>{
             topCompoIcon ?
@@ -2334,18 +2855,9 @@ const loadAllPXTimeEntries = async () => {
     [ProjectTableData]
   );
 
+
   const workingThisWeekColumns = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
-      {
-        accessorKey: "",
-        placeholder: "",
-        hasCheckbox: false,
-        hasCustomExpanded: hasCustomExpanded,
-        hasExpanded: hasExpanded,
-        isHeaderNotAvlable: isHeaderNotAvlable,
-        size: 12,
-        id: 'Id',
-      },
       {
         accessorFn: (row) => row?.Site,
         cell: ({ row }) => (
@@ -2867,7 +3379,7 @@ const loadAllPXTimeEntries = async () => {
       <div>
         {QueryId != "" ? (
           <>
-            <div className="row">
+            <div className="">
               <div
                 className="d-flex justify-content-between p-0"
               >
@@ -2941,7 +3453,7 @@ const loadAllPXTimeEntries = async () => {
                           <section>
                             <div className="row">
                               <div className="col-md-12 bg-white">
-                                <div className="team_member row  py-2">
+                                <div className="team_member row pe-2 py-2">
                                   <div className="col-md-4  pe-0">
                                     <dl>
                                       <dt className="bg-fxdark">Due Date</dt>
@@ -2984,15 +3496,16 @@ const loadAllPXTimeEntries = async () => {
                                         </span>
                                       </dd>
                                     </dl>
-                                    <dl>
+                                    {showTimeEntryIcon && <dl>
                                         <dt className="bg-fxdark">Total PX Time</dt>
                                         <dd className="bg-light">
+                                        {(totalEstimatedTime != undefined && totalEstimatedTime != 0) && <span title="Total Estimated Time">{`${totalEstimatedTime} hrs; `}</span>}
                                           {(totalTime != undefined && totalTime != 0) && <span title="Total Time">{`${totalTime.toFixed(2)} hrs; `}</span>}
                                           {(monthTotalTime != undefined && monthTotalTime != 0) && <span title="This Month Time">{`${monthTotalTime.toFixed(2)} hrs; `}</span>}
                                           {(weekTotalTime != undefined && weekTotalTime != 0)&& <span title="This Week Time">{`${weekTotalTime.toFixed(2)} hrs; `}</span>}
                                           <a className="smartTotalTime hover-text m-0 float-end" onClick={() => loadAllPXTimeEntries()}><BsClock/><span className='tooltip-text pop-left'>Load Time Entries</span></a>
                                         </dd>
-                                      </dl>
+                                      </dl>}
                                   </div>
                                   <div className="col-md-4 p-0">
                                     <dl>
@@ -3058,7 +3571,7 @@ const loadAllPXTimeEntries = async () => {
                                           groupedData={groupedComponentData}
                                           pageName={"projectManagement"}
                                         /> : null}
-                                        {smartPortfoliosData?.map((component: any, index: any) => (`${component?.Title};`))}
+                                        {smartPortfoliosData?.map((component: any, index: any) => (`${component?.Title}; `))}
                                         <a className="ml-auto pull-right" onClick={() => setopenServiceComponent(true)}>
                                           <span className="svg__iconbox svg__icon--editBox alignIcon"  ></span>
                                         </a>
@@ -3130,7 +3643,7 @@ const loadAllPXTimeEntries = async () => {
                                 <div className='col-md-12 bg-white  pe-1'>
                                   <details>
                                     <summary> Working This Week {'(' + filteredTask?.length + ')'} </summary>
-                                    <div className='AccordionContent'  >
+                                    <div className='AccordionContent clearfix'>
                                       {filteredTask?.length > 0 ?
                                         <div className='Alltable border-0 dashboardTable' >
                                           <>
@@ -3141,9 +3654,9 @@ const loadAllPXTimeEntries = async () => {
                                         </div>}
                                     </div>
                                 </details>
-                                <details open={timeEntries.length > 0}>
+                                {showTimeEntryIcon && <details open={timeEntries.length > 0}>
                                     <summary> Time Entries </summary>
-                                    <div className='AccordionContent'  >
+                                    <div className='AccordionContent clearfix'>
                                         {timeEntries?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable' >
                                                 <>
@@ -3153,7 +3666,7 @@ const loadAllPXTimeEntries = async () => {
                                                 <span>No Time Entries Available</span>
                                             </div>}
                                     </div>
-                                </details>
+                                </details>}
                                 </div>  
                               </div>
                             </div>
@@ -3173,7 +3686,7 @@ const loadAllPXTimeEntries = async () => {
                               )}
                             </span>
                           </div>
-                          <div>
+                          {/* <div>
                             <div>
                               <span>
                                 {Masterdata?.TeamsGroup && (
@@ -3191,7 +3704,7 @@ const loadAllPXTimeEntries = async () => {
                                 )}
                               </span>
                             </div>
-                          </div>
+                          </div> */}
                           <div>
                             {Masterdata?.Id != undefined && <AncTool item={Masterdata} callBack={AncCallback} AllListId={AllListId} Context={props.Context} listName={"Master Tasks"} />}
                           </div>
@@ -3215,7 +3728,7 @@ const loadAllPXTimeEntries = async () => {
                                   PortfolioFeature={Masterdata?.Item_x0020_Type == "Sprint" ? 'Feature' : ''}
                                   AllSitesTaskData={AllSitesAllTasks}
                                   MasterdataItem={Masterdata}
-                                  columns={column2} data={ProjectTableData} callBackData={callBackData}
+                                  columns={!AllListId.siteUrl.includes("ilftransactionhub") ? column2 : column} data={ProjectTableData} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} 
                                   //  SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
@@ -3477,3 +3990,4 @@ const loadAllPXTimeEntries = async () => {
 };
 export default ProjectManagementMain;
 export { myContextValue }
+

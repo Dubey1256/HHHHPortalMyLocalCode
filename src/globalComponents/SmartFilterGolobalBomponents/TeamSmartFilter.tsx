@@ -451,10 +451,11 @@ const TeamSmartFilter = (item: any) => {
                 Categories.push(element);
             }
         });
+
         PriorityData = PriorityData?.sort((elem1: any, elem2: any) => parseInt(elem2.SortOrder) - parseInt(elem1.SortOrder));
         Type = Type?.sort((elem1: any, elem2: any) => parseInt(elem1.SortOrder) - parseInt(elem2.SortOrder));
         ClientCategory?.forEach((elem: any) => {
-            if (elem?.Title != 'Master Tasks' && (elem?.ParentID == 0 || (elem?.Parent != undefined && elem?.Parent?.Id == undefined))) {
+            if (elem?.Title != 'Master Tasks' && ((elem?.Parent == undefined || elem?.Parent?.Id == undefined || elem?.Parent?.Id == 0))) {
                 elem.values = [],
                     elem.checked = [],
                     elem.checkedObj = [],
@@ -502,7 +503,7 @@ const TeamSmartFilter = (item: any) => {
         }
 
         SitesData?.forEach((element: any) => {
-            if (element.Title != 'Master Tasks' && (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined))) {
+            if (element.Title != 'Master Tasks' && (element?.Parent === undefined || element?.Parent?.Id == undefined)) {
                 element.values = [],
                     element.checked = [],
                     element.checkedObj = [],
@@ -513,7 +514,7 @@ const TeamSmartFilter = (item: any) => {
             }
         })
         portfolioTypeHeadingData?.forEach((element: any) => {
-            if (element.Title != 'Master Tasks' && (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined))) {
+            if (element.Title != 'Master Tasks' && (element?.Parent === undefined || element?.Parent?.Id == undefined)) {
                 element.values = [],
                     element.checked = [],
                     element.checkedObj = [],
@@ -524,7 +525,7 @@ const TeamSmartFilter = (item: any) => {
         })
         PrecentComplete = PrecentComplete?.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
         PrecentComplete?.forEach((element: any) => {
-            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+            if ((element?.Parent === undefined || element?.Parent?.Id == undefined)) {
                 element.value = element.Id;
                 element.label = element.Title;
                 filterGroups[1].ValueLength = PrecentComplete?.length;
@@ -533,7 +534,7 @@ const TeamSmartFilter = (item: any) => {
             }
         })
         Type?.forEach((element: any) => {
-            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+            if ((element?.Parent === undefined || element?.Parent?.Id == undefined)) {
                 element.value = element.Id;
                 element.label = element.Title;
                 element.selectAllChecked = true;
@@ -543,7 +544,7 @@ const TeamSmartFilter = (item: any) => {
             }
         })
         PriorityData?.forEach((element: any) => {
-            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+            if ((element?.Parent === undefined || element?.Parent?.Id == undefined)) {
                 element.value = element.Id;
                 element.label = element.Title;
                 filterGroups[2].ValueLength = PriorityData?.length;
@@ -553,7 +554,7 @@ const TeamSmartFilter = (item: any) => {
         })
 
         Categories?.forEach((element: any) => {
-            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+            if ((element?.Parent === undefined || element?.Parent?.Id === undefined || element?.Parent?.Id === 0 )) {
                 element.value = element.Id;
                 element.label = element.Title;
                 filterGroups[3].ValueLength = Categories?.length;
@@ -2080,12 +2081,20 @@ const TeamSmartFilter = (item: any) => {
     <rect x="0.5" y="0.5" width="15" height="15" fill="white" stroke="#CCCCCC"/>
     </svg>
   `;
+    // const halfCheckBoxIcons = `
+    // <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+    // <rect x="0.5" y="0.5" width="15" height="15" fill="${portfolioColor}" stroke="${portfolioColor}"/>
+    // <path fill-rule="evenodd" clip-rule="evenodd" d="M4 8.25V8.25C4 8.94036 4.55964 9.5 5.25 9.5H8.375H11.5C12.1904 9.5 12.75 8.94036 12.75 8.25V8.25V8.25C12.75 7.55964 12.1904 7 11.5 7H8.375H5.25C4.55964 7 4 7.55964 4 8.25V8.25Z" fill="white"/>
+    // </svg>
+    // `;
     const halfCheckBoxIcons = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <rect x="0.5" y="0.5" width="15" height="15" fill="${portfolioColor}" stroke="${portfolioColor}"/>
-    <path fill-rule="evenodd" clip-rule="evenodd" d="M4 8.25V8.25C4 8.94036 4.55964 9.5 5.25 9.5H8.375H11.5C12.1904 9.5 12.75 8.94036 12.75 8.25V8.25V8.25C12.75 7.55964 12.1904 7 11.5 7H8.375H5.25C4.55964 7 4 7.55964 4 8.25V8.25Z" fill="white"/>
-    </svg>
-    `;
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024' version='1.1'>
+        <path d='M16 16l0 992 992 0L1008 16 16 16zM946 946 78 946 78 78l868 0L946 946zM264 264l496 0 0 496-496 0L264 264z' fill='${portfolioColor}'/>
+    </svg>`;
+    const svgData = `
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024' version='1.1'>
+        <path d='M16 16l0 992 992 0L1008 16 16 16zM946 946 78 946 78 78l868 0L946 946zM264 264l496 0 0 496-496 0L264 264z' fill='${portfolioColor}'/>
+    </svg>`;
     const checkBoxColor = () => {
         setTimeout(() => {
             const inputElement = document.getElementsByClassName('custom-checkbox-tree');
@@ -2337,7 +2346,11 @@ const TeamSmartFilter = (item: any) => {
                                 <div className='alignCenter justify-content-between col-sm-12'>
                                     <div className='alignCenter col-sm-8' style={{ color: `${portfolioColor}` }} onClick={() => { toggleIcon(); toggleAllExpendCloseUpDown(iconIndex) }}>
                                         {icons[iconIndex]} <span className="f-16 fw-semibold hreflink ms-2 pe-1 allfilter">All Filters -</span>
-                                        <div className="f-14" style={{ color: "#333333" }}>{sitesCountInfo + ' ' + projectCountInfo + ' ' + CategoriesandStatusInfo + ' ' + clientCategoryCountInfo + ' ' + teamMembersCountInfo + ' ' + dateCountInfo}</div>
+                                        <div className="f-14" style={{ color: "#333333" }}>
+                                            {sitesCountInfo === "" && projectCountInfo === "" && CategoriesandStatusInfo === "" && clientCategoryCountInfo === "" && teamMembersCountInfo === "" && dateCountInfo === "" ? "No filters selected yet. Select the parameters to filter" :
+                                                sitesCountInfo + ' ' + projectCountInfo + ' ' + CategoriesandStatusInfo + ' ' + clientCategoryCountInfo + ' ' + teamMembersCountInfo + ' ' + dateCountInfo
+                                            }
+                                        </div>
                                     </div>
                                     <div className='alignCenter col-sm-4'>
                                         <div className='ml-auto alignCenter'>
@@ -2495,7 +2508,7 @@ const TeamSmartFilter = (item: any) => {
                                                                             <fieldset className='pe-3 smartFilterStyle'>
                                                                                 <legend className='SmartFilterHead'>
                                                                                     <span className="mparent d-flex pb-1" style={{ borderBottom: "1.5px solid #BDBDBD", color: portfolioColor }}>
-                                                                                        <input className={"form-check-input cursor-pointer"}
+                                                                                        <input className="form-check-input cursor-pointer"
                                                                                             style={Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
                                                                                             type="checkbox"
                                                                                             checked={Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
@@ -2504,7 +2517,18 @@ const TeamSmartFilter = (item: any) => {
                                                                                                 if (input) {
                                                                                                     const isIndeterminate = Group?.checked?.length > 0 && Group?.checked?.length !== Group?.values?.length;
                                                                                                     input.indeterminate = isIndeterminate;
-                                                                                                    if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
+                                                                                                    if (isIndeterminate) {
+                                                                                                        input.style.backgroundColor = 'transparent';
+                                                                                                        input.style.borderColor = portfolioColor;
+                                                                                                        const encodedData = encodeURIComponent(svgData);
+                                                                                                        input.style.backgroundImage = `url("data:image/svg+xml,${encodedData}")`;
+                                                                                                        input.style.border = "unset";
+                                                                                                    } else {
+                                                                                                        input.style.removeProperty('background-color');
+                                                                                                        input.style.removeProperty('background-image');
+                                                                                                        input.style.removeProperty('border');
+                                                                                                        input.style.removeProperty('borderColor');
+                                                                                                    }
                                                                                                 }
                                                                                             }}
                                                                                         />
@@ -2585,7 +2609,19 @@ const TeamSmartFilter = (item: any) => {
                                                                                             if (input) {
                                                                                                 const isIndeterminate = Group?.checked?.length > 0 && Group?.checked?.length !== Group?.ValueLength;
                                                                                                 input.indeterminate = isIndeterminate;
-                                                                                                if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
+                                                                                                // if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
+                                                                                                if (isIndeterminate) {
+                                                                                                    input.style.backgroundColor = 'transparent';
+                                                                                                    input.style.borderColor = portfolioColor;
+                                                                                                    const encodedData = encodeURIComponent(svgData);
+                                                                                                    input.style.backgroundImage = `url("data:image/svg+xml,${encodedData}")`;
+                                                                                                    input.style.border = "unset";
+                                                                                                } else {
+                                                                                                    input.style.removeProperty('background-color');
+                                                                                                    input.style.removeProperty('background-image');
+                                                                                                    input.style.removeProperty('border');
+                                                                                                    input.style.removeProperty('borderColor');
+                                                                                                }
                                                                                             }
                                                                                         }}
                                                                                     />
@@ -2666,7 +2702,19 @@ const TeamSmartFilter = (item: any) => {
                                                                                             if (input) {
                                                                                                 const isIndeterminate = Group?.checked?.length > 0 && Group?.checked?.length !== Group?.ValueLength;
                                                                                                 input.indeterminate = isIndeterminate;
-                                                                                                if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
+                                                                                                // if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
+                                                                                                if (isIndeterminate) {
+                                                                                                    input.style.backgroundColor = 'transparent';
+                                                                                                    input.style.borderColor = portfolioColor;
+                                                                                                    const encodedData = encodeURIComponent(svgData);
+                                                                                                    input.style.backgroundImage = `url("data:image/svg+xml,${encodedData}")`;
+                                                                                                    input.style.border = "unset";
+                                                                                                } else {
+                                                                                                    input.style.removeProperty('background-color');
+                                                                                                    input.style.removeProperty('background-image');
+                                                                                                    input.style.removeProperty('border');
+                                                                                                    input.style.removeProperty('borderColor');
+                                                                                                }
                                                                                             }
                                                                                         }}
                                                                                     />
@@ -2809,7 +2857,19 @@ const TeamSmartFilter = (item: any) => {
                                                                                             if (input) {
                                                                                                 const isIndeterminate = Group?.checked?.length > 0 && Group?.checked?.length !== Group?.values?.length;
                                                                                                 input.indeterminate = isIndeterminate;
-                                                                                                if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
+                                                                                                // if (isIndeterminate) { input.style.backgroundColor = portfolioColor; input.style.borderColor = portfolioColor; } else { input.style.backgroundColor = ''; input.style.borderColor = ''; }
+                                                                                                if (isIndeterminate) {
+                                                                                                    input.style.backgroundColor = 'transparent';
+                                                                                                    input.style.borderColor = portfolioColor;
+                                                                                                    const encodedData = encodeURIComponent(svgData);
+                                                                                                    input.style.backgroundImage = `url("data:image/svg+xml,${encodedData}")`;
+                                                                                                    input.style.border = "unset";
+                                                                                                } else {
+                                                                                                    input.style.removeProperty('background-color');
+                                                                                                    input.style.removeProperty('background-image');
+                                                                                                    input.style.removeProperty('border');
+                                                                                                    input.style.removeProperty('borderColor');
+                                                                                                }
                                                                                             }
                                                                                         }}
                                                                                     />

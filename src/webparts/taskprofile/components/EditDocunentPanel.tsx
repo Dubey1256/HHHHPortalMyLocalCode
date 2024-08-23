@@ -11,6 +11,7 @@ import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import ImageInformation from '../../EditPopupFiles/ImageInformation';
 import ReadyMadeTable from '../../../globalComponents/RadimadeTable';
+import GlobalTooltip from '../../../globalComponents/Tooltip';
 let mastertaskdetails: any = []
 let copyEditData: any = {}
 let mydataa: any = [];
@@ -60,15 +61,18 @@ const EditDocumentpanel = (props: any) => {
 
   React.useEffect(() => {
     AllListId = props.AllListId
-    if (window.location.href.toLowerCase()?.indexOf('gmbh') > -1) {
-      AllListId.TaskTypeID = "d255609f-7f22-4e40-a857-a3ffd2c57101";
-      AllListId.PortFolioTypeID = "63031812-949e-46a0-a6f5-dc6be912a193";
+    if ('TaskTypeID' in AllListId && 'PortFolioTypeID' in AllListId) {
+
+    } else {
+      if (window.location.href.toLowerCase()?.indexOf('gmbh') > -1) {
+        AllListId.TaskTypeID = "d255609f-7f22-4e40-a857-a3ffd2c57101";
+        AllListId.PortFolioTypeID = "63031812-949e-46a0-a6f5-dc6be912a193";
+      }
+      else {
+        AllListId.TaskTypeID = "21b55c7b-5748-483a-905a-62ef663972dc";
+        AllListId.PortFolioTypeID = "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
+      }
     }
-    else {
-      AllListId.TaskTypeID = "21b55c7b-5748-483a-905a-62ef663972dc";
-      AllListId.PortFolioTypeID = "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
-    }
-    
     AllListId.Context = props.AllListId?.context
     if (props?.editData != undefined) {
       LoadMasterTaskList().then((smartData: any) => {
@@ -483,6 +487,16 @@ const EditDocumentpanel = (props: any) => {
       </>
     );
   };
+  const customRadimadeTable = () => {
+    return (
+      <>
+        <div className='subheading' >
+          Select Task
+        </div>
+        <GlobalTooltip ComponentId='843' />
+      </>
+    )
+  }
   const imageta = (e: any) => {
     if (e) {
       setisOpenImageTab(true)
@@ -1353,8 +1367,8 @@ const EditDocumentpanel = (props: any) => {
         />
       }
 
-      <Panel isOpen={isopenTaskpopup} isBlocking={false} onDismiss={() => setisopenTaskpopup(false)} type={PanelType.large} >
-        <ReadyMadeTable AllListId={AllListId} configration={"AllAwt"} TaskFilter={"PercentComplete lt '0.90'"} usedFor={'editdocument'} callBack={TaskCallback} closepopup={() => setisopenTaskpopup(false)} />
+      <Panel isOpen={isopenTaskpopup} isBlocking={false} onDismiss={() => setisopenTaskpopup(false)} type={PanelType.large} onRenderHeader={customRadimadeTable} >
+        <ReadyMadeTable AllListId={AllListId} others={true} configration={"AllAwt"} TaskFilter={"PercentComplete lt '0.90'"} usedFor={'editdocument'} callBack={TaskCallback} closepopup={() => setisopenTaskpopup(false)} />
       </Panel>
 
     </>

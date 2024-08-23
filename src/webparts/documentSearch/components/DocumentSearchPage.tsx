@@ -280,7 +280,7 @@ export default function DocumentSearchPage(Props: any) {
             cell: ({ row }) => (
                 <div className='alignCenter '>
                     <a target="_blank" className='alignCenter' data-interception="off" href={row?.original?.FileDirRef}>
-                        {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'xls' && row?.original?.File_x0020_Type != 'xlsx' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && (row?.original?.File_x0020_Type != 'jfif' && (row?.original?.File_x0020_Type === 'fig' || row?.original?.File_x0020_Type === 'mp4' ? (
+                        {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'xls' && row?.original?.File_x0020_Type != 'xlsx' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && (row?.original?.File_x0020_Type != 'jfif' && (row?.original?.File_x0020_Type === 'fig' || row?.original?.File_x0020_Type === 'mp4'|| row?.original?.File_x0020_Type === 'eml' ? (
                             <span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--unknownFile"></span>
                         ) : (
                             <>

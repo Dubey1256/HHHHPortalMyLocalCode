@@ -317,7 +317,7 @@ const AddProject = (props: any) => {
                     <label className="form-label full-width">Title</label>
                             <input type='text' className='form-control' placeholder='Enter Title' value={title} onChange={(e) => { settitle(e.target.value); autoSuggestionsForProject(e) }} />
                             {projectData?.length > 0 ? (
-                                <div>
+                                <div className='w-100'>
                                     <ul className="list-group">
                                         {projectData?.map((Item: any) => {
                                             return (

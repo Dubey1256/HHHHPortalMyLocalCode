@@ -52,7 +52,7 @@ export class EventRecurrenceInfoMonthly extends React.Component<IEventRecurrence
       selectedKey: 'daily',
       selectPatern: 'monthly',
       startDate: this.props.startDate ? this.props.startDate : moment().toDate(),
-      endDate: moment(this.props.startDate).add('month', 1).toDate(),
+      endDate:props?.DueDate!=undefined?props?.DueDate: moment(this.props.startDate).add('month', 1).toDate(),
       numberOcurrences: '10',
       disableDayOfMonth: false,
       disableNumberOcurrences: true,
@@ -519,7 +519,7 @@ export class EventRecurrenceInfoMonthly extends React.Component<IEventRecurrence
 
             </div>
             <div style={{ width: '100%', paddingTop: '10px' }}>
-              <Label>{ strings.patternLabel }</Label>
+              <Label className='border-bottom'>{ strings.patternLabel }</Label>
               <ChoiceGroup
                 selectedKey={this.state.selectPatern}
                 options={[
@@ -616,8 +616,8 @@ export class EventRecurrenceInfoMonthly extends React.Component<IEventRecurrence
               />
             </div>
 
-            <div style={{ paddingTop: '22px' }}>
-              <Label>{strings.dateRangeLabel}</Label>
+            <div className='pt-4'>
+              <Label className='border-bottom'>{strings.dateRangeLabel}</Label>
               <div style={{ display: 'inline-block', verticalAlign: 'top', paddingRight: '35px', paddingTop: '10px' }}>
 
                 <DatePicker

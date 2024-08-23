@@ -6,10 +6,12 @@ import SmartTooltipComponent from './SmartTimeToolTip';
 // import { Tooltip as ReactTooltip } from 'react-tooltip'
 var AllTimeSpentDetails: any = [];
 let AllAvailableTitle: any = [];
-let allTaskUsers:any;
-     const SmartTimeTotalFunction = (item: any) => {
+let allTaskUsers: any;
+const SmartTimeTotalFunction = (item: any) => {
+    let TimeData = item?.props?.TotalTime
+    let TotalTime = TimeData / 60
     var TaskTimeSheetCategoriesGrouping: any = [];
-   const [isTimeEntry, setisTimeEntry] = React.useState(false);
+    const [isTimeEntry, setisTimeEntry] = React.useState(false);
     const [timeEntry, setTimeEntry] = React.useState(null);
     const [smartTimeTotal, setsmartTimeTotal] = React.useState(0);
     const [additionalTime, setAdditionalTime] = React.useState([]);
@@ -20,14 +22,14 @@ let allTaskUsers:any;
     console.log(item.props);
     console.log(AllTimeSheetDataNew);
     React.useEffect(() => {
-    if(item.props!=undefined){
-        allTaskUsers=item?.allTaskUsers
-        EditData(item.props);
-    }
-      
+        if (item.props != undefined) {
+            allTaskUsers = item?.allTaskUsers
+            EditData(item.props);
+        }
+
     }, []);
-   const EditData = async (items: any) => {
-      if (items.siteType == "Offshore Tasks") {
+    const EditData = async (items: any) => {
+        if (items.siteType == "Offshore Tasks") {
             var siteType = "OffshoreTasks"
             var filteres = "Task" + siteType + "/Id eq " + items.Id;
         }
@@ -37,10 +39,10 @@ let allTaskUsers:any;
 
         var select = "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres + "";
         var count = 0;
-        if (items.siteType == "Migration" || items.siteType == "ALAKDigital") {
+        if (items.siteType == "Migration" || items.siteType == "ALAKDigital" || items.siteType == "ILF") {
             var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select + "" }]
-                  //TasksTimesheet2
-       
+            //TasksTimesheet2
+
         }
         else if (item?.props?.sitePage == "SH") {
             var allurls = [{
@@ -49,13 +51,13 @@ let allTaskUsers:any;
 
         }
         else {
-            var allurls = [{ 
+            var allurls = [{
                 // 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
 
-            'Url': `${item?.props?.siteUrl}/_api/web/lists/getbyId('${item.AllListId.TaskTimeSheetListID}')/items?$select=${select}`
-              
+                'Url': `${item?.props?.siteUrl}/_api/web/lists/getbyId('${item.AllListId.TaskTimeSheetListID}')/items?$select=${select}`
+
                 //	TaskTimeSheetListNew
-        }]
+            }]
         }
 
 
@@ -67,39 +69,39 @@ let allTaskUsers:any;
                 method: "GET",
 
                 headers: {
-               "Accept": "application/json; odata=verbose"
+                    "Accept": "application/json; odata=verbose"
                 },
 
                 success: function (data) {
                     count++;
-                    var duplicateArray:any=[];
+                    var duplicateArray: any = [];
                     if (data?.d?.results != undefined && data?.d?.results?.length > 0) {
-                        data?.d?.results?.map((items:any)=>{
-                            if(items.AdditionalTimeEntry!=null){
-                             items.AdditionalTime = JSON.parse(items.AdditionalTimeEntry)
-                             duplicateArray.push(items);
-                           }
-                         })
-                          if(duplicateArray!=undefined&& duplicateArray.length>0){
+                        data?.d?.results?.map((items: any) => {
+                            if (items.AdditionalTimeEntry != null) {
+                                items.AdditionalTime = JSON.parse(items.AdditionalTimeEntry)
+                                duplicateArray.push(items);
+                            }
+                        })
+                        if (duplicateArray != undefined && duplicateArray.length > 0) {
                             AllTimeSpentDetails = AllTimeSpentDetails.concat(duplicateArray);
-                          }
-                    
-                         if(AllTimeSpentDetails!=undefined&&AllTimeSpentDetails.length>0){
-                            getStructureData();
-                         }
                         }
-                   
+
+                        if (AllTimeSpentDetails != undefined && AllTimeSpentDetails.length > 0) {
+                            getStructureData();
+                        }
+                    }
+
                 }
             })
         })
     };
-   
-   
-  
+
+
+
     const getStructureData = function () {
-  
+
         // Smart total time code   get code
-        var TotalTime = 0.0;
+        var TotalTimes = 0.0;
 
         console.log(timeEntry);
         let newArray: any = [];
@@ -110,7 +112,7 @@ let allTaskUsers:any;
                 item.additionaltime2.push(item);
                 hoversmartArray.push(item)
             })
-               })
+        })
         console.log(hoversmartArray);
 
         hoversmartArray.map((items: any) => {
@@ -120,14 +122,14 @@ let allTaskUsers:any;
             }
             else if (newArray.length > 0) {
                 newArray.map((child: any) => {
-                    
+
                     if (child.AuthorId == items.AuthorId) {
                         child.additionaltime2.unshift(items.additionaltime2[0])
                         parentfound = true;
                     }
-                   
+
                 })
-               
+
                 if (parentfound == false) {
                     newArray.push(items);
                 }
@@ -141,24 +143,24 @@ let allTaskUsers:any;
         //         item.additionaltime3 =item.additionaltime2 .reduce(function (previous: any, current: any) {
 
         //             let alredyExists =
-                    
+
         //              previous.filter(function (item: any) {
-                    
+
         //              return (item.Description === current.Description||item.Created==current.Created);
-                    
+
         //            }).length > 0;
-                    
+
         //              if (!alredyExists) {
-                    
+
         //              previous.push(current);
-                    
+
         //             }
-                    
+
         //              return previous;
-                    
+
         //           }, []);
         //     }
-           
+
         // })
 
         setTimeEntry(newArray)
@@ -199,7 +201,7 @@ let allTaskUsers:any;
                                     hoverTime = hoverTime + tempItem.TaskTimeInMin;;
                                 }
                             }
-                        }else{
+                        } else {
                             if (typeof (tempItem.TaskTime) == 'string') {
                                 let timeValue = Number(tempItem.TaskTime);
                                 if (timeValue > 0) {
@@ -209,31 +211,40 @@ let allTaskUsers:any;
                                 }
                             } else {
                                 if (tempItem.TaskTime > 0) {
-                                    let tempTImeInMinute:any = tempItem.TaskTime * 60
+                                    let tempTImeInMinute: any = tempItem.TaskTime * 60
                                     TotalTimeData = TotalTimeData + tempTImeInMinute;
                                     hoverTime = hoverTime + tempTImeInMinute;
                                 }
                             }
                         }
-                        TotalTime = TotalTimeData;
+                        TotalTimes = TotalTimeData;
                         hoverTime = hoverTime;
                         //tempItem.hoverTime = (hoverTime / 60) ;
                         // hoverTime = hoverTime + parseFloat(tempItem.TaskTime);
                         // TotalTime=TotalTime+ parseFloat(tempItem.TaskTime)
                     })
-                    items.hoverTime = hoverTime/60;
+                    items.hoverTime = hoverTime / 60;
                 }
                 if (TotalTimeData > 0) {
                     FinalTotalTime = (TotalTimeData / 60);
                 }
-                TotalTime = FinalTotalTime;
-                
-               
+                TotalTimes = FinalTotalTime;
+
+
             })
         }
-       setsmartTimeTotal(TotalTime)
+        setsmartTimeTotal(TotalTimes)
 
-       item?.callbackTotalTime(TotalTime)
+        item?.callbackTotalTime(TotalTime)
+        newArray?.map((items: any) => {
+            items?.additionaltime2?.sort((a: any, b: any) => {
+                const dateA: any = new Date(a?.TaskDate.split('/').reverse().join('/'));
+                const dateB: any = new Date(b?.TaskDate.split('/').reverse().join('/'));
+                return dateB - dateA;
+            })
+        });
+
+
         setAdditionalTime(newArray)
         setTimeSheet(TaskTimeSheetCategoriesGrouping);
     }
@@ -247,7 +258,7 @@ let allTaskUsers:any;
         EditData(item.props);
     }
     const ComponentCallBack = (dt: any) => {
-       console.log(dt)
+        console.log(dt)
     }
     return (
         <>
@@ -255,35 +266,36 @@ let allTaskUsers:any;
             {console.log(timeEntry)}
             {console.log(AllAvailableTitle)}
             {console.log(additionalTime)}
-            {smartTimeTotal.toFixed(1)}
+            {/* {smartTimeTotal.toFixed(1)} */}
+            {TotalTime != null && TotalTime >= 0 ? TotalTime.toFixed(1) : 0.0}
             <span className='openhoverpopup hoverimg'>
-            <span className="svg__iconbox svg__icon--clock dark" onClick={OpenTimeEntry}></span>
-               <div className='hoverpopup overlay'>
+                <span className="svg__iconbox svg__icon--clock dark" onClick={OpenTimeEntry}></span>
+                <div className='hoverpopup overlay'>
                     <div className='hoverpopuptitle'>{item.props.Title}</div>
                     <div className='hoverpopupbody'>
                         <table className='table mb-0'>
-                           { additionalTime.length > 0?<tbody>
-                                {additionalTime.length > 0 && additionalTime.map((items: any,index:any) => {
+                            {additionalTime.length > 0 ? <tbody>
+                                {additionalTime.length > 0 && additionalTime.map((items: any, index: any) => {
                                     return (
                                         <>
                                             <tr className='for-c0l'>
                                                 <td style={{ width: "20%" }}>
-                                                    <img className='workmember '  src={items?.AuthorImage != undefined && items?.AuthorImage !="" ? items?.AuthorImage:"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}></img>
+                                                    <img className='workmember ' src={items?.AuthorImage != undefined && items?.AuthorImage != "" ? items?.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}></img>
                                                 </td>
                                                 <td >
-                                                <SmartTooltipComponent items={items}allTaskUsers={allTaskUsers}siteUrl={item?.AllListId?.siteUrl}/>
-                                               
-                                              
+                                                    <SmartTooltipComponent items={items} allTaskUsers={allTaskUsers} siteUrl={item?.AllListId?.siteUrl} />
+
+
                                                 </td>
-                                               
-                                                <td style={{ width: "80%" }} colSpan={2}><span className='px-2'>Total Time</span>{items.hoverTime.toFixed(2)}<span className='mx-1'>{items.hoverTime>1?'hours':'hour'}</span></td>
+
+                                                <td style={{ width: "80%" }} colSpan={2}><span className='px-2'>Total Time</span>{items.hoverTime.toFixed(2)}<span className='mx-1'>{items.hoverTime > 1 ? 'hours' : 'hour'}</span></td>
                                             </tr>
 
                                             {items?.additionaltime2?.length > 0 && items?.additionaltime2?.map((details: any) => {
                                                 return (
                                                     <>       <tr className={details?.lableColor}>
                                                         <td style={{ width: "20%" }}>{details.TaskDate}</td>
-                                                        <td style={{ width: "10%" }}>{details?.TaskTime}<span className='mx-1'>{details?.TaskTime>1?'hours':'hour'}</span></td>
+                                                        <td style={{ width: "10%" }}>{details?.TaskTime}<span className='mx-1'>{details?.TaskTime > 1 ? 'hours' : 'hour'}</span></td>
                                                         <td style={{ width: "70%" }}>{details.Description}</td>
                                                     </tr>
                                                     </>
@@ -293,14 +305,14 @@ let allTaskUsers:any;
                                     )
                                 }
                                 )}
-                            </tbody>:<div className='p-2'><div className='noTimeEntry'>No Time Entry</div></div>}
+                            </tbody> : <div className='p-2'><div className='noTimeEntry'>No Time Entry</div></div>}
 
                         </table>
                         {/* <ReactTooltip id="authorTooltip" /> */}
-                        
+
                     </div> </div>
             </span>
-            {isTimeEntry ? <TimeEntry data={item?.props} context={item.Context} Context={item.Context} isopen={isTimeEntry} CallBackTimesheet={() => { CallBackTimesheet() }}  parentCallback={ComponentCallBack}/> : ''}
+            {isTimeEntry ? <TimeEntry data={item?.props} context={item.Context} Context={item.Context} isopen={isTimeEntry} CallBackTimesheet={() => { CallBackTimesheet() }} parentCallback={ComponentCallBack} /> : ''}
         </>
     )
 }

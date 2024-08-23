@@ -293,7 +293,7 @@ const Picker = (item: any) => {
         return (
             <>
                 <div className="subheading">
-                    Select Category
+               Select Category
                 </div>
                 <Tooltip ComponentId="1741" />
             </>
@@ -371,15 +371,14 @@ const Picker = (item: any) => {
                                     return (
                                         <>
                                             <li onMouseEnter={() => HoverFirstLevel(item.Id)} onMouseLeave={HoverOutFirstLevel} key={item.Id}>
-                                                {item.ItemImage != null &&
                                                     <div onClick={() => selectPickerData(item)} className='alignCenter hreflink justify-content-between'>
                                                         <a className={`${FirstHoveredItemId == item?.Id ? 'boldOnHover flag_icon alignCenter' : 'flag_icon alignCenter'}`}>
-                                                            <img className="flag_icon" style={{ height: "12px", width: "18px" }} src={item.ItemImage.Url} />
+                                                            {item.ItemImage ? <img className="flag_icon" style={{ height: "12px", width: "18px" }} src={item.ItemImage.Url} />: 
+                                                            <span className="me-4"></span>}
                                                             {item.Title}
                                                         </a>
                                                         {item?.childs?.length > 0 && <SlArrowRight />}
                                                     </div>
-                                                }
                                                 <ul className="sub-menu clr mar0">
                                                     {item.childs?.map(function (child1: any) {
                                                         return (
