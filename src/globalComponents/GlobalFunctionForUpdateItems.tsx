@@ -2065,7 +2065,6 @@ export const ReduceTheContentLines: any = (Content: String, sliceFrom: number) =
 export const TaskNotificationConfiguration = async (requiredData: any) => {
     const { usedFor, SiteURL, ItemDetails, Context, RequiredListIds, AllTaskUser, Status, SendUserEmail}: any = requiredData || {};
     const filterData: any = [];
-    let UxCatUserArray: any = [];
     try {
         const web = new Web(SiteURL)
         let ResponseData: any = await web.lists.getByTitle('NotificationsConfigration').items.select('Id,ID,Modified,Created,Title,Author/Id,Author/Title,Editor/Id,Editor/Title,Recipients/Id,Recipients/Title,ConfigType,ConfigrationJSON,Subject,PortfolioType/Id,PortfolioType/Title').expand('Author,Editor,Recipients ,PortfolioType').get();
@@ -2183,6 +2182,7 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                 ItemDetails?.TaskCategories?.map((item: any) => {                                  
                                     if (!TNC?.Category?.includes('All') && TNC.Category?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
                                         //This is used to assigned Design As Lead
+                                        let UxCatUserArray: any = [];
                                         TNC.Notifier.map((user: any) => {
                                             AllTaskUser?.map((TaskUserData: any) => {
                                                 if (user.Id == TaskUserData.AssingedToUserId)

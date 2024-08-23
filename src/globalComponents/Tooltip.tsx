@@ -25,9 +25,11 @@ var ComponentData: any = {
 function Tooltip(props: any) {
   const [projectId, setprojectId] = React.useState(null)
   const [OpenCallNotes, setOpenCallNotes] = React.useState(false);
-  const [OpenAdminHelp, setOpenAdminHelp] = React.useState(false)
+  const [OpenAdminHelp, setOpenAdminHelp] = React.useState(false);
   const [CMSToolComponent, setCMSToolComponent] = React.useState('');
-  const [component, setComponent] = React.useState('')
+  const [component, setComponent] = React.useState('');
+  const [currentuser, setCurrentUser] = React.useState<any>();
+  const [groups, setGroups] = React.useState<any>();
   const [currentbrowser, setcurrentbrowser] = React.useState('');
   const [allowLabelEdit, setAllowLabelEdit] = React.useState(false);
   
@@ -39,31 +41,49 @@ function Tooltip(props: any) {
 
   React.useEffect(() => {
     loadSiteUrl();
+    getCurrentUser();
+    getCurrentUserGroup();
   }, [])
+
+  const getCurrentUser = async () => {
+    let pageInfo = await globalCommon.pageContext();
+    let web = new Web(pageInfo.WebFullUrl);
+    const currentUser = await web.currentUser.get()
+    setCurrentUser(currentUser)
+  }
+
+  const getCurrentUserGroup = async () => {
+    let pageInfo = await globalCommon.pageContext();
+    let web = new Web(pageInfo.WebFullUrl);
+    const currentUser = await web.currentUser.get()
+    const userGroups: any = await web.getUserById(currentUser.Id).groups.get();
+    setGroups(userGroups)
+  }
 
   React.useEffect(() => {
     var userAgent = navigator.userAgent;
-    let grueneTopNavBrowser = userAgent;
+    let SPTopNavBrowser = userAgent;
       try {
-        let sessionData: any = localStorage.getItem('grueneTopNavBrowser');
+        let tenantName = window?.location?.hostname?.split('.')[0]
+        let sessionData: any = localStorage.getItem(`${tenantName}BrowserSetting`);
         try {
           if (sessionData != null) {
             sessionData = JSON.parse(sessionData);
             sessionData = sessionData[0]
-            grueneTopNavBrowser = sessionData
+            SPTopNavBrowser = sessionData
           } else {
             if (userAgent.indexOf("Firefox") !== -1) {
-              grueneTopNavBrowser = 'firefox:';
+              SPTopNavBrowser = 'firefox:';
             } else if (userAgent.indexOf("Chrome") !== -1) {
-              grueneTopNavBrowser = 'googlechrome://';
+              SPTopNavBrowser = 'googlechrome://';
             } else if (userAgent.indexOf("Edge") !== -1) {
-              grueneTopNavBrowser = 'microsoft-edge:';
+              SPTopNavBrowser = 'microsoft-edge:';
             }
           }
         } catch (e) {
   
         }
-        setcurrentbrowser(grueneTopNavBrowser);
+        setcurrentbrowser(SPTopNavBrowser);
       } catch {
         if (userAgent.indexOf("Firefox") !== -1) {
           setcurrentbrowser('firefox:')
@@ -239,13 +259,24 @@ function Tooltip(props: any) {
     return (false);
   }
 
+  const switchBrowser = (e: any, browsername: any) => {
+    const checked = e?.target?.checked;
+    if (checked) {
+      setDefaultBrowser(browsername)
+    }
+    else {
+      setcurrentbrowser('')
+    }
+  }
+
   const setDefaultBrowser = (browserName: any) => {
     if (browserName) {
       if (browserName == currentbrowser) {
         IsSameSite = true
       }
       let toBeSetLocally: any = JSON.stringify([browserName]);
-      localStorage.setItem('grueneTopNavBrowser', toBeSetLocally)
+      let tenantName = window?.location?.hostname?.split('.')[0]
+      localStorage.setItem(`${tenantName}BrowserSetting`, toBeSetLocally)
     }
     setcurrentbrowser(browserName);
     $(".showBrowsers").css("display", "none");
@@ -280,6 +311,7 @@ function Tooltip(props: any) {
           {/* {isShown && ( */}
           <div className={isServiceTask ? 'dropdown-menu show dropdown-menu-end toolmenubox serviepannelgreena' : 'dropdown-menu show dropdown-menu-end toolmenubox'}>
               
+              {(currentuser?.LoginName.indexOf("hochhuth-consulting") > -1 || groups?.some((group: any) => group.Title.includes("HHHH"))) ? <>
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Feedback SP')}><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH Feedback SP</a>
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Bug')}><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH Bug</a>
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Design')}><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH Design</a>
@@ -288,14 +320,15 @@ function Tooltip(props: any) {
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Component Page')} ><span className="svg__iconbox  svg__icon--Comments mr-4"></span>HHHH Component Page</a>
               <a className='dropdown-item hreflink' onClick={(e) => feedbackInitial('Call Notes')}> <span className="svg__iconbox  svg__icon--Comments mr-4"></span>Call Notes</a>
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Admin Help')}> <span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Admin Help</a>
+              </>: ""}
               <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Help')}> <span className="svg__iconbox  svg__icon--help-fill mr-4"></span>Help</a>
               {(props.ShowPencilIcon==true || props.ShowPencilIcon==false) && <a className='dropdown-item hreflink' onClick={() => { setAllowLabelEdit(!allowLabelEdit); props?.setShowPencilIcon(!allowLabelEdit)}}> <span className="svg__iconbox  svg__icon--editLabel mr-4"></span>{allowLabelEdit == true ? 'Stop Editing' : 'Edit Labels'}</a>}
-              {pageContent?.WebFullUrl.indexOf("hhhhteams") == -1 && <>
+              {(pageContent?.WebFullUrl.indexOf("hhhhteams") == -1 && (currentuser?.LoginName.indexOf("hochhuth-consulting") > -1 || groups?.some((group: any) => group.Title.includes("HHHH")))) && <>
                 <a className='dropdown-item' onMouseEnter={() => { handleMouseEnter() }} ><FaCommentAlt />Browser Setting</a>
                 <div className="dropdown-submenu dropdown-menu-level-1 showBrowsers" onMouseLeave={() => $(".showBrowsers").css("display", "none")} style={{ display: "none" }}>
-                    <a className='dropdown-item' onClick={() => setDefaultBrowser('googlechrome://')}> <input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'googlechrome://'} /><FaCommentAlt /> Chrome</a>
-                    <a className='dropdown-item' onClick={() => setDefaultBrowser('microsoft-edge:')}><input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'microsoft-edge:'} /><FaCommentAlt /> Edge</a>
-                    <a className='dropdown-item' onClick={() => setDefaultBrowser('firefox:')}><input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'firefox:'} /><FaCommentAlt /> Firefox</a> 
+                    {/* <a className='dropdown-item'> <input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'googlechrome://'} onChange={(e: any) => switchBrowser(e, 'googlechrome://')}/><FaCommentAlt /> Chrome</a> */}
+                    <a className='dropdown-item'><input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'microsoft-edge:'} onChange={(e: any) => switchBrowser(e, 'microsoft-edge:')}/><FaCommentAlt /> Edge</a>
+                    <a className='dropdown-item'><input type="checkbox" className='form-check-input' name="" id="" checked={currentbrowser == 'firefox:'} onChange={(e: any) => switchBrowser(e, 'firefox:')}/><FaCommentAlt /> Firefox</a> 
                 </div>
               </>
               }
