@@ -6584,7 +6584,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col ps-0">
                                             <div className="input-group">
                                                 {console.log("Working action default users data ==============", WorkingActionDefaultUsers)}
-                                                <div className="form-label full-width alignCenter mb-1">
+                                                <div className="form-label full-width alignCenter ">
                                                     <b className="alignCenter"><LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Bottleneck"} onlyText={"text"} />: </b>
 
                                                     {WorkingActionDefaultUsers?.map((userDtl: any, index: number) => {
@@ -6744,7 +6744,7 @@ const EditTaskPopup = (Items: any) => {
                                         {/* This is used for Attentions  */}
                                         <div className="col mt-2 ps-0">
                                             <div className="input-group">
-                                                <div className="form-label full-width alignCenter mb-1">
+                                                <div className="form-label full-width alignCenter ">
                                                     <b className="alignCenter"><LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Attention"} onlyText={"text"} />: </b>
                                                     {WorkingActionDefaultUsers?.map((userDtl: any, index: number) => {
                                                         return (
@@ -6932,7 +6932,7 @@ const EditTaskPopup = (Items: any) => {
                                         {/* //////////////////////////////This is phone section/////////////////////////// */}
                                         <div className="col mt-2 ps-0">
                                             <div className="input-group">
-                                                <div className="form-label full-width alignCenter mb-1">
+                                                <div className="form-label full-width alignCenter ">
                                                     <b className="alignCenter"><LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Phone"} onlyText={"text"} />: </b>
                                                     {WorkingActionDefaultUsers?.map((userDtl: any, index: number) => {
                                                         return (
