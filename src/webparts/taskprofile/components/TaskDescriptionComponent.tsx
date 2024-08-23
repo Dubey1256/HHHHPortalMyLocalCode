@@ -626,25 +626,41 @@ const TaskDescriptions = (props: any) => {
     }
     // ========approval history popup and callback End =================
 
-    const cleanHTML = (html: any, folora: any, index: any) => {
-        if (html != undefined) {
-            html = globalCommon?.replaceURLsWithAnchorTags(html)
-            const div = document.createElement('div');
-            div.innerHTML = html;
-            const paragraphs = div.querySelectorAll('p');
-            // Filter out empty <p> tags
-            paragraphs.forEach((p) => {
-                if (p.innerText.trim() === '') {
-                    p.parentNode.removeChild(p); // Remove empty <p> tags
+    const cleanHTML = (text:any, folora: any, index: any) => {
+        if (!text) return '';
+    
+        // Create a temporary DOM element to parse the HTML content
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = text;
+    
+        // Function to convert plain URLs to anchor tags
+        const replacePlainURLs = (node:any) => {
+            const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null);
+            const urlRegex = /(https?:\/\/[^\s<>"]+)/g;
+    
+            while (walker.nextNode()) {
+                const currentNode = walker.currentNode;
+                if (currentNode.nodeValue && urlRegex.test(currentNode.nodeValue)) {
+                    const replacedHTML = currentNode.nodeValue.replace(urlRegex, (url) => {
+                        return `<a href="${url}" target="_blank" data-interception="off" class="hreflink">${url}</a>`;
+                    });
+                    const span = document.createElement('span');
+                    span.innerHTML = replacedHTML;
+                    currentNode.parentNode.replaceChild(span, currentNode);
                 }
-            });
-            div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
-            div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
-
-
-            return div.innerHTML;
-        }
-
+            }
+        };
+    
+        // Replace plain URLs in the DOM
+        replacePlainURLs(tempDiv);
+    
+        // Remove inline styles from all anchor tags
+        const anchorTags = tempDiv.querySelectorAll('a');
+        anchorTags.forEach((anchor) => {
+            anchor.removeAttribute('style');
+        });
+    
+        return tempDiv.innerHTML;
     };
 
     /// ==============reply comment function ====================

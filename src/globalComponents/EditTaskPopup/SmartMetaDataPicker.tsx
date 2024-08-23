@@ -92,7 +92,7 @@ const Picker = (item: any) => {
         }
 
     }
-    var SmartTaxonomyName =item?.usedFor || "Categories";
+    var SmartTaxonomyName = "Categories";
     const loadGmBHTaskUsers = function () {
         var AllTaskusers = []
         var AllMetaData: any = []
@@ -293,7 +293,7 @@ const Picker = (item: any) => {
         return (
             <>
                 <div className="subheading">
-                {item?.usedFor !=undefined ? `Select${item?.usedFor}`: "Select Category"}
+               Select Category
                 </div>
                 <Tooltip ComponentId="1741" />
             </>
