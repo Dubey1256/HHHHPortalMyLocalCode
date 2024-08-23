@@ -51,7 +51,7 @@ const PortfolioLeadEOD = (props: any) => {
             if (user.UserGroup?.Title == "Portfolio Lead Team") {
                 uniqueLeads.add(user?.AssingedToUserId);
             }
-            if( user.UserGroup?.Title !="Ex Staff" &&  user.UserGroup?.Title == "Design Team" || user.UserGroup?.Title == "QA Team"){
+            if( user.UserGroup?.Title !="Ex Staff" && ( user.UserGroup?.Title == "Design Team" || user.UserGroup?.Title == "QA Team")){
                 user?.Approver?.forEach((approver: any) => {
                     uniqueLeads.add(approver?.Id);
               });
@@ -65,12 +65,15 @@ const PortfolioLeadEOD = (props: any) => {
         leads.map((Leads: any) => {
             Leads.AllTeamMembers = []
             Leads.teamMembersOnLeave=[];
-            allUsers.map((user: any) => {
-                user?.Approver?.forEach((approver: any) => {
-                    if (Leads.AssingedToUserId == approver.Id) {
-                        Leads.AllTeamMembers.push(user)
-                    }
-                });
+            allUsers.map((user: any) => { 
+                if(user.UserGroup?.Title !="Ex Staff"){
+                    user?.Approver?.forEach((approver: any) => {
+                        if ( Leads.AssingedToUserId == approver.Id) {
+                            Leads.AllTeamMembers.push(user)
+                        }
+                    });
+                }
+               
             })
             let test=leaveInformations?.find((leave:any)=>{
                 

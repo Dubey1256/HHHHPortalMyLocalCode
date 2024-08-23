@@ -2179,10 +2179,11 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                 })
                             }                          
                             else if (TNC?.percentComplete == Status && TNC?.NotificationType == "Lead")    {
+                                let UxCatUserArray: any = [];
                                 ItemDetails?.TaskCategories?.map((item: any) => {                                  
                                     if (!TNC?.Category?.includes('All') && TNC.Category?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
                                         //This is used to assigned Design As Lead
-                                        let UxCatUserArray: any = [];
+                                     
                                         TNC.Notifier.map((user: any) => {
                                             AllTaskUser?.map((TaskUserData: any) => {
                                                 if (user.Id == TaskUserData.AssingedToUserId)
