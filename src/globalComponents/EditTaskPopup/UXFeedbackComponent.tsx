@@ -1194,7 +1194,7 @@ export default function UXFeedbackComponent(textItems: any) {
                                                                     <a className="hreflink alignIcon"
                                                                         style={{ cursor: "pointer" }} target="_blank"
                                                                         onClick={() => RemoveItem(obj, i)}>
-                                                                        <span className="svg__iconbox hreflink mini svg__icon--trash"></span>
+                                                                        <span className=" hreflink svg__icon--trash svg__iconbox" title="Delete Comment"></span>
                                                                     </a>
 
 
