@@ -51,7 +51,7 @@ const PortfolioLeadEOD = (props: any) => {
             if (user.UserGroup?.Title == "Portfolio Lead Team") {
                 uniqueLeads.add(user?.AssingedToUserId);
             }
-            if(user.UserGroup?.Title == "Design Team" || user.UserGroup?.Title == "QA Team"){
+            if( user.UserGroup?.Title !="Ex Staff" &&  user.UserGroup?.Title == "Design Team" || user.UserGroup?.Title == "QA Team"){
                 user?.Approver?.forEach((approver: any) => {
                     uniqueLeads.add(approver?.Id);
               });
@@ -129,7 +129,7 @@ const PortfolioLeadEOD = (props: any) => {
         console.log(AllLeaves);
         }
         const loadAllTimeEntry = async () => {
-            let  TodayTimeEntry:any=[];
+        
             AllTimeEntry=[];
          if (props?.timesheetListConfig?.length > 0) {
                 let timesheetLists: any = []; 
@@ -147,9 +147,11 @@ const PortfolioLeadEOD = (props: any) => {
                                 .getById(list?.listId)
                                 .items.select(list?.query)
                             .filter(`Modified ge datetime'${isoPreviousDate}'`)
-                         .getAll().then((data:any)=>{   
+                         .getAll().then((data:any)=>{ 
+                            let TodayTimeEntry:any=[];  
                             data?.map((timeEntry:any)=>{
                                 let TimeEntryParse:any=[]
+                              
                                 if(timeEntry?. AdditionalTimeEntry!=undefined && timeEntry?. AdditionalTimeEntry!=null){
                                     TimeEntryParse  = JSON.parse(timeEntry?. AdditionalTimeEntry)
                                 }
@@ -160,7 +162,7 @@ const PortfolioLeadEOD = (props: any) => {
                              
                             })
                             let chekDate=moment(new Date()).format('DD/MM/YYYY');
-                             let timeValue:any=TodayTimeEntry.filter((item:any)=>item?.TaskDate===chekDate);                  
+                             let timeValue:any=TodayTimeEntry?.filter((item:any)=>item?.TaskDate===chekDate);                  
                             // AllTimeEntry=TodayTimeEntry.filter((item:any)=>item?.TaskDate===chekDate);
                             AllTimeEntry.push(...timeValue)
                             if(timesheetLists?.length-1==index){
@@ -205,7 +207,7 @@ const PortfolioLeadEOD = (props: any) => {
                         ${item?.portfolioTitle.slice(0, 22) + '...' ?? 'No data available'}
                     </td>
                     <td height="48"  width="400" align="left" valign="middle" style="background: #fff;color: #333;width:350px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
-                        ${item?.AllTeamMembers?.length ?? 'No data available'}
+                        ${item?.AllTeamMembers?.length+1 ?? 'No data available'}
                     </td>
                     <td height="48"  width="130" valign="middle" style="background: #fff;color: #333;width:130px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                         ${item?.teamMembersOnLeave?.length ?? ''}
@@ -292,7 +294,7 @@ const PortfolioLeadEOD = (props: any) => {
                 placeholder: "LeadName",
                 header: "",
                 resetColumnFilters: false,
-                size: 95,
+                size: 300,
                 isColumnVisible: true
             },
             {
@@ -313,21 +315,21 @@ const PortfolioLeadEOD = (props: any) => {
                 resetColumnFilters: false,
                 // isColumnDefultSortingAsc: isColumnDefultSortingAsc,
                 // isColumnDefultSortingAsc:true,
-                size: 120,
+               
                 isColumnVisible: true
             },
             {
                 accessorFn: (row) => row?.AllTeamMembers,
                 cell: ({ row, column, getValue }) => (
                     <>
-                    {row?.original?.AllTeamMembers?.length}
+                    {row?.original?.AllTeamMembers?.length+1}
                     </>
                 ),
                 id: "AllTeamMembers",
                 placeholder: "Total Team-Member Available",
                 resetColumnFilters: false,
                 header: "",
-                size: 500,
+                size: 150,
                 isColumnVisible: true,
                 isAdvanceSearchVisible: true
             },
@@ -342,7 +344,7 @@ const PortfolioLeadEOD = (props: any) => {
                 placeholder: "Not Available team-Member",
                 resetColumnFilters: false,
                 header: "",
-                size: 500,
+                size: 150,
                 isColumnVisible: true,
                 isAdvanceSearchVisible: true
             },
@@ -361,7 +363,7 @@ const PortfolioLeadEOD = (props: any) => {
                 placeholder: "shortageHours",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 150,
                 isColumnVisible: true,
                 isAdvanceSearchVisible: true
             },
@@ -378,7 +380,7 @@ const PortfolioLeadEOD = (props: any) => {
                 tableId="EodReport"
                 multiSelect={true}
                 customHeaderButtonAvailable={true}
-
+                wrapperHeight="400px"
             />
         </>
     )
