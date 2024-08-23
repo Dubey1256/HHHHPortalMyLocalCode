@@ -11,6 +11,7 @@ import moment from 'moment';
 import * as globalCommon from '../../../globalComponents/globalCommon'
 import ImagetabFunction from '../../EditPopupFiles/ImageInformation';
 import HtmlEditor from '../../../globalComponents/HtmlEditor/HtmlEditor';
+import RichTextEditorComponent from '../../../globalComponents/RichTextEditor';
 let modaltype: any;
 let SitesConfig: any[] = []
 let allSitesTask: any[] = []
@@ -21,6 +22,8 @@ let selectfilterarray: any = [];
 var ChangedTopCategories: any = [];
 let CurrentSiteUrl: any;
 export default function SmartMetadataEditPopup(props: any) {
+    if (props?.AllList?.SPSitesListUrl === undefined || props?.AllList?.SPSitesListUrl === '')
+        props.AllList.SPSitesListUrl = props?.AllList?.SitesListUrl;
     const [state, rerender] = React.useReducer(() => ({}), {});
     const [activeTab, setActiveTab] = useState('');
     const [AllSitesTask, setAllSitesTask]: any = useState([]);
@@ -39,6 +42,7 @@ export default function SmartMetadataEditPopup(props: any) {
     const [metadatPopupBreadcrum, setMetadatPopupBreadcrum]: any = useState([]);
     const [opensmartmetapopup, setopensmartmetapopup] = useState(false);
     const [smartFilterArray, setSmartFilterArray]: any = useState([]);
+    const [IsLoaderActive, setIsLoaderActive] = useState(false);
     const [TaggedsmartFilterArray, setTaggedsmartFilterArray]: any = useState([]);
     const [SmartTaxonomyItem, setSmartTaxonomyItem]: any = useState({
         Id: 0,
@@ -74,7 +78,8 @@ export default function SmartMetadataEditPopup(props: any) {
     let Items: any
     let folderUrl: any
     let SelectItemImagetype: any = 'ItemImage';
-    
+    if (props?.modalInstance?.Item_x0020_Cover !== undefined && props?.modalInstance?.Item_x0020_Cover !== '')
+        props.modalInstance.Item_x002d_Image = props?.modalInstance?.Item_x0020_Cover;
     useEffect(() => {
         if (props?.siteName === 'GmbH') {
             setActiveTab('WebPageInfo')
@@ -165,7 +170,7 @@ export default function SmartMetadataEditPopup(props: any) {
 
     const showingBreadcrumb = (metadata: any) => {
         const findBreadcrumb = (itemId: any) => {
-            const item = props?.MetadataItems.find((top: any) => top.Id === itemId);
+            const item = props?.MetadataItems?.find((top: any) => top.Id === itemId);
             if (item) {
                 breadcrumb.unshift(item);
                 if (item.ParentID) {
@@ -174,7 +179,7 @@ export default function SmartMetadataEditPopup(props: any) {
             }
         };
         const breadcrumb: any = [];
-        const manageSmartmetadataItem: any = props?.MetadataItems.find(
+        const manageSmartmetadataItem: any = props?.MetadataItems?.find(
             (top: any) => top.Id === metadata.Id
         );
         if (manageSmartmetadataItem) {
@@ -217,10 +222,8 @@ export default function SmartMetadataEditPopup(props: any) {
     const handleChangeCategories = (ChangeCategoryItem: any) => {
         setSelectedChangedCategories(ChangeCategoryItem.target.value);
         if (ChangeCategoryItem.target.value) {
-            if (ChangeCategoryItem.target.value === 'Admin')
-                ChangedTopCategories = props?.MetadataItems?.filter((meta: any) => meta?.ParentID === 0 && meta?.TaxType=== "Categories" && meta?.Title === ChangeCategoryItem.target.value).map((meta: any) => meta?.subRows);
-            else
-                ChangedTopCategories = props?.MetadataItems?.filter((meta: any) => meta?.Title === ChangeCategoryItem.target.value).map((meta: any) => meta?.subRows);
+            ChangedTopCategories = props?.MetadataItems?.filter((meta: any) => meta?.Title === ChangeCategoryItem.target.value)
+                .map((meta: any) => meta?.subRows);
         }
         console.log(ChangedTopCategories);
     }
@@ -324,7 +327,7 @@ export default function SmartMetadataEditPopup(props: any) {
         TaxType = taxType;
         if (item != undefined) {
             modaltype = 'Update';
-            if (item.Item_x005F_x0020_Cover != undefined && item.Item_x005F_x0020_Cover.Url != undefined)
+            if (item?.Item_x005F_x0020_Cover != undefined && item?.Item_x005F_x0020_Cover?.Url != undefined)
                 selectedImageUrl = item.Item_x005F_x0020_Cover.Url;
             item.PageTitle = item.Title
             if (item.TaxType === 'Topics')
@@ -347,7 +350,7 @@ export default function SmartMetadataEditPopup(props: any) {
             if (item.ProfileType === 'Event') {
                 item.href = `${props?.AllList?.SPSitesListUrl}/SitePages/Profiles.aspx?SmartID=${item.Id}&Item=${item.Title}`
             }
-            if (item.PageContent !== '' && item.PageContent !== undefined && item.PageContent !== null) {
+            if (item?.PageContent !== '' && item?.PageContent !== undefined && item?.PageContent !== null) {
                 item.PageContent = item?.PageContent?.replaceAll("&#58;", ":");
             }
             if (props?.smartDescription !== '' && props?.smartDescription !== undefined && props?.smartDescription !== null) {
@@ -358,6 +361,11 @@ export default function SmartMetadataEditPopup(props: any) {
                 setFilterTypeData(item?.SmartFilters);
                 item.smartFilterSearch = item?.SmartFilters?.map((elem: any) => elem).join(" ")
             }
+            if (item.Description !== undefined && item.Description !== '') {
+                item.Description = item?.Description?.replace(/<\/?[^>]+(>|$)/g, '');
+            }
+            if (item.Item_x0020_Cover !== undefined && item.Item_x0020_Cover !== '')
+                item.Item_x002d_Image = item.Item_x0020_Cover;
             setSmartTaxonomyItem(item)
         }
         else {
@@ -400,6 +408,59 @@ export default function SmartMetadataEditPopup(props: any) {
         alert("Remove Categories Successfully");
         Selecteditems = [];
     };
+    const processImageSrc = async (htmlString: any) => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlString, 'text/html');
+        const imgTags = doc.querySelectorAll('img');
+        let promises: any = [];
+        let date = new Date();
+        let TimeStamp = date.getTime();
+        let Count: any = 0;
+        imgTags.forEach(img => {
+            let src = img.getAttribute('src');
+            if (src?.length > 800) {
+                setIsLoaderActive(true);
+                Count++;
+                let DataObject = {
+                    data_url: src,
+                    file: "Image/jpg",
+                    fileName: `Cover_Image_${Count}_${TimeStamp + ""}_${SmartTaxonomyItem?.Id}_${SmartTaxonomyItem?.Title}.jpg`
+                }
+                promises.push(uploadImageFolder(DataObject).then(GetImageUrl => {
+                    img.setAttribute('src', GetImageUrl);
+                    console.log("src", GetImageUrl);
+                    setIsLoaderActive(false);
+                }));
+            }
+        });
+
+        await Promise.all(promises);
+        return doc.documentElement.outerHTML;
+    }
+    const uploadImageFolder = async (Data: any) => {
+        var src = Data.data_url?.split(",")[1];
+        let FinalPreparedArray = ''
+        var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
+            return c.charCodeAt(0);
+        }));
+        const data = byteArray
+        var fileData = '';
+        for (var i = 0; i < byteArray.byteLength; i++) {
+            fileData += String.fromCharCode(byteArray[i]);
+        }
+        const web = new Web(props?.AllList?.SPSitesListUrl);
+        const folder = web.getFolderByServerRelativeUrl(`PublishingImages/Page-Images`);
+
+        try {
+            const item = await folder.files.add(Data.fileName, data);
+            let imageURL = `${props?.AllList?.Context?._pageContext?._web?.absoluteUrl.split(props?.AllList?.Context?.pageContext?._web?.serverRelativeUrl)[0]}${item?.data?.ServerRelativeUrl}`;
+            FinalPreparedArray = imageURL;
+            return FinalPreparedArray;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
     const UpdateItem = async () => {
         try {
             if (SmartTaxonomyItem.TaxType == "Client Category") {
@@ -443,6 +504,7 @@ export default function SmartMetadataEditPopup(props: any) {
             } else {
                 setSmartTaxonomyItem({ ...SmartTaxonomyItem, siteName: "" });
             }
+            const getTheUpdatedContent: any = await processImageSrc(SmartTaxonomyItem.PageContent);
             const item = {
                 Title: SmartTaxonomyItem.Title,
                 AlternativeTitle: SmartTaxonomyItem.AlternativeTitle !== null ? SmartTaxonomyItem.AlternativeTitle : SmartTaxonomyItem.Title,
@@ -450,7 +512,7 @@ export default function SmartMetadataEditPopup(props: any) {
                 ParentID: SmartTaxonomyItem.ParentID,
                 ParentId: SmartTaxonomyItem.ParentID,
                 SortOrder: SmartTaxonomyItem.SortOrder,
-                PageContent: SmartTaxonomyItem.PageContent !== null ? SmartTaxonomyItem.PageContent : '',
+                PageContent: getTheUpdatedContent?.includes('null') ? '' : getTheUpdatedContent,
                 Description: SmartTaxonomyItem.Description !== null ? SmartTaxonomyItem.Description : '',
                 TaxType: SmartTaxonomyItem.TaxType,
                 ItemRank: SmartTaxonomyItem.ItemRank !== "" ? SmartTaxonomyItem.ItemRank : null,
@@ -486,7 +548,10 @@ export default function SmartMetadataEditPopup(props: any) {
             if (modaltype == "Update") {
                 const web = new Web(props?.AllList?.SPSitesListUrl);
                 await web.lists.getById(props.AllList.SmartMetadataListID).items.getById(SmartTaxonomyItem.Id).update(item);
-                props.EditItemCallBack('', '', SmartTaxonomyItem?.TaxType, '')
+                if (props?.EditItemCallBack !== undefined)
+                    props?.EditItemCallBack('', '', SmartTaxonomyItem?.TaxType, '');
+                if (props?.callBackProfilePagesItem !== undefined)
+                    props?.callBackProfilePagesItem(SmartTaxonomyItem?.TaxType);
                 CloseEditSmartMetaPopup()
             }
 
@@ -538,7 +603,7 @@ export default function SmartMetadataEditPopup(props: any) {
     const onRenderCustomHeaderMetadata = () => {
         return (
             <>
-                <div className='siteColor subheading'>
+                <div className='ps-4 siteColor subheading'>
                     Update SmartMetadata Item
                 </div>
                 <Tooltip ComponentId={'1630'} />
@@ -548,7 +613,7 @@ export default function SmartMetadataEditPopup(props: any) {
     const onRenderMetadataChangeParent = () => {
         return (
             <>
-                <div className='siteColor subheading'>
+                <div className='ps-4 siteColor subheading'>
                     Select Parent
                 </div>
                 <Tooltip ComponentId={'1630'} />
@@ -612,10 +677,15 @@ export default function SmartMetadataEditPopup(props: any) {
         setTaggedsmartFilterArray(selectfilterarray);
     };
     const closePopupSmartPopup = () => {
-
+        if (FilterTypeData.length === 0 && TaggedsmartFilterArray?.length !== 0) {
+            setTaggedsmartFilterArray([]);
+            selectfilterarray=[];
+        }
+        rerender();
         setopensmartmetapopup(false);
     }
     const saveselectedData = () => {
+        setTaggedsmartFilterArray(selectfilterarray);
         setFilterTypeData(selectfilterarray);
         setopensmartmetapopup(false);
     }
@@ -633,13 +703,12 @@ export default function SmartMetadataEditPopup(props: any) {
                             closeButtonAriaLabel="Close"
                         >
                             <div className="modal-body">
-                                <div>
+                                <div className="col-sm-12 tab-content bdrbox pad10">
                                     {props?.TabSelected === "Categories" && <div className="form-group">
-                                      
-                                        <div className="input-group mb-1">
-                                        <label className='full-width'>
+                                        <div className="col-xs-3">
                                             Change Categories:<b className="span-error">*</b>
-                                        </label>
+                                        </div>
+                                        <div className="col-xs-9">
                                             <select
                                                 className="form-control"
                                                 value={selectedChangedCategories}
@@ -653,13 +722,12 @@ export default function SmartMetadataEditPopup(props: any) {
                                                 ))}
                                             </select>
                                         </div>
-                                
+                                        <div className="clearfix"></div>
                                     </div>
                                     }
                                     {props?.TabSelected !== 'Categories' && <div className="form-group">
-                                      
-                                        <div className="input-group mb-1">
-                                        <label className="full-width">Top Level:</label>
+                                        <div className="col-xs-3">Top Level:</div>
+                                        <div className="col-xs-9">
                                             <select
                                                 className="form-control"
                                                 value={selectedOptionTop}
@@ -673,14 +741,13 @@ export default function SmartMetadataEditPopup(props: any) {
                                                 ))}
                                             </select>
                                         </div>
-                                    
+                                        <div className="clearfix"></div>
                                     </div>}
                                     <div className="form-group">
-                                        
-                                        <div className="input-group mb-1">
-                                        <label className='full-width'>
+                                        <div className="col-xs-3">
                                             Second Level:<b className="span-error">*</b>
-                                        </label>
+                                        </div>
+                                        <div className="col-xs-9">
                                             <select
                                                 className="form-control"
                                                 value={selectedOptionSecond}
@@ -700,7 +767,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                                     ))}
                                             </select>
                                         </div>
-                                       
+                                        <div className="clearfix"></div>
                                     </div>
                                 </div>
                             </div>
@@ -756,8 +823,8 @@ export default function SmartMetadataEditPopup(props: any) {
                             <div className="modal-body">
                                 <form name="NewForm" noValidate role="form">
                                     <div className="" style={{ background: '#f5f5f5 !important' }}>
-                                        <div id="parentdiv" className="mb-2 ps-2 row" >
-                                            <div className="col">
+                                        <div id="parentdiv" className="row" style={{ marginBottom: '4px' }}>
+                                            <div className="col-xs-9">
                                                 <ul className=" m-0 p-0 spfxbreadcrumb">
                                                     {metadatPopupBreadcrum.map((item: any) => {
                                                         return (<li>
@@ -824,7 +891,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                                         </div>
                                                     </div>
                                                     <div className="col">
-                                                        <div className=' input-group'>
+                                                        {props?.siteName !== 'Hub' && props?.siteName !== 'Management'}<div className=' input-group'>
                                                             <label className="full_width">SmartFilters </label>
                                                             {(FilterTypeData?.length == 0 ||
                                                                 FilterTypeData[0] == undefined) && (
@@ -850,9 +917,12 @@ export default function SmartMetadataEditPopup(props: any) {
                                                                         <>
                                                                             {item != undefined && (
                                                                                 <div className="full-width replaceInput alignCenter">
-                                                                                    <a style={{ color: "#fff !important" }}>
+                                                                                    {item?.length <= 17 ? <a style={{ color: "#fff !important" }}>
                                                                                         {item}
-                                                                                    </a>
+                                                                                    </a> :
+                                                                                    <a style={{ color: "#fff !important" }}>
+                                                                                        {item?.slice(0, 17) + '....'}
+                                                                                    </a>}
                                                                                     <span className="input-group-text" placeholder="SmartFilters">
                                                                                         <span
                                                                                             title="SmartFilters"
@@ -962,6 +1032,16 @@ export default function SmartMetadataEditPopup(props: any) {
                                                     onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, Description: e.target.value })}
                                                 ></textarea>
 
+                                            </div>
+                                        </div>
+                                        <div className="row mt-2">
+                                            <div className="form-group col-md-12 mt-2 introduction-editor">
+                                                <label className="full_width">Page Content<b className="span-error">*</b></label>
+                                                {SmartTaxonomyItem?.Title !== '' ?
+                                                    <RichTextEditorComponent
+                                                        EditorValue={SmartTaxonomyItem?.PageContent !== null || undefined ? SmartTaxonomyItem?.PageContent : ""}
+                                                        HtmlEditorStateChange={(Data: any) => HtmlEditorCallBack(Data, "PageContent")}>
+                                                    </RichTextEditorComponent> : ""}
                                             </div>
                                         </div>
                                     </div>
@@ -1177,7 +1257,7 @@ export default function SmartMetadataEditPopup(props: any) {
                             left: "0px",
                         }}
                     >
-                        <div className="align-items-center d-flex justify-content-between px-4 py-2">
+                        <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
                             <div>
                                 <div className="">
                                     Created{" "}
@@ -1206,7 +1286,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                     </span>
                                 </div>
                                 <div>
-                                    <a>
+                                    <a className="hreflink siteColor">
                                         <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
                                         <span
                                             onClick={() => deleteDataFunction(SmartTaxonomyItem)}
@@ -1215,16 +1295,16 @@ export default function SmartMetadataEditPopup(props: any) {
                                         </span>
                                     </a>
 
-                                  <span> | </span>   
-                                    <span onClick={() => setVersionHistoryPopup(false)}>
-                                     
+                                    |
+                                    <span>
+                                        <div className="text-left" onClick={() => setVersionHistoryPopup(false)}>
                                             {SmartTaxonomyItem?.Id && <VersionHistory listName='SmartMetadata'
                                                 taskId={SmartTaxonomyItem?.Id}
                                                 RequiredListIds={props?.AllList}
                                                 siteUrls={props?.AllList?.SPSitesListUrl}
                                                 listId={props?.AllList?.SmartMetadataListID}
                                             />}
-                                 
+                                        </div>
                                     </span>
                                 </div>
                             </div>
@@ -1289,7 +1369,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                 <li key={index} onClick={() => handleItemClick(item)}>
                                     <a target="_blank" >{item}</a>
                                 </li>
-                        ))}
+                            ))}
                         </ul>
                     </div>
                 </div>

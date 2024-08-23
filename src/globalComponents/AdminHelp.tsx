@@ -177,7 +177,7 @@ return (
           className="pull-right"
           target="_blank"
           data-interception="off"
-          href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Question-Management.aspx?taskId=${componentData?.Id}`}
+          href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/QuestionManagement.aspx?taskId=${componentData?.Id}`}
         >
           Manage Questions
         </a>

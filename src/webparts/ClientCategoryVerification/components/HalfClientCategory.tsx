@@ -22,6 +22,7 @@ var siteConfig: any = []
 var AllTaskUsers: any = []
 var Idd: number;
 let AllMasterTaskItems: any = [];
+let ProtectedMasterTask: any = [];
 var allSitesTasks: any = [];
 var AllListId: any = {};
 let typeData: any = [];
@@ -1167,8 +1168,70 @@ const HalfClientCategory = (props: any) => {
         ],
         [AllMasterTasks]
     );
+
+    React.useEffect(() => {
+        let portFoliotypeCount = JSON.parse(JSON.stringify(portfolioTypeDataItemCopy?.map((taskLevelcount: any) => {
+            taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0; return taskLevelcount
+        }
+        )))
+        if (protectedView) {
+            ProtectedMasterTask?.map((elem: any) => {
+                if (elem?.Item_x0020_Type != undefined) {
+                    portFoliotypeCount?.map((type: any) => {
+                        if (elem?.Item_x0020_Type === type?.Title) {
+                            type[type.Title + 'filterNumber'] += 1;
+                            type[type.Title + 'number'] += 1;
+                        }
+                    })
+                }
+                if (elem?.subRows?.length > 0) {
+                    elem?.subRows.map((child: any) => {
+                        if (child?.Item_x0020_Type != undefined) {
+                            portFoliotypeCount?.map((type: any) => {
+                                if (child?.Item_x0020_Type === type?.Title) {
+                                    type[type.Title + 'filterNumber'] += 1;
+                                    type[type.Title + 'number'] += 1;
+                                }
+                            })
+                        }
+                    })
+                }
+            });
+            setPortFolioTypeIcon(portFoliotypeCount)
+           
+        }
+        else {
+            AllMasterTaskItems?.map((elem: any) => {
+                if (elem?.Item_x0020_Type != undefined) {
+                    portFoliotypeCount?.map((type: any) => {
+                        if (elem?.Item_x0020_Type === type?.Title) {
+                            type[type.Title + 'filterNumber'] += 1;
+                            type[type.Title + 'number'] += 1;
+                        }
+                    })
+                }
+                if (elem?.subRows?.length > 0) {
+                    elem?.subRows.map((child: any) => {
+                        if (child?.Item_x0020_Type != undefined) {
+                            portFoliotypeCount?.map((type: any) => {
+                                if (child?.Item_x0020_Type === type?.Title) {
+                                    type[type.Title + 'filterNumber'] += 1;
+                                    type[type.Title + 'number'] += 1;
+                                }
+                            })
+                        }
+                    })
+                }
+            });
+            setPortFolioTypeIcon(portFoliotypeCount)
+           
+        }
+    }, [protectedView])
+
     const filterProtectedView = (checked: any) => {
+
         if (!checked) {
+            ProtectedMasterTask = AllCSFMasterTasks?.filter((item: any) => item?.isProtectedItem == true)
             AllCSFMasterTasks = AllMasterTasks;
             BackUpAllCCTask = AllSiteTasks;
             setAllMasterTasks(AllCSFMasterTasks?.filter((item: any) => item?.isProtectedItem == true))

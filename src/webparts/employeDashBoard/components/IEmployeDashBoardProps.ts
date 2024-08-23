@@ -16,4 +16,5 @@ export interface IEmployeDashBoardProps {
   MyNotesId: '2163fbd9-b6f0-48b8-bc1b-bb48e43f188d',
   UpComingBdaySiteName: 'HR';
   AdminConfigurationListId: 'e968902a-3021-4af2-a30a-174ea95cf8fa';
+  DocumentListID: '';
 }

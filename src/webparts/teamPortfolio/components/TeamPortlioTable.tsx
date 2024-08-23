@@ -3540,25 +3540,22 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         return false;
     };
-    function deletedDataFromPortfolios(dataArray: any, idToDelete: any, siteName: any) {
-        let updatedArray = [];
-        let itemDeleted = false;
-        for (let item of dataArray) {
-            if (item.Id === idToDelete && item.siteType === siteName) {
-                itemDeleted = true;
-                continue;
-            }
-            let newItem = { ...item };
-            if (newItem.subRows && newItem.subRows.length > 0) {
-                newItem.subRows = deletedDataFromPortfolios(newItem.subRows, idToDelete, siteName);
-            }
-            updatedArray.push(newItem);
-            if (itemDeleted) {
-                return updatedArray;
-            }
-        }
-        return updatedArray;
-    }
+
+      
+
+    function deletedDataFromPortfolios(dataArray: any[], idToDelete: any, siteName: any): any[] {         
+        return dataArray?.map((item) => {
+          if (item?.Id === idToDelete && item?.siteType === siteName) {
+            return null; 
+          }
+          if (item.subRows && item.subRows.length > 0) {
+            item.subRows = deletedDataFromPortfolios(item?.subRows, idToDelete, siteName);
+          }
+      
+          return item;
+        }).filter(item => item !== null); 
+      }
+
     const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => {
         for (let i = 0; i < copyDtaArray.length; i++) {
             if ((dataToUpdate?.Portfolio?.Id === copyDtaArray[i]?.Portfolio?.Id && dataToUpdate?.Id === copyDtaArray[i]?.Id && copyDtaArray[i]?.siteType === dataToUpdate?.siteType) || (dataToUpdate?.Id === copyDtaArray[i]?.Id && copyDtaArray[i]?.siteType === dataToUpdate?.siteType)) {

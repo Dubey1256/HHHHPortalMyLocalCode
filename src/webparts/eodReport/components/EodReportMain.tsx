@@ -10,6 +10,7 @@ import HighlightableCell from "../../../globalComponents/GroupByReactTableCompon
 import { Panel, PanelType } from "office-ui-fabric-react";
 import { Avatar } from "@fluentui/react-components";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import PortfolioLeadEOD from './PortFolioLeadEOD';
 
 let forceAllAditionalTaskCall: any = [];
 let copyAllAditionalTaskData: any = [];
@@ -32,6 +33,7 @@ export const EodReportMain = (props: any) => {
     const [allAditionalTask, setallAditionalTask]: any = React.useState([])
     copyAllAditionalTaskData = allAditionalTask;
     const [loaded, setLoaded] = React.useState(false);
+    const [PortfolioLeadEODMail, setPortfolioLeadEODMail]: any = React.useState('')
     let childRefdata: any;
     let nextUniqueId = 1;
 
@@ -59,14 +61,26 @@ export const EodReportMain = (props: any) => {
     const [selectedTaskForEod, setSelectedTaskForEod]: any = React.useState([])
     const [teamMembers, setTeamMembers]: any = React.useState([])
     const [editPanelType, setEditPanelType]: any = React.useState();
+    const [taskCommentData, setCommnetData]: any = React.useState();
+    const [comments, setComments]: any = React.useState<{ [key: number]: { Achieved: string, Pending: string } }>({});
+
     // console.log(currentUserData, "currentUserDatacurrentUserData");
     AllListId = {
         MasterTaskListID: props.props.MasterTaskId,
         TaskUserListID: props.props.TaskUserListID,
         SmartMetadataListID: props.props.SmartMetadataListID,
-        siteUrl: props.props.siteUrl,
+        siteUrl: props.props.context?._pageContext?.web?.absoluteUrl,
         Context: props.props.context,
     }
+    const handleCommentChange = (index: number, type: 'Achieved' | 'Pending', value: string) => {
+        setComments((prev: any) => ({
+            ...prev,
+            [index]: {
+                ...(prev[index] || {}),
+                [type]: value,
+            },
+        }));
+    };
 
     const handleEdit = (task: any, type: number) => {
         console.log(task, "taskId");
@@ -77,7 +91,48 @@ export const EodReportMain = (props: any) => {
         setSelectedPanelTask(task)
         setEditPanelType(type)
 
+        if (typeof task?.oldOffshoreComments === 'string') {
+            try {
+                const parsedComments = JSON.parse(task.oldOffshoreComments);
+                
+                setCommnetData(parsedComments);
+            } catch (error) {
+                console.error('Error parsing OffshoreComments:', error);
+            }
+        } else {
+
+            const parsedComments = task?.oldOffshoreComments; 
+            setCommnetData(parsedComments);
+        }
+
+
         // setEditableCells({ ...editableCells, [taskId]: true });
+    };
+
+    const addNewComment = () => {
+        let parsedComments: any = []
+        if (typeof selectedPanelTask?.oldOffshoreComments === 'string') {
+            try {
+                parsedComments = JSON.parse(selectedPanelTask?.oldOffshoreComments);
+            } catch (error) {
+                console.error('Error parsing OffshoreComments:', error);
+            }
+        }
+        setCommnetData([
+            ...taskCommentData,
+            {
+                AuthorId: currentUserData,
+                Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+                AuthorImage: loginUserData[0]?.Item_x0020_Cover?.Url ?? '',
+                AuthorName: loginUserData[0]?.Title != undefined ? loginUserData[0]?.Title : props.props.context?.pageContext?._user.displayName,
+                Type: "EODReport",
+                isEodTask: false,
+                Title: panelTitle,
+                Achieved: "",
+                Pending: "",
+                ID: generateUniqueId(parsedComments)
+            }
+        ]);
     };
 
     const handleDelete = (task: any) => {
@@ -86,33 +141,7 @@ export const EodReportMain = (props: any) => {
         onDeletepress(task)
     }
 
-    const handleUpdate = (taskId: string) => {
-        setEditableCells({ ...editableCells, [taskId]: false });
-    };
-
-    const handleChangeAchieved = (taskId: string, value: string) => {
-        setAchievedValue({ ...achievedValue, [taskId]: value });
-    };
-
-    const handleChangePending = (taskId: string, value: string) => {
-        setPendingValue({ ...pendingValue, [taskId]: value });
-    };
-    // const handleDelete = (task: any) => {
-    //     setEditableCells({ ...editableCells, [taskId]: true });
-    // };
-    function getPreviousDateFormatted() {
-        // Get the current date
-        let currentDate = new Date();
-
-        // Subtract one day
-        currentDate.setDate(currentDate.getDate() - 1);
-
-        // Format the date in the desired format
-        let formattedDate = currentDate.toISOString();
-
-        return formattedDate;
-    }
-
+    
     const handleTaskSelection = (taskId: any, isChecked: boolean, task: any) => {
         if (isChecked) {
             setSelectedTasks([...selectedTasks, taskId]);
@@ -125,36 +154,36 @@ export const EodReportMain = (props: any) => {
     };
 
     // Function to handle page change
-    const handlePageChangeAdditionalTable = (pageNumber: any) => {
-        setCurrentPageAdditionalTask(pageNumber);
-    };
+    
+    const findAndUpdateOffshoreComments = (objectToUpdate: any, newOffshoreComments: any, alloffshoreComment: any) => {
 
-    const handlePageChange = (pageNumber: any) => {
-        setCurrentPageEoDReport(pageNumber);
-    };
-
-    const findAndUpdateOffshoreComments = (objectToUpdate: any, newOffshoreComments: any,alloffshoreComment:any) => {
         allTodayModifiedTask.map((item: any) => {
             if (item.ID === objectToUpdate.ID) {
                 item.OffshoreComments = [...alloffshoreComment];
-                item.Achieved = newOffshoreComments?.Achieved;
-                item.Pending = newOffshoreComments?.Pending;
-              
+                const todayComments = alloffshoreComment?.filter(
+                    (comment: { Created: any }) => isTodayCreated(comment?.Created)
+                  );
+                  item.Achieved = todayComments?.map((comment: { Achieved: any }) => comment.Achieved).join(', ');
+                  item.Pending = todayComments?.map((comment: { Pending: any }) => comment.Pending).join(', ');
+                   item.oldOffshoreComments = [...alloffshoreComment]
             }
         });
-
         copyAllAditionalTaskData.map((item: any) => {
-            if (item.ID === objectToUpdate.ID) {
-                item.OffshoreComments =[...alloffshoreComment];
-                item.Achieved = newOffshoreComments?.Achieved;
-                item.Pending = newOffshoreComments?.Pending;
-                
+            if (item?.ID === objectToUpdate?.ID) {
+                item.OffshoreComments = [...alloffshoreComment];
+                const todayComments = alloffshoreComment?.filter(
+                    (comment: { Created: any }) => isTodayCreated(comment?.Created)
+                  );
+                  item.Achieved = todayComments?.map((comment: { Achieved: any }) => comment.Achieved).join(', ');
+                  item.Pending = todayComments?.map((comment: { Pending: any }) => comment.Pending).join(', ');
+                item.oldOffshoreComments = [...alloffshoreComment]
             }
-        });
+        })
+
         setAllTodayModifiedTask(allTodayModifiedTask);
         if (copyAllAditionalTaskData?.length > 0) {
             forceAllAditionalTaskCall = [];
-            forceAllAditionalTaskCall = forceAllAditionalTaskCall.concat(copyAllAditionalTaskData);
+            forceAllAditionalTaskCall = forceAllAditionalTaskCall?.concat(copyAllAditionalTaskData);
             refreshData();
         }
     };
@@ -177,22 +206,19 @@ export const EodReportMain = (props: any) => {
         } else {
             OffshoreCommentsArray = selectedTaskForEod.OffshoreComments;
         }
-            if(selectedTaskForEod.CommentUniqueID!=undefined&& selectedTaskForEod.CommentUniqueID==""){
-                selectedTaskForEod.CommentUniqueID= getCommentUniqueID(selectedTaskForEod.OffshoreComments)
-            }
+        if (selectedTaskForEod.CommentUniqueID != undefined && selectedTaskForEod.CommentUniqueID == "") {
+            selectedTaskForEod.CommentUniqueID = getCommentUniqueID(selectedTaskForEod.OffshoreComments)
+        }
 
 
-        const updatedOffshoreComments:any = OffshoreCommentsArray.map((comment) => {
-            if (selectedTaskForEod.CommentUniqueID == comment.ID) {
-                return {
-                    ...comment,
-                    isEodTask: false
-                };
+        const updatedOffshoreComments = OffshoreCommentsArray.map((comment) => {
+            if (comment.hasOwnProperty('isEodTask') && isTodayCreated(comment?.Created)) {
+                return { ...comment, isEodTask: false }; // Create a new object with `isEodTask` set to false
             }
-            return comment;
+            return comment; // Return the original comment if no changes are made
         });
 
-        const updateValue = updatedOffshoreComments.find((comment: any) => comment.ID == selectedTaskForEod.CommentUniqueID) || {};
+
         const updatedTask = {
             ...selectedTaskForEod,
             OffshoreComments: updatedOffshoreComments
@@ -204,7 +230,7 @@ export const EodReportMain = (props: any) => {
         setSelectedTaskForEod([])
 
         // combinedArray.map((item: any) => {
-        updateCommentFunctionForAddToEoD(updateValue, "OffshoreComments", selectedTaskForEod?.oldOffshoreComments, selectedTaskForEod);
+        updateCommentFunctionForAddToEoD(updatedOffshoreComments, "OffshoreComments", selectedTaskForEod?.oldOffshoreComments, selectedTaskForEod);
         // })
     };
 
@@ -276,7 +302,7 @@ export const EodReportMain = (props: any) => {
             let tasks = groupedTasks[projectTitle];
             let firstTask = true;
             let lastTask = false
-            tasks.forEach((item: { Id: any; siteType: any; Title: any; Achieved: any; Pending: any; Lead: any;ProjectId:any }, index: any) => {
+            tasks.forEach((item: { Id: any; siteType: any; Title: any; Achieved: any; Pending: any; Lead: any; ProjectId: any, smartTimeTotal: any }, index: any) => {
                 let projectTitleCell = `<tr>
                     <td height="48" align="left" width="180" valign="middle" style="background: #fff;color: #333;width:180px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-left: 1px solid #EEE; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                                             ${''}
@@ -284,7 +310,7 @@ export const EodReportMain = (props: any) => {
                 if (firstTask) {
                     projectTitleCell = ` <tr>
                     <td height="48" align="left" width="180" valign="middle" style="background: #fff;color: #333;width:180px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-left: 1px solid #EEE; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
-                      <a style="color: #2F5596;" href="${siteURL}/SitePages/PX-Profile.aspx?ProjectId==${item?.ProjectId}">
+                      <a href="${siteURL}/SitePages/PX-Profile.aspx?ProjectId==${item?.ProjectId}">
                             ${projectTitle ?? ''}
                         </a>    
                    
@@ -297,19 +323,25 @@ export const EodReportMain = (props: any) => {
 
                 let taskRow = ` 
                     ${projectTitleCell}
-                    <td height="48"  width="240" valign="middle" style="background: #fff;color: #2F5596;width:220px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
-                        <a style="color: #2F5596;" href="${siteURL}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}">
+                    <td height="48"  width="240" valign="middle" style="background: #fff;color: #2F5596;width:220px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 500;padding: 0px 8px; text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                        <a  href="${siteURL}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}">
                             ${item?.Title ?? ''}
                         </a>
                     </td>
-                    <td height="48"  width="400" align="left" valign="middle" style="background: #fff;color: #333;width:350px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                    <td height="48"  width="400" align="left" valign="middle" style="background: #fff;color: #333;width:350px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 500;padding: 0px 8px;text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                         ${item.Achieved ?? 'No data available'}
                     </td>
-                    <td height="48"  width="400" align="left" valign="middle" style="background: #fff;color: #333;width:350px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                    <td height="48"  width="400" align="left" valign="middle" style="background: #fff;color: #333;width:350px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 500;padding: 0px 8px;text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                         ${item.Pending ?? 'No data available'}
                     </td>
-                    <td height="48"  width="130" valign="middle" style="background: #fff;color: #333;width:130px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
-                        ${item.Lead ?? ''}
+                    <td height="48"  width="130" valign="middle" style="background: #fff;color: #333;width:130px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 500;padding: 0px 8px;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                     <a href="${siteURL}/SitePages/Dashboard.aspx?DashBoardId=5">
+                     ${item.Lead ?? ''}
+                        </a>   
+                    
+                    </td>
+                     <td height="48"  width="130" valign="middle" style="background: #fff;color: #333;width:130px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 500;padding: 0px 8px;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                        ${item.smartTimeTotal ?? ''}
                     </td>
                 </tr>
                
@@ -320,7 +352,9 @@ export const EodReportMain = (props: any) => {
 
         let body = '';
         if (body1?.length > 0) {
-            body = `<table width="100%" bgcolor="#FAFAFA" style="background-color:#FAFAFA;margin:-18px -10px;" align="center">
+               body = PortfolioLeadEODMail+`
+            
+            <table width="100%" bgcolor="#FAFAFA" style="background-color:#FAFAFA;margin:-18px -10px;" align="center">
                 <tr>
                     <td width="100%">
                         <table width="900px" align="center" bgcolor="#fff" style="width:1350px;padding:0px 32px;background-color:#fff;">
@@ -363,8 +397,8 @@ export const EodReportMain = (props: any) => {
                                 <td width="350" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">Work Completed</td>
                                 <td width="350" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">Work  Pending</td>
                                 <td width="130" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">Portfolio Lead</td>
-                            </tr>
-                    
+                            <td width="130" height="48" align="center" valign="middle" bgcolor="#FAFAFA" style="font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">Smart time</td>
+                                </tr>       
                             <tbody>
                                 ${body1.join('')}
                             </tbody>
@@ -499,48 +533,48 @@ export const EodReportMain = (props: any) => {
 
 
     const onAddpress = () => {
-        let isPendingEmpty:any=false
-        let isAcheviedEmpty:any =false
-        let bothEmpty:any =false  
-        selectedTaskForEod.map((items:any)=>{
-            let checkEmptyComment:any; 
-            if(items?.original?.OffshoreComments!=undefined){
-               if(typeof items.original.OffshoreComments === 'string'){
-                try {
-                    checkEmptyComment = JSON.parse(items?.original?.OffshoreComments)
-                } catch (error) {
-                    console.error('Error parsing OffshoreComments:', error);
-                }
-               }else{
-                checkEmptyComment=items.original.OffshoreComments
-               }
-                let EodRoprtAvialble = checkEmptyComment?.some((comment: any) => {
-                    if (comment?.Type=="EODReport") {
-                        return true;
-                    } 
-                })
-               if(EodRoprtAvialble!=undefined && EodRoprtAvialble==true){
-                checkEmptyComment.map((comment:any)=>{
-                    if(comment.Type=="EODReport"){
-                     if(comment?.Achieved==null||comment?.Achieved ==undefined || comment?.Achieved ==''){
-                        isAcheviedEmpty=true
-                     }
-                     else if(comment?.Pending==null||comment?.Pending ==undefined || comment?.Pending ==''){
-                         isPendingEmpty=true
-                     }
+        let isPendingEmpty: any = false
+        let isAcheviedEmpty: any = false
+        let bothEmpty: any = false
+        selectedTaskForEod.map((items: any) => {
+            let checkEmptyComment: any;
+            if (items?.original?.OffshoreComments != undefined) {
+                if (typeof items.original.OffshoreComments === 'string') {
+                    try {
+                        checkEmptyComment = JSON.parse(items?.original?.OffshoreComments)
+                    } catch (error) {
+                        console.error('Error parsing OffshoreComments:', error);
                     }
-                 })
-               }else{
-                bothEmpty=true
-               }
-                
-            } else{
-                bothEmpty=true
+                } else {
+                    checkEmptyComment = items.original.OffshoreComments
+                }
+                let EodRoprtAvialble = checkEmptyComment?.some((comment: any) => {
+                    if (comment?.Type == "EODReport") {
+                        return true;
+                    }
+                })
+                if (EodRoprtAvialble != undefined && EodRoprtAvialble == true) {
+                    checkEmptyComment.map((comment: any) => {
+                        if (comment.Type == "EODReport") {
+                            if (comment?.Achieved == null || comment?.Achieved == undefined || comment?.Achieved == '') {
+                                isAcheviedEmpty = true
+                            }
+                            else if (comment?.Pending == null || comment?.Pending == undefined || comment?.Pending == '') {
+                                isPendingEmpty = true
+                            }
+                        }
+                    })
+                } else {
+                    bothEmpty = true
+                }
+
+            } else {
+                bothEmpty = true
             }
         })
-        if( isPendingEmpty == false && isAcheviedEmpty==false && bothEmpty==false){
+        if (isPendingEmpty == false && isAcheviedEmpty == false && bothEmpty == false) {
             const filterarrray = selectedTaskForEod?.map((item: any) => {
-                let OffshoreCommentsArray;
+                let OffshoreCommentsArray: any;
                 if (typeof item.original.OffshoreComments === 'string') {
                     OffshoreCommentsArray = JSON.parse(item.original.OffshoreComments);
                 }
@@ -552,24 +586,20 @@ export const EodReportMain = (props: any) => {
                     console.error('Error parsing OffshoreComments:', error);
                     // Handle the error appropriately, e.g., provide a default value or log the error
                 }
-                const updatedOffshoreComments = OffshoreCommentsArray?.map((comment: any) => {
-                    if (comment.hasOwnProperty('isEodTask')) {
-                        return {
-                            ...comment,
-                            isEodTask: true
-                        };
+
+                const updatedOffshoreComments: any = OffshoreCommentsArray.map((comment: any) => {
+                    if (comment.hasOwnProperty('isEodTask') && isTodayCreated(comment?.Created)) {
+                        return { ...comment, isEodTask: true }; // Create a new object with `isEodTask` set to false
                     }
-                    return {
-                        ...comment,
-                        isEodTask: true
-                    };
+                    return comment; // Return the original comment if no changes are made
                 });
-    
+
+
                 return {
                     ...item.original,
                     OffshoreComments: updatedOffshoreComments,
                     oldOffshoreComments: updatedOffshoreComments
-    
+
                 };
             });
             const combinedArray = [...allTodayModifiedTask, ...filterarrray];
@@ -577,20 +607,18 @@ export const EodReportMain = (props: any) => {
             setallAditionalTask(removeFromAdditionalArray)
             setAllTodayModifiedTask(combinedArray)
             setSelectedTaskForEod([])
-    
             combinedArray.map((item: any) => {
                 updateCommentFunctionForAddToEoD(item?.OffshoreComments, "OffshoreComments", item?.oldOffshoreComments, item);
             })
             childRef?.current?.setRowSelection({});
-
-        }else{
-         if(isPendingEmpty == true){
-            alert("Please fill the pending Comment")
-         }  else if(isAcheviedEmpty== true){
-            alert("Please fill the achived Comment")
-         } else if(bothEmpty == true){
-            alert("Please fill the achived and pending Comments")
-         }
+        } else {
+            if (isPendingEmpty == true) {
+                alert("Please fill the pending Comment")
+            } else if (isAcheviedEmpty == true) {
+                alert("Please fill the achived Comment")
+            } else if (bothEmpty == true) {
+                alert("Please fill the achived and pending Comments")
+            }
         }
 
     }
@@ -646,7 +674,7 @@ export const EodReportMain = (props: any) => {
                 id: "Title",
                 placeholder: "Title",
                 header: "",
-            
+
                 resetColumnFilters: false,
                 isColumnVisible: true
             }
@@ -677,7 +705,7 @@ export const EodReportMain = (props: any) => {
                 placeholder: "Achieved",
                 header: "",
                 resetColumnFilters: false,
-                size: 330,
+                size: 230,
                 isColumnVisible: true
             },
             {
@@ -693,7 +721,7 @@ export const EodReportMain = (props: any) => {
                 placeholder: "Pending",
                 header: "",
                 resetColumnFilters: false,
-                size: 330,
+                size: 230,
                 isColumnVisible: true
             },
 
@@ -755,6 +783,20 @@ export const EodReportMain = (props: any) => {
                 header: "",
                 size: 100,
                 fixedColumnWidth: true
+            },
+            {
+                accessorFn: (row) => row?.smartTimeTotal,
+                cell: ({ row, getValue }) => (
+                    <div>
+                        {row?.original?.smartTimeTotal}
+                    </div>
+                ),
+
+                id: "smartTimeTotal",
+                placeholder: "TotalTime",
+                header: "",
+                size: 60,
+                isColumnVisible: true
             },
             {
                 cell: ({ row, getValue }) => (
@@ -880,6 +922,21 @@ export const EodReportMain = (props: any) => {
                 size: 80,
                 isColumnVisible: true
             },
+            {
+                accessorFn: (row) => row?.smartTimeTotal,
+                cell: ({ row, getValue }) => (
+                    <div>
+                        {row?.original?.smartTimeTotal}
+                    </div>
+                ),
+
+                id: "smartTimeTotal",
+                placeholder: "TotalTime",
+                header: "",
+                size: 80,
+                isColumnVisible: true
+            }
+            ,
 
             {
                 cell: ({ row, getValue }) => (
@@ -1012,8 +1069,8 @@ export const EodReportMain = (props: any) => {
 
     const AddEODComment = () => {
         console.log(selectedPanelTask, "selectedPanelTask");
-        if(selectedPanelTask.CommentUniqueID!=undefined&& selectedPanelTask.CommentUniqueID==""){
-            selectedPanelTask.CommentUniqueID= getCommentUniqueID(selectedPanelTask.OffshoreComments)
+        if (selectedPanelTask.CommentUniqueID != undefined && selectedPanelTask.CommentUniqueID == "") {
+            selectedPanelTask.CommentUniqueID = getCommentUniqueID(selectedPanelTask.OffshoreComments)
         }
         let offshoreComments: any = [];
         let newId = 1;
@@ -1025,7 +1082,7 @@ export const EodReportMain = (props: any) => {
             }
         } else {
             offshoreComments = selectedPanelTask.OffshoreComments;
-        } 
+        }
         console.log("Newly generated ID:", newId);
         if (offshoreComments == undefined || offshoreComments == null || offshoreComments == "[null]") {
             newId = 1;
@@ -1046,49 +1103,9 @@ export const EodReportMain = (props: any) => {
 
             addCommentFunction(selectedPanelTask, [CommentJSON], "OffshoreComments", selectedPanelTask?.oldOffshoreComments);
         } else {
-
-            if (panelPendingComment != '' || panelAchivedComment != '') {
-                let CommentJSON ={}
-                if(selectedPanelTask?.CommentUniqueID!=undefined &&selectedPanelTask?.CommentUniqueID!=''){
-                    offshoreComments.map((comments:any)=>{
-                        if(comments?.ID==selectedPanelTask?.CommentUniqueID){
-                             CommentJSON = {
-                                    AuthorId: currentUserData,
-                                    Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
-                                    AuthorImage: loginUserData[0]?.Item_x0020_Cover?.Url ?? '',
-                                    AuthorName: loginUserData[0]?.Title != undefined ? loginUserData[0]?.Title : props.props.context?.pageContext?._user.displayName,
-                                    Type: "EODReport",
-                                    Title: selectedPanelTask?.Title ?? '',
-                                    ProjectID: selectedPanelTask?.Project?.Id ?? '',
-                                    ProjectName: selectedPanelTask?.Project?.Title ?? '',
-                                    Achieved: panelAchivedComment,
-                                    Pending: panelPendingComment,
-                                    ID: comments?.ID ?? newId,
-                                    isEodTask: editPanelType == 1 ? true : false,
-                                }
-                        }
-                    })
-                }else{
-                     CommentJSON = {
-                        AuthorId: currentUserData,
-                        Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
-                        AuthorImage: loginUserData[0]?.Item_x0020_Cover?.Url ?? '',
-                        AuthorName: loginUserData[0]?.Title != undefined ? loginUserData[0]?.Title : props.props.context?.pageContext?._user.displayName,
-                        Type: "EODReport",
-                        Title: selectedPanelTask?.Title ?? '',
-                        ProjectID: selectedPanelTask?.Project?.Id ?? '',
-                        ProjectName: selectedPanelTask?.Project?.Title ?? '',
-                        Achieved: panelAchivedComment,
-                        Pending: panelPendingComment,
-                        ID: generateUniqueId(offshoreComments) ?? newId,
-                        isEodTask: editPanelType == 1 ? true : false,
-                    }
-                }
-                // 
-                updateCommentFunction(CommentJSON, "OffshoreComments", selectedPanelTask?.oldOffshoreComments, selectedPanelTask);
-
-                console.log(CommentJSON, "CommentJSON")
-
+            if (prepareCommentJSON()?.length > 0 && taskCommentData?.some((comment:any)=>((isTodayCreated(comment?.Created)))) ) {
+                const commentJSONArray = prepareCommentJSON();
+                AddCommentFunctionToUpdateComment(commentJSONArray, "OffshoreComments", selectedPanelTask?.oldOffshoreComments, selectedPanelTask);
             }
             else {
                 newId = addUniqueIdToArray(offshoreComments);
@@ -1107,6 +1124,7 @@ export const EodReportMain = (props: any) => {
                     isEodTask: offshoreComments?.isEodTask ?? false,
 
                 }
+                AddCommentFunctionToUpdateComment([CommentJSON], "OffshoreComments", selectedPanelTask?.oldOffshoreComments, selectedPanelTask);
                 console.log(CommentJSON, "CommentJSON")
 
             }
@@ -1125,7 +1143,7 @@ export const EodReportMain = (props: any) => {
 
             }
             await web.lists.getById(selectedPanelTask?.listId).items.getById(selectedPanelTask?.ID).update(tempObject).then(() => {
-                findAndUpdateOffshoreComments(task, UpdateData[0],UpdateData)
+                findAndUpdateOffshoreComments(task, UpdateData, UpdateData)
                 alert("Successfully Submitted")
                 closePanel()
                 console.log("Background Comment Updated !!!")
@@ -1134,43 +1152,52 @@ export const EodReportMain = (props: any) => {
             console.log("Error : ", error.message)
         }
     }
-    const updateCommentFunction = async (UpdateData: any, columnName: any, oldoffshoreComments: any, task: any) => {
+
+    const AddCommentFunctionToUpdateComment = async (UpdateData: any, columnName: any, oldoffshoreComments: any, task: any) => {
         let oldoffshoreComment: any = [];
+
         try {
             let web = new Web(siteURL);
-            if (typeof oldoffshoreComments === 'string') {
-                try {
-                    oldoffshoreComment = JSON.parse(oldoffshoreComments)
-                } catch (error) {
-                    console.error('Error parsing OffshoreComments:', error);
-                }
-            } else {
-                oldoffshoreComment =oldoffshoreComments;
-            } 
-            let updatedComments = [...oldoffshoreComment];
-            if (oldoffshoreComment.length > 0) {
-                if (UpdateData.ID !=undefined) {
-                    const index = oldoffshoreComment.findIndex((comment: any) => comment.ID === UpdateData.ID);
-                    if (index !== -1) {
-                        updatedComments[index] = UpdateData;
-                    } else {
-                        updatedComments.push(UpdateData);
-                    }
-                }
-            } else {
-                updatedComments.push(UpdateData);
-            }
 
+            try {
+                oldoffshoreComment = JSON.parse(oldoffshoreComments);
+            } catch (error) {
+
+            }
+            let updatedComments: any = [...oldoffshoreComment];
+            console.log(updatedComments, "updatedComments")
+            console.log(UpdateData, "UpdateData")
+
+            if (UpdateData.length > 0) {
+                // Iterate over each comment in the UpdateData array
+                UpdateData.forEach((updateItem: any) => {
+                    if (updateItem.ID != undefined) {
+                        const index = updatedComments.findIndex((comment: any) => comment.ID === updateItem.ID);
+                        if (index !== -1) {
+                            // Update the existing comment
+                            updatedComments[index] = updateItem;
+                        } else {
+                            // Add new comment
+                            updatedComments.push(updateItem);
+                        }
+                    }
+                });
+
+            } else {
+                // If UpdateData is empty, no action needed
+            }
             let tempObject: any = {}
+
             if (columnName == "OffshoreComments") {
+
                 tempObject = {
                     OffshoreComments: updatedComments.length > 0 ? JSON.stringify(updatedComments) : null
                 }
+
             }
             try {
                 await web.lists.getById(selectedPanelTask?.listId).items.getById(selectedPanelTask?.ID).update(tempObject).then(() => {
-                    findAndUpdateOffshoreComments(task, UpdateData,updatedComments)
-
+                    findAndUpdateOffshoreComments(task, UpdateData, updatedComments)
                     alert("Successfully Submitted")
                     closePanel()
                     console.log("Background Comment Updated !!!")
@@ -1186,7 +1213,6 @@ export const EodReportMain = (props: any) => {
             return oldoffshoreComment;
         }
     }
-
     const updateCommentFunctionForAddToEoD = async (UpdateData: any, columnName: any, oldoffshoreComments: any, task: any) => {
         let oldoffshoreComment: any = [];
 
@@ -1201,19 +1227,24 @@ export const EodReportMain = (props: any) => {
 
         try {
             let web = new Web(siteURL);
-
-            
-            let updatedComments = [...oldoffshoreComment];
-            if (oldoffshoreComment.length > 0) {
-                if (UpdateData?.ID!=undefined) {
-                    const index = oldoffshoreComment.findIndex((comment: any) => comment.ID === UpdateData.ID);
-                    if (index !== -1) {
-                        updatedComments[index] = UpdateData;
-                    } else {
-                        updatedComments.push(UpdateData);
+            let updatedComments: any = [...oldoffshoreComment];
+            // s
+            if (UpdateData?.length > 0) {
+                // Iterate over each comment in the UpdateData array
+                UpdateData?.forEach((updateItem: any) => {
+                    if (updateItem.ID != undefined) {
+                        const index = updatedComments?.findIndex((comment: any) => comment.ID === updateItem.ID);
+                        if (index !== -1) {
+                            // Update the existing comment
+                            updatedComments[index] = updateItem;
+                        } else {
+                            // Add new comment
+                            updatedComments?.push(updateItem);
+                        }
                     }
-                }
-            } else {
+                });
+            }
+            else {
                 updatedComments.push(...UpdateData);
             }
 
@@ -1260,10 +1291,10 @@ export const EodReportMain = (props: any) => {
     //  Code by Udbahv
     //  const getPortfolioLead=(timeEntry:any)=>{
     //     let lead=''
-    
+
     //     allUsers.map((user:any)=>{
     //         if(timeEntry?.AuthorId==user?.AssingedToUser?.Id){
-           
+
     //            return lead= user?.Approver?.map((teamMember: { Title: any; }) => teamMember.Title).join(', ');
     //         }
     //     })
@@ -1279,17 +1310,38 @@ export const EodReportMain = (props: any) => {
         } else { authImg.Suffix = user[0]?.Suffix }
         return user ? authImg : null;
     };
-    const getAllLeads=(alluser:any)=>{
-        let leads:any=[]
-        alluser?.map((user:any)=>{
-           if(user.app){
+    const getAllLeads = (allUsers: any[]) => {
+        const uniqueLeads = new Set<string>();
+        const leads: any = [];
+        allUsers?.forEach((user: any) => {
+            if (user.UserGroup?.Title == "Portfolio Lead Team") {
+                uniqueLeads.add(user?.AssingedToUserId);
+            }
+            user?.Approver?.forEach((approver: any) => {
+                uniqueLeads.add(approver?.Id);
+            });
+        });
 
-           } 
-        }
-            
-        )
+        allUsers?.forEach((user: any) => {
+            if (uniqueLeads.has(user?.AssingedToUserId)) {
+                leads.push(user);
+            }
+        });
+        leads.map((Leads: any) => {
+            Leads.Childs = []
+            allUsers.map((user: any) => {
+                user?.Approver?.forEach((approver: any) => {
+                    if (Leads.AssingedToUserId == approver.Id) {
+                        Leads.Childs.push(user)
+                    }
+                });
+            })
 
-    }
+        })
+
+
+        return leads;
+    };
     const getAllTodayModifiedTask = async (siteconfig: any[]) => {
         let filteredData: any = []
         console.log(timesheetListConfig, "timesheetListConfig")
@@ -1304,7 +1356,7 @@ export const EodReportMain = (props: any) => {
                 try {
                     const web = new Web(siteURL);
                     const res: any = await web.lists.getById(listIds?.listId)
-                        .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
+                        .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "TotalTime", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
                             "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                             "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
                             "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
@@ -1331,7 +1383,7 @@ export const EodReportMain = (props: any) => {
                     else if (loginUserInfo[0]?.UserGroup?.Title == "QA Team") {
                         filteredData = res;
                     }
-                    else if (loginUserInfo[0]?.AssingedToUserId=='328') {
+                    else if (loginUserInfo[0]?.AssingedToUserId == '328') {
                         filteredData = res;
                     }
                     else if (loginUserInfo[0]?.UserGroup?.Title == "Portfolio Lead Team" || loginUserInfo[0]?.UserGroup?.Title == "Design Team") {
@@ -1355,6 +1407,7 @@ export const EodReportMain = (props: any) => {
                             item.ProjectTitle = item?.Project?.Title;
                             item.ProjectId = item?.Project?.Id;
                             item.projectStructerId = item?.Project?.PortfolioStructureID
+                           
                             const title = item?.Project?.Title || '';
                             const formattedDueDate = Moment(item?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
                             item.joinedData = [];
@@ -1362,13 +1415,13 @@ export const EodReportMain = (props: any) => {
                                 item.joinedData.push(`Project ${item?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                             }
                         }
+                        item.smartTimeTotal = item?.TotalTime != undefined ? (item?.TotalTime / 60).toFixed(2) : '';
                         item.ID = item?.ID;
                         item.listId = listIds?.listId;
                         item.siteType = listIds?.Title;
-
                         item.Achieved = getTodayAchievedOrPending(item?.OffshoreComments, 1)
                         item.Pending = getTodayAchievedOrPending(item?.OffshoreComments, 2)
-                        item.CommentUniqueID=getCommentUniqueID(item?.OffshoreComments)
+                        item.CommentUniqueID = getCommentUniqueID(item?.OffshoreComments)
                         // item.Lead = item.ResponsibleTeam?.[0]?.Title
                         item.Lead = item.ResponsibleTeam?.map((teamMember: { Title: any; }) => teamMember.Title).join(', ');
                         item.TaskCategories = item?.TaskCategories?.map((categories: { Title: any; }) => categories?.Title).join(', ')
@@ -1381,12 +1434,12 @@ export const EodReportMain = (props: any) => {
                                 item.Author.suffix = authImg.Suffix
                             }
                         }
+
                         item.ProjectId = item?.Project?.Id
                         item.oldOffshoreComments = item?.OffshoreComments
-
                         if (item?.OffshoreComments != null) {
                             const offshoreCommentsArray = JSON.parse(item.OffshoreComments);
-                            const filteredComments = offshoreCommentsArray?.filter((comment: { Type: string, isEodTask: boolean ,Created:any}) => comment?.Type === "EODReport" && comment?.isEodTask && isTodayCreated(comment?.Created) );
+                            const filteredComments = offshoreCommentsArray?.filter((comment: { Type: string, isEodTask: boolean, Created: any }) => comment?.Type === "EODReport" && comment?.isEodTask && isTodayCreated(comment?.Created));
                             console.log(filteredComments, "filteredComments");
                             if (filteredComments.length > 0) {
                                 todayAllEODTaskData.push(item);
@@ -1539,7 +1592,7 @@ export const EodReportMain = (props: any) => {
                 const filterTimesheetTask = AllTaskTimeEntries.flatMap((item: any) =>
                     checkTimeEntrySite(item, todayAllTaskData)
                 );
-                 todayAllEODTaskData = AllTaskTimeEntries.flatMap((item: any) =>
+                todayAllEODTaskData = AllTaskTimeEntries.flatMap((item: any) =>
                     checkTimeEntrySite(item, todayAllEODTaskData)
                 );
                 const uniqueTasks = filterTimesheetTask.reduce((acc: { find: (arg0: (item: any) => boolean) => any; concat: (arg0: any[]) => any; }, current: { ID: any; siteType: any }) => {
@@ -1562,37 +1615,42 @@ export const EodReportMain = (props: any) => {
                 }, []);
                 // console.log(uniqueFilterTimesheetTask)
                 setallAditionalTask(uniqueTasks)
-                
+
                 setAllTodayModifiedTask(uniqueTasks2)
+
+
+
+                // console.log(uniqueFilterTimesheetTask)
+
             }
         }
     }
 
-   const getCommentUniqueID=(offShoreComment:any)=>{
-  let uniqueCommentId=''
-    if (offShoreComment == null) {
-        return uniqueCommentId;
-    }else{
-        let commentsArray:any=[]
-        if (typeof offShoreComment === 'string') {
-            try {
-                commentsArray = JSON.parse(offShoreComment);
-            } catch (error) {
-                console.error('Error parsing OffshoreComments:', error);
-            }
+    const getCommentUniqueID = (offShoreComment: any) => {
+        let uniqueCommentId = ''
+        if (offShoreComment == null) {
+            return uniqueCommentId;
         } else {
-            commentsArray = offShoreComment;
-        }
-        commentsArray.map((comment:any)=>{
-            if( isTodayCreated(comment?.Created)){
-                uniqueCommentId=comment.ID
-                return  uniqueCommentId
+            let commentsArray: any = []
+            if (typeof offShoreComment === 'string') {
+                try {
+                    commentsArray = JSON.parse(offShoreComment);
+                } catch (error) {
+                    console.error('Error parsing OffshoreComments:', error);
+                }
+            } else {
+                commentsArray = offShoreComment;
             }
-        })
-    }
-    return uniqueCommentId
+            commentsArray.map((comment: any) => {
+                if (isTodayCreated(comment?.Created)) {
+                    uniqueCommentId = comment.ID
+                    return uniqueCommentId
+                }
+            })
+        }
+        return uniqueCommentId
 
-   }
+    }
 
 
     function getTodayAchievedOrPending(offshoreComments: any | null | undefined, type: number): string {
@@ -1636,7 +1694,40 @@ export const EodReportMain = (props: any) => {
         // Join results into a single string
         return results?.join(', ') || ''; // You can choose a different delimiter if needed
     }
-
+    const prepareCommentJSON = () => {
+        console.log(taskCommentData, "taskCommentData");
+        console.log(comments, "comments");
+    
+        return (
+            taskCommentData?.map(
+                (item: { Title: any; Achieved: any; Pending: any;Created:any;ID: string; Project: { Id: string; Title: string } }, index: React.Key) => {
+                    if (item.hasOwnProperty('isEodTask') && isTodayCreated(item?.Created)) {
+                        return {
+                            AuthorId: currentUserData,
+                            Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+                            AuthorImage: loginUserData[0]?.Item_x0020_Cover?.Url ?? '',
+                            AuthorName: loginUserData[0]?.Title !== undefined ? loginUserData[0]?.Title : props.props.context?.pageContext?._user.displayName,
+                            Type: "EODReport",
+                            Title: selectedPanelTask?.Title ?? '',
+                            ProjectID: selectedPanelTask?.Project?.Id ?? '',
+                            ProjectName: selectedPanelTask?.Project?.Title ?? '',
+                            Achieved: comments[index]?.Achieved ?? item.Achieved,
+                            Pending: comments[index]?.Pending ?? item.Pending,
+                            ID: item.ID,
+                            isEodTask: editPanelType === 1, // Setting the `isEodTask` property based on `editPanelType`
+                        };
+                    }
+                    return item; // Return the original item if conditions are not met
+                }
+            ) ?? [] // Ensure that if `taskCommentData` is undefined, an empty array is returned
+        );
+    };
+    const handleDeleteComment = (index: any) => {
+        // Create a new array excluding the comment at the given index
+        const updatedComments = taskCommentData.filter((_: any, i: any) => i !== index);
+        // Update the state with the new array
+        setCommnetData(updatedComments);
+    };
 
     const callBackData = React.useCallback((checkData: any) => {
         console.log(checkData, "checkData");
@@ -1678,14 +1769,42 @@ export const EodReportMain = (props: any) => {
     const closePanel = () => {
         setShowpanel(false)
     }
+    const callbackPortfolioLeadEOD= React.useCallback((mailHtml:any)=>{
+        setPortfolioLeadEODMail(mailHtml)
+    },[])
     return (
         <div>
-            <h2>EOD Report</h2>
+            <div className=''>
+               
+
+               <section className="Tabl1eContentSection row taskprofilepagegreen">
+              
+                   <div className="container-fluid p-0">
+                       <section className="ContentSection">
+                      
+                           <div className="container p-0 mt-3">
+                           <h2 className='heading'>All Portfolio Lead</h2>
+                               <div className="Alltable">
+                                   <div className="col-sm-12 p-0 smart">
+                                       <div>
+                                           <div>{ allUsers?.length > 0 && timesheetListConfig?.length > 0 && < PortfolioLeadEOD  callbackPortfolioLeadEOD={callbackPortfolioLeadEOD} AllUsers={allUsers}timesheetListConfig={timesheetListConfig} AllListId={AllListId}/>}
+                                       
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                       </section>
+                   </div>
+               </section>
+           </div>
+            
             <section className="Tabl1eContentSection row taskprofilepagegreen">
                 <div className="container-fluid p-0">
-                    <section className="TableSection">
-                        <div className="container p-0">
-                            <div className="Alltable mt-2 ">
+                    <section className="ContentSection">
+                        <div className="container p-0 mt-3">
+                        <h2 className='heading'>EOD Report</h2>
+                            <div className="Alltable">
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
@@ -1698,6 +1817,7 @@ export const EodReportMain = (props: any) => {
                                                 fixedWidth={true}
                                                 tableId="EodReport"
                                                 multiSelect={true}
+                                                  wrapperHeight="400px"
                                                 customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtonsForEmail}
 
                                             />
@@ -1709,12 +1829,13 @@ export const EodReportMain = (props: any) => {
                     </section>
                 </div>
             </section>
-            <h2>Additional Report</h2>
+            
             <section className="Tabl1eContentSection row taskprofilepagegreen">
                 <div className="container-fluid p-0">
-                    <section className="TableSection">
-                        <div className="container p-0">
-                            <div className="Alltable mt-2 ">
+                    <section className="ContentSection">
+                        <div className="container p-0 mt-3">
+                        <h2 className='heading'>Additional Report</h2>
+                            <div className="Alltable">
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
@@ -1728,6 +1849,7 @@ export const EodReportMain = (props: any) => {
                                                 tableId="EodReportAdditional"
                                                 customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons}
                                                 multiSelect={true}
+                                                  wrapperHeight="400px"
 
                                             />
                                         </div>
@@ -1747,40 +1869,79 @@ export const EodReportMain = (props: any) => {
                 onDismiss={closePanel}
                 isBlocking={false}
             >
-                <td>{panelTitle}</td>
                 <div className="parentDiv p-0 pt-1">
-                    <div
-                    >
-                        <h4>Achived Comment</h4>
+                    {taskCommentData != undefined && taskCommentData?.length >= 1 && taskCommentData?.map((item: { AuthorName: string, Achieved: string | number | readonly string[]; Pending: string | number | readonly string[]; Title: any,Created:any }, index: any) => (
+                         item?.hasOwnProperty('isEodTask') && isTodayCreated(item?.Created)
+                         &&
+                        <div key={index}>
+                            <td className="strong">{item?.Title} -- Comment By {item?.AuthorName != undefined ? item?.AuthorName : ''}</td>
+                            <div>
+                                <div className='f-15'>Achieved Comment</div>
+                                <textarea
+                                    className="full-width"
+                                    id={`txtUpdateCommentAchieved-${index}`}
+                                    rows={6}
+                                    defaultValue={item.Achieved}
+                                    onChange={(e) => handleCommentChange(index, 'Achieved', e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <div className='f-15'>Pending Comment</div>
+                                <textarea
+                                    className="full-width"
+                                    id={`txtUpdateCommentPending-${index}`}
+                                    rows={6}
+                                    defaultValue={item.Pending}
+                                    onChange={(e) => handleCommentChange(index, 'Pending', e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <button onClick={() => handleDeleteComment(index)} className="btn btn-danger">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    ))}
 
-                        <textarea className="full-width"
-                            id="txtUpdateComment"
-                            rows={6}
-                            defaultValue={panelAchivedComment}
-                            onChange={(e) => setPanelAchivedComment(e.target.value)}
-                        >
-                        </textarea>
-                    </div>
-                    <div
-                    >
-                        <h4>Pending Comment</h4>
-                        <textarea className="full-width"
-                            id="txtUpdateComment"
-                            rows={6}
-                            defaultValue={panelPendingComment}
-                            onChange={(e) => setPanelPendingComment(e.target.value)}
-                        >
-                        </textarea>
-                    </div>
-                    <footer className="d-flex justify-content-between ms-3 float-end">
+                    {(taskCommentData == undefined || taskCommentData == null || taskCommentData?.length == 0||taskCommentData?.every((comment:any)=>((isTodayCreated(comment?.Created)==false)))) &&
                         <div>
-                            <button onClick={() => onPanelSaveButtonClick()} className="btn btnPrimary mx-1">
+                            <td>{panelTitle}</td>
+                            <div>
+                                <div className='f-15'>Achived Comment</div>
+                                <textarea
+                                    className="full-width"
+                                    id={`txtUpdateCommentAchieved-1}`}
+                                    rows={6}
+                                    defaultValue={''}
+                                    onChange={(e) => setPanelAchivedComment(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <div className='f-15'>Pending Comment</div>
+                                <textarea
+                                    className="full-width"
+                                    id={`txtUpdateCommentPending-1`}
+                                    rows={6}
+                                    defaultValue={''}
+                                    onChange={(e) => setPanelPendingComment(e.target.value)}
+                                />
+                            </div>
+
+
+                        </div>
+                    }
+                    <footer className="d-flex justify-content-between ms-3 float-end">
+                        <div className='alignCenter ml-auto'>
+                            <span onClick={addNewComment} className="svg__iconbox svg__icon--Plus hreflink" title='Add'>
+                                Add
+                            </span>
+                            <button onClick={onPanelSaveButtonClick} className="btn btnPrimary mx-1">
                                 Save
                             </button>
                             <button className='btn btn-default' onClick={closePanel}>
                                 Cancel
                             </button>
-
+                         
                         </div>
                     </footer>
                 </div>
