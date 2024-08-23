@@ -677,9 +677,11 @@ export default function SmartMetadataEditPopup(props: any) {
         setTaggedsmartFilterArray(selectfilterarray);
     };
     const closePopupSmartPopup = () => {
-        if (TaggedsmartFilterArray?.length === 0) {
+        if (FilterTypeData.length === 0 && TaggedsmartFilterArray?.length !== 0) {
             setTaggedsmartFilterArray([]);
+            selectfilterarray=[];
         }
+        rerender();
         setopensmartmetapopup(false);
     }
     const saveselectedData = () => {
