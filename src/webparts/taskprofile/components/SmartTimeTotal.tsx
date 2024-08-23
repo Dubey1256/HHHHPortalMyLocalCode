@@ -39,7 +39,7 @@ const SmartTimeTotalFunction = (item: any) => {
 
         var select = "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres + "";
         var count = 0;
-        if (items.siteType == "Migration" || items.siteType == "ALAKDigital") {
+        if (items.siteType == "Migration" || items.siteType == "ALAKDigital" || items.siteType == "ILF") {
             var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select + "" }]
             //TasksTimesheet2
 
