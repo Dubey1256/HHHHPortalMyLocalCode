@@ -25,7 +25,8 @@ export interface IEmployeDashBoardWebPartProps {
   UpComingBirthdayId: 'a7b80424-e5e1-47c6-80a1-0ee44a70f92c';
   MyNotesId: '2163fbd9-b6f0-48b8-bc1b-bb48e43f188d',
   UpComingBdaySiteName: 'HR';
-  AdminConfigurationListId: 'e968902a-3021-4af2-a30a-174ea95cf8fa'
+  AdminConfigurationListId: 'e968902a-3021-4af2-a30a-174ea95cf8fa',
+  TimeEntry:boolean
 
 }
 
@@ -56,6 +57,7 @@ export default class EmployeDashBoardWebPart extends BaseClientSideWebPart<IEmpl
         UpComingBdaySiteName: 'HR',
         AdminConfigurationListId: this.properties.AdminConfigurationListId,
         DocumentListID: this.properties.DocumentListID,
+        TimeEntry: this.properties.TimeEntry
       }
     );
 
@@ -163,7 +165,6 @@ export default class EmployeDashBoardWebPart extends BaseClientSideWebPart<IEmpl
                 PropertyPaneTextField("DocumentListID", {
                   label: "DocumentListID"
                 }),
-
                 // PropertyPaneTextField('MasterTaskListID', {
                 //   label: "MasterTaskListID"
                 // }),
@@ -176,12 +177,9 @@ export default class EmployeDashBoardWebPart extends BaseClientSideWebPart<IEmpl
                 // PropertyPaneTextField('TaskTimeSheetListID', {
                 //   label: "TaskTimeSheetListID"
                 // }),
-                // PropertyPaneTextField('TimeEntry', {
-                //   label: "TimeEntry"
-                // }),
-                // PropertyPaneTextField('SiteCompostion', {
-                //   label: "SiteCompostion"
-                // }),
+                PropertyPaneTextField('TimeEntry', {
+                  label: "TimeEntry"
+                }),
               ]
             }
           ]

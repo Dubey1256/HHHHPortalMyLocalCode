@@ -31,6 +31,7 @@ import { PeoplePicker, PrincipalType } from '@pnp/spfx-controls-react/lib/People
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
+import PageLoader from '../../../globalComponents/pageLoader';
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -46,6 +47,7 @@ let sourceUser: any;
 let UpdatedItem: any = [];
 let portfolioColor: any = '';
 let SelectedWorkingDates: any = [];
+let onClickTimeSheetsData: any = [];
 let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1, taskStatusComment: "For Approval" }, { value: 2, taskStatusComment: "Follow Up" }, { value: 3, taskStatusComment: "Approved" },
 { value: 4, taskStatusComment: "Checking" }, { value: 5, taskStatusComment: "Acknowledged" }, { value: 8, taskStatusComment: "Priority Check" }, { value: 9, taskStatusComment: "Ready To Go" },
 { value: 10, taskStatusComment: "working on it" }, { value: 70, taskStatusComment: "Re-Open" }, { value: 75, taskStatusComment: "Deployment Pending" }, { value: 80, taskStatusComment: "In QA Review" },
@@ -53,6 +55,7 @@ let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1,
 const TaskStatusTbl = (Tile: any) => {
   const childRef = React.useRef<any>();
   const ContextData: any = React.useContext(myContextValue);
+  const [progressBar, setprogressBar] = useState(false)
   const [IsShowAllUser, setIsShowAllUser] = useState(true);
   const [state, rerender] = React.useReducer(() => ({}), {});
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
@@ -77,6 +80,7 @@ const TaskStatusTbl = (Tile: any) => {
   const [SelectedWorkingDate, setSelectedWorkingDate] = React.useState<any>(false);
   const [SelectedDateRange, setSelectedDateRange] = React.useState<any>([]);
   const [selectedTimeReport, setSelectedTimeReport] = React.useState('This Week');
+  const [TotalTime, setTotalTime] = React.useState<any>(ContextData?.totalTime != undefined ? ContextData?.totalTime : 0);
   const dashBoardbulkUpdateCallBack = React.useCallback(async (configTableId: any, data: any) => {
     setBulkUpdateDataCallBack(data);
     setBulkUpdateDataTableId(configTableId);
@@ -93,6 +97,9 @@ const TaskStatusTbl = (Tile: any) => {
       rerender();
     }
   }, [bulkUpdateDataCallBack, bulkUpdateDataTableId]);
+  useEffect(() => {
+    setTotalTime(ContextData?.totalTime)
+  }, [ContextData?.totalTime != undefined && ContextData?.totalTime != '']);
   useEffect(() => {
     setSelectedUserId(ContextData?.currentUserId)
   }, [ContextData?.currentUserId]);
@@ -135,9 +142,9 @@ const TaskStatusTbl = (Tile: any) => {
     MasterTaskListID: ContextData?.propsValue?.MasterTaskListID,
     siteUrl: ContextData?.siteUrl,
     TaskTimeSheetListID: ContextData?.propsValue?.TaskTimeSheetListID,
-    isShowTimeEntry: true,
     isShowSiteCompostion: true,
-    Context: ContextData?.propsValue?.Context
+    Context: ContextData?.propsValue?.Context,
+    isShowTimeEntry: ContextData?.propsValue?.TimeEntry == 'true' ? true : false
   };
   if (AllapprovalTask && AllapprovalTask.length > 0 && flagApproval != true) {
     flagApproval = true
@@ -1751,15 +1758,17 @@ const TaskStatusTbl = (Tile: any) => {
           fixedColumnWidth: true,
           cell: ({ row, index }: any) => (
             <div className="alignCenter gap-1 pull-right approvelicon position-relative" >
-              {item?.Status != "My TimSheet" ? <>
-                <span title="Approve" onClick={() => SaveApprovalRejectPopup('Approved', row?.original, undefined)} ><MdOutlineGppGood style={{ color: "#008f47", fontSize: "22px" }} /> </span>
-                <span title="Reject" data-toggle="tooltip" data-placement="bottom" id={`Reply-${row?.index}`} onClick={() => openRejectPopup(row?.original)}><MdGppBad style={{ color: "#dc3545", fontSize: "22px" }} /></span>
+              {item?.Status != 'TimeEntryWebpart' && <>
+                {item?.Status != "My TimSheet" ? <>
+                  <span title="Approve" onClick={() => SaveApprovalRejectPopup('Approved', row?.original, undefined)} ><MdOutlineGppGood style={{ color: "#008f47", fontSize: "22px" }} /> </span>
+                  <span title="Reject" data-toggle="tooltip" data-placement="bottom" id={`Reply-${row?.index}`} onClick={() => openRejectPopup(row?.original)}><MdGppBad style={{ color: "#dc3545", fontSize: "22px" }} /></span>
+                </>
+                  :
+                  <>
+                    <span title="Send For Approval" className="svg__iconbox svg__icon--forApproval hreflink" onClick={() => SaveApprovalRejectPopup('For Approval', row?.original, 'For Approval')}></span>
+                  </>}
               </>
-                :
-                <>
-                  <span title="Send For Approval" className="svg__iconbox svg__icon--forApproval hreflink" onClick={() => SaveApprovalRejectPopup('For Approval', row?.original, 'For Approval')}></span>
-                </>}
-
+              }
             </div>
           )
         },]
@@ -2138,7 +2147,7 @@ const TaskStatusTbl = (Tile: any) => {
   const ShowCustomDataHeaderTimeSheet = (config: any) => {
     return (
       <div>
-        {config?.WebpartTitle}
+        {selectedTimeReport}'s Time Entry
         {config?.ShowTitleInHeader === true && (
           <>  {' - '}
             <span>
@@ -2146,7 +2155,7 @@ const TaskStatusTbl = (Tile: any) => {
             </span>
           </>
         )}
-        {` (${config?.Tasks?.length})`}
+        {TotalTime != undefined && TotalTime != '' ? ` (${config?.Tasks?.length}) (${TotalTime.toFixed(2)} Hours)` : ''}
       </div>
     );
   }
@@ -2390,11 +2399,11 @@ const TaskStatusTbl = (Tile: any) => {
                     </div>
                     <div className="Alltable" >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
-                        <GlobalCommanTable multiWebPart={true} showingDataCoustom={config?.ShowTitleInHeader === true ? ShowCustomDataHeaderTimeSheet(config) : `${config?.WebpartTitle} (${config?.Tasks?.length})`} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        <GlobalCommanTable smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true} multiWebPart={true} showingDataCoustom={config?.ShowTitleInHeader === true ? ShowCustomDataHeaderTimeSheet(config) : `${config?.WebpartTitle} (${config?.Tasks?.length})`} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                           pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                       )}
                       {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
-                        <GlobalCommanTable multiWebPart={true} showingDataCoustom={config?.ShowTitleInHeader === true ? ShowCustomDataHeaderTimeSheet(config) : `${config?.WebpartTitle} (${config?.Tasks?.length})`} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        <GlobalCommanTable smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true} multiWebPart={true} showingDataCoustom={config?.ShowTitleInHeader === true ? ShowCustomDataHeaderTimeSheet(config) : `${config?.WebpartTitle} (${config?.Tasks?.length})`} wrapperHeight="300px" customHeaderButtonAvailable={true} customTableHeaderButtons={customTimeSheetTableHeaderButtons(config)} ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                           pageSize={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.tablePageSize : ''} showPagination={config?.configurationData != undefined && config?.configurationData[0] != undefined ? config?.configurationData[0]?.showPageSizeSetting?.showPagination : ''} />
                       )}
                     </div>
@@ -2441,8 +2450,162 @@ const TaskStatusTbl = (Tile: any) => {
       </>
     );
   };
+  // Get Week Start Date 
+  function getStartingDate(startDateOf: any) {
+    const startingDate = new Date();
+    let formattedDate = startingDate;
+    if (startDateOf == 'This Week') {
+      startingDate.setDate(startingDate.getDate() - startingDate.getDay());
+      formattedDate = startingDate;
+    } else if (startDateOf == 'Today') {
+      formattedDate = startingDate;
+    } else if (startDateOf == 'Yesterday') {
+      startingDate.setDate(startingDate.getDate() - 1);
+      formattedDate = startingDate;
+    } else if (startDateOf == 'This Month') {
+      startingDate.setDate(1);
+      formattedDate = startingDate;
+    } else if (startDateOf == 'Last Month') {
+      const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
+      const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
+      var change = (Moment(startingDateOfLastMonth).add(22, 'days').format())
+      var b = new Date(change)
+      formattedDate = b;
+    } else if (startDateOf == 'Last Week') {
+      const lastWeek = new Date(startingDate.getFullYear(), startingDate.getMonth(), startingDate.getDate() - 7);
+      const startingDateOfLastWeek = new Date(lastWeek.getFullYear(), lastWeek.getMonth(), lastWeek.getDate() - lastWeek.getDay() + 1);
+      formattedDate = startingDateOfLastWeek;
+    }
+
+    return formattedDate;
+  }
+  function getEndingDate(startDateOf: any): Date {
+    const endingDate = new Date();
+    let formattedDate = endingDate;
+    if (startDateOf === 'This Week') {
+      endingDate.setDate(endingDate.getDate() + (6 - endingDate.getDay()));
+      formattedDate = endingDate;
+    } else if (startDateOf === 'Today') {
+      formattedDate = endingDate;
+    } else if (startDateOf === 'Yesterday') {
+      endingDate.setDate(endingDate.getDate() - 1);
+      formattedDate = endingDate;
+    } else if (startDateOf === 'This Month') {
+      endingDate.setMonth(endingDate.getMonth() + 1, 0);
+      formattedDate = endingDate;
+    } else if (startDateOf === 'Last Month') {
+      const lastMonth = new Date(endingDate.getFullYear(), endingDate.getMonth() - 1);
+      endingDate.setDate(0);
+      formattedDate = endingDate;
+    } else if (startDateOf === 'Last Week') {
+      const lastWeek = new Date(endingDate.getFullYear(), endingDate.getMonth(), endingDate.getDate() - 7);
+      endingDate.setDate(lastWeek.getDate() - lastWeek.getDay() + 7);
+      formattedDate = endingDate;
+    }
+
+    return formattedDate;
+  }
+  //End
   const currentUserTimeEntry = (start: any) => {
+    let totalTime: any = 0;
+    setprogressBar(true);
     setSelectedTimeReport(start);
+    const startDate = getStartingDate(start);
+    const endDate = getEndingDate(start);
+    const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
+    const endDateMidnight = new Date(endDate.setHours(0, 0, 0, 0));
+    let AllTimeSheet: any = ContextData?.onLoadeTimeSheetsData;
+    if (onClickTimeSheetsData != undefined && onClickTimeSheetsData != '' && Object.keys(onClickTimeSheetsData)?.length > 0)
+      AllTimeSheet = onClickTimeSheetsData;
+    // Create a map for quick lookup
+    const timeSheetMap = new Map<string, any>();
+    // Populate the map with all time sheets
+    Object.keys(AllTimeSheet || {}).forEach(key => {
+      const sheet = AllTimeSheet[key];
+      if (sheet?.additionalTimeEntry) {
+        timeSheetMap.set(key, sheet);
+      }
+    });
+    DashboardConfig?.forEach((config: any) => {
+      if (config?.Status === "TimeEntryWebpart") {
+        config.Tasks = [];
+        ContextData?.AllFilterTask?.forEach((task: any) => {
+          const key = task?.siteType?.toLowerCase() === "offshore tasks" ? `TaskOffshore Tasks${task.Id}` : `Task${task?.siteType}${task.Id}`;
+          const sheet = timeSheetMap.get(key);
+          if (sheet && sheet?.Id === task.Id && sheet?.siteType === task.siteType) {
+            sheet.additionalTimeEntry?.forEach((timeEntry: any, index: any) => {
+              timeEntry.SiteIcon = task?.SiteIcon;
+              timeEntry.TaskID = task?.TaskID;
+              timeEntry.Site = task?.siteType;
+              timeEntry.TaskItem = task;
+              timeEntry.timeSheetsDescriptionSearch = timeEntry?.Description || '';
+              timeEntry.UpdatedId = sheet?.Id;
+              // Normalize ID fields
+              if (!timeEntry.Id && timeEntry.ID) timeEntry.Id = timeEntry.ID;
+              if (!timeEntry.ID && timeEntry.Id) timeEntry.ID = timeEntry.Id;
+              if (!timeEntry.Id && !timeEntry.ID) {
+                timeEntry.Id = index;
+                timeEntry.ID = index;
+              }
+              if (timeEntry.TaskDate) {
+                // Handle date formatting and comparison
+                const [day, month, year] = timeEntry.TaskDate.split('/');
+                const timeFillDate: any = new Date(+year, +month - 1, +day);
+                timeEntry.sortTaskDate = new Date(timeFillDate);
+                timeEntry.TaskDates = Moment(timeFillDate).format("ddd, DD/MM/YYYY");
+                timeEntry.sortTaskDate.setHours(0, 0, 0, 0);
+                timeEntry.Title = timeEntry?.AuthorName;
+                if (ContextData?.currentUserData?.AssingedToUserId === timeEntry?.AuthorId &&
+                  timeFillDate >= startDateMidnight && timeFillDate <= endDateMidnight) {
+                  totalTime += parseFloat(timeEntry?.TaskTime);
+                  config?.Tasks.push(timeEntry);
+                }
+              }
+            });
+          }
+        });
+        ContextData?.Above80Task?.forEach((task: any) => {
+          const key = task?.siteType?.toLowerCase() === "offshore tasks" ? `TaskOffshore Tasks${task.Id}` : `Task${task?.siteType}${task.Id}`;
+          const sheet = timeSheetMap.get(key);
+          if (sheet && sheet?.Id === task.Id && sheet?.siteType === task.siteType) {
+            sheet.additionalTimeEntry?.forEach((timeEntry: any, index: any) => {
+              timeEntry.SiteIcon = task?.SiteIcon;
+              timeEntry.TaskID = task?.TaskID;
+              timeEntry.Site = task?.siteType;
+              timeEntry.TaskItem = task;
+              timeEntry.timeSheetsDescriptionSearch = timeEntry?.Description || '';
+              timeEntry.UpdatedId = sheet?.Id;
+              // Normalize ID fields
+              if (!timeEntry.Id && timeEntry.ID) timeEntry.Id = timeEntry.ID;
+              if (!timeEntry.ID && timeEntry.Id) timeEntry.ID = timeEntry.Id;
+              if (!timeEntry.Id && !timeEntry.ID) {
+                timeEntry.Id = index;
+                timeEntry.ID = index;
+              }
+              if (timeEntry.TaskDate) {
+                // Handle date formatting and comparison
+                const [day, month, year] = timeEntry.TaskDate.split('/');
+                const timeFillDate: any = new Date(+year, +month - 1, +day);
+                timeEntry.sortTaskDate = new Date(timeFillDate);
+                timeEntry.TaskDates = Moment(timeFillDate).format("ddd, DD/MM/YYYY");
+                timeEntry.sortTaskDate.setHours(0, 0, 0, 0);
+                timeEntry.Title = timeEntry?.AuthorName;
+                if (ContextData?.currentUserData?.AssingedToUserId === timeEntry?.AuthorId &&
+                  timeFillDate >= startDateMidnight && timeFillDate <= endDateMidnight) {
+                  totalTime += parseFloat(timeEntry?.TaskTime);
+                  config?.Tasks.push(timeEntry);
+                }
+              }
+            });
+          }
+        });
+      }
+    });
+    setTotalTime(totalTime);
+    DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+    setActiveTile(Tile?.activeTile)
+    rerender();
+    setprogressBar(false);
   }
   const CancelDateSelection = () => {
     setShowDateSelection(false);
@@ -2464,9 +2627,18 @@ const TaskStatusTbl = (Tile: any) => {
     let Config: any = DashboardConfig.filter((item: any) => item.IsWorkingWeekTask == true)[0];
     onDropTable('', '', Config, true)
   }
+  const smartTimeTotal = async () => {
+    setprogressBar(true);
+    const item = { ContextValue: ContextData?.propsValue, DashBoardCall: true }
+    let smartmetaDataDetails: any = ContextData?.smartmetaDataDetails;
+    let timeSheetConfig: any = ContextData?.timesheetListConfig;
+    onClickTimeSheetsData = await globalCommon.smartTimeFind({ item, smartmetaDataDetails, timeSheetConfig });
+    currentUserTimeEntry(selectedTimeReport)
+  }
   return (
     <>
       <div>
+        {progressBar && <PageLoader />}
         {ActiveTile != undefined && generateDashboard()}
         <span>
           {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={(Type: any) => { CallBack(Type) }} />}
