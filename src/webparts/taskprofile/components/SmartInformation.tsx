@@ -1656,17 +1656,16 @@ const SmartInformation = (props: any, ref: any) => {
 
               <footer className={popupEdit ? 'col-sm-8 mt-2 p-0' : "mt-2 p-0"}>
                 {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
-                <span className='me-2'><a className="ForAll hreflink" target="_blank" data-interception="off"
+                <span><a className="ForAll hreflink" target="_blank" data-interception="off"
                   href={baseurl}>
                   Manage Information
                 </a></span>
                 <span className='mx-2'>|</span>
-
                 <span><a title='Add Link/ Document' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
-                <Button className='btn btn-primary ms-3 me-1' onClick={saveSharewebItem} disabled={allValue.InfoType === 'Information Source' ? (sourceTitle == '' || smartnoteAuthor?.length == 0 || InfoDate == '' || InfoSource.key == 0) : allValue?.Title == ''}>
+                <Button className='btn btn-primary mx-2' onClick={saveSharewebItem} disabled={allValue.InfoType === 'Information Source' ? (sourceTitle == '' || smartnoteAuthor?.length == 0 || InfoDate == '' || InfoSource.key == 0) : allValue?.Title == ''}>
                   Save
                 </Button>
-                <Button className='btn btn-default mx-1' onClick={() => handleClose()}>
+                <Button className='btn btn-default' onClick={() => handleClose()}>
                   Cancel
                 </Button>
 
