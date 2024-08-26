@@ -12,7 +12,7 @@ import OnHoldCommentCard from "./Comments/OnHoldCommentCard";
 import Picker from "./EditTaskPopup/SmartMetaDataPicker";
 import Tooltip from "./Tooltip";
 import { IoHandRightOutline } from "react-icons/io5";
-
+import { Avatar } from "@fluentui/react-components";
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
 let taskUsers: any = [];
@@ -1491,24 +1491,25 @@ const inlineEditingcolumns = (props: any) => {
                     if (AssignedUser.Id == user.AssingedToUserId) {
                       return (
                         <a
-                          target="_blank"
-                          data-interception="off"
-                          title={user.Title}
-                        >
-                          {user?.Item_x0020_Cover?.Url != undefined ? (
-                            <img
-                              className="workmember ms-1"
-                              style={{ marginBottom: "1px" }}
-                              title={user?.Title}
-                              src={user?.Item_x0020_Cover?.Url}
-                            ></img>
-                          ) : (
-                            <span
-                              title={user?.Title}
-                              className="alignIcon  svg__iconbox svg__icon--defaultUser grey ms-1 "
-                            ></span>
-                          )}
-                        </a>
+                        target="_blank"
+                        data-interception="off"
+                        title={user.Title}
+                      >
+                        {user?.Item_x0020_Cover?.Url ? (
+                          <Avatar
+                            className="UserImage"
+                            title={user?.Title}
+                            name={user?.Title}
+                            image={{ src: user?.Item_x0020_Cover?.Url }}
+                          />
+                        ) : (
+                          <Avatar
+                            title={user?.Title}
+                            name={user?.Title}
+                            className="UserImage"
+                          />
+                        )}
+                      </a>
                       );
                     }
                   });
