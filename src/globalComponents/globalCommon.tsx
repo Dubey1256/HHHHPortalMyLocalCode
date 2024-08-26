@@ -3597,7 +3597,7 @@ export const GetColumnDetails = (name: any, Columns: any) => {
 
 
 
-export const loadAllTimeEntryQueryBased = async (timesheetListConfig: any, ModifiedDate: any) => {
+xport const loadAllTimeEntryQueryBased = async (timesheetListConfig: any, ModifiedDate: any) => {
     var AllTimeEntry: any = []
     let modifiedDateValue = moment(ModifiedDate).utc().subtract(1, 'days').format('YYYY-MM-DDTHH:mm:ss[Z]');
     let filt = "(Modified gt '" + modifiedDateValue + "' )"
@@ -3676,11 +3676,11 @@ export const smartTimeUseStorageCheck = async (item: any) => {
                                         const updatedEntry = updatedTimeEntryIndex[key];
                                         if (JSON.stringify(currentEntry) !== JSON.stringify(updatedEntry)) {
                                             currentEntry.additionalTimeEntry = currentEntry.additionalTimeEntry?.map((obj: any) => {
-                                                const matchingObj = updatedEntry.additionalTimeEntry?.find((x: any) => x.MainParentId === obj.MainParentId && x.ParentID === obj.ParentID);
+                                                const matchingObj = updatedEntry.additionalTimeEntry?.find((x: any) => x.MainParentId === obj.MainParentId && x.ParentID === obj.ParentID && x?.Id === obj?.Id);
                                                 return matchingObj || obj;
                                             }) || [];
                                             updatedEntry.additionalTimeEntry?.forEach((newObj: any) => {
-                                                const existsInOld = currentEntry.additionalTimeEntry?.some((oldObj: any) => oldObj.MainParentId === newObj.MainParentId && oldObj.ParentID === newObj.ParentID);
+                                                const existsInOld = currentEntry.additionalTimeEntry?.some((oldObj: any) => oldObj.MainParentId === newObj.MainParentId && oldObj.ParentID === newObj.ParentID && oldObj.Id === newObj.Id);
                                                 if (!existsInOld) {
                                                     currentEntry.additionalTimeEntry?.push(newObj);
                                                 }
@@ -3754,16 +3754,20 @@ export async function smartTimeFind(item: any) {
             });
         });
     }
-    allTastsData?.map((task: any) => {
-        task.TotalTaskTime = 0;
-        task.timeSheetsDescriptionSearch = "";
-        const key = `Task${task?.siteType + task.Id}`;
-        if (timeEntryIndex.hasOwnProperty(key)
-            && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
-            task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndex[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndex[key]?.TotalTaskTime;
-            task.timeSheetsDescriptionSearch = timeEntryIndex[key]?.timeSheetsDescriptionSearch;
-        }
-    })
+    if (item?.item?.DashBoardCall === true) {
+        allTastsData = timeEntryIndex;
+    } else if (item?.item?.DashBoardCall != true) {
+        allTastsData?.map((task: any) => {
+            task.TotalTaskTime = 0;
+            task.timeSheetsDescriptionSearch = "";
+            const key = `Task${task?.siteType + task.Id}`;
+            if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
+
+                task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndex[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndex[key]?.TotalTaskTime;
+                task.timeSheetsDescriptionSearch = timeEntryIndex[key]?.timeSheetsDescriptionSearch;
+            }
+        })
+    }
     if (timeEntryIndex) {
         const dataString = JSON.stringify(timeEntryIndex);
         const blob = new Blob([dataString], { type: 'text/plain;charset=utf-8' });
@@ -3844,27 +3848,38 @@ export const smartTimeUseStorage = async (item: any) => {
                 const file = files[0];
                 const blob: Blob = await web.getFileByServerRelativePath(`${file?.ServerRelativeUrl}`)?.getBlob();
                 const myFile: any = blobToFile(blob, file?.FileLeafRef);
-                item?.setSmartTimelastModifiedDate(moment(file?.TimeLastModified).format('DD/MM/YYYY HH:mm:ss'));
                 const reader = new FileReader();
                 reader.onload = (e: any) => {
                     finalString = e.target.result;
-                    if (finalString?.length > 0) {
-                        const timeEntryIndexLocalStorage = JSON.parse(finalString);
-                        allTastsData?.map((task: any) => {
-                            task.TotalTaskTime = 0;
-                            task.timeSheetsDescriptionSearch = "";
-                            const key = `Task${task?.siteType + task.Id}`;
-                            if (timeEntryIndexLocalStorage.hasOwnProperty(key)
-                                && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
-                                task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 !== 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
-                                task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
-                            }
-                        });
-                        console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage);
-                        resolve(allTastsData);
-                    } else {
-                        resolve(allTastsData);
+                    if (item?.DashBoardCall === true) {
+                        if (finalString?.length > 0) {
+                            const timeEntryIndexLocalStorage = JSON.parse(finalString);
+                            allTastsData = timeEntryIndexLocalStorage;
+                            resolve(allTastsData);
+                        } else {
+                            resolve(allTastsData);
+                        }
+                    } else if (item?.DashBoardCall != true) {
+                        if (finalString?.length > 0) {
+                            item?.setSmartTimelastModifiedDate(moment(file?.TimeLastModified).format('DD/MM/YYYY HH:mm:ss'));
+                            const timeEntryIndexLocalStorage = JSON.parse(finalString);
+                            allTastsData?.map((task: any) => {
+                                task.TotalTaskTime = 0;
+                                task.timeSheetsDescriptionSearch = "";
+                                const key = `Task${task?.siteType + task.Id}`;
+                                if (timeEntryIndexLocalStorage.hasOwnProperty(key)
+                                    && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
+                                    task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 !== 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                                    task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
+                                }
+                            });
+                            console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage);
+                            resolve(allTastsData);
+                        } else {
+                            resolve(allTastsData);
+                        }
                     }
+
                 };
                 reader.readAsText(myFile);
             } else {
@@ -3876,3 +3891,4 @@ export const smartTimeUseStorage = async (item: any) => {
         }
     });
 };
+
