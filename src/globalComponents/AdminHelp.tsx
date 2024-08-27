@@ -148,21 +148,20 @@ const AdminHelp = (props: any) => {
     };
     const onRenderFooterQuestionEdit = () => {
       return (
-<footer>
-    <button
-      className="me-1 btn btn-primary"
-      onClick={() => updateDetails()}
-    >
-      Save
-    </button>
-    <button
-      className="btn btn-default"
-      onClick={() => closeEditQuestionPopup()}
-    >
-      Cancel
-    </button>
-</footer>
-
+        <footer className="footer-right text-end">
+          <button
+            className="me-1 btn btn-primary"
+            onClick={() => updateDetails()}
+          >
+            Save
+          </button>
+          <button
+            className="btn btn-default"
+            onClick={() => closeEditQuestionPopup()}
+          >
+            Cancel
+          </button>
+        </footer>
       );
   };
 
