@@ -21,7 +21,7 @@ var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var ApproverIds: any = [];
 let selectedFeateureItem: any;
-let selectedCatTitleVal: any = []
+let selectedCatTitleVal: any = [];
 let AutoCompleteItemsArray: any = [];
 var changeTime: any = 0;
 let siteUrl: any = "";
@@ -29,23 +29,26 @@ let smartMetadataListId: any = "";
 let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
-let StatusValue: any
-let onHoldCategory: any = []
+let StatusValue: any;
+let onHoldCategory: any = [];
 let TempArrya: any = [];
 let UpdatedItemRank: any = "";
 
 const inlineEditingcolumns = (props: any) => {
-  const [EditData, setEditData] = React.useState(props?.item)
+  const [EditData, setEditData] = React.useState(props?.item);
   const [TimeInHours, setTimeInHours] = React.useState(0);
   const [taskStatusInNumber, setTaskStatusInNumber] = React.useState(0);
   const [TimeInMinutes, setTimeInMinutes] = React.useState(0);
-  const [selectedFeatureTypeData, setSelectedFeatureTypeData]: any = React.useState({});
+  const [
+    selectedFeatureTypeData,
+    setSelectedFeatureTypeData,
+  ]: any = React.useState({});
   const [categorySearchKey, setCategorySearchKey] = React.useState("");
   const [CategoriesData, setCategoriesData] = React.useState<any>([]);
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
   const [TeamConfig, setTeamConfig] = React.useState();
   const [onHoldComment, setOnHoldComment]: any = React.useState(false);
-  const [UpdateFeatureType, setUpdateFeatureType] = React.useState(false)
+  const [UpdateFeatureType, setUpdateFeatureType] = React.useState(false);
   const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
   const [showEditPencil, setShowEditPencil] = React.useState(false);
   const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
@@ -68,12 +71,12 @@ const inlineEditingcolumns = (props: any) => {
   const [dueDate, setDueDate] = useState({
     editDate: props?.item?.DueDate != undefined ? props?.item?.DueDate : null,
     editPopup: false,
-    selectDateName: ""
+    selectDateName: "",
   });
   const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState({
     Title: "",
     PercentCompleteStatus: "",
-    ComponentLink: ""
+    ComponentLink: "",
   });
   const [remark, setRemark]: any = useState(false);
   const [impTaskCategoryType, setImpTaskCategoryType] = React.useState([]);
@@ -87,8 +90,8 @@ const inlineEditingcolumns = (props: any) => {
   const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true);
   const [selectedCatId, setSelectedCatId]: any[] = React.useState([]);
   const [feedback, setFeedback] = useState("");
-  const [comments, setComments] = useState([])
-  const [onHoldPanel, setOnHoldPanel] = useState(false)
+  const [comments, setComments] = useState([]);
+  const [onHoldPanel, setOnHoldPanel] = useState(false);
   const [DesignStatus, setDesignStatus] = useState(false);
   const StatusArray = [
     { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
@@ -97,19 +100,39 @@ const inlineEditingcolumns = (props: any) => {
     { value: 3, status: "3% Approved", taskStatusComment: "Approved" },
     { value: 4, status: "4% Checking", taskStatusComment: "Checking" },
     { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
-    { value: 8, status: "8% Priority Check", taskStatusComment: "Priority Check" },
+    {
+      value: 8,
+      status: "8% Priority Check",
+      taskStatusComment: "Priority Check",
+    },
     { value: 9, status: "9% Ready To Go", taskStatusComment: "Ready To Go" },
-    { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
+    {
+      value: 10,
+      status: "10% working on it",
+      taskStatusComment: "working on it",
+    },
     { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
-    { value: 75, status: "75% Deployment Pending", taskStatusComment: "Deployment Pending" },
-    { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
-    { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
+    {
+      value: 75,
+      status: "75% Deployment Pending",
+      taskStatusComment: "Deployment Pending",
+    },
+    {
+      value: 80,
+      status: "80% In QA Review",
+      taskStatusComment: "In QA Review",
+    },
+    {
+      value: 90,
+      status: "90% Task completed",
+      taskStatusComment: "Task completed",
+    },
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" },
   ];
   const PortfolioStatusArray = [
     { value: 0, status: "Not Started", taskStatusComment: "Not Started" },
     { value: 1, status: "In Progress", taskStatusComment: "In Progress" },
-    { value: 2, status: "Completed", taskStatusComment: "Completed" }
+    { value: 2, status: "Completed", taskStatusComment: "Completed" },
   ];
   const TaskItemRank = [
     { rankTitle: "(8) Top Highlights", rank: 8 },
@@ -123,46 +146,66 @@ const inlineEditingcolumns = (props: any) => {
   ];
   React.useEffect(() => {
     updateItemValues();
-  }, [dueDate.editPopup, UpdateFeatureType, TaskStatusPopup, remark, teamMembersPopup, UpdateEstimatedTime, TaskPriorityPopup, taskCategoriesPopup, props?.item?.TaskCategories?.results, ItemRankPortfolio]);
+  }, [
+    dueDate.editPopup,
+    UpdateFeatureType,
+    TaskStatusPopup,
+    remark,
+    teamMembersPopup,
+    UpdateEstimatedTime,
+    TaskPriorityPopup,
+    taskCategoriesPopup,
+    props?.item?.TaskCategories?.results,
+    ItemRankPortfolio,
+  ]);
 
   React.useEffect(() => {
     updateTaskComments();
-  }, [])
+  }, []);
 
   React.useEffect(() => {
     setTimeout(() => {
-      const panelMain: any = document.querySelector('.ms-Panel-main');
+      const panelMain: any = document.querySelector(".ms-Panel-main");
       if (panelMain && props.portfolioColor) {
-        $('.ms-Panel-main').css('--SiteBlue', props?.portfolioColor); // Set the desired color value here
+        $(".ms-Panel-main").css("--SiteBlue", props?.portfolioColor); // Set the desired color value here
       }
-    }, 1500)
-  }, [taskCategoriesPopup,dueDate.editPopup,TaskPriorityPopup,ItemRankPopup,teamMembersPopup,remark,UpdateEstimatedTime,TaskStatusPopup]);
+    }, 1500);
+  }, [
+    taskCategoriesPopup,
+    dueDate.editPopup,
+    TaskPriorityPopup,
+    ItemRankPopup,
+    teamMembersPopup,
+    remark,
+    UpdateEstimatedTime,
+    TaskStatusPopup,
+  ]);
 
   const updateItemValues = () => {
     selectedCatTitleVal = [];
     try {
       setpriorityRank(JSON.parse(localStorage.getItem("Priority")));
-      setImpTaskCategoryType(JSON.parse(
-        localStorage.getItem("impTaskCategoryType")
-      ));
+      setImpTaskCategoryType(
+        JSON.parse(localStorage.getItem("impTaskCategoryType"))
+      );
     } catch (e) {
-      console.error("Priority and impTaskCategoryType")
+      console.error("Priority and impTaskCategoryType");
     }
     try {
-      let a: any = localStorage.getItem('taskCategoryType')
-      a = JSON.parse(a)
-      a = a.filter((item: any) => item.Title != 'Bottleneck')
-      localStorage.setItem('taskCategoryType', JSON.stringify(a))
-
-    }
-    catch (e) {
-      console.error("JSON cannot be parsed")
+      let a: any = localStorage.getItem("taskCategoryType");
+      a = JSON.parse(a);
+      a = a.filter((item: any) => item.Title != "Bottleneck");
+      localStorage.setItem("taskCategoryType", JSON.stringify(a));
+    } catch (e) {
+      console.error("JSON cannot be parsed");
     }
     try {
-
-      if (props?.pageName === "portfolioprofile" || props?.pageName === 'ProjectManagmentMaster') {
-        setShowEditPencil(true)
-        setPortfoliosta(props?.item?.Status)
+      if (
+        props?.pageName === "portfolioprofile" ||
+        props?.pageName === "ProjectManagmentMaster"
+      ) {
+        setShowEditPencil(true);
+        setPortfoliosta(props?.item?.Status);
       }
       if (props?.item?.metaDataListId != undefined) {
         smartMetadataListId = props?.item?.metaDataListId;
@@ -170,7 +213,7 @@ const inlineEditingcolumns = (props: any) => {
         smartMetadataListId = props?.AllListId?.SmartMetadataListID;
       }
       if (props?.item?.FeatureType?.Id != undefined) {
-        setSelectedFeatureTypeData(props?.item?.FeatureType)
+        setSelectedFeatureTypeData(props?.item?.FeatureType);
         selectedFeateureItem = props?.item?.FeatureType;
       }
       if (props?.item?.siteUrl != undefined) {
@@ -183,7 +226,11 @@ const inlineEditingcolumns = (props: any) => {
           props?.item?.TaskCategories?.map((cat: any) => {
             cat.ActiveTile = true;
           });
-          setDesignStatus(props?.item?.TaskCategories?.some((category: any) => category.Title === "Design"));
+          setDesignStatus(
+            props?.item?.TaskCategories?.some(
+              (category: any) => category.Title === "Design"
+            )
+          );
         }
         setCategoriesData(props?.item?.TaskCategories);
       } else if (props?.item?.TaskCategories?.results?.length > 0) {
@@ -193,10 +240,13 @@ const inlineEditingcolumns = (props: any) => {
           });
         }
         setCategoriesData(props?.item?.TaskCategories?.results);
-      } else if ((props?.item?.TaskCategories?.length == 0 || props?.item?.TaskCategories?.results?.length == 0) && props?.item?.Categories?.length > 0) {
+      } else if (
+        (props?.item?.TaskCategories?.length == 0 ||
+          props?.item?.TaskCategories?.results?.length == 0) &&
+        props?.item?.Categories?.length > 0
+      ) {
         selectedCatTitleVal = [];
-        selectedCatTitleVal = props?.item?.Categories?.split(";")
-
+        selectedCatTitleVal = props?.item?.Categories?.split(";");
       }
       loadTaskUsers();
       if (props?.item?.DueDate != undefined) {
@@ -226,18 +276,19 @@ const inlineEditingcolumns = (props: any) => {
         setTaskStatusInNumber(props.item.PercentComplete);
       }
       GetSmartMetadata();
-    } catch (e) { console.log }
-  }
+    } catch (e) {
+      console.log;
+    }
+  };
 
   const updateTaskComments = () => {
     try {
-      let allComments: any = JSON.parse(props?.item?.Comments)
-      setComments(allComments)
+      let allComments: any = JSON.parse(props?.item?.Comments);
+      setComments(allComments);
+    } catch {
+      console.log("JSON cannot be parsed");
     }
-    catch {
-      console.log('JSON cannot be parsed')
-    }
-  }
+  };
   const getPercentCompleteTitle = (percent: any) => {
     let result = "";
     StatusArray?.map((status: any) => {
@@ -275,9 +326,7 @@ const inlineEditingcolumns = (props: any) => {
         localStorage.getItem("impTaskCategoryType")
       );
       // instantCat = JSON.parse(localStorage.getItem("instantCategories"));
-      CMSTaskCategories = JSON.parse(
-        localStorage.getItem("taskCategoryType")
-      );
+      CMSTaskCategories = JSON.parse(localStorage.getItem("taskCategoryType"));
       Priority = JSON.parse(localStorage.getItem("Priority"));
       let site = JSON.parse(localStorage.getItem("siteUrl"));
       let DataLoaded = JSON.parse(localStorage.getItem("inlineMetaDataLoaded"));
@@ -329,14 +378,17 @@ const inlineEditingcolumns = (props: any) => {
         instantCat = [];
 
         AllMetadata?.map((metadata: any) => {
-          if (selectedCatTitleVal?.some((catTitle: any) => { catTitle == metadata?.Title && metadata.TaxType == "Categories" })) {
-            cateFromTitle.push(metadata)
+          if (
+            selectedCatTitleVal?.some((catTitle: any) => {
+              catTitle == metadata?.Title && metadata.TaxType == "Categories";
+            })
+          ) {
+            cateFromTitle.push(metadata);
           }
           if (
             metadata.Title == "Immediate" ||
             metadata.Title == "Favorite"
             // metadata.Title == "Bottleneck" ||
-
           ) {
             impTaskCategories.push(metadata);
           }
@@ -344,7 +396,7 @@ const inlineEditingcolumns = (props: any) => {
           if (metadata.TaxType == "Categories") {
             CMSTaskCategories.push(metadata);
           }
-        })
+        });
 
         CMSTaskCategories?.map((cat: any) => {
           getChilds(cat, TaskTypes);
@@ -373,7 +425,7 @@ const inlineEditingcolumns = (props: any) => {
         localStorage.setItem("instantCategories", JSON.stringify(instantCat));
         Priority = getSmartMetadataItemsByTaxType(AllMetadata, "Priority Rank");
         setTaskCategoryType(CMSTaskCategories);
-        setImpTaskCategoryType(impTaskCategories)
+        setImpTaskCategoryType(impTaskCategories);
         setpriorityRank(Priority);
         setInstantCategories(instantCat);
         if (cateFromTitle?.length > 0) {
@@ -390,12 +442,12 @@ const inlineEditingcolumns = (props: any) => {
       CMSTaskCategories?.map((cat: any) => {
         selectedCatTitleVal?.map((catTitle: any) => {
           if (catTitle == cat?.Title) {
-            cateFromTitle.push(cat)
+            cateFromTitle.push(cat);
           }
-        })
-        if (cateFromTitle?.some(
-          (selectedCat: any) => selectedCat?.Id == cat?.Id
-        )) {
+        });
+        if (
+          cateFromTitle?.some((selectedCat: any) => selectedCat?.Id == cat?.Id)
+        ) {
           cat.ActiveTile = true;
         } else {
           cat.ActiveTile = false;
@@ -430,8 +482,6 @@ const inlineEditingcolumns = (props: any) => {
   };
   const getChilds = (item: any, items: any) => {
     try {
-
-
       let parent = JSON.parse(JSON.stringify(item));
       parent.Newlabel = `${parent?.Title}`;
       AutoCompleteItemsArray.push(parent);
@@ -448,9 +498,11 @@ const inlineEditingcolumns = (props: any) => {
           getChilds(child, items);
         }
       });
-    } catch (e) { console.log(e) }
+    } catch (e) {
+      console.log(e);
+    }
   };
-  var getSmartMetadataItemsByTaxType = function (
+  var getSmartMetadataItemsByTaxType = function(
     metadataItems: any,
     taxType: any
   ) {
@@ -474,21 +526,24 @@ const inlineEditingcolumns = (props: any) => {
     setAllTaskUser(taskUsers);
   };
   const openTaskStatusUpdatePopup = async () => {
-    StatusValue = props.item.PercentComplete
+    StatusValue = props.item.PercentComplete;
     setTaskStatusPopup(true);
   };
   function isValidDate(dateString: any): boolean {
     const date = Moment(dateString, "YYYY-MM-DD", true);
     return date.isValid();
   }
-   const UpdatePortfolioStatus = async () => {
+  const UpdatePortfolioStatus = async () => {
     let web = new Web(props?.item?.siteUrl);
-    await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
-      Status: Portfoliosta
-    });
+    await web.lists
+      .getById(props?.item?.listId)
+      .items.getById(props?.item?.Id)
+      .update({
+        Status: Portfoliosta,
+      });
     setPortfolioStatus(false);
-     console.log("Update Portfolio Status")
-     }
+    console.log("Update Portfolio Status");
+  };
   const UpdateTaskStatus = async () => {
     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
       TaskAssignedTo?.map((taskInfo) => {
@@ -570,52 +625,56 @@ const inlineEditingcolumns = (props: any) => {
     let postData: any = {};
 
     switch (props?.columnName) {
-      case 'TaskCategories':
+      case "TaskCategories":
         postData.Categories = CategoryTitle;
-        postData.TaskCategoriesId = { results: selectedCategoriesId ? selectedCategoriesId : [] };
+        postData.TaskCategoriesId = {
+          results: selectedCategoriesId ? selectedCategoriesId : [],
+        };
         break;
 
-      case 'Team':
+      case "Team":
         postData.AssignedToId = { results: AssignedToIds ?? [] };
         postData.ResponsibleTeamId = { results: ResponsibleTeamIds ?? [] };
         postData.TeamMembersId = { results: TeamMemberIds ?? [] };
         break;
 
-      case 'Priority':
+      case "Priority":
         postData.Priority = priority;
         postData.PriorityRank = priorityRank;
         if (props?.mypriority != true) {
           postData.Categories = CategoryTitle;
-          postData.TaskCategoriesId = { results: selectedCategoriesId ? selectedCategoriesId : [] };
+          postData.TaskCategoriesId = {
+            results: selectedCategoriesId ? selectedCategoriesId : [],
+          };
         }
         break;
 
-      case 'Remark':
+      case "Remark":
         postData.Remark = feedback;
         break;
 
-      case 'EstimatedTime':
+      case "EstimatedTime":
         postData.EstimatedTime = TimeInHours;
         break;
 
-      case 'PercentComplete':
+      case "PercentComplete":
         postData.PercentComplete = StatusValue / 100;
-        postData.IsTodaysTask = EditData?.IsTodaysTask
-        postData.workingThisWeek = EditData?.workingThisWeek
+        postData.IsTodaysTask = EditData?.IsTodaysTask;
+        postData.workingThisWeek = EditData?.workingThisWeek;
         postData.AssignedToId = { results: AssignedToIds ?? [] };
-        postData.StartDate = EditData?.StartDate
-        postData.CompletedDate = EditData?.CompletedDate
-        postData.Status = taskStatus
+        postData.StartDate = EditData?.StartDate;
+        postData.CompletedDate = EditData?.CompletedDate;
+        postData.Status = taskStatus;
         break;
 
-      case 'DueDate':
+      case "DueDate":
         postData.DueDate = newDueDate;
         break;
 
-      case 'FeatureType':
+      case "FeatureType":
         postData.FeatureTypeId = selectedFeateureItem?.Id;
         break;
-      case 'ItemRank':
+      case "ItemRank":
         postData.ItemRank = UpdatedItemRank;
         break;
       default:
@@ -643,7 +702,7 @@ const inlineEditingcolumns = (props: any) => {
             task.listId = props?.item?.listId;
             task.siteUrl = props?.item?.siteUrl;
             task.AssignedTo = TaskAssignedTo;
-            if (props?.columnName == 'FeatureType') {
+            if (props?.columnName == "FeatureType") {
               task.FeatureType = selectedFeateureItem;
             }
             task.ResponsibleTeam = TaskResponsibleTeam;
@@ -674,19 +733,19 @@ const inlineEditingcolumns = (props: any) => {
         setTaskCategoriesPopup(false);
         setTaskStatusPopup(false);
         setTaskPriorityPopup(false);
-        setItemRankPopup(false)
+        setItemRankPopup(false);
         setTeamMembersPopup(false);
-        setTaskStatus("")
+        setTaskStatus("");
         clearEstimations();
         setRemark(false);
         closeTaskDueDate();
       });
   };
   const removeFeatureType = () => {
-    selectedFeateureItem = { Id: null }
+    selectedFeateureItem = { Id: null };
     setSelectedFeatureTypeData({});
     UpdateTaskStatus();
-  }
+  };
   const setWorkingMember = (statusId: any) => {
     AllTaskUser?.map((dataTask: any) => {
       if (dataTask.AssingedToUserId == statusId) {
@@ -701,20 +760,19 @@ const inlineEditingcolumns = (props: any) => {
   };
 
   const CategoryCallBack = React.useCallback((item1: any, type: any) => {
-    setIsComponentPicker(false)
-    setTaskCategoriesPopup(true)
+    setIsComponentPicker(false);
+    setTaskCategoriesPopup(true);
     let uniqueIds: any = {};
-    TempArrya = CategoriesData
+    TempArrya = CategoriesData;
     if (type == "Category-Task-Footertable") {
       if (item1?.length > 0) {
         item1?.map((cat: any) => {
           cat.ActiveTile = true;
           if (cat.Title == "On-Hold") {
-            onHoldCategory.push(cat)
-            setOnHoldPanel(true)
-          }
-          else {
-            TempArrya.push(cat)
+            onHoldCategory.push(cat);
+            setOnHoldPanel(true);
+          } else {
+            TempArrya.push(cat);
           }
         });
       }
@@ -727,8 +785,8 @@ const inlineEditingcolumns = (props: any) => {
       return false;
     });
     TempArrya = result;
-    setCategoriesData(result)
-  }, [])
+    setCategoriesData(result);
+  }, []);
 
   const smartCategoryPopup = React.useCallback(() => {
     setIsComponentPicker(false);
@@ -739,7 +797,7 @@ const inlineEditingcolumns = (props: any) => {
     setOnHoldPanel(false);
     setTaskCategoriesPopup(true);
     if (usedFor == "Save") {
-      let uniqueIds: any = {}
+      let uniqueIds: any = {};
       TempArrya.push(onHoldCategory[0]);
       const result: any = TempArrya.filter((item: any) => {
         if (!uniqueIds[item.Id]) {
@@ -755,7 +813,6 @@ const inlineEditingcolumns = (props: any) => {
   const DDComponentCallBack = React.useCallback((dt: any) => {
     setTeamConfig(dt);
 
-
     if (dt?.AssignedTo?.length > 0) {
       let tempAssigned: any = [];
       dt.AssignedTo?.map((arrayData: any) => {
@@ -766,10 +823,9 @@ const inlineEditingcolumns = (props: any) => {
         }
       });
       setTaskAssignedTo(tempAssigned);
-    }
-    else {
-      AssignedToIds = []
-      setTaskAssignedTo([])
+    } else {
+      AssignedToIds = [];
+      setTaskAssignedTo([]);
     }
     if (dt?.TeamMemberUsers?.length > 0) {
       let tempTeam: any = [];
@@ -781,10 +837,9 @@ const inlineEditingcolumns = (props: any) => {
         }
       });
       setTaskTeamMembers(tempTeam);
-    }
-    else {
-      TeamMemberIds = []
-      setTaskTeamMembers([])
+    } else {
+      TeamMemberIds = [];
+      setTaskTeamMembers([]);
     }
     if (dt?.ResponsibleTeam?.length > 0) {
       let tempResponsible: any = [];
@@ -796,23 +851,22 @@ const inlineEditingcolumns = (props: any) => {
         }
       });
       setTaskResponsibleTeam(tempResponsible);
-    }
-    else {
-      ResponsibleTeamIds = []
-      setTaskResponsibleTeam([])
+    } else {
+      ResponsibleTeamIds = [];
+      setTaskResponsibleTeam([]);
     }
   }, []);
 
   const EditComponentPicker = (item: any) => {
     setIsComponentPicker(true);
     setTaskCat(item);
-    setTaskCategoriesPopup(true)
+    setTaskCategoriesPopup(true);
   };
 
   const selectSubTaskCategory = (title: any, Id: any, item: any) => {
     setCategorySearchKey("");
     setSearchedCategoryData([]);
-    let TaskCategories: any[] = CategoriesData
+    let TaskCategories: any[] = CategoriesData;
     if (item.ActiveTile) {
       item.ActiveTile = !item.ActiveTile;
       TaskCategories = TaskCategories.filter(
@@ -824,11 +878,10 @@ const inlineEditingcolumns = (props: any) => {
     } else if (!item.ActiveTile) {
       item.ActiveTile = !item.ActiveTile;
       if (item.Title == "On-Hold") {
-        setOnHoldPanel(true)
-        onHoldCategory.push(item)
-      }
-      else {
-        TaskCategories.push(item)
+        setOnHoldPanel(true);
+        onHoldCategory.push(item);
+      } else {
+        TaskCategories.push(item);
       }
     }
     setInstantCategories((CategoriesData: any) =>
@@ -839,7 +892,7 @@ const inlineEditingcolumns = (props: any) => {
         return selectCAT; // Return the original value if no change is needed
       })
     );
-    TempArrya = TaskCategories
+    TempArrya = TaskCategories;
     setCategoriesData(TaskCategories);
   };
 
@@ -920,7 +973,7 @@ const inlineEditingcolumns = (props: any) => {
       PercentCompleteStatus: StatusData.value,
     });
     setPercentCompleteCheck(false);
-    StatusValue = StatusData.value
+    StatusValue = StatusData.value;
     if (StatusData.value == 1) {
       let tempArray: any = [];
       if (
@@ -964,7 +1017,7 @@ const inlineEditingcolumns = (props: any) => {
           setPercentCompleteStatus(item.status);
           setTaskStatus(item.taskStatusComment);
         }
-      })
+      });
     }
 
     if (StatusData.value == 80) {
@@ -972,7 +1025,7 @@ const inlineEditingcolumns = (props: any) => {
         ...prevState,
         IsTodaysTask: false,
         workingThisWeek: false,
-        CompletedDate: undefined
+        CompletedDate: undefined,
       }));
       if (
         EditData.TeamMembers != undefined &&
@@ -1024,7 +1077,7 @@ const inlineEditingcolumns = (props: any) => {
       }
       setEditData((prevState: any) => ({
         ...prevState,
-        IsTodaysTask: true
+        IsTodaysTask: true,
       }));
       StatusArray?.map((item: any) => {
         if (StatusData.value == item.value) {
@@ -1041,7 +1094,7 @@ const inlineEditingcolumns = (props: any) => {
       setEditData((prevState: any) => ({
         ...prevState,
         IsTodaysTask: false,
-        workingThisWeek: false
+        workingThisWeek: false,
       }));
       setWorkingMember(32);
       StatusArray?.map((item: any) => {
@@ -1055,7 +1108,7 @@ const inlineEditingcolumns = (props: any) => {
       setEditData((prevState: any) => ({
         ...prevState,
         IsTodaysTask: false,
-        workingThisWeek: false
+        workingThisWeek: false,
       }));
       if (EditData.siteType == "Offshore%20Tasks") {
         setWorkingMember(36);
@@ -1066,7 +1119,7 @@ const inlineEditingcolumns = (props: any) => {
       }
       setEditData((prevState: any) => ({
         ...prevState,
-        CompletedDate: Moment(new Date()).format("MM-DD-YYYY")
+        CompletedDate: Moment(new Date()).format("MM-DD-YYYY"),
       }));
       StatusArray?.map((item: any) => {
         if (StatusData.value == item.value) {
@@ -1085,11 +1138,21 @@ const inlineEditingcolumns = (props: any) => {
   };
   const handleCategoryChange = (event: any, CategoryId: any, Category: any) => {
     if (event.target.checked) {
-      setSelectedCatId((prevSelectedCatId: any) => [...prevSelectedCatId, CategoryId]);
-      setCategoriesData((prevCategoriesData: any) => [...prevCategoriesData, Category]);
+      setSelectedCatId((prevSelectedCatId: any) => [
+        ...prevSelectedCatId,
+        CategoryId,
+      ]);
+      setCategoriesData((prevCategoriesData: any) => [
+        ...prevCategoriesData,
+        Category,
+      ]);
     } else {
-      setSelectedCatId((prevSelectedCatId: any) => prevSelectedCatId.filter((val: any) => val !== CategoryId));
-      setCategoriesData((prevCategoriesData: any) => prevCategoriesData.filter((itm: any) => itm?.Id !== CategoryId));
+      setSelectedCatId((prevSelectedCatId: any) =>
+        prevSelectedCatId.filter((val: any) => val !== CategoryId)
+      );
+      setCategoriesData((prevCategoriesData: any) =>
+        prevCategoriesData.filter((itm: any) => itm?.Id !== CategoryId)
+      );
     }
   };
   const closeTaskDueDate = () => {
@@ -1109,7 +1172,7 @@ const inlineEditingcolumns = (props: any) => {
       setDueDate({
         ...dueDate,
         editDate: dates.setDate(dates.getDate() + 1),
-        selectDateName: item
+        selectDateName: item,
       });
     }
     if (item === "This Week") {
@@ -1119,7 +1182,7 @@ const inlineEditingcolumns = (props: any) => {
       setDueDate({
         ...dueDate,
         editDate: new Date(dates.setDate(dates.getDate() - dates.getDay() + 7)),
-        selectDateName: item
+        selectDateName: item,
       });
     }
     if (item === "Next Week") {
@@ -1134,7 +1197,7 @@ const inlineEditingcolumns = (props: any) => {
         editDate: nextweek.setDate(
           nextweek.getDate() - (nextweek.getDay() - 1) + 6
         ),
-        selectDateName: item
+        selectDateName: item,
       });
     }
     if (item === "This Month") {
@@ -1221,9 +1284,13 @@ const inlineEditingcolumns = (props: any) => {
         }
       >
         <div className="subheading ">
-          {props?.item?.SiteIcon != null && <img className="imgWid29 pe-1 mt-1 " src={props?.item?.SiteIcon} />}
+          {props?.item?.SiteIcon != null && (
+            <img className="imgWid29 pe-1 mt-1 " src={props?.item?.SiteIcon} />
+          )}
           <span className="siteColor">
-            {`Update ${columnName} - ${props?.item?.TaskID != undefined ? props?.item?.TaskID : ''} ${props?.item?.Title}`}
+            {`Update ${columnName} - ${
+              props?.item?.TaskID != undefined ? props?.item?.TaskID : ""
+            } ${props?.item?.Title}`}
           </span>
         </div>
         <Tooltip ComponentId={7801} />
@@ -1241,23 +1308,22 @@ const inlineEditingcolumns = (props: any) => {
 
   const Smartmetadatafeature = React.useCallback((data: any) => {
     if (data === "Close") {
-      setUpdateFeatureType(false)
+      setUpdateFeatureType(false);
     } else {
-      setUpdateFeatureType(false)
-      selectedFeateureItem = data[0]
+      setUpdateFeatureType(false);
+      selectedFeateureItem = data[0];
       setSelectedFeatureTypeData(data[0]);
-      UpdateTaskStatus()
+      UpdateTaskStatus();
     }
-  }, [])
+  }, []);
 
-
-  // Item Rank Update 
+  // Item Rank Update
   const UpdateItemRank = () => {
     UpdatedItemRank = ItemRankPortfolio;
-    UpdateTaskStatus()
-  }
-  // Item Rank Update End 
-  const getPriorityRank = (title:any) => {
+    UpdateTaskStatus();
+  };
+  // Item Rank Update End
+  const getPriorityRank = (title: any) => {
     const titleNumber = parseInt(title, 10);
     if (titleNumber >= 8 && titleNumber <= 10) {
       return "High";
@@ -1279,8 +1345,11 @@ const inlineEditingcolumns = (props: any) => {
             className="hreflink"
           >
             &nbsp;
-            <span className="alignCenter " style={{ display: "flex", width: "100%", height: "100%" }}>
-            {Portfoliosta}
+            <span
+              className="alignCenter "
+              style={{ display: "flex", width: "100%", height: "100%" }}
+            >
+              {Portfoliosta}
 
               {showEditPencil && (
                 <a className="pancil-icons ml-auto">
@@ -1289,9 +1358,10 @@ const inlineEditingcolumns = (props: any) => {
               )}
             </span>
           </span>
-
         </>
-      ):("")}
+      ) : (
+        ""
+      )}
       {/* Portfolio status end  */}
       {props?.columnName == "Team" ? (
         <>
@@ -1313,7 +1383,6 @@ const inlineEditingcolumns = (props: any) => {
               )}
             </span>
           </span>
-
         </>
       ) : (
         ""
@@ -1331,66 +1400,81 @@ const inlineEditingcolumns = (props: any) => {
               width: "100%",
               height: "100%",
               gap: "1px",
-              alignItems: "center"
+              alignItems: "center",
             }}
             onClick={() => setTaskPriorityPopup(true)}
           >
-
-            {props?.mypriority === true && props?.item?.PriorityRank != null && props?.item?.PriorityRank != undefined ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}` : props?.item?.PriorityRank}
-            {props?.item?.TaskCategories?.length > 0 && props?.item?.TaskCategories?.map((items: any) =>
-              items?.Title === "On-Hold" ? (
-                <div className="hover-text">
-                  <IoHandRightOutline
-                    onMouseEnter={showOnHoldComment}
-                    onMouseLeave={hideOnHoldComment}
-                  />
-                  {onHoldComment && <span className="tooltip-text pop-right">
-                    {comments?.map((commentItem: any, index: any) =>
-                      commentItem?.CommentFor !== undefined &&
-                        commentItem?.CommentFor === "On-Hold" ? (
-                        <div key={index}>
-                          <span className="siteColor p-1 border-bottom">
-                            Task On-Hold by{" "}
-                            <span>{commentItem?.AuthorName}</span>{" "}
-                            <span>{Moment(commentItem?.Created).format('DD/MM/YY')}</span>
-                          </span>
-                          {commentItem?.CommentFor !== undefined &&
-                            commentItem?.CommentFor === "On-Hold" ? (
-                            <div key={index}>{commentItem?.Description}</div>
-                          ) : null}
-                        </div>
-                      ) : null
+            {props?.mypriority === true &&
+            props?.item?.PriorityRank != null &&
+            props?.item?.PriorityRank != undefined
+              ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(
+                  3
+                )}`
+              : props?.item?.PriorityRank}
+            {props?.item?.TaskCategories?.length > 0 &&
+              props?.item?.TaskCategories?.map((items: any) =>
+                items?.Title === "On-Hold" ? (
+                  <div className="hover-text">
+                    <IoHandRightOutline
+                      onMouseEnter={showOnHoldComment}
+                      onMouseLeave={hideOnHoldComment}
+                    />
+                    {onHoldComment && (
+                      <span className="tooltip-text pop-right">
+                        {comments?.map((commentItem: any, index: any) =>
+                          commentItem?.CommentFor !== undefined &&
+                          commentItem?.CommentFor === "On-Hold" ? (
+                            <div key={index}>
+                              <span className="siteColor p-1 border-bottom">
+                                Task On-Hold by{" "}
+                                <span>{commentItem?.AuthorName}</span>{" "}
+                                <span>
+                                  {Moment(commentItem?.Created).format(
+                                    "DD/MM/YY"
+                                  )}
+                                </span>
+                              </span>
+                              {commentItem?.CommentFor !== undefined &&
+                              commentItem?.CommentFor === "On-Hold" ? (
+                                <div key={index}>
+                                  {commentItem?.Description}
+                                </div>
+                              ) : null}
+                            </div>
+                          ) : null
+                        )}
+                      </span>
                     )}
-                  </span>}
-                </div>
-              ) : null
-            )}
-            {props?.item?.TaskCategories?.length > 0 && props?.item?.TaskCategories?.map((category: any) => {
-              if (category?.Title == "Immediate") {
-                return (
-                  <a title="Immediate">
-                    <span className=" svg__iconbox svg__icon--alert alignIcon "></span>
-                    {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} />  */}
-                  </a>
-                );
-              }
-              // if (category?.Title == "Bottleneck") {
-              //   return (
-              //     <a title="Bottleneck">
-              //       {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} />  */}
-              //       <span className=" svg__iconbox svg__icon--bottleneck alignIcon "></span>
-              //     </a>
-              //   );
-              // }
-              if (category?.Title == "Favorite") {
-                return (
-                  <a title="Favorite" className="alignCenter">
-                    <span className=" svg__iconbox svg__icon--Star"></span>
-                    {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} />  */}
-                  </a>
-                );
-              }
-            })}
+                  </div>
+                ) : null
+              )}
+            {props?.item?.TaskCategories?.length > 0 &&
+              props?.item?.TaskCategories?.map((category: any) => {
+                if (category?.Title == "Immediate") {
+                  return (
+                    <a title="Immediate">
+                      <span className=" svg__iconbox svg__icon--alert alignIcon "></span>
+                      {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} />  */}
+                    </a>
+                  );
+                }
+                // if (category?.Title == "Bottleneck") {
+                //   return (
+                //     <a title="Bottleneck">
+                //       {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} />  */}
+                //       <span className=" svg__iconbox svg__icon--bottleneck alignIcon "></span>
+                //     </a>
+                //   );
+                // }
+                if (category?.Title == "Favorite") {
+                  return (
+                    <a title="Favorite" className="alignCenter">
+                      <span className=" svg__iconbox svg__icon--Star"></span>
+                      {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} />  */}
+                    </a>
+                  );
+                }
+              })}
             &nbsp;
             {showEditPencil && (
               <a className="pancil-icons ml-auto">
@@ -1398,7 +1482,6 @@ const inlineEditingcolumns = (props: any) => {
               </a>
             )}
           </span>
-
         </>
       ) : (
         ""
@@ -1443,21 +1526,68 @@ const inlineEditingcolumns = (props: any) => {
         <>
           {" "}
           <span
-            className={selectedFeatureTypeData?.Title != undefined ? "sdgergeg" : "hreffwefwlinkerg"}
+            className={
+              selectedFeatureTypeData?.Title != undefined
+                ? "sdgergeg"
+                : "hreffwefwlinkerg"
+            }
             style={{
               display: "flex",
               width: "100%",
               height: "100%",
-              gap: "1px"
+              gap: "1px",
             }}
           >
-
-            {UpdateFeatureType != true ? <span style={{ overflow: 'hidden', display: 'inline-block', width: `${selectedFeatureTypeData?.Title != undefined ? '168px' : '185px'}`, textOverflow: 'ellipsis', whiteSpace: "nowrap" }} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> : <span style={{ overflow: 'hidden', display: 'inline-block', width: `${selectedFeatureTypeData?.Title != undefined ? '168px' : '185px'}`, textOverflow: 'ellipsis', whiteSpace: "nowrap" }} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span>}&nbsp;
-            {selectedFeatureTypeData?.Title != undefined ? <a className="pancil-icons hreflink" onClick={() => removeFeatureType()}>
-              <span className="alignIcon svg__iconbox svg__icon--cross"></span>
-            </a> : ''}
-
-            <a className="pancil-icons ml-auto hreflink" onClick={() => setUpdateFeatureType(true)}>
+            {UpdateFeatureType != true ? (
+              <span
+                style={{
+                  overflow: "hidden",
+                  display: "inline-block",
+                  width: `${
+                    selectedFeatureTypeData?.Title != undefined
+                      ? "168px"
+                      : "185px"
+                  }`,
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+                title={selectedFeatureTypeData?.Title}
+              >
+                {selectedFeatureTypeData?.Title}
+              </span>
+            ) : (
+              <span
+                style={{
+                  overflow: "hidden",
+                  display: "inline-block",
+                  width: `${
+                    selectedFeatureTypeData?.Title != undefined
+                      ? "168px"
+                      : "185px"
+                  }`,
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+                title={selectedFeatureTypeData?.Title}
+              >
+                {selectedFeatureTypeData?.Title}
+              </span>
+            )}
+            &nbsp;
+            {selectedFeatureTypeData?.Title != undefined ? (
+              <a
+                className="pancil-icons hreflink"
+                onClick={() => removeFeatureType()}
+              >
+                <span className="alignIcon svg__iconbox svg__icon--cross"></span>
+              </a>
+            ) : (
+              ""
+            )}
+            <a
+              className="pancil-icons ml-auto hreflink"
+              onClick={() => setUpdateFeatureType(true)}
+            >
               <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
             </a>
           </span>
@@ -1465,7 +1595,7 @@ const inlineEditingcolumns = (props: any) => {
       ) : (
         ""
       )}
-      
+
       {props?.columnName == "PercentComplete" ? (
         <>
           <span
@@ -1477,7 +1607,6 @@ const inlineEditingcolumns = (props: any) => {
             }
             onClick={() => openTaskStatusUpdatePopup()}
           >
-
             {/* <span className="d-inline-block" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Disabled popover">
                                 {props.item.PercentComplete}
                             </span> */}
@@ -1524,7 +1653,6 @@ const inlineEditingcolumns = (props: any) => {
               </a>
             )}
           </span>
-
         </>
       ) : (
         ""
@@ -1545,7 +1673,11 @@ const inlineEditingcolumns = (props: any) => {
           }}
         >
           <>&nbsp;</>
-          {props?.item?.DisplayDueDate != undefined ? props?.item?.DisplayDueDate : <>&nbsp;</>}
+          {props?.item?.DisplayDueDate != undefined ? (
+            props?.item?.DisplayDueDate
+          ) : (
+            <>&nbsp;</>
+          )}
           {showEditPencil && (
             <a className="pancil-icons ml-auto">
               <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
@@ -1553,7 +1685,7 @@ const inlineEditingcolumns = (props: any) => {
           )}
         </span>
       ) : (
-        ''
+        ""
       )}
 
       {/* Panel to edit due-date */}
@@ -1575,7 +1707,11 @@ const inlineEditingcolumns = (props: any) => {
           }}
         >
           <>&nbsp;</>
-          {props?.item?.ItemRank != undefined ? props?.item?.ItemRank : <>&nbsp;</>}
+          {props?.item?.ItemRank != undefined ? (
+            props?.item?.ItemRank
+          ) : (
+            <>&nbsp;</>
+          )}
           {showEditPencil && (
             <a className="pancil-icons ml-auto">
               <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
@@ -1583,7 +1719,7 @@ const inlineEditingcolumns = (props: any) => {
           )}
         </span>
       ) : (
-        ''
+        ""
       )}
 
       {/* Item Rank Popup End */}
@@ -1803,9 +1939,9 @@ const inlineEditingcolumns = (props: any) => {
           </footer>
         </div>
       </Panel>
-     {/* Panel for the Portfolio Project */}
-  {/* Pannel To select Status */}
-  <Panel
+      {/* Panel for the Portfolio Project */}
+      {/* Pannel To select Status */}
+      <Panel
         onRenderHeader={() => onRenderCustomHeader("PortfolioStatus")}
         isOpen={PortfolioStatus}
         customWidth="500px"
@@ -1827,7 +1963,7 @@ const inlineEditingcolumns = (props: any) => {
                           onClick={() => setPortfoliosta(item?.status)}
                         />
                         <label className="form-check-label">
-                        {item?.status}
+                          {item?.status}
                         </label>
                       </div>
                     </li>
@@ -1847,7 +1983,7 @@ const inlineEditingcolumns = (props: any) => {
           </footer>
         </div>
       </Panel>
-{/* Panel for the Project Portfolio */}
+      {/* Panel for the Project Portfolio */}
       {/* Pannel To select Priority */}
       <Panel
         onRenderHeader={() => onRenderCustomHeader("Priority")}
@@ -1867,7 +2003,7 @@ const inlineEditingcolumns = (props: any) => {
             <div>
               <ul className="list-none">
                 {priorityRank?.map((item: any, index) => {
-                   const priority = getPriorityRank(item.Title);
+                  const priority = getPriorityRank(item.Title);
                   return (
                     <li key={index}>
                       <div className="SpfxCheckRadio">
@@ -1878,7 +2014,7 @@ const inlineEditingcolumns = (props: any) => {
                           onClick={() => setTaskPriority(item.Title)}
                         />
                         <label className="form-check-label mx-2">
-                          {item?.Title}  ({priority})
+                          {item?.Title} ({priority})
                         </label>
                       </div>
                     </li>
@@ -1887,48 +2023,54 @@ const inlineEditingcolumns = (props: any) => {
               </ul>
             </div>
           </div>
-          {(props?.mypriority != true && props.pageName !== "portfolioprofile") &&
+          {props?.mypriority != true && props.pageName !== "portfolioprofile" && (
             <>
-              {impTaskCategoryType?.map((option) => (
-                option.Title !== 'Bottleneck' && (
-                  <div
-                    className={
-                      ServicesTaskCheck ? "serviepannelgreena d-flex" : "d-flex"
-                    }
-                    key={option.Id}
-                  >
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id={option.Id}
-                      value={option.Id}
-                      checked={selectedCatId?.includes(option.Id)}
-                      onChange={(event) => handleCategoryChange(event, option.Id, option)}
-                    />
-                    <a className="alignCenter" title={option.Title}>
-                      {option.Title == "Immediate" ? (
-                        <span className="workmember svg__iconbox svg__icon--alert "></span>
-                      ) : (
-                        ""
-                      )}
-                      {/* {option.Title == "Bottleneck" ? (
+              {impTaskCategoryType?.map(
+                (option) =>
+                  option.Title !== "Bottleneck" && (
+                    <div
+                      className={
+                        ServicesTaskCheck
+                          ? "serviepannelgreena d-flex"
+                          : "d-flex"
+                      }
+                      key={option.Id}
+                    >
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        id={option.Id}
+                        value={option.Id}
+                        checked={selectedCatId?.includes(option.Id)}
+                        onChange={(event) =>
+                          handleCategoryChange(event, option.Id, option)
+                        }
+                      />
+                      <a className="alignCenter" title={option.Title}>
+                        {option.Title == "Immediate" ? (
+                          <span className="workmember svg__iconbox svg__icon--alert "></span>
+                        ) : (
+                          ""
+                        )}
+                        {/* {option.Title == "Bottleneck" ? (
                       <span className="workmember svg__iconbox svg__icon--bottleneck "></span>
                     ) : (
                       ""
                     )} */}
-                      {option.Title == "Favorite" ? (
-                        <span className="workmember svg__iconbox svg__icon--Star "></span>
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                    <label htmlFor={option.Id} className="ms-2">
-                      {option.Title}
-                    </label>
-                  </div>)
-              ))}
+                        {option.Title == "Favorite" ? (
+                          <span className="workmember svg__iconbox svg__icon--Star "></span>
+                        ) : (
+                          ""
+                        )}
+                      </a>
+                      <label htmlFor={option.Id} className="ms-2">
+                        {option.Title}
+                      </label>
+                    </div>
+                  )
+              )}
             </>
-          }
+          )}
           <footer className="float-end">
             <button
               type="button"
@@ -1942,53 +2084,52 @@ const inlineEditingcolumns = (props: any) => {
       </Panel>
       {/* Item Rank Popup  */}
       <Panel
-      onRenderHeader={() => onRenderCustomHeader("Item Rank")}
-      isOpen={ItemRankPopup}
-      customWidth="500px"
-      onDismiss={() => setItemRankPopup(false)}
-      isBlocking={ItemRankPopup}
-    >
-      <div
-        className={
-          ServicesTaskCheck
-            ? "serviepannelgreena inline-update-priority"
-            : "inline-update-priority"
-        }
+        onRenderHeader={() => onRenderCustomHeader("Item Rank")}
+        isOpen={ItemRankPopup}
+        customWidth="500px"
+        onDismiss={() => setItemRankPopup(false)}
+        isBlocking={ItemRankPopup}
       >
-        <div className="modal-body">
-          <div>
-            <ul className="list-none">
-              {TaskItemRank.map((item, index) => (
-                <li key={index}>
-                  <div className="SpfxCheckRadio">
-                    <input
-                      className="radio"
-                      type="radio"
-                      checked={ItemRankPortfolio === item.rank}
-                      onChange={() => setItemRankPortfolio(item.rank)}
-                    />
-                    <label className="form-check-label mx-2">
-                      {item.rankTitle}
-                    </label>
-                  </div>
-                </li>
-              ))}
-            </ul>
+        <div
+          className={
+            ServicesTaskCheck
+              ? "serviepannelgreena inline-update-priority"
+              : "inline-update-priority"
+          }
+        >
+          <div className="modal-body">
+            <div>
+              <ul className="list-none">
+                {TaskItemRank.map((item, index) => (
+                  <li key={index}>
+                    <div className="SpfxCheckRadio">
+                      <input
+                        className="radio"
+                        type="radio"
+                        checked={ItemRankPortfolio === item.rank}
+                        onChange={() => setItemRankPortfolio(item.rank)}
+                      />
+                      <label className="form-check-label mx-2">
+                        {item.rankTitle}
+                      </label>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
+
+          <footer className="float-end">
+            <button
+              type="button"
+              className="btn btn-primary px-3"
+              onClick={UpdateItemRank}
+            >
+              Save
+            </button>
+          </footer>
         </div>
-
-        <footer className="float-end">
-          <button
-            type="button"
-            className="btn btn-primary px-3"
-            onClick={UpdateItemRank}
-          >
-            Save
-          </button>
-        </footer>
-      </div>
-    </Panel>
-
+      </Panel>
 
       {/* Item Rank Popup End  */}
       <Panel
@@ -1999,19 +2140,19 @@ const inlineEditingcolumns = (props: any) => {
         type={PanelType.medium}
       >
         <div>
-          {props.pageName !== "portfolioprofile" ?
+          {props.pageName !== "portfolioprofile" ? (
             <TeamConfigurationCard
               AllListId={props?.AllListId}
               ItemInfo={props?.item}
               parentCallback={DDComponentCallBack}
             ></TeamConfigurationCard>
-            :
+          ) : (
             <TeamConfigurationCards
               ItemInfo={props?.item}
               AllListId={props?.AllListId}
               parentCallback={DDComponentCallBack}
             ></TeamConfigurationCards>
-          }
+          )}
           <footer className="float-end">
             <button
               type="button"
@@ -2054,11 +2195,15 @@ const inlineEditingcolumns = (props: any) => {
           onClick={() => setTaskCategoriesPopup(true)}
           style={{ display: "flex", width: "100%", height: "100%" }}
         >
-
-          {props?.item?.Categories}  &nbsp;
+          {props?.item?.Categories} &nbsp;
           {showEditPencil && (
             <a className="pancil-icons ml-auto">
-              <span className="svg__iconbox svg__icon--editBox"></span>
+              <span
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="Edit Categories"
+                className="svg__iconbox svg__icon--editBox"
+              ></span>
             </a>
           )}
         </span>
@@ -2102,7 +2247,11 @@ const inlineEditingcolumns = (props: any) => {
                             key={item.id}
                             onClick={
                               () =>
-                                selectSubTaskCategory(item?.Title, item?.Id, item)
+                                selectSubTaskCategory(
+                                  item?.Title,
+                                  item?.Id,
+                                  item
+                                )
                               // setSelectedCategoryData([item], "For-Auto-Search")
                             }
                           >
@@ -2115,7 +2264,6 @@ const inlineEditingcolumns = (props: any) => {
                 ) : null}
               </div>
             </div>
-
 
             {instantCategories?.map((item: any) => {
               return (
@@ -2143,24 +2291,24 @@ const inlineEditingcolumns = (props: any) => {
                     {!instantCategories?.some(
                       (selectedCat: any) => selectedCat?.Title == type?.Title
                     ) && (
-                        <div className="block alignCenter">
-                          <a
-                            className="wid90"
-                            style={{ color: "#fff !important" }}
-                            target="_blank"
-                            data-interception="off"
-                          >
-                            {type.Title}
-                          </a>
-                          <span
-                            className="bg-light ml-auto svg__iconbox svg__icon--cross"
-                            onClick={() =>
-                              selectSubTaskCategory(type?.Title, type?.Id, type)
-                            }
-                          ></span>
-                          {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
-                        </div>
-                      )}
+                      <div className="block alignCenter">
+                        <a
+                          className="wid90"
+                          style={{ color: "#fff !important" }}
+                          target="_blank"
+                          data-interception="off"
+                        >
+                          {type.Title}
+                        </a>
+                        <span
+                          className="bg-light ml-auto svg__iconbox svg__icon--cross"
+                          onClick={() =>
+                            selectSubTaskCategory(type?.Title, type?.Id, type)
+                          }
+                        ></span>
+                        {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
+                      </div>
+                    )}
                   </>
                 );
               })}
@@ -2190,9 +2338,13 @@ const inlineEditingcolumns = (props: any) => {
       {UpdateFeatureType && (
         <Smartmetadatapickerin
           Call={Smartmetadatafeature}
-          selectedFeaturedata={selectedFeatureTypeData?.Id != undefined ? [selectedFeatureTypeData] : []}
+          selectedFeaturedata={
+            selectedFeatureTypeData?.Id != undefined
+              ? [selectedFeatureTypeData]
+              : []
+          }
           AllListId={props?.AllListId}
-          TaxType='Feature Type'
+          TaxType="Feature Type"
           usedFor="Single"
         ></Smartmetadatapickerin>
       )}

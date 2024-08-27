@@ -293,7 +293,7 @@ const Picker = (item: any) => {
         return (
             <>
                 <div className="subheading">
-                    Select Category
+               Select Category
                 </div>
                 <Tooltip ComponentId="1741" />
             </>

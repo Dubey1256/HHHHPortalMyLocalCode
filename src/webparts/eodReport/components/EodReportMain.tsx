@@ -1407,7 +1407,7 @@ export const EodReportMain = (props: any) => {
                             item.ProjectTitle = item?.Project?.Title;
                             item.ProjectId = item?.Project?.Id;
                             item.projectStructerId = item?.Project?.PortfolioStructureID
-                            item.smartTimeTotal = item?.TotalTime != undefined ? (item?.TotalTime / 60).toFixed(2) : '';
+                           
                             const title = item?.Project?.Title || '';
                             const formattedDueDate = Moment(item?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
                             item.joinedData = [];
@@ -1415,6 +1415,7 @@ export const EodReportMain = (props: any) => {
                                 item.joinedData.push(`Project ${item?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                             }
                         }
+                        item.smartTimeTotal = item?.TotalTime != undefined ? (item?.TotalTime / 60).toFixed(2) : '';
                         item.ID = item?.ID;
                         item.listId = listIds?.listId;
                         item.siteType = listIds?.Title;
