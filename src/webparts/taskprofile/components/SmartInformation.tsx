@@ -377,6 +377,14 @@ const SmartInformation = (props: any, ref: any) => {
 
             if (allSmartInformationglobal.length == allSmartInformationglobaltagdocuments.length) {
               let initialData = allSmartInformationglobaltagdocuments.slice(0, 5);
+              initialData?.map((itm: any,index:any) => {
+                if (index === 0) {
+                  setsmartInformationArrow(0)
+                  setSlArrowDownup(true)
+                  setenlargeSlArrowDownup(true)
+                  setenlargeInformationArrow(0)
+                }
+              })              
               if (initialData?.length == 5) {
                 setshowmore(true)
               }
@@ -1215,31 +1223,31 @@ const SmartInformation = (props: any, ref: any) => {
     return isExists;
   }
   const handlesearchingvalue = (event: any) => {
-    const value = event.target.value.trim(); 
+    const value = event.target.value.trim();
     let filtersmartvalue: any = [];
-    setsearchvalue(event.target.value);   
-    if (value) {           
-      const regex = new RegExp(value.split(/\s+/).map((word:any) => `(?=.*${word})`).join(''), 'i');
+    setsearchvalue(event.target.value);
+    if (value) {
+      const regex = new RegExp(value.split(/\s+/).map((word: any) => `(?=.*${word})`).join(''), 'i');
       copySmartInfo.forEach((val: any) => {
-        if (regex.test(val?.Title)) {          
+        if (regex.test(val?.Title)) {
           if (!IsitemExists(filtersmartvalue, val)) {
             filtersmartvalue.push(val);
-          }          
-        }       
-      });      
+          }
+        }
+      });
     } else {
       filtersmartvalue = copySmartInfo;
     }
     setSmartInformation(filtersmartvalue);
     if (showmore) {
       setshowmore(false)
-    }    
+    }
   }
 
   const handleenlargesearchingvalue = (event: any) => {
     const value = event.target.value.trim();
     let filtersmartvalue: any = [];
-    setEnlargesearchvalue(event.target.value)   
+    setEnlargesearchvalue(event.target.value)
     if (value) {
       const regex = new RegExp(value.split(/\s+/).map((word: any) => `(?=.*${word})`).join(''), 'i');
       copySmartInfo.forEach((val: any) => {
@@ -1255,8 +1263,8 @@ const SmartInformation = (props: any, ref: any) => {
     setshowenlargeSmartInfo(filtersmartvalue)
     if (showmore) {
       setshowmore(false)
-    }              
-   
+    }
+
   }
 
 

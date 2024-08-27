@@ -1175,12 +1175,16 @@ function CreateTaskComponent(props: any) {
                             await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Auto-Assignment", SiteURL: AllListId.siteUrl, ItemDetails: data.data, Context: AllListId.Context, RequiredListIds: AllListId, AllTaskUser: taskUsers, Status: 0 })
                             let assignedToIds: any[] = [];
                             let responsibleTeamIds: any[] = [];
-                            data?.data?.TaskAssignedUsers?.map((users: any) => {
-                                assignedToIds.push(users.AssingedToUserId)
-                            })
-                            data?.data?.TaskResponsibleTeam?.map((teamMember: any) => {
-                                responsibleTeamIds.push(teamMember.AssingedToUserId)
-                            })
+                            if (data?.data?.TaskAssignedUsers.length > 0) {
+                                data?.data?.TaskAssignedUsers?.map((users: any) => {
+                                    assignedToIds.push(users.AssingedToUserId)
+                                })
+                            }
+                            if (data?.data?.TaskResponsibleTeam.length > 0) {
+                                data?.data?.TaskResponsibleTeam?.map((teamMember: any) => {
+                                    responsibleTeamIds.push(teamMember.AssingedToUserId)
+                                })
+                            }
                             let updateTask: any = {}
                             updateTask.AssignedToId = {results: assignedToIds ? assignedToIds : []}
                             updateTask.TeamMembersId = {results: assignedToIds ? assignedToIds : []}
@@ -2181,71 +2185,69 @@ function CreateTaskComponent(props: any) {
             </footer>
 
 
-            {(IsOpenPortfolio || ProjectManagementPopup) && (
-                <ServiceComponentPortfolioPopup
-                    props={CMSToolComponent}
-                    Dynamic={AllListId}
-                    Call={ComponentServicePopupCallBack}
-                    selectionType={"Single"}
-                    groupedData={IsOpenPortfolio == true ? groupedComponentData : groupedProjectData}
-                    showProject={ProjectManagementPopup}
-                />
-            )}
-            {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup context={props?.SelectedProp.Context} SDCTaskDetails={burgerMenuTaskDetails}
-                sendApproverMail={sendApproverMail} AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} pageType={'createTask'} /> : ''}
+                {(IsOpenPortfolio || ProjectManagementPopup) && (
+                    <ServiceComponentPortfolioPopup
+                        props={CMSToolComponent}
+                        Dynamic={AllListId}
+                        Call={ComponentServicePopupCallBack}
+                        selectionType={"Single"}
+                        groupedData={IsOpenPortfolio == true ? groupedComponentData : groupedProjectData}
+                        showProject={ProjectManagementPopup}
+                    />
+                )}
+                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup context={props?.SelectedProp.Context} SDCTaskDetails={burgerMenuTaskDetails}
+                    sendApproverMail={sendApproverMail} AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} pageType={'createTask'} /> : ''}
+            </div >
+            <span className="rightSideWebparts ms-4">
+                <div className="card no-border mb-3">
+                    <div className="card-body">
+                        <h6 className="f-15 title titleBorder">Suggested Projects</h6>
+                        <input
+                            type="search"
+                            value={searchedSuggestedProject}
+                            onChange={(e) => searchSuggestedProjects(e)}
+                            placeholder="Search Suggested Projects"
+                            className='full-width px-1 py-0 mt-1'
+                        />
+                        {SuggestedProjectsOfporfolio?.length > 0 ? <ul className="SpfxCheckRadio list-group list-group-flush">
+                            {SuggestedProjectsOfporfolio?.map((project: any) => {
+                                return (
+                                    <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action no-border ellipsisTextList' >
+                                        <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
+                                        <a title={`${project?.PortfolioStructureID} - ${project?.Title}`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
+                                            data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title}`}</a>
+                                    </li>
+                                )
+                            })}
+                        </ul> : <h6 className="f-15 title">No Suggested Projects</h6>}
+                    </div>
+                </div>
+                <div className="card no-border mb-3">
+                    <div className="card-body">
+                        <h6 className="f-15 title titleBorder">Relevant Projects</h6>
+                        <input
+                            type="search"
+                            value={searchedRelevantProject}
+                            onChange={(e) => searchRelevantProjects(e)}
+                            placeholder="Search Relevant Projects"
+                            className='full-width px-1 py-0 mt-1'
+                        />
+                        {relevantProjects?.length > 0 ? <ul className="SpfxCheckRadio list-group list-group-flush m-0">
+                            {relevantProjects?.map((project: any) => {
+                                return (
+                                    <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action no-border ellipsisTextList'>
+                                        <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
+                                        <a title={`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
+                                            data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`}</a>
+                                    </li>
+                                )
+                            })}
+                        </ul> : <h6 className="f-15 title">No Relevant Projects</h6>}
+                    </div>
+                </div>
+            </span>
         </div >
-        <div className="col-3">
-            <div className='Suggested-aside'>
-            <div className="card mb-3 ">
-                <div className="card-body ">
-                    <h6 className="f-15 title titleBorder">Suggested Projects</h6>
-                    <input
-                        type="search"
-                        value={searchedSuggestedProject}
-                        onChange={(e) => searchSuggestedProjects(e)}
-                        placeholder="Search Suggested Projects"
-                        className='full-width px-1 py-0 mt-1'
-                    />
-                    {SuggestedProjectsOfporfolio?.length > 0 ? <ul className="SpfxCheckRadio list-group list-group-flush">
-                        {SuggestedProjectsOfporfolio?.map((project: any) => {
-                            return (
-                                <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action' >
-                                    <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
-                                    <a className="hreflink text-content" title={`${project?.PortfolioStructureID} - ${project?.Title}`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
-                                        data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title}`}</a>
-                                </li>
-                            )
-                        })}
-                    </ul> : <h6 className="f-15 title">No Suggested Projects</h6>}
-                </div>
-            </div>
-            <div className="card mb-3">
-                <div className="card-body">
-                    <h6 className="f-15 title titleBorder">Relevant Projects</h6>
-                    <input
-                        type="search"
-                        value={searchedRelevantProject}
-                        onChange={(e) => searchRelevantProjects(e)}
-                        placeholder="Search Relevant Projects"
-                        className='full-width px-1 py-0 mt-1'
-                    />
-                    {relevantProjects?.length > 0 ? <ul className="SpfxCheckRadio  list-group list-group-flush">
-                        {relevantProjects?.map((project: any) => {
-                            return (
-                                <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action'>
-                                    <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
-                                    <a className="hreflink text-content" title={`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
-                                        data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`}</a>
-                                </li>
-                            )
-                        })}
-                    </ul> : <h6 className="f-15 title">No Relevant Projects</h6>}
-                </div>
-            </div>
-            </div>
-        </div>
-    </div>
-    </>
+        </>
     )
 }
 
