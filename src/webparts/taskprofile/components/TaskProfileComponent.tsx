@@ -2562,11 +2562,11 @@ const CreateHHHTask :any= props?.props?.Context ?._pageContext ?._legacyPageCont
                                                         </div>
                                                     </dl>
                                                 }
-                                   {CreateHHHTask && <span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?TaskId=${state?.Result?.Id}&Title=${state?.Result?.Title}&DueDate=${state?.Result?.DueDate}&Priority=${state?.Result?.Priority}&CreatedBy=${state?.Result?.Author?.[0]?.Title}&CreatedDate=${state?.Result?.Created}&ExternalSite=1&TaskSite=${listName}&siteAbsoluteUrl=${propsValue?.siteUrl}&TaskUrl=${state?.Result?.component_url?.Url}`} target="_blank" data-interception="off">Create HHHH Task</a></span>}
+                                   {CreateHHHTask && <span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?TaskId=${state?.Result?.Id}&Title=${state?.Result?.Title}&DueDate=${state?.Result?.DueDate}&Priority=${state?.Result?.Priority}&CreatedBy=${state?.Result?.Author?.[0]?.Title}&CreatedDate=${state?.Result?.Created}&ExternalSite=1&TaskSite=${listName}&siteAbsoluteUrl=${AllListId?.siteUrl}&TaskUrl=${state?.Result?.component_url?.Url}`} target="_blank" data-interception="off">Create HHHH Task</a></span>}
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="row">
+                                    <div className="row">propsValue?.siteUrl
                                         <div className='p-0'> {state?.Result?.Id != undefined && <KeyDocuments AllListId={AllListId} Context={propsValue?.Context} siteUrl={propsValue?.siteUrl} user={taskUsers} DocumentsListID={propsValue?.DocumentsListID} ID={itemID} siteName={listName} folderName={state?.Result?.Title} keyDoc={true}></KeyDocuments>}</div>
                                     </div>
                                     <section>
