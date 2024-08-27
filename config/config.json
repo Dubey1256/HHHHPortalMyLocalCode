@@ -562,6 +562,14 @@
           "manifest": "./src/webparts/importTaskPortfolioItems/ImportTaskPortfolioItemsWebPart.manifest.json"
         }
       ]
+    },
+    "document-outlook-mails-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/documentOutlookMails/DocumentOutlookMailsWebPart.js",
+          "manifest": "./src/webparts/documentOutlookMails/DocumentOutlookMailsWebPart.manifest.json"
+        }
+      ]
     }
   },
   
@@ -660,6 +668,7 @@
     "GmbhHomePageWebPartStrings": "lib/webparts/gmbhHomePage/loc/{locale}.js",
     "ManageQuestionWebPartStrings": "lib/webparts/manageQuestion/loc/{locale}.js",
     "EodReportWebPartStrings": "lib/webparts/eodReport/loc/{locale}.js",
-    "ImportTaskPortfolioItemsWebPartStrings": "lib/webparts/importTaskPortfolioItems/loc/{locale}.js"
+    "ImportTaskPortfolioItemsWebPartStrings": "lib/webparts/importTaskPortfolioItems/loc/{locale}.js",
+    "DocumentOutlookMailsWebPartStrings": "lib/webparts/documentOutlookMails/loc/{locale}.js"
   }
 }
