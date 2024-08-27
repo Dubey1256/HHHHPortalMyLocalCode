@@ -144,7 +144,7 @@ const TaskStatusTbl = (Tile: any) => {
     TaskTimeSheetListID: ContextData?.propsValue?.TaskTimeSheetListID,
     isShowSiteCompostion: true,
     Context: ContextData?.propsValue?.Context,
-    isShowTimeEntry: ContextData?.propsValue?.TimeEntry == 'true' ? true : false
+    isShowTimeEntry: ContextData?.propsValue?.TimeEntry == 'true' || ContextData?.propsValue?.TimeEntry == true ? true : false
   };
   if (AllapprovalTask && AllapprovalTask.length > 0 && flagApproval != true) {
     flagApproval = true
