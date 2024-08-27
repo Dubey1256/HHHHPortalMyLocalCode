@@ -685,7 +685,7 @@ export default function SmartMetadataEditPopup(props: any) {
         setopensmartmetapopup(false);
     }
     const saveselectedData = () => {
-        setTaggedsmartFilterArray(selectfilterarray);
+        // setTaggedsmartFilterArray(selectfilterarray);
         setFilterTypeData(selectfilterarray);
         setopensmartmetapopup(false);
     }
