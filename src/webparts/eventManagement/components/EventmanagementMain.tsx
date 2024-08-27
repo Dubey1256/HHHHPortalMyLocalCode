@@ -974,7 +974,7 @@ const EventManagementmain = (props: any) => {
                 </div>
             </Panel>
             {isEditModalOpen &&
-                <EventEditPopup callBack={closeEditPopup} EditEventData={selectedItemId} AllListId={props?.props} Context={propsvalue?.context} editdocpanel={isEditModalOpen} />
+                <EventEditPopup callBack={closeEditPopup} EditEventData={selectedItemId} AllListId={props?.props} Context={propsvalue?.Context} editdocpanel={isEditModalOpen} />
             }
         </>
     )
