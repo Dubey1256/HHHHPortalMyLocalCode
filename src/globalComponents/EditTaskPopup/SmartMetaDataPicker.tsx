@@ -107,17 +107,17 @@ const Picker = (item: any) => {
             success: function (data) {
                 AllTaskusers = data.d.results;
                 $.each(AllTaskusers, function (index: any, item: any) {
-                    if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
+                    if (item?.Title?.toLowerCase() == 'pse' && item?.TaxType == 'Client Category') {
                         item.newTitle = 'EPS';
                     }
-                    else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
+                    else if (item?.Title?.toLowerCase() == 'e+i' && item?.TaxType == 'Client Category') {
                         item.newTitle = 'EI';
                     }
-                    else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
+                    else if (item?.Title?.toLowerCase() == 'education' && item?.TaxType == 'Client Category') {
                         item.newTitle = 'Education';
                     }
                     else {
-                        item.newTitle = item.Title;
+                        item.newTitle = item?.Title;
                     }
                     AllMetaData.push(item);
                 })

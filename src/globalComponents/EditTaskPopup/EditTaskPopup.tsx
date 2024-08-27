@@ -51,7 +51,7 @@ import SmartPriorityHover from "./SmartPriorityHover";
 import UXDesignPopupTemplate from "./UXDesignPopupTemplate";
 import ReactPopperTooltipSingleLevel from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import RecurringTask from "../RecurringTask";
-
+let UxTaskConfiguration:any=[];
 let PortfolioItemColor: any = "";
 let taskUsers: any = [];
 let AllTaskUser: any = [];
@@ -469,7 +469,13 @@ const EditTaskPopup = (Items: any) => {
                         } else {
                             SmartItemData.newTitle = SmartItemData.Title;
                         }
-                    } else {
+                    }
+                    else if(SmartItemData?.TaxType == "UxTaskConfiguration"){
+                       let  CopyUxTaskConfiguration :any=  JSON.parse(SmartItemData?.Configurations)
+                       UxTaskConfiguration.push(...CopyUxTaskConfiguration)
+                    } 
+                    
+                    else {
                         SmartItemData.newTitle = SmartItemData.Title;
                     }
                 });
@@ -833,7 +839,7 @@ const EditTaskPopup = (Items: any) => {
                     setImmediateStatus(item.TaskCategories?.some((category: any) => category.Title === "Immediate"));
                     setOnlyCompletedStatus(item.TaskCategories?.some((category: any) => category.Title === "Only Completed"));
                     setDesignStatus(item.TaskCategories?.some((category: any) => category.Title === "Design" || category.Title === "User Experience - UX"));
-                    setDesignNewTemplates(item.TaskCategories?.some((category: any) => category.Title === "UX-New"))
+                    setDesignNewTemplates(item.TaskCategories?.some((category: any) =>UxTaskConfiguration.some((config:any)=>category.Title ===config?.Title ) ))
 
                 }
                 if (item.Portfolio != undefined && item.Portfolio?.Title != undefined) {
@@ -1575,10 +1581,11 @@ const EditTaskPopup = (Items: any) => {
 
 
                 //  code by vivek
-
-                if (selectedData?.Title == "UX-New") {
+              
+                if (UxTaskConfiguration?.some((uxdata:any)=>uxdata?.Title==selectedData?.Title)) {
                     let firstIndexData: any = []
-                    if (EditDataBackup?.Categories?.includes('UX-New')) {
+                    
+                    if (UxTaskConfiguration?.some((uxdata:any)=>EditDataBackup?.Categories?.includes(uxdata?.Title))) {
                         setDesignNewTemplates(true)
                     }
                     else {
@@ -1623,10 +1630,11 @@ const EditTaskPopup = (Items: any) => {
                     BackupTaskCategoriesData.push(existingData);
                 }
                 // code by vivek
-
-                if (existingData?.Title == "UX-New") {
+                
+                if (UxTaskConfiguration?.some((uxdata:any)=>uxdata?.Title==existingData?.Title)) {
                     let firstIndexData: any = []
-                    if (EditDataBackup?.Categories?.includes('UX-New')) {
+                    
+                    if (UxTaskConfiguration?.some((uxdata:any)=>EditDataBackup?.Categories?.includes(uxdata?.Title))) {
                         setDesignNewTemplates(true)
                     } else {
                         const RestructureData = JSON.parse(JSON.stringify(EditDataBackup))
