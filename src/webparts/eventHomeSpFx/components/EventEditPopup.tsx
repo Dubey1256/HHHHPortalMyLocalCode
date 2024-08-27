@@ -676,7 +676,7 @@ const Editpopup = (props: any) => {
                     </div>
 
                     <div className="footer-right">
-                        <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Events/Forms/EditForm.aspx?ID=${EventItem?.Id != null ? EventItem?.Id : null}`}>Open out-of-the-box form</a></span>
+                        <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/List/Events/EditForm.aspx?ID=${EventItem?.Id != null ? EventItem?.Id : null}`}>Open out-of-the-box form</a></span>
                         <button type='button' className='btn btn-primary mx-2' onClick={UpdateDetails}>
                             Save
                         </button>
