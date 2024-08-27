@@ -93,8 +93,9 @@ const EventManagementmain = (props: any) => {
         let lasteventscreatedbyme: any = [];
         let upComingevents: any = [];
         web.lists.getById('860a08d5-9711-4d8e-bd26-93fe09362bd4').items
-            .select('ID', 'Title', 'Description', 'SmartActivities/Title', 'SmartActivities/Id', 'SmartTopics/Title', 'SmartTopics/Id', 'SmartPages/Title', 'SmartPages/Id', 'FileLeafRef', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Title', 'Editor/Id', 'EventDate', 'EndDate', 'Location')
+            .select('ID', 'Title', 'EventDescription', 'SmartActivities/Title', 'SmartActivities/Id', 'SmartTopics/Title', 'SmartTopics/Id', 'SmartPages/Title', 'SmartPages/Id', 'FileLeafRef', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Title', 'Editor/Id', 'EventDate', 'EndDate', 'Location')
             .expand("Author", "Editor", "SmartActivities", "SmartTopics", "SmartPages")
+            .top(4999)
             .get()
             .then((results: any) => {                
                 console.log(results);
@@ -104,6 +105,28 @@ const EventManagementmain = (props: any) => {
                         var bDate = new Date(b['Created']);
                         return aDate > bDate ? -1 : aDate < bDate ? 1 : 0;
                     });
+                    results.map((eventitem: any) => {                       
+                        if (eventitem.EventDate != undefined)
+                            eventitem.UpdateEventDate = moment(eventitem.EventDate).format("DD MMM YYYY");
+
+                        if (eventitem.EndDate != undefined)
+                            eventitem.UpdateEndDate = moment(eventitem.EndDate).format("DD MMM YYYY");
+
+                        if (eventitem.Created !== undefined)
+                            eventitem.UpdateCreatedDate = moment(eventitem.Created).format("DD MMM YYYY");
+
+                        if (eventitem.Modified)
+                            eventitem.UpdateModifiedDate = moment(eventitem.Modified).format("DD MMM YYYY");
+
+                        eventitem.EventDescription1 = '';
+                        try {
+                            if (eventitem.EventDescription != undefined && eventitem.EventDescription != '')
+                                eventitem.EventDescription1 = $.parseHTML(eventitem.Description)[0].textContent;
+                        }
+                        catch (e) {
+                            console.log(e);
+                        }                       
+                    })
                     results.map((itm: any) => {
                         if (lasteventsCreated.length < 10 && (new Date(itm.Created).setHours(0, 0, 0, 0) <= new Date().setHours(0, 0, 0, 0))) {
                             if (!isItemExists(lasteventsCreated, itm))
@@ -246,6 +269,7 @@ const EventManagementmain = (props: any) => {
             setopenpopup(false)
             setTimeout(() => {                
                 alert("All folders has been created cuccessfully!")
+                loadAllsiteEvents()
             },200)
         } catch (error) {
             console.error('Error creating image folder:', error);
@@ -778,17 +802,17 @@ const EventManagementmain = (props: any) => {
                                 <span className="PublishedDate valign-middle">
                                     <div className="justify-content-start valign-middle">
                                         {/* <CustomToolTip Description={event.IsVisible === 'Ready to Publish'?'Ready to Publish':event.IsVisible === 'Draft'?'Draft':'Published'} usedFor={event.IsVisible === 'Ready to Publish'?'Ready to Publish':event.IsVisible === 'Draft'?'Draft':'Published'} />                                             */}
-                                        <a className="NewsEventsList-ItemTitle" target="_blank" href={`${propsvalue?.siteUrl}/SitePages/EventDetail.aspx?ItemID=${event.Id}&Site='GmBH'`} data-interception="off">
+                                        <a className="NewsEventsList-ItemTitle" target="_blank" href={`${propsvalue?.siteUrl}/SitePages/EventDetail.aspx?ItemId=${event.Id}&Site=GmbH`} data-interception="off">
                                             {event.Title} </a>
-                                        {event.Description ? <span className='hover-text'>
+                                        {event?.EventDescription ? <span className='hover-text'>
                                             <span className="svg__iconbox svg__icon--info alignIcon"></span>
-                                            <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event.Description }}></span>
+                                            <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event?.EventDescription }}></span>
                                         </span> : ''}
 
                                         {(event.EventDescription1 != undefined && event.EventDescription1 != null) || (event.Item_x0020_Cover != undefined && event.Item_x0020_Cover != '') && <span className="popover-markup">
                                             <span ><span className="svg-info-icon"></span></span>
                                             <div className="col-sm-12 clearfix">
-                                                {event?.Description != undefined && event?.Description != null && event?.Description != '' && <div className="popover-Content">
+                                                {event?.EventDescription != undefined && event?.EventDescription != null && event?.EventDescription != '' && <div className="popover-Content">
                                                     {event.Title != undefined && <p className="popover-Title">
                                                         {event.Title}
                                                     </p>}
@@ -797,7 +821,7 @@ const EventManagementmain = (props: any) => {
                                                     </p>}
                                                     <span className='hover-text'>
                                                         <span className="svg__iconbox svg__icon--info alignIcon"></span>
-                                                        <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event.Description }}></span>
+                                                        <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event?.EventDescription }}></span>
                                                     </span>
                                                     <div className="clearfix popover-Desc">
                                                         {/* <div id="imagedetail">
@@ -805,7 +829,7 @@ const EventManagementmain = (props: any) => {
                                                                     ng-src="{{event.Item_x0020_Cover}}?RenditionID=12" title="" />
 
                                                             </div> */}
-                                                        {/* <div ng-bind-html="event?.Description | trustedHTML">
+                                                        {/* <div ng-bind-html="event?.EventDescription | trustedHTML">
                                                             </div> */}
                                                     </div>
                                                 </div>}
@@ -839,15 +863,15 @@ const EventManagementmain = (props: any) => {
                                 <span className="PublishedDate valign-middle">
                                     <div className="justify-content-start valign-middle">
                                         {/* <CustomToolTip Description={event.IsVisible === 'Ready to Publish'?'Ready to Publish':event.IsVisible === 'Draft'?'Draft':'Published'} usedFor={event.IsVisible === 'Ready to Publish'?'Ready to Publish':event.IsVisible === 'Draft'?'Draft':'Published'} />                                             */}
-                                        <a className="NewsEventsList-ItemTitle" href={`${propsvalue?.siteUrl}/SitePages/EventDetail.aspx?ItemID=${event.Id}&Site='GmBH'`} data-interception="off" target="_blank">{event.Title}</a>
-                                        {event.Description ? <span className='hover-text'>
+                                        <a className="NewsEventsList-ItemTitle" href={`${propsvalue?.siteUrl}/SitePages/EventDetail.aspx?ItemId=${event.Id}&Site=GmbH`} data-interception="off" target="_blank">{event.Title}</a>
+                                        {event?.EventDescription ? <span className='hover-text'>
                                             <span className="svg__iconbox svg__icon--info alignIcon"></span>
-                                            <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event.Description }}></span>
+                                            <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event?.EventDescription }}></span>
                                         </span> : ''}
                                         {(event.EventDescription1 != undefined && event.EventDescription1 != null) || (event.Item_x0020_Cover != undefined && event.Item_x0020_Cover != '') && <span className="popover-markup">
                                             {/* <span ><span className="svg-info-icon"></span></span> */}
                                             <div className="col-sm-12 clearfix">
-                                                {event?.Description != undefined && event?.Description != null && event?.Description != '' && <div className="popover-Content">
+                                                {event?.EventDescription != undefined && event?.EventDescription != null && event?.EventDescription != '' && <div className="popover-Content">
                                                     {event.Title != undefined && <p className="popover-Title">
                                                         {event.Title}
                                                     </p>}
@@ -856,7 +880,7 @@ const EventManagementmain = (props: any) => {
                                                     </p>}
                                                     <span className='hover-text'>
                                                         <span className="svg__iconbox svg__icon--info alignIcon"></span>
-                                                        <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event.Description }}></span>
+                                                        <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event?.EventDescription }}></span>
                                                     </span>
                                                     {/* <div className="clearfix popover-Desc">
                                                                 <div id="imagedetail">
@@ -864,7 +888,7 @@ const EventManagementmain = (props: any) => {
                                                                         ng-src="{{event.Item_x0020_Cover}}?RenditionID=12" title=""/>
 
                                                                 </div>
-                                                                <div ng-bind-html="event?.Description | trustedHTML">
+                                                                <div ng-bind-html="event?.EventDescription | trustedHTML">
                                                                 </div>
                                                             </div> */}
                                                 </div>}
@@ -898,16 +922,16 @@ const EventManagementmain = (props: any) => {
                                 <span className="PublishedDate valign-middle">
                                     <div className="justify-content-start valign-middle">
                                         {/* <CustomToolTip Description={event.IsVisible === 'Ready to Publish'?'Ready to Publish':event.IsVisible === 'Draft'?'Draft':'Published'} usedFor={event.IsVisible === 'Ready to Publish'?'Ready to Publish':event.IsVisible === 'Draft'?'Draft':'Published'} />                                             */}
-                                        <a className="NewsEventsList-ItemTitle" href={`${propsvalue?.siteUrl}/SitePages/EventDetail.aspx?ItemID=${event.Id}&Site='GmBH'`} data-interception="off" target="_blank">{event.Title}</a>
-                                        {event.Description ? <span className='hover-text'>
+                                        <a className="NewsEventsList-ItemTitle" href={`${propsvalue?.siteUrl}/SitePages/EventDetail.aspx?ItemId=${event.Id}&Site=GmbH`} data-interception="off" target="_blank">{event.Title}</a>
+                                        {event?.EventDescription ? <span className='hover-text'>
                                             <span className="svg__iconbox svg__icon--info alignIcon"></span>
-                                            <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event.Description }}></span>
+                                            <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event?.EventDescription }}></span>
                                         </span> : ''}
 
                                         {(event.EventDescription1 != undefined && event.EventDescription1 != null) || (event.Item_x0020_Cover != undefined && event.Item_x0020_Cover != '') && <span className="popover-markup">
                                             {/* <span ><span className="svg-info-icon"></span></span> */}
                                             <div className="col-sm-12 clearfix">
-                                                {event?.Description != undefined && event?.Description != null && event?.Description != '' && <div className="popover-Content">
+                                                {event?.EventDescription != undefined && event?.EventDescription != null && event?.EventDescription != '' && <div className="popover-Content">
                                                     {event.Title != undefined && <p className="popover-Title">
                                                         {event.Title}
                                                     </p>}
@@ -916,7 +940,7 @@ const EventManagementmain = (props: any) => {
                                                     </p>}
                                                     <span className='hover-text'>
                                                         <span className="svg__iconbox svg__icon--info alignIcon"></span>
-                                                        <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event.Description }}></span>
+                                                        <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event?.EventDescription }}></span>
                                                     </span>                                                   
                                                 </div>}
                                             </div>
