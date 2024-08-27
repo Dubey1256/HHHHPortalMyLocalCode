@@ -935,7 +935,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       <div className={color ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1 "}>
         <div className='subheading'>
           <span className="siteColor">
-            Comment:{Title}{commentlength}
+            Comment : {Title} <span className='ms-1'>{`(${commentlength})`}</span>
           </span>
         </div>
         <Tooltip ComponentId="588" />
@@ -1253,7 +1253,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                   {this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 3 &&
                     <div className="MoreComments ng-hide">
                       <a className="MoreComments ng-binding ng-hide" title="Click to Reply" onClick={() => this.openAllCommentModal()}>
-                        All Comments({this.state.Result["Comments"]?.length})
+                        All Comments ({this.state.Result["Comments"]?.length})
                       </a>
                     </div>
                   }
