@@ -563,6 +563,7 @@
         }
       ]
     }
+    
   },
   
   "externals": {
@@ -661,5 +662,6 @@
     "ManageQuestionWebPartStrings": "lib/webparts/manageQuestion/loc/{locale}.js",
     "EodReportWebPartStrings": "lib/webparts/eodReport/loc/{locale}.js",
     "ImportTaskPortfolioItemsWebPartStrings": "lib/webparts/importTaskPortfolioItems/loc/{locale}.js"
+  
   }
 }
