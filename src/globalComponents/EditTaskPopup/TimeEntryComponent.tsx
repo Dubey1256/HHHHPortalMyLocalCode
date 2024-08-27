@@ -2935,7 +2935,7 @@ const TimeEntryPopup = (item: any) => {
         cell: ({ row }) => (
           <>
             <span  >
-              <div className="d-flex" >
+              <div className="alignCenter" >
                 <>
                   {row?.original?.show === true ? (
                     <span>

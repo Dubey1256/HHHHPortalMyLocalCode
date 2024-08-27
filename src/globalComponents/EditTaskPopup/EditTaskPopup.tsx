@@ -6154,7 +6154,7 @@ const EditTaskPopup = (Items: any) => {
                                                         }
                                                         data-interception="off"
                                                     >
-                                                        <span className="svg__iconbox svg__icon--link"></span>
+                                                        <span title="Open in New Tab" className="svg__iconbox svg__icon--link"></span>
                                                     </a>
                                                 </span>
                                             </div>
@@ -7337,7 +7337,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 ? (
-                                                                            <span className="hover-text alignCenter">
+                                                                            <span className="hover-text m-0 alignCenter">
                                                                                 <span onClick={() => openTaskUserPopup("Approval")} className="svg__iconbox svg__icon--Plus"></span>
                                                                                 <span className="tooltip-text pop-left">
                                                                                     Add User
@@ -8785,7 +8785,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     }
                                                                     data-interception="off"
                                                                 >
-                                                                    <span className="svg__iconbox svg__icon--link"></span>
+                                                                    <span title="Open in New Tab" className="svg__iconbox svg__icon--link"></span>
                                                                 </a>
                                                             </span>
                                                         </div>
