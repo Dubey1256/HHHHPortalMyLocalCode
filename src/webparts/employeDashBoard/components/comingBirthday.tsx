@@ -91,7 +91,7 @@ export default function ComingBirthday(UpcomingBday: any) {
         <>
             <div className="">
                 <div className='alignCenter'>
-                    {UpcomingBday?.config?.WebpartTitle != undefined && <div className=' text-body'>{UpcomingBday?.config?.WebpartTitle}</div>}
+                    {UpcomingBday?.config?.WebpartTitle != undefined && <div className=' text-body fw-bold'>{UpcomingBday?.config?.WebpartTitle}</div>}
                     <div className='boldClable f-16 empCol' style={{ marginLeft: "auto" }}>
                         {UpcomingBday?.IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(UpcomingBday?.config)}></span>}
                         {AllHrContactDetails.length} People</div>

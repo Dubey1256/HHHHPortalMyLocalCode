@@ -14,14 +14,22 @@ import { BsGlobe2 } from "react-icons/bs";
 import { FaMapLocationDot } from "react-icons/fa6";
 import { MdContactPhone } from "react-icons/Md";
 import { SlArrowRight, SlLocationPin } from "react-icons/sl";
+import { MSGraphClient } from '@microsoft/sp-http';
+import PageLoader from "../../../globalComponents/pageLoader";
 let allListId: any = {};
+let ContactData: any = []
 const ContactProfileComponent = (props: any) => {
     const baseUrl = props?.props?.Context?.pageContext?._web?.absoluteUrl;
     const MainSiteUrl = props?.props?.Context?.pageContext?.site?.absoluteUrl;
     let webs = new Web(baseUrl);
+    const [AllUserData, setAllUserData] = useState([]);
+    const [GroupData, setGroupData] = useState([]);
     const [Contacts, setContacts] = useState(null);
     const [Masterdata, setMasterdata] = React.useState<any>({});
     const [openEditpopup, setopenEditpopup] = useState(false)
+    const [isexistUser, setisexistUser] = useState(false)
+    const [loaded, setLoaded] = React.useState(false);
+    const [isPermission, setisPermission] = React.useState(true);
 
     React.useEffect(() => {
         allListId = {
@@ -48,6 +56,8 @@ const ContactProfileComponent = (props: any) => {
                 .get();
 
             if (data && data.length > 0) {
+                ContactData = data[0]
+                GetAllUsers()
                 setContacts(data[0]);
             }
         } catch (error) {
@@ -62,7 +72,83 @@ const ContactProfileComponent = (props: any) => {
             setContacts(updatedData);
         setopenEditpopup(false)
     }
+    const GetAllUsers = () => {
+        var query = "/_api/web/siteUsers";
+        var SiteUrl = baseUrl;
+        $.ajax({
+            url: SiteUrl + query,
+            method: "GET",
+            async: false,
+            headers: {
+                accept: "application/json;odata=verbose",
+                "content-Type": "application/json;odata=verbose",
+            },
+            success: function (data: any) {
+                setAllUserData(data?.d?.results); // Process the user data here
+                console.log(data?.d?.results)
+                data?.d?.results?.forEach((i: any) => {
+                    if (ContactData?.Email?.toLowerCase() == i?.Email?.toLowerCase()) {
+                        setisexistUser(true)
+                        setisPermission(false)
+                        console.log(i.Id)
+                        GetGroupsByUserId(i.Id)
+                    }
+                })
+            },
+            error: function (data: any) {
+                alert("An error occurred while fetching users");
+            },
+        });
+    };
 
+
+    const GetGroupsByUserId = (userId: number) => {
+        var query = `/_api/web/getUserById(${userId})/Groups`;
+        var SiteUrl = baseUrl;
+        $.ajax({
+            url: SiteUrl + query,
+            method: "GET",
+            async: false,
+            headers: {
+                accept: "application/json;odata=verbose",
+                "content-Type": "application/json;odata=verbose",
+            },
+            success: function (data: any) {
+                setGroupData(data?.d?.results); // Set the groups data here
+                console.log(data?.d?.results)
+            },
+            error: function (data: any) {
+                alert("You do not have rights to access this section");
+            },
+        });
+    };
+    const AddPermission = async () => {
+        setLoaded(true)
+        if (ContactData?.Email != "") {
+            const newUser = {
+                "invitedUserDisplayName": ContactData.FirstName + ' ' + ContactData.Title,
+                "invitedUserEmailAddress": ContactData.Email,
+                "invitedUserFirstName": ContactData.FirstName,
+                "invitedUserLastName": ContactData.Title,
+                "sendInvitationMessage": true,
+                "inviteRedirectUrl": props?.props?.Context?.pageContext?._web?.absoluteUrl,
+                "invitedUserType": "guest"
+            };
+            try {
+                const client: MSGraphClient = await props?.props?.Context?.msGraphClientFactory.getClient('3');
+                const response = await client.api("/invitations")
+                    .version("v1.0")
+                    .post(newUser).then(async (res: any) => {
+                        alert("Invitation sent successfully");
+                        setLoaded(false)
+                    })
+            } catch (error) {
+                console.error("Error creating user:", error);
+                setLoaded(false)
+            }
+        }
+        setLoaded(false)
+    }
     return (
         <>
             <Container>
@@ -226,9 +312,23 @@ const ContactProfileComponent = (props: any) => {
                             </section>
                         </div>
                         <div className="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="Communication-Account">
-                            <p>Show information if user is added as External User / Internal User in ADContact column.
-                                if not available, then start workflow to generate access
-                                Invitation button (external)</p>
+                            <div className="text-center">
+                                {isPermission && (
+                                    <><p>
+                                        This user is not available in the internal directory. If you want to add this user, please click the "Invite" button.
+                                    </p><button
+                                        className='btn btn-primary ms-1 mx-2'
+                                        onClick={AddPermission}
+                                    >
+                                            Invite
+                                        </button></>
+                                )}</div>
+                            {loaded && <PageLoader />}
+                            {GroupData?.map((item: any) => {
+                                return (
+                                    <p><strong>Permission Group Name - </strong> {item?.Title}</p>
+                                )
+                            })}
                         </div>
 
                     </div>

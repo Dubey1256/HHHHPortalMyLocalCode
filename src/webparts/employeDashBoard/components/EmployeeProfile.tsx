@@ -32,7 +32,10 @@ let todaysDrafTimeEntry: any = [];
 var AllTaskTimeEntries: any = [];
 let currentUserId: any
 let CurrentConfigItem: any = [];
+let onLoadeTimeSheetsData: any = []
+let Above80Task: any = [];
 CurrentMatchableDate.setHours(0, 0, 0, 0)
+let totalTime: any = 0;
 const EmployeProfile = (props: any) => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
@@ -60,8 +63,10 @@ const EmployeProfile = (props: any) => {
     LoadAdminConfiguration(false, undefined)
     loadMasterTask();
     loadTaskUsers(undefined);
+    ChckSmartTimeIsAvalable();
     getAllData(true);
-    generateDateRange()
+    generateDateRange();
+
   }, []);
   const generateDateRange = () => {
     let Count = 0;
@@ -93,44 +98,44 @@ const EmployeProfile = (props: any) => {
     dates.unshift({ "DisplayDate": 'Un-Assigned', "ServerDate": undefined, IsShowTask: false });
   };
   const timeEntryIndex: any = {};
-  const smartTimeTotal = async () => {
-    let AllTimeEntries = [];
-    if (timeSheetConfig?.Id !== undefined) {
-      AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
-    }
-    let allSites = smartmetaDataDetails.filter((e) => e.TaxType == "Sites")
-    AllTimeEntries?.forEach((entry: any) => {
-      allSites.forEach((site) => {
-        const taskTitle = `Task${site.Title}`;
-        const key = taskTitle + entry[taskTitle]?.Id
-        if (entry.hasOwnProperty(taskTitle) && entry.AdditionalTimeEntry !== null && entry.AdditionalTimeEntry !== undefined) {
-          if (entry[taskTitle].Id == 168) {
-            console.log(entry[taskTitle].Id);
-          }
-          const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
-          let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
-          let timeSheetsDescriptionSearch = additionalTimeEntry?.reduce((accumulator: any, entry: any) => `${accumulator} ${entry?.Description?.replace(/(<([^>]+)>|\n)/gi, "").trim()}`, "").trim();
-          if (timeEntryIndex.hasOwnProperty(key)) {
-            timeEntryIndex[key].TotalTaskTime += totalTaskTime;
-            timeEntryIndex[key].timeSheetsDescriptionSearch = (timeEntryIndex[key]?.timeSheetsDescriptionSearch || '') + ' ' + timeSheetsDescriptionSearch;
-          } else {
-            timeEntryIndex[`${taskTitle}${entry[taskTitle]?.Id}`] = {
-              ...entry[taskTitle],
-              TotalTaskTime: totalTaskTime,
-              siteType: site.Title,
-              timeSheetsDescriptionSearch: timeSheetsDescriptionSearch
-            };
-          }
-        }
-      });
-    });
-    if (timeEntryIndex) {
-      const dataString = JSON.stringify(timeEntryIndex);
-      localStorage.setItem('timeEntryIndex', dataString);
-    }
-    console.log("timeEntryIndex", timeEntryIndex)
-    getAllData(true);
-  };
+  // const smartTimeTotal = async () => {
+  //   let AllTimeEntries = [];
+  //   if (timeSheetConfig?.Id !== undefined) {
+  //     AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
+  //   }
+  //   let allSites = smartmetaDataDetails.filter((e) => e.TaxType == "Sites")
+  //   AllTimeEntries?.forEach((entry: any) => {
+  //     allSites.forEach((site) => {
+  //       const taskTitle = `Task${site.Title}`;
+  //       const key = taskTitle + entry[taskTitle]?.Id
+  //       if (entry.hasOwnProperty(taskTitle) && entry.AdditionalTimeEntry !== null && entry.AdditionalTimeEntry !== undefined) {
+  //         if (entry[taskTitle].Id == 168) {
+  //           console.log(entry[taskTitle].Id);
+  //         }
+  //         const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
+  //         let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
+  //         let timeSheetsDescriptionSearch = additionalTimeEntry?.reduce((accumulator: any, entry: any) => `${accumulator} ${entry?.Description?.replace(/(<([^>]+)>|\n)/gi, "").trim()}`, "").trim();
+  //         if (timeEntryIndex.hasOwnProperty(key)) {
+  //           timeEntryIndex[key].TotalTaskTime += totalTaskTime;
+  //           timeEntryIndex[key].timeSheetsDescriptionSearch = (timeEntryIndex[key]?.timeSheetsDescriptionSearch || '') + ' ' + timeSheetsDescriptionSearch;
+  //         } else {
+  //           timeEntryIndex[`${taskTitle}${entry[taskTitle]?.Id}`] = {
+  //             ...entry[taskTitle],
+  //             TotalTaskTime: totalTaskTime,
+  //             siteType: site.Title,
+  //             timeSheetsDescriptionSearch: timeSheetsDescriptionSearch
+  //           };
+  //         }
+  //       }
+  //     });
+  //   });
+  //   if (timeEntryIndex) {
+  //     const dataString = JSON.stringify(timeEntryIndex);
+  //     localStorage.setItem('timeEntryIndex', dataString);
+  //   }
+  //   console.log("timeEntryIndex", timeEntryIndex)
+  //   getAllData(true);
+  // };
   const GetSmartmetadata = async () => {
     const web = new Web(props.props?.siteUrl);
     let smartmetaDetails: any = [];
@@ -224,8 +229,10 @@ const EmployeProfile = (props: any) => {
               }
               if (IsLoadTask != false && TotalCSmartFav?.length == countCall) {
                 setprogressBar(true);
-                if (Type != false && Type != "OtherUserSelected")
-                  smartTimeTotal();
+                if (Type != false && Type != "OtherUserSelected") {
+
+                }
+                // smartTimeTotal();
                 else
                   getAllData(Type)
               }
@@ -237,8 +244,10 @@ const EmployeProfile = (props: any) => {
             if (index == DashboardConfig?.length - 1) {
               if (IsLoadTask != false) {
                 setprogressBar(true);
-                if (Type != false && Type != "OtherUserSelected")
-                  smartTimeTotal();
+                if (Type != false && Type != "OtherUserSelected") {
+
+                }
+                // smartTimeTotal();
                 else
                   getAllData(Type)
               }
@@ -580,6 +589,32 @@ const EmployeProfile = (props: any) => {
 
     return formattedDate;
   }
+  function getEndingDate(startDateOf: any): Date {
+    const endingDate = new Date();
+    let formattedDate = endingDate;
+    if (startDateOf === 'This Week') {
+      endingDate.setDate(endingDate.getDate() + (6 - endingDate.getDay()));
+      formattedDate = endingDate;
+    } else if (startDateOf === 'Today') {
+      formattedDate = endingDate;
+    } else if (startDateOf === 'Yesterday') {
+      endingDate.setDate(endingDate.getDate() - 1);
+      formattedDate = endingDate;
+    } else if (startDateOf === 'This Month') {
+      endingDate.setMonth(endingDate.getMonth() + 1, 0);
+      formattedDate = endingDate;
+    } else if (startDateOf === 'Last Month') {
+      const lastMonth = new Date(endingDate.getFullYear(), endingDate.getMonth() - 1);
+      endingDate.setDate(0);
+      formattedDate = endingDate;
+    } else if (startDateOf === 'Last Week') {
+      const lastWeek = new Date(endingDate.getFullYear(), endingDate.getMonth(), endingDate.getDate() - 7);
+      endingDate.setDate(lastWeek.getDate() - lastWeek.getDay() + 7);
+      formattedDate = endingDate;
+    }
+
+    return formattedDate;
+  }
   var isItemExists = function (array: any, Id: any) {
     var isExists = false;
     for (let index = 0; index < array.length; index++) {
@@ -591,6 +626,7 @@ const EmployeProfile = (props: any) => {
     };
     return isExists;
   };
+
   const MakeFinalData = () => {
     var today = new Date();
     var time = today.getHours() + ":" + today.getMinutes();
@@ -807,128 +843,250 @@ const EmployeProfile = (props: any) => {
         let TempArray: any = []
         let ServerThisWeek: any = getStartingDate('This Week')
         let ThisWeek = getStartingDate('This Week').toISOString();
-        if (TimeSheetLists != undefined && TimeSheetLists?.length > 0) {
-          TimeSheetLists.map((site: any) => {
-            let web = new Web(site?.siteUrl);
-            web.lists.getById(site?.listId).items.select(site?.query).filter(`(Modified ge '${ThisWeek}') and (TimesheetTitle/Id ne null)`).getAll()
-              .then((data: any) => {
-                console.log(data);
-                data.map((entry: any) => {
-                  try {
-                    if (entry?.AdditionalTimeEntry != undefined && entry?.AdditionalTimeEntry != null && entry?.AdditionalTimeEntry != '') {
-                      entry.AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
-                      entry.AuthorName = '';
-                      entry.AuthorImage = ''
-                      entry.TaskTime = 0
-                      entry.TaskDate = undefined
-                      entry.CreatedServerDate = undefined
-                      if (entry.AdditionalTimeEntry != undefined && entry.AdditionalTimeEntry?.length > 0) {
-                        entry.AdditionalTimeEntry?.map((TimeEntry: any, index: any) => {
-                          TimeEntry.SiteIcon = '';
-                          TimeEntry.TaskID = '';
-                          if (array?.length) {
-                            array?.map((task: any) => {
-                              if (task?.siteType != undefined && task?.siteType?.toLowerCase() == "offshore tasks")
-                                task.LookupColumn = "Offshore Tasks";
-                              task.LookupColumn = task?.siteType;
-                              let ColumnName = "Task" + task?.LookupColumn.replace(" ", "");
-                              if (entry[ColumnName] != undefined && entry[ColumnName].Title != undefined) {
-                                if (entry[ColumnName].Id != undefined && entry[ColumnName].Id == task?.Id) {
-                                  TimeEntry.SiteIcon = task?.SiteIcon;
-                                  TimeEntry.TaskID = task?.TaskID;
-                                  TimeEntry.Site = task?.siteType;
-                                  TimeEntry.TaskItem = task;
+        let ThisMonth = getStartingDate('This Month').toISOString();
+        let filter = `(Modified ge '${ThisMonth}') and (PercentComplete gt 0.81)`;
+        globalCommon?.loadAllSiteTasks(props?.props, filter).then((Tasks: any) => {
+          Above80Task = [];
+          if (Tasks?.length)
+            Above80Task = [...Tasks]
+          if (TimeSheetLists != undefined && TimeSheetLists?.length > 0) {
+            TimeSheetLists.map((site: any) => {
+              let web = new Web(site?.siteUrl);
+              web.lists.getById(site?.listId).items.select(site?.query).filter(`(Modified ge '${ThisWeek}') and (TimesheetTitle/Id ne null)`).getAll()
+                .then((data: any) => {
+                  console.log(data);
+                  data.map((entry: any) => {
+                    try {
+                      if (entry?.AdditionalTimeEntry != undefined && entry?.AdditionalTimeEntry != null && entry?.AdditionalTimeEntry != '') {
+                        entry.AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
+                        entry.AuthorName = '';
+                        entry.AuthorImage = ''
+                        entry.TaskTime = 0
+                        entry.TaskDate = undefined
+                        entry.CreatedServerDate = undefined
+                        if (entry.AdditionalTimeEntry != undefined && entry.AdditionalTimeEntry?.length > 0) {
+                          entry.AdditionalTimeEntry?.map((TimeEntry: any, index: any) => {
+                            TimeEntry.SiteIcon = '';
+                            TimeEntry.TaskID = '';
+                            if (array?.length) {
+                              array?.map((task: any) => {
+                                if (task?.siteType != undefined && task?.siteType?.toLowerCase() == "offshore tasks")
+                                  task.LookupColumn = "Offshore Tasks";
+                                task.LookupColumn = task?.siteType;
+                                let ColumnName = "Task" + task?.LookupColumn.replace(" ", "");
+                                if (entry[ColumnName] != undefined && entry[ColumnName].Title != undefined) {
+                                  if (entry[ColumnName].Id != undefined && entry[ColumnName].Id == task?.Id) {
+                                    TimeEntry.SiteIcon = task?.SiteIcon;
+                                    TimeEntry.TaskID = task?.TaskID;
+                                    TimeEntry.Site = task?.siteType;
+                                    TimeEntry.TaskItem = task;
+                                  }
                                 }
-                              }
-                            })
-                          }
-                          TimeEntry.timeSheetsDescriptionSearch = '';
-                          TimeEntry.UpdatedId = entry?.Id;
-                          TimeEntry.timeSheetsDescriptionSearch = TimeEntry?.Description
-                          if ((TimeEntry?.Id == undefined || TimeEntry?.Id == '') && TimeEntry?.ID != undefined && TimeEntry?.ID != '')
-                            TimeEntry.Id = TimeEntry?.ID;
-                          else if ((TimeEntry?.ID == undefined || TimeEntry?.ID == '') && TimeEntry?.Id != undefined && TimeEntry?.Id != '')
-                            TimeEntry.ID = TimeEntry?.Id;
-                          else {
-                            TimeEntry.Id = index;
-                            TimeEntry.ID = index;
-                          }
-                          if (TimeEntry.TaskDate != null) {
-                            var dateValues = TimeEntry?.TaskDate?.split("/");
-                            var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
-                            var NewDate = new Date(dp);
-                            TimeEntry.sortTaskDate = NewDate;
-                            TimeEntry.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
-                            TimeEntry.sortTaskDate.setHours(0, 0, 0, 0);
-                            TimeEntry.Title = TimeEntry?.AuthorName;
-                          }
-                          entry.listId = site?.listId;
-                          entry.siteUrl = site?.siteUrl
-                          if (site?.taskSites != undefined && site?.taskSites?.length > 0) {
-                            site?.taskSites?.forEach((Site: any) => {
-                              if (entry['Task' + Site] != undefined && entry['Task' + Site]?.Id != undefined) {
-                                entry.TaskListType = Site;
-                              }
-                            })
-                          }
-                          if (TimeEntry?.sortTaskDate != undefined && ServerThisWeek != undefined && TimeEntry?.sortTaskDate.getTime() >= ServerThisWeek.getTime()) {
-                            if (TimeEntry?.Status == 'For Approval' && config?.Status != "My TimSheet") {
-                              TempArray.push(TimeEntry)
-                              if (!isItemExists(AllTimeEntry, entry.Id))
-                                AllTimeEntry.push(entry);
+                              })
+                              Above80Task?.map((task: any) => {
+                                task.TaskID = globalCommon.GetTaskId(task);
+                                if (task?.siteType != undefined && task?.siteType?.toLowerCase() == "offshore tasks")
+                                  task.LookupColumn = "Offshore Tasks";
+                                task.LookupColumn = task?.siteType;
+                                let ColumnName = "Task" + task?.LookupColumn.replace(" ", "");
+                                if (entry[ColumnName] != undefined && entry[ColumnName].Title != undefined) {
+                                  if (entry[ColumnName].Id != undefined && entry[ColumnName].Id == task?.Id) {
+                                    TimeEntry.SiteIcon = task?.SiteIcon;
+                                    TimeEntry.TaskID = task?.TaskID;
+                                    TimeEntry.Site = task?.siteType;
+                                    TimeEntry.TaskItem = task;
+                                  }
+                                }
+                              })
                             }
-                          }
-                          if (TimeEntry?.sortTaskDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == TimeEntry?.sortTaskDate.getTime()) {
-                            if (TimeEntry?.Status == 'Draft' && config?.Status == "My TimSheet") {
-                              TempArray.push(TimeEntry)
-                              if (!isItemExists(AllTimeEntry, entry.Id))
-                                AllTimeEntry.push(entry);
+                            // if (TimeEntry?.SiteIcon == undefined || TimeEntry?.SiteIcon == '') {
+                            //   let CurrentSite:any = AllSite?.filter((site: any) =>site?.Title == item?.ServerDate)
+                            //   TimeEntry?.SiteIcon = site?.Item_x005F_x0020_Cover?.Url
+                            // }
+                            TimeEntry.timeSheetsDescriptionSearch = '';
+                            TimeEntry.UpdatedId = entry?.Id;
+                            TimeEntry.timeSheetsDescriptionSearch = TimeEntry?.Description
+                            if ((TimeEntry?.Id == undefined || TimeEntry?.Id == '') && TimeEntry?.ID != undefined && TimeEntry?.ID != '')
+                              TimeEntry.Id = TimeEntry?.ID;
+                            else if ((TimeEntry?.ID == undefined || TimeEntry?.ID == '') && TimeEntry?.Id != undefined && TimeEntry?.Id != '')
+                              TimeEntry.ID = TimeEntry?.Id;
+                            else {
+                              TimeEntry.Id = index;
+                              TimeEntry.ID = index;
                             }
-                          }
+                            if (TimeEntry.TaskDate != null) {
+                              var dateValues = TimeEntry?.TaskDate?.split("/");
+                              var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
+                              var NewDate = new Date(dp);
+                              TimeEntry.sortTaskDate = NewDate;
+                              TimeEntry.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
+                              TimeEntry.sortTaskDate.setHours(0, 0, 0, 0);
+                              TimeEntry.Title = TimeEntry?.AuthorName;
+                            }
+                            entry.listId = site?.listId;
+                            entry.siteUrl = site?.siteUrl
+                            if (site?.taskSites != undefined && site?.taskSites?.length > 0) {
+                              site?.taskSites?.forEach((Site: any) => {
+                                if (entry['Task' + Site] != undefined && entry['Task' + Site]?.Id != undefined) {
+                                  entry.TaskListType = Site;
+                                }
+                              })
+                            }
+                            if (TimeEntry?.sortTaskDate != undefined && ServerThisWeek != undefined && TimeEntry?.sortTaskDate.getTime() >= ServerThisWeek.getTime()) {
+                              if (TimeEntry?.Status == 'For Approval' && config?.Status != "My TimSheet") {
+                                TempArray.push(TimeEntry)
+                                if (!isItemExists(AllTimeEntry, entry.Id))
+                                  AllTimeEntry.push(entry);
+                              }
+                            }
+                            if (TimeEntry?.sortTaskDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == TimeEntry?.sortTaskDate.getTime()) {
+                              if (TimeEntry?.Status == 'Draft' && config?.Status == "My TimSheet") {
+                                TempArray.push(TimeEntry)
+                                if (!isItemExists(AllTimeEntry, entry.Id))
+                                  AllTimeEntry.push(entry);
+                              }
+                            }
+                          })
+                        }
+                      }
+                    } catch (e) {
+                      console.log(entry)
+                    }
+                  });
+                  arraycount++;
+                  let currentCount = TimeSheetLists?.length;
+                  if (arraycount == currentCount) {
+                    let TeamMember: any = []
+                    taskUsers?.map((item: any) => {
+                      if (item[config['Status']] != undefined && Array.isArray(item[config['Status']]) && item[config['Status']]?.length > 0) {
+                        item[config['Status']].forEach((teamMember: any) => {
+                          if (teamMember?.Id == currentUserId && !isTaskUserExist(TeamMember, item) && item?.ItemType != 'Group')
+                            TeamMember.push(item)
                         })
                       }
-                    }
-                  } catch (e) {
-                    console.log(entry)
-                  }
-                });
-                arraycount++;
-                let currentCount = TimeSheetLists?.length;
-                if (arraycount == currentCount) {
-                  let TeamMember: any = []
-                  taskUsers?.map((item: any) => {
-                    if (item[config['Status']] != undefined && Array.isArray(item[config['Status']]) && item[config['Status']]?.length > 0) {
-                      item[config['Status']].forEach((teamMember: any) => {
-                        if (teamMember?.Id == currentUserId && !isTaskUserExist(TeamMember, item) && item?.ItemType != 'Group')
+                      else if (item[config['Status']] != undefined && typeof item[config['Status']] == 'object' && item[config['Status']] !== null) {
+                        if ((item[config['Status']]?.Id == currentUserId || item[config['Status']]?.Id == currentUserData?.Id) && !isTaskUserExist(TeamMember, item) && item?.ItemType != 'Group')
                           TeamMember.push(item)
+                      }
+                    })
+                    if (config?.Status == "My TimSheet") {
+                      TeamMember = [];
+                      TeamMember.push(currentUserData)
+                    }
+                    if (TempArray != undefined && TempArray?.length > 0 && TeamMember?.length > 0) {
+                      TeamMember?.map((User: any) => {
+                        TempArray?.map((TimeEntry: any) => {
+                          if (User?.AssingedToUserId != undefined && TimeEntry?.AuthorId != undefined && TimeEntry?.AuthorId == User?.AssingedToUserId) {
+                            config?.Tasks.push(TimeEntry)
+                          }
+                        })
                       })
                     }
-                    else if (item[config['Status']] != undefined && typeof item[config['Status']] == 'object' && item[config['Status']] !== null) {
-                      if ((item[config['Status']]?.Id == currentUserId || item[config['Status']]?.Id == currentUserData?.Id) && !isTaskUserExist(TeamMember, item) && item?.ItemType != 'Group')
-                        TeamMember.push(item)
-                    }
-                  })
-                  if (config?.Status == "My TimSheet") {
-                    TeamMember = [];
-                    TeamMember.push(currentUserData)
-                  }
-                  if (TempArray != undefined && TempArray?.length > 0 && TeamMember?.length > 0) {
-                    TeamMember?.map((User: any) => {
-                      TempArray?.map((TimeEntry: any) => {
-                        if (User?.AssingedToUserId != undefined && TimeEntry?.AuthorId != undefined && TimeEntry?.AuthorId == User?.AssingedToUserId) {
-                          config?.Tasks.push(TimeEntry)
+                    if (config?.Status == "TimeEntryWebpart") {
+                      totalTime = 0;
+                      const startDate = getStartingDate('This Week');
+                      const endDate = getEndingDate('This Week');
+                      const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
+                      const endDateMidnight = new Date(endDate.setHours(0, 0, 0, 0));
+                      array?.map((task: any) => {
+                        let key = `Task${task?.siteType + task.Id}`;
+                        if (task?.siteType != undefined && task?.siteType?.toLowerCase() == "offshore tasks")
+                          key = `Task${"Offshore Tasks" + task.Id}`;
+                        if (onLoadeTimeSheetsData.hasOwnProperty(key) && onLoadeTimeSheetsData[key]?.Id === task.Id && onLoadeTimeSheetsData[key]?.siteType === task.siteType) {
+                          if (onLoadeTimeSheetsData[key]?.additionalTimeEntry != undefined && onLoadeTimeSheetsData[key]?.additionalTimeEntry != null && onLoadeTimeSheetsData[key]?.additionalTimeEntry != '') {
+                            if (onLoadeTimeSheetsData[key].additionalTimeEntry != undefined && onLoadeTimeSheetsData[key].additionalTimeEntry?.length > 0) {
+                              onLoadeTimeSheetsData[key].additionalTimeEntry?.map((TimeEntry: any, index: any) => {
+                                TimeEntry.SiteIcon = task?.SiteIcon;
+                                TimeEntry.TaskID = task?.TaskID;
+                                TimeEntry.Site = task?.siteType;
+                                TimeEntry.TaskItem = task;
+                                TimeEntry.timeSheetsDescriptionSearch = '';
+                                TimeEntry.UpdatedId = onLoadeTimeSheetsData[key]?.Id;
+                                TimeEntry.timeSheetsDescriptionSearch = TimeEntry?.Description
+                                if ((TimeEntry?.Id == undefined || TimeEntry?.Id == '') && TimeEntry?.ID != undefined && TimeEntry?.ID != '')
+                                  TimeEntry.Id = TimeEntry?.ID;
+                                else if ((TimeEntry?.ID == undefined || TimeEntry?.ID == '') && TimeEntry?.Id != undefined && TimeEntry?.Id != '')
+                                  TimeEntry.ID = TimeEntry?.Id;
+                                else {
+                                  TimeEntry.Id = index;
+                                  TimeEntry.ID = index;
+                                }
+                                if (TimeEntry.TaskDate != null) {
+                                  var dateValues = TimeEntry?.TaskDate?.split("/");
+                                  var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
+                                  var NewDate = new Date(dp);
+                                  TimeEntry.sortTaskDate = NewDate;
+                                  TimeEntry.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
+                                  TimeEntry.sortTaskDate.setHours(0, 0, 0, 0);
+                                  TimeEntry.Title = TimeEntry?.AuthorName;
+                                  const [day, month, year] = TimeEntry?.TaskDate?.split('/');
+                                  const timeFillDate = new Date(+year, +month - 1, +day);
+                                  if (currentUserData?.AssingedToUserId != undefined && TimeEntry?.AuthorId != undefined && TimeEntry?.AuthorId == currentUserData?.AssingedToUserId && timeFillDate >= startDateMidnight && timeFillDate <= endDateMidnight) {
+                                    totalTime += parseFloat(TimeEntry?.TaskTime);
+                                    config?.Tasks.push(TimeEntry)
+                                  }
+                                }
+                              })
+                            }
+                          }
                         }
                       })
-                    })
+                      Above80Task?.map((task: any) => {
+                        let key = `Task${task?.siteType + task.Id}`;
+                        if (task?.siteType != undefined && task?.siteType?.toLowerCase() == "offshore tasks")
+                          key = `Task${"Offshore Tasks" + task.Id}`;
+                        if (onLoadeTimeSheetsData.hasOwnProperty(key) && onLoadeTimeSheetsData[key]?.Id === task.Id && onLoadeTimeSheetsData[key]?.siteType === task.siteType) {
+                          if (onLoadeTimeSheetsData[key]?.additionalTimeEntry != undefined && onLoadeTimeSheetsData[key]?.additionalTimeEntry != null && onLoadeTimeSheetsData[key]?.additionalTimeEntry != '') {
+                            if (onLoadeTimeSheetsData[key].additionalTimeEntry != undefined && onLoadeTimeSheetsData[key].additionalTimeEntry?.length > 0) {
+                              onLoadeTimeSheetsData[key].additionalTimeEntry?.map((TimeEntry: any, index: any) => {
+                                TimeEntry.SiteIcon = task?.SiteIcon;
+                                TimeEntry.TaskID = task?.TaskID;
+                                TimeEntry.Site = task?.siteType;
+                                TimeEntry.TaskItem = task;
+                                TimeEntry.timeSheetsDescriptionSearch = '';
+                                TimeEntry.UpdatedId = onLoadeTimeSheetsData[key]?.Id;
+                                TimeEntry.timeSheetsDescriptionSearch = TimeEntry?.Description
+                                if ((TimeEntry?.Id == undefined || TimeEntry?.Id == '') && TimeEntry?.ID != undefined && TimeEntry?.ID != '')
+                                  TimeEntry.Id = TimeEntry?.ID;
+                                else if ((TimeEntry?.ID == undefined || TimeEntry?.ID == '') && TimeEntry?.Id != undefined && TimeEntry?.Id != '')
+                                  TimeEntry.ID = TimeEntry?.Id;
+                                else {
+                                  TimeEntry.Id = index;
+                                  TimeEntry.ID = index;
+                                }
+                                if (TimeEntry.TaskDate != null) {
+                                  var dateValues = TimeEntry?.TaskDate?.split("/");
+                                  var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
+                                  var NewDate = new Date(dp);
+                                  TimeEntry.sortTaskDate = NewDate;
+                                  TimeEntry.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
+                                  TimeEntry.sortTaskDate.setHours(0, 0, 0, 0);
+                                  TimeEntry.Title = TimeEntry?.AuthorName;
+                                  const [day, month, year] = TimeEntry?.TaskDate?.split('/');
+                                  const timeFillDate = new Date(+year, +month - 1, +day);
+                                  if (currentUserData?.AssingedToUserId != undefined && TimeEntry?.AuthorId != undefined && TimeEntry?.AuthorId == currentUserData?.AssingedToUserId && timeFillDate >= startDateMidnight && timeFillDate <= endDateMidnight) {
+                                    totalTime += parseFloat(TimeEntry?.TaskTime);
+                                    config?.Tasks.push(TimeEntry)
+                                  }
+                                }
+                              })
+                            }
+                          }
+                        }
+                      })
+                    }
+                    setIsCallContext(true);
                   }
-                  setIsCallContext(true);
-                }
-              }).catch((error: any) => {
-                console.log(error)
-              })
+                }).catch((error: any) => {
+                  console.log(error)
+                })
 
-          })
-        }
+            })
+          }
+        }).catch((err: any) => {
+          console.log("then catch error", err);
+        });
+
       }
     });
     let todayDate: any = new Date();
@@ -1072,6 +1230,14 @@ const EmployeProfile = (props: any) => {
         await Promise.all(fetchPromises)
       }
     }
+  }
+  const ChckSmartTimeIsAvalable = async () => {
+    let item = {
+      ContextValue: props?.props,
+      DashBoardCall: true
+    }
+    onLoadeTimeSheetsData = await globalCommon.smartTimeUseStorage(item);
+    console.log(onLoadeTimeSheetsData)
   }
   const getAllData = async (IsLoad: any) => {
     if (IsLoad != undefined && IsLoad == true) {
@@ -1794,7 +1960,7 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, smartmetaDataDetails: smartmetaDataDetails, CurrentUserProjectData: CurrentUserProjectData, CurrentUserInfo: CurrentUserInfo, CurrentUserWorkingToday: CurrentUserWorkingToday, currentUserId: currentUserId, todaysDrafTimeEntry: todaysDrafTimeEntry, CurrentConfigItem: CurrentConfigItem, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, DashboardValue: DashboardValue, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      <myContextValue.Provider value={{ ...myContextValue, Above80Task: Above80Task, totalTime: totalTime, smartmetaDataDetails: smartmetaDataDetails, onLoadeTimeSheetsData: onLoadeTimeSheetsData, AllFilterTask: allData, CurrentUserProjectData: CurrentUserProjectData, CurrentUserInfo: CurrentUserInfo, CurrentUserWorkingToday: CurrentUserWorkingToday, currentUserId: currentUserId, todaysDrafTimeEntry: todaysDrafTimeEntry, CurrentConfigItem: CurrentConfigItem, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, DashboardValue: DashboardValue, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div>
           {LoadHeaderSection != undefined && (<Header />)}
         </div>

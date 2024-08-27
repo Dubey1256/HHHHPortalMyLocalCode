@@ -7,7 +7,8 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import { Row } from 'react-bootstrap';
 import * as GlobalFunction from '../../../globalComponents/globalCommon';
-
+import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
+import EventEditPopup from '../../eventHomeSpFx/components/EventEditPopup';
 let SmartTaxonomyItemId: any = ''
 let backupCurrentFolder: any = [];
 let backupExistingFiles: any = [];
@@ -19,6 +20,8 @@ let AllFilesAndFolderBackup: any = [];
 const EventManagementmain = (props: any) => {
     const propsvalue = props?.props
     const [StartDate, setStartDate] = React.useState<any>('');
+    const [isEditModalOpen, setisEditModalOpen] = React.useState(false);
+    const [selectedItemId, setSelectedItem] = React.useState(undefined);
     const [AllFilesAndFolder, setAllFilesAndFolder]: any = React.useState([]);
     const [ExistingFiles, setExistingFiles]: any = React.useState([]);
     const [AllReadytagged, setAllReadytagged]: any = React.useState([]);
@@ -40,9 +43,17 @@ const EventManagementmain = (props: any) => {
     const siteUrl = propsvalue?.Context?.pageContext?.web?.absoluteUrl;
     const [newSubFolderName, setNewSubFolderName]: any = React.useState('');
     const [folderExist, setFolderExist] = React.useState(false);
+    const [iseventcreateditem, setiseventcreateditem] = React.useState(true);
+    const [iseventcreatedbymitem, setiseventcreatedbymitem] = React.useState(true);
+    const [isupcomingeventitem, setisupcomingeventitem] = React.useState(true);
     const [selectedPath, setSelectedPath] = React.useState({
         displayPath: '',
         completePath: '',
+    });
+    const [AllEventListItems, setAllEventListItems] = React.useState({
+        EventCreatedByMe: [],
+        LastEventCreated: [],
+        UpComingEvents: []
     });
     let ItemRank = [
         { rankTitle: 'Select Item Rank', rank: null },
@@ -59,10 +70,88 @@ const EventManagementmain = (props: any) => {
     React.useEffect(() => {
         pathGenerator()
         rootSiteName = propsvalue?.Context.pageContext.site.absoluteUrl.split(propsvalue?.Context.pageContext.site.serverRelativeUrl)[0];
+        loadAllsiteEvents()
     }, [])
     const openCreateeventpopup = () => {
         setopenpopup(true)
         setitemcreated(false)
+    }
+    const isItemExists = (array: any, eventitm: any) => {
+        var isExists: any = false;
+        array.map((item: any) => {
+            if (item.Id === eventitm.Id) {
+                isExists = true;
+                return false;
+            }
+        });
+        return isExists;
+    }
+    const loadAllsiteEvents = () => {
+        const web = new Web(propsvalue?.siteUrl);
+        let currentUserId = propsvalue?.Context.pageContext._legacyPageContext.userId;       
+        let lasteventsCreated: any = [];
+        let lasteventscreatedbyme: any = [];
+        let upComingevents: any = [];
+        web.lists.getById('860a08d5-9711-4d8e-bd26-93fe09362bd4').items
+            .select('ID', 'Title', 'Description', 'SmartActivities/Title', 'SmartActivities/Id', 'SmartTopics/Title', 'SmartTopics/Id', 'SmartPages/Title', 'SmartPages/Id', 'FileLeafRef', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Title', 'Editor/Id', 'EventDate', 'EndDate', 'Location')
+            .expand("Author", "Editor", "SmartActivities", "SmartTopics", "SmartPages")
+            .get()
+            .then((results: any) => {                
+                console.log(results);
+                if (results !== undefined && results !== '') {
+                    results.sort(function (a: any, b: any) {
+                        var aDate = new Date(a['Created']);
+                        var bDate = new Date(b['Created']);
+                        return aDate > bDate ? -1 : aDate < bDate ? 1 : 0;
+                    });
+                    results.map((itm: any) => {
+                        if (lasteventsCreated.length < 10 && (new Date(itm.Created).setHours(0, 0, 0, 0) <= new Date().setHours(0, 0, 0, 0))) {
+                            if (!isItemExists(lasteventsCreated, itm))
+                                lasteventsCreated.push(itm)
+                            lasteventsCreated.sort(function (a: any, b: any) {
+                                var aDate = new Date(a['EventDate']);
+                                var bDate = new Date(b['EventDate']);
+                                return aDate > bDate ? -1 : aDate < bDate ? 1 : 0;
+                            });
+                        }
+                    })
+                    results.map((itm: any) => {
+                        if (lasteventscreatedbyme.length < 10 && currentUserId === itm.Author.Id) {
+                            if (!isItemExists(lasteventscreatedbyme, itm))
+                                lasteventscreatedbyme.push(itm)
+                            lasteventscreatedbyme.sort(function (a: any, b: any) {
+                                var aDate = new Date(a['EventDate']);
+                                var bDate = new Date(b['EventDate']);
+                                return aDate > bDate ? -1 : aDate < bDate ? 1 : 0;
+                            });
+                        }
+                    })
+                    results.map((itm: any) => {
+                        if (itm.EventDate !== undefined && itm.EventDate !== '' && itm.EventDate !== 'InvalidDate') {
+                            if (upComingevents.length < 10 && (new Date(itm.EventDate).setHours(0, 0, 0, 0) > new Date().setHours(0, 0, 0, 0))) {
+                                if (!isItemExists(upComingevents, itm))
+                                    upComingevents.push(itm)
+                                upComingevents.sort(function (a: any, b: any) {
+                                    var aDate = new Date(a['EventDate']);
+                                    var bDate = new Date(b['EventDate']);
+                                    return aDate > bDate ? -1 : aDate < bDate ? 1 : 0;
+                                });
+                            }
+                        }
+        
+                    })
+        
+                }
+                setAllEventListItems(prevState => ({
+                    ...prevState,
+                    EventCreatedByMe: lasteventscreatedbyme,
+                    LastEventCreated: lasteventsCreated,
+                    UpComingEvents: upComingevents
+                }));
+            })
+            .catch((err: any) => {
+                console.log(err)
+            })          
     }
 
     const createsmartmetadataItem = () => {
@@ -80,7 +169,7 @@ const EventManagementmain = (props: any) => {
                 console.log(data)
                 console.log("your item has been created")
                 SmartTaxonomyItemId = data.Id
-                createEvent()                                
+                createEvent()
             })
             .catch((e: any) => {
                 console.log(e)
@@ -155,7 +244,9 @@ const EventManagementmain = (props: any) => {
             setImageFolderItem(data?.data);
             setimagefoldercreated(true)
             setopenpopup(false)
-            alert("All folders has been created successfully!")
+            setTimeout(() => {                
+                alert("All folders has been created cuccessfully!")
+            },200)
         } catch (error) {
             console.error('Error creating image folder:', error);
             return Promise.reject(error);
@@ -534,6 +625,32 @@ const EventManagementmain = (props: any) => {
         });
     };
     //end
+    const setlasteventcreateditem = () => {
+        if (!iseventcreateditem)
+            setiseventcreateditem(true)
+        else
+            setiseventcreateditem(false)
+    }
+    const setlasteventcreatedbymeitem = () => {
+        if (!iseventcreatedbymitem)
+            setiseventcreatedbymitem(true)
+        else
+            setiseventcreatedbymitem(false)
+    }
+    const setupcomingeventitem = () => {
+        if (!isupcomingeventitem)
+            setisupcomingeventitem(true)
+        else
+            setisupcomingeventitem(false)
+    }
+    const openEditEventPopup = (itemId: any) => {
+        setisEditModalOpen(true);
+        setSelectedItem(itemId);
+    };
+    const closeEditPopup = () => {
+        setisEditModalOpen(false);
+        loadAllsiteEvents();
+    };
 
     const clear = () => {
         setStartDate('')
@@ -638,55 +755,179 @@ const EventManagementmain = (props: any) => {
                     </div>
                 </div>
             </section>
-            {/* <div className='row'>
-                    <div className='col-sm-12'>
-                        <div className='input-group'>
-                            <label className="full-width "> Start Date <span className='text-danger'>*</span> </label>
-                            <input type="date" className="form-control" value={StartDate}
-                                onChange={(e) => setStartDate(e.target.value)} />
-                        </div>
-                    </div>
-                    <div className='col-sm-12'>
-                        <div className='input-group'>
-                            <label className="full-width "> Short Event Title <span className='text-danger'>*</span> </label>
-                            <input type="text" className="form-control" value={ShortTitle}
-                                onChange={(e) => setShortTitle(e.target.value)} />
-                        </div>
-                    </div>
-                    <div className='col-sm-12'>
-                        <div className='input-group'>
-                            <label className="full-width "> Page Title </label>
-                            <input type="text" className="form-control" value={PageTitle}
-                                onChange={(e) => setPageTitle(e.target.value)} />
-                        </div>
-                    </div>
-                    <div className='col-sm-12'>
-                        <div className='input-group'>
-                            <label className="full-width "> Folder Url </label>
-                            <span>{selectedPath?.displayPath}<span><a title="Click for Associated Folder" className='hreflink ms-2 siteColor' onClick={() => setChoosePathPopup(true)} > Change Path </a></span></span>
-                        </div>
-                    </div>
-                    <div className='col-sm-12'>
-                        <div className='input-group'>
-                            <label className="full-width "> Select Item Rank </label>
-                         
-                        </div>
-                    </div>
 
+            <div className="d-flex gap-5">
+                <div className="col">
+                    <div className="gap-1 pb-1 siteBdrBottom valign-middle">
+                        <span className="accordionIcon" onClick={() => setlasteventcreateditem()}>
+                            {iseventcreateditem === true ? <IoChevronDown /> : <IoChevronUp />}
+                        </span>
+                        <span className="NewsEventsLists-Title">Last Events created</span>
+                        <a href={`${propsvalue?.siteUrl}/SitePages/Event-Home.aspx`} target="_blank" className='ml-auto small' data-interception="off">
+                            See all Events
+                        </a>
+                    </div>
+                    {iseventcreateditem === true && <ul className="whatsNew customlist-style1 list-unstyled">
+                        {AllEventListItems?.LastEventCreated?.length > 0 && AllEventListItems?.LastEventCreated.map((event: any) => {
+                            return (<li>
+                                <span className="PublishedDate alignCenter">
+                                    <span className="small">{event.UpdateEventDate}</span>
+                                    <span className="ml-5">{event.Location}</span>
+                                    <span className="svg__iconbox svg__icon--edit ml-auto" onClick={() => openEditEventPopup(event)}></span>
+                                </span>
+                                <span className="PublishedDate valign-middle">
+                                    <div className="justify-content-start valign-middle">
+                                        {/* <CustomToolTip Description={event.IsVisible === 'Ready to Publish'?'Ready to Publish':event.IsVisible === 'Draft'?'Draft':'Published'} usedFor={event.IsVisible === 'Ready to Publish'?'Ready to Publish':event.IsVisible === 'Draft'?'Draft':'Published'} />                                             */}
+                                        <a className="NewsEventsList-ItemTitle" target="_blank" href={`${propsvalue?.siteUrl}/SitePages/EventDetail.aspx?ItemID=${event.Id}&Site='GmBH'`} data-interception="off">
+                                            {event.Title} </a>
+                                        {event.Description ? <span className='hover-text'>
+                                            <span className="svg__iconbox svg__icon--info alignIcon"></span>
+                                            <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event.Description }}></span>
+                                        </span> : ''}
+
+                                        {(event.EventDescription1 != undefined && event.EventDescription1 != null) || (event.Item_x0020_Cover != undefined && event.Item_x0020_Cover != '') && <span className="popover-markup">
+                                            <span ><span className="svg-info-icon"></span></span>
+                                            <div className="col-sm-12 clearfix">
+                                                {event?.Description != undefined && event?.Description != null && event?.Description != '' && <div className="popover-Content">
+                                                    {event.Title != undefined && <p className="popover-Title">
+                                                        {event.Title}
+                                                    </p>}
+                                                    {event.Title == undefined && <p className="popover-Title">
+                                                        {event.FileLeafRef}
+                                                    </p>}
+                                                    <span className='hover-text'>
+                                                        <span className="svg__iconbox svg__icon--info alignIcon"></span>
+                                                        <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event.Description }}></span>
+                                                    </span>
+                                                    <div className="clearfix popover-Desc">
+                                                        {/* <div id="imagedetail">
+                                                                <img ng-if="item.Item_x0020_Cover != null" className="image mt-10"
+                                                                    ng-src="{{event.Item_x0020_Cover}}?RenditionID=12" title="" />
+
+                                                            </div> */}
+                                                        {/* <div ng-bind-html="event?.Description | trustedHTML">
+                                                            </div> */}
+                                                    </div>
+                                                </div>}
+                                            </div>
+                                        </span>}
+                                    </div>
+                                </span>
+                            </li>)
+                        })}
+                    </ul>}
                 </div>
-                <footer className='text-end mt-2'>
-                    <div className='col-sm-12 row m-0'>
-                        <div className='col-sm-6 mt-2 p-0'>
-                            <button type='button' className='btn btn-primary mx-2' onClick={openCreateeventpopup}>
-                                Submit
-                            </button>
-                            <button type='button' className='btn btn-default' onClick={clear}>
-                                Clear
-                            </button>
-                        </div>
-                    </div>
-                </footer> */}
 
+                <div className="col">
+                    <div className="gap-1 pb-1 siteBdrBottom valign-middle">
+                        <span className="accordionIcon" onClick={() => setlasteventcreatedbymeitem()}>
+                            {iseventcreatedbymitem === true ? <IoChevronDown /> : <IoChevronUp />}
+                        </span>
+                        <span className="NewsEventsLists-Title">Last Events created by me</span>
+                        <a target="_blank" className='ml-auto small' href={`${propsvalue?.siteUrl}/SitePages/Event-Home.aspx`} data-interception="off">
+                            See all Events
+                        </a>
+                    </div>
+                    {iseventcreatedbymitem === true && <ul className="whatsNew customlist-style1 list-unstyled">
+                        {AllEventListItems?.EventCreatedByMe?.length > 0 && AllEventListItems?.EventCreatedByMe.map((event: any) => {
+                            return (<li>
+                                <span className="PublishedDate alignCenter">
+                                    <span className="small">{event.UpdateEventDate}</span>
+                                    <span className="ml-5">{event.Location}</span>
+                                    <span className="svg__iconbox svg__icon--edit ml-auto" onClick={() => openEditEventPopup(event)}></span>
+                                </span>
+                                <span className="PublishedDate valign-middle">
+                                    <div className="justify-content-start valign-middle">
+                                        {/* <CustomToolTip Description={event.IsVisible === 'Ready to Publish'?'Ready to Publish':event.IsVisible === 'Draft'?'Draft':'Published'} usedFor={event.IsVisible === 'Ready to Publish'?'Ready to Publish':event.IsVisible === 'Draft'?'Draft':'Published'} />                                             */}
+                                        <a className="NewsEventsList-ItemTitle" href={`${propsvalue?.siteUrl}/SitePages/EventDetail.aspx?ItemID=${event.Id}&Site='GmBH'`} data-interception="off" target="_blank">{event.Title}</a>
+                                        {event.Description ? <span className='hover-text'>
+                                            <span className="svg__iconbox svg__icon--info alignIcon"></span>
+                                            <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event.Description }}></span>
+                                        </span> : ''}
+                                        {(event.EventDescription1 != undefined && event.EventDescription1 != null) || (event.Item_x0020_Cover != undefined && event.Item_x0020_Cover != '') && <span className="popover-markup">
+                                            {/* <span ><span className="svg-info-icon"></span></span> */}
+                                            <div className="col-sm-12 clearfix">
+                                                {event?.Description != undefined && event?.Description != null && event?.Description != '' && <div className="popover-Content">
+                                                    {event.Title != undefined && <p className="popover-Title">
+                                                        {event.Title}
+                                                    </p>}
+                                                    {event.Title == undefined && <p className="popover-Title">
+                                                        {event.FileLeafRef}
+                                                    </p>}
+                                                    <span className='hover-text'>
+                                                        <span className="svg__iconbox svg__icon--info alignIcon"></span>
+                                                        <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event.Description }}></span>
+                                                    </span>
+                                                    {/* <div className="clearfix popover-Desc">
+                                                                <div id="imagedetail">
+                                                                    <img ng-if="item.Item_x0020_Cover != null" className="image mt-10"
+                                                                        ng-src="{{event.Item_x0020_Cover}}?RenditionID=12" title=""/>
+
+                                                                </div>
+                                                                <div ng-bind-html="event?.Description | trustedHTML">
+                                                                </div>
+                                                            </div> */}
+                                                </div>}
+                                            </div>
+                                        </span>}
+                                    </div>
+                                </span>
+                            </li>)
+                        })}
+                    </ul>}
+                </div>
+
+                <div className="col">
+                    <div className="gap-1 pb-1 siteBdrBottom valign-middle">
+                        <span className="accordionIcon" onClick={() => setupcomingeventitem()}>
+                            {isupcomingeventitem === true ? <IoChevronDown /> : <IoChevronUp />}
+                        </span>
+                        <span className="NewsEventsLists-Title" >Next Events upcoming</span>
+                        <a className='ml-auto small' target="_blank" href={`${propsvalue?.siteUrl}/SitePages/Event-Home.aspx`} data-interception="off">
+                            See all Events
+                        </a>
+                    </div>
+                    {isupcomingeventitem === true && <ul className="whatsNew customlist-style1 list-unstyled">
+                        {AllEventListItems?.UpComingEvents?.length > 0 && AllEventListItems?.UpComingEvents.map((event: any) => {
+                            return (<li>
+                                <span className="PublishedDate alignCenter">
+                                    <span className="small">{event.UpdateEventDate}</span>
+                                    <span className="ml-5">{event.Location}</span>
+                                    <span className="svg__iconbox svg__icon--edit ml-auto" onClick={() => openEditEventPopup(event)}></span>
+                                </span>
+                                <span className="PublishedDate valign-middle">
+                                    <div className="justify-content-start valign-middle">
+                                        {/* <CustomToolTip Description={event.IsVisible === 'Ready to Publish'?'Ready to Publish':event.IsVisible === 'Draft'?'Draft':'Published'} usedFor={event.IsVisible === 'Ready to Publish'?'Ready to Publish':event.IsVisible === 'Draft'?'Draft':'Published'} />                                             */}
+                                        <a className="NewsEventsList-ItemTitle" href={`${propsvalue?.siteUrl}/SitePages/EventDetail.aspx?ItemID=${event.Id}&Site='GmBH'`} data-interception="off" target="_blank">{event.Title}</a>
+                                        {event.Description ? <span className='hover-text'>
+                                            <span className="svg__iconbox svg__icon--info alignIcon"></span>
+                                            <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event.Description }}></span>
+                                        </span> : ''}
+
+                                        {(event.EventDescription1 != undefined && event.EventDescription1 != null) || (event.Item_x0020_Cover != undefined && event.Item_x0020_Cover != '') && <span className="popover-markup">
+                                            {/* <span ><span className="svg-info-icon"></span></span> */}
+                                            <div className="col-sm-12 clearfix">
+                                                {event?.Description != undefined && event?.Description != null && event?.Description != '' && <div className="popover-Content">
+                                                    {event.Title != undefined && <p className="popover-Title">
+                                                        {event.Title}
+                                                    </p>}
+                                                    {event.Title == undefined && <p className="popover-Title">
+                                                        {event.FileLeafRef}
+                                                    </p>}
+                                                    <span className='hover-text'>
+                                                        <span className="svg__iconbox svg__icon--info alignIcon"></span>
+                                                        <span className='tooltip-text pop-right scrollbar maXh-400' dangerouslySetInnerHTML={{ __html: event.Description }}></span>
+                                                    </span>                                                   
+                                                </div>}
+                                            </div>
+                                        </span>}
+                                    </div>
+                                </span>
+                            </li>)
+                        })}
+                    </ul>}
+                </div>
+            </div>
 
             <Panel isOpen={openpopup} isBlocking={false} onDismiss={closepopup} type={PanelType.medium} onRenderHeader={EventCreationToolHeader} onRenderFooter={EventCreationToolFooter}>
                 <div className='col'>
@@ -708,6 +949,9 @@ const EventManagementmain = (props: any) => {
 
                 </div>
             </Panel>
+            {isEditModalOpen &&
+                <EventEditPopup callBack={closeEditPopup} EditEventData={selectedItemId} AllListId={props?.props} Context={propsvalue?.context} editdocpanel={isEditModalOpen} />
+            }
         </>
     )
 }

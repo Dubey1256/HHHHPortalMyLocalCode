@@ -2,6 +2,7 @@ import moment from "moment";
 import * as React from "react";
 import { usePopperTooltip } from "react-popper-tooltip";
 import "react-popper-tooltip/dist/styles.css";
+import { Avatar } from "@fluentui/react-components";
 var siteUrl = '';
 function ShowTaskTeamMembers(item: any) {
   siteUrl = item.props?.siteUrl != undefined ? item?.props?.siteUrl : item?.Context?.siteurl;
@@ -17,14 +18,14 @@ function ShowTaskTeamMembers(item: any) {
     setTooltipRef,
     setTriggerRef,
     visible,
-} = usePopperTooltip({
+  } = usePopperTooltip({
     trigger: null,
     interactive: true,
     closeOnOutsideClick: false,
     placement: "auto",
     visible: controlledVisible,
     onVisibleChange: setControlledVisible,
-});
+  });
   let TaskUsers: any = [];
   TaskUsers = item?.TaskUsers;
   let CompleteTeamMembers: any = [];
@@ -97,13 +98,13 @@ function ShowTaskTeamMembers(item: any) {
               }
             }
           }
-          item.workingMember = true;          
+          item.workingMember = true;
           CompleteTeamMembers.push(item);
         });
       }
       if (taskDetails?.TeamMembers != undefined) {
         taskDetails["TeamMembers"]?.map((item: any, index: any) => {
-        
+
           CompleteTeamMembers.push(item);
         });
       }
@@ -111,8 +112,8 @@ function ShowTaskTeamMembers(item: any) {
       CompleteTeamMembers = CompleteTeamMembers.filter((item: any, index: any) => {
         return CompleteTeamMembers.indexOf(item) === index;
       });
-      if(CompleteTeamMembers?.length>0){
-        CompleteTeamMembers= GetUserObjectFromCollection(CompleteTeamMembers)
+      if (CompleteTeamMembers?.length > 0) {
+        CompleteTeamMembers = GetUserObjectFromCollection(CompleteTeamMembers)
       }
 
       // Check if there are more than 3 members
@@ -138,13 +139,13 @@ function ShowTaskTeamMembers(item: any) {
   }, [item]);
 
   const GetUserObjectFromCollection = (UsersValues: any) => {
-   let userDeatails: any = [];
+    let userDeatails: any = [];
     UsersValues?.map((item: any) => {
-      let workingToday=item?.workingMember!=undefined?item?.workingMember:false;
-      
-    
+      let workingToday = item?.workingMember != undefined ? item?.workingMember : false;
+
+
       item = TaskUsers?.find((User: any) => User?.AssingedToUser?.Id == item?.Id)
-      if(item?.Id!=undefined){
+      if (item?.Id != undefined) {
         userDeatails.push({
           'Id': item?.AssingedToUser.Id,
           'Name': item?.Email,
@@ -154,7 +155,7 @@ function ShowTaskTeamMembers(item: any) {
           "workingMember": workingToday
         });
       }
-      
+
     })
 
     setKey((prevKey) => prevKey + 1);
@@ -184,32 +185,24 @@ function ShowTaskTeamMembers(item: any) {
         } */}
         <div key={key} className="alignCenter">
           {taskData?.TeamMembersFlat != null &&
-            taskData?.TeamMembersFlat?.length > 0 && 
+            taskData?.TeamMembersFlat?.length > 0 &&
             taskData?.TeamMembersFlat?.map((rcData: any, i: any) => {
               return (
-                <a style={{marginRight:"4px"}} href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`}
+                <a
+                  style={{ marginRight: "4px" }}
+                  href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`}
                   target="_blank"
-                  className={i == (LeadCount - 1) && i != 3 ? "teamLeader-IconEnd alignCenter" : 'alignCenter'}
+                  className={i === (LeadCount - 1) && i !== 3 ? "teamLeader-IconEnd alignCenter" : "alignCenter"}
                   data-interception="off"
                   title={rcData?.Title}
                 >
-                  {rcData.userImage != null && (
-                    <img
-                      className={rcData?.workingMember ? "suffix_Usericon activeimg" : "suffix_Usericon"}
-                      src={rcData?.userImage}
-                    />
-                  )}
-                  {rcData.userImage == null && (
-                    <span
-                      className={
-                        rcData?.workingMember
-                          ? "suffix_Usericon activeimg"
-                          : "suffix_Usericon "
-                      }
-                    >
-                      {rcData?.Suffix}
-                    </span>
-                  )}
+                  <Avatar
+                    className="UserImage"
+                    title={rcData?.Title}
+                    name={rcData?.Title}
+                    image={rcData?.userImage ? { src: rcData?.userImage } : null}
+                    initials={rcData?.Suffix}  // Display suffix when image is not available
+                  />
                 </a>
               );
             })}
@@ -217,7 +210,7 @@ function ShowTaskTeamMembers(item: any) {
         {taskData?.TeamMembersTip != null &&
           taskData?.TeamMembersTip?.length > 0 && (
             <div
-              className="hover-text user_Member_img_suffix2 alignCenter" 
+              className="hover-text user_Member_img_suffix2 alignCenter"
               ref={setTriggerRef}
               onMouseOver={(e) => handleSuffixHover()}
               onMouseLeave={(e) => handleSuffixLeave()}
@@ -235,49 +228,32 @@ function ShowTaskTeamMembers(item: any) {
                       className="mb-1 team_Members_Item"
                       style={{ position: "relative" }}
                     >
-                      <div 
-                      >
+                      <div>
                         <a
-                        href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`}
-                        target="_blank"
-                        data-interception="off"
-                        style={{
-                          position: "relative",
-                          display: "inline-block",
-                        }}
-                      >
-                        {rcData.userImage != null && (
-                          <img
-                            className={
-                              rcData?.workingMember
-                                ? "suffix_Usericon activeimg"
-                                : "suffix_Usericon"
-                            }
-                            src={rcData?.userImage}
-                            alt={rcData?.Title}
+                          href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`}
+                          target="_blank"
+                          data-interception="off"
+                          style={{
+                            position: "relative",
+                            display: "inline-block",
+                          }}
+                        >
+                          <Avatar
+                            className="UserImage"
+                            title={rcData?.Title}
+                            name={rcData?.Title}
+                            image={rcData?.userImage ? { src: rcData?.userImage } : null}
                           />
-                        )}
-                        {rcData.userImage == null && (
-                          <span
-                            className={
-                              rcData?.workingMember
-                                ? "suffix_Usericon activeimg"
-                                : "suffix_Usericon"
-                            }
-                          >
-                            {rcData?.Suffix}
-                          </span>
-                        )}
+                        </a>
                         <span className="mx-2">{rcData?.Title}</span>
-                      </a>
-                    </div>
+                      </div>
                     </div>
                   ))}
                 </div>
               </span>)}
             </div>
           )}
-      </div>
+      </div >
     </>
   );
 }

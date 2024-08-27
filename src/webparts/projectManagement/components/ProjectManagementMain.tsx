@@ -1531,6 +1531,7 @@ const loadAllPXTimeEntries = async () => {
     }
     setIsComponent(false);
     GetMasterData(false)
+    setTaggedPortfolio([]);
   };
 
   const LoadAllSiteAllTasks = async function () {
@@ -2858,16 +2859,6 @@ const loadAllPXTimeEntries = async () => {
   const workingThisWeekColumns = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
-        accessorKey: "",
-        placeholder: "",
-        hasCheckbox: false,
-        hasCustomExpanded: hasCustomExpanded,
-        hasExpanded: hasExpanded,
-        isHeaderNotAvlable: isHeaderNotAvlable,
-        size: 12,
-        id: 'Id',
-      },
-      {
         accessorFn: (row) => row?.Site,
         cell: ({ row }) => (
 
@@ -3388,7 +3379,7 @@ const loadAllPXTimeEntries = async () => {
       <div>
         {QueryId != "" ? (
           <>
-            <div className="row">
+            <div className="">
               <div
                 className="d-flex justify-content-between p-0"
               >
@@ -3462,7 +3453,7 @@ const loadAllPXTimeEntries = async () => {
                           <section>
                             <div className="row">
                               <div className="col-md-12 bg-white">
-                                <div className="team_member row  py-2">
+                                <div className="team_member row pe-2 py-2">
                                   <div className="col-md-4  pe-0">
                                     <dl>
                                       <dt className="bg-fxdark">Due Date</dt>
@@ -3580,7 +3571,7 @@ const loadAllPXTimeEntries = async () => {
                                           groupedData={groupedComponentData}
                                           pageName={"projectManagement"}
                                         /> : null}
-                                        {smartPortfoliosData?.map((component: any, index: any) => (`${component?.Title};`))}
+                                        {smartPortfoliosData?.map((component: any, index: any) => (`${component?.Title}; `))}
                                         <a className="ml-auto pull-right" onClick={() => setopenServiceComponent(true)}>
                                           <span className="svg__iconbox svg__icon--editBox alignIcon"  ></span>
                                         </a>
@@ -3652,7 +3643,7 @@ const loadAllPXTimeEntries = async () => {
                                 <div className='col-md-12 bg-white  pe-1'>
                                   <details>
                                     <summary> Working This Week {'(' + filteredTask?.length + ')'} </summary>
-                                    <div className='AccordionContent'  >
+                                    <div className='AccordionContent clearfix'>
                                       {filteredTask?.length > 0 ?
                                         <div className='Alltable border-0 dashboardTable' >
                                           <>
@@ -3665,7 +3656,7 @@ const loadAllPXTimeEntries = async () => {
                                 </details>
                                 {showTimeEntryIcon && <details open={timeEntries.length > 0}>
                                     <summary> Time Entries </summary>
-                                    <div className='AccordionContent'  >
+                                    <div className='AccordionContent clearfix'>
                                         {timeEntries?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable' >
                                                 <>

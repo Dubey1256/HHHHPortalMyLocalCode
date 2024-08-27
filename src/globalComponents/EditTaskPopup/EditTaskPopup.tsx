@@ -6154,7 +6154,7 @@ const EditTaskPopup = (Items: any) => {
                                                         }
                                                         data-interception="off"
                                                     >
-                                                        <span className="svg__iconbox svg__icon--link"></span>
+                                                        <span title="Open in New Tab" className="svg__iconbox svg__icon--link"></span>
                                                     </a>
                                                 </span>
                                             </div>
@@ -6584,7 +6584,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col ps-0">
                                             <div className="input-group">
                                                 {console.log("Working action default users data ==============", WorkingActionDefaultUsers)}
-                                                <div className="form-label full-width alignCenter mb-1">
+                                                <div className="form-label full-width alignCenter ">
                                                     <b className="alignCenter"><LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Bottleneck"} onlyText={"text"} />: </b>
 
                                                     {WorkingActionDefaultUsers?.map((userDtl: any, index: number) => {
@@ -6744,7 +6744,7 @@ const EditTaskPopup = (Items: any) => {
                                         {/* This is used for Attentions  */}
                                         <div className="col mt-2 ps-0">
                                             <div className="input-group">
-                                                <div className="form-label full-width alignCenter mb-1">
+                                                <div className="form-label full-width alignCenter ">
                                                     <b className="alignCenter"><LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Attention"} onlyText={"text"} />: </b>
                                                     {WorkingActionDefaultUsers?.map((userDtl: any, index: number) => {
                                                         return (
@@ -6932,7 +6932,7 @@ const EditTaskPopup = (Items: any) => {
                                         {/* //////////////////////////////This is phone section/////////////////////////// */}
                                         <div className="col mt-2 ps-0">
                                             <div className="input-group">
-                                                <div className="form-label full-width alignCenter mb-1">
+                                                <div className="form-label full-width alignCenter ">
                                                     <b className="alignCenter"><LabelInfoIconToolTip ShowPencilIcon={ShowPencilIcon} ContextInfo={Items?.AllListId} columnName={"Phone"} onlyText={"text"} />: </b>
                                                     {WorkingActionDefaultUsers?.map((userDtl: any, index: number) => {
                                                         return (
@@ -7076,7 +7076,7 @@ const EditTaskPopup = (Items: any) => {
                                             })}
                                         </div>
                                         {/* //////////////////////////////This is Approval section/////////////////////////// */}
-                                        <div className="col mt-2 ps-0 input-group" >
+                                        <div className="col mt-2 ps-0 input-group Approvalcol " >
                                             {WorkingAction?.length > 0 ? <> {WorkingAction?.map((WAItemData, ItemIndex) => {
                                                 if ((WAItemData.Title === "Approval") && (WAItemData?.InformationData?.length === 0 || WAItemData?.InformationData?.length > 1)) {
                                                     return (
@@ -7095,7 +7095,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     />
                                                                     <span className="ms-1">Approval</span>
                                                                 </div >
-                                                                <div>
+                                                                <div className="complexcol">
                                                                     <ul className="p-0 mt-1 list-none alignCenter">
                                                                         <li className="SpfxCheckRadio" onClick={() => updateWAForApproval("Normal", "Type")}>
                                                                             <input
@@ -7337,7 +7337,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </span>
                                                                         {WAItemData?.InformationData?.length === 1 ? (
-                                                                            <span className="hover-text alignCenter">
+                                                                            <span className="hover-text m-0 alignCenter">
                                                                                 <span onClick={() => openTaskUserPopup("Approval")} className="svg__iconbox svg__icon--Plus"></span>
                                                                                 <span className="tooltip-text pop-left">
                                                                                     Add User
@@ -8785,7 +8785,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     }
                                                                     data-interception="off"
                                                                 >
-                                                                    <span className="svg__iconbox svg__icon--link"></span>
+                                                                    <span title="Open in New Tab" className="svg__iconbox svg__icon--link"></span>
                                                                 </a>
                                                             </span>
                                                         </div>

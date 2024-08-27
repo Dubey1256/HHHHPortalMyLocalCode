@@ -146,6 +146,25 @@ const AdminHelp = (props: any) => {
             </>
         );
     };
+    const onRenderFooterQuestionEdit = () => {
+      return (
+<footer>
+    <button
+      className="me-1 btn btn-primary"
+      onClick={() => updateDetails()}
+    >
+      Save
+    </button>
+    <button
+      className="btn btn-default"
+      onClick={() => closeEditQuestionPopup()}
+    >
+      Cancel
+    </button>
+</footer>
+
+      );
+  };
 
 
 return (
@@ -163,9 +182,8 @@ return (
       <span className="alignCentre">
         {componentData?.Short_x0020_Description_x0020_On.replace("<p>", "").replace("</p>", "")}
       </span>
-      <div className="col-sm-12 mb-10">
-        <a
-          className="hreflink pull-right"
+      <div className="col-sm-12 mb-10 clearfix">
+        <a className="pull-right"
           target="_blank"
           data-interception="off"
           href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/HHHHPortfolioDescriptionForm.aspx?taskId=${componentData?.Id}`}
@@ -173,27 +191,23 @@ return (
           Manage Content
         </a>
         <span className="mx-2 pull-right"> | </span>
-        <a
-          className="pull-right"
+        <a className="pull-right"
           target="_blank"
           data-interception="off"
-          href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Question-Management.aspx?taskId=${componentData?.Id}`}
-        >
-          Manage Questions
+          href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/QuestionManagement.aspx?taskId=${componentData?.Id}`}
+        > Manage Questions
         </a>
       </div>
       <div className="col-sm-12 form-group">
-        <fieldset className="fieldsett">
+        <fieldset className="fieldsett m-0">
           <legend>FAQs</legend>
           <div className="col-sm-12 mb-10">
-            <div className="col-sm-12">
-              <span
-                className="pull-right hreflink siteColor"
+              <a
+                className="mb-1 pull-right"
                 onClick={() => setIsOpenAddQuestion(true)}
               >
                 Ask Questions
-              </span>
-            </div>
+              </a>
           </div>
           <div className="col-sm-12">
             {smartHelpData
@@ -309,7 +323,7 @@ return (
           </div>
         </div>
       </div>
-      <footer className="footer-right">
+      <footer className="footer-right text-end">
         <div className="">
           <button className="btn btn-primary" onClick={() => AddQuestionFunc()}>
             Save
@@ -331,6 +345,8 @@ return (
       closeButtonAriaLabel="Close"
       onRenderHeader={onRenderHeaderQuestionEdit}
       type={PanelType.medium}
+      isFooterAtBottom={true}
+      onRenderFooter={onRenderFooterQuestionEdit}
     >
       <div className="modal-body clearfix">
         <div className="input-group mb-2">
@@ -360,24 +376,7 @@ return (
           </div>
         </div>
       </div>
-      <footer className="footer-right">
-        <div className="align-items-center d-flex justify-content-between">
-          <div className="">
-            <button
-              className="me-1 btn btn-primary"
-              onClick={() => updateDetails()}
-            >
-              Save
-            </button>
-            <button
-              className="btn btn-default"
-              onClick={() => closeEditQuestionPopup()}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </footer>
+
     </Panel>
   </>
 );

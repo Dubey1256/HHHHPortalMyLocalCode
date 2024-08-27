@@ -126,7 +126,7 @@ export function Filter({
     return (
 
         <>
-            <input style={{ width: "100%", paddingRight: "10px" }} className="m-1" type="search" value={(columnFilterValue ?? "") as string}
+            <input style={{ width: "100%", paddingRight: "12px" }} className="m-1" type="search" value={(columnFilterValue ?? "") as string}
                 onChange={(e) => column.setFilterValue(e.target.value)} placeholder={`${placeholder?.placeholder}`} />
             {columnFilterValue && <span className='searchClear' onClick={(e: any) => column.setFilterValue("")}></span>}<span className='tooltip-text pop-right fw-light'>{placeholder?.placeholder}</span>
         </>
@@ -1474,7 +1474,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                         <TooltipHost content={tooltips[option.key]}>
                                             <div style={{ display: 'flex',
                                                     alignItems: 'center', padding:'2px 16px 2px 4px',
-                                                    width: '130px', fontSize:'11px',
+                                                    width: '102px', fontSize:'11px',
                                                     backgroundColor: option.key === globalSearchType ? 'var(--SiteBlue)' : '',
                                                     color:option.key === globalSearchType ? '#fff' :'#333333',
                                                     border: option.key === globalSearchType ? '1px solid #999999':''
@@ -1484,7 +1484,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                                     {option.key === globalSearchType && (
                                                         <Icon
                                                             iconName="CheckMark"
-                                                            style={{ marginRight: '4px', backgroundColor: 'var(--SiteBlue)', color: 'white', width:'20px', height:'20px' }}
+                                                            style={{ marginRight: '4px', backgroundColor: 'var(--SiteBlue)', color: 'white', fontSize:'16px' }}
                                                         />
                                                     )}
                                                 </div>
@@ -1492,7 +1492,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                             </div>
                                         </TooltipHost>
                                     )}
-                                    styles={{ dropdown: { width: '130px'} }}
+                                    styles={{ dropdown: { width: '118px'} }}
                                 />
 
                             </span>

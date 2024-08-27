@@ -47,6 +47,7 @@ export const MonthlyLeaveReport = (props: any) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [expandedIndexLeave, setExpandedIndexLeave] = useState<number | null>(null);
   const [expandedVal, setExpandedVal] = useState<string | null>(null);
+  const [allUserCheckBoxClick,setAllUserCheckBoxClick]=useState(false);
 
   let dropSuccessHandler: any;
 
@@ -200,6 +201,7 @@ export const MonthlyLeaveReport = (props: any) => {
           }
         }
       });
+      setAllUserCheckBoxClick(true)
     } else if (select == false) {
       AllTaskuser.forEach((item: any) => {
         if (item?.childs != undefined && item?.childs?.length > 0) {
@@ -218,6 +220,7 @@ export const MonthlyLeaveReport = (props: any) => {
           });
         }
       });
+      setAllUserCheckBoxClick(false)
     }
 
     AllTaskuser.forEach((item: any) => {
@@ -1076,10 +1079,11 @@ export const MonthlyLeaveReport = (props: any) => {
         isBlocking={false}
       // onRenderFooter={CustomFooter}
       >
-        <div className="smartFilter bg-light border mb-3 col">
+        <div className="smartFilter bg-light border mb-3 col mt-0 p-1">
           {showingMonthlyPannelData ? (
             <>
-              <div className="p-0 m-0">
+              <div className="m-0 p-0">
+              <div className="alignCenter">
                 <SlArrowDown
                   onClick={() => setshowingMonthlyPannelData(false)}
                 />
@@ -1087,6 +1091,8 @@ export const MonthlyLeaveReport = (props: any) => {
                 <a>
                   <span>Task User :</span>
                 </a>
+                {allUserCheckBoxClick==false && 
+                <div className="selectedALLUsers">
                 {ImageSelectedUsers != null &&
                   ImageSelectedUsers.length > 0 &&
                   ImageSelectedUsers.map((user: any, i: number) => {
@@ -1095,7 +1101,7 @@ export const MonthlyLeaveReport = (props: any) => {
                         <Avatar
 
                           id={"UserImg" + user?.Id}
-                          className="AssignUserPhoto me-1 activeimg"
+                          className="AssignUserPhoto me-1 activeimg mb-0"
                           title={user?.AssingedToUser?.Title}
                           onClick={(e: any) => SelectUserImagee(e, user)}
                           image={{ src: user?.Item_x0020_Cover?.Url }}
@@ -1106,14 +1112,40 @@ export const MonthlyLeaveReport = (props: any) => {
                       </span>
                     );
                   })}
-                <span className="">
+               </div>
+                }
+
+                <span className="alignCenter">
                   <input
                     type="checkbox"
-                    className="form-check-input mx-1"
+                    className="form-check-input mt-0 mx-1"
                     onClick={(e) => SelectAllGroupMember(e)}
                   />
                   <label>Select All </label>
                 </span>
+               </div>
+               {allUserCheckBoxClick==true&& <div className="selectedALLUsers">
+                {ImageSelectedUsers != null &&
+                  ImageSelectedUsers.length > 0 &&
+                  ImageSelectedUsers.map((user: any, i: number) => {
+                    return (
+                      <span>
+                        <Avatar
+
+                          id={"UserImg" + user?.Id}
+                          className="AssignUserPhoto me-1 activeimg mb-0"
+                          title={user?.AssingedToUser?.Title}
+                          onClick={(e: any) => SelectUserImagee(e, user)}
+                          image={{ src: user?.Item_x0020_Cover?.Url }}
+                          initials={
+                            user?.Item_x0020_Cover?.Url == undefined ? user?.Suffix : undefined
+                          }
+                        />
+                      </span>
+                    );
+                  })}
+               </div>}
+               
               </div>
 
               <Col>
@@ -1124,7 +1156,7 @@ export const MonthlyLeaveReport = (props: any) => {
                   </summary>
 
                   <div style={{ display: "block" }}>
-                    <div className="taskTeamBox ps-40 ">
+                    <div className="taskTeamBox ps-30">
                       {AllTaskuser != null &&
                         AllTaskuser.length > 0 &&
                         AllTaskuser.map((users: any, i: number) => {
@@ -1223,10 +1255,10 @@ export const MonthlyLeaveReport = (props: any) => {
                     Date
                     <hr></hr>
                   </summary>
-                  <Row className="ps-30">
+                  <Row className="ps-30 row">
                     <div>
                       <div className="col TimeReportDays">
-                        <span className="SpfxCheckRadio me-2">
+                        <span className="SpfxCheckRadio">
                           <input
                             type="radio"
                             className="radio"
@@ -1239,7 +1271,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>Custom</label>
                         </span>
-                        <span className="SpfxCheckRadio me-2">
+                        <span className="SpfxCheckRadio">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1251,7 +1283,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>Today</label>
                         </span>
-                        <span className="SpfxCheckRadio me-2">
+                        <span className="SpfxCheckRadio">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1263,7 +1295,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label> Yesterday </label>
                         </span>
-                        <span className="SpfxCheckRadio me-2">
+                        <span className="SpfxCheckRadio">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1276,7 +1308,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label> This Week</label>
                         </span>
-                        <span className="SpfxCheckRadio me-2">
+                        <span className="SpfxCheckRadio">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1288,7 +1320,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label> Last Week</label>
                         </span>
-                        <span className="SpfxCheckRadio me-2">
+                        <span className="SpfxCheckRadio">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1300,7 +1332,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>This Month</label>
                         </span>
-                        <span className="SpfxCheckRadio me-2">
+                        <span className="SpfxCheckRadio">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1312,7 +1344,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>Last Month</label>
                         </span>
-                        <span className="SpfxCheckRadio me-2">
+                        <span className="SpfxCheckRadio">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1323,7 +1355,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>Last 3 Months</label>
                         </span>
-                        <span className="SpfxCheckRadio me-2">
+                        <span className="SpfxCheckRadio">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1334,7 +1366,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>This Year</label>
                         </span>
-                        <span className="SpfxCheckRadio me-2">
+                        <span className="SpfxCheckRadio">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1345,7 +1377,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>Last Year</label>
                         </span>
-                        <span className="SpfxCheckRadio me-2">
+                        <span className="SpfxCheckRadio">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1356,7 +1388,7 @@ export const MonthlyLeaveReport = (props: any) => {
                           />
                           <label>All Time</label>
                         </span>
-                        <span className="SpfxCheckRadio me-2">
+                        <span className="SpfxCheckRadio">
                           <input
                             type="radio"
                             name="dateSelection"
@@ -1378,7 +1410,7 @@ export const MonthlyLeaveReport = (props: any) => {
                       </div>
                     </div>
                   </Row>
-                  <Row className="ps-30 mt-2">
+                  <Row className="ps-30 mt-2 row pe-2">
                     <div className="col">
                       <label
                         ng-required="true"
@@ -1567,16 +1599,35 @@ export const MonthlyLeaveReport = (props: any) => {
                       {expandedIndex === index && (
                         <tr className="MonthlyLeaveReport-Table-InnerRow">
                           <td colSpan={7}>
-                            <table className="table">
+                            <table className="table w-100">
                               <tr>
                                 {((expandedVal == "" || expandedVal === "Planned") && entry?.leavediscriptionPlanned?.length > 0) && (
-                                  <tr>
-                                    <td colSpan={7}>
+
                                       <fieldset className="LeaveType">
                                         <legend className="LeaveTypeName">
                                           Planned:&nbsp; {entry?.Plannedleave}
                                         </legend>
+                                    <table className="table w-100">
+                                      <thead>
+                                        <tr>
+                                          <th>Event Start Date</th>
+                                          <th>Event End Date</th>
+                                          <th>Description</th>
+                                          <th>Status</th>
+                                        </tr>
+                                      </thead>
                                         {entry?.leavediscriptionPlanned?.map((leave: any, idx: number) => (
+                                        <tbody>
+                                          <tr key={idx}>
+                                            <td>{leave.eventDate}</td>
+                                            <td>{leave.endDate}</td>
+                                            <td>{leave.Short_x0020_Description_x0020_On}</td>
+                                            <td>{leave.isApproved}</td>
+                                          </tr>
+                                        </tbody>
+                                      ))}
+                                    </table>
+                                    {/* {entry?.leavediscriptionPlanned?.map((leave: any, idx: number) => (
                                           <div className="LeaveData-Row" key={idx}>
                                             <span className="LeaveDate">
                                               {leave.eventDate !== leave.endDate
@@ -1590,12 +1641,41 @@ export const MonthlyLeaveReport = (props: any) => {
                                               {leave.isApproved}
                                             </span>
                                           </div>
-                                        ))}
+                                        ))} */}
                                       </fieldset>
-                                    </td>
-                                  </tr>
                                 )}
+                                  </tr>
+                              <tr>
                                 {((expandedVal == "" || expandedVal === "Un-Planned") && entry?.leavediscriptionUnPlanned?.length > 0) && (
+
+                                  <fieldset className="LeaveType">
+                                    <legend className="LeaveTypeName">
+                                      Un-planned:&nbsp; {entry?.leavediscriptionUnPlanned.length}
+                                    </legend>
+                                    <table className="table w-100">
+                                      <thead>
+                                        <tr>
+                                          <th>Event Start Date</th>
+                                          <th>Event End Date</th>
+                                          <th>Description</th>
+                                          <th>Status</th>
+                                        </tr>
+                                      </thead>
+                                      {entry?.leavediscriptionUnPlanned?.map((leave: any, idx: number) => (
+                                        <tbody>
+                                          <tr key={idx}>
+                                            <td>{leave.eventDate}</td>
+                                            <td>{leave.endDate}</td>
+                                            <td>{leave.Short_x0020_Description_x0020_On}</td>
+                                            <td>{leave.isApproved}</td>
+                                          </tr>
+                                        </tbody>
+                                      ))}
+                                    </table>
+                                  </fieldset>
+                                )}
+                              </tr>
+                              {/* {((expandedVal == "" || expandedVal === "Un-Planned") && entry?.leavediscriptionUnPlanned?.length > 0) && (
                                   <tr>
                                     <td colSpan={7}>
                                       <fieldset className="LeaveType">
@@ -1620,8 +1700,39 @@ export const MonthlyLeaveReport = (props: any) => {
                                       </fieldset>
                                     </td>
                                   </tr>
-                                )}
+                                )} */}
+
+                              <tr>
                                 {((expandedVal == "" || expandedVal === "RH") && entry?.leavediscriptionRh?.length > 0) && (
+
+                                  <fieldset className="LeaveType">
+                                    <legend className="LeaveTypeName">
+                                        RH:&nbsp; {entry?.leavediscriptionRh?.length}
+                                      </legend>
+                                    <table className="table w-100 mb-0">
+                                      <thead>
+                                        <tr>
+                                          <th>Event Start Date</th>
+                                          <th>Event End Date</th>
+                                          <th>Description</th>
+                                          <th>Status</th>
+                                        </tr>
+                                      </thead>
+                                      {entry?.leavediscriptionRh?.map((leave: any, idx: number) => (
+                                        <tbody>
+                                          <tr key={idx}>
+                                            <td>{leave.eventDate}</td>
+                                            <td>{leave.eventDate}</td>
+                                            <td>{leave.Short_x0020_Description_x0020_On}</td>
+                                            <td>{leave.isApproved}</td>
+                                          </tr>
+                                        </tbody>
+                                      ))}
+                                    </table>
+                                  </fieldset>
+                                )}
+                              </tr>
+                              {/* {((expandedVal == "" || expandedVal === "RH") && entry?.leavediscriptionRh?.length > 0) && (
                                   <tr>
                                     <td colSpan={7}>
                                       <fieldset className="LeaveType">
@@ -1641,8 +1752,37 @@ export const MonthlyLeaveReport = (props: any) => {
                                       </fieldset>
                                     </td>
                                   </tr>
-                                )}
+                              )} */}
+                              <tr>
                                 {((expandedVal == "" || expandedVal === "Halfday") && entry?.leavediscriptionHalfday?.length > 0) && (
+                                  <fieldset className="LeaveType">
+                                    <legend className="LeaveTypeName">
+                                        Half Day:&nbsp; {entry?.leavediscriptionHalfday.length}
+                                      </legend>
+                                    <table className="table w-100">
+                                      <thead>
+                                        <tr>
+                                          <th>Event Start Date</th>
+                                          <th>Event End Date</th>
+                                          <th>Description</th>
+                                          <th>Status</th>
+                                        </tr>
+                                      </thead>
+                                      {entry?.leavediscriptionHalfday?.map((leave: any, idx: number) => (
+                                        <tbody>
+                                          <tr key={idx}>
+                                            <td>{leave.eventDate}</td>
+                                            <td>{leave.eventDate}</td>
+                                            <td>{leave.Short_x0020_Description_x0020_On}</td>
+                                            <td>{leave.isApproved}</td>
+                                          </tr>
+                                        </tbody>
+                                      ))}
+                                    </table>
+                                  </fieldset>
+                                )}
+                              </tr>
+                              {/* {((expandedVal == "" || expandedVal === "Halfday") && entry?.leavediscriptionHalfday?.length > 0) && (
                                   <tr>
                                     <td colSpan={7}>
                                       <fieldset className="LeaveType">
@@ -1665,8 +1805,7 @@ export const MonthlyLeaveReport = (props: any) => {
                                       </fieldset>
                                     </td>
                                   </tr>
-                                )}
-                              </tr>
+                              )} */}
                             </table>
                           </td>
                         </tr>

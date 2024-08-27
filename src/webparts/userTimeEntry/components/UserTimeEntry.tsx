@@ -3996,7 +3996,7 @@ export default class UserTimeEntry extends React.Component<
         <span
           style={{
             position: "absolute",
-            top: "50%",
+            top: "20px",
             right: "7px",
             transform: "translateY(-50%)",
             cursor: "pointer",
@@ -4021,7 +4021,7 @@ export default class UserTimeEntry extends React.Component<
         <span
           style={{
             position: "absolute",
-            top: "50%",
+            top: "20px",
             right: "7px",
             transform: "translateY(-50%)",
             cursor: "pointer",
@@ -4299,7 +4299,7 @@ export default class UserTimeEntry extends React.Component<
         );
       } else {
 
-        let TimeSheetDetails:any = {}
+        let TimeSheetDetails: any = {}
         TimeSheetDetails['ManagementCount'] = ManagementCount,
           TimeSheetDetails['managementMembers'] = managementMembers,
           TimeSheetDetails['ManagementTime'] = ManagementTime,
@@ -4328,6 +4328,13 @@ export default class UserTimeEntry extends React.Component<
         );
       }
     }
+  };
+  private clearDateFiltersWorkingAction = () => {
+    this.setState({
+      selectedRadio: '',
+      startdate: null,
+      enddate: null,
+    });
   };
   public render(): React.ReactElement<IUserTimeEntryProps> {
     const {
@@ -4541,7 +4548,7 @@ export default class UserTimeEntry extends React.Component<
                     </summary>
                     <hr style={{ width: "98%", marginLeft: "30px" }}></hr>
                     <Row className="ps-30 my-2">
-                      <div>
+                      <div className="ps-2">
                         <div className="col TimeReportDays">
                           <span className="SpfxCheckRadio">
                             <input
@@ -4704,7 +4711,7 @@ export default class UserTimeEntry extends React.Component<
                       </div>
                     </Row>
                     <Row className="ps-30 mb-2">
-                      <div className="col-2">
+                      <div className="col-1" style={{ width: "180px" }}>
                         <div className="input-group">
                           <label className="full-width">Start Date</label>
                           <span>
@@ -4720,7 +4727,7 @@ export default class UserTimeEntry extends React.Component<
                           </span>
                         </div>
                       </div>
-                      <div className="col-2">
+                      <div className="col-1" style={{ width: "180px" }}>
                         <div className="input-group">
                           <label className="full-width">End Date</label>
                           <span>
@@ -4735,6 +4742,7 @@ export default class UserTimeEntry extends React.Component<
                           </span>
                         </div>
                       </div>
+                      <div className="col-1"><label className="hreflink pt-4" title="Clear Date Filters" onClick={this.clearDateFiltersWorkingAction}><strong style={{ color: `${portfolioColor}` }} >Clear</strong></label></div>
                       <div className="col">
                         <div className="mt-1">
                           <label className="full_width">Portfolio Item</label>

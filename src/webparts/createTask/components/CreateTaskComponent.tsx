@@ -1175,12 +1175,16 @@ function CreateTaskComponent(props: any) {
                             await GlobalFunctionForUpdateItems.TaskNotificationConfiguration({ usedFor: "Auto-Assignment", SiteURL: AllListId.siteUrl, ItemDetails: data.data, Context: AllListId.Context, RequiredListIds: AllListId, AllTaskUser: taskUsers, Status: 0 })
                             let assignedToIds: any[] = [];
                             let responsibleTeamIds: any[] = [];
-                            data.data.TaskAssignedUsers.map((users: any) => {
-                                assignedToIds.push(users.AssingedToUserId)
-                            })
-                            data.data.ResponsibleTeamMembers.map((teamMember: any) => {
-                                responsibleTeamIds.push(teamMember.AssingedToUserId)
-                            })
+                            if (data?.data?.TaskAssignedUsers.length > 0) {
+                                data?.data?.TaskAssignedUsers?.map((users: any) => {
+                                    assignedToIds.push(users.AssingedToUserId)
+                                })
+                            }
+                            if (data?.data?.TaskResponsibleTeam.length > 0) {
+                                data?.data?.TaskResponsibleTeam?.map((teamMember: any) => {
+                                    responsibleTeamIds.push(teamMember.AssingedToUserId)
+                                })
+                            }
                             let updateTask: any = {}
                             updateTask.AssignedToId = {results: assignedToIds ? assignedToIds : []}
                             updateTask.TeamMembersId = {results: assignedToIds ? assignedToIds : []}
@@ -1884,301 +1888,301 @@ function CreateTaskComponent(props: any) {
         );
     };
     return (
-        <>  <div className={save.portfolioType == "Service" ? "justify-content-center align-items-start d-flex" : 'justify-content-center align-items-start d-flex'}>
-            <div className='creatTaskPage' >
-                <div className='generalInfo'>
-                    <div>
-                        {props?.projectId == undefined ?
-                            <h4 className="titleBorder">General Information</h4> : ''}
-                        <div className='row p-0'>
-                            <div className='col-sm-6  '>
-                                <div className='input-group'>
-                                    <label className='full-width form-label'>Task Name</label>
-                                    <input type="text" placeholder='Enter task Name' className='form-control' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
-                                </div>
+        <>  <div className={save.portfolioType == "Service" ? "row" : 'row '}>
+        <div className='col-9 creatTaskPage' >
+            <div className='generalInfo'>
+                <div>
+                    {props?.projectId == undefined ?
+                        <h4 className="titleBorder">General Information</h4> : ''}
+                    <div className='row p-0'>
+                        <div className='col-sm-6  '>
+                            <div className='input-group'>
+                                <label className='full-width form-label'>Task Name</label>
+                                <input type="text" placeholder='Enter task Name' className='form-control' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
                             </div>
-                            <div className='col-sm-3'>
-                                <div className="input-group mb-2">
-                                    <label className="form-label full-width">
-                                        Portfolio Item
-                                    </label>
-                                    {smartComponentData?.length > 0 ? (
-                                        <span className="full-width">
-                                            {smartComponentData?.map((com: any) => {
+                        </div>
+                        <div className='col-sm-3'>
+                            <div className="input-group mb-2">
+                                <label className="form-label full-width">
+                                    Portfolio Item
+                                </label>
+                                {smartComponentData?.length > 0 ? (
+                                    <span className="full-width">
+                                        {smartComponentData?.map((com: any) => {
+                                            return (
+                                                <>
+                                                    <div className="full-width replaceInput pe-0 alignCenter" style={{ width: '100%' }}>
+                                                        <a title={com?.Title} target="_blank" data-interception="off" className="textDotted"
+                                                            href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com?.Id}`} >
+                                                            {com?.Title}
+                                                        </a>
+                                                        {/* <span title="Remove Component" onClick={() => { setSmartComponentData([]), selectedPortfolio = [], setSuggestedProjectsOfporfolio([]) }}
+                                                            style={{ backgroundColor: 'black' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span> */}
+                                                    </div>
+
+                                                </>
+                                            );
+                                        })}
+                                    </span>
+                                ) : (<input type="text" className="form-control" value={SearchedServiceCompnentKey}
+                                    onChange={(e) => autoSuggestionsForServiceAndComponent(e)} placeholder="Search Portfolio Item" />)}
+                                <span className="input-group-text">
+                                    <span title="Component Popup" onClick={(e) => EditPortfolio(save, 'Component')}
+                                        className="svg__iconbox svg__icon--editBox"></span>
+                                </span>
+                                {SearchedServiceCompnentData?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                            {SearchedServiceCompnentData.map((Item: any) => {
                                                 return (
-                                                    <>
-                                                        <div className="full-width replaceInput pe-0 alignCenter" style={{ width: '90%' }}>
-                                                            <a title={com?.Title} target="_blank" data-interception="off" className="textDotted"
-                                                                href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com?.Id}`} >
-                                                                {com?.Title}
-                                                            </a>
-                                                            <span title="Remove Component" onClick={() => { setSmartComponentData([]), selectedPortfolio = [], setSuggestedProjectsOfporfolio([]) }}
-                                                                style={{ backgroundColor: 'black' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
-                                                        </div>
-
-                                                    </>
-                                                );
-                                            })}
-                                        </span>
-                                    ) : (<input type="text" className="form-control" value={SearchedServiceCompnentKey}
-                                        onChange={(e) => autoSuggestionsForServiceAndComponent(e)} placeholder="Search Portfolio Item" />)}
-                                    <span className="input-group-text">
-                                        <span title="Component Popup" onClick={(e) => EditPortfolio(save, 'Component')}
-                                            className="svg__iconbox svg__icon--editBox"></span>
-                                    </span>
-                                    {SearchedServiceCompnentData?.length > 0 ? (
-                                        <div className="SmartTableOnTaskPopup">
-                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                {SearchedServiceCompnentData.map((Item: any) => {
-                                                    return (
-                                                        <li className='hreflink list-group-item rounded-0 list-group-item-action p-1' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
-                                                            <a>{Item.Path}</a>
-                                                        </li>
-                                                    )
-                                                }
-                                                )}
-                                            </ul>
-                                        </div>) : null}
-                                </div>
-
-
-
-                            </div>
-                            <div className='col-sm-3'>
-                                <div className="input-group mb-2">
-                                    <label className="form-label full-width">
-                                        Project
-                                    </label>
-                                    {selectedProjectData?.Id != undefined ? (
-                                        <span className="full-width">
-                                            <div className="full-width replaceInput pe-0 alignCenter" style={{ width: '90%' }}>
-                                                <a title={selectedProjectData?.Title} target="_blank" data-interception="off" className="textDotted"
-                                                    href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${selectedProjectData?.ID}`} >
-                                                    {selectedProjectData?.Title}
-                                                </a>
-                                                <span title="Remove Project" onClick={() => { setSelectedProjectData({}) }}
-                                                    style={{ backgroundColor: 'black' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
-                                            </div>
-
-                                        </span>
-                                    ) : (<input type="text" className="form-control" value={SearchedProjectKey}
-                                        onChange={(e) => autoSuggestionsForProject(e)} placeholder="Search Project/Sprints" />)}
-                                    <span className="input-group-text">
-                                        <span title="Component Popup" onClick={(e) => EditPortfolio(save, 'Project')}
-                                            className="svg__iconbox svg__icon--editBox"></span>
-                                    </span>
-                                    {SearchedProjectItems?.length > 0 ? (
-                                        <div className="SmartTableOnTaskPopup">
-                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                {SearchedProjectItems.map((Item: any) => {
-                                                    return (
-                                                        <li className='hreflink list-group-item rounded-0 list-group-item-action p-1' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
-                                                            <a>{Item.Path}</a>
-                                                        </li>
-                                                    )
-                                                }
-                                                )}
-                                            </ul>
-                                        </div>) : null}
-                                </div>
-
-
-
+                                                    <li className='hreflink list-group-item rounded-0 list-group-item-action p-1' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
+                                                        <a>{Item.Path}</a>
+                                                    </li>
+                                                )
+                                            }
+                                            )}
+                                        </ul>
+                                    </div>) : null}
                             </div>
 
-                            <div className='col mt-2'>
-                                <div className='input-group'>
-                                    <label className='full-width'>Task URL</label>
-                                    <input type="text" className='form-control' placeholder='Enter task Url' value={save.taskUrl} onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
-                                </div>
-                            </div>
+
 
                         </div>
+                        <div className='col-sm-3'>
+                            <div className="input-group mb-2">
+                                <label className="form-label full-width">
+                                    Project
+                                </label>
+                                {selectedProjectData?.Id != undefined ? (
+                                    <span className="full-width">
+                                        <div className="full-width replaceInput pe-0 alignCenter" style={{ width: '100%' }}>
+                                            <a title={selectedProjectData?.Title} target="_blank" data-interception="off" className="textDotted"
+                                                href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${selectedProjectData?.ID}`} >
+                                                {selectedProjectData?.Title}
+                                            </a>
+                                            {/* <span title="Remove Project" onClick={() => { setSelectedProjectData({}) }}
+                                                style={{ backgroundColor: 'black' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span> */}
+                                        </div>
+
+                                    </span>
+                                ) : (<input type="text" className="form-control" value={SearchedProjectKey}
+                                    onChange={(e) => autoSuggestionsForProject(e)} placeholder="Search Project/Sprints" />)}
+                                <span className="input-group-text">
+                                    <span title="Component Popup" onClick={(e) => EditPortfolio(save, 'Project')}
+                                        className="svg__iconbox svg__icon--editBox"></span>
+                                </span>
+                                {SearchedProjectItems?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                            {SearchedProjectItems.map((Item: any) => {
+                                                return (
+                                                    <li className='hreflink list-group-item rounded-0 list-group-item-action p-1' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
+                                                        <a>{Item.Path}</a>
+                                                    </li>
+                                                )
+                                            }
+                                            )}
+                                        </ul>
+                                    </div>) : null}
+                            </div>
+
+
+
+                        </div>
+
+                        <div className='col mt-2'>
+                            <div className='input-group'>
+                                <label className='full-width'>Task URL</label>
+                                <input type="text" className='form-control' placeholder='Enter task Url' value={save.taskUrl} onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            {burgerMenuTaskDetails?.ComponentID != undefined ?
+                <div className={refreshPage != true ? 'mt-2' : 'mt-2'}>
+                    <ul className="nav nav-tabs" id="myTab" role="tablist">
+                        <button className="nav-link active" id="URL-Tasks" data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
+                            URL TASKS {("(" + (TaskUrlRelevantTask?.length > 0 ? TaskUrlRelevantTask?.length : 0) + ')')}
+                        </button>
+
+                        <button className="nav-link " id="Page-Tasks" data-bs-toggle="tab" data-bs-target="#PageTasks" type="button" role="tab" aria-controls="PageTasks" aria-selected="true">
+                            PAGE TASKS {("(" + (PageRelevantTask?.length > 0 ? PageRelevantTask?.length : 0) + ')')}
+                        </button>
+
+                        <button className="nav-link " id="Component-Tasks" data-bs-toggle="tab" data-bs-target="#ComponentTasks" type="button" role="tab" aria-controls="ComponentTasks" aria-selected="false">
+                            COMPONENT TASKS {("(" + (ComponentRelevantTask?.length > 0 ? ComponentRelevantTask?.length : 0) + ')')} </button>
+
+                    </ul>
+                    <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
+                        <div className="tab-pane Alltable p-0 show active" style={{ maxHeight: "300px", overflow: 'hidden' }} id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
+                            {TaskUrlRelevantTask?.length > 0 ?
+                                <>
+                                    <div className={TaskUrlRelevantTask?.length > 0 ? 'fxhg' : ''}>
+                                        <GlobalCommanTable wrapperHeight="100%" columns={column2} data={TaskUrlRelevantTask} callBackData={callBackData} />
+                                    </div>
+                                </> : <div className='text-center full-width'>
+                                    <span>No Tasks Available</span>
+                                </div>
+                            }
+                        </div>
+                        <div className="tab-pane Alltable p-0 " style={{ maxHeight: "300px", overflow: 'hidden' }} id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
+                            {PageRelevantTask?.length > 0 ?
+                                <>
+                                    <div className={PageRelevantTask?.length > 0 ? 'fxhg' : ''}>
+                                        <GlobalCommanTable wrapperHeight="100%" columns={column2} data={PageRelevantTask} callBackData={callBackData} />
+                                    </div>
+                                </> : <div className='text-center full-width'>
+                                    <span>No Tasks Available</span>
+                                </div>
+                            }
+                        </div>
+                        <div className="tab-pane Alltable p-0" style={{ maxHeight: "300px", overflow: 'hidden' }} id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
+
+                            {ComponentRelevantTask?.length > 0 ?
+                                <>
+                                    <div className={ComponentRelevantTask?.length > 0 ? 'fxhg' : ''}>
+                                        <GlobalCommanTable wrapperHeight="100%" columns={column2} data={ComponentRelevantTask} callBackData={callBackData} />
+                                    </div>
+                                </> : <div className='text-center full-width'>
+                                    <span>No Tasks Available</span>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+                : ''}
+
+
+
+
+
+            {/*---------------- Sites -------------
+            -------------------------------*/}
+            {siteType?.length > 1 ?
+                <div className='col mt-4'>
+                    <h4 className="titleBorder ">Websites</h4>
+                    <div className='clearfix p-0'>
+                        <ul className="site-actions">
+                            {siteType?.map((item: any) => {
+                                return (
+                                    <>
+                                        {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
+                                            <>
+                                                <li
+                                                    className={isActive.siteType && save.siteType === item.Title ? 'bgtile active text-center position-relative' : "position-relative bgtile text-center"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
+                                                    {/*  */}
+                                                    <a className=' text-decoration-none' >
+                                                        <span className="icon-sites">
+                                                            {item.Item_x005F_x0020_Cover != undefined &&
+                                                                <img className="icon-sites"
+                                                                    src={item.Item_x005F_x0020_Cover.Url} />
+                                                            }
+                                                        </span>{item.Title}
+                                                    </a>
+                                                </li>
+                                            </>
+                                        }
+                                    </>)
+                            })}
+                        </ul>
+                    </div>
+                </div> : ''}
+
+            {props?.projectId == undefined ? <>
+                <div className="clearfix"></div>
+                {/*---- Task Categories ---------
+            -------------------------------*/}
+                <div className="col" >
+                    {TaskTypes?.map((Task: any) => {
+                        return (
+                            <>
+                                <div className='mt-4 clearfix'>
+                                    <h4 className="titleBorder "> {Task?.Title}</h4>
+                                    <div className='col p-0 taskcatgoryPannel'  >
+                                        {subCategory?.map((item: any) => {
+                                            return (
+                                                <>
+                                                    {Task.Id === item.ParentID &&
+                                                        <a onClick={() => selectSubTaskCategory(item?.Title, item?.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask active text-center' : 'bg-siteColor subcategoryTask text-center'} >
+                                                            <span className="tasks-label">{item.Title}</span>
+                                                        </a>
+                                                    }
+                                                </>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </>)
+                    })}
+                </div>
+                <div className="clearfix"></div>
+                {/*-----Priority Rank ---------------------------------------*/}
+                <div className='col clearfix mt-4'>
+                    <h4 className="titleBorder ">Priority Rank</h4>
+
+                    {/* <legend className="border-bottom fs-6">Priority Rank</legend> */}
+                    <div className="taskcatgoryPannel alignCenter Priority">
+                        <span className='me-2'>High priority</span>
+                        {priorityRank?.map((item: any) => {
+                            return (
+                                <a className={isActive.rank && save.rank === item.Title ? 'subcategoryTask active' : 'subcategoryTask'} onClick={() => setActiveTile("rank", "rank", item.Title)}> {item?.Title} </a>
+                            )
+                        })}
+                        <span className='ms-3'>Low priority</span>
+
                     </div>
 
                 </div>
+                <div className="clearfix"></div>
+                {/*-----Time --------
+            -------------------------------*/}
 
-                {burgerMenuTaskDetails?.ComponentID != undefined ?
-                    <div className={refreshPage != true ? 'mt-2' : 'mt-2'}>
-                        <ul className="nav nav-tabs" id="myTab" role="tablist">
-                            <button className="nav-link active" id="URL-Tasks" data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
-                                URL TASKS {("(" + (TaskUrlRelevantTask?.length > 0 ? TaskUrlRelevantTask?.length : 0) + ')')}
-                            </button>
-
-                            <button className="nav-link " id="Page-Tasks" data-bs-toggle="tab" data-bs-target="#PageTasks" type="button" role="tab" aria-controls="PageTasks" aria-selected="true">
-                                PAGE TASKS {("(" + (PageRelevantTask?.length > 0 ? PageRelevantTask?.length : 0) + ')')}
-                            </button>
-
-                            <button className="nav-link " id="Component-Tasks" data-bs-toggle="tab" data-bs-target="#ComponentTasks" type="button" role="tab" aria-controls="ComponentTasks" aria-selected="false">
-                                COMPONENT TASKS {("(" + (ComponentRelevantTask?.length > 0 ? ComponentRelevantTask?.length : 0) + ')')} </button>
-
-                        </ul>
-                        <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
-                            <div className="tab-pane Alltable p-0 show active" style={{ maxHeight: "300px", overflow: 'hidden' }} id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
-                                {TaskUrlRelevantTask?.length > 0 ?
-                                    <>
-                                        <div className={TaskUrlRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable wrapperHeight="100%" columns={column2} data={TaskUrlRelevantTask} callBackData={callBackData} />
-                                        </div>
-                                    </> : <div className='text-center full-width'>
-                                        <span>No Tasks Available</span>
-                                    </div>
-                                }
-                            </div>
-                            <div className="tab-pane Alltable p-0 " style={{ maxHeight: "300px", overflow: 'hidden' }} id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
-                                {PageRelevantTask?.length > 0 ?
-                                    <>
-                                        <div className={PageRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable wrapperHeight="100%" columns={column2} data={PageRelevantTask} callBackData={callBackData} />
-                                        </div>
-                                    </> : <div className='text-center full-width'>
-                                        <span>No Tasks Available</span>
-                                    </div>
-                                }
-                            </div>
-                            <div className="tab-pane Alltable p-0" style={{ maxHeight: "300px", overflow: 'hidden' }} id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
-
-                                {ComponentRelevantTask?.length > 0 ?
-                                    <>
-                                        <div className={ComponentRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable wrapperHeight="100%" columns={column2} data={ComponentRelevantTask} callBackData={callBackData} />
-                                        </div>
-                                    </> : <div className='text-center full-width'>
-                                        <span>No Tasks Available</span>
-                                    </div>
-                                }
-
-                            </div>
-                        </div>
-                    </div>
-                    : ''}
-
-
-
-
-
-                {/*---------------- Sites -------------
-                -------------------------------*/}
-                {siteType?.length > 1 ?
-                    <div className='col mt-4'>
-                        <h4 className="titleBorder ">Websites</h4>
-                        <div className='clearfix p-0'>
-                            <ul className="site-actions">
-                                {siteType?.map((item: any) => {
-                                    return (
-                                        <>
-                                            {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
-                                                <>
-                                                    <li
-                                                        className={isActive.siteType && save.siteType === item.Title ? 'bgtile active text-center position-relative' : "position-relative bgtile text-center"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
-                                                        {/*  */}
-                                                        <a className=' text-decoration-none' >
-                                                            <span className="icon-sites">
-                                                                {item.Item_x005F_x0020_Cover != undefined &&
-                                                                    <img className="icon-sites"
-                                                                        src={item.Item_x005F_x0020_Cover.Url} />
-                                                                }
-                                                            </span>{item.Title}
-                                                        </a>
-                                                    </li>
-                                                </>
-                                            }
-                                        </>)
-                                })}
-                            </ul>
-                        </div>
-                    </div> : ''}
-
-                {props?.projectId == undefined ? <>
-                    <div className="clearfix"></div>
-                    {/*---- Task Categories ---------
-                -------------------------------*/}
-                    <div className="col" >
-                        {TaskTypes?.map((Task: any) => {
+                <div className='col mt-4 clearfix'>
+                    <h4 className="titleBorder">Time</h4>
+                    <div className="taskcatgoryPannel">
+                        {Timing?.map((item: any) => {
                             return (
-                                <>
-                                    <div className='mt-4 clearfix'>
-                                        <h4 className="titleBorder "> {Task?.Title}</h4>
-                                        <div className='col p-0 taskcatgoryPannel'  >
-                                            {subCategory?.map((item: any) => {
-                                                return (
-                                                    <>
-                                                        {Task.Id === item.ParentID &&
-                                                            <a onClick={() => selectSubTaskCategory(item?.Title, item?.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask active text-center' : 'bg-siteColor subcategoryTask text-center'} >
-                                                                <span className="tasks-label">{item.Title}</span>
-                                                            </a>
-                                                        }
-                                                    </>
-                                                )
-                                            })}
-                                        </div>
-                                    </div>
-                                </>)
+                                <a className={isActive.time && save.Time === item.Title ? ' active subcategoryTask' : 'subcategoryTask'} onClick={() => setActiveTile("Time", "time", item.Title)}>{item.Title}</a>
+                            )
                         })}
                     </div>
-                    <div className="clearfix"></div>
-                    {/*-----Priority Rank ---------------------------------------*/}
-                    <div className='col clearfix mt-4'>
-                        <h4 className="titleBorder ">Priority Rank</h4>
-
-                        {/* <legend className="border-bottom fs-6">Priority Rank</legend> */}
-                        <div className="taskcatgoryPannel alignCenter Priority">
-                            <span className='me-2'>High priority</span>
-                            {priorityRank?.map((item: any) => {
-                                return (
-                                    <a className={isActive.rank && save.rank === item.Title ? 'subcategoryTask active' : 'subcategoryTask'} onClick={() => setActiveTile("rank", "rank", item.Title)}> {item?.Title} </a>
-                                )
-                            })}
-                            <span className='ms-3'>Low priority</span>
-
-                        </div>
-
+                </div>
+                <div className="clearfix"></div>
+                {/*-----Due date --------
+            -------------------------------*/}
+                <div className='col mt-4'>
+                    <h4 className="titleBorder ">Due Date</h4>
+                    <div className="taskcatgoryPannel">
+                        <a className={isActive.dueDate && save.dueDate === 'Today' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
+                        <a className={isActive.dueDate && save.dueDate === 'Tomorrow' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow">Tomorrow</a>
+                        <a className={isActive.dueDate && save.dueDate === 'ThisWeek' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek">This Week</a>
+                        <a className={isActive.dueDate && save.dueDate === 'NextWeek' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'NextWeek')} id="NextWeek">Next Week</a>
+                        <a className={isActive.dueDate && save.dueDate === 'ThisMonth' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisMonth')} id="ThisMonth">This Month</a>
                     </div>
-                    <div className="clearfix"></div>
-                    {/*-----Time --------
-                -------------------------------*/}
+                </div>
+            </> : ''}
 
-                    <div className='col mt-4 clearfix'>
-                        <h4 className="titleBorder">Time</h4>
-                        <div className="taskcatgoryPannel">
-                            {Timing?.map((item: any) => {
-                                return (
-                                    <a className={isActive.time && save.Time === item.Title ? ' active subcategoryTask' : 'subcategoryTask'} onClick={() => setActiveTile("Time", "time", item.Title)}>{item.Title}</a>
-                                )
-                            })}
-                        </div>
-                    </div>
-                    <div className="clearfix"></div>
-                    {/*-----Due date --------
-                -------------------------------*/}
-                    <div className='col mt-4'>
-                        <h4 className="titleBorder ">Due Date</h4>
-                        <div className="taskcatgoryPannel">
-                            <a className={isActive.dueDate && save.dueDate === 'Today' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
-                            <a className={isActive.dueDate && save.dueDate === 'Tomorrow' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow">Tomorrow</a>
-                            <a className={isActive.dueDate && save.dueDate === 'ThisWeek' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek">This Week</a>
-                            <a className={isActive.dueDate && save.dueDate === 'NextWeek' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'NextWeek')} id="NextWeek">Next Week</a>
-                            <a className={isActive.dueDate && save.dueDate === 'ThisMonth' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisMonth')} id="ThisMonth">This Month</a>
-                        </div>
-                    </div>
-                </> : ''}
-
-                <footer className='col text-end mt-3'>
-                    {
-                        siteType?.map((site: any) => {
-                            if (site.Title === save.siteType) {
-                                return (
-                                    <span className='ms-2'>
-                                        {(site.Item_x005F_x0020_Cover !== undefined && site.Item_x005F_x0020_Cover?.Url !== undefined) &&
-                                            <img className="createTask-SiteIcon mx-2" style={{ width: '31.5px' }} src={site.Item_x005F_x0020_Cover.Url} />
-                                        }
-                                    </span>
-                                )
-                            }
-                        })
-                    }
-                    <button type="button" disabled={isTaskCreated} className='btn btn-primary bg-siteColor ' onClick={() => createTask()}>Submit</button>
-                </footer>
+            <footer className='col text-end mt-3'>
+                {
+                    siteType?.map((site: any) => {
+                        if (site.Title === save.siteType) {
+                            return (
+                                <span className='ms-2'>
+                                    {(site.Item_x005F_x0020_Cover !== undefined && site.Item_x005F_x0020_Cover?.Url !== undefined) &&
+                                        <img className="createTask-SiteIcon mx-2" style={{ width: '31.5px' }} src={site.Item_x005F_x0020_Cover.Url} />
+                                    }
+                                </span>
+                            )
+                        }
+                    })
+                }
+                <button type="button" disabled={isTaskCreated} className='btn btn-primary bg-siteColor ' onClick={() => createTask()}>Submit</button>
+            </footer>
 
 
                 {(IsOpenPortfolio || ProjectManagementPopup) && (
@@ -2194,8 +2198,8 @@ function CreateTaskComponent(props: any) {
                 {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup context={props?.SelectedProp.Context} SDCTaskDetails={burgerMenuTaskDetails}
                     sendApproverMail={sendApproverMail} AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} pageType={'createTask'} /> : ''}
             </div >
-            <span className="ms-4">
-                <div className="card mb-3">
+            <span className="rightSideWebparts ms-4">
+                <div className="card no-border mb-3">
                     <div className="card-body">
                         <h6 className="f-15 title titleBorder">Suggested Projects</h6>
                         <input
@@ -2208,9 +2212,9 @@ function CreateTaskComponent(props: any) {
                         {SuggestedProjectsOfporfolio?.length > 0 ? <ul className="SpfxCheckRadio list-group list-group-flush">
                             {SuggestedProjectsOfporfolio?.map((project: any) => {
                                 return (
-                                    <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action' >
+                                    <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action no-border ellipsisTextList' >
                                         <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
-                                        <a className="hreflink" title={`${project?.PortfolioStructureID} - ${project?.Title}`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
+                                        <a title={`${project?.PortfolioStructureID} - ${project?.Title}`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
                                             data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title}`}</a>
                                     </li>
                                 )
@@ -2218,7 +2222,7 @@ function CreateTaskComponent(props: any) {
                         </ul> : <h6 className="f-15 title">No Suggested Projects</h6>}
                     </div>
                 </div>
-                <div className="card mb-3">
+                <div className="card no-border mb-3">
                     <div className="card-body">
                         <h6 className="f-15 title titleBorder">Relevant Projects</h6>
                         <input
@@ -2228,12 +2232,12 @@ function CreateTaskComponent(props: any) {
                             placeholder="Search Relevant Projects"
                             className='full-width px-1 py-0 mt-1'
                         />
-                        {relevantProjects?.length > 0 ? <ul className="SpfxCheckRadio  list-group list-group-flush">
+                        {relevantProjects?.length > 0 ? <ul className="SpfxCheckRadio list-group list-group-flush m-0">
                             {relevantProjects?.map((project: any) => {
                                 return (
-                                    <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action'>
+                                    <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action no-border ellipsisTextList'>
                                         <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
-                                        <a className="hreflink" title={`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
+                                        <a title={`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
                                             data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`}</a>
                                     </li>
                                 )

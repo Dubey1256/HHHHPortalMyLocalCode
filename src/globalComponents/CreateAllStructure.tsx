@@ -698,10 +698,10 @@ const CreateAllStructureComponent = (props: any) => {
       <div
         className={
           defaultPortfolioType == "Events"
-            ? "eventpannelorange"
+            ? ""
             : defaultPortfolioType == "Service" ||
               defaultPortfolioType == "Service Portfolio"
-            ? "serviepannelgreena"
+            ? ""
             : "component Portfolio clearfix"
         }
       >
