@@ -155,13 +155,13 @@ export const EodReportMain = (props: any) => {
 
     // Function to handle page change
     
-    const findAndUpdateOffshoreComments = (objectToUpdate: any, newOffshoreComments: any, alloffshoreComment: any) => {
+    const findAndUpdateOffshoreComments = (objectToUpdate: any,alloffshoreComment: any) => {
 
         allTodayModifiedTask.map((item: any) => {
             if (item.ID === objectToUpdate.ID) {
                 item.OffshoreComments = [...alloffshoreComment];
                 const todayComments = alloffshoreComment?.filter(
-                    (comment: { Created: any }) => isTodayCreated(comment?.Created)
+                    (comment: { Created: any }) => comment?.hasOwnProperty('isEodTask') && isTodayCreated(comment?.Created)
                   );
                   item.Achieved = todayComments?.map((comment: { Achieved: any }) => comment.Achieved).join(', ');
                   item.Pending = todayComments?.map((comment: { Pending: any }) => comment.Pending).join(', ');
@@ -172,7 +172,7 @@ export const EodReportMain = (props: any) => {
             if (item?.ID === objectToUpdate?.ID) {
                 item.OffshoreComments = [...alloffshoreComment];
                 const todayComments = alloffshoreComment?.filter(
-                    (comment: { Created: any }) => isTodayCreated(comment?.Created)
+                    (comment: { Created: any }) => comment?.hasOwnProperty('isEodTask') && isTodayCreated(comment?.Created)
                   );
                   item.Achieved = todayComments?.map((comment: { Achieved: any }) => comment.Achieved).join(', ');
                   item.Pending = todayComments?.map((comment: { Pending: any }) => comment.Pending).join(', ');
@@ -1143,7 +1143,7 @@ export const EodReportMain = (props: any) => {
 
             }
             await web.lists.getById(selectedPanelTask?.listId).items.getById(selectedPanelTask?.ID).update(tempObject).then(() => {
-                findAndUpdateOffshoreComments(task, UpdateData, UpdateData)
+                findAndUpdateOffshoreComments(task,UpdateData)
                 alert("Successfully Submitted")
                 closePanel()
                 console.log("Background Comment Updated !!!")
@@ -1197,7 +1197,7 @@ export const EodReportMain = (props: any) => {
             }
             try {
                 await web.lists.getById(selectedPanelTask?.listId).items.getById(selectedPanelTask?.ID).update(tempObject).then(() => {
-                    findAndUpdateOffshoreComments(task, UpdateData, updatedComments)
+                    findAndUpdateOffshoreComments(task,updatedComments)
                     alert("Successfully Submitted")
                     closePanel()
                     console.log("Background Comment Updated !!!")
@@ -1725,9 +1725,28 @@ export const EodReportMain = (props: any) => {
     const handleDeleteComment = (index: any) => {
         // Create a new array excluding the comment at the given index
         const updatedComments = taskCommentData.filter((_: any, i: any) => i !== index);
+        deleteEodJson(updatedComments)
         // Update the state with the new array
         setCommnetData(updatedComments);
     };
+    const deleteEodJson = async (updatedComments: any) => {
+
+        let tempObject: any = {
+            OffshoreComments: updatedComments.length > 0 ? JSON.stringify(updatedComments) : null
+        }
+        try {
+            let web = new Web(siteURL);
+            web.lists.getById(selectedPanelTask?.listId).items.getById(selectedPanelTask?.ID).update(tempObject).then(() => {
+                findAndUpdateOffshoreComments(selectedPanelTask, updatedComments)
+                console.log("Json delete !!!")
+            })
+        } catch (error) {
+
+            console.log("Error : ", error.message)
+
+        }
+
+    }
 
     const callBackData = React.useCallback((checkData: any) => {
         console.log(checkData, "checkData");
@@ -1903,7 +1922,7 @@ export const EodReportMain = (props: any) => {
                         </div>
                     ))}
 
-                    {(taskCommentData == undefined || taskCommentData == null || taskCommentData?.length == 0||taskCommentData?.every((comment:any)=>((isTodayCreated(comment?.Created)==false)))) &&
+                    {(taskCommentData == undefined || taskCommentData == null || taskCommentData?.length == 0 || taskCommentData?.every((comment: any) => ((comment?.Type == "EODReport" && isTodayCreated(comment?.Created))==false))) &&
                         <div>
                             <td>{panelTitle}</td>
                             <div>
