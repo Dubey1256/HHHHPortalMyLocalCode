@@ -676,7 +676,7 @@ const Editpopup = (props: any) => {
                     </div>
 
                     <div className="footer-right">
-                        <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/List/Events/EditForm.aspx?ID=${EventItem?.Id != null ? EventItem?.Id : null}`}>Open out-of-the-box form</a></span>
+                        <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/Events/EditForm.aspx?ID=${EventItem?.Id != null ? EventItem?.Id : null}`}>Open out-of-the-box form</a></span>
                         <button type='button' className='btn btn-primary mx-2' onClick={UpdateDetails}>
                             Save
                         </button>
@@ -1077,7 +1077,11 @@ const Editpopup = (props: any) => {
                             </div>
 
                             {/* {EventItem != undefined && <div className='mt-3'> <label className="full-width form-label">Original Language Description</label> {EventItem?.Id != undefined && <HtmlEditorCard editorValue={EventItem?.Description != undefined ? EventItem?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard>}</div>} */}
-                            {EventItem != undefined && <div className='mt-3'> <label className="full-width form-label">Original Language Description</label> {EventItem?.Id != undefined && <HtmlEditorCard editorValue={EventItem?.Description != undefined &&(EventItem.Description.includes("html") ? ("") : (EventItem?.Description) )} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard>}</div>}
+                            <div className='mt-3'>
+                                <label className="full-width form-label">Original Language Description</label>
+                                {EventItem?.Id != undefined &&
+                                    <HtmlEditorCard editorValue={EventItem?.Description != undefined ? EventItem?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard>}
+                            </div>
 
                         </div>
                     </Tab>                   
