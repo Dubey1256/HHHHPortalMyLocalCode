@@ -46,7 +46,7 @@ const EventHome = (props: any) => {
             // Format and set events data
             const formattedEvents = data.map((item: any) => {
                 item.StartDate = moment(item.EventDate).format('DD MMM YYYY');
-                item.EndDates = moment(item.EndDate).format('DD MMM YYYY');
+               item.EndDates = moment(item.EndDate || item.EventDate).format('DD MMM YYYY');
                 item.FirstDate = moment(item.EventDate).format('YYYY-MM-DD');
                 item.LastDate = moment(item.LastDate).format('YYYY-MM-DD');
                 item.Locations = item.Location != null ? (item.Location) : "";
