@@ -3345,7 +3345,7 @@ const CopyTaskProfile = (props: any) => {
                         {CreateHHHTask && (
                           <span>
                             <a
-                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?TaskId=${state?.Result?.Id}&Title=${state?.Result?.Title}&DueDate=${state?.Result?.DueDate}&Priority=${state?.Result?.Priority}&CreatedBy=${state?.Result?.Author?.[0]?.Title}&CreatedDate=${state?.Result?.Created}&ExternalSite=1&TaskUrl=${state?.Result?.component_url?.Url}`}
+                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?TaskId=${state?.Result?.Id}&Title=${state?.Result?.Title}&DueDate=${state?.Result?.DueDate}&Priority=${state?.Result?.Priority}&CreatedBy=${state?.Result?.Author?.[0]?.Title}&CreatedDate=${state?.Result?.Created} &siteAbsoluteUrl=${AllListId?.SiteUrl}&TaskSite=${listName} &ExternalSite=1&TaskUrl=${state?.Result?.component_url?.Url}`}
                               target="_blank"
                               data-interception="off"
                             >
