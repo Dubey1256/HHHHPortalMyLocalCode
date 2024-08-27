@@ -1808,7 +1808,7 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           cell: (info: any) => (
             <>
               <a className="alignCenter" onClick={() => EditDataTimeEntryData(info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
-                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
+                <span className="svg__iconbox svg__icon--clock" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
               </a></>
           ),
           id: 'AllEntry',
@@ -1845,8 +1845,8 @@ const [checkBoxVisble,SetCheckboxVisble]=useState(false)
           <span>Last Modified Views</span></h2>
           {checkBoxVisble&&
         <div className="d-flex float-end">
-          <div className="me-1" >
-            <input className="form-check-input me-2"
+          <div className="me-3" >
+            <input className="form-check-input me-1"
               type="checkbox"
               checked={componentChecked}
               onChange={componentCheckboxChange}

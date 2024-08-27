@@ -17,4 +17,5 @@ export interface IEmployeDashBoardProps {
   UpComingBdaySiteName: 'HR';
   AdminConfigurationListId: 'e968902a-3021-4af2-a30a-174ea95cf8fa';
   DocumentListID: '';
+  TimeEntry:boolean;
 }

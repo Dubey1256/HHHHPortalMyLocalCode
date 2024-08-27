@@ -17,8 +17,15 @@ let EndDate: any
 let backup: any = []
 let finaldata: any = []
 let isWeekMonthDay = false;
+
 let checkType = 'Day';
 const GraphData = (data: any) => {
+  let isGmbh = false;
+  data?.sites.map((val:any)=>{
+if(val.Title == 'GMBH' && val.isSelected == true){
+  isGmbh = true;
+}
+  })
   let processedData: any = []
   let transformedData: any = [];
   const [count, setCount] = React.useState(0)
@@ -317,8 +324,10 @@ const GraphData = (data: any) => {
       Education: 0,
       Migration: 0,
       EI: 0,
-      EPS: 0,
+      PSE: 0,
       OffShoreTasks: 0,
+      ILF: 0,
+      Tasks: 0,
       isWeekend: entry.isWeekend
 
     };
@@ -337,10 +346,16 @@ const GraphData = (data: any) => {
         transformedEntry.EI = site.Time;
       }
       else if (site.Site === 'EPS') {
-        transformedEntry.EPS = site.Time;
+        transformedEntry.PSE = site.Time;
       }
       else if (site.Site === 'Migration') {
         transformedEntry.Migration = site.Time;
+      }
+      else if (site.Site === 'ILF') {
+        transformedEntry.ILF = site.Time;
+      }
+      else if (site.Site === 'Tasks' || site.Site === 'SH') {
+        transformedEntry.Tasks = site.Time;
       }
       else {
         transformedEntry.OffShoreTasks = site.Time;
@@ -762,7 +777,7 @@ const GraphData = (data: any) => {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      const keysToDisplay = ['HHHH', 'Education', 'PSE', 'E+E', 'Migration', 'Gruene', 'OffShoreTasks'];
+      const keysToDisplay = ['HHHH', 'Education', 'PSE', 'E+E', 'Migration', 'Gruene', 'OffShoreTasks','ILF','Tasks'];
       const colorMap: any = {
         HHHH: '#2f5596',
         Education: '#990077',
@@ -770,7 +785,9 @@ const GraphData = (data: any) => {
         'E+E': '#243a4a',
         Migration: '#1199bb',
         Gruene: '#008839',
-        OffShoreTasks: '#c1722e'
+        OffShoreTasks: '#c1722e',
+        ILF:'#0c78be',
+        Tasks:'#000066'
       };
   
       const filteredData = keysToDisplay
@@ -818,33 +835,43 @@ const GraphData = (data: any) => {
       <div style={{ textAlign: "center", marginTop: 32, display: "flex", justifyContent: "center" }}>
         <div style={{ display: "flex", alignItems: "center", marginRight: 20 }}>
           <div style={{ width: 20, height: 20, marginRight: 5, backgroundColor: "#2f5596" }} />
-          <span>HHHH</span>
+          <span>HHHH (SP)</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", marginRight: 20 }}>
           <div style={{ width: 20, height: 20, marginRight: 5, backgroundColor: "#dc0018" }} />
-          <span>PSE</span>
+          <span>PSE (SP)</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", marginRight: 20 }}>
           <div style={{ width: 20, height: 20, marginRight: 5, backgroundColor: "#243a4a" }} />
-          <span>E+E</span>
+          <span>E+E (SP)</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", marginRight: 20 }}>
           <div style={{ width: 20, height: 20, marginRight: 5, backgroundColor: "#1199bb" }} />
-          <span>Migration</span>
+          <span>Migration (SP)</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", marginRight: 20 }}>
           <div style={{ width: 20, height: 20, marginRight: 5, backgroundColor: "#990077" }} />
-          <span>Education</span>
+          <span>Education (SP)</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", marginRight: 20 }}>
           <div style={{ width: 20, height: 20, marginRight: 5, backgroundColor: "#008839" }} />
-          <span>Gruene</span>
+          <span>Gruene (SP)</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", marginRight: 20 }}>
           <div style={{ width: 20, height: 20, marginRight: 5, backgroundColor: "#c1722e" }} />
-          <span>OffShoreTasks</span>
+          <span>OffShoreTasks (SP)</span>
         </div>
+        <div style={{ display: "flex", alignItems: "center", marginRight: 20 }}>
+          <div style={{ width: 20, height: 20, marginRight: 5, backgroundColor: "#0c78be" }} />
+          <span>ILF (SP)</span>
+        </div>
+        {isGmbh ?<div style={{ display: "flex", alignItems: "center", marginRight: 20 }}>
+          <div style={{ width: 20, height: 20, marginRight: 5, backgroundColor: "#000066" }} />
+          <span>Tasks (Gmbh)</span>
+        </div>:''}
+        
       </div>
+      
     );
   };
   
@@ -893,6 +920,8 @@ const GraphData = (data: any) => {
                   <Bar dataKey="Education" stackId="a" fill="#990077" />
                   <Bar dataKey="Gruene" stackId="a" fill="#008839" />
                   <Bar dataKey="OffShoreTasks" stackId="a" fill="#c1722e" />
+                  <Bar dataKey="ILF" stackId="a" fill="#0c78be" />
+                  <Bar dataKey="Tasks" stackId="a" fill="#000066" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
