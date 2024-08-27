@@ -84,7 +84,7 @@ const CentralizedSiteComposition = (Props: any) => {
     const childRef = React.useRef<any>();
 
     let [SiteSettingJSON, setSiteSettingJSON] = useState([
-        { Name: "Manual", IsSelected: true, Type: "radio", Descriptions: "Manual Site Composition Allocation : Users have the ability to input their preferred allocation on chosen sites manually.", BtnName: "SiteSettingRadio" },
+        { Name: "Manual", IsSelected: true, Type: "radio", Descriptions: "Manual Site Composition Allocation: Users have the ability to input their preferred allocation on chosen sites manually.", BtnName: "SiteSettingRadio" },
         { Name: "Proportional", IsSelected: false, Type: "radio", Descriptions: "Proportional Site Composition Allocation: The distribution will be evenly divided, summing up to 100%, across the chosen sites.", BtnName: "SiteSettingRadio" },
         { Name: "Deluxe", IsSelected: false, Type: "radio", Descriptions: "Site composition based on configuration: Predefined in the cockpit, these compositions are dynamic. Any additions or updates to existing ones will automatically update all components wherever this site composition is applied. Deluxe Site composition: EI: 50%, EPS : 50%", BtnName: "SiteSettingRadio" },
         { Name: "Standard", IsSelected: false, Type: "radio", Descriptions: "Site composition based on configuration: Predefined in the cockpit, these compositions are dynamic. Any additions or updates to existing ones will automatically update all components wherever this site composition is applied. Standard Site Composition: EI: 60%, EPS: 30%, Education: 5%, Migration: 5%", BtnName: "SiteSettingRadio" }
@@ -864,6 +864,16 @@ const CentralizedSiteComposition = (Props: any) => {
                 </div>
                 <div className="alignCenter mb-3 me-1">
                     <div className="alignCenter">
+                        <span className=''>Protected</span>
+                        <span className="hover-text alignIcon me-2">
+                            <span className="svg__iconbox svg__icon--info dark"></span>
+                            <span className="tooltip-text pop-left">
+                                <span>This button enables you to toggle between Protected and Unprotected modes for validation.</span>
+                                <p className="mb-1 mt-16"><b>Validation Cases:</b> </p>
+                                1. When the toggle is enabled, it protected both the parent item and extends protection to the selected items (CSF/AWT) from the Tagged Child Item Table.<br />
+                                2. When the toggle is disabled, it unprotected the parent item only.
+                            </span>
+                        </span>
                         <label className="switch me-2 siteColor" htmlFor="checkbox-Protected">
                             <input
                                 checked={IsMakeSCProtected}
@@ -874,16 +884,7 @@ const CentralizedSiteComposition = (Props: any) => {
                             />
                             {IsMakeSCProtected === true ? <div style={{ backgroundColor: `${PortfolioItemColor}`, borderColor: `${PortfolioItemColor}` }} className="slider round" title='Switch to Un-Protected View'></div> : <div title='Switch to Protected-View' className="slider round"></div>}
                         </label>
-                        <span className='ms-1 siteColor'>Protected</span>
-                        <span className="hover-text alignIcon">
-                            <span className="svg__iconbox svg__icon--info dark"></span>
-                            <span className="tooltip-text pop-left">
-                                <span>This button enables you to toggle between Protected and Unprotected modes for validation.</span>
-                                <p className="mb-1 mt-16"><b>Validation Cases:</b> </p>
-                                1. When the toggle is enabled, it protected both the parent item and extends protection to the selected items (CSF/AWT) from the Tagged Child Item Table.<br />
-                                2. When the toggle is disabled, it unprotected the parent item only.
-                            </span>
-                        </span>
+                       
                     </div>
                     <Tooltip ComponentId="1268" isServiceTask={false} />
                 </div>
@@ -2033,7 +2034,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 <section className="mb-5 modal-body">
                     <div className="Site-composition-and-client-category d-flex full-width">
                         <div className="site-settings-and-site-composition-distributions full-width">
-                            <div className="siteColor border p-1 alignCenter">
+                            <div className="border p-1 alignCenter">
                                 <span className="me-2" onClick={() =>
                                     setSiteCompositionTool(SiteCompositionTool ? false : true)
                                 }>
@@ -2047,10 +2048,10 @@ const CentralizedSiteComposition = (Props: any) => {
                                 <span className="hover-text alignIcon">
                                     <span className="svg__iconbox svg__icon--info dark"></span>
                                     <span className="tooltip-text pop-right">
-                                        <b>Site Composition Settings :</b>
+                                        <b>Site Composition Settings: </b>
                                         {"The site composition Settings options include manual input by users for selected sites, equal distribution among selected sites totaling 100% (proportional allocation), and predefined dynamic configurations (Deluxe and Standard) in the cockpit."}
                                         <p></p>
-                                        <b>Site Composition Distributions :</b>
+                                        <b>Site Composition Distributions: </b>
                                         {"With the Site Composition Distribution Tool, users can both add and modify the Site Composition Distribution of CSF-AWT. Subsequently, the tool will generate the time spent on an AWT based on the specified Site Composition."}
                                     </span>
                                 </span>
@@ -2248,7 +2249,7 @@ const CentralizedSiteComposition = (Props: any) => {
                         </div>
                         <div className="summarize-cc full-width ps-1">
                             <div className="summarize-cc edit-site-composition-on-task-profile">
-                                <div className="border p-1 siteColor alignCenter">
+                                <div className="border p-1 alignCenter">
                                     <span className="me-2" onClick={() =>
                                         setSummarizationTool(SummarizationTool ? false : true)
                                     }>
@@ -2291,13 +2292,13 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                 <td className="m-0 p-1 align-middle w-75">
                                                                     <div className="input-group">
                                                                         <input type="text"
-                                                                            className="border-end-0 form-control"
+                                                                            className="form-control"
                                                                             placeholder={`Search ${CCDetails.Title} Client Categories Here`}
                                                                             value={CCDetails.Title == SelectedSiteName ? searchedKey : ""}
                                                                             onChange={(e: any) => CCAutoSuggestionsMain(e, CCDetails.Title)}
                                                                             defaultValue={CCDetails.Title == SelectedSiteName ? searchedKey : ""}
                                                                         />
-                                                                        <span className="bg-white hreflink border"
+                                                                        <span className="input-group-text"
                                                                             onClick={() => openClientCategoryModel(CCDetails.Title, CCDetails.ClientCategories)}
                                                                         >
                                                                             <span title="Edit Client Category" className="svg__iconbox svg__icon--editBox hreflink">

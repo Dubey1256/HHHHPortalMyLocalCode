@@ -998,7 +998,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         <div className="width20 top-assign pe-1">
                                             <label className="BdrBtm mb-0">Select Date</label>
                                             <div className="input-group" >
-                                                <input type="date" id="start" className="full-width" name="trip-start" value={this.state.pickerDate} min={this.state.startDate}
+                                                <input type="date" id="start" className="form-control" name="trip-start" value={this.state.pickerDate} min={this.state.startDate}
                                                     onChange={(e) => this.pickupCustomDate(e.target.value)}
                                                 />
                                             </div>

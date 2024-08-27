@@ -871,7 +871,7 @@ const EditDocumentpanel = (props: any) => {
                 </div>
 
                 <div className="input-group mx-4"><label className="full-width ">Year </label>
-                  <input type="text" className="form-control" value={EditdocumentsData?.Year} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Year: e.target.value })} />
+                  <input type="number" className="form-control" value={EditdocumentsData?.Year} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Year: e.target.value })} />
 
                 </div>
                 <div className="input-group mx-4">
@@ -928,7 +928,7 @@ const EditDocumentpanel = (props: any) => {
                         ))}
                       </div>
                     ) : (<>
-                      <input type="text" className="form-control" placeholder="Search Task Here" onChange={(e) => autoSuggestionForTask(e)} />
+                      <input type="text" className="form-control" onChange={(e) => autoSuggestionForTask(e)} />
                       <span className="input-group-text" placeholder="Task">
                         <span title="Task" onClick={(e) => openTaskPopup("Task")} className="svg__iconbox svg__icon--editBox" ></span>
                       </span>
