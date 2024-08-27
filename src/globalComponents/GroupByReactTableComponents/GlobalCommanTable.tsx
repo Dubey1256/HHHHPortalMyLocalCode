@@ -1474,7 +1474,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                         <TooltipHost content={tooltips[option.key]}>
                                             <div style={{ display: 'flex',
                                                     alignItems: 'center', padding:'2px 16px 2px 4px',
-                                                    width: '102px', fontSize:'11px',
+                                                    width: '104px', fontSize:'11px',
                                                     backgroundColor: option.key === globalSearchType ? 'var(--SiteBlue)' : '',
                                                     color:option.key === globalSearchType ? '#fff' :'#333333',
                                                     border: option.key === globalSearchType ? '1px solid #999999':''
@@ -1492,7 +1492,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                             </div>
                                         </TooltipHost>
                                     )}
-                                    styles={{ dropdown: { width: '118px'} }}
+                                    styles={{ dropdown: { width: '120px'} }}
                                 />
 
                             </span>
