@@ -914,6 +914,15 @@ const loadAllPXTimeEntries = async () => {
         return task;
       });
     });
+    // setFilteredTasks(prevTasks => {
+    //   return prevTasks.map((task: any) => {
+    //     if (task.Id === item.Id && task.siteType === item.siteType) {
+    //       return { ...task, ...item };
+    //     }
+    //     return task;
+    //   });
+    // });
+
     backupTableData = ProjectTableData;
   }, []);
 
@@ -1049,6 +1058,19 @@ const loadAllPXTimeEntries = async () => {
         }
 
         items.TaskID = globalCommon.GetTaskId(items);
+        items.TaskEstimatedTime = 0
+        try {
+          items.EstimatedTimeParsed = JSON.parse(items.EstimatedTimeDescription);
+          if (Array.isArray(items.EstimatedTimeParsed)) {
+            items.EstimatedTimeParsed.map((time: any) => {
+              const parsedTime = Number(time.EstimatedTime);   
+              items.TaskEstimatedTime += parsedTime
+              
+            });
+          }
+        } catch (e) {
+          console.error('Error parsing EstimatedTime:', e);
+        }
 
         AllUser?.map((user: any) => {
           if (user.AssingedToUserId == items.Author.Id) {
@@ -2301,11 +2323,11 @@ const loadAllPXTimeEntries = async () => {
         size: 105
       },
        {
-        accessorFn: (row) => row?.TotalTaskTime,
+        accessorFn: (row) => row?.TaskEstimatedTime,
         cell: ({ row }) => (
-          <span> {row?.original?.TotalTaskTime}</span>
+          <span> {row?.original?.TaskEstimatedTime}</span>
         ),
-        id: "TotalTaskTime",
+        id: "TaskEstimatedTime",
         placeholder: "Estimated Time",
         header: "",
         resetColumnFilters: false,
@@ -3571,7 +3593,7 @@ const loadAllPXTimeEntries = async () => {
                                           groupedData={groupedComponentData}
                                           pageName={"projectManagement"}
                                         /> : null}
-                                        {smartPortfoliosData?.map((component: any, index: any) => (`${component?.Title}; `))}
+                                        {smartPortfoliosData?.map((component: any, index: any) => (`${component?.Title};`))}
                                         <a className="ml-auto pull-right" onClick={() => setopenServiceComponent(true)}>
                                           <span className="svg__iconbox svg__icon--editBox alignIcon"  ></span>
                                         </a>
@@ -3990,4 +4012,3 @@ const loadAllPXTimeEntries = async () => {
 };
 export default ProjectManagementMain;
 export { myContextValue }
-

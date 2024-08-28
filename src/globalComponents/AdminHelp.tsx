@@ -120,13 +120,9 @@ const AdminHelp = (props: any) => {
     const onRenderCustomHeader = (
     ) => {
         return (
-            <div className="d-flex full-width pb-1" >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span className="siteColor">
-                        {`Admin Help - ${componentData?.Title}`}
-                    </span>
-                </div>
-            </div>
+          <>
+            <div className="subheading siteColor"> {`Admin Help - ${componentData?.Title}`}</div>
+            </>
         );
     };
     const onRenderCustomHeaderQuestion = () => {
@@ -178,9 +174,9 @@ return (
       onRenderHeader={onRenderCustomHeader}
       closeButtonAriaLabel="Close"
     >
-      <span className="alignCentre">
+      <p>
         {componentData?.Short_x0020_Description_x0020_On.replace("<p>", "").replace("</p>", "")}
-      </span>
+      </p>
       <div className="col-sm-12 mb-10 clearfix">
         <a className="pull-right"
           target="_blank"

@@ -17,24 +17,24 @@ import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import Slider from 'react-slick';
 import { BiInfoCircle } from 'react-icons/bi';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
-import { Accordion, AccordionHeader,AccordionItem, AccordionPanel, AccordionToggleEventHandler, } from "@fluentui/react-components";
+import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionToggleEventHandler, } from "@fluentui/react-components";
 import CompareSetData from './CompareSetData';
 let countemailbutton: number;
 var changespercentage = false;
 var buttonId: any;
 var settings = {
-  dots: false,
-  infinite: false,
-  speed: 500,
-  slidesToShow: 1,
-  slidesToScroll: 1,
-  adaptiveHeight: true,
-  prevArrow: <FaAngleLeft />,
-  nextArrow: <FaAngleRight />
+    dots: false,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    adaptiveHeight: true,
+    prevArrow: <FaAngleLeft />,
+    nextArrow: <FaAngleRight />
 };
 
 const uxdescriptions = (props: any) => {
-    const propsvalue = props?.Item;    
+    const propsvalue = props?.Item;
     let arrayOfChar = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',]
     const [Result, setResult] = React.useState<any>({});
     const [TaskFeedbackData, setTaskFeedbackData] = React.useState<any>([]);
@@ -65,21 +65,21 @@ const uxdescriptions = (props: any) => {
     const [imageInfo, setimageInfo] = React.useState({})
     const [isModalOpen, setisModalOpen] = React.useState(false);
     const [showPopup, setshowPopup] = React.useState('none');
-    const [CurrentActiveTab, setCurrentActiveTab]=React.useState(1)
+    const [CurrentActiveTab, setCurrentActiveTab] = React.useState(1)
     const [countfeedback, setcountfeedback] = React.useState(0)
     const [objective, setobjective] = React.useState(false);
     const [openItems, setOpenItems] = React.useState(["1"]);
-    const [checkedSetData,setCheckedSetData]=React.useState([])
-    const [comparesetpannel,setComparesetpannel]=React.useState(false)
-    
+    const [checkedSetData, setCheckedSetData] = React.useState([])
+    const [comparesetpannel, setComparesetpannel] = React.useState(false)
+
     React.useEffect(() => {
-        buttonId = `callout-button`;        
+        buttonId = `callout-button`;
         // if (Result["TaskId"] != undefined && Result['Title'] != undefined) {
         //     document.title = `${Result["TaskId"]}-${Result['Title']}`
         // } else {
         //     document.title = "Task Profile"
         // }
-        if (propsvalue) {            
+        if (propsvalue) {
             setResult(propsvalue)
             setTaskFeedbackData(propsvalue?.FeedBack?.[0]?.FeedBackDescriptions)
         }
@@ -91,11 +91,11 @@ const uxdescriptions = (props: any) => {
 
 
     //===============traffic light function ==================
-    const changeTrafficLigth = async (index: any, item: any,obj:any) => {
+    const changeTrafficLigth = async (index: any, item: any, obj: any) => {
         console.log(index);
         console.log(item);
         if (Result?.checkIsApproval) {
-            if (obj === 'objective') {                
+            if (obj === 'objective') {
                 var tempData: any = TaskFeedbackData[index];
             }
             else {
@@ -138,18 +138,18 @@ const uxdescriptions = (props: any) => {
             console.log(TaskFeedbackData);
             await onPost();
             if (Result?.FeedBack != undefined) {
-                if (obj === 'objective') {                    
+                if (obj === 'objective') {
                     await checkforMail(TaskFeedbackData, item, tempData);
                 }
                 else {
-                    await checkforMail(TaskFeedbackData[CurrentActiveTab].TemplatesArray, item, tempData);                  
+                    await checkforMail(TaskFeedbackData[CurrentActiveTab].TemplatesArray, item, tempData);
                 }
 
             }
         }
     }
 
-    const changeTrafficLigthsubtext = async (parentindex: any, subchileindex: any, status: any,obj:any) => {
+    const changeTrafficLigthsubtext = async (parentindex: any, subchileindex: any, status: any, obj: any) => {
         console.log(parentindex);
         console.log(subchileindex);
         console.log(status);
@@ -201,9 +201,9 @@ const uxdescriptions = (props: any) => {
                     await checkforMail(TaskFeedbackData, status, tempData?.Subtext[subchileindex]);
                 }
                 else {
-                    await checkforMail(TaskFeedbackData[CurrentActiveTab].TemplatesArray, status, tempData?.Subtext[subchileindex]);                 
+                    await checkforMail(TaskFeedbackData[CurrentActiveTab].TemplatesArray, status, tempData?.Subtext[subchileindex]);
                 }
-                
+
             }
         }
     }
@@ -221,7 +221,7 @@ const uxdescriptions = (props: any) => {
         setupdateComment(true)
     }
     //================================ taskfeedbackcard===============
-    const showhideCommentBox = (index: any,obj:any) => {
+    const showhideCommentBox = (index: any, obj: any) => {
         if (showcomment == 'none') {
             setshowcomment('block')
         }
@@ -280,7 +280,7 @@ const uxdescriptions = (props: any) => {
             else {
                 fbData["Comments"] = [temp];
             }
-            (document.getElementById('txtComment') as HTMLTextAreaElement).value = '';                 
+            (document.getElementById('txtComment') as HTMLTextAreaElement).value = '';
             setCommenttoPost('')
             setshowcomment('none')
             setApprovalCommentcheckbox(false)
@@ -291,7 +291,7 @@ const uxdescriptions = (props: any) => {
         }
 
     }
-    const openEditModal = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any, parentIndex: any,obj:any) => {
+    const openEditModal = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any, parentIndex: any, obj: any) => {
         setupdateCommentText({
             'comment': comment?.Title,
             'indexOfUpdateElement': indexOfUpdateElement,
@@ -299,13 +299,13 @@ const uxdescriptions = (props: any) => {
             'isSubtextComment': isSubtextComment,
             "data": comment,
             "parentIndexOpeneditModal": parentIndex,
-            'obj':obj
+            'obj': obj
         })
         setisEditModalOpen(true);
         setCommenttoUpdate(comment?.Title)
     }
 
-    const clearComment = (isSubtextComment: any, indexOfDeleteElement: any, indexOfSubtext: any, parentindex: any,obj:any) => {
+    const clearComment = (isSubtextComment: any, indexOfDeleteElement: any, indexOfSubtext: any, parentindex: any, obj: any) => {
         if (confirm("Are you sure you want to delete this comment?")) {
             let updatedFeedbackData = [...TaskFeedbackData];
             if (obj === 'objective') {
@@ -323,7 +323,7 @@ const uxdescriptions = (props: any) => {
                 }
 
             }
-           
+
             setTaskFeedbackData(updatedFeedbackData);
             onPost();
         }
@@ -333,8 +333,8 @@ const uxdescriptions = (props: any) => {
         setCommenttoUpdate(e.target.value)
     }
     const updateComment = () => {
-        let txtComment = CommenttoUpdate  
-        let updatedFeedbackData = [...TaskFeedbackData]; 
+        let txtComment = CommenttoUpdate
+        let updatedFeedbackData = [...TaskFeedbackData];
         if (txtComment != '') {
             let temp: any = {
                 AuthorImage: props?.currentUser != null && props?.currentUser.length > 0 ? props?.currentUser[0]['userImage'] : "",
@@ -363,8 +363,8 @@ const uxdescriptions = (props: any) => {
                         feedback.Title = CommenttoUpdate;
                     }
                 }
-                
-            } else {                
+
+            } else {
                 if (updateCommentText?.data?.isApprovalComment) {
                     temp.isApprovalComment = updateCommentText?.data?.isApprovalComment;
                     temp.isShowLight = updateCommentText?.data?.isShowLight
@@ -376,7 +376,7 @@ const uxdescriptions = (props: any) => {
                     }
                     else {
                         updatedFeedbackData[updateCommentText?.parentIndexOpeneditModal]["Comments"][updateCommentText['indexOfUpdateElement']].Title = temp.Title
-                    }  
+                    }
                 }
                 else {
                     if (updateCommentText?.isSubtextComment) {
@@ -384,9 +384,9 @@ const uxdescriptions = (props: any) => {
                     }
                     else {
                         updatedFeedbackData[CurrentActiveTab].TemplatesArray[updateCommentText?.parentIndexOpeneditModal]["Comments"][updateCommentText['indexOfUpdateElement']].Title = temp.Title
-                    }  
+                    }
                 }
-                              
+
             }
             setTaskFeedbackData(updatedFeedbackData);
             onPost();
@@ -431,22 +431,22 @@ const uxdescriptions = (props: any) => {
 
             }
             //Add object in feedback
-            if(objective){
+            if (objective) {
                 if (TaskFeedbackData[parentIndex]["Subtext"][j].Comments != undefined) {
                     Result.FeedBack[0].FeedBackDescriptions[parentIndex]["Subtext"][j].Comments.unshift(temp);
                 }
                 else {
                     Result.FeedBack[0].FeedBackDescriptions[parentIndex]["Subtext"][j]['Comments'] = [temp];
                 }
-            }else{
+            } else {
                 if (TaskFeedbackData[CurrentActiveTab].TemplatesArray[parentIndex]["Subtext"][j].Comments != undefined) {
                     Result.FeedBack[0].FeedBackDescriptions[CurrentActiveTab].TemplatesArray[parentIndex]["Subtext"][j].Comments.unshift(temp);
                 }
                 else {
                     Result.FeedBack[0].FeedBackDescriptions[CurrentActiveTab].TemplatesArray[parentIndex]["Subtext"][j]['Comments'] = [temp];
-                }  
+                }
             }
-        
+
             (document.getElementById('txtCommentSubtext') as HTMLTextAreaElement).value = '';
             // setState({
             //     ...state,
@@ -464,7 +464,7 @@ const uxdescriptions = (props: any) => {
         }
 
     }
-    const showhideCommentBoxOfSubText = (j: any, parentIndex: any,obj:any) => {
+    const showhideCommentBoxOfSubText = (j: any, parentIndex: any, obj: any) => {
         if (showcomment_subtext == 'none') {
             setshowcomment_subtext('none')
         }
@@ -753,20 +753,20 @@ const uxdescriptions = (props: any) => {
         setreplyTextComment(e.target.value)
 
     }
-    const openReplycommentPopup = (i: any, k: any,obj:any) => {
-        let temp :any = +i + '' + k;
+    const openReplycommentPopup = (i: any, k: any, obj: any) => {
+        let temp: any = +i + '' + k;
         if (obj === 'objective') {
             setobjective(true)
         }
         else {
-             temp = +i + "" + k + obj;
+            temp = +i + "" + k + obj;
             setobjective(false)
         }
         setcurrentDataIndex(temp)
         setisCalloutVisible(true)
     }
-    const openReplySubcommentPopup = (i: any, j: any, k: any,obj:any) => {
-        let  temp1 :any = +i + '' + j + k;
+    const openReplySubcommentPopup = (i: any, j: any, k: any, obj: any) => {
+        let temp1: any = +i + '' + j + k;
         if (obj === 'objective') {
             setobjective(true)
         }
@@ -784,7 +784,7 @@ const uxdescriptions = (props: any) => {
         console.log(currentDataIndex)
         let txtComment: any = replyTextComment;
         if (txtComment != '') {
-            let updatedFeedbackData = [...TaskFeedbackData]; 
+            let updatedFeedbackData = [...TaskFeedbackData];
             var temp: any =
             {
                 AuthorImage: props?.currentUser != null && props?.currentUser?.length > 0 ? props?.currentUser[0]['userImage'] : "",
@@ -793,17 +793,17 @@ const uxdescriptions = (props: any) => {
                 Title: txtComment,
 
             };
-            let index: any = currentDataIndex.split('');            
+            let index: any = currentDataIndex?.indexOf('tab') > -1 ? currentDataIndex?.split('tab')?.[0]?.split('') : currentDataIndex?.split('objective')?.[0]?.split('');
             if (index.length == 2) {
-                let parentIndex = parseInt(index[0])
-                let commentIndex = parseInt(index[1])
+                let parentIndex = parseInt(index[0])               
+                let commentIndex =  parseInt(index[1]) 
                 if (objective) {
                     var feedback = updatedFeedbackData[parentIndex].Comments[commentIndex];
                 }
                 else {
                     var feedback = updatedFeedbackData?.[CurrentActiveTab]?.TemplatesArray?.[parentIndex].Comments[commentIndex];
                 }
-                
+
 
                 if (feedback.ReplyMessages == undefined) {
                     feedback.ReplyMessages = []
@@ -815,14 +815,14 @@ const uxdescriptions = (props: any) => {
             }
             if (index.length == 3) {
                 let parentIndex = parseInt(index[0])
-                let subcomentIndex = parseInt(index[1])
+                let subcomentIndex = parseInt(index[1])                
                 let commentIndex = parseInt(index[2])
 
-                if (objective) {                    
+                if (objective) {
                     var feedback = updatedFeedbackData[parentIndex].Subtext[subcomentIndex].Comments[commentIndex];
                 }
                 else {
-                    
+
                     var feedback = updatedFeedbackData?.[CurrentActiveTab]?.TemplatesArray?.[parentIndex].Subtext[subcomentIndex].Comments[commentIndex];
                 }
 
@@ -834,7 +834,7 @@ const uxdescriptions = (props: any) => {
                 }
 
             }
-                    
+
 
             setTaskFeedbackData(updatedFeedbackData)
             console.log(temp)
@@ -849,8 +849,8 @@ const uxdescriptions = (props: any) => {
 
     }
     // =========clearReplycomment===========
-    const clearReplycomment = (isSubtextComment: any, indexOfDeleteElement: any, indexOfSubtext: any, parentindex: any, replyIndex: any, obj:any) => {
-        if (confirm("Are you sure, you want to delete this comment?")) {           
+    const clearReplycomment = (isSubtextComment: any, indexOfDeleteElement: any, indexOfSubtext: any, parentindex: any, replyIndex: any, obj: any) => {
+        if (confirm("Are you sure, you want to delete this comment?")) {
             let updatedFeedbackData = [...TaskFeedbackData];
             if (obj === 'objective') {
                 if (isSubtextComment) {
@@ -875,7 +875,7 @@ const uxdescriptions = (props: any) => {
 
     //===========EditReplyComment===============
 
-    const EditReplyComment = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any, parentIndex: any, replyIndex: any,obj:any) => {
+    const EditReplyComment = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any, parentIndex: any, replyIndex: any, obj: any) => {
         setisEditReplyModalOpen(true)
         setCommenttoUpdate(comment?.Title)
         setupdateReplyCommentText({
@@ -886,7 +886,7 @@ const uxdescriptions = (props: any) => {
             'replyIndex': replyIndex,
             "data": comment,
             "parentIndexOpeneditModal": parentIndex,
-            'obj':obj
+            'obj': obj
         })
     }
 
@@ -914,371 +914,371 @@ const uxdescriptions = (props: any) => {
 
     const handleToggle: AccordionToggleEventHandler<string> = (event, data) => {
         setOpenItems(data.openItems);
-      };
+    };
 
-      // ==================Compare set Data function ================
-      const CheckSetData=(isChecked :any,data:any)=>{
+    // ==================Compare set Data function ================
+    const CheckSetData = (isChecked: any, data: any) => {
         if (isChecked) {
             setCheckedSetData([...checkedSetData, data]);
         } else {
             setCheckedSetData(checkedSetData.filter(item => item.setTitle !== data.setTitle));
         }
     }
-  
-       
+
+
     return (
         <>
             {/* //============ New Design Templates Start =========== */}
             <div className="col-sm-12 p-0 mt-2">
-                {Result?.TaskTypeTitle != null && (Result?.TaskTypeTitle == '' ||Result?.TaskTypeTitle == 'Task' || Result?.TaskTypeTitle == "Workstream" || Result?.TaskTypeTitle == "Activities") &&
+                {Result?.TaskTypeTitle != null && (Result?.TaskTypeTitle == '' || Result?.TaskTypeTitle == 'Task' || Result?.TaskTypeTitle == "Workstream" || Result?.TaskTypeTitle == "Activities") &&
                     TaskFeedbackData?.length > 0 &&
                     TaskFeedbackData[0]?.Title != '' && countfeedback >= 0 &&
                     <div className={"Addcomment boxshadow p-2" + " manage_gap"}>
                         {/* **************************************** OBJECTIVE    ******************************************** */}
-                        <Accordion className='taskacordion' collapsible openItems={openItems}  onToggle={handleToggle}>
+                        <Accordion className='taskacordion' collapsible openItems={openItems} onToggle={handleToggle}>
                             <AccordionItem value="1">
                                 <AccordionHeader> <span className='fw-semibold'>Objective</span></AccordionHeader>
                                 <AccordionPanel>
-                                       
-                        {TaskFeedbackData?.map((fbData: any, i: any) => {
-                            if (typeof fbData == "object") {
-                                let userdisplay: any = [];
-                                userdisplay.push({ Title: props?.userDisplayName })
 
-                                if (fbData != null && fbData != undefined && fbData?.Title != "" && i == 0) {
+                                    {TaskFeedbackData?.map((fbData: any, i: any) => {
+                                        if (typeof fbData == "object") {
+                                            let userdisplay: any = [];
+                                            userdisplay.push({ Title: props?.userDisplayName })
 
-                                    try {
-                                        if (fbData?.Title != undefined) {
-                                            fbData.Title = fbData?.Title?.replace(/\n/g, '<br>');
+                                            if (fbData != null && fbData != undefined && fbData?.Title != "" && i == 0) {
 
-                                        }
-                                    } catch (e) {
-                                    }
-                                    return (
-                                        <>
-                                            <div className='bg-white p-2 rounded-1'>
-                                                <div className="col mb-2">
-                                                    <div className='text-end'>
-                                                       <span className="d-block">
-                                                                <a className="siteColor" style={{ cursor: 'pointer' }} onClick={(e) => showhideCommentBox(i,'objective')}>Add Comment</a>
-                                                            </span>
-                                                        
-                                                    </div>
+                                                try {
+                                                    if (fbData?.Title != undefined) {
+                                                        fbData.Title = fbData?.Title?.replace(/\n/g, '<br>');
+
+                                                    }
+                                                } catch (e) {
+                                                }
+                                                return (
+                                                    <>
+                                                        <div className='bg-white p-2 rounded-1'>
+                                                            <div className="col mb-2">
+                                                                <div className='text-end'>
+                                                                    <span className="d-block">
+                                                                        <a className="siteColor" style={{ cursor: 'pointer' }} onClick={(e) => showhideCommentBox(i, 'objective')}>Add Comment</a>
+                                                                    </span>
+
+                                                                </div>
 
 
-                                                    <div className="d-flex p-0 FeedBack-comment ">
-                                                        <div className="border p-1 me-1">
-                                                            <span>{i + 1}.</span>
-                                                            <ul className='list-none'>
-                                                                <li>
-                                                                    {fbData['Completed'] != null && fbData['Completed'] && <span className="svg__iconbox svg__icon--tick"></span>}
-                                                                </li>
-                                                                <li>
-                                                                    {fbData['HighImportance'] != null && fbData['HighImportance'] &&
-                                                                        <span className="svg__iconbox svg__icon--taskHighPriority"></span>
-                                                                    }
-                                                                </li>
-                                                                <li>
-                                                                    {fbData['LowImportance'] != null && fbData['LowImportance'] &&
-                                                                        <span className="svg__iconbox svg__icon--lowPriority"></span>
-                                                                    }
-                                                                </li>
-                                                                <li>
-                                                                    {fbData['Phone'] != null && fbData['Phone'] &&
-                                                                        <span className="svg__iconbox svg__icon--phone"></span>
-                                                                    }
-                                                                </li>
-                                                            </ul>
-                                                        </div>
+                                                                <div className="d-flex p-0 FeedBack-comment ">
+                                                                    <div className="border p-1 me-1">
+                                                                        <span>{i + 1}.</span>
+                                                                        <ul className='list-none'>
+                                                                            <li>
+                                                                                {fbData['Completed'] != null && fbData['Completed'] && <span className="svg__iconbox svg__icon--tick"></span>}
+                                                                            </li>
+                                                                            <li>
+                                                                                {fbData['HighImportance'] != null && fbData['HighImportance'] &&
+                                                                                    <span className="svg__iconbox svg__icon--taskHighPriority"></span>
+                                                                                }
+                                                                            </li>
+                                                                            <li>
+                                                                                {fbData['LowImportance'] != null && fbData['LowImportance'] &&
+                                                                                    <span className="svg__iconbox svg__icon--lowPriority"></span>
+                                                                                }
+                                                                            </li>
+                                                                            <li>
+                                                                                {fbData['Phone'] != null && fbData['Phone'] &&
+                                                                                    <span className="svg__iconbox svg__icon--phone"></span>
+                                                                                }
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
 
-                                                        <div className="border p-2 full-width text-break">
+                                                                    <div className="border p-2 full-width text-break">
 
-                                                            <span dangerouslySetInnerHTML={{ __html: cleanHTML(fbData?.Title, "folora", i) }}></span>
-                                                            <div className="col">
-                                                                {fbData['Comments'] != null && fbData['Comments']?.length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
-                                                                    return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
-                                                                        <div className="">
-                                                                            <div className="d-flex p-0">
-                                                                                <div className="col-1 p-0 wid30">
-                                                                                    {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)}
-                                                                                        src={fbComment.AuthorImage} /> :
-                                                                                        <span onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)} title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>}
-                                                                                </div>
-                                                                                <div className="col-11 pe-0" >
-                                                                                    <div className='d-flex justify-content-between align-items-center'>
-                                                                                        {fbComment?.AuthorName} - {fbComment?.Created}
-                                                                                        <span className='d-flex'>
-                                                                                            <a className="ps-1" title="Comment Reply" >
-                                                                                                <div data-toggle="tooltip" id={buttonId + "-" + i + k}
-                                                                                                    onClick={() => openReplycommentPopup(i, k,'objective')}
-                                                                                                    data-placement="bottom"
-                                                                                                >
-                                                                                                    <span className="svg__iconbox svg__icon--reply"></span>
-                                                                                                </div>
-                                                                                            </a>
-                                                                                            <a title='Edit'
-                                                                                                onClick={() => openEditModal(fbComment, k, 0, false, i, 'objective')}
-                                                                                            >
-                                                                                                <span className='svg__iconbox svg__icon--edit'></span>
-                                                                                            </a>
-                                                                                            <a title='Delete'
-                                                                                                onClick={() =>clearComment(false, k, 0, i,'objective')}
-                                                                                            >
-                                                                                                <span className='svg__iconbox svg__icon--trash'></span></a>
-                                                                                        </span>
-                                                                                    </div>
-                                                                                    <div><span dangerouslySetInnerHTML={{ __html: cleanHTML(fbComment?.Title, null, i) }}></span></div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div className="col-12 ps-3 pe-0 mt-1">
-                                                                                {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, index: any) => {
-                                                                                    return (
-                                                                                        <div className="d-flex border ms-3 p-2  mb-1">
+                                                                        <span dangerouslySetInnerHTML={{ __html: cleanHTML(fbData?.Title, "folora", i) }}></span>
+                                                                        <div className="col">
+                                                                            {fbData['Comments'] != null && fbData['Comments']?.length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
+                                                                                return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
+                                                                                    <div className="">
+                                                                                        <div className="d-flex p-0">
                                                                                             <div className="col-1 p-0 wid30">
-                                                                                                {replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, replymessage?.AuthorName, props?.taskUsers)}
-                                                                                                    src={replymessage?.AuthorImage} /> : <span title={replymessage?.AuthorName != undefined ? replymessage?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser" ></span>}
+                                                                                                {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)}
+                                                                                                    src={fbComment.AuthorImage} /> :
+                                                                                                    <span onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)} title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>}
                                                                                             </div>
                                                                                             <div className="col-11 pe-0" >
                                                                                                 <div className='d-flex justify-content-between align-items-center'>
-                                                                                                    {replymessage?.AuthorName} - {replymessage?.Created}
+                                                                                                    {fbComment?.AuthorName} - {fbComment?.Created}
                                                                                                     <span className='d-flex'>
+                                                                                                        <a className="ps-1" title="Comment Reply" >
+                                                                                                            <div data-toggle="tooltip" id={buttonId + "-" + i + k}
+                                                                                                                onClick={() => openReplycommentPopup(i, k, 'objective')}
+                                                                                                                data-placement="bottom"
+                                                                                                            >
+                                                                                                                <span className="svg__iconbox svg__icon--reply"></span>
+                                                                                                            </div>
+                                                                                                        </a>
                                                                                                         <a title='Edit'
-                                                                                                            onClick={() => EditReplyComment(replymessage, k, 0, false, i, index,'objective')
-                                                                                                            }
+                                                                                                            onClick={() => openEditModal(fbComment, k, 0, false, i, 'objective')}
                                                                                                         >
                                                                                                             <span className='svg__iconbox svg__icon--edit'></span>
                                                                                                         </a>
                                                                                                         <a title='Delete'
-                                                                                                            onClick={() => clearReplycomment(false, k, 0, i, index,'objective')
-                                                                                                            }
+                                                                                                            onClick={() => clearComment(false, k, 0, i, 'objective')}
                                                                                                         >
                                                                                                             <span className='svg__iconbox svg__icon--trash'></span></a>
                                                                                                     </span>
                                                                                                 </div>
-                                                                                                <div><span dangerouslySetInnerHTML={{ __html: cleanHTML(replymessage?.Title, null, i) }}></span></div>
+                                                                                                <div><span dangerouslySetInnerHTML={{ __html: cleanHTML(fbComment?.Title, null, i) }}></span></div>
                                                                                             </div>
                                                                                         </div>
+                                                                                        <div className="col-12 ps-3 pe-0 mt-1">
+                                                                                            {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, index: any) => {
+                                                                                                return (
+                                                                                                    <div className="d-flex border ms-3 p-2  mb-1">
+                                                                                                        <div className="col-1 p-0 wid30">
+                                                                                                            {replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, replymessage?.AuthorName, props?.taskUsers)}
+                                                                                                                src={replymessage?.AuthorImage} /> : <span title={replymessage?.AuthorName != undefined ? replymessage?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser" ></span>}
+                                                                                                        </div>
+                                                                                                        <div className="col-11 pe-0" >
+                                                                                                            <div className='d-flex justify-content-between align-items-center'>
+                                                                                                                {replymessage?.AuthorName} - {replymessage?.Created}
+                                                                                                                <span className='d-flex'>
+                                                                                                                    <a title='Edit'
+                                                                                                                        onClick={() => EditReplyComment(replymessage, k, 0, false, i, index, 'objective')
+                                                                                                                        }
+                                                                                                                    >
+                                                                                                                        <span className='svg__iconbox svg__icon--edit'></span>
+                                                                                                                    </a>
+                                                                                                                    <a title='Delete'
+                                                                                                                        onClick={() => clearReplycomment(false, k, 0, i, index, 'objective')
+                                                                                                                        }
+                                                                                                                    >
+                                                                                                                        <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                                                                                </span>
+                                                                                                            </div>
+                                                                                                            <div><span dangerouslySetInnerHTML={{ __html: cleanHTML(replymessage?.Title, null, i) }}></span></div>
+                                                                                                        </div>
+                                                                                                    </div>
 
-                                                                                    )
-                                                                                })}
-                                                                            </div>
+                                                                                                )
+                                                                                            })}
+                                                                                        </div>
+                                                                                    </div>
+
+
+                                                                                </div>
+
+
+                                                                            })}
                                                                         </div>
 
+                                                                    </div>
+                                                                </div>
+                                                                {showhideCommentBoxIndex == i && objective && <div className='SpfxCheckRadio'>
+                                                                    <div className="align-items-center d-flex"
+                                                                        style={{ display: showcomment }}
+                                                                    >  <textarea id="txtComment" onChange={(e) => handleInputChange(e)} className="form-control full-width"></textarea>
+                                                                        <button type="button" className={props?.Item["Approver"] != undefined && props?.Item["Approver"] != "" && (props?.Item["Approver"]?.AssingedToUser?.Id == props?.currentUser[0]?.Id || (props?.Item["Approver"]?.Approver?.length > 0 && props?.Item["Approver"]?.Approver[0]?.Id == props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => PostButtonClick(fbData, i)}>Post</button>
+                                                                    </div>
+                                                                </div>}
+
+                                                            </div>
+
+                                                            {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
+                                                                return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
+                                                                    <div className='text-end'>
+
+
+                                                                        <span className="d-block text-end">
+                                                                            <a className='siteColor' style={{ cursor: 'pointer' }}
+                                                                                onClick={(e) => showhideCommentBoxOfSubText(j, i, 'objective')}
+                                                                            >Add Comment</a>
+                                                                        </span>
 
                                                                     </div>
 
+                                                                    <div className="d-flex pe-0 FeedBack-comment">
+                                                                        <div className="border p-1 me-1">
+                                                                            <span >{i + 1}.{j + 1}</span>
+                                                                            <ul className="list-none">
+                                                                                <li>
+                                                                                    {fbSubData?.Completed != null && fbSubData?.Completed &&
+                                                                                        <span className="svg__iconbox svg__icon--tick"></span>
+                                                                                    }
+                                                                                </li>
+                                                                                <li>
+                                                                                    {fbSubData?.HighImportance != null && fbSubData?.HighImportance &&
+                                                                                        <span className="svg__iconbox svg__icon--taskHighPriority"></span>
+                                                                                    }
+                                                                                </li>
+                                                                                <li>
+                                                                                    {fbSubData?.LowImportance != null && fbSubData?.LowImportance &&
+                                                                                        <span className="svg__iconbox svg__icon--lowPriority"></span>
+                                                                                    }
+                                                                                </li>
+                                                                                <li>
+                                                                                    {fbSubData?.Phone != null && fbSubData?.Phone &&
+                                                                                        <span className="svg__iconbox svg__icon--phone"></span>
+                                                                                    }
+                                                                                </li>
+                                                                            </ul>
+                                                                        </div>
 
-                                                                })}
-                                                            </div>
+                                                                        <div className="border p-2 full-width text-break"
 
-                                                        </div>
-                                                    </div>
-                                                    {showhideCommentBoxIndex == i && objective && <div className='SpfxCheckRadio'>
-                                                        <div className="align-items-center d-flex"
-                                                            style={{ display: showcomment }}
-                                                        >  <textarea id="txtComment" onChange={(e) => handleInputChange(e)} className="form-control full-width"></textarea>
-                                                            <button type="button" className={props?.Item["Approver"] != undefined && props?.Item["Approver"] != "" && (props?.Item["Approver"]?.AssingedToUser?.Id ==props?.currentUser[0]?.Id || (props?.Item["Approver"]?.Approver?.length > 0 && props?.Item["Approver"]?.Approver[0]?.Id ==props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => PostButtonClick(fbData, i)}>Post</button>
-                                                        </div>
-                                                    </div>}
-
-                                                </div>
-
-                                                {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
-                                                    return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
-                                                        <div className='text-end'>
-                                                           
-                                                           
-                                                                <span className="d-block text-end">
-                                                                    <a className='siteColor' style={{ cursor: 'pointer' }}
-                                                                        onClick={(e) => showhideCommentBoxOfSubText(j, i,'objective')}
-                                                                    >Add Comment</a>
-                                                                </span>
-                                                           
-                                                        </div>
-
-                                                        <div className="d-flex pe-0 FeedBack-comment">
-                                                            <div className="border p-1 me-1">
-                                                                <span >{i + 1}.{j + 1}</span>
-                                                                <ul className="list-none">
-                                                                    <li>
-                                                                        {fbSubData?.Completed != null && fbSubData?.Completed &&
-                                                                            <span className="svg__iconbox svg__icon--tick"></span>
-                                                                        }
-                                                                    </li>
-                                                                    <li>
-                                                                        {fbSubData?.HighImportance != null && fbSubData?.HighImportance &&
-                                                                            <span className="svg__iconbox svg__icon--taskHighPriority"></span>
-                                                                        }
-                                                                    </li>
-                                                                    <li>
-                                                                        {fbSubData?.LowImportance != null && fbSubData?.LowImportance &&
-                                                                            <span className="svg__iconbox svg__icon--lowPriority"></span>
-                                                                        }
-                                                                    </li>
-                                                                    <li>
-                                                                        {fbSubData?.Phone != null && fbSubData?.Phone &&
-                                                                            <span className="svg__iconbox svg__icon--phone"></span>
-                                                                        }
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-
-                                                            <div className="border p-2 full-width text-break"
-
-                                                            >
-                                                                <span ><span dangerouslySetInnerHTML={{ __html: cleanHTML(fbSubData?.Title, null, j) }}></span></span>
-                                                                <div className="feedbackcomment col-sm-12 PadR0 mt-10">
-                                                                    {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
-                                                                        return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "} title={fbComment?.isShowLight != undefined ? fbComment?.isShowLight : ""}>
-                                                                            <div className="">
-                                                                                <div className="d-flex p-0">
-                                                                                    <div className="col-1 p-0 wid30">
-                                                                                        {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)}
-                                                                                            src={fbComment.AuthorImage} /> : <span onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)} title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
-                                                                                        }
-                                                                                    </div>
-                                                                                    <div className="col-11 pad0" key={k}>
-                                                                                        <div className="d-flex justify-content-between align-items-center">
-                                                                                            {fbComment?.AuthorName} - {fbComment?.Created}
-                                                                                            <span className='d-flex'>
-                                                                                                <a className="ps-1" title="Comment Reply" >
-                                                                                                    <div data-toggle="tooltip" id={buttonId + "-" + i + j + k }
-                                                                                                        onClick={() => openReplySubcommentPopup(i, j, k,'objective')}
-                                                                                                        data-placement="bottom"
-                                                                                                    >
-                                                                                                        <span className="svg__iconbox svg__icon--reply"></span>
-                                                                                                    </div>
-                                                                                                </a>
-                                                                                                <a title="Edit"
-                                                                                                    onClick={() => openEditModal(fbComment, k, j, true, i,'objective')}
-                                                                                                >
-
-                                                                                                    <span className='svg__iconbox svg__icon--edit'></span>
-                                                                                                </a>
-                                                                                                <a title='Delete'
-                                                                                                    onClick={() =>clearComment(true, k, j, i,'objective')}
-                                                                                                ><span className='svg__iconbox svg__icon--trash'></span></a>
-                                                                                            </span>
-                                                                                        </div>
-                                                                                        <div ><span dangerouslySetInnerHTML={{ __html: cleanHTML(fbComment?.Title, null, j) }}></span></div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div className="col-12 ps-3 pe-0 mt-1">
-                                                                                    {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, ReplyIndex: any) => {
-                                                                                        return (
-                                                                                            <div className="d-flex border ms-3 p-2  mb-1">
+                                                                        >
+                                                                            <span ><span dangerouslySetInnerHTML={{ __html: cleanHTML(fbSubData?.Title, null, j) }}></span></span>
+                                                                            <div className="feedbackcomment col-sm-12 PadR0 mt-10">
+                                                                                {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
+                                                                                    return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "} title={fbComment?.isShowLight != undefined ? fbComment?.isShowLight : ""}>
+                                                                                        <div className="">
+                                                                                            <div className="d-flex p-0">
                                                                                                 <div className="col-1 p-0 wid30">
-                                                                                                    {replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, replymessage?.AuthorName, props?.taskUsers)}
-                                                                                                        src={replymessage.AuthorImage} /> : <span title={replymessage?.AuthorName != undefined ? replymessage?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>}
+                                                                                                    {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)}
+                                                                                                        src={fbComment.AuthorImage} /> : <span onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, fbComment?.AuthorName, props?.taskUsers)} title={fbComment?.AuthorName != undefined ? fbComment?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
+                                                                                                    }
                                                                                                 </div>
-                                                                                                <div className="col-11 pe-0" >
-                                                                                                    <div className='d-flex justify-content-between align-items-center'>
-                                                                                                        {replymessage?.AuthorName} - {replymessage?.Created}
+                                                                                                <div className="col-11 pad0" key={k}>
+                                                                                                    <div className="d-flex justify-content-between align-items-center">
+                                                                                                        {fbComment?.AuthorName} - {fbComment?.Created}
                                                                                                         <span className='d-flex'>
-                                                                                                            <a title='Edit'
-
-                                                                                                                onClick={() => EditReplyComment(replymessage, k, 0, true, i, ReplyIndex,'objective')
-                                                                                                                }
+                                                                                                            <a className="ps-1" title="Comment Reply" >
+                                                                                                                <div data-toggle="tooltip" id={buttonId + "-" + i + j + k}
+                                                                                                                    onClick={() => openReplySubcommentPopup(i, j, k, 'objective')}
+                                                                                                                    data-placement="bottom"
+                                                                                                                >
+                                                                                                                    <span className="svg__iconbox svg__icon--reply"></span>
+                                                                                                                </div>
+                                                                                                            </a>
+                                                                                                            <a title="Edit"
+                                                                                                                onClick={() => openEditModal(fbComment, k, j, true, i, 'objective')}
                                                                                                             >
+
                                                                                                                 <span className='svg__iconbox svg__icon--edit'></span>
                                                                                                             </a>
                                                                                                             <a title='Delete'
-                                                                                                                onClick={() => clearReplycomment(true, k, j, i, ReplyIndex,'objective')}
-
-                                                                                                            >
-                                                                                                                <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                                                                                onClick={() => clearComment(true, k, j, i, 'objective')}
+                                                                                                            ><span className='svg__iconbox svg__icon--trash'></span></a>
                                                                                                         </span>
                                                                                                     </div>
-                                                                                                    <div><span dangerouslySetInnerHTML={{ __html: cleanHTML(replymessage?.Title, null, j) }}></span></div>
+                                                                                                    <div ><span dangerouslySetInnerHTML={{ __html: cleanHTML(fbComment?.Title, null, j) }}></span></div>
                                                                                                 </div>
                                                                                             </div>
+                                                                                            <div className="col-12 ps-3 pe-0 mt-1">
+                                                                                                {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, ReplyIndex: any) => {
+                                                                                                    return (
+                                                                                                        <div className="d-flex border ms-3 p-2  mb-1">
+                                                                                                            <div className="col-1 p-0 wid30">
+                                                                                                                {replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, replymessage?.AuthorName, props?.taskUsers)}
+                                                                                                                    src={replymessage.AuthorImage} /> : <span title={replymessage?.AuthorName != undefined ? replymessage?.AuthorName : "Default user icons"} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>}
+                                                                                                            </div>
+                                                                                                            <div className="col-11 pe-0" >
+                                                                                                                <div className='d-flex justify-content-between align-items-center'>
+                                                                                                                    {replymessage?.AuthorName} - {replymessage?.Created}
+                                                                                                                    <span className='d-flex'>
+                                                                                                                        <a title='Edit'
 
-                                                                                        )
-                                                                                    })}
-                                                                                </div>
+                                                                                                                            onClick={() => EditReplyComment(replymessage, k, 0, true, i, ReplyIndex, 'objective')
+                                                                                                                            }
+                                                                                                                        >
+                                                                                                                            <span className='svg__iconbox svg__icon--edit'></span>
+                                                                                                                        </a>
+                                                                                                                        <a title='Delete'
+                                                                                                                            onClick={() => clearReplycomment(true, k, j, i, ReplyIndex, 'objective')}
+
+                                                                                                                        >
+                                                                                                                            <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                                                                                    </span>
+                                                                                                                </div>
+                                                                                                                <div><span dangerouslySetInnerHTML={{ __html: cleanHTML(replymessage?.Title, null, j) }}></span></div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+                                                                                                    )
+                                                                                                })}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                })}
                                                                             </div>
                                                                         </div>
-                                                                    })}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        {subchildcomment == j && subchildParentIndex == i && objective ? <div className='SpfxCheckRadio' >
-                                                            {/* <div className="col-sm-12 mt-2 p-0  ">
+                                                                    </div>
+                                                                    {subchildcomment == j && subchildParentIndex == i && objective ? <div className='SpfxCheckRadio' >
+                                                                        {/* <div className="col-sm-12 mt-2 p-0  ">
                                                                 {TaskFeedbackData["Approver"] != "" && TaskFeedbackData["Approver"] != undefined && (TaskFeedbackData["Approver"]?.AssingedToUser?.Id == props?.currentUser[0]?.Id || (TaskFeedbackData["Approver"]?.Approver[0]?.Id == props?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target?.checked)} />Mark as Approval Comment</label>}
 
                                                             </div> */}
 
-                                                            <div className="align-items-center d-flex"
+                                                                        <div className="align-items-center d-flex"
 
-                                                            >  <textarea id="txtCommentSubtext" onChange={(e) => handleInputChange(e)} className="form-control full-width" ></textarea>
-                                                                <button type="button" className={props?.Item["Approver"] != undefined && props?.Item["Approver"] != "" && (props?.Item["Approver"]?.AssingedToUser?.Id ==props?.currentUser[0]?.Id || (props?.Item["Approver"]?.Approver[0]?.Id ==props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => SubtextPostButtonClick(j, i)}>Post</button>
-                                                            </div>
-                                                        </div> : null}
-
-                                                    </div>
-                                                })}
-
-                                            </div>
-                                            <div>
-                                             
-                                            <div className={`carouselSlider taskImgTemplate ${fbData?.setImagesInfo?.length == 1 ? "ArrowIconHide" : ""}`} >
-                                                    <Slider {...settings}>
-                                                        {fbData?.setImagesInfo?.map((imgData: any, indeximage: any) => {
-
-                                                            return (
-                                                                <div key={indeximage} className='carouselHeight'>
-                                                                    <img className="img-fluid"
-                                                                        alt={imgData?.ImageName}
-                                                                        src={imgData?.ImageUrl}
-                                                                        loading="lazy"
-                                                                    ></img>
-                                                                    <div className="Footerimg d-flex align-items-center justify-content-between p-1 ">
-                                                                        <div className='usericons'>
-
-                                                                            <div className="d-flex">
-
-                                                                                <span className="mx-2" >{imgData?.UploadeDate}</span>
-                                                                                <span className='round px-1'>
-                                                                                    {imgData?.UserImage != null && imgData?.UserImage != "" ?
-                                                                                        <img className='align-self-start hreflink ' title={imgData?.UserName} src={imgData?.UserImage} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, imgData?.UserName, props?.taskUsers)} />
-                                                                                        : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"}onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, imgData?.UserName, props?.taskUsers)}   className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
-                                                                                    }
-                                                                                </span>
-                                                                                {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
-                                                                                    <BiInfoCircle />
-                                                                                </span>}
-
-                                                                            </div>
+                                                                        >  <textarea id="txtCommentSubtext" onChange={(e) => handleInputChange(e)} className="form-control full-width" ></textarea>
+                                                                            <button type="button" className={props?.Item["Approver"] != undefined && props?.Item["Approver"] != "" && (props?.Item["Approver"]?.AssingedToUser?.Id == props?.currentUser[0]?.Id || (props?.Item["Approver"]?.Approver[0]?.Id == props?.currentUser[0]?.Id)) ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => SubtextPostButtonClick(j, i)}>Post</button>
                                                                         </div>
-                                                                        <div className="expandicon">
-
-                                                                            <span >
-                                                                                {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
-                                                                            </span>
-
-                                                                        </div>
-
-                                                                    </div>
+                                                                    </div> : null}
 
                                                                 </div>
-                                                            )
+                                                            })}
+
+                                                        </div>
+                                                        <div>
+
+                                                            <div className={`carouselSlider taskImgTemplate ${fbData?.setImagesInfo?.length == 1 ? "ArrowIconHide" : ""}`} >
+                                                                <Slider {...settings}>
+                                                                    {fbData?.setImagesInfo?.map((imgData: any, indeximage: any) => {
+
+                                                                        return (
+                                                                            <div key={indeximage} className='carouselHeight'>
+                                                                                <img className="img-fluid"
+                                                                                    alt={imgData?.ImageName}
+                                                                                    src={imgData?.ImageUrl}
+                                                                                    loading="lazy"
+                                                                                ></img>
+                                                                                <div className="Footerimg d-flex align-items-center justify-content-between p-1 ">
+                                                                                    <div className='usericons'>
+
+                                                                                        <div className="d-flex">
+
+                                                                                            <span className="mx-2" >{imgData?.UploadeDate}</span>
+                                                                                            <span className='round px-1'>
+                                                                                                {imgData?.UserImage != null && imgData?.UserImage != "" ?
+                                                                                                    <img className='align-self-start hreflink ' title={imgData?.UserName} src={imgData?.UserImage} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, imgData?.UserName, props?.taskUsers)} />
+                                                                                                    : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, imgData?.UserName, props?.taskUsers)} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
+                                                                                                }
+                                                                                            </span>
+                                                                                            {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
+                                                                                                <BiInfoCircle />
+                                                                                            </span>}
+
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="expandicon">
+
+                                                                                        <span >
+                                                                                            {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
+                                                                                        </span>
+
+                                                                                    </div>
+
+                                                                                </div>
+
+                                                                            </div>
+                                                                        )
 
 
 
-                                                        })}
-                                                    </Slider>
-                                                </div>
-                                            </div>
-                                        </>
-                                    )
-                                }
-                            }
+                                                                    })}
+                                                                </Slider>
+                                                            </div>
+                                                        </div>
+                                                    </>
+                                                )
+                                            }
+                                        }
 
-                        })}
+                                    })}
                                 </AccordionPanel>
                             </AccordionItem>
                         </Accordion>
-                   
+
 
                         {/* ************************************ TAB ******************************************* */}
                         <div className='mt-2 UXDesignTabs'>
@@ -1287,31 +1287,31 @@ const uxdescriptions = (props: any) => {
                                     if (index > 0) {
                                         return (
                                             <>
-                                         <div className="position-relative">
-                                            <button
-                                                className={`nav-link ${CurrentActiveTab == index ? 'active' : ''}`}
-                                                id={tab?.setTitle}
-                                                data-bs-toggle="tab"
-                                                data-bs-target={`#${tab?.setTitle}`}
-                                                type="button"
-                                                role="tab"
-                                                aria-controls={tab?.setTitle}
-                                                aria-selected="true"
-                                                onClick={()=> handleChangeTab(index) }
-                                            >
-                                                {arrayOfChar[index - 1] + "." + tab?.setTitle}
+                                                <div className="position-relative">
+                                                    <button
+                                                        className={`nav-link ${CurrentActiveTab == index ? 'active' : ''}`}
+                                                        id={tab?.setTitle}
+                                                        data-bs-toggle="tab"
+                                                        data-bs-target={`#${tab?.setTitle}`}
+                                                        type="button"
+                                                        role="tab"
+                                                        aria-controls={tab?.setTitle}
+                                                        aria-selected="true"
+                                                        onClick={() => handleChangeTab(index)}
+                                                    >
+                                                        {arrayOfChar[index - 1] + "." + tab?.setTitle}
 
-                                            </button>
-                                           <div className='editTab'>
-                                           <input type="checkbox" className='form-check-input me-1' onChange={(e) => CheckSetData(e.target.checked,tab)} />
-                                            </div> 
-                                           
-                                            </div>
+                                                    </button>
+                                                    <div className='editTab'>
+                                                        <input type="checkbox" className='form-check-input me-1' onChange={(e) => CheckSetData(e.target.checked, tab)} />
+                                                    </div>
+
+                                                </div>
                                             </>
                                         )
                                     }
                                 })}
-                                 <a className="ml-auto mt-2" onClick={()=>setComparesetpannel(true)}>Compare</a>
+                                <a className="ml-auto mt-2" onClick={() => setComparesetpannel(true)}>Compare</a>
 
                             </ul>
 
@@ -1348,7 +1348,7 @@ const uxdescriptions = (props: any) => {
                                                                                 <span className='round px-1'>
                                                                                     {imgData?.UserImage != null && imgData?.UserImage != "" ?
                                                                                         <img className='align-self-start hreflink ' title={imgData?.UserName} src={imgData?.UserImage} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, imgData?.UserName, props?.taskUsers)} />
-                                                                                        : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"}onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, imgData?.UserName, props?.taskUsers)}   className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
+                                                                                        : <span title={imgData?.UserName != undefined ? imgData?.UserName : "Default user icons"} onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, undefined, imgData?.UserName, props?.taskUsers)} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
                                                                                     }
                                                                                 </span>
                                                                                 {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
@@ -1393,16 +1393,16 @@ const uxdescriptions = (props: any) => {
                                                                         {props?.ApprovalStatus ?
                                                                             <span className="alignCenter">
                                                                                 <span title="Rejected"
-                                                                                    onClick={() => changeTrafficLigth(i, "Reject",'tab')}
+                                                                                    onClick={() => changeTrafficLigth(i, "Reject", 'tab')}
                                                                                     className={fbData['isShowLight'] == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
                                                                                 >
                                                                                 </span>
                                                                                 <span
-                                                                                    onClick={() => changeTrafficLigth(i, "Maybe",'tab')}
+                                                                                    onClick={() => changeTrafficLigth(i, "Maybe", 'tab')}
                                                                                     title="Maybe" className={fbData['isShowLight'] == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
                                                                                 </span>
                                                                                 <span title="Approved"
-                                                                                    onClick={() => changeTrafficLigth(i, "Approve",'tab')}
+                                                                                    onClick={() => changeTrafficLigth(i, "Approve", 'tab')}
                                                                                     className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                                                 </span>
@@ -1422,7 +1422,7 @@ const uxdescriptions = (props: any) => {
                                                                     </div>
                                                                     <div className='m-0'>
                                                                         <span className="d-block">
-                                                                            <a className="siteColor" style={{ cursor: 'pointer' }} onClick={(e) => showhideCommentBox(i,'tab')}>Add Comment</a>
+                                                                            <a className="siteColor" style={{ cursor: 'pointer' }} onClick={(e) => showhideCommentBox(i, 'tab')}>Add Comment</a>
                                                                         </span>
                                                                     </div>
                                                                 </div>
@@ -1475,19 +1475,19 @@ const uxdescriptions = (props: any) => {
                                                                                                     <span className='d-flex'>
                                                                                                         <a className="ps-1" title="Comment Reply" >
                                                                                                             <div data-toggle="tooltip" id={buttonId + "-" + i + k + "tab"}
-                                                                                                                onClick={() => openReplycommentPopup(i, k,'tab')}
+                                                                                                                onClick={() => openReplycommentPopup(i, k, 'tab')}
                                                                                                                 data-placement="bottom"
                                                                                                             >
                                                                                                                 <span className="svg__iconbox svg__icon--reply"></span>
                                                                                                             </div>
                                                                                                         </a>
                                                                                                         <a title='Edit'
-                                                                                                            onClick={() => openEditModal(fbComment, k, 0, false, i,'tab')}
+                                                                                                            onClick={() => openEditModal(fbComment, k, 0, false, i, 'tab')}
                                                                                                         >
                                                                                                             <span className='svg__iconbox svg__icon--edit'></span>
                                                                                                         </a>
                                                                                                         <a title='Delete'
-                                                                                                            onClick={() =>clearComment(false, k, 0, i,'tab')}
+                                                                                                            onClick={() => clearComment(false, k, 0, i, 'tab')}
                                                                                                         >
                                                                                                             <span className='svg__iconbox svg__icon--trash'></span></a>
                                                                                                     </span>
@@ -1508,13 +1508,13 @@ const uxdescriptions = (props: any) => {
                                                                                                                 {replymessage?.AuthorName} - {replymessage?.Created}
                                                                                                                 <span className='d-flex'>
                                                                                                                     <a title='Edit'
-                                                                                                                        onClick={() => EditReplyComment(replymessage, k, 0, false, i, index,'tab')
+                                                                                                                        onClick={() => EditReplyComment(replymessage, k, 0, false, i, index, 'tab')
                                                                                                                         }
                                                                                                                     >
                                                                                                                         <span className='svg__iconbox svg__icon--edit'></span>
                                                                                                                     </a>
                                                                                                                     <a title='Delete'
-                                                                                                                        onClick={() => clearReplycomment(false, k, 0, i, index,'tab')
+                                                                                                                        onClick={() => clearReplycomment(false, k, 0, i, index, 'tab')
                                                                                                                         }
                                                                                                                     >
                                                                                                                         <span className='svg__iconbox svg__icon--trash'></span></a>
@@ -1540,7 +1540,7 @@ const uxdescriptions = (props: any) => {
                                                                 </div>
                                                                 {showhideCommentBoxIndex == i && !objective && <div className='SpfxCheckRadio'>
                                                                     <div className="col-sm-12 mt-2 p-0" style={{ display: showcomment }} >
-                                                                    {props?.Item?.Approver != "" && props?.Item?.Approver != undefined && (props?.Item?.checkIsApproval) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' name='approval' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target.checked)} />
+                                                                        {props?.Item?.Approver != "" && props?.Item?.Approver != undefined && (props?.Item?.checkIsApproval) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' name='approval' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target.checked)} />
                                                                             Mark as Approval Comment</label>}
                                                                     </div>
                                                                     <div className="align-items-center d-flex"
@@ -1559,16 +1559,16 @@ const uxdescriptions = (props: any) => {
                                                                             {props?.ApprovalStatus ?
                                                                                 <span className="alignCenter">
                                                                                     <span title="Rejected"
-                                                                                        onClick={() => changeTrafficLigthsubtext(i, j, "Reject",'tab')}
+                                                                                        onClick={() => changeTrafficLigthsubtext(i, j, "Reject", 'tab')}
                                                                                         className={fbSubData.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
                                                                                     >
                                                                                     </span>
                                                                                     <span title="Maybe"
-                                                                                        onClick={() => changeTrafficLigthsubtext(i, j, "Maybe",'tab')}
+                                                                                        onClick={() => changeTrafficLigthsubtext(i, j, "Maybe", 'tab')}
                                                                                         className={fbSubData?.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
                                                                                     </span>
                                                                                     <span title="Approved"
-                                                                                        onClick={() => changeTrafficLigthsubtext(i, j, "Approve",'tab')}
+                                                                                        onClick={() => changeTrafficLigthsubtext(i, j, "Approve", 'tab')}
                                                                                         className={fbSubData?.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                                                     </span>
@@ -1586,7 +1586,7 @@ const uxdescriptions = (props: any) => {
                                                                         <div className='m-0'>
                                                                             <a className="d-block text-end">
                                                                                 <a className='siteColor' style={{ cursor: 'pointer' }}
-                                                                                    onClick={(e) => showhideCommentBoxOfSubText(j, i,'tab')}
+                                                                                    onClick={(e) => showhideCommentBoxOfSubText(j, i, 'tab')}
                                                                                 >Add Comment</a>
                                                                             </a>
                                                                         </div>
@@ -1636,8 +1636,8 @@ const uxdescriptions = (props: any) => {
                                                                                                         {fbComment?.AuthorName} - {fbComment?.Created}
                                                                                                         <span className='d-flex'>
                                                                                                             <a className="ps-1" title="Comment Reply" >
-                                                                                                                <div data-toggle="tooltip" id={buttonId + "-" + i + j + k +"tab"}
-                                                                                                                    onClick={() => openReplySubcommentPopup(i, j, k,'tab')}
+                                                                                                                <div data-toggle="tooltip" id={buttonId + "-" + i + j + k + "tab"}
+                                                                                                                    onClick={() => openReplySubcommentPopup(i, j, k, 'tab')}
                                                                                                                     data-placement="bottom"
                                                                                                                 >
                                                                                                                     <span className="svg__iconbox svg__icon--reply"></span>
@@ -1650,7 +1650,7 @@ const uxdescriptions = (props: any) => {
                                                                                                                 <span className='svg__iconbox svg__icon--edit'></span>
                                                                                                             </a>
                                                                                                             <a title='Delete'
-                                                                                                                onClick={() =>clearComment(true, k, j, i,'tab')}
+                                                                                                                onClick={() => clearComment(true, k, j, i, 'tab')}
                                                                                                             ><span className='svg__iconbox svg__icon--trash'></span></a>
                                                                                                         </span>
                                                                                                     </div>
@@ -1671,13 +1671,13 @@ const uxdescriptions = (props: any) => {
                                                                                                                     <span className='d-flex'>
                                                                                                                         <a title='Edit'
 
-                                                                                                                            onClick={() => EditReplyComment(replymessage, k, 0, true, i, ReplyIndex,'tab')
+                                                                                                                            onClick={() => EditReplyComment(replymessage, k, 0, true, i, ReplyIndex, 'tab')
                                                                                                                             }
                                                                                                                         >
                                                                                                                             <span className='svg__iconbox svg__icon--edit'></span>
                                                                                                                         </a>
                                                                                                                         <a title='Delete'
-                                                                                                                            onClick={() => clearReplycomment(true, k, j, i, ReplyIndex,'tab')}
+                                                                                                                            onClick={() => clearReplycomment(true, k, j, i, ReplyIndex, 'tab')}
 
                                                                                                                         >
                                                                                                                             <span className='svg__iconbox svg__icon--trash'></span></a>
@@ -1698,8 +1698,8 @@ const uxdescriptions = (props: any) => {
                                                                     </div>
                                                                     {subchildcomment == j && subchildParentIndex == i && !objective ? <div className='SpfxCheckRadio' >
                                                                         <div className="col-sm-12 mt-2 p-0  ">
-                                                                             {props?.Item?.Approver != "" && props?.Item?.Approver != undefined && (props?.Item?.checkIsApproval) && 
-                                                                             <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target?.checked)} />Mark as Approval Comment</label>}
+                                                                            {props?.Item?.Approver != "" && props?.Item?.Approver != undefined && (props?.Item?.checkIsApproval) &&
+                                                                                <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={ApprovalCommentcheckbox} onChange={(e) => setApprovalCommentcheckbox(e.target?.checked)} />Mark as Approval Comment</label>}
 
                                                                         </div>
 
@@ -1730,7 +1730,7 @@ const uxdescriptions = (props: any) => {
 
                 }
             </div>
-            {/* // =========New design templates End ============ */}            
+            {/* // =========New design templates End ============ */}
             {isCalloutVisible ? (
                 <FocusTrapCallout
                     className='p-2 replyTooltip'
@@ -1753,16 +1753,9 @@ const uxdescriptions = (props: any) => {
 
                     </Text>
                     <FocusZone handleTabKey={FocusZoneTabbableElements.all} isCircularNavigation>
-                        <Stack
-                            className='modal-footer'
-                            gap={8} horizontal>
-
-                            <button className='btn btn-default'
-                                onClick={() => setisCalloutVisible(false)}
-                            >Cancel</button>
-                            <button className='btn btn-primary'
-                                onClick={SaveReplyMessageFunction}
-                            >Save</button>
+                        <Stack className='modal-footer' gap={8} horizontal>
+                            <button className='btn btn-primary' onClick={SaveReplyMessageFunction}>Save</button>
+                            <button className='btn btn-default' onClick={() => setisCalloutVisible(false)}>Cancel</button>
                         </Stack>
                     </FocusZone>
                 </FocusTrapCallout>
@@ -1786,20 +1779,19 @@ const uxdescriptions = (props: any) => {
                 </footer>
             </Panel>}
             {ApprovalHistoryPopup ? <ApprovalHistoryPopupComponent
-                        ApprovalPointUserData={ApprovalPointUserData}
-                        indexSHow={currentArraySubTextIndex != null ? ApprovalPointCurrentParentIndex + "." + currentArraySubTextIndex : ApprovalPointCurrentParentIndex}
-                        ApprovalPointCurrentIndex={ApprovalPointCurrentParentIndex - 1}
-                        ApprovalPointHistoryStatus={ApprovalHistoryPopup}
-                        currentArrayIndex={currentArraySubTextIndex - 1}
-                        usefor="TaskProfile"
+                ApprovalPointUserData={ApprovalPointUserData}
+                indexSHow={currentArraySubTextIndex != null ? ApprovalPointCurrentParentIndex + "." + currentArraySubTextIndex : ApprovalPointCurrentParentIndex}
+                ApprovalPointCurrentIndex={ApprovalPointCurrentParentIndex - 1}
+                ApprovalPointHistoryStatus={ApprovalHistoryPopup}
+                currentArrayIndex={currentArraySubTextIndex - 1}
+                usefor="TaskProfile"
 
-                        callBack={() => ApprovalHistoryPopupCallBack()}
-                    />
-                        : null}
-           {comparesetpannel  && checkedSetData?.length>0 &&   <CompareSetData checkedSetData={checkedSetData} setComparesetpannel={setComparesetpannel}></CompareSetData>}
+                callBack={() => ApprovalHistoryPopupCallBack()}
+            />
+                : null}
+            {comparesetpannel && checkedSetData?.length > 0 && <CompareSetData checkedSetData={checkedSetData} setComparesetpannel={setComparesetpannel}></CompareSetData>}
         </>
     )
 }
 
 export default uxdescriptions;
-

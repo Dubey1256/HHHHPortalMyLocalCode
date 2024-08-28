@@ -83,7 +83,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         setSmartMetadataCount(Count);
     }
     //...........................................................End Filter SmartMetadata Items counts....................................................
-    const GetAdminConfig = async (Tab:any) => {
+    const GetAdminConfig = async (Tab: any) => {
         try {
             let web = new Web(selectedProps.AllList.SPSitesListUrl);
             const Config = await web.lists.getById(selectedProps.AllList.SPSiteConfigListID).items.select("ID,Title,OrderBy,WebpartId,DisplayColumns,Columns,QueryType,FilterItems&$filter=WebpartId eq 'AllManageSmartMetadataPortfolioTabs'").getAll();
@@ -97,14 +97,14 @@ export default function ManageSmartMetadata(selectedProps: any) {
             console.error(error);
         }
     };
-    const LoadSmartMetadata = async (Tab:any) => {
+    const LoadSmartMetadata = async (Tab: any) => {
         try {
             let web = new Web(selectedProps?.AllList?.SPSitesListUrl);
             const AllMetaDataItems = await web.lists.getById(selectedProps?.AllList?.SmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title&$filter=isDeleted ne 1").getAll();
             const modifiedItems = AllMetaDataItems.map((item: any) => {
                 return {
                     ...item,
-                    Item_x002d_Image: item.ItemCover // Assuming ItemCover is the property you want to rename
+                    Item_x002d_Image: item.ItemCover, // Assuming ItemCover is the property you want to rename
                 };
             });
             SmartmetadataItems = SmartmetadataItems.concat(modifiedItems)
@@ -113,10 +113,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     if (UrlTabName !== null) {
                         ShowingTabsData(UrlTabName)
                     } else {
-                        if (siteName === 'SP' || siteName === 'ILF')
+                        if (siteName === 'SP' || siteName === 'ILF' || siteName === 'Hub' || siteName === 'creatorspace' || siteName === 'Management')
                             ShowingTabsData("Categories");
                         if (siteName === 'GmbH')
-                            if(Tab !== '' && Tab !== undefined)
+                            if (Tab !== '' && Tab !== undefined)
                                 ShowingTabsData(Tab);
                             else
                                 ShowingTabsData("Topics");
@@ -153,6 +153,9 @@ export default function ManageSmartMetadata(selectedProps: any) {
         if (ParentMetaDataItems.length > 0)
             ParentMetaDataItems = [];
         SmartmetadataItems?.filter((comp: any) => {
+            if(comp?.Description !== undefined && comp?.Description !== ''){
+                comp.Description = comp?.Description?.replace(/<\/?[^>]+(>|$)/g, '');
+            }
             if (comp.TaxType === 'Smart Pages') {
                 comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Pages.aspx?SmartID=${comp.Id}&Item=${comp.Title}`
             }
@@ -163,17 +166,14 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 comp['flag'] = true;
                 ParentMetaDataItems.push(comp)
             }
-            comp.smartFilterSearch='';
-            if(comp?.SmartFilters!=null &&comp?.SmartFilters?.length>0){
-               comp.smartFilterSearch= comp?.SmartFilters?.map((elem: any) => elem).join(" ")
-              
+            comp.smartFilterSearch = '';
+            if (comp?.SmartFilters != null && comp?.SmartFilters?.length > 0) {
+                comp.smartFilterSearch = comp?.SmartFilters?.map((elem: any) => elem).join(" ")
             }
         });
         ParentMetaDataItems.filter((item: any) => {
             GroupByItems(item, SmartmetadataItems);
         })
-
-
         ParentMetaDataItems.filter((item: any) => {
             if (item.TaxType && item.TaxType === Tab) {
                 TabsFilter.push(item);
@@ -187,7 +187,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             CopySmartmetadata = TabsFilter;
             setSmartmetadata(TabsFilter);
             childRefdata?.current?.setRowSelection({});
-            
+
         }
     };
     const ShowingCategoriesTabsData = (tabData: any) => {
@@ -264,10 +264,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 <>
                     <div className='alignCenter'>
                         {
-                         row?.original?.smartFilterSearch!=undefined &&row?.original?.smartFilterSearch != null &&
-                            row?.original?.smartFilterSearch != '' ? (
-                            <a>{row?.original?.smartFilterSearch}</a>
-                        ) : null}
+                            row?.original?.smartFilterSearch != undefined && row?.original?.smartFilterSearch != null &&
+                                row?.original?.smartFilterSearch != '' ? (
+                                <a>{row?.original?.smartFilterSearch}</a>
+                            ) : null}
                     </div>
                 </>
             ),
@@ -465,7 +465,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
     };
     const OpenTopRestructureIcon = () => {
         if (MyContextValue) {
-            if (siteName === 'GmbH') {
+            if (siteName === 'GmbH' || siteName === 'ILF' || siteName === 'Hub' || siteName === 'Management' || siteName === 'creatorspace') {
                 const FilterItemParentID = 0;
                 MyContextValue?.OpenModal(FilterItemParentID, true);
             }
@@ -535,13 +535,19 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const buttonRestructureCheck = () => {
         setSmartmetadataRestructure(true);
     }
-    const closeCompareAndRestructuepopup = () => {
-        setSmartmetadataCompare(false);
-        setSmartmetadataRestructure(false);
-        childRefdata?.current?.setRowSelection({});
+    const closeCompareAndRestructuepopup = (type: any) => {
+        if (type === 'update') {
+            setRestructureIcon(false);
+            setSmartmetadataCompare(false);
+            setSmartmetadataRestructure(false);
+            setSmartmetadataAdd(false);
+        }
+        else {
+            setSmartmetadataCompare(false);
+        }
     }
     const customTableHeaderButtons = (
-        <>
+        <div>
             <button type="button" title="Add" onClick={OpenCreateSmartMetadataPopup} className="btnCol btn btn-primary">Add +</button>
             {SmartmetadataCompareButton
                 ? <button type="button" title="Compare" onClick={openComparePopup} className='btnCol btn btn-primary'>Compare</button> : <button type="button" title="Compare" disabled={true} onClick={openComparePopup} className='btnCol btn btn-primary'>Compare</button>
@@ -549,7 +555,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             {SmartmetadataRestructureButton
                 ? <button type="button" title="Restructure" className="btnCol btn btn-primary" onClick={buttonRestructureCheck}>Restructure</button> : <button type="button" title="Restructure" className="btnCol btn btn-primary" disabled={true}>Restructure</button>
             }
-        </>
+        </div>
     )
     //-------------------------------------------------- GENERATE JSON FUNCTION end---------------------------------------------------------------
     return (
@@ -562,11 +568,12 @@ export default function ManageSmartMetadata(selectedProps: any) {
                             :
                             <h3 className="heading">Manage Smart MetaData</h3>
                         }
-                        {/* <span>
-                            <a data-interception="off" target="_blank" href={`${selectedProps?.AllList?.SPSitesListUrl}/SitePages/managesmartmetadata-old.aspx`} >
-                                Old ManageSmartMetadata
-                            </a>
-                        </span> */}
+                        {siteName !== 'Hub' && siteName !== 'Management' && siteName !== 'ILF' && siteName !== 'creatorspace' && 
+                            <span>
+                                <a data-interception="off" target="_blank" href={`${selectedProps?.AllList?.SPSitesListUrl}/SitePages/managesmartmetadata-old.aspx`} >
+                                    Old ManageSmartMetadata
+                                </a>
+                            </span>}
                     </div>
                     <div>
                         <span>
@@ -663,7 +670,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                         </Panel>
                     </div>)
                 }
-                {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} TabSelected={TabSelected} ParentMetaDataItems={ParentMetaDataItems} childRefdata={childRefdata} /> : ''}
+                {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} TabSelected={TabSelected} siteName = {siteName} ParentMetaDataItems={ParentMetaDataItems} childRefdata={childRefdata} /> : ''}
                 {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata AllList={selectedProps.AllList} CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} childRefdata={childRefdata} /> : ''}
             </div >
         </>
