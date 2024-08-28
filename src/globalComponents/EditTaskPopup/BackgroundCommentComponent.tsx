@@ -134,6 +134,7 @@ const BackgroundCommentComponent = (Props: any) => {
                 AuthorName: CurrentUser?.Title != undefined ? CurrentUser?.Title : Context?.pageContext?._user.displayName,
                 Type: "EODReport",
                 isEodTask:false,
+                Deployment: false,
                 Title: taskInfo?.Title,
                 ProjectID: taskInfo?.Project?.Id,
                 ProjectName: taskInfo?.Project?.Title,
