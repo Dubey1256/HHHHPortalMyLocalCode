@@ -145,6 +145,7 @@ const AdminHelp = (props: any) => {
     const onRenderFooterQuestionEdit = () => {
       return (
         <footer className="footer-right text-end">
+          <div>
           <button
             className="me-1 btn btn-primary"
             onClick={() => updateDetails()}
@@ -157,6 +158,7 @@ const AdminHelp = (props: any) => {
           >
             Cancel
           </button>
+          </div>
         </footer>
       );
   };
