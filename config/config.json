@@ -562,6 +562,14 @@
           "manifest": "./src/webparts/importTaskPortfolioItems/ImportTaskPortfolioItemsWebPart.manifest.json"
         }
       ]
+    },
+    "institution-profile-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/institutionProfile/InstitutionProfileWebPart.js",
+          "manifest": "./src/webparts/institutionProfile/InstitutionProfileWebPart.manifest.json"
+        }
+      ]
     }
     
   },
@@ -661,7 +669,9 @@
     "GmbhHomePageWebPartStrings": "lib/webparts/gmbhHomePage/loc/{locale}.js",
     "ManageQuestionWebPartStrings": "lib/webparts/manageQuestion/loc/{locale}.js",
     "EodReportWebPartStrings": "lib/webparts/eodReport/loc/{locale}.js",
-    "ImportTaskPortfolioItemsWebPartStrings": "lib/webparts/importTaskPortfolioItems/loc/{locale}.js"
+    "ImportTaskPortfolioItemsWebPartStrings": "lib/webparts/importTaskPortfolioItems/loc/{locale}.js",
+    "InstitutionProfileWebPartStrings": "lib/webparts/institutionProfile/loc/{locale}.js"
+    
   
   }
 }

@@ -2,31 +2,30 @@ import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
-  type IPropertyPaneConfiguration,
+  IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'HhhcontactWebPartStrings';
-import Hhhcontact from './components/Hhhcontact';
-import { IHhhcontactProps } from './components/IHhhcontactProps';
+import * as strings from 'InstitutionProfileWebPartStrings';
+import InstitutionProfile from './components/InstitutionProfile';
+import { IInstitutionProfileProps } from './components/IInstitutionProfileProps';
 
-export interface IHhhcontactWebPartProps {
+export interface IInstitutionProfileWebPartProps {
   description: string;
-  TeamContactSearchlistIds:"ee0d83a2-d7ae-4629-989d-b8bbf18e2311"
-  TeamSmartMetadatalistIds:"c8ce47a9-3159-44f2-aeae-5f56501d8e9d"
-  TeamInstitutionlistIds:"c8ce47a9-3159-44f2-aeae-5f56501d8e9d"
+  TeamContactSearchlistIds:"8E331566-CE4D-4136-AF89-9ED07FA61AA2"
+  TeamSmartMetadatalistIds:"9370af15-a5ca-4b30-bb7c-3fed50c7db00"
+  TeamInstitutionlistIds:'595D3F27-1EE6-4C41-9FE0-163C05BE0F24'
 }
-
-export default class HhhcontactWebPart extends BaseClientSideWebPart<IHhhcontactWebPartProps> {
+export default class InstitutionProfileWebPart extends BaseClientSideWebPart<IInstitutionProfileWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IHhhcontactProps> = React.createElement(
-      Hhhcontact,
+    const element: React.ReactElement<IInstitutionProfileProps> = React.createElement(
+      InstitutionProfile,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
@@ -34,10 +33,11 @@ export default class HhhcontactWebPart extends BaseClientSideWebPart<IHhhcontact
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        TeamContactSearchlistIds:this.properties.TeamContactSearchlistIds,
-        TeamInstitutionlistIds:this.properties.TeamInstitutionlistIds,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        MainsiteUrl: this.context.pageContext.site.absoluteUrl,
+        TeamContactSearchlistIds:this?.properties?.TeamContactSearchlistIds,
         TeamSmartMetadatalistIds:this?.properties?.TeamSmartMetadatalistIds,
-        MainsiteUrl: this.context.pageContext.site.absoluteUrl
+        TeamInstitutionlistIds:this?.properties?.TeamInstitutionlistIds
       }
     );
 
@@ -65,9 +65,10 @@ export default class HhhcontactWebPart extends BaseClientSideWebPart<IHhhcontact
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-           
+              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
+              break;
             default:
-              environmentMessage = strings.UnknownEnvironment;
+              throw new Error('Unknown host');
           }
 
           return environmentMessage;
@@ -109,23 +110,20 @@ export default class HhhcontactWebPart extends BaseClientSideWebPart<IHhhcontact
         {
           header: {
             description: strings.PropertyPaneDescription
-          },
+          }, 
           groups: [
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
-                }),
                 PropertyPaneTextField('TeamContactSearchlistIds', {
-                  label: "TeamContactSearchlistIds" 
+                  label: "TeamContactSearchlistIds"
                 }),
                 PropertyPaneTextField('TeamSmartMetadatalistIds', {
-                  label: "TeamSmartMetadatalistIds" 
+                  label: "TeamSmartMetadatalistIds"
                 }),
                 PropertyPaneTextField('TeamInstitutionlistIds', {
-                  label: "TeamInstitutionlistIds" 
-                }),
+                  label: "TeamInstitutionlistIds"
+                })
               ]
             }
           ]

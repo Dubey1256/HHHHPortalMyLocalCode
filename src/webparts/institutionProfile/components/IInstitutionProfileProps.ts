@@ -1,12 +1,13 @@
-export interface IHhhcontactProps {
+export interface IInstitutionProfileProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;
   hasTeamsContext: boolean;
-  Context: any;
   userDisplayName: string;
+  TeamSmartMetadatalistIds:any;
   TeamContactSearchlistIds:any;
   TeamInstitutionlistIds:any;
-  TeamSmartMetadatalistIds:any;
-  MainsiteUrl:any;
+  siteUrl:any
+  Context: any;
+  MainsiteUrl:any
 }

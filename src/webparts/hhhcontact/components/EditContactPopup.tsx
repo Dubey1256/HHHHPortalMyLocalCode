@@ -9,6 +9,7 @@ import Smarttaxonomypopup from './Smarttaxonomypopup';
 import Smartmetadatapickerin from '../../../globalComponents/Smartmetadatapickerindependent/SmartmetadatapickerSingleORMulti'
 import Tooltip from '../../../globalComponents/Tooltip';
 import moment from 'moment';
+import SelectInstitutionPopup from './orgContactEditPopup';
 let AutoCompleteItemsArray: any = [];
 let tempSmartCategoriesData: any = []
 var tempCategoryData: any = "";
@@ -24,9 +25,10 @@ const EditContactPopup = (props: any) => {
     const [imagetab, setImagetab] = React.useState(false);
     const [ActivityData, setActivityData] = useState([]);
     const [status, setStatus] = useState({
-        orgPopup: false,
         taxanomypopup: false,
-        CountryPopup: false
+        CategoriesPopup: false,
+        CountryPopup: false,
+        SelectInstitutionPopup: false,
     });
     useEffect(() => {
         loadSmartTaxonomyItems()
@@ -52,26 +54,12 @@ const EditContactPopup = (props: any) => {
             props.closeEditContactPopup()
         }
     }
-    const openSmartTaxonomyActivity = (item: any) => {
-        setStatus({
-            ...status, orgPopup: false,
-            taxanomypopup: true,
-            CountryPopup: false
-        })
-    }
-    const openSmartTaxonomyCategories = (item: any) => {
-        setStatus({
-            ...status, orgPopup: false,
-            taxanomypopup: false,
-            CountryPopup: true
-        })
-    }
     const getContactDetails = async () => {
         try {
             //props?.allListId?.TeamContactSearchlistIds
-            const select = "WorkCity,WorkFax ,WorkAddress,Id,WorkCountry,Email,FullName,WorkFax,ItemCover,SmartActivities/Id,SmartActivities/Title,SmartCategories/Id,SmartCategories/Title,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,ol_Department,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title";
+            const select = "WorkCity,WorkFax ,WorkAddress,Institution/Title,Institution/Id,Id,WorkCountry,Email,FullName,WorkFax,ItemCover,SmartActivities/Id,SmartActivities/Title,SmartCategories/Id,SmartCategories/Title,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,ol_Department,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title";
             const query = `Id eq ${itemId}`;
-            const data = await webs.lists.getById(props?.allListId?.TeamContactSearchlistIds).items.select(select).expand('Author', 'Editor', 'SmartActivities', 'SmartCategories').filter(query).get();
+            const data = await webs.lists.getById(props?.allListId?.TeamContactSearchlistIds).items.select(select).expand('Author', 'Editor', 'SmartActivities', 'SmartCategories','Institution').filter(query).get();
             const contact = data[0];
             if (contact.SmartCategories) {
                 setSmartCategoriesData(contact.SmartCategories)
@@ -81,10 +69,10 @@ const EditContactPopup = (props: any) => {
             }
             if (contact?.Modified != null && contact?.Modified != undefined) {
                 contact.Modified = moment(contact.Modified).format("DD/MM/YYYY");
-             }
+            }
             if (contact?.ItemCover != null && contact?.ItemCover != undefined) {
                 contact.Item_x002d_Image = contact?.ItemCover
-             }
+            }
             setContactDetails(contact);
 
         } catch (error) {
@@ -206,14 +194,14 @@ const EditContactPopup = (props: any) => {
             let smartActivityIds = setSmarttaxanomyIds(contactDetails.SmartActivities);
             let smartCategoriesIds = setSmarttaxanomyIds(contactDetails.SmartCategories);
             let postData = {
-                Company: contactDetails?.Company,
+                Company: contactDetails?.Institution != undefined && contactDetails?.Institution?.Title != undefined? contactDetails?.Institution?.Title : null,
                 JobTitle: contactDetails?.JobTitle,
                 Email: contactDetails?.Email,
                 WorkCity: contactDetails?.WorkCity,
                 WorkCountry: contactDetails?.WorkCountry,
                 FirstName: contactDetails?.FirstName,
                 Title: contactDetails?.Title,
-                FullName: contactDetails?.FirstName && contactDetails?.Title ? contactDetails?.FirstName + ' ' + contactDetails?.Title: contactDetails?.FirstName ? contactDetails?.FirstName: contactDetails?.Title ? contactDetails?.Title : "" ,
+                FullName: contactDetails?.FirstName && contactDetails?.Title ? contactDetails?.FirstName + ' ' + contactDetails?.Title : contactDetails?.FirstName ? contactDetails?.FirstName : contactDetails?.Title ? contactDetails?.Title : "",
                 Suffix: contactDetails?.Suffix,
                 WebPage: contactDetails?.WebPage,
                 IM: contactDetails?.IM,
@@ -227,6 +215,7 @@ const EditContactPopup = (props: any) => {
                 Comments: contactDetails?.Comments,
                 WorkAddress: contactDetails?.WorkAddress,
                 WorkFax: contactDetails?.WorkFax,
+                InstitutionId: contactDetails?.Institution != undefined && contactDetails?.Institution?.Id != undefined? contactDetails?.Institution?.Id : null,
                 SmartActivitiesId: { results: smartActivityIds != undefined && smartActivityIds.length > 0 ? smartActivityIds : [], },
                 SmartCategoriesId: { results: smartCategoriesIds != undefined && smartCategoriesIds.length > 0 ? smartCategoriesIds : [], },
                 ItemCover: {
@@ -314,6 +303,14 @@ const EditContactPopup = (props: any) => {
         tempCategoryData = tempString;
         setSmartCategoriesData(tempArray2);
     };
+    const openSelectInstitutionPopup = () => {
+        setStatus({
+            ...status, SelectInstitutionPopup: true,
+            taxanomypopup: false,
+            CategoriesPopup: false,
+            CountryPopup: false
+        })
+    }
     const removeSelectTaxanomy = (item: any, taxType: any) => {
         if (taxType == 'Activities' && contactDetails.SmartActivities != undefined && contactDetails.SmartActivities != null && contactDetails.SmartActivities.length > 0) {
             contactDetails.SmartActivities.map((i: any, index: any) => {
@@ -331,6 +328,13 @@ const EditContactPopup = (props: any) => {
         }
         setContactDetails(contactDetails);
     }
+    const CloseSelectInstitutionPopup = useCallback((data: any) => {
+        setStatus({ ...status, SelectInstitutionPopup: false })
+        if (data != undefined) {
+            setContactDetails(data);
+        }
+
+    }, []);
     const CustomFooter = () => {
         return (
             <footer className='alignCenter'>
@@ -357,7 +361,7 @@ const EditContactPopup = (props: any) => {
         return (
             <>
                 <div className='subheading'>
-                    Edit Contact - {(contactDetails.FirstName != null ? contactDetails.FirstName: " ") + ' ' + (contactDetails.Title != null ? contactDetails.Title: " ")}
+                    Edit Contact - {(contactDetails.FirstName != null ? contactDetails.FirstName : " ") + ' ' + (contactDetails.Title != null ? contactDetails.Title : " ")}
                 </div>
                 <Tooltip ComponentId='3433' />
             </>
@@ -414,45 +418,61 @@ const EditContactPopup = (props: any) => {
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="FirstName" className='full-width form-label'>First Name</label>
-                                                                    <input type="text" id="FirstName" className="form-control" defaultValue={contactDetails.FirstName} onInput={(e: any) => setContactDetails({ ...contactDetails, FirstName: e.target.value ? e.target.value: "" })} />
+                                                                    <input type="text" id="FirstName" className="form-control" defaultValue={contactDetails.FirstName} onInput={(e: any) => setContactDetails({ ...contactDetails, FirstName: e.target.value ? e.target.value : "" })} />
                                                                 </div></div>
                                                             <div className="col-sm-4">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="Title" className='full-width form-label'>Last Name</label>
-                                                                    <input type="text" id="Title" className="form-control" defaultValue={contactDetails.Title} onInput={(e: any) => setContactDetails({ ...contactDetails, Title: e.target.value ? e.target.value: "" })} />
+                                                                    <input type="text" id="Title" className="form-control" defaultValue={contactDetails.Title} onInput={(e: any) => setContactDetails({ ...contactDetails, Title: e.target.value ? e.target.value : "" })} />
                                                                 </div></div>
                                                             <div className="col-sm-4 pe-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkCity" className='full-width form-label'>WorkCity</label>
-                                                                    <input type="text" id="WorkCity" className="form-control" defaultValue={contactDetails.WorkCity} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkCity: e.target.value ? e.target.value: "" })} />
+                                                                    <input type="text" id="WorkCity" className="form-control" defaultValue={contactDetails.WorkCity} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkCity: e.target.value ? e.target.value : "" })} />
                                                                 </div></div>
                                                         </div>
                                                         <div className="row form-group mt-2">
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="Email" className='full-width form-label'>Email</label>
-                                                                    <input type="text" id="Email" className="form-control" defaultValue={contactDetails.Email} onInput={(e: any) => setContactDetails({ ...contactDetails, Email: e.target.value ? e.target.value: "" })} />
+                                                                    <input type="text" id="Email" className="form-control" defaultValue={contactDetails.Email} onInput={(e: any) => setContactDetails({ ...contactDetails, Email: e.target.value ? e.target.value : "" })} />
                                                                 </div>
                                                             </div>
                                                             <div className="col-sm-4">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WebPage" className='full-width form-label'>WebPage</label>
-                                                                    <input className="form-control" type="text" defaultValue={contactDetails?.WebPage ? contactDetails?.WebPage.Url : ""} onInput={(e: any) => setContactDetails({ ...contactDetails, WebPage: { ...contactDetails.WebPage, Url: e.target.value ? e.target.value: "" } })} />
+                                                                    <input className="form-control" type="text" defaultValue={contactDetails?.WebPage ? contactDetails?.WebPage.Url : ""} onInput={(e: any) => setContactDetails({ ...contactDetails, WebPage: { ...contactDetails.WebPage, Url: e.target.value ? e.target.value : "" } })} />
                                                                 </div>
                                                             </div>
                                                             <div className="col-sm-4 pe-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="IM" className='full-width form-label'>Skype</label>
-                                                                    <input type="text" id="IM" className="form-control" defaultValue={contactDetails.IM} onInput={(e: any) => setContactDetails({ ...contactDetails, IM: e.target.value ? e.target.value : ""})} />
+                                                                    <input type="text" id="IM" className="form-control" defaultValue={contactDetails.IM} onInput={(e: any) => setContactDetails({ ...contactDetails, IM: e.target.value ? e.target.value : "" })} />
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="row form-group mt-2">
-                                                            <div className="col-sm-4 ps-0">
+                                                            {/* <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="Company" className='full-width form-label'>Institution</label>
                                                                     <input type="text" id="Company" className="form-control" defaultValue={contactDetails.Company} onInput={(e: any) => setContactDetails({ ...contactDetails, Company: e.target.value ? e.target.value : ""})} />
-                                                                </div></div>
+                                                                </div></div> */}
+                                                            <div className="col-sm-4 ps-0">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">Institution</label>
+                                                                    {contactDetails?.Institution?.Title ?
+                                                                        <div className="block wid90 alignCenter">
+                                                                            <a className="hreflink" target="_blank"> {contactDetails?.Institution?.Title}</a>
+                                                                            <span className="bg-light svg__icon--cross svg__iconbox hreflink ml-auto" onClick={() => setContactDetails({ ...contactDetails, Institution: undefined })}></span>
+                                                                        </div> : <input className="form-control" type='text' />
+
+                                                                    }
+
+                                                                    <span className="input-group-text" title="Select Organisation">
+                                                                        <span onClick={() => openSelectInstitutionPopup()} className="svg__iconbox svg__icon--editBox"></span>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
                                                             <div className="col-sm-4">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="JobTitle" className='full-width form-label'>Job Title</label>
@@ -468,46 +488,46 @@ const EditContactPopup = (props: any) => {
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkPhone" className='full-width form-label'>Business Phone</label>
-                                                                    <input type="text" id="WorkPhone" className="form-control" defaultValue={contactDetails.WorkPhone} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkPhone: e.target.value ? e.target.value: ""})} />
+                                                                    <input type="text" id="WorkPhone" className="form-control" defaultValue={contactDetails.WorkPhone} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkPhone: e.target.value ? e.target.value : "" })} />
                                                                 </div></div>
                                                             <div className="col-sm-4">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="CellPhone" className='full-width form-label'>Mobile Number</label>
-                                                                    <input type="text" id="CellPhone" className="form-control" defaultValue={contactDetails.CellPhone} onInput={(e: any) => setContactDetails({ ...contactDetails, CellPhone: e.target.value ? e.target.value: "" })} />
+                                                                    <input type="text" id="CellPhone" className="form-control" defaultValue={contactDetails.CellPhone} onInput={(e: any) => setContactDetails({ ...contactDetails, CellPhone: e.target.value ? e.target.value : "" })} />
                                                                 </div></div>
                                                             <div className="col-sm-4 pe-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="HomePhone" className='full-width form-label'>Home Phone</label>
-                                                                    <input type="text" id="HomePhone" className="form-control" defaultValue={contactDetails.HomePhone} onInput={(e: any) => setContactDetails({ ...contactDetails, HomePhone: e.target.value ? e.target.value: "" })} />
+                                                                    <input type="text" id="HomePhone" className="form-control" defaultValue={contactDetails.HomePhone} onInput={(e: any) => setContactDetails({ ...contactDetails, HomePhone: e.target.value ? e.target.value : "" })} />
                                                                 </div></div>
                                                         </div>
                                                         <div className="row form-group mt-2">
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkZip" className='full-width form-label'>ZIP Code</label>
-                                                                    <input type="text" id="WorkZip" className="form-control" defaultValue={contactDetails.WorkZip} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkZip: e.target.value ? e.target.value: "" })} />
+                                                                    <input type="text" id="WorkZip" className="form-control" defaultValue={contactDetails.WorkZip} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkZip: e.target.value ? e.target.value : "" })} />
                                                                 </div></div>
                                                             <div className="col-sm-4">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="Office" className='full-width form-label'>Office</label>
-                                                                    <input type="text" id="Office" className="form-control" defaultValue={contactDetails.Office} onInput={(e: any) => setContactDetails({ ...contactDetails, Office: e.target.value ? e.target.value: "" })} />
+                                                                    <input type="text" id="Office" className="form-control" defaultValue={contactDetails.Office} onInput={(e: any) => setContactDetails({ ...contactDetails, Office: e.target.value ? e.target.value : "" })} />
                                                                 </div></div>
                                                             <div className="col-sm-4 pe-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkCountry" className='full-width form-label'>Country</label>
-                                                                    <input type="text" id="WorkCountry" className="form-control" defaultValue={contactDetails.WorkCountry} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkCountry: e.target.value ? e.target.value: "" })} />
+                                                                    <input type="text" id="WorkCountry" className="form-control" defaultValue={contactDetails.WorkCountry} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkCountry: e.target.value ? e.target.value : "" })} />
                                                                 </div></div>
                                                         </div>
                                                         <div className="row form-group mt-2">
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkFax" className='full-width form-label'>Fax</label>
-                                                                    <input type="text" id="WorkFax" className="form-control" defaultValue={contactDetails.WorkFax} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkFax: e.target.value ? e.target.value: ""})} />
+                                                                    <input type="text" id="WorkFax" className="form-control" defaultValue={contactDetails.WorkFax} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkFax: e.target.value ? e.target.value : "" })} />
                                                                 </div></div>
                                                             <div className="col-sm-4">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkAddress" className='full-width form-label'>Address</label>
-                                                                    <input type="text" id="WorkAddress" className="form-control" defaultValue={contactDetails.WorkAddress} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkAddress: e.target.value ? e.target.value: ""})} />
+                                                                    <input type="text" id="WorkAddress" className="form-control" defaultValue={contactDetails.WorkAddress} onInput={(e: any) => setContactDetails({ ...contactDetails, WorkAddress: e.target.value ? e.target.value : "" })} />
                                                                 </div></div>
                                                         </div>
                                                     </div>
@@ -523,7 +543,7 @@ const EditContactPopup = (props: any) => {
                                                                     <label className='full-width form-label'>Comments</label>
                                                                     <textarea className='w-100'
                                                                         defaultValue={contactDetails.Comments}
-                                                                        onInput={(e: any) => setContactDetails({ ...contactDetails, Comments: e.target.value ? e.target.value: ""})}
+                                                                        onInput={(e: any) => setContactDetails({ ...contactDetails, Comments: e.target.value ? e.target.value : "" })}
                                                                         rows={4}
                                                                         cols={50}
                                                                         placeholder="Enter text here..."
@@ -677,6 +697,7 @@ const EditContactPopup = (props: any) => {
             </Panel>
             {/* {status.taxanomypopup ? <Smarttaxonomypopup popupName="Activities" selectedCountry={currentCountry} callBack={CloseSmarttaxonomypopup} data={ActivityData} updateData={contactDetails} /> : null} */}
             {status.CountryPopup ? <Smartmetadatapickerin popupName="Contact Countries" AllListId={props?.allListId} usedfor={"Multi"} TaxType={"Countries"} selectedCountry={currentCountry} callBack={CloseSmarttaxonomypopup} updateData={contactDetails} /> : null}
+            {status.SelectInstitutionPopup ? <SelectInstitutionPopup callBack={CloseSelectInstitutionPopup} updateData={contactDetails} allListId={props?.allListId}/> : null}
         </>
 
     );

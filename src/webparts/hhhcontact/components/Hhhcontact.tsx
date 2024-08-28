@@ -13,7 +13,9 @@ export default class Hhhcontact extends React.Component<IHhhcontactProps, {}> {
       hasTeamsContext,
       userDisplayName,
       TeamContactSearchlistIds,
-      TeamSmartMetadatalistIds
+      TeamInstitutionlistIds,
+      TeamSmartMetadatalistIds,
+      MainsiteUrl,
     } = this.props;
 
     return (
