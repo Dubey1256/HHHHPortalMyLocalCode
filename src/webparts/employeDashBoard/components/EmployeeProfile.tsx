@@ -59,14 +59,15 @@ const EmployeProfile = (props: any) => {
     console.log(e);
   }
   useEffect(() => {
+    ChckSmartTimeIsAvalable();
     GetSmartmetadata();
     LoadAdminConfiguration(false, undefined)
     loadMasterTask();
     loadTaskUsers(undefined);
-    ChckSmartTimeIsAvalable();
-    getAllData(true);
     generateDateRange();
-
+    // setTimeout(() => {
+    //   getAllData(true);
+    // }, 2000);
   }, []);
   const generateDateRange = () => {
     let Count = 0;
@@ -1238,6 +1239,7 @@ const EmployeProfile = (props: any) => {
     }
     onLoadeTimeSheetsData = await globalCommon.smartTimeUseStorage(item);
     console.log(onLoadeTimeSheetsData)
+    getAllData(true);
   }
   const getAllData = async (IsLoad: any) => {
     if (IsLoad != undefined && IsLoad == true) {
