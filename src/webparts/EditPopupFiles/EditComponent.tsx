@@ -1709,31 +1709,31 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData,port
             Url: Items.ComponentLink != undefined ? Items.ComponentLink : null,
           },
           TechnicalExplanations:
-            PostTechnicalExplanations != undefined &&
-              PostTechnicalExplanations != ""
+            PostTechnicalExplanations != undefined ||
+              PostTechnicalExplanations != ''
               ? PostTechnicalExplanations
               : EditData?.TechnicalExplanations,
           Deliverables:
-            PostDeliverables != undefined && PostDeliverables != ""
+            PostDeliverables != undefined || PostDeliverables != ''
               ? PostDeliverables
               : EditData?.Deliverables,
           Short_x0020_Description_x0020_On:
-            PostShort_x0020_Description_x0020_On != undefined &&
-              PostShort_x0020_Description_x0020_On != ""
+            PostShort_x0020_Description_x0020_On != undefined ||
+              PostShort_x0020_Description_x0020_On != ''
               ? PostShort_x0020_Description_x0020_On
               : EditData?.Short_x0020_Description_x0020_On,
           Help_x0020_Information:
-            PostHelp_x0020_Information != undefined &&
-              PostHelp_x0020_Information != ""
+            PostHelp_x0020_Information != undefined ||
+              PostHelp_x0020_Information != ''
               ? PostHelp_x0020_Information
               : EditData?.Help_x0020_Information,
           HelpInformation:
-            PostHelp_x0020_Information != undefined &&
-              PostHelp_x0020_Information != ""
+            PostHelp_x0020_Information != undefined ||
+              PostHelp_x0020_Information != ''
               ? PostHelp_x0020_Information
               : EditData?.HelpInformation,
           Body:
-            PostBody != undefined && PostBody != "" ? PostBody : EditData?.Body,
+            PostBody != undefined || PostBody != '' ? PostBody : EditData?.Body,
           AssignedToId: {
             results:
               AssignedToIds != undefined && AssignedToIds?.length > 0

@@ -3597,7 +3597,7 @@ export const GetColumnDetails = (name: any, Columns: any) => {
 
 
 
-xport const loadAllTimeEntryQueryBased = async (timesheetListConfig: any, ModifiedDate: any) => {
+export const loadAllTimeEntryQueryBased = async (timesheetListConfig: any, ModifiedDate: any) => {
     var AllTimeEntry: any = []
     let modifiedDateValue = moment(ModifiedDate).utc().subtract(1, 'days').format('YYYY-MM-DDTHH:mm:ss[Z]');
     let filt = "(Modified gt '" + modifiedDateValue + "' )"

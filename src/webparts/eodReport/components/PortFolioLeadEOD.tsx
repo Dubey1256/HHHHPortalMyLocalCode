@@ -207,7 +207,9 @@ const PortfolioLeadEOD = (props: any) => {
                         </a>
                     </td>
                     <td height="48"  width="400" align="left" valign="middle" style="background: #fff;color: #333;width:350px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
+                        <a style="color: #2F5596;" href=${props?.AllListId?.siteUrl}/SitePages/PortfolioLead.aspx?web=1">
                         ${item?.portfolioTitle.slice(0, 22) + '...' ?? 'No data available'}
+                        </a> 
                     </td>
                     <td height="48"  width="400" align="left" valign="middle" style="background: #fff;color: #333;width:350px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;text-align: left; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;">
                         ${item?.AllTeamMembers?.length+1 ?? 'No data available'}

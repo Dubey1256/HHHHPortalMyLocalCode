@@ -684,7 +684,7 @@ export const MonthlyLeaveReport = (props: any) => {
             dayOfWeek !== 6 && // Saturday
             !isWeekend(currentDate, adjustedEndDateToToday)
           ) {
-            if (item?.Event_x002d_Type == LeaveType) {
+            if (item?.Event_x002d_Type == LeaveType || LeaveType.includes(item.Event_x002d_Type)) {
               if (item?.HalfDay === true || item?.HalfDayTwo === true) {
                 workingDays += 0.5;
               } else {
@@ -978,9 +978,9 @@ export const MonthlyLeaveReport = (props: any) => {
         ]);
         // user.unplannedleave = [...unplannedLeave, ...sickLeave].map(item => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
         //user.unplannedleave = user.unplannedleave.map((item:any) => `${item.Short_x0020_Description_x0020_On} (${item.eventDate})`).join(', ');
-        user.unplannedleave = `${user.unplannedleave}${
-          UnplannedLeaveString.length != 0 ? `[ ${UnplannedLeaveString} ]` : ""
-        } `;
+        // user.unplannedleave = `${user.unplannedleave}${
+        //   UnplannedLeaveString.length != 0 ? `[ ${UnplannedLeaveString} ]` : ""
+        // } `;
         user.UnPlanedEventDates = UnPlanedEventDates;
         user.leavediscriptionUnPlanned =
           leavediscriptionUnPlanned != undefined
@@ -1590,7 +1590,7 @@ export const MonthlyLeaveReport = (props: any) => {
                         </td>
                         <td>{entry.Title}</td>
                         <td onClick={() => toggleExpand(index, "Planned")}>{entry?.Plannedleave}</td>
-                        <td onClick={() => toggleExpand(index, "Un-Planned")}>{entry?.leavediscriptionUnPlanned.length}</td>
+                        <td onClick={() => toggleExpand(index, "Un-Planned")}>{entry?.unplannedleave}</td>
                         <td onClick={() => toggleExpand(index, "RH")}>{entry?.leavediscriptionRh?.length}</td>
                         <td onClick={() => toggleExpand(index, "Halfday")}>{entry?.leavediscriptionHalfday?.length}</td>
                         <td onClick={() => toggleExpand(index, "")}>{entry?.TotalLeave}</td>
@@ -1650,7 +1650,7 @@ export const MonthlyLeaveReport = (props: any) => {
 
                                   <fieldset className="LeaveType">
                                     <legend className="LeaveTypeName">
-                                      Un-planned:&nbsp; {entry?.leavediscriptionUnPlanned.length}
+                                      Un-planned:&nbsp; {entry?.unplannedleave}
                                     </legend>
                                     <table className="table w-100">
                                       <thead>
