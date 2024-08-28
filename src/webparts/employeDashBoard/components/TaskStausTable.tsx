@@ -2155,7 +2155,7 @@ const TaskStatusTbl = (Tile: any) => {
             </span>
           </>
         )}
-        {TotalTime != undefined && TotalTime != '' ? ` (${config?.Tasks?.length}) (${TotalTime.toFixed(2)} Hours)` : ''}
+        {TotalTime != undefined && TotalTime != '' ? ` (${config?.Tasks?.length}) (${TotalTime.toFixed(2)} Hrs)` : ''}
       </div>
     );
   }
@@ -2601,11 +2601,13 @@ const TaskStatusTbl = (Tile: any) => {
         });
       }
     });
-    setTotalTime(totalTime);
     DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
-    setActiveTile(Tile?.activeTile)
-    rerender();
+    setTotalTime(totalTime);
+    // setActiveTile(Tile?.activeTile)
+    //rerender();
     setprogressBar(false);
+    console.log('OnCclickData---' + onClickTimeSheetsData)
+    console.log('TimeSheet update successfully-------------' + DashboardConfigCopy)
   }
   const CancelDateSelection = () => {
     setShowDateSelection(false);
@@ -2633,6 +2635,7 @@ const TaskStatusTbl = (Tile: any) => {
     let smartmetaDataDetails: any = ContextData?.smartmetaDataDetails;
     let timeSheetConfig: any = ContextData?.timesheetListConfig;
     onClickTimeSheetsData = await globalCommon.smartTimeFind({ item, smartmetaDataDetails, timeSheetConfig });
+    console.log(onClickTimeSheetsData + '------------function call' + selectedTimeReport)
     currentUserTimeEntry(selectedTimeReport)
   }
   return (

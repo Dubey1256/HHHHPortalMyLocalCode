@@ -657,6 +657,7 @@ export default function SmartMetadataEditPopup(props: any) {
         selectfilterarray = selectfilterarray.filter((type: any) => { Item !== type });
         setFilterTypeData(updatedSelectedItems);
         setTaggedsmartFilterArray(updatedSelectedItems);
+        SmartTaxonomyItem.SmartFilters = updatedSelectedItems;
     };
     const isItemExists = (arr: any, Title: any) => {
         var isExists = false;
@@ -685,13 +686,7 @@ export default function SmartMetadataEditPopup(props: any) {
         setopensmartmetapopup(false);
     }
     const saveselectedData = () => {
-        if(selectfilterarray?.length > 0){
-            selectfilterarray?.forEach((new_item:any)=>{
-                if(new_item?.indexOf(SmartTaxonomyItem?.SmartFilters) > -1){
-                    SmartTaxonomyItem?.SmartFilters.push(new_item);
-                }
-            })
-        }
+        // setFilterTypeData(SmartTaxonomyItem?.SmartFilters);
         setFilterTypeData(selectfilterarray);
         setopensmartmetapopup(false);
     }
@@ -818,7 +813,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                 <button onClick={() => handleTabChange('ImageInfo')} className="nav-link" id="ImageInfo-tab" data-bs-toggle="tab" data-bs-target="#ImageInfo" type="button" role="tab" aria-controls="ImageInfo" aria-selected="false">IMAGE INFORMATION</button>
                             </li>
                         }
-                        {props?.siteName !== 'GmbH' &&
+                        {props?.siteName !== 'GmbH' && props?.siteName !== 'Hub' && props?.siteName !== 'Management' && 
                             <li className="nav-item" role="presentation">
                                 <button onClick={() => handleTabChange('TaskInfo')} className="nav-link" id="TaskInfo-tab" data-bs-toggle="tab" data-bs-target="#TaskInfo" type="button" role="tab" aria-controls="TaskInfo" aria-selected="false">TASKS</button>
                             </li>

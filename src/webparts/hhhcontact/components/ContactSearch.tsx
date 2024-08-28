@@ -7,33 +7,49 @@ import { Panel, PanelType, DefaultButton } from 'office-ui-fabric-react';
 import EditContactPopup from './EditContactPopup';
 import CreateContactComponent from './CreateContact';
 import ContactSmartFilter from './ContactSmartFilter';
+import EditPage from '../../../globalComponents/EditPanelPage/EditPage';
+import CreateInstitutionComponent from './createInstitution';
+import EditInstitutionPopup from './EditInstitutionPopup';
 let EditItem: any;
 let allListId: any = {};
 let backupallContact: any = []
 const ContactSearch = (props: any) => {
     const baseUrl = props?.props?.Context?.pageContext?._web?.absoluteUrl;
     const MainSiteUrl = props?.props?.Context?.pageContext?.site?.absoluteUrl;
+    const [institutionData, setInstitutionsData] = useState([]);
+    const [searchedInstituteData, setSearchedInstituteData] = useState([]);
     const [allContactData, setallContactData] = useState([]);
+    const [editInstitutionData, setEditInstitutionData] = useState([]);
+    const [EditInstitutionStatus, setEditInstitutionStatus] = useState(false);
     const [SelectCreateContact, setSelectCreateContact] = useState(false)
     const [EditPopupflag, setEditPopupflag] = useState(false)
     const [isDisabled, setIsDisabled] = useState(true);
+    const [institutiontab, setinstitutiontab] = React.useState(false);
+    const [CreateInstituteStatus, setCreateInstituteStatus] = useState(false);
+    const [contacttab, setcontacttab] = React.useState(true);
+    const [headerChange, setHeaderChange]: any = React.useState("");
+    const [descriptionChange, setDescriptionChange]: any = React.useState("");
     const [userEmails, setUserEmails]: any = useState([]);
+    const [InstitutionEditPopupflag, setInstitutionEditPopupflag] = useState(false)
     let webs = new Web(baseUrl);
 
     useEffect(() => {
         allListId = {
             TeamContactSearchlistIds: props?.props?.TeamContactSearchlistIds,
+            TeamInstitutionlistIds: props?.props?.TeamInstitutionlistIds,
             TeamSmartMetadatalistIds: props?.props?.TeamSmartMetadatalistIds,
             SmartMetadataListID: props?.props?.TeamSmartMetadatalistIds,
+            MainsiteUrl: props?.props?.MainsiteUrl,
             Context: props?.props?.Context,
             baseUrl: baseUrl
         }
         getAllContact();
+        getInstitutionDetails()
     }, [])
     const getAllContact = async () => {
         //allListId?.TeamContactSearchlistIds
         try {
-            let data = await webs.lists.getById(allListId?.TeamContactSearchlistIds).items.select("WorkCity,Id,SmartActivitiesId,SmartCategories/Id,SmartCategories/Title,WorkCountry,ItemType,Email,FullName,ItemCover,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title").expand("Author,Editor,SmartCategories").orderBy("Created desc").getAll();
+            let data = await webs.lists.getById(allListId?.TeamContactSearchlistIds).items.select("WorkCity,StaffID,Id,SmartActivitiesId,SmartCategories/Id,SmartCategories/Title,WorkCountry,ItemType,Email,FullName,ItemCover,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title").expand("Author,Editor,SmartCategories").orderBy("Created desc").getAll();
             data.map((item: any) => {
                 item.Selected = false
                 if (item?.SmartCategories) {
@@ -50,6 +66,26 @@ const ContactSearch = (props: any) => {
             console.error(error);
         };
     };
+    const getInstitutionDetails = async () => {
+        try {
+            let web = new Web(allListId?.baseUrl);
+            await web.lists.getById(props?.props?.TeamInstitutionlistIds)
+                .items
+                .select("Id", "Title", "SmartCountries/Id", "SmartCountries/Title", "FirstName", "Description", "FullName", "Company", "JobTitle", "About", "ItemType", "WorkCity", "ItemImage", "WorkCountry", "WorkAddress", "WebPage", "CellPhone", "HomePhone", "Email", "Created", "Author/Id", "Author/Title", "Modified", "Editor/Id", "Editor/Title")
+                .expand("Author", "Editor", "SmartCountries")
+                .orderBy("Created", true)
+                .getAll().then((data: any) => {
+                    setInstitutionsData(data);
+                    setSearchedInstituteData(data);
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+
+        } catch (error) {
+            console.log("Error:", error.message);
+        }
+
+    }
     const OpenEditContactPopup = (item: any) => {
         setEditPopupflag(true)
         EditItem = item
@@ -60,7 +96,19 @@ const ContactSearch = (props: any) => {
     }
     const ClosePopup = useCallback(() => {
         setSelectCreateContact(false)
+        setCreateInstituteStatus(false)
     }, []);
+    const closeEditInstitutionPopup = (item: any) => {
+        setEditInstitutionStatus(false)
+        EditCallBackInstitution(item)
+    }
+    const EditCallBackInstitution = useCallback((updateData: any) => {
+        setEditPopupflag(false)
+        getInstitutionDetails();
+        setSelectCreateContact(false)
+        setCreateInstituteStatus(false)
+        setEditInstitutionStatus(false);
+    }, [getInstitutionDetails])
     const handleEmailClick = (email: any) => {
         window.location.href = `mailto:${email}`;
     };
@@ -89,6 +137,7 @@ const ContactSearch = (props: any) => {
                 id: 'row.original',
                 size: 25,
             },
+            { accessorKey: "StaffID", placeholder: "StaffID", header: "", size: 100, id: "StaffID" },
             {
                 accessorKey: "FullName",
                 placeholder: "Title",
@@ -199,6 +248,8 @@ const ContactSearch = (props: any) => {
             backupAllContactData.forEach((item, index) => {
                 if (updateData.Id === item.Id) {
                     updateData.FullName = updateData.FirstName + ' ' + updateData.Title
+                    updateData.Company = updateData?.Institution && updateData?.Institution?.Title != undefined? updateData?.Institution?.Title : null,
+                    updateData.StaffID = item.StaffID
                     backupAllContactData[index] = updateData;
                     idExists = true;
                 }
@@ -209,8 +260,10 @@ const ContactSearch = (props: any) => {
         } else {
             getAllContact();
         }
+        getInstitutionDetails();
         setallContactData(backupAllContactData);
         setSelectCreateContact(false)
+        setCreateInstituteStatus(false)
     }
     const AddCallBackItem = () => {
         getAllContact();
@@ -219,36 +272,154 @@ const ContactSearch = (props: any) => {
     const FilterCallback = (filterData: any) => {
         setallContactData(filterData)
     }
+    const openInstitutionPopup = (editItems: any) => {
+        setEditInstitutionStatus(true);
+        setEditInstitutionData(editItems);
+    }
+    const changeHeader = (items: any) => {
+        setHeaderChange(items);
+    };
+    const changeDescription = (items: any) => {
+        setDescriptionChange(items);
+    };
     const customTableHeaderButtons = (
         <div>
             <button className={isDisabled ? 'btnCol btn btn-primary mx-1' : "btnCol btn btn-primary mx-1"} onClick={sendEmail} disabled={isDisabled}>Bulk Email</button>
             <button className='btnCol btn btn-primary' onClick={() => setSelectCreateContact(true)}>Create Contact</button>
         </div>
     )
+    const customTableHeaderInstituteButtons: any = (
+        <>    
+            <button className='btnCol btn btn-primary' onClick={() => setCreateInstituteStatus(true)}>Create Institution</button>
+        </>
+    )
+    const Inscolumns = React.useMemo<ColumnDef<unknown, unknown>[]>(() =>
+        [{
+            accessorKey: "",
+            placeholder: "",
+            hasCheckbox: true,
+            hasCustomExpanded: false,
+            hasExpanded: false,
+            isHeaderNotAvlable: true,
+            size: 55,
+            id: 'Id',
+        },
+        {
+            cell: ({ row }: any) => (
+                <>
+                    <img className='workmember ' src={`${row.original.ItemImage != null && row.original.ItemImage.Url != null ? row.original.ItemImage.Url : `${MainSiteUrl}/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg`}`} />
+                </>
+            ),
+            accessorKey: '',
+            canSort: false,
+            placeholder: '',
+            header: '',
+            id: 'ItemImage',
+            size: 25,
+        },
+        {
+            accessorFn: (row: any) => row?.FullName,
+            cell: ({ row }: any) => (
+                <a target='_blank' data-interception="off"
+                    href={`${allListId?.baseUrl}/SitePages/Institution-Profile.aspx?InstitutionId=${row?.original.Id}`}
+                >{row.original.FullName}</a>
+
+            ),
+
+            canSort: false,
+            placeholder: 'Search Instituion',
+            header: '',
+            id: 'Title',
+            size: 150,
+        },
+        { accessorKey: "WorkCity", placeholder: "City", header: "", size: 80, id: "WorkCity" },
+        { accessorKey: "SmartCountriesTitle", placeholder: "Country", header: "", size: 80, id: "SmartCountriesTitle" },
+        { accessorKey: "SitesTagged", placeholder: "Site", header: "", size: 80, id: "SitesTagged" },
+
+        {
+            cell: ({ row }) => (
+                <>
+                    <span onClick={() => openInstitutionPopup(row?.original)} title="Edit" className='svg__iconbox svg__icon--edit hreflink'></span>
+                </>
+            ),
+            accessorKey: '',
+            canSort: false,
+            placeholder: '',
+            header: '',
+            id: 'row.original',
+            size: 10,
+        },
+        ],
+        [searchedInstituteData]);
+
+        function insttab() {
+            setinstitutiontab(true);
+            setcontacttab(false)
+        }
+        const conttab = () => {
+            setcontacttab(false);
+            setinstitutiontab(true)
+        }
+        const closeEditpoup = (page: any,update:any,updatedetails:any) => {
+            EditCallBackItem(updatedetails);
+           
+        }
     return (
         <><div className="container">
-            <header className="page-header">
-                <h1 className="page-title heading">Contact Database</h1>
-            </header>
-            <div className="tab-pane show active" id="Contacts" role="tabpanel" aria-labelledby="Contacts">
-                <div>
-                    {/* <ContactSmartFilter props={props?.props} allContactData={allContactData} backupallContact={backupallContact} FilterCallback={FilterCallback}></ContactSmartFilter> */}
-                    {/* <div className="alignCenter" >
-                        <div className='ml-auto mb-1 '>
-                            
+            <div className='alignCenter'>
+                <h2 className='heading'>Contact Database</h2>
+                <EditPage context={props?.props} changeHeader={changeHeader} changeDescription={changeDescription} tooltipId={"956"} />
+            </div>
+            <div>
+                <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
+                <button className={`nav-link ${contacttab == true ? "active" : ""}`}
+                        id="Contacts-Tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#Contacts"
+                        type="button"
+                        role="tab"
+                        aria-controls="Contacts"
+                        aria-selected="true"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            conttab()
+                        }}
+                    >
+                        CONTACTS
+                    </button>
+                    <button className={`nav-link ${institutiontab == true ? "active" : ""}`}
+                        id="Institution-Tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#Institution"
+                        type="button"
+                        role="tab"
+                        aria-controls="Institution"
+                        aria-selected="false"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            insttab()
+                        }}
+                    >
+                        INSTITUTION
+                    </button>
+                </ul>
+                <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
+                    <div className={`tab-pane show  ${contacttab == true ? "active" : ""}`} id="Contacts" role="tabpanel" aria-labelledby="Contacts">
+                        <div className='Alltable'>
+                            <GlobalCommanTable multiSelect={true} fixedWidthTable={true} columns={columns} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} data={allContactData} hideTeamIcon={true} hideOpenNewTableIcon={true} showHeader={true} callBackData={callBackData} />
                         </div>
-                    </div> */}
-                    <div className="TableContentSection">
-                        <div className='Alltable mt-2 mb-2'>
-                            <div className='col-md-12 p-0 '>
-                                <GlobalCommanTable multiSelect={true} fixedWidthTable={true} columns={columns} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} data={allContactData} hideTeamIcon={true} hideOpenNewTableIcon={true} showHeader={true} callBackData={callBackData} />
-                            </div>
+                    </div>
+                    <div className={`tab-pane show  ${institutiontab == true ? "active" : ""}`} id="Institution" role="tabpanel" aria-labelledby="Institution">
+                        <div className='Alltable'>
+                            <GlobalCommanTable multiSelect={true} fixedWidthTable={true} columns={Inscolumns} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderInstituteButtons} data={institutionData} hideTeamIcon={true} hideOpenNewTableIcon={true} showHeader={true} callBackData={callBackData} />
                         </div>
                     </div>
                 </div>
             </div>
-            {SelectCreateContact ? <CreateContactComponent callBack={ClosePopup} data={allContactData} AddCallBackItem={AddCallBackItem} closeEditContactPopup={closeEditContactPopup} EditCallBackItem={EditCallBackItem} allListId={allListId} /> : null}
+            {SelectCreateContact ? <CreateContactComponent Context={props.props.Context} callBack={ClosePopup} data={allContactData} AddCallBackItem={AddCallBackItem} closeEditContactPopup={closeEditContactPopup} EditCallBackItem={EditCallBackItem} allListId={allListId} /> : null}
+            {CreateInstituteStatus ? <CreateInstitutionComponent Context={props.props.Context} callBack={ClosePopup} data={institutionData} AddCallBackItem={AddCallBackItem} closeEditContactPopup={closeEditContactPopup} EditCallBackItem={EditCallBackItem} allListId={allListId} /> : null}
             {EditPopupflag && (<EditContactPopup Context={props.props.Context} props={EditItem} closeEditContactPopup={closeEditContactPopup} EditCallBackItem={EditCallBackItem} allListId={allListId}></EditContactPopup>)}
+            {EditInstitutionStatus && (<EditInstitutionPopup Context={props.props.Context} props={editInstitutionData}closeEditpoup={closeEditpoup} closeEditInstitutionPopup={closeEditInstitutionPopup} EditCallBackInstitution={EditCallBackInstitution} allListId={allListId}></EditInstitutionPopup>)}
         </div>
         </>
     )

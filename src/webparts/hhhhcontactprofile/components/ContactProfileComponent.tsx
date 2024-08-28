@@ -18,6 +18,7 @@ import { MSGraphClient } from '@microsoft/sp-http';
 import PageLoader from "../../../globalComponents/pageLoader";
 let allListId: any = {};
 let ContactData: any = []
+let ADContactTitles: any;
 const ContactProfileComponent = (props: any) => {
     const baseUrl = props?.props?.Context?.pageContext?._web?.absoluteUrl;
     const MainSiteUrl = props?.props?.Context?.pageContext?.site?.absoluteUrl;
@@ -49,13 +50,15 @@ const ContactProfileComponent = (props: any) => {
     const loadContacts = async () => {
         try {
             const itemId = getParameterByName('contactId');
-            const data = await webs.lists.getById(allListId?.TeamContactSearchlistIds).items.select("WorkCity", "Id", "WorkCountry", "WorkAddress", "Email", "FullName", "ItemCover", "Attachments", "Company", "JobTitle", "FirstName", "Title", "Suffix", "WebPage", "IM", "ol_Department", "WorkPhone", "CellPhone", "HomePhone", "WorkZip", "Office", "Comments", "WorkFax", "Created", "Modified", "Author/Name", "Author/Title", "Editor/Name", "Editor/Title")
-                .expand("Author", "Editor")
+            const data = await webs.lists.getById(allListId?.TeamContactSearchlistIds).items.select("WorkCity", "StaffID", "Id", "WorkCountry", "WorkAddress", "Email", "FullName", "ItemCover", "Attachments", "Company", "JobTitle", "FirstName", "Title", "Suffix", "WebPage", "IM", "ol_Department", "WorkPhone", "CellPhone", "HomePhone", "WorkZip", "Office", "Comments", "WorkFax", "Created", "Modified", "Author/Name", "Author/Title", "Editor/Name", "Editor/Title", "ADContact/Id", "ADContact/Title", "ADContact/Name",)
+                .expand("Author", "Editor", "ADContact")
                 .orderBy("Created", false)
                 .filter(`Id eq '${itemId}'`)
                 .get();
 
             if (data && data.length > 0) {
+                console.log(data[0])
+                ADContactTitles = data[0]?.ADContact ? data[0]?.ADContact?.Title : '';
                 ContactData = data[0]
                 GetAllUsers()
                 setContacts(data[0]);
@@ -189,6 +192,10 @@ const ContactProfileComponent = (props: any) => {
                             </h2>
                         </div>
                         <section>
+                           <Row className="profileHead">
+                                <Col md={3} className="bg-Fa profileLeftSec">StaffID</Col>
+                                <Col md={9} className="bg-Ff profileRightSec">{Contacts?.StaffID}</Col>
+                            </Row>
                             <Row className="profileHead">
                                 <Col md={3} className="bg-Fa profileLeftSec">Organization</Col>
                                 <Col md={9} className="bg-Ff profileRightSec">{Contacts?.Company}</Col>
@@ -313,6 +320,21 @@ const ContactProfileComponent = (props: any) => {
                         </div>
                         <div className="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="Communication-Account">
                             <div className="text-center">
+                                {/* {isPermission ? (
+                                    <>
+                                        <p>
+                                            This user is not available in the internal directory. If you want to add this user, please click the "Invite" button.
+                                        </p>
+                                        <button
+                                            className='btn btn-primary ms-1 mx-2'
+                                            onClick={AddPermission}
+                                        >
+                                            Invite
+                                        </button>
+                                    </>
+                                ) : (
+                                    <p><strong>User Name - </strong> {ADContactTitles}</p>
+                                )} */}
                                 {isPermission && (
                                     <><p>
                                         This user is not available in the internal directory. If you want to add this user, please click the "Invite" button.
@@ -322,13 +344,21 @@ const ContactProfileComponent = (props: any) => {
                                     >
                                             Invite
                                         </button></>
-                                )}</div>
+                                )}
+
+                            </div>
                             {loaded && <PageLoader />}
-                            {GroupData?.map((item: any) => {
-                                return (
-                                    <p><strong>Permission Group Name - </strong> {item?.Title}</p>
-                                )
-                            })}
+                            {GroupData?.length > 0 ? (
+                                <p>
+                                    <strong>Permission Group Name - </strong>
+                                    {GroupData.map((item, index) => (
+                                        <span key={index}>
+                                            {item?.Title}{index < GroupData.length - 1 && ', '}
+                                        </span>
+                                    ))}
+                                </p>
+                            ) : (''
+                            )}
                         </div>
 
                     </div>
