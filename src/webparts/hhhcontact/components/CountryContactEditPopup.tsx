@@ -60,7 +60,7 @@ const CountryContactEditPopup = (props: any) => {
             customWidth="1280px"
             isBlocking={false}
             onRenderFooterContent={CustomFootersmartinfo}
-isFooterAtBottom={true}
+            isFooterAtBottom={true}
             onDismiss={() => props.callBack()}
         >
                 <div className="panel-body">
