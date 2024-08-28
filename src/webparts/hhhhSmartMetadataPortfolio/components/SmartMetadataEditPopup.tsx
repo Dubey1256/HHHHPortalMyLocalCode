@@ -523,7 +523,7 @@ export default function SmartMetadataEditPopup(props: any) {
                 ProfileType: SmartTaxonomyItem.ProfileType,
                 ShortDescription: SmartTaxonomyItem.ShortDescription !== null ? SmartTaxonomyItem.ShortDescription : '',
                 HelpDescription: SmartTaxonomyItem.Description !== null ? SmartTaxonomyItem.Description : '',
-                SmartFilters: { "results": TaggedsmartFilterArray },
+                SmartFilters: { "results": SmartTaxonomyItem.SmartFilters },
                 //SmartCountriesId: { "results": smart_Countries },
                 //SmartActivitiesId: { "results": smart_Activity },
                 //SmartTopicsId: { "results": smart_Topics },
@@ -663,11 +663,11 @@ export default function SmartMetadataEditPopup(props: any) {
         arr.forEach((item: any) => { if (item == Title) { isExists = true; return false; } });
         return isExists;
     }
-
     const handleItemClick = (item: any) => {
         selectfilterarray = TaggedsmartFilterArray?.length > 0 ? TaggedsmartFilterArray : selectfilterarray;
-        if (!isItemExists(selectfilterarray, item))
+        if (!isItemExists(selectfilterarray, item)){
             selectfilterarray.push(item);
+        }
         setTaggedsmartFilterArray(selectfilterarray);
         rerender();
     };
@@ -685,7 +685,13 @@ export default function SmartMetadataEditPopup(props: any) {
         setopensmartmetapopup(false);
     }
     const saveselectedData = () => {
-        // setTaggedsmartFilterArray(selectfilterarray);
+        if(selectfilterarray?.length > 0){
+            selectfilterarray?.forEach((new_item:any)=>{
+                if(new_item?.indexOf(SmartTaxonomyItem?.SmartFilters) > -1){
+                    SmartTaxonomyItem?.SmartFilters.push(new_item);
+                }
+            })
+        }
         setFilterTypeData(selectfilterarray);
         setopensmartmetapopup(false);
     }
@@ -1303,6 +1309,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                                 RequiredListIds={props?.AllList}
                                                 siteUrls={props?.AllList?.SPSitesListUrl}
                                                 listId={props?.AllList?.SmartMetadataListID}
+                                                siteName = {props?.siteName}
                                             />}
                                         </div>
                                     </span>

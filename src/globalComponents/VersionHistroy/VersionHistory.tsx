@@ -349,6 +349,18 @@ export default function VersionHistory(props: any) {
                         case 'Team_x005f_x0020_x005f_Members':
                             newKey = 'TeamMembers';
                             break;
+                        case 'href':
+                            newKey = 'href';
+                            break;
+                        case 'HelpDescription':
+                            newKey = 'HelpDescription';
+                            break;
+                        case 'PageContent':
+                            newKey = 'PageContent';
+                            break;
+                        case 'Description':
+                            newKey = 'Description';
+                            break;
                         case 'Reference_x005f_x0020_x005f_Item_x005f_x0020_x005f_Json':
                             newKey = 'Reference Item Json';
                             break;
@@ -434,6 +446,46 @@ export default function VersionHistory(props: any) {
                                 console.log(e);
                             }
                         }
+                        else if (key === 'href') {
+                            newKey = 'href';
+                            try {
+                                const hrefvalue = currentObj.href.replace(/<[^>]*>/g, '');
+                                differingPairs[newKey] = hrefvalue;
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }
+                        }
+                        else if (key === 'HelpDescription') {
+                            newKey = 'HelpDescription';
+                            try {
+                                const HelpDescriptionvalue = currentObj.HelpDescription.replace(/<[^>]*>/g, '');
+                                differingPairs[newKey] = HelpDescriptionvalue;
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }
+                        }
+                        else if (key === 'PageContent') {
+                            newKey = 'PageContent';
+                            try {
+                                const PageContentvalue = currentObj.PageContent.replace(/<[^>]*>/g, '');
+                                differingPairs[newKey] = PageContentvalue;
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }
+                        }
+                        else if (key === 'Description') {
+                            newKey = 'Description';
+                            try {
+                                const Descriptionvalue = currentObj.Description.replace(/<[^>]*>/g, '');
+                                differingPairs[newKey] = Descriptionvalue;
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }
+                        }
                         else if (key === 'Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On') {
                             newKey = 'ShortDescriptionOnline';
                             try {
@@ -473,8 +525,7 @@ export default function VersionHistory(props: any) {
                                 const WorkingActionValue = JSON.parse(currentObj?.WorkingAction);
                                 WorkingActionValue?.map((item: any) => {
                                     newKey = item?.Title;
-                                    if (item?.InformationData != undefined)
-                                        differingPairs[newKey] = item?.InformationData;
+                                    differingPairs[newKey] = item?.InformationData;
                                 })
 
                             }
@@ -539,6 +590,18 @@ export default function VersionHistory(props: any) {
                     switch (key) {
                         case 'Team_x005f_x0020_x005f_Members':
                             newKey = 'TeamMembers';
+                            break;
+                        case 'href':
+                            newKey = 'href';
+                            break;
+                        case 'HelpDescription':
+                            newKey = 'HelpDescription';
+                            break;
+                        case 'PageContent':
+                            newKey = 'PageContent';
+                            break;
+                        case 'Description':
+                            newKey = 'Description';
                             break;
                         case 'Reference_x005f_x0020_x005f_Item_x005f_x0020_x005f_Json':
                             newKey = 'Reference Item Json';
@@ -620,6 +683,16 @@ export default function VersionHistory(props: any) {
                                 }
 
                             }
+                            else if (key === 'href') {
+                                newKey = 'href';
+                                try {
+                                    const hrefvalue = currentObj.href.replace(/<[^>]*>/g, '');
+                                    differingPairs[newKey] = hrefvalue;
+                                }
+                                catch (e) {
+                                    console.log(e);
+                                }
+                            }
                             else if (key === 'Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On') {
                                 newKey = 'ShortDescriptionOnline';
                                 try {
@@ -630,6 +703,36 @@ export default function VersionHistory(props: any) {
                                     console.log(e);
                                 }
 
+                            }
+                            else if (key === 'HelpDescription') {
+                                newKey = 'HelpDescription';
+                                try {
+                                    const HelpDescriptionvalue = currentObj.HelpDescription.replace(/<[^>]*>/g, '');
+                                    differingPairs[newKey] = HelpDescriptionvalue;
+                                }
+                                catch (e) {
+                                    console.log(e);
+                                }
+                            }
+                            else if (key === 'PageContent') {
+                                newKey = 'PageContent';
+                                try {
+                                    const PageContentvalue = currentObj.PageContent.replace(/<[^>]*>/g, '');
+                                    differingPairs[newKey] = PageContentvalue;
+                                }
+                                catch (e) {
+                                    console.log(e);
+                                }
+                            }
+                            else if (key === 'Description') {
+                                newKey = 'Description';
+                                try {
+                                    const Descriptionvalue = currentObj.Description.replace(/<[^>]*>/g, '');
+                                    differingPairs[newKey] = Descriptionvalue;
+                                }
+                                catch (e) {
+                                    console.log(e);
+                                }
                             }
                             else if (key === 'TechnicalExplanations') {
                                 newKey = 'TechnicalExplanations';
@@ -648,8 +751,7 @@ export default function VersionHistory(props: any) {
                                     const WorkingActionValue = JSON.parse(currentObj?.WorkingAction);
                                     WorkingActionValue?.map((item: any) => {
                                         newKey = item?.Title;
-                                        if (item?.InformationData != undefined)
-                                            differingPairs[newKey] = item?.InformationData;
+                                        differingPairs[newKey] = item?.InformationData;
                                     })
 
                                 }
@@ -1025,7 +1127,10 @@ export default function VersionHistory(props: any) {
                                         </td>
                                         <td>
                                             <span className="siteColor"><a href={`${siteTypeUrl}/Lists/${sitetype}/DispForm.aspx?ID=${SCItem.ID}&VersionNo=${SCItem.version}`}>{SCItem?.ModifiedDate}</a></span>
-                                            <a href={`${siteTypeUrl}/SitePages/TaskDashboard.aspx?UserId=${SCItem.UserId}&Name=${SCItem?.ModifiedBy}`} target='_blank' data-interception='off'>{SCItem?.ItemImage ? <img className='workmember hreflink ms-1' src={SCItem?.ItemImage} title={SCItem?.ModifiedBy} /> : <span title={SCItem?.ModifiedBy ? SCItem?.ModifiedBy : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>}</a>
+                                            {props?.siteName !== 'Hub' && props?.siteName !== 'Management' && props?.siteName !== 'creatorspace' &&
+                                                <a href={`${siteTypeUrl}/SitePages/TaskDashboard.aspx?UserId=${SCItem.UserId}&Name=${SCItem?.ModifiedBy}`} target='_blank' data-interception='off'>
+                                                    {SCItem?.ItemImage ? <img className='workmember hreflink ms-1' src={SCItem?.ItemImage} title={SCItem?.ModifiedBy} /> :
+                                                        <span title={SCItem?.ModifiedBy ? SCItem?.ModifiedBy : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>}</a>}
                                             {/* <span className="siteColor">{SCItem?.ModifiedBy}</span> */}
                                         </td>
                                     </tr>
@@ -1167,7 +1272,7 @@ export default function VersionHistory(props: any) {
                                             <td>
                                                 <div className="alignCenter">
                                                     <a href={`${siteTypeUrl}/Lists/${sitetype}/DispForm.aspx?ID=${itm.ID}&VersionNo=${itm.version}`} target='_blank' data-interception="off">{itm?.ModifiedDate}</a>
-                                                    <a href={`${siteTypeUrl}/SitePages/TaskDashboard.aspx?UserId=${itm.UserId}&Name=${itm?.ModifiedBy}`} target='_blank' data-interception='off'>{itm?.ItemImage ? <img className='workmember hreflink ms-1' src={itm?.ItemImage} title={itm?.ModifiedBy} /> : <span title={itm?.ModifiedBy ? itm?.ModifiedBy : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>}</a>
+                                                    {props?.siteName !== 'Hub' && props?.siteName !== 'Management' && props?.siteName !== 'creatorspace' && <a href={`${siteTypeUrl}/SitePages/TaskDashboard.aspx?UserId=${itm.UserId}&Name=${itm?.ModifiedBy}`} target='_blank' data-interception='off'>{itm?.ItemImage ? <img className='workmember hreflink ms-1' src={itm?.ItemImage} title={itm?.ModifiedBy} /> : <span title={itm?.ModifiedBy ? itm?.ModifiedBy : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>}</a>}
                                                 </div>
                                             </td>
                                         </tr>
