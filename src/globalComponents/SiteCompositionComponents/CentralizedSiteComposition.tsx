@@ -1614,16 +1614,22 @@ const CentralizedSiteComposition = (Props: any) => {
             let AllDataForUpdate: any = [SelectedItemDetailsFormCall].concat(SelectedChildItems);
             let DataUpdated: any = false;
             AllDataForUpdate?.map(async (FinalData: any) => {
+                let checkForType: string = '';
                 if (FinalData?.Item_x0020_Type == "SubComponent" || FinalData?.Item_x0020_Type == "Feature" || FinalData?.Item_x0020_Type == "Component") {
                     if (FinalData?.IsSCProtected == undefined || FinalData?.IsSCProtected == false) {
                         DataUpdated = UpdateOnBackendSide(FinalData, "CSF");
                     }
+                    checkForType = FinalData?.Item_x0020_Type;
                 }
                 if (FinalData.TaskType?.Title == "Task" || FinalData.TaskType?.Title == "Activities" || FinalData.TaskType?.Title == "Workstream") {
                     UpdateOnBackendSide(FinalData, "AWT");
                     if (FinalData?.IsSCProtected == undefined || FinalData?.IsSCProtected == false) {
                         DataUpdated = UpdateOnBackendSide(FinalData, "CSF");
                     }
+                     checkForType = FinalData.TaskType?.Title;
+                }
+                if(checkForType?.length == 0){
+                   alert("This Selected item's portfolioType or TaskType is missing. Please update it first.")
                 }
             })
             if (DataUpdated) {
