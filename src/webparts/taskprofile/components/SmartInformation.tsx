@@ -314,10 +314,8 @@ const SmartInformation = (props: any, ref: any) => {
             smartinfo.Editor.EditorImage = user?.Item_x0020_Cover
           }
         })
-
       })
-
-      TagDocument(allSmartInformationglobal);
+      TagDocument(allSmartInformationglobal.reverse());
     }
   }
 
@@ -325,15 +323,22 @@ const SmartInformation = (props: any, ref: any) => {
   // ==============Get Documents tag  and link tag inside smartInformation ==========
 
 
-  const TagDocument = (allSmartInformationglobal: any) => {
+  const TagDocument = async (allSmartInformationglobal: any) => {
     console.log(mastertaskdetails)
-
+    console.log(allSmartInformationglobal)
+    allSmartInformationglobal?.map((itm: any, index: any) => {
+      if (index === 0) {
+        setsmartInformationArrow(index)
+        setSlArrowDownup(true)
+        setenlargeSlArrowDownup(true)
+        setenlargeInformationArrow(index)
+      }
+    })    
     var allSmartInformationglobaltagdocuments: any = [];
     console.log(AllTasktagsmartinfo)
     if (allSmartInformationglobal != undefined && allSmartInformationglobal?.length > 0) {
 
       allSmartInformationglobal?.map(async (items: any) => {
-
         const web = new Web(props?.AllListId?.siteUrl);
         await web.lists.getById(props?.AllListId?.DocumentsListID)
           .items.select("Id,Title,PriorityRank,Year,Item_x0020_Cover,Body,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
@@ -373,38 +378,26 @@ const SmartInformation = (props: any, ref: any) => {
               })
             }
             console.log(items)
-            allSmartInformationglobaltagdocuments.push(items)
-
-            if (allSmartInformationglobal.length == allSmartInformationglobaltagdocuments.length) {
-              let initialData = allSmartInformationglobaltagdocuments.slice(0, 5);
-              initialData?.map((itm: any,index:any) => {
-                if (index === 0) {
-                  setsmartInformationArrow(0)
-                  setSlArrowDownup(true)
-                  setenlargeSlArrowDownup(true)
-                  setenlargeInformationArrow(0)
-                }
-              })              
-              if (initialData?.length == 5) {
-                setshowmore(true)
-              }
-              setSmartInformation(initialData);
-              if (addSmartInfoPopupAddlinkDoc2 && (props.showHide === "projectManagement" || props.showHide === "ANCTaskProfile")) {
-                props?.callback?.();
-                addSmartInfoPopupAddlinkDoc2 = false;
-              }
-              setcopySmartInfo(allSmartInformationglobaltagdocuments);
-              setshowenlargeSmartInfo(allSmartInformationglobaltagdocuments);
-            }
-
+            allSmartInformationglobaltagdocuments.push(items)            
           }).catch((err) => {
             console.log(err.message);
             setSmartInformation(allSmartInformationglobal)
-          });
-
+          })     
       })
 
-
+      setTimeout(() => {
+        let initialData = allSmartInformationglobal.slice(0, 5);
+        if (initialData?.length == 5) {
+          setshowmore(true)
+        }        
+        setSmartInformation(initialData);
+        if (addSmartInfoPopupAddlinkDoc2 && (props.showHide === "projectManagement" || props.showHide === "ANCTaskProfile")) {
+          props?.callback?.();
+          addSmartInfoPopupAddlinkDoc2 = false;
+        }
+        setcopySmartInfo(allSmartInformationglobal);
+        setshowenlargeSmartInfo(allSmartInformationglobal);
+      },0)     
     }
     else {
       setSmartInformation(allSmartInformationglobal)
