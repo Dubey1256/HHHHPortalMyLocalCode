@@ -31,11 +31,11 @@ import RadimadeTable from "../../../globalComponents/RadimadeTable";
 
 const sp = spfi();
 let AllClientCategoryDataBackup: any = [];
-// Specially for the Custome Calendar 
-import { useState, useRef, useEffect } from 'react';
-import { FaCalendarAlt } from 'react-icons/fa';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+// Specially for the Custome Calendar
+import { useState, useRef, useEffect } from "react";
+import { FaCalendarAlt } from "react-icons/fa";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import PortfolioProjectManagement from "./PortfolioProjectmanagement";
 const CalendarPicker = ({ fieldValue, handleInputChange, type }: any) => {
@@ -43,8 +43,8 @@ const CalendarPicker = ({ fieldValue, handleInputChange, type }: any) => {
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
-    const myDate: any = Moment(fieldValue, 'DD/MM/YYYY').toDate();
-    const Dates = new Date(myDate)
+    const myDate: any = Moment(fieldValue, "DD/MM/YYYY").toDate();
+    const Dates = new Date(myDate);
     if (fieldValue) {
       setStartDate(Dates);
     }
@@ -62,7 +62,7 @@ const CalendarPicker = ({ fieldValue, handleInputChange, type }: any) => {
   };
   const handleClear = () => {
     setStartDate(null);
-    handleInputChange({ target: { value: '', type } });
+    handleInputChange({ target: { value: "", type } });
     setOpen(false);
   };
   const CustomCalendarContainer = ({ children }: any) => {
@@ -70,14 +70,19 @@ const CalendarPicker = ({ fieldValue, handleInputChange, type }: any) => {
       <div>
         {children}
         <div className="custom-clear-button text-end">
-          <a className="hyperlink pe-3" onClick={handleClear}>Clear</a>
+          <a className="hyperlink pe-3" onClick={handleClear}>
+            Clear
+          </a>
         </div>
       </div>
     );
   };
   return (
     <div className="calendar-picker">
-      <span className="svg__iconbox svg__icon--calendar" onClick={handleIconClick}></span>
+      <span
+        className="svg__iconbox svg__icon--calendar"
+        onClick={handleIconClick}
+      ></span>
       {open && (
         <div className="react-datepicker">
           <DatePicker
@@ -88,15 +93,10 @@ const CalendarPicker = ({ fieldValue, handleInputChange, type }: any) => {
             calendarContainer={CustomCalendarContainer}
           />
         </div>
-
       )}
     </div>
   );
 };
-
-
-
-
 
 // Work the Inline Editing
 interface EditableFieldProps {
@@ -152,9 +152,12 @@ export const EditableField: React.FC<EditableFieldProps> = ({
 
         // Use priorityValue to update your list
         let webs = new Web(web);
-        await webs.lists.getByTitle(listName).items.getById(itemId).update({
-          PriorityRank: priorityValue,
-        });
+        await webs.lists
+          .getByTitle(listName)
+          .items.getById(itemId)
+          .update({
+            PriorityRank: priorityValue,
+          });
 
         setEditing(false);
         TaskProfilePriorityCallback(priorityValue);
@@ -252,7 +255,6 @@ export const EditableField: React.FC<EditableFieldProps> = ({
     setFieldValue(event.target.value);
   };
 
-
   if (fieldName == "PercentComplete") {
     const [myfieldValue, setmyFieldValue] = React.useState(value);
     const handleInputChanges = (event: any) => {
@@ -318,20 +320,29 @@ export const EditableField: React.FC<EditableFieldProps> = ({
           {mymergedStatus}
         </span>
         <a className="pancil-icons" onClick={handleEdit}>
-          <span className="svg__iconbox svg__icon--editBox"></span>
+          <span
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Edit Due Date"
+            className="svg__iconbox svg__icon--editBox"
+          ></span>
         </a>
       </div>
     );
   }
   if (type === "Date") {
-    const handleInputChangeDate = (event: { target: { value: any; type: any } }) => {
+    const handleInputChangeDate = (event: {
+      target: { value: any; type: any };
+    }) => {
       setFieldValue(event.target.value);
       handleSaveDate(event.target.value);
     };
 
     const handleSaveDate = async (dateValue: any) => {
       try {
-        const formattedValue = dateValue ? new Date(dateValue).toISOString() : null;
+        const formattedValue = dateValue
+          ? new Date(dateValue).toISOString()
+          : null;
         let webs = new Web(web);
         await webs.lists
           .getByTitle(listName)
@@ -354,14 +365,20 @@ export const EditableField: React.FC<EditableFieldProps> = ({
             handleInputChange={handleInputChangeDate}
             type="date"
           />
-        </div>)
+        </div>
+      );
     }
     // const formattedDate = fieldValue ? new Date(fieldValue).toLocaleDateString() : "";
-    const formattedDate = moment(fieldValue, 'DD/MM/YYYY').format('DD/MM/YYYY');
+    const formattedDate = moment(fieldValue, "DD/MM/YYYY").format("DD/MM/YYYY");
     return (
       <div>
-        <span title={formattedDate != 'Invalid date' ? formattedDate : ''}>{formattedDate != 'Invalid date' ? formattedDate : ''}</span>
-        <a className="alignIcon ms-1 pencil-icons pull-right" onClick={handleEdit}>
+        <span title={formattedDate != "Invalid date" ? formattedDate : ""}>
+          {formattedDate != "Invalid date" ? formattedDate : ""}
+        </span>
+        <a
+          className="alignIcon ms-1 pencil-icons pull-right"
+          onClick={handleEdit}
+        >
           <span className="svg__iconbox svg__icon--calendar"></span>
         </a>
       </div>
@@ -409,7 +426,12 @@ export const EditableField: React.FC<EditableFieldProps> = ({
     <div>
       <span title={fieldValue}>{fieldValue}</span>
       <a className="pancil-icons" onClick={handleEdit}>
-        <span className="svg__iconbox svg__icon--editBox"></span>
+        <span
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title={fieldName == "ItemRank" ? "Edit Item Rank" : "Edit Priority"}
+          className="svg__iconbox svg__icon--editBox"
+        ></span>
       </a>
     </div>
   );
@@ -455,7 +477,7 @@ let AllMasterTaskData: any = [];
 let keyDocRef: any;
 let relevantDocRef: any;
 let smartInfoRef: any;
-let portfolioColor: any = '';
+let portfolioColor: any = "";
 let MyDefaultData: any = [];
 function Portfolio({ SelectedProp, TaskUser }: any) {
   AllTaskuser = TaskUser;
@@ -523,9 +545,8 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
     const defaultContext = defaultContextValue.Context || {};
     const defaultAllTaskUsers = AllTaskuser || [];
     const defaultPortfolioTyped = portfolioTyped || [];
-    const DefaultAllMasterTaskData = AllMasterTaskData?.length > 0 ? AllMasterTaskData : [];
-
-
+    const DefaultAllMasterTaskData =
+      AllMasterTaskData?.length > 0 ? AllMasterTaskData : [];
 
     return (
       <PortfolioProjectManagement
@@ -539,9 +560,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
     );
   }, [MyDefaultData, ContextValue, AllTaskuser, portfolioTyped]);
 
-  // End of Project management 
-
-
+  // End of Project management
 
   const getPortFolioType = async () => {
     let web = new Web(SelectedProp.siteUrl);
@@ -562,13 +581,12 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
   }, [count]);
   React.useEffect(() => {
     setTimeout(() => {
-      const panelMain: any = document.querySelector('.ms-Panel-main');
+      const panelMain: any = document.querySelector(".ms-Panel-main");
       if (panelMain && portfolioColor) {
-        $('.ms-Panel-main').css('--SiteBlue', portfolioColor); // Set the desired color value here
+        $(".ms-Panel-main").css("--SiteBlue", portfolioColor); // Set the desired color value here
       }
-    }, 1500)
+    }, 1500);
   }, [isopenProjectpopup, IsComponent, SiteCompositionShow]);
-
 
   const getSmartMetaDataListAllItems = async () => {
     let AllSmartDataListData: any = [];
@@ -626,7 +644,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
 
   // Common Function for filtering the Data According to Tax Type
 
-  const getSmartMetadataItemsByTaxType = function (
+  const getSmartMetadataItemsByTaxType = function(
     metadataItems: any,
     taxType: any
   ) {
@@ -651,7 +669,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         SelectedProp.SiteCompostion != ""
           ? JSON.parse(SelectedProp.SiteCompostion)
           : "";
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
     }
     // if (SelectedProp != undefined) {
@@ -673,7 +691,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         headers: {
           Accept: "application/json; odata=verbose",
         },
-        success: function (data) {
+        success: function(data) {
           response = response.concat(data.d.results);
           response.map((item: any) => {
             item.AssignedTo =
@@ -724,7 +742,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
             item.siteCompositionData = SiteCompositionTemp;
             SelectedProp.isShowSiteCompostion = item.siteCompositionData;
             if (SelectedProp.isShowSiteCompostion.length == 0) {
-              setComposition(false)
+              setComposition(false);
             }
             item.listId = ContextValue.MasterTaskListID;
             if (item.FolderID != undefined) {
@@ -736,7 +754,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                 headers: {
                   Accept: "application/json; odata=verbose",
                 },
-                success: function (data) {
+                success: function(data) {
                   responsen = [];
                   responsen = responsen.concat(data.d.results);
                   if (data.d.__next) {
@@ -744,7 +762,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                   } else SetFolderData(responsen);
                   // console.log(responsen);
                 },
-                error: function (error) {
+                error: function(error) {
                   console.log(error);
                   // error handler code goes here
                 },
@@ -763,7 +781,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                 headers: {
                   Accept: "application/json; odata=verbose",
                 },
-                success: function (mydata) {
+                success: function(mydata) {
                   ParentData = [];
                   ParentData.push(mydata?.d?.results[0]);
                   combinedArray = [
@@ -778,7 +796,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                     console.log(ParentData);
                   }
                 },
-                error: function (error) {
+                error: function(error) {
                   console.log(error);
                   // error handler code goes here
                 },
@@ -797,11 +815,11 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                 headers: {
                   Accept: "application/json; odata=verbose",
                 },
-                success: function (data) {
+                success: function(data) {
                   if (data != undefined) {
                     AllHelp = [];
                     AllQuestion = [];
-                    data.d.results.forEach(function (item: any) {
+                    data.d.results.forEach(function(item: any) {
                       item.AssignedTo =
                         item?.AssignedTo?.results === undefined
                           ? []
@@ -822,7 +840,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                     urln = data.d.__next;
                   } else setquestionandhelp(responsen);
                 },
-                error: function (error) {
+                error: function(error) {
                   console.log(error);
                 },
               });
@@ -848,7 +866,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
 
           console.log(response);
         },
-        error: function (error) {
+        error: function(error) {
           console.log(error);
         },
       });
@@ -859,7 +877,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
     getPortFolioType();
   };
 
-  let getMasterTaskListTasks = async function () {
+  let getMasterTaskListTasks = async function() {
     let web = new Web(ContextValue?.siteUrl);
 
     componentDetails = await web.lists
@@ -874,7 +892,10 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         "Portfolios/Title"
       )
       .expand("Portfolios")
-      .filter("(Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint') and Portfolios/Id eq " + ID)
+      .filter(
+        "(Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint') and Portfolios/Id eq " +
+          ID
+      )
       .top(4000)
       .get();
 
@@ -884,9 +905,9 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
   };
   // Make Folder data unique
 
-  Folderdatas = FolderData.reduce(function (previous: any, current: any) {
+  Folderdatas = FolderData.reduce(function(previous: any, current: any) {
     let alredyExists =
-      previous.filter(function (item: any) {
+      previous.filter(function(item: any) {
         return item.Id === current.Id;
       }).length > 0;
     if (!alredyExists) {
@@ -1167,31 +1188,47 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         let filteredIds = item1
           .filter((item: { Id: null }) => item.Id !== null)
           .map((item: { Id: any }) => item.Id);
-          // const a = await getPortfolioStructureId(mydata[0]?.PortfolioType?.Title,mydata[0]);
-          let StructureID:any;
-          if(item1[0].Item_x0020_Type == 'SubComponent' && mydata[0]?.Item_x0020_Type == 'Feature' ){
-            StructureID = item1[0].PortfolioStructureID + '-F' + (item1[0]?.subRows?.length + 1);
-            updateParent(filteredIds, mydataid, SelectedProp,StructureID);
-            setisopenChangeParent(false);
-          } else if(item1[0].Item_x0020_Type == 'Component' && mydata[0]?.Item_x0020_Type == 'SubComponent' ){
-            StructureID = item1[0].PortfolioStructureID + '-S' + (item1[0]?.subRows?.length + 1);
-            updateParent(filteredIds, mydataid, SelectedProp,StructureID);
-            setisopenChangeParent(false);
-          }else if(item1[0].Item_x0020_Type == 'Component' && mydata[0]?.Item_x0020_Type == 'Feature' ){
-            StructureID = item1[0].PortfolioStructureID + '-F' + (item1[0]?.subRows?.length + 1)
-            updateParent(filteredIds, mydataid, SelectedProp,StructureID);
-            setisopenChangeParent(false);
-          }else{
-            alert("This cannot be a parent because it is at the same level.")
-            setisopenChangeParent(false);
-          }
-       
+        // const a = await getPortfolioStructureId(mydata[0]?.PortfolioType?.Title,mydata[0]);
+        let StructureID: any;
+        if (
+          item1[0].Item_x0020_Type == "SubComponent" &&
+          mydata[0]?.Item_x0020_Type == "Feature"
+        ) {
+          StructureID =
+            item1[0].PortfolioStructureID +
+            "-F" +
+            (item1[0]?.subRows?.length + 1);
+          updateParent(filteredIds, mydataid, SelectedProp, StructureID);
+          setisopenChangeParent(false);
+        } else if (
+          item1[0].Item_x0020_Type == "Component" &&
+          mydata[0]?.Item_x0020_Type == "SubComponent"
+        ) {
+          StructureID =
+            item1[0].PortfolioStructureID +
+            "-S" +
+            (item1[0]?.subRows?.length + 1);
+          updateParent(filteredIds, mydataid, SelectedProp, StructureID);
+          setisopenChangeParent(false);
+        } else if (
+          item1[0].Item_x0020_Type == "Component" &&
+          mydata[0]?.Item_x0020_Type == "Feature"
+        ) {
+          StructureID =
+            item1[0].PortfolioStructureID +
+            "-F" +
+            (item1[0]?.subRows?.length + 1);
+          updateParent(filteredIds, mydataid, SelectedProp, StructureID);
+          setisopenChangeParent(false);
+        } else {
+          alert("This cannot be a parent because it is at the same level.");
+          setisopenChangeParent(false);
+        }
       }
     },
     [] // Dependencies array, add variables here if the callback depends on them
   );
-  
-  
+
   // this is used for site compositipon component callback
 
   const ClosePopupCallBack = (FnType: any) => {
@@ -1241,30 +1278,28 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
     itemIds: number[],
     itemId: any,
     AllListId: any,
-    PortfolioId:any
+    PortfolioId: any
   ) {
     try {
       let web = new Web(AllListId?.siteUrl);
-       await web.lists
-          .getById(AllListId?.MasterTaskListID)
-          .items.getById(itemId)
-          .update({
-            ParentId:itemIds[0],
-            PortfolioStructureID:PortfolioId
-          })
-          .then((res: any) => {
-            getMasterTaskListTasks();
-            count++;
-            console.log(res);
-          });
-      
+      await web.lists
+        .getById(AllListId?.MasterTaskListID)
+        .items.getById(itemId)
+        .update({
+          ParentId: itemIds[0],
+          PortfolioStructureID: PortfolioId,
+        })
+        .then((res: any) => {
+          getMasterTaskListTasks();
+          count++;
+          console.log(res);
+        });
     } catch (error) {
       console.error("Error updating multi-lookup field:", error);
     }
   }
 
-
-  // Change for the change parent 
+  // Change for the change parent
   const getPortfolioStructureId = async (type: any, item: any) => {
     var filter = "";
     if (type == "Component") {
@@ -1274,7 +1309,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         "Parent/Id eq '" + item?.Id + "' and Item_x0020_Type eq '" + type + "'";
       //filter = "Parent/Id eq '" + item.Id
     }
- 
+
     let web = new Web(SelectedProp?.siteUrl);
     let results = await web.lists
       .getByTitle("Master Tasks")
@@ -1357,41 +1392,41 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                         {/* Changes done by Robin End*/}
                         {(item?.Item_x0020_Type == "SubComponent" ||
                           item?.Item_x0020_Type == "Feature") && (
-                            <>
-                              <li>
-                                {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                                {ParentData != undefined &&
-                                  ParentData[0]?.Parent?.Id != undefined &&
-                                  ParentData?.map((ParentD: any) => {
-                                    return (
-                                      <>
-                                        {ParentD?.Parent != undefined && (
-                                          <a
-                                            target="_blank"
-                                            data-interception="off"
-                                            href={`${SelectedProp.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentD?.Parent?.Id}`}
-                                          >
-                                            {ParentD?.Parent?.Title}
-                                          </a>
-                                        )}
-                                      </>
-                                    );
-                                  })}
-                              </li>
-                              <li>
-                                {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                                {item?.Parent != undefined && (
-                                  <a
-                                    target="_blank"
-                                    data-interception="off"
-                                    href={`${SelectedProp.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.Parent?.Id}`}
-                                  >
-                                    {item?.Parent?.Title}
-                                  </a>
-                                )}
-                              </li>
-                            </>
-                          )}
+                          <>
+                            <li>
+                              {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                              {ParentData != undefined &&
+                                ParentData[0]?.Parent?.Id != undefined &&
+                                ParentData?.map((ParentD: any) => {
+                                  return (
+                                    <>
+                                      {ParentD?.Parent != undefined && (
+                                        <a
+                                          target="_blank"
+                                          data-interception="off"
+                                          href={`${SelectedProp.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentD?.Parent?.Id}`}
+                                        >
+                                          {ParentD?.Parent?.Title}
+                                        </a>
+                                      )}
+                                    </>
+                                  );
+                                })}
+                            </li>
+                            <li>
+                              {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                              {item?.Parent != undefined && (
+                                <a
+                                  target="_blank"
+                                  data-interception="off"
+                                  href={`${SelectedProp.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.Parent?.Id}`}
+                                >
+                                  {item?.Parent?.Title}
+                                </a>
+                              )}
+                            </li>
+                          </>
+                        )}
 
                         <li>
                           <a>{item?.Title}</a>
@@ -1572,8 +1607,8 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   value={
                                     item?.StartDate != undefined
                                       ? Moment(item?.StartDate).format(
-                                        "DD/MM/YYYY"
-                                      )
+                                          "DD/MM/YYYY"
+                                        )
                                       : ""
                                   }
                                   TaskProfilePriorityCallback={null}
@@ -1649,7 +1684,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   {item?.Parent?.Title != undefined && (
                                     <>
                                       <a
-                                        className='text-content'
+                                        className="text-content"
                                         target="_blank"
                                         data-interception="off"
                                         href={
@@ -1664,30 +1699,30 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                       <span className="hreflink">
                                         {item?.PortfolioType?.Title ==
                                           "Component" && (
-                                            <>
-                                              <a
-                                                className="pancil-icons"
-                                                onClick={() =>
-                                                  openParentPopupFunction()
-                                                }
-                                              >
-                                                <span className="svg__iconbox svg__icon--editBox"></span>
-                                              </a>
-                                            </>
-                                          )}
+                                          <>
+                                            <a
+                                              className="pancil-icons"
+                                              onClick={() =>
+                                                openParentPopupFunction()
+                                              }
+                                            >
+                                              <span className="svg__iconbox svg__icon--editBox"></span>
+                                            </a>
+                                          </>
+                                        )}
                                         {item?.PortfolioType?.Title ==
                                           "Service" && (
-                                            <>
-                                              <a
-                                                className="pancil-icons"
-                                                onClick={() =>
-                                                  openParentPopupFunction()
-                                                }
-                                              >
-                                                <span className="svg__iconbox svg__icon--editBox"></span>
-                                              </a>
-                                            </>
-                                          )}
+                                          <>
+                                            <a
+                                              className="pancil-icons"
+                                              onClick={() =>
+                                                openParentPopupFunction()
+                                              }
+                                            >
+                                              <span className="svg__iconbox svg__icon--editBox"></span>
+                                            </a>
+                                          </>
+                                        )}
                                       </span>
                                     </>
                                   )}
@@ -1712,8 +1747,8 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                     value={
                                       item?.DueDate != undefined
                                         ? Moment(item?.DueDate).format(
-                                          "DD/MM/YYYY"
-                                        )
+                                            "DD/MM/YYYY"
+                                          )
                                         : ""
                                     }
                                     TaskProfilePriorityCallback={null}
@@ -1886,8 +1921,8 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                               value={
                                 item?.CompletedDate != undefined
                                   ? Moment(item?.CompletedDate).format(
-                                    "DD/MM/YYYY"
-                                  )
+                                      "DD/MM/YYYY"
+                                    )
                                   : ""
                               }
                               TaskProfilePriorityCallback={null}
@@ -1981,7 +2016,8 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
 
                         {/* Admin Notes */}
                         {data[0]?.AdminNotes !== null &&
-                          removeHtmlAndNewline(data[0]?.AdminNotes).trim() !== "" && (
+                          removeHtmlAndNewline(data[0]?.AdminNotes).trim() !==
+                            "" && (
                             <details open>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
@@ -2064,8 +2100,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                     <p
                                       className="m-0"
                                       dangerouslySetInnerHTML={{
-                                        __html:
-                                          item?.Body
+                                        __html: item?.Body,
                                       }}
                                     ></p>
                                   </div>
@@ -2084,7 +2119,6 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                               </label>
                             </summary>
                             <div className="border border-top-0 p-2">
-
                               {AllHelp?.map((item) => (
                                 <details>
                                   <summary className="alignCenter">
@@ -2096,8 +2130,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                     <p
                                       className="m-0"
                                       dangerouslySetInnerHTML={{
-                                        __html:
-                                          item?.Body
+                                        __html: item?.Body,
                                       }}
                                     ></p>
                                   </div>
@@ -2287,14 +2320,20 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                         <details open>
                           <summary>
                             <label>Site Composition</label>
-                            <a className="alignCenter ml-auto pull-right"><span className="svg__iconbox svg__icon--editBox" title="Edit Site Composition" onClick={() => setSiteCompositionShow(true)}></span></a>
+                            <a className="alignCenter ml-auto pull-right">
+                              <span
+                                className="svg__iconbox svg__icon--editBox"
+                                title="Edit Site Composition"
+                                onClick={() => setSiteCompositionShow(true)}
+                              ></span>
+                            </a>
                           </summary>
                           {data?.length > 0 &&
-                            data[0]?.siteCompositionData?.length > 0 ? (
+                          data[0]?.siteCompositionData?.length > 0 ? (
                             <div className="spxdropdown-menu">
                               <ul>
                                 {data[0]?.siteCompositionData != undefined &&
-                                  data[0]?.siteCompositionData?.length > 0 ? (
+                                data[0]?.siteCompositionData?.length > 0 ? (
                                   <>
                                     {data[0]?.siteCompositionData?.map(
                                       (SiteDtls: any, i: any) => {
@@ -2312,40 +2351,40 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
 
                                             {SiteDtls.ClienTimeDescription !=
                                               undefined && (
-                                                <span className="mx-2">
-                                                  {Number(
-                                                    SiteDtls.ClienTimeDescription
-                                                  ).toFixed(1)}
-                                                  %
-                                                </span>
-                                              )}
+                                              <span className="mx-2">
+                                                {Number(
+                                                  SiteDtls.ClienTimeDescription
+                                                ).toFixed(1)}
+                                                %
+                                              </span>
+                                            )}
 
                                             <span className="d-inline">
                                               {SiteDtls.ClientCategory !=
                                                 undefined &&
-                                                SiteDtls.ClientCategory.length > 0
+                                              SiteDtls.ClientCategory.length > 0
                                                 ? SiteDtls.ClientCategory?.map(
-                                                  (
-                                                    clientcat: any,
-                                                    Index: any
-                                                  ) => {
-                                                    return (
-                                                      <div
-                                                        className={
-                                                          Index ==
+                                                    (
+                                                      clientcat: any,
+                                                      Index: any
+                                                    ) => {
+                                                      return (
+                                                        <div
+                                                          className={
+                                                            Index ==
                                                             SiteDtls
                                                               .ClientCategory
                                                               ?.length -
-                                                            1
-                                                            ? "mb-0"
-                                                            : "mb-0 border-bottom"
-                                                        }
-                                                      >
-                                                        {clientcat.Title}
-                                                      </div>
-                                                    );
-                                                  }
-                                                )
+                                                              1
+                                                              ? "mb-0"
+                                                              : "mb-0 border-bottom"
+                                                          }
+                                                        >
+                                                          {clientcat.Title}
+                                                        </div>
+                                                      );
+                                                    }
+                                                  )
                                                 : null}
                                             </span>
                                           </li>
@@ -2432,7 +2471,17 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         </section>
 
         {/* table secation artical */}
-        {data?.length > 0 && <RadimadeTable portfolioColor={portfolioColor} tableId="PortfolioProfile" AllListId={ContextValue} configration={"CSFAWT"} SelectedItem={data[0]} ComponentFilter={data[0]?.PortfolioType?.Title} TaskFilter={"PercentComplete lt '0.90' or PercentComplete eq null "}></RadimadeTable>}
+        {data?.length > 0 && (
+          <RadimadeTable
+            portfolioColor={portfolioColor}
+            tableId="PortfolioProfile"
+            AllListId={ContextValue}
+            configration={"CSFAWT"}
+            SelectedItem={data[0]}
+            ComponentFilter={data[0]?.PortfolioType?.Title}
+            TaskFilter={"PercentComplete lt '0.90' or PercentComplete eq null "}
+          ></RadimadeTable>
+        )}
         {/* {data.map((item: any) => (
           <ComponentTable
             props={item}
@@ -2496,7 +2545,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
             Call={(DataItem: any, Type: any, functionType: any) => {
               callBackParentChange(DataItem, Type, functionType);
             }}
-          // showProject={isopenChangeParent}
+            // showProject={isopenChangeParent}
           />
         )}
         {SiteCompositionShow && (
