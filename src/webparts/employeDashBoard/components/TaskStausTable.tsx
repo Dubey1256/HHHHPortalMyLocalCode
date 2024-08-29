@@ -1636,7 +1636,7 @@ const TaskStatusTbl = (Tile: any) => {
         {
           accessorKey: "",
           placeholder: "",
-          hasCheckbox: true,
+          hasCheckbox: item?.Status != "TimeEntryWebpart" ? true : false,
           hasCustomExpanded: false,
           hasExpanded: false,
           size: 20,
@@ -2085,8 +2085,8 @@ const TaskStatusTbl = (Tile: any) => {
     return (
       <span className="alignCenter">
         {IsShowConfigBtn && config?.IsEditWebpart != false && <span className="svg__iconbox svg__icon--setting hreflink me-1" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
-        {RefSelectedItem?.length > 0 && config?.Status != "My TimSheet" ? <span className="empCol me-1 hreflink" title="Approve All" onClick={() => SaveApprovalRejectPopup('ApprovedAll', undefined, 'Approved')}>Approve All</span>
-          : RefSelectedItem?.length > 0 && config?.Status == "My TimSheet" ? <span className="empCol me-1 hreflink" title="Send All for Approval" onClick={() => SaveApprovalRejectPopup('ApprovedAll', undefined, 'For Approval')}>Send All</span> : ''}
+        {RefSelectedItem?.length > 0 && config?.Status != "My TimSheet" && config?.Status != "TimeEntryWebpart" ? <span className="empCol me-1 hreflink" title="Approve All" onClick={() => SaveApprovalRejectPopup('ApprovedAll', undefined, 'Approved')}>Approve All</span>
+          : RefSelectedItem?.length > 0 && config?.Status == "My TimSheet" && config?.Status != "TimeEntryWebpart" ? <span className="empCol me-1 hreflink" title="Send All for Approval" onClick={() => SaveApprovalRejectPopup('ApprovedAll', undefined, 'For Approval')}>Send All</span> : ''}
 
         {/* <span className="me-1 hreflink" style={{ color: "#646464" }}>Approve All</span>} */}
       </span>
