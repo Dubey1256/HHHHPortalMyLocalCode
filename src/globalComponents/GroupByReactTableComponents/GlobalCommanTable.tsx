@@ -30,7 +30,7 @@ import ShowTeamMembers from '../ShowTeamMember';
 import SelectFilterPanel from './selectFilterPannel';
 import ExpndTable from '../ExpandTable/Expandtable';
 import RestructuringCom from '../Restructuring/RestructuringCom';
-import RestructureProject from '../../webparts/projectManagement/components/RestructureProject';
+ import RestructureProject from '../../webparts/projectManagement/components/RestructureProject';
 import { SlArrowDown, SlArrowRight, SlArrowUp } from 'react-icons/sl';
 import { BsClockHistory, BsList, BsSearch } from 'react-icons/bs';
 import Tooltip from "../../globalComponents/Tooltip";
@@ -946,15 +946,14 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     /****************** defult Expend Other Section  part *******************/
     React.useEffect(() => {
-        if (table?.getRowModel()?.rows?.length > 0 && items?.data?.length > 0) {
+        if (table?.getRowModel()?.rows?.length > 0 && items?.data?.length > 0 && items?.expendedTrue != true) {
             table?.getRowModel()?.rows?.map((elem: any) => {
                 if (elem?.original?.Title === "Others") {
-                    // const newExpandedState = { [elem.id]: true };
                     setExpanded((prev: any) => ({ ...prev, [elem.id]: true, }));
                 }
             })
         }
-    }, [items?.data?.length > 0])
+    }, [items?.data?.length > 0, items?.expendedTrue != true])
     /****************** defult Expend Other Section end *******************/
 
     React.useEffect(() => {
@@ -1516,7 +1515,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         {items?.protfolioProfileButton === true && items?.hideAddActivityBtn != true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" disabled={true} > Add Activity-Task</button>}</>}
-
+                        
                         {items?.showRestructureButton && (
                             <>
                                 {items?.projectmngmnt === 'projectmngmnt' ? (trueRestructuring ? (<RestructureProject AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} projectmngmnt={items?.projectmngmnt} MasterdataItem={items?.MasterdataItem} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />) : (<button type="button" title="Restructure" disabled className="btn btn-primary"> Restructure P </button>)
