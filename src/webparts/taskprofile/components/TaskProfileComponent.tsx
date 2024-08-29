@@ -2467,15 +2467,9 @@ const CreateHHHTask :any= props?.props?.Context ?._pageContext ?._legacyPageCont
                                                             </a>
 
                                                         }
-                                                        <span
-                              data-toggle="tooltip"
-                              data-placement="bottom"
-                              title="Edit Portfolio Item"
-                              className="ml-auto pull-right svg__icon--editBox svg__iconbox w17"
-                              onClick={() =>
-                                openPortfolioPopupFunction("Portfolio")
-                              }
-                            ></span>
+                                                        <span data-toggle="tooltip" data-placement="bottom" 
+                                                         title="Edit Portfolio Item"className="ml-auto pull-right svg__icon--editBox svg__iconbox w17"
+                                                         onClick={() => openPortfolioPopupFunction("Portfolio")} ></span>
 
                                                     </dd>
                                                 </dl>
@@ -2487,14 +2481,14 @@ const CreateHHHTask :any= props?.props?.Context ?._pageContext ?._legacyPageCont
 
                                                             <ReactPopperTooltipSingleLevel CMSToolId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allDataOfTask} AllListId={AllListId} /></a> : null}
                                                             <span
-                              data-toggle="tooltip"
-                              data-placement="bottom"
-                              title="Edit Project"
-                              className="text-end ml-auto pull-right svg__icon--editBox svg__iconbox w17"
-                              onClick={() =>
-                                openPortfolioPopupFunction("Project")
-                              }
-                            ></span>
+                                                                data-toggle="tooltip"
+                                                                data-placement="bottom"
+                                                                title="Edit Project"
+                                                                className="text-end ml-auto pull-right svg__icon--editBox svg__iconbox w17"
+                                                                onClick={() =>
+                                                                    openPortfolioPopupFunction("Project")
+                                                                }
+                                                                ></span>
 
                                                     </dd>
                                                 </dl>
