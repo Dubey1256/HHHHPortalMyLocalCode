@@ -2108,7 +2108,7 @@ const CopyTaskProfile = (props: any) => {
                                     <span
                                       data-toggle="tooltip"
                                       data-placement="bottom"
-                                      title="Edit Portfolio Item"
+                                      title="Edit Categories"
                                       className="svg__iconbox svg__icon--editBox alignIcon"
                                       onClick={() => setOpenCategories(true)}
                                     ></span>
