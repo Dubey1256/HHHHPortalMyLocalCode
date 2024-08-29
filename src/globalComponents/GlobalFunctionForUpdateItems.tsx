@@ -2012,7 +2012,119 @@ export const GenerateEmailNotification = (RequiredData: any) => {
     )
 }
 
+// This is used for generating Body Content of Email Notifaction
+export const GenerateBodyContentEmailNotification = (RequiredData: any) => {
+    return (
+        <table cellPadding="0" cellSpacing="0" width="100%" style={{ width: "100%" }}>
+            <tbody>
+                <tr>
+                    <td>
+                        <table cellPadding="0" cellSpacing="0" width="100%" style={{ width: "100%" }}>
+                            <tbody>
+                                <tr>
+                                    <td style={{ border: 'none' }}>
+                                        <div style={{ fontFamily: 'Segoe UI', fontSize: '16px', color: '#333333', fontWeight: '600' }} >Task Details :</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" valign="middle" width="150" style={{ border: "5px solid #fff", borderLeft: "0px", padding: "8px", backgroundColor: "#F5F5F5" }}>
+                                        <div style={{ fontFamily: 'Segoe UI', fontSize: '13px', fontWeight: '600', color: '#333333' }}>Task Id:</div>
+                                    </td>
+                                    <td colSpan={2} style={{ border: "5px solid #fff", padding: "8px" }}>
+                                        <div style={{ fontFamily: 'Segoe UI', fontSize: '13px', color: '#333333' }}>{RequiredData?.TaskId}</div>
+                                    </td>
+                                    <td width="150" style={{ border: "5px solid #fff", padding: "8px", backgroundColor: "#F5F5F5" }}>
+                                        <div style={{ fontFamily: 'Segoe UI', fontSize: '13px', fontWeight: '600', color: '#333333' }}>Priority:</div>
+                                    </td>
+                                    <td colSpan={2} style={{ border: "5px solid #fff", borderRight: "0px", padding: "8px" }}>
+                                        <div style={{ fontFamily: 'Segoe UI', fontSize: '13px', color: '#333333' }}>{RequiredData["Priority"]}</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="150" style={{ border: "5px solid #fff", borderLeft: "0px", padding: "8px", backgroundColor: "#F5F5F5" }}>
+                                        <div style={{ fontFamily: 'Segoe UI', fontSize: '13px', fontWeight: '600', color: '#333333' }}>Team Members:</div>
+                                    </td>
+                                    <td colSpan={2} style={{ border: "5px solid #fff", padding: "8px" }}>
+                                        {RequiredData["TeamMembers"] != null &&
+                                            RequiredData["TeamMembers"].length > 0 &&
+                                            <span style={{ fontFamily: 'Segoe UI', fontSize: '13px', color: '#333333' }}>
+                                                {joinObjectValues(RequiredData["TeamMembers"])}
+                                            </span>
+                                        }
+                                    </td>
+                                    <td width="150" style={{ border: "5px solid #fff", padding: "8px", backgroundColor: "#F5F5F5" }}>
+                                        <div style={{ fontFamily: 'Segoe UI', fontSize: '13px', fontWeight: '600', color: '#333333' }}>% Complete:</div>
+                                    </td>
+                                    <td colSpan={2} style={{ border: "5px solid #fff", borderRight: "0px", padding: "8px" }}>
+                                        <div style={{ fontFamily: 'Segoe UI', fontSize: '13px', color: '#333333' }}>{RequiredData["PercentComplete"]}</div>
+                                    </td>
+                                </tr>
 
+                            </tbody>
+                        </table>
+                        <table cellPadding="0" cellSpacing="0" width="100%" style={{ width: "100%" }}>
+                            <tr>
+                                {RequiredData?.CommentsArray?.length > 0 ?
+                                    <td style={{ padding: '.75pt .75pt .75pt .75pt', width: '100%' }} width="100">
+                                        <table className='table table-striped ' cellPadding={0} width="100%" style={{ width: '100.0%', borderRadius: '4px', }}>
+                                            <tbody>
+                                                <tr>
+                                                    <td style={{ border: 'none', height: '24px' }} >
+                                                        <div style={{ fontFamily: 'Segoe UI', fontSize: '16px', color: '#333333', fontWeight: '600' }} ></div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style={{ border: 'none' }}>
+                                                        <div style={{ fontFamily: 'Segoe UI', fontSize: '16px', color: '#333333', fontWeight: '600' }} >Comments:</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style={{ border: 'none', padding: '0px', width: '100%' }} width="100">
+                                                        {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
+                                                            return (
+                                                                <table style={{ width: '100%' }} width="100">
+                                                                    <tr>
+                                                                        <td style={{ border: '0px', background: '#F5F5F5', padding: '12px 24px' }}>
+                                                                            <div style={{ marginBottom: "3.75pt" }}>
+                                                                                <p style={{ marginBottom: '1.25pt' }}>
+                                                                                    <div style={{ fontFamily: 'Segoe UI', fontSize: '14px', color: '#333333' }}><span style={{ fontWeight: '600' }}>{cmtData.AuthorName} - </span>{cmtData.Created}</div></p>
+                                                                            </div>
+                                                                            <p style={{ marginBottom: '1.25pt' }}>
+                                                                                <div style={{ fontFamily: 'Segoe UI', fontSize: '13px', color: '#333333', borderLeft: '1px solid #BDBDBD', padding: '8px 12px', marginBottom: '10px' }}>{cmtData.Description}</div></p>
+
+                                                                            {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
+                                                                                return (
+                                                                                    <table style={{ width: '100%' }} width="100">
+                                                                                        <tr>
+                                                                                            <td style={{ margin: '12px 16px', background: '#FFFFFF', marginTop: '3.75pt', padding: '10px' }}>
+                                                                                                <div style={{ marginBottom: "3.75pt" }}>
+                                                                                                    <div style={{ fontFamily: 'Segoe UI', fontSize: '14px', color: '#333333' }}><span style={{ fontWeight: '600' }}>{replyData.AuthorName} - </span>{replyData.Created}</div>
+                                                                                                </div>
+                                                                                                <div style={{ fontFamily: 'Segoe UI', fontSize: '13px', color: '#333333', borderLeft: '1px solid #BDBDBD', padding: '8px 12px' }}>{replyData.Description}</div>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </table>
+                                                                                )
+                                                                            })}
+                                                                        </td></tr>
+                                                                </table>
+                                                            )
+                                                        })}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                    : null
+                                }
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    )
+}
 // This is used for Prepare Data on The basis of sort order 
 
 export const PrepareDataAccordingToSortOrder = (SourceArray: any, currentArray: any) => {
@@ -2394,7 +2506,7 @@ export const SendDynamicEmailNotification = async (requiredData: any) => {
 export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredData: any) => {
     try {
         const { ItemDetails, ReceiverEmail, Context, usedFor, ReceiverName } = requiredData || {};
-        const emailMessage = GenerateMSTeamsNotification(ItemDetails);
+        const emailMessage = GenerateBodyContentEmailNotification(ItemDetails);
         const containerDiv = document.createElement('div');
         const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
         ReactDOM.render(reactElement, containerDiv);
