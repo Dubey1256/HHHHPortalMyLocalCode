@@ -2390,7 +2390,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                 </div>
                             </div>
                             <div className="tagged-child-items-table Alltable mb-5">
-                                {data?.length > 0 ? <GlobalCommonTable
+                            {data?.length > 0 ? <GlobalCommonTable
                                     setLoaded={setLoaded}
                                     AllListId={RequiredListIds}
                                     columns={columns}
@@ -2399,7 +2399,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                     callBackData={GlobalTableCallBackData}
                                     showHeader={false}
                                     fixedWidth={true}
-                                    
+                                    expendedTrue={true}
                                 /> : <GlobalCommonTable
                                     setLoaded={setLoaded}
                                     AllListId={RequiredListIds}
@@ -2409,7 +2409,6 @@ const CentralizedSiteComposition = (Props: any) => {
                                     callBackData={GlobalTableCallBackData}
                                     showHeader={false}
                                     fixedWidth={true}
-                                    
                                 />}
                             </div>
                         </div> : null
