@@ -3623,7 +3623,7 @@ export const smartTimeUseStorageCheck = async (item: any) => {
     let finalString = '';
     let ContextValue = item?.item?.ContextValue;
     try {
-        let folderName = "SmartTimeTotal/" + item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userDisplayName.replace(/\s+/g, '') + item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userId + "-" + "SmartTimeTotel";
+        let folderName = "SmartTimeTotal/" + item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userDisplayName.replace(/\s+/g, '') + item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userId + "-" + "SmartTimeTotal";
         let web = new Web(ContextValue?.siteUrl);
         const files = await web.getFolderByServerRelativeUrl(`Documents/${folderName}`).files.get();
         if (files?.length > 0) {
@@ -3771,8 +3771,8 @@ export async function smartTimeFind(item: any) {
     if (timeEntryIndex) {
         const dataString = JSON.stringify(timeEntryIndex);
         const blob = new Blob([dataString], { type: 'text/plain;charset=utf-8' });
-        let fileName = item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userDisplayName.replace(/\s+/g, '') + item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userId + "-" + "SmartTimeTotel";
-        let folderName = item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userDisplayName.replace(/\s+/g, '') + item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userId + "-" + "SmartTimeTotel";
+        let fileName = item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userDisplayName.replace(/\s+/g, '') + item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userId + "-" + "SmartTimeTotal";
+        let folderName = item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userDisplayName.replace(/\s+/g, '') + item?.item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userId + "-" + "SmartTimeTotal";
         let RootFolder = "SmartTimeTotal";
         await rootFolderCheck(blob, fileName + '.txt', RootFolder, folderName, ContextValue, item?.item);
     }
@@ -3841,7 +3841,7 @@ export const smartTimeUseStorage = async (item: any) => {
             let folderName = "SmartTimeTotal/" + ContextValue?.Context?.pageContext?.legacyPageContext?.userDisplayName.replace(/\s+/g, '')
                 + ContextValue?.Context?.pageContext?.legacyPageContext?.userId
                 + "-"
-                + "SmartTimeTotel";
+                + "SmartTimeTotal";
             let web = new Web(ContextValue?.siteUrl);
             const files = await web.getFolderByServerRelativeUrl(`Documents/${folderName}`).files.get();
             if (files?.length > 0) {
