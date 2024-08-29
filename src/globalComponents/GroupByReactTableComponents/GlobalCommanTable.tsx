@@ -17,7 +17,7 @@ import {
 } from "@tanstack/react-table";
 import { useVirtualizer, notUndefined } from "@tanstack/react-virtual";
 import { Dropdown, TooltipHost } from 'office-ui-fabric-react';
- import { exportmeExcel } from "excel-ent";
+import { exportmeExcel } from "excel-ent";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaPlus, FaMinus, FaListAlt } from 'react-icons/fa';
 import { HTMLProps } from 'react';
@@ -126,7 +126,7 @@ export function Filter({
     return (
 
         <>
-            <input style={{ width: "100%", paddingRight: "12px" }} className="m-1" type="search" value={(columnFilterValue ?? "") as string}
+            <input style={{ width: "100%", paddingRight: "10px" }} className="m-1" type="search" value={(columnFilterValue ?? "") as string}
                 onChange={(e) => column.setFilterValue(e.target.value)} placeholder={`${placeholder?.placeholder}`} />
             {columnFilterValue && <span className='searchClear' onClick={(e: any) => column.setFilterValue("")}></span>}<span className='tooltip-text pop-right fw-light'>{placeholder?.placeholder}</span>
         </>
@@ -925,7 +925,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         })
     }
     React.useEffect(() => {
-        if (expendedTrue != true) {
+        if (items?.expendedTrue != true) {
             if (table.getState().columnFilters.length || table.getState()?.globalFilter?.length > 0) {
                 const allKeys = Object.keys(table.getFilteredRowModel().rowsById).reduce(
                     (acc: any, cur: any) => {
@@ -958,12 +958,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
     /****************** defult Expend Other Section end *******************/
 
     React.useEffect(() => {
-        if (expendedTrue === true) {
+        if (items?.expendedTrue === true) {
             setExpanded(true);
         } else {
             setExpanded({});
         }
-    }, []);
+    }, [items?.expendedTrue, items?.data]);
 
     React.useEffect(() => {
         if (pageName === 'hierarchyPopperToolTip') {
@@ -1032,15 +1032,15 @@ const GlobalCommanTable = (items: any, ref: any) => {
     }
     const exportCallBack = React.useCallback((columnChecked: any) => {
         if (columnChecked != 'close') {
-            let headerColur="0a1c3e"
-            let currentUrl:any=window.location.href;
-            let FileSaveName="PageData"
+            let headerColur = "0a1c3e"
+            let currentUrl: any = window.location.href;
+            let FileSaveName = "PageData"
             let match = currentUrl?.match(/\/([^/]+\.aspx)(\?.*)?$/);
 
-            if(match!=undefined){
-                 FileSaveName = match[1]?.replace('.aspx','');
+            if (match != undefined) {
+                FileSaveName = match[1]?.replace('.aspx', '');
             }
-            
+
 
             if (currentUrl.toString().includes('PortfolioType=Service')) {
                 headerColur = '#228B22'
@@ -1456,59 +1456,60 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </span>
 
 
-                            <div className='alignCenter'>
-                                {selectedFilterCount?.selectedFilterCount == "No item is selected" ? <span className="svg__iconbox svg__icon--setting hreflink" style={{ backgroundColor: 'gray' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span> :
-                                    <span className="svg__iconbox svg__icon--setting hreflink" style={selectedFilterCount?.selectedFilterCount == 'All content' ? { backgroundColor: "var(--SiteBlue)" } : { backgroundColor: 'rgb(68 114 199)' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>}
-                            </div>
-                            <span className='mx-1'>
-                                <Dropdown
-                                    className="full-width customSelectBox"
-                                    id="search"
-                                    options={optionsSearch}
-                                    selectedKey={globalSearchType}
-                                    onChange={(e, option) => {
-                                        setGlobalSearchType(option.key);
-                                        setGlobalFilter("");
+                    <div className='alignCenter'>
+                        {selectedFilterCount?.selectedFilterCount == "No item is selected" ? <span className="svg__iconbox svg__icon--setting hreflink" style={{ backgroundColor: 'gray' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span> :
+                            <span className="svg__iconbox svg__icon--setting hreflink" style={selectedFilterCount?.selectedFilterCount == 'All content' ? { backgroundColor: "var(--SiteBlue)" } : { backgroundColor: 'rgb(68 114 199)' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>}
+                    </div>
+                    <span className='mx-1'>
+                        <Dropdown
+                            className="full-width customSelectBox"
+                            id="search"
+                            options={optionsSearch}
+                            selectedKey={globalSearchType}
+                            onChange={(e, option) => {
+                                setGlobalSearchType(option.key);
+                                setGlobalFilter("");
+                            }}
+                            onRenderOption={(option) => (
+                                <TooltipHost content={tooltips[option.key]}>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center', padding: '2px 16px 2px 4px',
+                                        width: '104px', fontSize: '11px',
+                                        backgroundColor: option.key === globalSearchType ? 'var(--SiteBlue)' : '',
+                                        color: option.key === globalSearchType ? '#fff' : '#333333',
+                                        border: option.key === globalSearchType ? '1px solid #999999' : ''
                                     }}
-                                    onRenderOption={(option) => (
-                                        <TooltipHost content={tooltips[option.key]}>
-                                            <div style={{ display: 'flex',
-                                                    alignItems: 'center', padding:'2px 16px 2px 4px',
-                                                    width: '104px', fontSize:'11px',
-                                                    backgroundColor: option.key === globalSearchType ? 'var(--SiteBlue)' : '',
-                                                    color:option.key === globalSearchType ? '#fff' :'#333333',
-                                                    border: option.key === globalSearchType ? '1px solid #999999':''
-                                                }}
-                                            >
-                                                <div style={{ width: '20px' }} className='alignCenter '>
-                                                    {option.key === globalSearchType && (
-                                                        <Icon
-                                                            iconName="CheckMark"
-                                                            style={{ marginRight: '4px', backgroundColor: 'var(--SiteBlue)', color: 'white', fontSize:'16px' }}
-                                                        />
-                                                    )}
-                                                </div>
-                                                <div>{option.text}</div>
-                                            </div>
-                                        </TooltipHost>
-                                    )}
-                                    styles={{ dropdown: { width: '120px'} }}
-                                />
+                                    >
+                                        <div style={{ width: '20px' }} className='alignCenter '>
+                                            {option.key === globalSearchType && (
+                                                <Icon
+                                                    iconName="CheckMark"
+                                                    style={{ marginRight: '4px', backgroundColor: 'var(--SiteBlue)', color: 'white', fontSize: '16px' }}
+                                                />
+                                            )}
+                                        </div>
+                                        <div>{option.text}</div>
+                                    </div>
+                                </TooltipHost>
+                            )}
+                            styles={{ dropdown: { width: '120px' } }}
+                        />
 
-                            </span>
-                        </span>
-                        <span className="toolbox">
-                            {items.taskProfile != true && items?.showCreationAllButton === true && <>
-                                {items?.PortfolioFeature === "Feature" && items?.hideRestructureBtn != true ? (
-                                    <button type="button" disabled className="btn btn-primary" title=" Add Structure"> {" "} Add Structure{" "}</button>
-                                ) : (table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" && table?.getSelectedRowModel()?.flatRows[0]?.original
-                                    ?.TaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Workstream" && table?.getSelectedRowModel()?.flatRows[0]?.original
-                                        ?.TaskType?.Title != "Task") || table?.getSelectedRowModel()?.flatRows?.length === 0 ? (
-                                    <button type="button" className="btn btn-primary" title=" Add Structure" onClick={() => openCreationAllStructure("Add Structure")}>
-                                        {" "} Add Structure{" "}</button>
-                                ) : (
-                                    <button type="button" disabled className="btn btn-primary" title=" Add Structure"> {" "} Add Structure{" "}</button>
-                                )}
+                    </span>
+                </span>
+                <span className="toolbox">
+                    {items.taskProfile != true && items?.showCreationAllButton === true && <>
+                        {items?.PortfolioFeature === "Feature" && items?.hideRestructureBtn != true ? (
+                            <button type="button" disabled className="btn btn-primary" title=" Add Structure"> {" "} Add Structure{" "}</button>
+                        ) : (table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" && table?.getSelectedRowModel()?.flatRows[0]?.original
+                            ?.TaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Workstream" && table?.getSelectedRowModel()?.flatRows[0]?.original
+                                ?.TaskType?.Title != "Task") || table?.getSelectedRowModel()?.flatRows?.length === 0 ? (
+                            <button type="button" className="btn btn-primary" title=" Add Structure" onClick={() => openCreationAllStructure("Add Structure")}>
+                                {" "} Add Structure{" "}</button>
+                        ) : (
+                            <button type="button" disabled className="btn btn-primary" title=" Add Structure"> {" "} Add Structure{" "}</button>
+                        )}
 
                         {items?.protfolioProfileButton != true && items?.hideAddActivityBtn != true && <>{table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" disabled={true} > Add Activity-Task</button>}</>}
