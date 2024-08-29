@@ -1655,17 +1655,17 @@ const TimeEntryPopup = (item: any) => {
     console.log(foundCategory, "foundCategory");
     console.log("UP DATA", UpdatedData);
     let web = new Web(`${CurrentSiteUrl}`);
-
-    if (item.props?.TotalTime !== null && item.props?.TotalTime !== undefined) {
-      try {
-        taskTimeArray = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item.props.Id}`).get();
-        Time = taskTimeArray[0]?.TotalTime;
-        item.props.TotalTime = Time + TimeInMinutes;
-        Time = (Time ?? 0) + TimeInMinutes;
-      } catch (error) {
-        console.error('Failed to update TotalTime:', error.message);
-      }
-
+    try {
+      taskTimeArray = await web.lists.getById(item?.props?.listId).items.select('TotalTime').filter(`Id eq ${item.props.Id}`).get();
+     
+    } catch (error) {
+      console.error('Failed to update TotalTime:', error.message);
+    }
+   // item.props.TotalTime = item.props.TotalTime ?? 0;
+    if (taskTimeArray!=null && taskTimeArray!=undefined && taskTimeArray[0]?.TotalTime>=0) {
+      Time = taskTimeArray[0]?.TotalTime;
+      item.props.TotalTime = Time + TimeInMinutes;
+      Time = (Time ?? 0) + TimeInMinutes;
     }
     else {
       item.props.TotalTime = TimeInMinutes;
@@ -1960,15 +1960,15 @@ const TimeEntryPopup = (item: any) => {
   const AddTaskTime = async (child: any, Type: any) => {
     let updatedTotalTime: any;
     let TaskTimeTotal: any;
-    if (item.props?.TotalTime !== null) {
+   
       try {
         const web = new Web(`${siteUrl}`);
          updatedTotalTime =  await web.lists.getById(item.props.listId).items.select('TotalTime').filter(`Id eq ${ item.props.Id}`).get();
-        item.props.TotalTime=updatedTotalTime[0].TotalTime;
+        item.props.TotalTime = updatedTotalTime[0].TotalTime;
       } catch (error) {
         console.error('Failed to update TotalTime:', error.message);
       }
-    }
+    
     const taskTime=updatedTotalTime[0].TotalTime>0?updatedTotalTime[0].TotalTime:0;
     setbuttonDisable(true);
 

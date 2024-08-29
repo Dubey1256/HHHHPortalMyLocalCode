@@ -9,6 +9,7 @@ import { Avatar } from "@fluentui/react-components";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import PortfolioLeadEOD from './PortFolioLeadEOD';
 import moment from 'moment';
+import Tooltip from '../../../globalComponents/Tooltip';
 let forceAllAditionalTaskCall: any = [];
 let copyAllAditionalTaskData: any = [];
 let forceAllTodayModifiedTaskCall = [];
@@ -48,6 +49,7 @@ export const EodReportMain = (props: any) => {
     const [showPanel, setShowpanel] = React.useState(false)
     const [panelAchivedComment, setPanelAchivedComment] = React.useState('')
     const [panelPendingComment, setPanelPendingComment] = React.useState('')
+    const [checkBoxDeployPending,setcheckBoxDeployPending]=React.useState(false)
     const [panelTitle, setPanelTitle] = React.useState('')
     const [loginUserData, setLoginUserData] = React.useState([])
     const [selectedPanelTask, setSelectedPanelTask]: any = React.useState()
@@ -407,7 +409,7 @@ export const EodReportMain = (props: any) => {
 
         let subject = `[EOD Report] ${Moment(new Date()).format('YYYY-MM-DD')} - ${allTodayModifiedTask?.length ?? 0} Tasks`;
         SendEmailFinal(
-            ["abhishek.tiwari@hochhuth-consulting.de"],
+            ["prashant.kumar@hochhuth-consulting.de"],
             subject,
             sendAllTasks.replace(/,/g, "  ")
         );
@@ -1038,7 +1040,7 @@ export const EodReportMain = (props: any) => {
                 ProjectName: selectedPanelTask?.Project?.Title ?? '',
                 Achieved: panelAchivedComment,
                 Pending: panelPendingComment,
-                Deployment: false,
+                Deployment: checkBoxDeployPending,
                 ID: newId,
                 isEodTask: false,
             }
@@ -1260,7 +1262,7 @@ export const EodReportMain = (props: any) => {
         ){
             leads.push(...loginUserInfo)
         }
-        else if(loginUserInfo[0]?.UserGroup?.Title == "Smalsus Lead Team"||loginUserInfo[0]?.UserGroup?.Title == "HHHH Team" || loginUserInfo[0]?.UserGroup?.Title == "Junior Task Management" ||loginUserInfo[0]?.UserGroup?.Title =="Mobile Team"|| loginUserInfo[0]?.UserGroup?.Title== "QA Team"){
+        else if(loginUserInfo[0]?.UserGroup?.Title == "Smalsus Lead Team"||loginUserInfo[0]?.UserGroup?.Title == "HHHH Team" || loginUserInfo[0]?.UserGroup?.Title == "Junior Task Management" ||loginUserInfo[0]?.UserGroup?.Title =="Mobile Team"|| loginUserInfo[0]?.UserGroup?.Title== "QA Team"||loginUserInfo[0]?.AssingedToUserId == '328'){
             allUsers?.forEach((user: any) => {
                 if (user.UserGroup?.Title == "Portfolio Lead Team") {
                     uniqueLeads.add(user?.AssingedToUserId);
@@ -1806,7 +1808,7 @@ export const EodReportMain = (props: any) => {
                 <div className="subheading">
                     <span className="siteColor">{`Update EOD`}</span>
                 </div>
-                {/* <Tooltip ComponentId={1746} /> */}
+                <Tooltip ComponentId={12577} />
             </div>
         );
     };
@@ -1959,6 +1961,12 @@ export const EodReportMain = (props: any) => {
                     {(taskCommentData == undefined || taskCommentData == null || taskCommentData?.length == 0 || taskCommentData?.every((comment: any) => ((comment?.Type == "EODReport" && isTodayCreated(comment?.Created)) == false))) &&
                         <div>
                             <td>{panelTitle}</td>
+                            <label>Deployement Pending </label>
+                                <input className="form-check-input me-2"
+                                    type="checkbox"
+                                    checked={checkBoxDeployPending}
+                                    onChange={(e) =>setcheckBoxDeployPending(e.target.checked)}
+                                />
                             <div>
                                 <h4>Achived Comment</h4>
                                 <textarea

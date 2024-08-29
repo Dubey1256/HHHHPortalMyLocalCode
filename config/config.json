@@ -570,6 +570,13 @@
           "manifest": "./src/webparts/institutionProfile/InstitutionProfileWebPart.manifest.json"
         }
       ]
+    },"document-outlook-mails-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/documentOutlookMails/DocumentOutlookMailsWebPart.js",
+          "manifest": "./src/webparts/documentOutlookMails/DocumentOutlookMailsWebPart.manifest.json"
+        }
+      ]
     }
     
   },
@@ -670,7 +677,8 @@
     "ManageQuestionWebPartStrings": "lib/webparts/manageQuestion/loc/{locale}.js",
     "EodReportWebPartStrings": "lib/webparts/eodReport/loc/{locale}.js",
     "ImportTaskPortfolioItemsWebPartStrings": "lib/webparts/importTaskPortfolioItems/loc/{locale}.js",
-    "InstitutionProfileWebPartStrings": "lib/webparts/institutionProfile/loc/{locale}.js"
+    "InstitutionProfileWebPartStrings": "lib/webparts/institutionProfile/loc/{locale}.js",
+    "DocumentOutlookMailsWebPartStrings": "lib/webparts/documentOutlookMails/loc/{locale}.js"
     
   
   }
