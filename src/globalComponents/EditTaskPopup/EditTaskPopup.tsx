@@ -1753,12 +1753,16 @@ const EditTaskPopup = (Items: any) => {
         setCategorySearchKey(e.target.value);
         let tempArray: any = [];
         if (searchedKey?.length > 0) {
-            AutoCompleteItemsArray?.map((itemData: any) => {
-                if (
-                    itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())
-                ) {
-                    tempArray.push(itemData);
+            AutoCompleteItemsArray?.map((itemData: any) => { 
+                if(itemData?.Newlabel !== null && itemData?.Newlabel !== undefined)
+                {
+                    if (
+                        itemData.Newlabel?.toLowerCase().includes(searchedKey.toLowerCase())
+                    ) {
+                        tempArray.push(itemData);
+                    }
                 }
+               
             });
             setSearchedCategoryData(tempArray);
         } else {

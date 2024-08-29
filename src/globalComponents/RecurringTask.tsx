@@ -15,7 +15,7 @@ const RecurringTask = (props: any) => {
     const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] = React.useState(false);
     const [TaskData, SetTaskData]:any = React.useState({});
     const WorkingAction= React.useRef([])
-     WorkingAction.current=  JSON.parse(JSON.stringify( props?.WorkingAction));
+     WorkingAction.current=  JSON.parse(JSON.stringify( props?.WorkingAction)); 
     // Function Convert date
     function convertToISO(dateString:any) {
         let match = dateString.match(/(\d{2})\/(\d{2})\/(\d{4})/);
