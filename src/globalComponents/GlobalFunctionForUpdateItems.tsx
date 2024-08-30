@@ -2175,7 +2175,7 @@ export const ReduceTheContentLines: any = (Content: String, sliceFrom: number) =
 
 // This is used for getting information from TaskNotificationConfiguration  when  Category and status selected
 export const TaskNotificationConfiguration = async (requiredData: any) => {
-    const { usedFor, SiteURL, ItemDetails, Context, RequiredListIds, AllTaskUser, Status, SendUserEmail}: any = requiredData || {};
+    const { usedFor, SiteURL, ItemDetails, Context, RequiredListIds, AllTaskUser, Status, SendUserEmail }: any = requiredData || {};
     const filterData: any = [];
     try {
         const web = new Web(SiteURL)
@@ -2188,19 +2188,26 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                 if (TNMItem?.Title == "TaskNotificationConfigComponent") {
                     TaskNotificationConfig = JSON.parse(TNMItem.ConfigrationJSON);
                     TaskNotificationConfig?.map((TNC: any) => {
+                        let Count= 0;
                         if (usedFor == "Notification") {
                             if (TNC.percentComplete == ItemDetails.PercentComplete) {
                                 TNC.Category?.map((TNCCategory: any) => {
                                     ItemDetails.TaskCategories?.map(async (ItemDetailsCat: any) => {
                                         if (TNCCategory == ItemDetailsCat.Title || TNC?.Category?.includes('All')) {
                                             filterNotificationData.push(TNC);
-                                            if (TNC.NotificationType == "Teams") {
+                                            if (TNC.NotificationType == "Teams" && Count==0) {
+                                                Count++
                                                 await SendDynamicMSTeamsNotification({ Configuration: TNC, ItemDetails: ItemDetails, Context: Context, RequiredListIds: RequiredListIds, UserEmail: SendUserEmail });
                                             }
-                                            if ( TNC.NotificationType == "Email") {
+                                            if (TNCCategory != "Information Request" && TNC.NotificationType == "Email" && Count==0) {
+                                                Count++
                                                 await SendDynamicEmailNotification({ Configuration: TNC, ItemDetails: ItemDetails, Context: Context, UserEmail: SendUserEmail });
                                             }
-                                           
+                                            if (TNCCategory == "Information Request" && TNC.NotificationType == "Email" && Count==0) {
+                                                Count++
+                                                await SendEmailNotificationForIRCTasksAndPriorityCheck({ Configuration: TNC, TNCCategory, ItemDetails, Context });
+                                            }
+
 
                                             console.log(filterNotificationData);
                                         }
@@ -2277,7 +2284,7 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                     } else {
 
                                     }
-                                    if (TNC.selectedSite == ItemDetails.siteType.replace('%20',' ')) {
+                                    if (TNC.selectedSite == ItemDetails.siteType.replace('%20', ' ')) {
                                         //Deepak
                                         let SiteTaskAssignment: any = [];
                                         TNC.Notifier.map((user: any) => {
@@ -2289,10 +2296,10 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                         ItemDetails.TaskAssignedUsers = SiteTaskAssignment
                                     }
                                 })
-                            }                          
-                            else if (TNC?.percentComplete == Status && TNC?.NotificationType == "Lead")    {
+                            }
+                            else if (TNC?.percentComplete == Status && TNC?.NotificationType == "Lead") {
                                 let UxCatUserArray: any = [];
-                                ItemDetails?.TaskCategories?.map((item: any) => {                                  
+                                ItemDetails?.TaskCategories?.map((item: any) => {
                                     if (!TNC?.Category?.includes('All') && TNC.Category?.includes(item.Title) && !TNC.ExceptionSite.includes(ItemDetails.siteType)) {
                                         //This is used to assigned Design As Lead
                                         TNC.Notifier.map((user: any) => {
@@ -2300,10 +2307,10 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                                                 if (user.Id == TaskUserData.AssingedToUserId)
                                                     UxCatUserArray.push(TaskUserData);
                                             })
-                                        });                                       
-                                    }                                    
+                                        });
+                                    }
                                 })
-                                ItemDetails.TaskResponsibleTeam=UxCatUserArray;                                
+                                ItemDetails.TaskResponsibleTeam = UxCatUserArray;
                             }
 
                         }
