@@ -1757,12 +1757,12 @@ export const GenerateEmailNotification = (RequiredData: any) => {
         <table cellPadding="0" cellSpacing="0" width="100%" style={{ width: "100%" }}>
             <tbody>
                 <tr>
-                    <td width="70%" valign="top" style={{ width: '70.0%', padding: '.75pt .75pt .75pt .75pt' }}>
+                    <td width="100%" valign="top" style={{ width: '100%', padding: '.75pt .75pt .75pt .75pt' }}>
                         <table cellPadding="0" cellSpacing="0" width="99%" style={{ width: "99.0%", marginTop: "6px" }}>
                             <tbody>
                                 <tr>
-                                    <td style={{ border: 'none', background: '#DFDFDF', color: "#f333", padding: '.75pt .75pt .75pt .75pt' }}>
-                                        <b style={{ marginBottom: '1.25pt' }}><div style={{ fontFamily: 'Segoe UI Dark', fontSize: '10.0pt', color: 'black' }} >Task Details :</div></b>
+                                    <td style={{ border: 'none'}}>
+                                        <div style={{ fontFamily: 'Segoe UI Dark', fontSize: '16px', color: '#333333', fontWeight: '600' }} >Task Details :</div>
                                     </td>
                                 </tr>
                                 <tr>
@@ -1879,16 +1879,23 @@ export const GenerateEmailNotification = (RequiredData: any) => {
                         {RequiredData["FeedBack"] != null &&
                             RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                             RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title?.length > 8 ?
-                            <table cellPadding="0" cellSpacing="0" width="99%" style={{ width: "99.0%", marginTop: "15px" }}>
+                            <table cellPadding="0" cellSpacing="0" width="99%" style={{ width: "99.0%", marginTop: "15px", verticalAlign: 'top' }}>
                                 <tbody>
-                                    <td colSpan={2} style={{ padding: '0.75pt', whiteSpace: 'nowrap' }}><b><span style={{ fontSize: '10pt', color: 'black' }}>Task Description:</span></b></td>
+                                    <td valign="top" style={{ padding: '0.75pt', whiteSpace: 'nowrap', width: '75%' }}>
+                                    <table style={{width:'100%'}}> 
+                                        <tr>
+                                                    <td colSpan={2}>
+                                                        <div><span style={{ fontSize: '16px', color: '#333333', fontWeight: '600' }}> Task Description:</span></div>
+                                                    </td>
+                                                </tr>
                                     {RequiredData["FeedBack"] != null &&
                                         RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                                         RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title != '' &&
                                         RequiredData["FeedBack"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
                                             return (<>
+                                               
                                                 <tr>
-                                                    <td width="50" align="center" style={{ border: "1px solid #ccc", width: "50px" }}>
+                                                    <td width="50px" align="center" style={{ border: "1px solid #ccc", width: "50px" }}>
                                                         <span style={{ fontSize: "10pt", color: "rgb(111, 111, 111)" }}>
                                                             <span>{i + 1}</span>
 
@@ -1954,58 +1961,61 @@ export const GenerateEmailNotification = (RequiredData: any) => {
                                                     </>
                                                 })}
                                             </>)
-                                        })}
+                                        })}</table>
+                                        </td>
+                                        {RequiredData?.CommentsArray?.length > 0 ?
+                                            <td width="22%" style={{ width: '22%', padding: '.75pt .75pt .75pt .75pt', verticalAlign: 'top' }}>
+                                                <table className='table table-striped ' cellPadding={0} width="50%" style={{ width: '100.0%', borderRadius: '4px', }}>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style={{ border: 'none'}}>
+                                                                <div><span style={{ fontSize: '16px', color: '#333333', fontWeight: '600' }} >Comments:</span></div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style={{ border: 'none', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                                {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
+                                                                    return (
+                                                                        <>
+                                                                            <div style={{ border: '1px solid #ccc', background: '#f5f5f5', padding: '7.0pt 7.0pt 7.0pt 7.0pt' }}>
+                                                                                <div style={{ marginBottom: "3.75pt" }}>
+                                                                                    <p style={{ marginBottom: '1.25pt' }}>
+                                                                                        <span style={{ color: 'black' }}>{cmtData.AuthorName} - {cmtData.Created}</span></p>
+                                                                                </div>
+                                                                                <p style={{ marginBottom: '1.25pt' }}>
+                                                                                    <span style={{ color: 'black' }}>{cmtData.Description}</span></p>
+
+                                                                                {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
+                                                                                    return (
+                                                                                        <div style={{ padding: '7.0pt 7.0pt 7.0pt 7.0pt', background: '#DFDFDF', marginTop: '3.75pt' }}>
+                                                                                            <div style={{ marginBottom: "3.75pt" }}>
+                                                                                                <p style={{ margin: '0px' }}>
+                                                                                                    <span style={{ color: 'black' }}>{replyData.AuthorName} - {replyData.Created}</span></p>
+                                                                                            </div>
+                                                                                            <p style={{ marginBottom: '1.25pt' }}>
+                                                                                                <span style={{ color: 'black' }}>{replyData.Description}</span></p>
+                                                                                        </div>
+                                                                                    )
+                                                                                })}
+                                                                            </div>
+                                                                        </>
+                                                                    )
+                                                                })}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                            : null
+                                        }
                                 </tbody>
                             </table>
                             :
                             null
                         }
+                        
                     </td>
-                    {RequiredData?.CommentsArray?.length > 0 ?
-                        <td width="22%" style={{ width: '22.0%', padding: '.75pt .75pt .75pt .75pt', verticalAlign: 'top' }}>
-                            <table className='table table-striped ' cellPadding={0} width="100%" style={{ width: '100.0%', borderRadius: '4px', }}>
-                                <tbody>
-                                    <tr>
-                                        <td style={{ border: 'none', background: '#DFDFDF', color: "#f333", padding: '.75pt .75pt .75pt .75pt' }}>
-                                            <b style={{ marginBottom: '1.25pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }} >Comments:</span></b>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style={{ border: 'none', padding: '.75pt .75pt .75pt .75pt' }}>
-                                            {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
-                                                return (
-                                                    <>
-                                                        <div style={{ border: '1px solid #ccc', background: '#f5f5f5', padding: '7.0pt 7.0pt 7.0pt 7.0pt' }}>
-                                                            <div style={{ marginBottom: "3.75pt" }}>
-                                                                <p style={{ marginBottom: '1.25pt' }}>
-                                                                    <span style={{ color: 'black' }}>{cmtData.AuthorName} - {cmtData.Created}</span></p>
-                                                            </div>
-                                                            <p style={{ marginBottom: '1.25pt' }}>
-                                                                <span style={{ color: 'black' }}>{cmtData.Description}</span></p>
-
-                                                            {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
-                                                                return (
-                                                                    <div style={{ padding: '7.0pt 7.0pt 7.0pt 7.0pt', background: '#DFDFDF', marginTop: '3.75pt' }}>
-                                                                        <div style={{ marginBottom: "3.75pt" }}>
-                                                                            <p style={{ margin: '0px' }}>
-                                                                                <span style={{ color: 'black' }}>{replyData.AuthorName} - {replyData.Created}</span></p>
-                                                                        </div>
-                                                                        <p style={{ marginBottom: '1.25pt' }}>
-                                                                            <span style={{ color: 'black' }}>{replyData.Description}</span></p>
-                                                                    </div>
-                                                                )
-                                                            })}
-                                                        </div>
-                                                    </>
-                                                )
-                                            })}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                        : null
-                    }
+                   
                 </tr>
             </tbody>
         </table>
@@ -2096,7 +2106,7 @@ export const GenerateBodyContentEmailNotification = (RequiredData: any) => {
                                                                                 return (
                                                                                     <table style={{ width: '100%' }} width="100">
                                                                                         <tr>
-                                                                                            <td style={{ margin: '12px 16px', background: '#FFFFFF', marginTop: '3.75pt', padding: '10px' }}>
+                                                                                            <td style={{ margin: '12px 16px', background: '#FFFFFF', padding: '10px' }}>
                                                                                                 <div style={{ marginBottom: "3.75pt" }}>
                                                                                                     <div style={{ fontFamily: 'Segoe UI', fontSize: '14px', color: '#333333' }}><span style={{ fontWeight: '600' }}>{replyData.AuthorName} - </span>{replyData.Created}</div>
                                                                                                 </div>
@@ -2123,6 +2133,9 @@ export const GenerateBodyContentEmailNotification = (RequiredData: any) => {
                 </tr>
             </tbody>
         </table>
+
+
+
     )
 }
 // This is used for Prepare Data on The basis of sort order 
@@ -2188,22 +2201,22 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
                 if (TNMItem?.Title == "TaskNotificationConfigComponent") {
                     TaskNotificationConfig = JSON.parse(TNMItem.ConfigrationJSON);
                     TaskNotificationConfig?.map((TNC: any) => {
-                        let Count= 0;
+                        let Count = 0;
                         if (usedFor == "Notification") {
                             if (TNC.percentComplete == ItemDetails.PercentComplete) {
                                 TNC.Category?.map((TNCCategory: any) => {
                                     ItemDetails.TaskCategories?.map(async (ItemDetailsCat: any) => {
                                         if (TNCCategory == ItemDetailsCat.Title || TNC?.Category?.includes('All')) {
                                             filterNotificationData.push(TNC);
-                                            if (TNC.NotificationType == "Teams" && Count==0) {
+                                            if (TNC.NotificationType == "Teams" && Count == 0) {
                                                 Count++
                                                 await SendDynamicMSTeamsNotification({ Configuration: TNC, ItemDetails: ItemDetails, Context: Context, RequiredListIds: RequiredListIds, UserEmail: SendUserEmail });
                                             }
-                                            if (TNCCategory != "Information Request" && TNC.NotificationType == "Email" && Count==0) {
+                                            if (TNCCategory != "Information Request" && TNC.NotificationType == "Email" && Count == 0) {
                                                 Count++
                                                 await SendDynamicEmailNotification({ Configuration: TNC, ItemDetails: ItemDetails, Context: Context, UserEmail: SendUserEmail });
                                             }
-                                            if (TNCCategory == "Information Request" && TNC.NotificationType == "Email" && Count==0) {
+                                            if (TNCCategory == "Information Request" && TNC.NotificationType == "Email" && Count == 0) {
                                                 Count++
                                                 await SendEmailNotificationForIRCTasksAndPriorityCheck({ Configuration: TNC, TNCCategory, ItemDetails, Context });
                                             }
@@ -2323,7 +2336,6 @@ export const TaskNotificationConfiguration = async (requiredData: any) => {
         console.log("Error in get Task Notification Configuration function : ", error.message);
     }
 }
-
 
 //This is used for Send Task Notification when  Category and status selected according to Task Notification Configuration tool
 
@@ -2472,14 +2484,114 @@ export const SendDynamicEmailNotification = async (requiredData: any) => {
         }
         const emailBodyContent = `
         <div>
-            <p style="margin-top:16px;">
-             ${messageContent}
-            </p>
-            <p>Task Title: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
-            ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></p>
-            <span>${containerDiv.innerHTML}</span>
+<table width="100%" cellPadding="0" cellSpacing="0" style="background-color: #FAFAFA; margin: 0px -10px;" align="center">
+    <tr>
+    <td width="100%">
+    <table width="900px" cellPadding="0" cellSpacing="0" style="width: 900px; padding: 0px 32px; background-color: #fff;" align="center">
+    <tr>
+    <td width="100%">
+    <div>
+    <table style={{height: '35px'}} width="100%">
+    <tr>
+    <td width="100%" height="35px">&nbsp;</td>
+    </tr>
+    </table>
+    </div>
+    <div>
+    <table style={{height: '50px'}}>
+    <tr>
+    <td width="48px" height="48px"><img width="100%" height="100%" src="https://hochhuth-consulting.de/images/icon_small_hhhh.png" style={{width: '48px', height: '48px', borderRadius: '50%'}} alt="Site Icon" /></td>
+    <td><div style={{color: '#333', marginLeft:'4px', textAlign: 'center', fontFamily: 'Segoe UI', fontSize: '14px', fontStyle:  'normal'; font-weight: '600'">Task For Approver </div></td>
+    </tr>
+    </table>
+    </div>
+    <div>
+    <table style={{height: '32px'}} width="100%">
+    <tr>
+    <td width="100%" height="32px">&nbsp;</td>
+    </tr>
+    </table>
+    </div>
+    
+    <div>
+        <table>
+            <tr>
+            <td>
+                                ${messageContent}
+            </td></tr>
+            <tr>
+            <td>
+             <div>Task Title: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
+            ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></div>
+            </td>
+            </tr>
+        </table>
+    </div>
+    <div>
+        
+        <table style={{height: '24px'}} width="100%">
+        <tr>
+        <td width="100%" height="24px">&nbsp;</td>
+        </tr>
+        </table>
+        
+    </div>
+     
+                         
+    <div>${containerDiv.innerHTML}</div>
+    <div>
+        
+        <table style={{height: '40px'}} width="100%">
+        <tr>
+        <td width="100%" height="40px">&nbsp;</td>
+        </tr>
+        </table>
+        
+    </div>
+     <div>
+        <table>
+                <tr>
+                    <td>
+                    <table style="height: 88px;border-collapse: collapse;" border="0" width="100%" height="88px">
+                    <tr>
+                    <td width="100%" height="88px">&nbsp;</td>
+                    </tr>
+                    </table>
+                    </td>
+                </tr></table></div>
+                <div>
+                    <table>
+                    <tr>
+                    <td>
+                    <table style="height: 50px;border-collapse: collapse;" border="0" align="left">
+                    <tr>
+                    <td width="56px" height="48px"><img src="https://hochhuth-consulting.de/images/logo_small2.png" style="width: 56px;height: 48px;" alt="Site Icon"></td>
+                    <td style="margin-left:4px;"><div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div></td>
+                    </tr>
+                    </table>
+                    </td>
+                    </tr></table></div>
+                    <div>
+                        <table>
+                <tr>
+                <td>
+                <table style="height: 56px;border-collapse: collapse;" border="0" width="100%" height="88px">
+                <tr>
+                <td width="100%" height="56px">&nbsp;</td>
+                </tr>
+                </table>
+                </td>
+                </tr></table></div>
+     
+                </table>
+    </td>
+    </tr>
+    </table>
+
+
             </div>
             `;
+
         const emailProps = {
             To: ReceiverEmail,
             Subject: emailSubject,
@@ -2510,41 +2622,158 @@ export const SendDynamicEmailNotification = async (requiredData: any) => {
 
 // This is used for Send Email Notification for the Information Request Category Tasks 
 
+
 export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredData: any) => {
     try {
-        const { ItemDetails, ReceiverEmail, Context, usedFor, ReceiverName } = requiredData || {};
+        const { Configuration, TNCCategory, ItemDetails, Context } = requiredData || {};
+
+        // const { ItemDetails, ReceiverEmail, Context, usedFor, ReceiverName } = requiredData || {};
         const emailMessage = GenerateBodyContentEmailNotification(ItemDetails);
         const containerDiv = document.createElement('div');
         const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
         ReactDOM.render(reactElement, containerDiv);
 
-        let emailSubject = '';
-        let messageContent = '';
+        const ReceiverEmail: any = [];
+        if (Configuration.Notify == "Creator") {
+            ItemDetails.TaskCreatorData?.map(async (CreatorEmail: any) => {
 
-        if (usedFor === "Information-Request") {
-            emailSubject = `[Information Request - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title} - Request is completed`;
-            messageContent = 'Task created from your end for Information Request has been completed. Please take necessary action';
+                ReceiverEmail.push(CreatorEmail.Email);
+            });
         }
-        if (usedFor === "Priority-Check") {
-            emailSubject = `[Task Priority Check - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title}. Please have a look`;
-            messageContent = 'Task created from your end has been set to 8%. Please take necessary action';
+        let emailSubject: any = Configuration.subject;
+        if (emailSubject?.includes('siteType')) {
+            emailSubject = emailSubject?.replace('siteType', `${ItemDetails.siteType}`)
         }
-
+        if (emailSubject?.includes('TaskId')) {
+            emailSubject = emailSubject?.replace('TaskId', `${ItemDetails.TaskId}`)
+        }
+        if (emailSubject?.includes('Title')) {
+            emailSubject = emailSubject?.replace('Title', `${ItemDetails.Title}`)
+        }
+        let messageContent = Configuration.notifyContent;
+        if (messageContent?.includes('taskStatus')) {
+            messageContent = messageContent?.replace('taskStatus', `${ItemDetails.PercentComplete}%`)
+        }
         const emailBodyContent = `
-        <div style="border-top: 5px solid #2f5596;">
-            <p style="margin-top:16px;">${messageContent}</p>
-            <p style="font-size:16px;">Task Link: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
-            ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></p>
-            <span>${containerDiv.innerHTML}</span>
+<div>
+ 
+<table width="100%" cellPadding="0" cellSpacing="0" style="background-color: #FAFAFA; margin: 0px -10px;" align="center">
+    <tr>
+    <td width="100%">
+    <table width="900px" cellPadding="0" cellSpacing="0" style="width: 900px; padding: 0px 32px; background-color: #fff;" align="center">
+    <tr>
+    <td width="100%">
+    <div>
+    <table style={{height: '35px'}} width="100%">
+    <tr>
+    <td width="100%" height="35px">&nbsp;</td>
+    </tr>
+    </table>
+    </div>
+    <div>
+    <table style={{height: '50px'}}>
+    <tr>
+    <td width="48px" height="48px"><img width="100%" height="100%" src="https://hochhuth-consulting.de/images/icon_small_hhhh.png" style={{width: '48px', height: '48px', borderRadius: '50%'}} alt="Site Icon" /></td>
+    <td><div style={{color: '#333', marginLeft:'4px', textAlign: 'center', fontFamily: 'Segoe UI', fontSize: '14px', fontStyle:  'normal'; font-weight: '600'">${TNCCategory === "Information Request" ? 'Information Request Task' : 'Priority Check Task'}</div></td>
+    </tr>
+    </table>
+    </div>
+    <div>
+    <table style={{height: '32px'}} width="100%">
+    <tr>
+    <td width="100%" height="32px">&nbsp;</td>
+    </tr>
+    </table>
+    </div>
+    
+    <div>
+        <table>
+            <tr>
+            <td>
+                                ${messageContent}
+            </td></tr>
+        </table>
+    </div>
+    <div>
+        
+        <table style={{height: '24px'}} width="100%">
+        <tr>
+        <td width="100%" height="24px">&nbsp;</td>
+        </tr>
+        </table>
+        
+    </div>
+     
+                         
+    <div>${containerDiv.innerHTML}</div>
+    <div>
+        
+        <table style={{height: '40px'}} width="100%">
+        <tr>
+        <td width="100%" height="40px">&nbsp;</td>
+        </tr>
+        </table>
+        
+    </div>
+     <div width="100%">
+              <table>
+                <tr>
+                  <td width="260px" height="40px" align="center" style="background: #2F5596;display: flex;justify-content: center;align-items: center;gap: 8px;flex-shrink: 0;border-radius: 4px;
+                    font-family: Segoe UI;width:260px;height:40px;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">
+                    <a width="260px" height="40px" style="color:#fff;text-decoration: none;" href="${ItemDetails?.siteUrl}/SitePages/${`Task-Profile.aspx?taskId=${ItemDetails.Id}&Site=${ItemDetails.siteType}`}">
+                        Go to the Task
+                    </a>
+                
+                  </td>
+                </tr>
+              </table>
             </div>
+     <div>
+        <table>
+                <tr>
+                    <td>
+                    <table style="height: 88px;border-collapse: collapse;" border="0" width="100%" height="88px">
+                    <tr>
+                    <td width="100%" height="88px">&nbsp;</td>
+                    </tr>
+                    </table>
+                    </td>
+                </tr></table></div>
+                <div>
+                    <table>
+                    <tr>
+                    <td>
+                    <table style="height: 50px;border-collapse: collapse;" border="0" align="left">
+                    <tr>
+                    <td width="56px" height="48px"><img src="https://hochhuth-consulting.de/images/logo_small2.png" style="width: 56px;height: 48px;" alt="Site Icon"></td>
+                    <td style="margin-left:4px;"><div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div></td>
+                    </tr>
+                    </table>
+                    </td>
+                    </tr></table></div>
+                    <div>
+                        <table>
+                <tr>
+                <td>
+                <table style="height: 56px;border-collapse: collapse;" border="0" width="100%" height="88px">
+                <tr>
+                <td width="100%" height="56px">&nbsp;</td>
+                </tr>
+                </table>
+                </td>
+                </tr></table></div>
+     
+                </table>
+    </td>
+    </tr>
+    </table>
+</div>
             `;
-
         const emailProps = {
             To: ReceiverEmail,
             Subject: emailSubject,
             Body: emailBodyContent
         };
-
         if (ReceiverEmail?.length > 0) {
             const sp = spfi().using(spSPFx(Context));
             const data = await sp.utility.sendEmail({
@@ -2566,8 +2795,6 @@ export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredD
         throw error;
     }
 };
-
-
 
 
 
