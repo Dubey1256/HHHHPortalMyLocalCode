@@ -7,4 +7,5 @@ export interface IHhhhcontactprofileProps {
   Context: any;
   TeamContactSearchlistIds:any;
   TeamSmartMetadatalistIds:any;
+  TilesManagementListID:any;
 }
