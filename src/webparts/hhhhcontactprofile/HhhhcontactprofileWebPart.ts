@@ -16,6 +16,7 @@ export interface IHhhhcontactprofileWebPartProps {
   description: string;
   TeamContactSearchlistIds:"ee0d83a2-d7ae-4629-989d-b8bbf18e2311"
   TeamSmartMetadatalistIds:"c8ce47a9-3159-44f2-aeae-5f56501d8e9d"
+  TilesManagementListID: "1af9de61-c150-44de-a73d-4c92852f53c5"
 }
 
 export default class HhhhcontactprofileWebPart extends BaseClientSideWebPart<IHhhhcontactprofileWebPartProps> {
@@ -35,6 +36,7 @@ export default class HhhhcontactprofileWebPart extends BaseClientSideWebPart<IHh
         userDisplayName: this.context.pageContext.user.displayName,
         TeamContactSearchlistIds:this.properties.TeamContactSearchlistIds,
         TeamSmartMetadatalistIds:this?.properties?.TeamSmartMetadatalistIds,
+        TilesManagementListID:this?.properties?.TilesManagementListID
       }
     );
 
@@ -119,6 +121,9 @@ export default class HhhhcontactprofileWebPart extends BaseClientSideWebPart<IHh
                 }),
                 PropertyPaneTextField('TeamSmartMetadatalistIds', {
                   label: "TeamSmartMetadatalistIds" 
+                }),
+                PropertyPaneTextField('TilesManagementListID', {
+                  label: "TilesManagementListID" 
                 }),
               ]
             }
